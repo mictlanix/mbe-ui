@@ -8,6 +8,9 @@ import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/catalog_field_validators.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/address_list_item.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/contact.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/customers_list_controller.dart';
 
 part 'customer_form_controller.freezed.dart';
@@ -33,8 +36,13 @@ abstract final class CustomerFormErrorCode {
 /// create mode. `priceListId`/`salespersonId` are set by the form's
 /// `CatalogEntityPicker`s (FR-020); their display-text fields pre-fill the
 /// picker when editing an existing customer.
+///
+/// [addresses], [contacts] and [taxpayers] are the customer's complete link
+/// sets (046-catalog-improvements data-model §1). Each save sends all three
+/// as replace-all id lists, so a link changes only when the user adds or
+/// removes it here — and a customer with several RFCs keeps all of them.
 @freezed
-class CustomerFormState with _$CustomerFormState {
+abstract class CustomerFormState with _$CustomerFormState {
   const factory CustomerFormState({
     int? customerId,
     @Default('') String code,
@@ -46,11 +54,11 @@ class CustomerFormState with _$CustomerFormState {
     @Default('') String priceListDisplayText,
     int? salespersonId,
     @Default('') String salespersonDisplayText,
-    /// The RFC this customer invoices under (mbe-api#150). One here even
-    /// though the relation is many-to-many: a customer registered at the
-    /// counter has one, and managing the full set belongs in the catalog.
-    String? taxpayerId,
-    @Default('') String taxpayerDisplayText,
+
+    @Default(<AddressListItem>[]) List<AddressListItem> addresses,
+    @Default(<Contact>[]) List<Contact> contacts,
+    @Default(<TaxpayerRecipientListItem>[])
+    List<TaxpayerRecipientListItem> taxpayers,
     @Default(EntityStatus.active) EntityStatus status,
     @Default('') String comment,
     @Default(false) bool loading,
@@ -110,8 +118,66 @@ class CustomerFormController extends _$CustomerFormController {
   void salespersonSelected(int? id, String displayText) => state = state
       .copyWith(salespersonId: id, salespersonDisplayText: displayText);
 
+  /// The POS quick-create's single RFC picker (research R4): replaces the
+  /// whole set with exactly [id], or clears it when [id] is `null`.
   void taxpayerSelected(String? id, String displayText) =>
-      state = state.copyWith(taxpayerId: id, taxpayerDisplayText: displayText);
+      state = state.copyWith(
+        taxpayers: id == null
+            ? const []
+            : [
+                TaxpayerRecipientListItem(
+                  taxpayerRecipientId: id,
+                  name: displayText,
+                  email: '',
+                ),
+              ],
+      );
+
+  void addressAdded(AddressListItem address) {
+    if (state.addresses.any((a) => a.addressId == address.addressId)) return;
+    state = _clear(state.copyWith(addresses: [...state.addresses, address]));
+  }
+
+  void addressRemoved(int addressId) => state = _clear(
+    state.copyWith(
+      addresses: [
+        for (final a in state.addresses)
+          if (a.addressId != addressId) a,
+      ],
+    ),
+  );
+
+  void contactAdded(Contact contact) {
+    if (state.contacts.any((c) => c.contactId == contact.contactId)) return;
+    state = _clear(state.copyWith(contacts: [...state.contacts, contact]));
+  }
+
+  void contactRemoved(int contactId) => state = _clear(
+    state.copyWith(
+      contacts: [
+        for (final c in state.contacts)
+          if (c.contactId != contactId) c,
+      ],
+    ),
+  );
+
+  void taxpayerAdded(TaxpayerRecipientListItem taxpayer) {
+    final rfc = taxpayer.taxpayerRecipientId;
+    if (state.taxpayers.any((t) => t.taxpayerRecipientId == rfc)) return;
+    state = _clear(state.copyWith(taxpayers: [...state.taxpayers, taxpayer]));
+  }
+
+  void taxpayerRemoved(String rfc) => state = _clear(
+    state.copyWith(
+      taxpayers: [
+        for (final t in state.taxpayers)
+          if (t.taxpayerRecipientId != rfc) t,
+      ],
+    ),
+  );
+
+  CustomerFormState _clear(CustomerFormState s) =>
+      s.copyWith(error: null, errorDetail: null, fieldErrors: const {});
 
   void statusChanged(EntityStatus v) => state = state.copyWith(status: v);
 
@@ -135,8 +201,12 @@ class CustomerFormController extends _$CustomerFormController {
         priceListDisplayText: customer.priceList.name,
         salespersonId: customer.salesperson?.id,
         salespersonDisplayText: customer.salesperson?.name ?? '',
-        taxpayerId: customer.taxpayers.firstOrNull?.taxpayerRecipientId,
-        taxpayerDisplayText: customer.taxpayers.firstOrNull?.name ?? '',
+        addresses: customer.addresses,
+        contacts: customer.contacts,
+        taxpayers: [
+          for (final t in customer.taxpayers)
+            TaxpayerRecipientListItem.fromRecipient(t),
+        ],
         status: customer.status,
         comment: customer.comment ?? '',
       );
@@ -216,7 +286,11 @@ class CustomerFormController extends _$CustomerFormController {
             creditDays: _orNullInt(state.creditDays),
             salesperson: state.salespersonId,
             comment: _orNull(state.comment),
-            taxpayers: _taxpayersOf(state),
+            // A new customer has no links to keep, so an empty set is simply
+            // left out rather than sent as `[]`.
+            addresses: _orNullList(_addressIdsOf(state)),
+            contacts: _orNullList(_contactIdsOf(state)),
+            taxpayers: _orNullList(_taxpayerIdsOf(state)),
           );
       ref.invalidate(customersListControllerProvider);
       // Recording the new id lets a caller act on the customer it just
@@ -291,7 +365,9 @@ class CustomerFormController extends _$CustomerFormController {
             salesperson: state.salespersonId,
             status: state.status,
             comment: state.comment,
-            taxpayers: _taxpayersOf(state),
+            addresses: _addressIdsOf(state),
+            contacts: _contactIdsOf(state),
+            taxpayers: _taxpayerIdsOf(state),
           );
       ref.invalidate(customersListControllerProvider);
       state = state.copyWith(submitting: false, saved: true);
@@ -345,15 +421,25 @@ class CustomerFormController extends _$CustomerFormController {
 
 String? _orNull(String value) => value.isEmpty ? null : value;
 
-/// `null` leaves whatever links the customer already has alone; a list
-/// replaces them. Sending `[]` for an unset field would silently unlink every
-/// RFC the customer had, so "not chosen" must stay `null`.
-List<String>? _taxpayersOf(CustomerFormState state) {
-  final id = state.taxpayerId;
-  return id == null ? null : [id];
-}
+// On update the three link lists are always sent complete: mbe-api treats
+// each as replace-all, and the form holds the full set (loaded by
+// `loadForEdit`), so sending it unchanged leaves the links as they were — and
+// sending `[]` is how the last link is removed.
+List<int> _addressIdsOf(CustomerFormState state) => [
+  for (final a in state.addresses) a.addressId,
+];
+
+List<int> _contactIdsOf(CustomerFormState state) => [
+  for (final c in state.contacts) c.contactId,
+];
+
+List<String> _taxpayerIdsOf(CustomerFormState state) => [
+  for (final t in state.taxpayers) t.taxpayerRecipientId,
+];
 
 int? _orNullInt(String value) => value.isEmpty ? null : int.tryParse(value);
+
+List<T>? _orNullList<T>(List<T> value) => value.isEmpty ? null : value;
 
 Map<String, String> _fieldErrorsFromServer(ValidationError error) {
   final result = <String, String>{};

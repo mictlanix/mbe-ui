@@ -48,6 +48,11 @@ Future<void> main() async {
   final prefs = await SharedPreferences.getInstance();
   runApp(
     ProviderScope(
+      // Riverpod 3 retries a failing provider automatically by default. The
+      // app surfaces a failure at once through the shared error display, with
+      // an explicit Retry action (constitution §III), so automatic retry stays
+      // off.
+      retry: (retryCount, error) => null,
       overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
       child: const App(),
     ),

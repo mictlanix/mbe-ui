@@ -14,7 +14,7 @@ part 'destination_line.freezed.dart';
 /// distribution panel reconciles against the *sale*, never against delivery
 /// progress.
 @freezed
-class DestinationLine with _$DestinationLine {
+abstract class DestinationLine with _$DestinationLine {
   const factory DestinationLine({
     required int id,
     int? salesOrderDetail,

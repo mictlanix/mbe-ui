@@ -16,7 +16,7 @@ part 'price_list_delete_preview_provider.g.dart';
 /// FR-020 state rather than becoming unusable.
 @riverpod
 Future<PriceListDeletePreview> priceListDeletePreview(
-  PriceListDeletePreviewRef ref, {
+  Ref ref, {
   required int priceListId,
 }) {
   return ref

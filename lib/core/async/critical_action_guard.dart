@@ -168,6 +168,10 @@ class UnconfirmedEdits extends _$UnconfirmedEdits {
   /// Removes the entry for [id], if one exists — on confirm, on discard, and
   /// on the field's own disposal, so an entry never outlives its field.
   void remove(Object id) {
+    // A field's own disposal can run after this scope's provider is already
+    // gone (riverpod 3 forbids touching a disposed notifier); with the
+    // provider gone there is no entry left to remove.
+    if (!ref.mounted) return;
     if (state.every((e) => e.id != id)) return;
     state = [
       for (final existing in state)

@@ -20,6 +20,7 @@ Future<void> _pump(
 
   await tester.pumpWidget(
     ProviderScope(
+      retry: (_, _) => null,
       overrides: [
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
       ],

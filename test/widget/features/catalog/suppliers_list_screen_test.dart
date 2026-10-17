@@ -100,6 +100,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           supplierRepositoryProvider.overrideWithValue(repository),
@@ -192,6 +193,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             sharedPreferencesProvider.overrideWithValue(sharedPreferences),
             supplierRepositoryProvider.overrideWithValue(repository),

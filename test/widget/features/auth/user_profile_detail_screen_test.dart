@@ -87,6 +87,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           userProfileRepositoryProvider.overrideWithValue(repository),
         ],

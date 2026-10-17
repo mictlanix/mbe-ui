@@ -25,7 +25,7 @@ bool? _parseTriState(String? raw) {
 /// route's [ListQuery] — the URL, not a mutable notifier, is the source of
 /// truth.
 @freezed
-class EmployeeFilter with _$EmployeeFilter {
+abstract class EmployeeFilter with _$EmployeeFilter {
   const factory EmployeeFilter({
     @Default('') String search,
     EntityStatus? status,

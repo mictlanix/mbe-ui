@@ -13,7 +13,7 @@ part 'taxpayer_certificate.freezed.dart';
 /// deleted through this feature (FR-024); superseded by uploading a newer
 /// one.
 @freezed
-class TaxpayerCertificate with _$TaxpayerCertificate {
+abstract class TaxpayerCertificate with _$TaxpayerCertificate {
   const factory TaxpayerCertificate({
     required String taxpayerCertificateId,
     required String taxpayer,
@@ -37,7 +37,7 @@ class TaxpayerCertificate with _$TaxpayerCertificate {
 /// and only appear afterward in the resulting [TaxpayerCertificate].
 /// [taxpayer] is fixed to the open issuer's RFC, not re-selected (FR-021).
 @freezed
-class CertificateUpload with _$CertificateUpload {
+abstract class CertificateUpload with _$CertificateUpload {
   const factory CertificateUpload({
     required String taxpayer,
     List<int>? certificateBytes,

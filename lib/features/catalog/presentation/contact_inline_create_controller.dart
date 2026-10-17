@@ -20,7 +20,7 @@ abstract final class ContactInlineCreateErrorCode {
 /// Scoped to one dialog instance — auto-disposed when it closes, so each
 /// opening starts blank.
 @freezed
-class ContactInlineCreateState with _$ContactInlineCreateState {
+abstract class ContactInlineCreateState with _$ContactInlineCreateState {
   const factory ContactInlineCreateState({
     @Default('') String name,
     @Default('') String jobTitle,

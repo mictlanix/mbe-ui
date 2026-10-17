@@ -51,6 +51,7 @@ CashSession _session({int cashSessionId = 9}) => CashSession(
 
 ProviderContainer _containerFor(User user, CashSessionRepository repository) {
   return ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       cashSessionRepositoryProvider.overrideWithValue(repository),
       accessControlProvider.overrideWithValue(

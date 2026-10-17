@@ -19,7 +19,7 @@ const _pageSize = 20;
 /// search. Derived from the route's [ListQuery] — the URL, not a mutable
 /// notifier, is the source of truth.
 @freezed
-class CustomerFilter with _$CustomerFilter {
+abstract class CustomerFilter with _$CustomerFilter {
   const factory CustomerFilter({
     @Default('') String search,
     EntityStatus? status,

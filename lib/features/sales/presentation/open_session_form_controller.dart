@@ -29,7 +29,7 @@ abstract final class OpenSessionFormErrorCode {
 
 /// The open-session form's state (data-model.md §11).
 @freezed
-class OpenSessionFormState with _$OpenSessionFormState {
+abstract class OpenSessionFormState with _$OpenSessionFormState {
   const factory OpenSessionFormState({
     int? cashDrawerId,
     @Default('') String cashDrawerDisplayText,

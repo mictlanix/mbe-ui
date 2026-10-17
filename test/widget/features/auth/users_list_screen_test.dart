@@ -144,6 +144,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           authRepositoryProvider.overrideWithValue(authRepository),
           userRepositoryProvider.overrideWithValue(userRepository),
@@ -190,6 +191,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           authRepositoryProvider.overrideWithValue(authRepository),
           userRepositoryProvider.overrideWithValue(userRepository),

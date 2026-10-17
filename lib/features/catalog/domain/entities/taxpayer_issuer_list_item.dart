@@ -10,7 +10,7 @@ part 'taxpayer_issuer_list_item.freezed.dart';
 /// has one on record — the picker/detail display falls back to [rfc]
 /// (FR-034b).
 @freezed
-class TaxpayerIssuerListItem with _$TaxpayerIssuerListItem {
+abstract class TaxpayerIssuerListItem with _$TaxpayerIssuerListItem {
   const factory TaxpayerIssuerListItem({required String rfc, String? name}) =
       _TaxpayerIssuerListItem;
 

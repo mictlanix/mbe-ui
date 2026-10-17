@@ -21,7 +21,7 @@ const _pageSize = 20;
 /// `SalesOrdersFilter.fromQuery`'s own doc comment warns about, rather than
 /// merely avoiding it by discipline.
 @freezed
-class SalesQuotesFilter with _$SalesQuotesFilter {
+abstract class SalesQuotesFilter with _$SalesQuotesFilter {
   const factory SalesQuotesFilter({
     SaleStatus? status,
     int? customer,

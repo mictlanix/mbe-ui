@@ -199,7 +199,7 @@ void main() {
           builder: (_, _) => Scaffold(
             body: Consumer(
               builder: (context, ref, _) => CaptureStep(
-                sale: ref.watch(posSaleControllerProvider).valueOrNull,
+                sale: ref.watch(posSaleControllerProvider).value,
                 onContinue: () {},
               ),
             ),
@@ -216,6 +216,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
     final container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         salesOrderOverride(salesOrders),
@@ -223,7 +224,7 @@ void main() {
         productRepositoryProvider.overrideWithValue(productRepository),
         supplierRepositoryProvider.overrideWithValue(supplierRepository),
         allLabelsProvider.overrideWith((_) async => const []),
-        authNotifierProvider.overrideWith(
+        authProvider.overrideWith(
           () => _FixedAuthNotifier(
             AuthState.authenticated(token: 't', user: _catalogReaderUser),
           ),
@@ -764,7 +765,7 @@ void main() {
         // have unmounted `/host` and, with it, this sale.
         expect(router.state.uri.path, advancedSearchPath);
         expect(
-          container.read(posSaleControllerProvider).valueOrNull?.id,
+          container.read(posSaleControllerProvider).value?.id,
           sale.id,
         );
         verify(() => anyOpen(salesOrders)).called(1);
@@ -953,6 +954,7 @@ void main() {
         SharedPreferences.setMockInitialValues({});
         final sharedPreferences = await SharedPreferences.getInstance();
         final container = ProviderContainer(
+          retry: (_, _) => null,
           overrides: [
             sharedPreferencesProvider.overrideWithValue(sharedPreferences),
             salesOrderOverride(salesOrders),
@@ -960,7 +962,7 @@ void main() {
             productRepositoryProvider.overrideWithValue(productRepository),
             supplierRepositoryProvider.overrideWithValue(supplierRepository),
             allLabelsProvider.overrideWith((_) async => const []),
-            authNotifierProvider.overrideWith(
+            authProvider.overrideWith(
               () => _FixedAuthNotifier(
                 AuthState.authenticated(token: 't', user: updaterUser),
               ),
@@ -1149,7 +1151,7 @@ void main() {
         overrides: [
           salesOrderOverride(salesOrders),
           customerRepositoryProvider.overrideWithValue(customers),
-          authNotifierProvider.overrideWith(
+          authProvider.overrideWith(
             () => _FixedAuthNotifier(
               AuthState.authenticated(token: 't', user: _catalogReaderUser),
             ),
@@ -1168,7 +1170,7 @@ void main() {
           overrides: [
             salesOrderOverride(salesOrders),
             customerRepositoryProvider.overrideWithValue(customers),
-            authNotifierProvider.overrideWith(
+            authProvider.overrideWith(
               () => _FixedAuthNotifier(
                 AuthState.authenticated(token: 't', user: _catalogReaderUser),
               ),

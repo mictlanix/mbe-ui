@@ -9,7 +9,7 @@ part 'supplier.freezed.dart';
 /// parsed to `double`. The lightweight `SupplierListItem` (id/code/name)
 /// remains the product form's picker item type, unaffected by this entity.
 @freezed
-class Supplier with _$Supplier {
+abstract class Supplier with _$Supplier {
   const factory Supplier({
     required int supplierId,
     required String code,

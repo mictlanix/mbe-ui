@@ -9,7 +9,7 @@ part 'denomination_count.freezed.dart';
 /// Only rows with `quantity > 0` are ever submitted (FR-020); [denomination]
 /// is always one of [kMxnDenominations]'s values.
 @freezed
-class DenominationCount with _$DenominationCount {
+abstract class DenominationCount with _$DenominationCount {
   const factory DenominationCount({required String denomination, required int quantity}) =
       _DenominationCount;
 }

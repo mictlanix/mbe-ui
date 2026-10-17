@@ -111,8 +111,11 @@ class TaxpayerRecipientFormPanelState
     }
 
     if (formState.saved || formState.deleted) {
+      // Pops with the created recipient (null after an update or delete),
+      // which the customer form's inline-create dialog returns to its caller.
+      final created = formState.created;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) Navigator.of(context).pop();
+        if (mounted) Navigator.of(context).pop(created);
       });
     }
 

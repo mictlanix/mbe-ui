@@ -104,6 +104,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           taxpayerRecipientRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
@@ -203,6 +204,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             taxpayerRecipientRepositoryProvider.overrideWithValue(repository),
             satCatalogRepositoryProvider.overrideWithValue(satRepository),

@@ -24,7 +24,8 @@ abstract final class TaxpayerCertificateUploadErrorCode {
 /// dialog closes, so each opening starts from a blank form. [taxpayer] is
 /// fixed to the open issuer's RFC (FR-021) — never a user-editable field.
 @freezed
-class TaxpayerCertificateUploadState with _$TaxpayerCertificateUploadState {
+abstract class TaxpayerCertificateUploadState
+    with _$TaxpayerCertificateUploadState {
   const factory TaxpayerCertificateUploadState({
     required String taxpayer,
     List<int>? certificateBytes,

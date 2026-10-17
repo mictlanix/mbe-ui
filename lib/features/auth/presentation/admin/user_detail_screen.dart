@@ -76,7 +76,7 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
     // permission, so they gate on the administrator flag rather than
     // `canUpdate`.
     final isAdministrator = access.isAdministrator;
-    final signedInUserId = switch (ref.watch(authNotifierProvider).valueOrNull) {
+    final signedInUserId = switch (ref.watch(authProvider).value) {
       AuthAuthenticated(:final user) => user.userId,
       _ => null,
     };
@@ -337,7 +337,7 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
     AppLocalizations l10n,
   ) {
     final hasProfilesAsync = ref.watch(hasActiveUserProfilesProvider);
-    if (hasProfilesAsync.valueOrNull == false) {
+    if (hasProfilesAsync.value == false) {
       return Text(
         l10n.noUserProfilesYetMessage,
         key: const Key('no_user_profiles_yet_on_create'),

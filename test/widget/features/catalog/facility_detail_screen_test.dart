@@ -90,6 +90,7 @@ void main() {
     WidgetTester tester, {
     required User signedInAs,
     int? facilityId,
+    Locale? locale,
   }) async {
     if (facilityId != null) {
       when(
@@ -97,6 +98,7 @@ void main() {
       ).thenAnswer((_) async => _facility);
     }
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         facilityRepositoryProvider.overrideWithValue(facilityRepo),
         addressRepositoryProvider.overrideWithValue(addressRepo),
@@ -109,6 +111,7 @@ void main() {
       UncontrolledProviderScope(
         container: container!,
         child: MaterialApp(
+          locale: locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: Scaffold(body: FacilityDetailScreen(facilityId: facilityId)),
@@ -117,6 +120,20 @@ void main() {
     );
     await tester.pumpAndSettle();
   }
+
+  testWidgets(
+    'in Spanish the type dropdown offers "Planta" for a production site '
+    '(046-catalog-improvements FR-012)',
+    (tester) async {
+      await pumpScreen(tester, signedInAs: _user(), locale: const Locale('es'));
+
+      await tester.tap(find.byKey(const Key('facility_type_field')));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Planta'), findsWidgets);
+      expect(find.textContaining('Sitio de producción'), findsNothing);
+    },
+  );
 
   testWidgets('the create form shows location, address, and taxpayer fields', (
     tester,

@@ -7,7 +7,7 @@ part 'price_list_delete_preview.freezed.dart';
 /// it, with counts (specs/034-price-list-retirement-ui FR-002), from
 /// `GET /api/v1/price-lists/{price_list_id}/delete/preview`.
 @freezed
-class PriceListDeletePreview with _$PriceListDeletePreview {
+abstract class PriceListDeletePreview with _$PriceListDeletePreview {
   const factory PriceListDeletePreview({
     /// One entry per referencing relation, in the server's order (largest
     /// count first). Never re-sorted client-side.
@@ -63,7 +63,7 @@ class PriceListDeletePreview with _$PriceListDeletePreview {
 
 /// One relation referencing the list and how many of its rows do.
 @freezed
-class PriceListDeleteCategory with _$PriceListDeleteCategory {
+abstract class PriceListDeleteCategory with _$PriceListDeleteCategory {
   const factory PriceListDeleteCategory({
     /// The raw `table.column` identifier mbe-api reports, kept verbatim so
     /// an unrecognized relation still reaches the UI rather than being

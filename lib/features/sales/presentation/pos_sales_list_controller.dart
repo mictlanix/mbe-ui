@@ -25,7 +25,7 @@ final _dateFacetFormat = DateFormat('yyyy-MM-dd');
 /// **not** a field — it is not something the cashier may vary (FR-003) and
 /// is read from [registerPointSaleProvider] instead.
 @freezed
-class PosSalesFilter with _$PosSalesFilter {
+abstract class PosSalesFilter with _$PosSalesFilter {
   const factory PosSalesFilter({
     required DateTime from,
     required DateTime to,

@@ -37,6 +37,7 @@ void main() {
 
   ProviderContainer container() {
     final c = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [salesQuoteRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(c.dispose);

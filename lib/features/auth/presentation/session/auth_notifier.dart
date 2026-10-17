@@ -105,7 +105,7 @@ class AuthNotifier extends _$AuthNotifier {
   /// `401` via `session_version`). No-op if [updated] does not match the
   /// current user or the session is not authenticated.
   void refreshCurrentUser(User updated) {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current is! AuthAuthenticated) return;
     if (current.user.userId != updated.userId) return;
     state = AsyncData(

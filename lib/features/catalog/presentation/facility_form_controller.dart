@@ -37,7 +37,7 @@ abstract final class FacilityFormErrorCode {
 /// Create/edit form state for a single facility. [facilityId] is `null` in
 /// create mode. FK fields are held as `id?` + `displayText` pairs.
 @freezed
-class FacilityFormState with _$FacilityFormState {
+abstract class FacilityFormState with _$FacilityFormState {
   const factory FacilityFormState({
     int? facilityId,
     @Default('') String code,
@@ -193,11 +193,9 @@ class FacilityFormController extends _$FacilityFormController {
 
   /// Additionally invalidates this facility's own children instance
   /// (018-nested-facility-management research §6) so a deleted-then-
-  /// recreated id cannot serve stale children. Unlike the three child form
-  /// controllers, no extra request is needed — the facility's own `type` is
-  /// already part of this form's state.
-  void _invalidateOwnChildren(int facilityId, FacilityType type) {
-    ref.invalidate(facilityChildrenControllerProvider(facilityId, type));
+  /// recreated id cannot serve stale children.
+  void _invalidateOwnChildren(int facilityId) {
+    ref.invalidate(facilityChildrenControllerProvider(facilityId));
   }
 
   /// Creates the facility (FR-028, FR-029). Re-checks create privilege
@@ -239,7 +237,7 @@ class FacilityFormController extends _$FacilityFormController {
             status: state.status,
           );
       _invalidateCaches();
-      _invalidateOwnChildren(created.facilityId, created.type);
+      _invalidateOwnChildren(created.facilityId);
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
       _handleSaveError(e, FacilityFormErrorCode.createFailed);
@@ -284,7 +282,7 @@ class FacilityFormController extends _$FacilityFormController {
             status: state.status,
           );
       _invalidateCaches();
-      _invalidateOwnChildren(facilityId, state.type);
+      _invalidateOwnChildren(facilityId);
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
       _handleSaveError(e, FacilityFormErrorCode.updateFailed);
@@ -326,7 +324,7 @@ class FacilityFormController extends _$FacilityFormController {
     try {
       await ref.read(facilityRepositoryProvider).delete(facilityId: facilityId);
       _invalidateCaches();
-      _invalidateOwnChildren(facilityId, state.type);
+      _invalidateOwnChildren(facilityId);
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {
       state = state.copyWith(

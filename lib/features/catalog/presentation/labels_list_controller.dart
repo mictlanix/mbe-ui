@@ -17,7 +17,7 @@ const _pageSize = 20;
 /// §VI). Derived from the route's [ListQuery] — the URL, not a mutable
 /// notifier, is the source of truth.
 @freezed
-class LabelFilter with _$LabelFilter {
+abstract class LabelFilter with _$LabelFilter {
   const factory LabelFilter({
     @Default('') String search,
     @Default(0) int pageIndex,

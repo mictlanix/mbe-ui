@@ -81,7 +81,7 @@ class _DocumentPreviewDialogState extends ConsumerState<DocumentPreviewDialog> {
     final preview = ref.watch(
       documentPreviewControllerProvider(widget.document),
     );
-    final data = preview.valueOrNull;
+    final data = preview.value;
 
     final body = Column(
       key: const Key('document_preview_surface'),

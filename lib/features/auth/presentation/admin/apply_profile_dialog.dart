@@ -53,7 +53,7 @@ class _ApplyProfileDialogState extends ConsumerState<_ApplyProfileDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (hasProfilesAsync.valueOrNull == false)
+            if (hasProfilesAsync.value == false)
               Text(
                 l10n.noUserProfilesYetMessage,
                 key: const Key('apply_profile_no_profiles_yet'),

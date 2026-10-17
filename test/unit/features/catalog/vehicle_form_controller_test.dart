@@ -45,6 +45,7 @@ const _existingVehicle = Vehicle(
 
 ProviderContainer _containerFor(User user, VehicleRepository repository) {
   return ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       vehicleRepositoryProvider.overrideWithValue(repository),
       accessControlProvider.overrideWithValue(

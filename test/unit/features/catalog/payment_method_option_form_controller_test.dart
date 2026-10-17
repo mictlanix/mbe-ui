@@ -43,6 +43,7 @@ ProviderContainer _containerFor(
   PaymentMethodOptionRepository repository,
 ) {
   return ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       paymentMethodOptionRepositoryProvider.overrideWithValue(repository),
       accessControlProvider.overrideWithValue(

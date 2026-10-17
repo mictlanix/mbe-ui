@@ -226,8 +226,11 @@ void main() {
       // Riverpod's own `AsyncNotifier` refresh logic): `AsyncLoading`
       // merged with the previous `AsyncData` via `copyWithPrevious`,
       // yielding `AsyncData(isLoading: true)` with the old value retained.
+      // `copyWithPrevious` is `@internal` since riverpod 3, with no public
+      // equivalent; this fixture still needs the exact state it produces.
       final loadingWithPreviousData = const AsyncValue<CatalogPage<String>>
           .loading()
+          // ignore: invalid_use_of_internal_member
           .copyWithPrevious(AsyncValue.data(_page(const ['a', 'b'])));
 
       await pumpState(

@@ -136,6 +136,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           customerRepositoryProvider.overrideWithValue(repository),
           priceListRepositoryProvider.overrideWithValue(priceListRepository),
@@ -258,6 +259,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             customerRepositoryProvider.overrideWithValue(repository),
             priceListRepositoryProvider.overrideWithValue(priceListRepository),
@@ -434,6 +436,7 @@ void main() {
 
         await tester.pumpWidget(
           ProviderScope(
+            retry: (_, _) => null,
             overrides: [
               customerRepositoryProvider.overrideWithValue(repository),
               priceListRepositoryProvider.overrideWithValue(

@@ -24,7 +24,7 @@ abstract final class PricingErrorCode {
 /// its left-joined price rows (research.md §5). `null` `productId` is the
 /// no-selection empty state (US2 §8).
 @freezed
-class PricingState with _$PricingState {
+abstract class PricingState with _$PricingState {
   const factory PricingState({
     int? productId,
     String? productDisplayText,
@@ -42,7 +42,7 @@ class PricingState with _$PricingState {
 /// retired the sales-order validation that read them), and a created row
 /// takes its band from the price list's own margins server-side.
 @freezed
-class PricingRowEditState with _$PricingRowEditState {
+abstract class PricingRowEditState with _$PricingRowEditState {
   const factory PricingRowEditState({
     @Default('') String price,
     @Default(false) bool submitting,

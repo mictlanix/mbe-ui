@@ -405,7 +405,7 @@ class _FactsView extends ConsumerWidget {
     // sale's own `customerName` is only the per-document override — null for
     // the walk-in customer even while this same record knows the name — so
     // reading it first left the band blank (mictlanix/mbe-api#172).
-    final displayName = customerAsync?.valueOrNull?.name ?? '—';
+    final displayName = customerAsync?.value?.name ?? '—';
 
     // Both actions share one height, so they sit on a single baseline rather
     // than each on its own.
@@ -533,7 +533,7 @@ class _TermsFact extends ConsumerWidget {
     final customer = customerId == null
         ? null
         : ref.watch(saleCustomerControllerProvider(customerId!));
-    final creditLimit = customer?.valueOrNull?.creditLimit;
+    final creditLimit = customer?.value?.creditLimit;
     final hasCredit = creditLimit != null && !isZeroAmount(creditLimit);
     final fmt = ref.watch(formattersProvider);
 

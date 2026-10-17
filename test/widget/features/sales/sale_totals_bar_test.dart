@@ -154,6 +154,7 @@ void main() {
       final sharedPreferences = await SharedPreferences.getInstance();
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           ],

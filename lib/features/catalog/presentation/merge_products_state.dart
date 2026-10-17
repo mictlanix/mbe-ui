@@ -10,7 +10,7 @@ part 'merge_products_state.freezed.dart';
 /// [duplicate] is persisted until [MergeProductsController.submit]
 /// succeeds.
 @freezed
-class MergeProductsState with _$MergeProductsState {
+abstract class MergeProductsState with _$MergeProductsState {
   const factory MergeProductsState({
     /// The "Product" selection — kept after a merge. `null` until chosen.
     ProductListItem? canonical,

@@ -4,17 +4,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
+import 'package:mbe_ui/features/catalog/data/address_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/contact_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/address_list_item.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/contact.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
+import 'package:mbe_ui/features/catalog/presentation/address_inline_create.dart';
+import 'package:mbe_ui/features/catalog/presentation/contact_inline_create.dart';
 import 'package:mbe_ui/features/catalog/presentation/customer_form_controller.dart';
+import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipient_inline_create.dart';
+import 'package:mbe_ui/features/catalog/presentation/widgets/linked_records_section.dart';
 import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -22,13 +31,12 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// Create / view / edit form for a single customer (spec 035 US5 —
 /// converted from the pushed `/customers/new` / `/customers/:customerId`
 /// routes to the shared record panel, `showRecordSheet`). [customerId] is
-/// `null` in create mode. Owns three `CatalogEntityPicker`s (price list,
-/// salesperson/employee, taxpayer recipient) — confirms FR-035 (every
-/// picker a converted form already offers keeps working unchanged) for the
-/// entity with the most pickers of the fourteen. Per the FR-035 spec
-/// correction, this form has no inline address/contact creation — that
-/// original assumption was false. See `label_form.dart` for the base
-/// pattern (spec 035 T029).
+/// `null` in create mode. Owns two `CatalogEntityPicker`s (price list,
+/// salesperson/employee) and three [LinkedRecordsSection]s — addresses,
+/// contacts and taxpayer recipients — where the customer's links are added,
+/// created and removed (046-catalog-improvements US1). The linked records
+/// are shared, so they are never edited from here (FR-009). See
+/// `label_form.dart` for the base pattern (spec 035 T029).
 class CustomerForm extends ConsumerStatefulWidget {
   const CustomerForm({super.key, this.customerId, this.forceReadOnly = false});
 
@@ -89,6 +97,8 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
     final priceListRepo = ref.read(priceListRepositoryProvider);
     final employeeRepo = ref.read(employeeRepositoryProvider);
     final taxpayerRepo = ref.read(taxpayerRecipientRepositoryProvider);
+    final addressRepo = ref.read(addressRepositoryProvider);
+    final contactRepo = ref.read(contactRepositoryProvider);
 
     if (formState.loading) {
       return const Center(
@@ -194,24 +204,6 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
           ),
         ),
         FormGridChild(
-          CatalogEntityPicker<TaxpayerRecipientListItem>(
-            key: const Key('taxpayer_field'),
-            label: l10n.taxpayerRecipientFieldLabel,
-            displayStringForOption: (t) =>
-                '${t.taxpayerRecipientId} — ${t.name}',
-            optionsBuilder: (query) async {
-              final result = await taxpayerRepo.list(
-                search: query.isEmpty ? null : query,
-              );
-              return result.items;
-            },
-            onSelected: (t) =>
-                controller.taxpayerSelected(t.taxpayerRecipientId, t.name),
-            initialDisplayText: formState.taxpayerDisplayText,
-            enabled: fieldsEnabled,
-          ),
-        ),
-        FormGridChild(
           TextFormField(
             key: const Key('zone_field'),
             initialValue: formState.zone,
@@ -281,6 +273,91 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
             enabled: fieldsEnabled,
             onChanged: controller.commentChanged,
             maxLines: 3,
+          ),
+        ),
+        // Linked records (046-catalog-improvements FR-001..FR-008). Linking or
+        // unlinking needs the same right as saving the customer (the
+        // sections are disabled exactly when the fields are); searching
+        // needs read on the linked kind, creating needs create on it.
+        const FormGridChild(span: FormGridSpan.full, Divider()),
+        FormGridChild(
+          span: FormGridSpan.full,
+          LinkedRecordsSection<AddressListItem>(
+            key: const Key('customer_addresses_section'),
+            sectionId: 'addresses',
+            title: l10n.customerAddressesSection,
+            emptyText: l10n.customerAddressesEmpty,
+            items: formState.addresses,
+            idOf: (a) => a.addressId,
+            labelOf: (a) => a.label,
+            statusOf: (a) => a.status,
+            editable: fieldsEnabled,
+            searchLabel: l10n.customerAddressLinkLabel,
+            searchExisting: access.can(SystemObject.addresses, AccessRight.read)
+                ? (query) async => (await addressRepo.list(
+                    search: query.isEmpty ? null : query,
+                    status: EntityStatus.active,
+                  )).items
+                : null,
+            onLinked: controller.addressAdded,
+            onUnlinked: (a) => controller.addressRemoved(a.addressId),
+            onCreateNew: access.can(SystemObject.addresses, AccessRight.create)
+                ? () => showAddressInlineCreateDialog(context)
+                : null,
+          ),
+        ),
+        const FormGridChild(span: FormGridSpan.full, Divider()),
+        FormGridChild(
+          span: FormGridSpan.full,
+          LinkedRecordsSection<Contact>(
+            key: const Key('customer_contacts_section'),
+            sectionId: 'contacts',
+            title: l10n.customerContactsSection,
+            emptyText: l10n.customerContactsEmpty,
+            items: formState.contacts,
+            idOf: (c) => c.contactId,
+            labelOf: (c) => c.name,
+            subtitleOf: (c) => c.preferredPhone ?? c.email,
+            editable: fieldsEnabled,
+            searchLabel: l10n.customerContactLinkLabel,
+            searchExisting: access.can(SystemObject.contacts, AccessRight.read)
+                ? (query) =>
+                      contactRepo.list(search: query.isEmpty ? null : query)
+                : null,
+            onLinked: controller.contactAdded,
+            onUnlinked: (c) => controller.contactRemoved(c.contactId),
+            onCreateNew: access.can(SystemObject.contacts, AccessRight.create)
+                ? () => showContactInlineCreateDialog(context)
+                : null,
+          ),
+        ),
+        const FormGridChild(span: FormGridSpan.full, Divider()),
+        FormGridChild(
+          span: FormGridSpan.full,
+          LinkedRecordsSection<TaxpayerRecipientListItem>(
+            key: const Key('customer_taxpayers_section'),
+            sectionId: 'taxpayers',
+            title: l10n.customerTaxpayersSection,
+            emptyText: l10n.customerTaxpayersEmpty,
+            items: formState.taxpayers,
+            idOf: (t) => t.taxpayerRecipientId,
+            labelOf: (t) => t.taxpayerRecipientId,
+            subtitleOf: (t) => t.name,
+            editable: fieldsEnabled,
+            searchLabel: l10n.customerTaxpayerLinkLabel,
+            searchExisting:
+                access.can(SystemObject.taxpayerRecipients, AccessRight.read)
+                ? (query) async => (await taxpayerRepo.list(
+                    search: query.isEmpty ? null : query,
+                  )).items
+                : null,
+            onLinked: controller.taxpayerAdded,
+            onUnlinked: (t) =>
+                controller.taxpayerRemoved(t.taxpayerRecipientId),
+            onCreateNew:
+                access.can(SystemObject.taxpayerRecipients, AccessRight.create)
+                ? () => showTaxpayerRecipientInlineCreateDialog(context)
+                : null,
           ),
         ),
         if (_isEdit)

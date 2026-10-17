@@ -206,7 +206,7 @@ class _OrderWorkspaceBodyState extends ConsumerState<_OrderWorkspaceBody> {
     // Offered on a draft and nowhere else: a committed, paid or already
     // cancelled order has nothing this action could do, so it is absent
     // rather than disabled (FR-034, contracts/order-workspace.md §8).
-    final order = orderAsync.valueOrNull;
+    final order = orderAsync.value;
     final canCancel =
         canUpdate &&
         order != null &&

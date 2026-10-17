@@ -13,7 +13,7 @@ part 'current_session.freezed.dart';
 /// a complete picture of the user's open sessions; the history list (FR-034)
 /// is the only way to reach the rest.
 @freezed
-class CurrentSession with _$CurrentSession {
+abstract class CurrentSession with _$CurrentSession {
   const factory CurrentSession({required SessionState state, CashSession? session}) =
       _CurrentSession;
 

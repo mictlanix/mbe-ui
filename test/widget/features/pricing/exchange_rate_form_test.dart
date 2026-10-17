@@ -69,6 +69,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           exchangeRateRepositoryProvider.overrideWithValue(repository),
@@ -210,6 +211,7 @@ void main() {
       final key = GlobalKey<ExchangeRateFormPanelState>();
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             sharedPreferencesProvider.overrideWithValue(sharedPreferences),
             exchangeRateRepositoryProvider.overrideWithValue(repository),
@@ -241,6 +243,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             sharedPreferencesProvider.overrideWithValue(sharedPreferences),
             exchangeRateRepositoryProvider.overrideWithValue(repository),

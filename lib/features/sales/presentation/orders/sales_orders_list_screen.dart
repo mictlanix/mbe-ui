@@ -383,7 +383,7 @@ class _SalesOrdersFiltersPanel extends ConsumerWidget {
                           .watch(
                             employeeDisplayNameProvider(filter.salesperson!),
                           )
-                          .valueOrNull ??
+                          .value ??
                       '${filter.salesperson}'
                 : l10n.salesOrderSalespersonEveryone,
           ),
@@ -398,7 +398,7 @@ class _SalesOrdersFiltersPanel extends ConsumerWidget {
               final resolvedName = effectiveFacilityId != null
                   ? ref
                         .watch(facilityDisplayNameProvider(effectiveFacilityId))
-                        .valueOrNull
+                        .value
                   : null;
               return CatalogEntityPicker<FacilityListItem>(
                 key: const Key('sales_orders_filter_facility'),

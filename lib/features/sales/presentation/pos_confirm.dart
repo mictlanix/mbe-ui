@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';

@@ -601,7 +601,7 @@
   "taxpayerRecipientEmailRequiredError": "El correo es obligatorio.",
 
   "facilityTypeStore": "Tienda",
-  "facilityTypeProductionSite": "Sitio de producción",
+  "facilityTypeProductionSite": "Planta",
   "columnFacility": "Instalación",
   "columnWarehouse": "Almacén",
   "columnComment": "Comentario",
@@ -710,7 +710,6 @@
   "noWarehousesInFacility": "Sin almacenes registrados.",
   "noPointsOfSaleInFacility": "Sin puntos de venta.",
   "noCashDrawersInFacility": "Sin cajas registradas.",
-  "productionSiteChildrenNote": "Los sitios de producción solo administran almacenes: no tienen puntos de venta ni cajas.",
   "pointSaleForeignFacilityBadge": "Otra instalación",
   "newWarehouseInFacility": "Almacén",
   "newPointSaleInFacility": "Punto de venta",
@@ -1179,5 +1178,16 @@
   "posSalePrintTicketError": "No se pudo imprimir el ticket.",
   "cashSessionViewCutAction": "Ver corte",
   "posSaleViewTicketTooltip": "Ver ticket",
-  "salesOrderViewDocumentAction": "Ver pedido"
+  "salesOrderViewDocumentAction": "Ver pedido",
+  "customerAddressesSection": "Direcciones",
+  "customerContactsSection": "Contactos",
+  "customerTaxpayersSection": "Receptores fiscales",
+  "customerAddressesEmpty": "Sin direcciones vinculadas.",
+  "customerContactsEmpty": "Sin contactos vinculados.",
+  "customerTaxpayersEmpty": "Sin receptores fiscales vinculados.",
+  "customerAddressLinkLabel": "Vincular una dirección existente",
+  "customerContactLinkLabel": "Vincular un contacto existente",
+  "customerTaxpayerLinkLabel": "Vincular un receptor fiscal existente",
+  "linkedRecordUnlinkTooltip": "Desvincular",
+  "linkedRecordNewAction": "Nuevo"
 }

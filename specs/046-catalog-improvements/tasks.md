@@ -32,13 +32,26 @@ description: "Task list for 046-catalog-improvements"
 
 **Purpose**: a known-good baseline, so later failures are attributable.
 
-- [ ] T001 Run `flutter analyze` and the test files listed in `specs/046-catalog-improvements/quickstart.md` § Automated checks on the clean branch; note any pre-existing failures so they are not blamed on this feature
+- [X] T001 Run `flutter analyze` and the test files listed in `specs/046-catalog-improvements/quickstart.md` § Automated checks on the clean branch; note any pre-existing failures so they are not blamed on this feature
 
 ---
 
 ## Phase 2: Foundational
 
 No blocking prerequisites. Each story is self-contained; the small shared domain changes live inside US1, the only story that needs them.
+
+---
+
+## Phase 2b: Code-generator upgrade (added during implementation)
+
+**Purpose**: `build_runner` could not run on Flutter 3.47.7, so no `@freezed`/`@riverpod` change could be generated (research R15). Done before the stories' generated code could compile.
+
+- [X] T045 Bump `flutter_riverpod`, `riverpod_annotation`, `riverpod_generator`, `freezed`, `freezed_annotation`, `build_runner` and `json_serializable` in `pubspec.yaml`; `flutter pub get`
+- [X] T046 Mechanical migration across `lib/` and `test/`: freezed classes `abstract`, typed refs to `Ref`, `valueOrNull` to `value`, `legacy.dart`/`misc.dart` imports, `authNotifierProvider` to `authProvider`, the `TrackedEditing.ref` type; regenerate with `dart run build_runner build --delete-conflicting-outputs`
+- [X] T047 Turn Riverpod 3's automatic retry off at the app root in `lib/main.dart` and in every test `ProviderScope`/`ProviderContainer`
+- [X] T048 Keep async writes alive across their request (`ref.keepAlive()`) in `lib/features/sales/presentation/tracked_editing.dart`, `sale_editing.dart`, `quote_editing.dart`, `delivery/delivery_controller.dart` and `close_session_form_controller.dart`; guard `UnconfirmedEdits.remove` in `lib/core/async/critical_action_guard.dart` with `ref.mounted`; watch the repository before the `await` in `capture/product_lookup_controller.dart`
+- [X] T049 Subscribe the auto-disposed controllers that `test/widget/features/sales/sale_editor_isolation_test.dart` reads, as a real screen would; mark the `copyWithPrevious` fixture in `test/widget/core/widgets/list_state_views_test.dart` as a deliberate use of an internal member
+- [X] T050 `flutter analyze` clean; full suite run, with the failures that predate this work identified (research R15)
 
 ---
 
@@ -50,14 +63,14 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 
 ### Domain and data
 
-- [ ] T002 [P] [US1] In `lib/features/catalog/domain/entities/address_list_item.dart`, add `@Default(EntityStatus.active) EntityStatus status`, mapped from `AddressResponse.status` in `fromResponse` (data-model §2); re-run build_runner
-- [ ] T003 [P] [US1] In `lib/features/catalog/domain/entities/taxpayer_recipient_list_item.dart`, add `TaxpayerRecipientListItem.fromRecipient(TaxpayerRecipient r)` carrying `taxpayerRecipientId`, `name`, `email`. Only `fromResponse` exists today, and `Customer.taxpayers` holds full `TaxpayerRecipient` entities, so this factory is required (data-model §4)
-- [ ] T004 [P] [US1] Add an optional `EntityStatus? status` parameter to `list(...)` in `lib/features/catalog/domain/repositories/address_repository.dart` and pass it to the generated `listAddresses(status:)` in `lib/features/catalog/data/address_repository_impl.dart` (data-model §3). Existing callers must compile unchanged
-- [ ] T005 [US1] In `lib/features/catalog/presentation/taxpayer_recipient_form_controller.dart`, add `TaxpayerRecipient? created` to the state and set it from the repository's return value in `submitCreate`. In `lib/features/catalog/presentation/taxpayer_recipient_form.dart`, on `saved` call `Navigator.pop(state.created)` instead of a bare pop; update flow must still pop with no value (research R7, data-model §5); re-run build_runner
+- [X] T002 [P] [US1] In `lib/features/catalog/domain/entities/address_list_item.dart`, add `@Default(EntityStatus.active) EntityStatus status`, mapped from `AddressResponse.status` in `fromResponse` (data-model §2); re-run build_runner
+- [X] T003 [P] [US1] In `lib/features/catalog/domain/entities/taxpayer_recipient_list_item.dart`, add `TaxpayerRecipientListItem.fromRecipient(TaxpayerRecipient r)` carrying `taxpayerRecipientId`, `name`, `email`. Only `fromResponse` exists today, and `Customer.taxpayers` holds full `TaxpayerRecipient` entities, so this factory is required (data-model §4)
+- [X] T004 [P] [US1] Add an optional `EntityStatus? status` parameter to `list(...)` in `lib/features/catalog/domain/repositories/address_repository.dart` and pass it to the generated `listAddresses(status:)` in `lib/features/catalog/data/address_repository_impl.dart` (data-model §3). Existing callers must compile unchanged
+- [X] T005 [US1] In `lib/features/catalog/presentation/taxpayer_recipient_form_controller.dart`, add `TaxpayerRecipient? created` to the state and set it from the repository's return value in `submitCreate`. In `lib/features/catalog/presentation/taxpayer_recipient_form.dart`, on `saved` call `Navigator.pop(state.created)` instead of a bare pop; update flow must still pop with no value (research R7, data-model §5); re-run build_runner
 
 ### Localization
 
-- [ ] T006 [US1] Add the US1 strings to `lib/l10n/app_en.arb` (with `@` metadata) and `lib/l10n/app_es.arb`, then run `flutter gen-l10n`:
+- [X] T006 [US1] Add the US1 strings to `lib/l10n/app_en.arb` (with `@` metadata) and `lib/l10n/app_es.arb`, then run `flutter gen-l10n`:
   - section titles: Addresses, Contacts, Tax recipients (es: Direcciones, Contactos, Receptores fiscales — matching the existing `taxpayerRecipientsMenuTitle` wording);
   - "No addresses linked" / contacts / taxpayers empty texts;
   - "Unlink" (es: Desvincular);
@@ -67,7 +80,7 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 
 ### Controller and widgets
 
-- [ ] T007 [US1] In `lib/features/catalog/presentation/customer_form_controller.dart`, implement data-model §1:
+- [X] T007 [US1] In `lib/features/catalog/presentation/customer_form_controller.dart`, implement data-model §1:
   - replace `taxpayerId` / `taxpayerDisplayText` with `taxpayers`, and add `addresses` and `contacts`;
   - add `addressAdded/Removed`, `contactAdded/Removed`, `taxpayerAdded/Removed`, each deduplicating and clearing field errors;
   - keep `taxpayerSelected(rfc, name)` as a single-item replace for the POS (research R4);
@@ -77,10 +90,10 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
   - re-run build_runner.
   
   The permission re-checks in create/update/delete stay as they are
-- [ ] T008 [P] [US1] Create `lib/features/catalog/presentation/widgets/linked_records_section.dart` per contracts C1: header with count, rows with an optional subtitle and inactive badge, a keyed remove button (`ValueKey('unlink-<id>')`), a bare `CatalogEntityPicker<T>` that leaves out already-linked ids, a "New" button, read-only and empty rendering, and `Spacing` tokens only. No I/O inside the widget (depends on T006)
-- [ ] T009 [P] [US1] Create `lib/features/catalog/presentation/taxpayer_recipient_inline_create.dart` per contracts C2: `showTaxpayerRecipientInlineCreateDialog` hosts `TaxpayerRecipientForm` in a `Dialog` (max width 640, scrollable) and returns the created record mapped to `TaxpayerRecipientListItem` (depends on T003, T005, T006)
-- [ ] T010 [US1] In `lib/features/sales/presentation/customer_inline_create.dart`, adapt the POS quick-create to the list state: the picker's `initialDisplayText` comes from `taxpayers.firstOrNull`, and `onSelected` keeps calling `taxpayerSelected`. Behavior must not change (research R4; depends on T007)
-- [ ] T011 [US1] In `lib/features/catalog/presentation/customer_form.dart`, remove the `taxpayer_field` picker. After `comment` and before `EntityStatusFormField`, add three full-width `LinkedRecordsSection`s separated by the shared divider, wired as in contracts C1's instance table:
+- [X] T008 [P] [US1] Create `lib/features/catalog/presentation/widgets/linked_records_section.dart` per contracts C1: header with count, rows with an optional subtitle and inactive badge, a keyed remove button (`ValueKey('unlink-<id>')`), a bare `CatalogEntityPicker<T>` that leaves out already-linked ids, a "New" button, read-only and empty rendering, and `Spacing` tokens only. No I/O inside the widget (depends on T006)
+- [X] T009 [P] [US1] Create `lib/features/catalog/presentation/taxpayer_recipient_inline_create.dart` per contracts C2: `showTaxpayerRecipientInlineCreateDialog` hosts `TaxpayerRecipientForm` in a `Dialog` (max width 640, scrollable) and returns the created record mapped to `TaxpayerRecipientListItem` (depends on T003, T005, T006)
+- [X] T010 [US1] In `lib/features/sales/presentation/customer_inline_create.dart`, adapt the POS quick-create to the list state: the picker's `initialDisplayText` comes from `taxpayers.firstOrNull`, and `onSelected` keeps calling `taxpayerSelected`. Behavior must not change (research R4; depends on T007)
+- [X] T011 [US1] In `lib/features/catalog/presentation/customer_form.dart`, remove the `taxpayer_field` picker. After `comment` and before `EntityStatusFormField`, add three full-width `LinkedRecordsSection`s separated by the shared divider, wired as in contracts C1's instance table:
   - search from `addressRepositoryProvider` (with `status: active`), `contactRepositoryProvider` and `taxpayerRecipientRepositoryProvider`;
   - create from the two existing inline dialogs and the new taxpayer dialog;
   - `editable` is the form's existing `!readOnly`;
@@ -90,7 +103,7 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 
 ### Tests
 
-- [ ] T012 [P] [US1] Update `test/unit/features/catalog/customer_form_controller_test.dart`:
+- [X] T012 [P] [US1] Update `test/unit/features/catalog/customer_form_controller_test.dart`:
   - add/remove/dedupe for all three lists;
   - `loadForEdit` seeds the three lists;
   - update sends all three id lists complete: a customer with 2 RFCs keeps both after saving an unrelated change (FR-006);
@@ -98,15 +111,15 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
   - `taxpayerSelected` replaces the list with one item;
   - `isDirty()` flips on a link change;
   - unlinking never deletes the record: `verifyNever` on any address, contact or taxpayer-recipient delete/update call (spec US1 scenario 5).
-- [ ] T013 [P] [US1] Create `test/widget/features/catalog/linked_records_section_test.dart`: rows and counts; unlink calls back; an already-linked record is excluded from the picker options; "New" result is passed to `onLinked`; read-only shows no controls; inactive badge; empty text; a long list does not overflow at a compact width
-- [ ] T014 [P] [US1] Create `test/widget/features/catalog/taxpayer_recipient_inline_create_test.dart` (returns the created record; cancel returns null). Extend `test/unit/features/catalog/taxpayer_recipient_form_controller_test.dart` with `created` being set on create and null on update
-- [ ] T015 [P] [US1] Extend the address repository test under `test/unit/features/catalog/` (find the existing `address_repository_impl` test) to assert `status` is forwarded and that omitting it keeps the old request
-- [ ] T016 [US1] Update `test/widget/features/catalog/customer_form_test.dart`:
+- [X] T013 [P] [US1] Create `test/widget/features/catalog/linked_records_section_test.dart`: rows and counts; unlink calls back; an already-linked record is excluded from the picker options; "New" result is passed to `onLinked`; read-only shows no controls; inactive badge; empty text; a long list does not overflow at a compact width
+- [X] T014 [P] [US1] Create `test/widget/features/catalog/taxpayer_recipient_inline_create_test.dart` (returns the created record; cancel returns null). Extend `test/unit/features/catalog/taxpayer_recipient_form_controller_test.dart` with `created` being set on create and null on update
+- [X] T015 [P] [US1] Extend the address repository test under `test/unit/features/catalog/` (find the existing `address_repository_impl` test) to assert `status` is forwarded and that omitting it keeps the old request
+- [X] T016 [US1] Update `test/widget/features/catalog/customer_form_test.dart`:
   - add provider overrides for the address, contact and taxpayer-recipient repositories;
   - cover the three sections listing linked records, read-only hiding every control, "New" hidden without the create privilege, link then Save sending the full lists, and cancel discarding changes with the dirty prompt;
   - cover a customer with 2 RFCs saved without losing either;
   - cover create-then-failed-save: a contact created with "Nuevo" stays in the section, the customer save fails and shows the error, and retrying Save sends that contact's id once, with no second contact created (spec edge case "Failure while creating a linked record") (depends on T011)
-- [ ] T017 [US1] Run and, if needed, update `test/widget/features/sales/customer_inline_create_test.dart` and `test/widget/features/sales/quote_customer_inline_create_test.dart`; behavior must be unchanged (depends on T010)
+- [X] T017 [US1] Run and, if needed, update `test/widget/features/sales/customer_inline_create_test.dart` and `test/widget/features/sales/quote_customer_inline_create_test.dart`; behavior must be unchanged (depends on T010)
 - [ ] T018 [US1] Manual validation: quickstart scenarios 1–6 against the dev backend, including the read-only user (scenario 5)
 
 **Checkpoint**: US1 is shippable on its own.
@@ -119,21 +132,21 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 
 **Independent Test**: Quickstart scenario 7. Expand a production site, see all three sections, create a point of sale and a cash drawer, and confirm both appear.
 
-- [ ] T019 [US2] In `lib/features/catalog/presentation/facility_children_controller.dart`, remove the `isStore` gate (lines ~40–49): `pointsOfSaleReadable` and `cashDrawersReadable` depend only on `can(..., read)`. **Drop the now-dead `FacilityType facilityType` family parameter** so the provider is keyed by `facilityId` alone, and update the doc comment about per-type fetching. Update every caller of `facilityChildrenControllerProvider(id, type)` to `(id)`:
+- [X] T019 [US2] In `lib/features/catalog/presentation/facility_children_controller.dart`, remove the `isStore` gate (lines ~40–49): `pointsOfSaleReadable` and `cashDrawersReadable` depend only on `can(..., read)`. **Drop the now-dead `FacilityType facilityType` family parameter** so the provider is keyed by `facilityId` alone, and update the doc comment about per-type fetching. Update every caller of `facilityChildrenControllerProvider(id, type)` to `(id)`:
   - `lib/features/catalog/presentation/facility_form_controller.dart:199-201`: `_invalidateOwnChildren(int facilityId)` drops its `type` argument, and its doc comment loses the remark about the type being part of the form state; update its callers in the same file;
   - `lib/features/catalog/presentation/widgets/facility_card.dart` and any other call site found with `grep -rn facilityChildrenControllerProvider lib test`.
   
   Re-run build_runner (research R11)
-- [ ] T020 [US2] In `lib/features/catalog/presentation/widgets/facility_card.dart`, remove every `isStore` branch on children (research R11):
+- [X] T020 [US2] In `lib/features/catalog/presentation/widgets/facility_card.dart`, remove every `isStore` branch on children (research R11):
   - the count badges;
   - the Points of Sale and Cash Drawers sections with their "+" actions;
   - the `productionSiteChildrenNote` block.
   
   Keep the type icon and label (FR-013): `_Header` still needs `isStore` for them. Remove the `isStore` parameter from the badge and body widgets, which no longer use it. Coordinate with T019, which edits the provider call in the same file
-- [ ] T021 [US2] Delete `productionSiteChildrenNote` (with its `@` entry) from `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`, then run `flutter gen-l10n` (depends on T020)
-- [ ] T022 [P] [US2] Invert `test/unit/features/catalog/facility_children_controller_test.dart` (~lines 149–178): a production site now requests all three child lists, and `pointsOfSaleReadable` / `cashDrawersReadable` follow the privilege. Update every `facilityChildrenControllerProvider(id, type)` reference to the single-key form (T019), here and in `test/unit/features/catalog/` facility form controller tests if they reference it
-- [ ] T023 [P] [US2] Invert `test/widget/features/catalog/facilities_list_screen_test.dart` (~lines 342–381): the production-site card shows Warehouses, Points of Sale and Cash Drawers with counts and "+" actions, the note is absent, and POS and drawer lists are fetched. Check the other uses of `_productionSite` (~lines 287, 498) still hold. Add a case for spec US2 scenario 3: a production site that has points of sale and cash drawers lists them under their sections with the right counts
-- [ ] T024 [P] [US2] Update `test/integration/facility_children_controller_live_test.dart` (~lines 88–93): drop the assertion that a production site's points of sale and cash drawers are empty
+- [X] T021 [US2] Delete `productionSiteChildrenNote` (with its `@` entry) from `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`, then run `flutter gen-l10n` (depends on T020)
+- [X] T022 [P] [US2] Invert `test/unit/features/catalog/facility_children_controller_test.dart` (~lines 149–178): a production site now requests all three child lists, and `pointsOfSaleReadable` / `cashDrawersReadable` follow the privilege. Update every `facilityChildrenControllerProvider(id, type)` reference to the single-key form (T019), here and in `test/unit/features/catalog/` facility form controller tests if they reference it
+- [X] T023 [P] [US2] Invert `test/widget/features/catalog/facilities_list_screen_test.dart` (~lines 342–381): the production-site card shows Warehouses, Points of Sale and Cash Drawers with counts and "+" actions, the note is absent, and POS and drawer lists are fetched. Check the other uses of `_productionSite` (~lines 287, 498) still hold. Add a case for spec US2 scenario 3: a production site that has points of sale and cash drawers lists them under their sections with the right counts
+- [X] T024 [P] [US2] Update `test/integration/facility_children_controller_live_test.dart` (~lines 88–93): drop the assertion that a production site's points of sale and cash drawers are empty
 - [ ] T025 [US2] Manual validation: quickstart scenario 7. Also change a store that has points of sale to a production site and confirm its children stay visible (spec US2 scenario 3)
 
 **Checkpoint**: US2 is shippable on its own.
@@ -146,8 +159,8 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 
 **Independent Test**: Quickstart scenario 8.
 
-- [ ] T026 [US3] In `lib/l10n/app_es.arb`, change `facilityTypeProductionSite` from "Sitio de producción" to "Planta"; leave English unchanged. Run `flutter gen-l10n` (after T021, since both edit the arb files)
-- [ ] T027 [US3] Run `grep -rni "sitio de producci" lib test` and fix any remaining occurrence. Add a Spanish-locale assertion in `test/widget/features/catalog/facilities_list_screen_test.dart` that the production-site card reads "Planta" and the facility form type dropdown offers "Planta" in `test/widget/features/catalog/facility_detail_screen_test.dart` (depends on T026)
+- [X] T026 [US3] In `lib/l10n/app_es.arb`, change `facilityTypeProductionSite` from "Sitio de producción" to "Planta"; leave English unchanged. Run `flutter gen-l10n` (after T021, since both edit the arb files)
+- [X] T027 [US3] Run `grep -rni "sitio de producci" lib test` and fix any remaining occurrence. Add a Spanish-locale assertion in `test/widget/features/catalog/facilities_list_screen_test.dart` that the production-site card reads "Planta" and the facility form type dropdown offers "Planta" in `test/widget/features/catalog/facility_detail_screen_test.dart` (depends on T026)
 - [ ] T028 [US3] Manual validation: quickstart scenario 8
 
 **Checkpoint**: US3 is shippable on its own.
@@ -160,14 +173,14 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 
 **Independent Test**: Quickstart scenarios 9 and 10.
 
-- [ ] T029 [US4] Add the preview strings to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`: close tooltip and the preview semantics label. Run `flutter gen-l10n` (after T026)
-- [ ] T030 [US4] In `lib/core/widgets/product_photo.dart`, add `VoidCallback? onTap` (contracts C3). When it is set, wrap the loaded image in an `InkWell` with a click cursor from `Image.network(frameBuilder:)` once `frame != null`. Placeholders (null URL or load error) are never wrapped. Behavior with `onTap == null` must not change
-- [ ] T031 [US4] Create `lib/core/widgets/product_photo_preview.dart` per contracts C4: `showProductPhotoPreview(context, {photoUrl, title})`, a `Dialog` with an ellipsized title, a close `IconButton` (`Key('photo_preview_close')`), an `Image.network(fit: BoxFit.contain)` limited to about 90% of the viewport, and the shared placeholder on load error. Escape, barrier tap and close all dismiss (depends on T029, T030)
-- [ ] T032 [US4] In `lib/features/catalog/presentation/products_list_screen.dart` (the photo cell, ~lines 128–132), pass `onTap: p.photo == null ? null : () => showProductPhotoPreview(context, photoUrl: p.photo!, title: p.name)` (depends on T031)
-- [ ] T033 [US4] In `lib/features/catalog/presentation/product_detail_screen.dart`, make only the saved-photo branch of `_thumbnail()` previewable; a pending (unsaved) upload is not (depends on T031)
-- [ ] T034 [P] [US4] Extend `test/widget/core/widgets/product_photo_test.dart`: `onTap` fires on a loaded photo; it does not fire on the null-URL or error placeholder; existing cases unchanged. To make a photo actually load, reuse the network-image stub pattern this file already uses for its "network image" case; the default test HTTP client returns errors, which would only exercise the placeholder
-- [ ] T035 [P] [US4] Create `test/widget/core/widgets/product_photo_preview_test.dart`: shows the title and image; Escape, barrier tap and the close button each dismiss; load error shows the placeholder; a tall portrait image fits inside the dialog without overflow or page scroll (spec edge case "Very large or portrait photos"). Use the same image stub as T034
-- [ ] T036 [US4] Extend `test/widget/features/catalog/products_list_screen_test.dart`: tapping a photo opens the preview and does **not** navigate to the product; tapping elsewhere in the row still opens the read-only view; a product without a photo has no preview (depends on T032)
+- [X] T029 [US4] Add the preview strings to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`: close tooltip and the preview semantics label. Run `flutter gen-l10n` (after T026) — *as built: none needed; the close button reuses the existing `documentCloseTooltip`*
+- [X] T030 [US4] In `lib/core/widgets/product_photo.dart`, add `VoidCallback? onTap` (contracts C3). When it is set, wrap the loaded image in an `InkWell` with a click cursor from `Image.network(frameBuilder:)` once `frame != null`. Placeholders (null URL or load error) are never wrapped. Behavior with `onTap == null` must not change
+- [X] T031 [US4] Create `lib/core/widgets/product_photo_preview.dart` per contracts C4: `showProductPhotoPreview(context, {photoUrl, title})`, a `Dialog` with an ellipsized title, a close `IconButton` (`Key('photo_preview_close')`), an `Image.network(fit: BoxFit.contain)` limited to about 90% of the viewport, and the shared placeholder on load error. Escape, barrier tap and close all dismiss (depends on T029, T030)
+- [X] T032 [US4] In `lib/features/catalog/presentation/products_list_screen.dart` (the photo cell, ~lines 128–132), pass `onTap: p.photo == null ? null : () => showProductPhotoPreview(context, photoUrl: p.photo!, title: p.name)` (depends on T031)
+- [X] T033 [US4] In `lib/features/catalog/presentation/product_detail_screen.dart`, make only the saved-photo branch of `_thumbnail()` previewable; a pending (unsaved) upload is not (depends on T031)
+- [X] T034 [P] [US4] Extend `test/widget/core/widgets/product_photo_test.dart`: `onTap` fires on a loaded photo; it does not fire on the null-URL or error placeholder; existing cases unchanged. To make a photo actually load, reuse the network-image stub pattern this file already uses for its "network image" case; the default test HTTP client returns errors, which would only exercise the placeholder
+- [X] T035 [P] [US4] Create `test/widget/core/widgets/product_photo_preview_test.dart`: shows the title and image; Escape, barrier tap and the close button each dismiss; load error shows the placeholder; a tall portrait image fits inside the dialog without overflow or page scroll (spec edge case "Very large or portrait photos"). Use the same image stub as T034
+- [X] T036 [US4] Extend `test/widget/features/catalog/products_list_screen_test.dart`: tapping a photo opens the preview and does **not** navigate to the product; tapping elsewhere in the row still opens the read-only view; a product without a photo has no preview (depends on T032)
 - [ ] T037 [US4] Manual validation: quickstart scenarios 9 and 10
 
 **Checkpoint**: US4 is shippable on its own.
@@ -180,9 +193,9 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 
 **Independent Test**: Quickstart scenario 11.
 
-- [ ] T038 [US5] In `lib/features/catalog/presentation/products_list_screen.dart`, size the photo cell per contracts C5: `size = (density.tableDataRowHeight ?? 44) - 2 * spacing.xxs`, wrapped in a centered `Padding(symmetric(vertical: spacing.xxs, horizontal: spacing.xs))`, with the column's `fixedWidth` set to `size + 2 * spacing.xs`. Use the existing density and spacing providers; no literals (after T032)
-- [ ] T039 [P] [US5] In `lib/features/catalog/presentation/product_detail_screen.dart` `_PhotoSection`, add `spacing.xs` padding around the thumbnail so it keeps a gap from the upload, replace and remove buttons in both the wide and compact layouts (FR-019)
-- [ ] T040 [US5] Update `test/widget/features/catalog/products_list_screen_test.dart` (~lines 295–312): replace the `size == 84` assertion with the derived size, and add a measuring test (§VI) that the space above the photo equals the space below it and is greater than 0, at both pointer and touch densities (after T036)
+- [X] T038 [US5] In `lib/features/catalog/presentation/products_list_screen.dart`, size the photo cell per contracts C5: `size = (density.tableDataRowHeight ?? 44) - 2 * spacing.xxs`, wrapped in a centered `Padding(symmetric(vertical: spacing.xxs, horizontal: spacing.xs))`, with the column's `fixedWidth` set to `size + 2 * spacing.xs`. Use the existing density and spacing providers; no literals (after T032)
+- [X] T039 [P] [US5] In `lib/features/catalog/presentation/product_detail_screen.dart` `_PhotoSection`, add `spacing.xs` padding around the thumbnail so it keeps a gap from the upload, replace and remove buttons in both the wide and compact layouts (FR-019)
+- [X] T040 [US5] Update `test/widget/features/catalog/products_list_screen_test.dart` (~lines 295–312): replace the `size == 84` assertion with the derived size, and add a measuring test (§VI) that the space above the photo equals the space below it and is greater than 0, at both pointer and touch densities (after T036)
 - [ ] T041 [US5] Manual validation: quickstart scenario 11, plus the detail screen at both layouts
 
 **Checkpoint**: US5 is shippable on its own.
@@ -191,8 +204,8 @@ No blocking prerequisites. Each story is self-contained; the small shared domain
 
 ## Phase 8: Polish & cross-cutting
 
-- [ ] T042 Run `dart format` on every changed file and `flutter analyze`; fix anything this feature introduced. Mention, but do not fix, unrelated warnings
-- [ ] T043 Run the full `flutter test` suite, including `test/unit/core/formatting_guard_test.dart`; confirm nothing outside the files named in this list changed behavior
+- [X] T042 Run `dart format` on every changed file and `flutter analyze`; fix anything this feature introduced. Mention, but do not fix, unrelated warnings
+- [X] T043 Run the full `flutter test` suite, including `test/unit/core/formatting_guard_test.dart`; confirm nothing outside the files named in this list changed behavior — *as built: 2934 pass, 62 skipped, 19 fail; all 19 predate this feature (research R15: Flutter 3.47 golden diffs, the regenerated products client, the live backend's 500)*
 - [ ] T044 Run the whole of `specs/046-catalog-improvements/quickstart.md` once end to end (all 11 scenarios) in Spanish, then confirm the success criteria SC-001 to SC-006 in `spec.md`
 
 ---

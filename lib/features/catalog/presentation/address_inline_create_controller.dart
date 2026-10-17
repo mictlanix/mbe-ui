@@ -27,7 +27,7 @@ abstract final class AddressInlineCreateErrorCode {
 /// (FR-031, FR-032). Scoped to one dialog instance — auto-disposed when the
 /// dialog closes, so each opening starts from a blank form.
 @freezed
-class AddressInlineCreateState with _$AddressInlineCreateState {
+abstract class AddressInlineCreateState with _$AddressInlineCreateState {
   const factory AddressInlineCreateState({
     @Default('') String street,
     @Default('') String exteriorNumber,

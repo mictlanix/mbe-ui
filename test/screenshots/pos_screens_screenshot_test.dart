@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -73,7 +74,7 @@ const _brand = BrandConfig(displayName: 'Mictlanix Business Essentials');
 /// A cashier with the register assigned and the privileges the screens gate
 /// on. Overriding auth also keeps the real `AuthInterceptor` (and its
 /// secure-storage plugin, absent in a test binary) off the path entirely.
-Override authOverride() => authNotifierProvider.overrideWith(
+Override authOverride() => authProvider.overrideWith(
   () => _FixedAuthNotifier(
     AuthState.authenticated(
       token: 't',
@@ -194,6 +195,7 @@ Future<void> pumpScreen(
   final sharedPreferences = await SharedPreferences.getInstance();
   await tester.pumpWidget(
     ProviderScope(
+      retry: (_, _) => null,
       overrides: [
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         ...overrides,

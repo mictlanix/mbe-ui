@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
@@ -205,6 +206,7 @@ Future<ProviderContainer> pumpPos(
   SharedPreferences.setMockInitialValues({});
   final sharedPreferences = await SharedPreferences.getInstance();
   final container = ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       sharedPreferencesProvider.overrideWithValue(sharedPreferences),
       ...overrides,
@@ -261,6 +263,7 @@ Future<PosRoutedHarness> pumpPosRouted(
   SharedPreferences.setMockInitialValues({});
   final sharedPreferences = await SharedPreferences.getInstance();
   final container = ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       sharedPreferencesProvider.overrideWithValue(sharedPreferences),
       ...overrides,
@@ -351,6 +354,7 @@ Future<PosRoutedHarness> pumpOrdersRouted(
   SharedPreferences.setMockInitialValues({});
   final sharedPreferences = await SharedPreferences.getInstance();
   final container = ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       sharedPreferencesProvider.overrideWithValue(sharedPreferences),
       ...overrides,
@@ -425,6 +429,7 @@ Future<PosRoutedHarness> pumpQuotesRouted(
   SharedPreferences.setMockInitialValues({});
   final sharedPreferences = await SharedPreferences.getInstance();
   final container = ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       sharedPreferencesProvider.overrideWithValue(sharedPreferences),
       ...overrides,

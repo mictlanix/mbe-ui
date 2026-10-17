@@ -151,9 +151,10 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
     final container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
-        authNotifierProvider.overrideWith(
+        authProvider.overrideWith(
           () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: user)),
         ),
         accessControlProvider.overrideWithValue(

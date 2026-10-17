@@ -83,7 +83,7 @@ class PosSalesListScreen extends ConsumerWidget {
     final resumableIds =
         ref
             .watch(openSalesSelectorControllerProvider(pointSale))
-            .valueOrNull
+            .value
             ?.map((sale) => sale.id)
             .toSet() ??
         const <int>{};
@@ -93,7 +93,7 @@ class PosSalesListScreen extends ConsumerWidget {
     final canCreate = access.can(SystemObject.pos, AccessRight.create);
     final canViewTicket = canOpenDocument(access, DocumentKind.saleTicket);
     final sessionOpen =
-        ref.watch(currentSessionControllerProvider).valueOrNull?.state !=
+        ref.watch(currentSessionControllerProvider).value?.state !=
         SessionState.none;
     final fmt = ref.watch(formattersProvider);
 

@@ -84,9 +84,23 @@ class DeliveryController extends _$DeliveryController {
   /// the distribution a gated step reads is already the sale's own (spec
   /// 031 FR-003, research R6). Every mutating method below routes through
   /// this.
-  Future<T> _tracked<T>(Future<T> Function() action) => ref
-      .read(pendingWritesProvider(ref.read(saleWritesScopeProvider)).notifier)
-      .track(action);
+  ///
+  /// The instance is kept alive for the whole call: confirming re-keys the
+  /// step's watch to the completed sale (mictlanix/mbe-ui#183), and under
+  /// riverpod 3 the instance a write started on, now unwatched, would
+  /// otherwise be disposed before the write publishes.
+  Future<T> _tracked<T>(Future<T> Function() action) async {
+    final keepAlive = ref.keepAlive();
+    try {
+      return await ref
+          .read(
+            pendingWritesProvider(ref.read(saleWritesScopeProvider)).notifier,
+          )
+          .track(action);
+    } finally {
+      keepAlive.close();
+    }
+  }
 
   /// Records one addressed destination (FR-027). The **first** destination
   /// (no destinations yet) is the one case where "the obvious, almost-always-
@@ -110,7 +124,7 @@ class DeliveryController extends _$DeliveryController {
     // confirmed first — a no-op once already confirmed (e.g. a payment
     // already ran it, or an earlier destination already did).
     await confirmBeforePayableAction(ref.read, sale);
-    final existing = state.valueOrNull ?? const <Destination>[];
+    final existing = state.value ?? const <Destination>[];
     final lines = existing.isEmpty
         ? [
             for (final line in distributionFor(sale: sale, destinations: existing))
@@ -184,7 +198,7 @@ class DeliveryController extends _$DeliveryController {
           fulfillmentType: FulfillmentType.counterPickup,
         );
 
-    state = AsyncData([...?state.valueOrNull, created]);
+    state = AsyncData([...?state.value, created]);
     return created;
   });
 
@@ -197,7 +211,7 @@ class DeliveryController extends _$DeliveryController {
             .cancel(destinationId: destinationId, reason: reason);
 
         state = AsyncData([
-          for (final destination in state.valueOrNull ?? const <Destination>[])
+          for (final destination in state.value ?? const <Destination>[])
             if (destination.id != destinationId) destination,
         ]);
       });
@@ -207,7 +221,7 @@ class DeliveryController extends _$DeliveryController {
   List<LineDistribution> distribution({Map<int, String> draft = const {}}) {
     return distributionFor(
       sale: sale,
-      destinations: state.valueOrNull ?? const [],
+      destinations: state.value ?? const [],
       draft: draft,
     );
   }
@@ -265,7 +279,7 @@ class DeliveryController extends _$DeliveryController {
   Future<Destination> _replace(Destination updated) async {
     final labelled = await _labelled(updated);
     state = AsyncData([
-      for (final destination in state.valueOrNull ?? const <Destination>[])
+      for (final destination in state.value ?? const <Destination>[])
         if (destination.id == labelled.id) labelled else destination,
     ]);
     return labelled;

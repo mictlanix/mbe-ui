@@ -229,7 +229,7 @@ class _ProfileFilterField extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final userProfileRepo = ref.read(userProfileRepositoryProvider);
     final resolvedName = profileId != null
-        ? ref.watch(userProfileNameProvider(profileId!)).valueOrNull
+        ? ref.watch(userProfileNameProvider(profileId!)).value
         : null;
 
     return CatalogEntityPicker<UserProfileSummary>(

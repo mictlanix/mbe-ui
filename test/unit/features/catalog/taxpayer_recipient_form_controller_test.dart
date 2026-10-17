@@ -44,6 +44,7 @@ ProviderContainer _containerFor(
   TaxpayerRecipientRepository repository,
 ) {
   return ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       taxpayerRecipientRepositoryProvider.overrideWithValue(repository),
       accessControlProvider.overrideWithValue(
@@ -123,10 +124,11 @@ void main() {
 
         await notifier.submitCreate();
 
-        expect(
-          container.read(taxpayerRecipientFormControllerProvider).saved,
-          isTrue,
-        );
+        final state = container.read(taxpayerRecipientFormControllerProvider);
+        expect(state.saved, isTrue);
+        // Handed back to a caller that opened the form to create one — the
+        // customer form's inline dialog (046-catalog-improvements R7).
+        expect(state.created?.taxpayerRecipientId, 'XAXX010101000');
       });
 
       test(
@@ -231,6 +233,7 @@ void main() {
 
       final state = container.read(taxpayerRecipientFormControllerProvider);
       expect(state.saved, isTrue);
+      expect(state.created, isNull);
       // The id field itself must not have been treated as required/changed —
       // no idRequired field error should ever surface once loaded for edit.
       expect(state.fieldErrors.containsKey('taxpayerRecipientId'), isFalse);

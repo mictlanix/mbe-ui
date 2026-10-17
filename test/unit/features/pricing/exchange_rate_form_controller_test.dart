@@ -30,6 +30,7 @@ const _fullAccessUser = User(
 
 ProviderContainer _containerFor(User user, ExchangeRateRepository repository) {
   final c = ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       exchangeRateRepositoryProvider.overrideWithValue(repository),
       accessControlProvider.overrideWithValue(

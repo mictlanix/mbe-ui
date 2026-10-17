@@ -2213,10 +2213,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noCashDrawersInFacility => 'No cash drawers registered.';
 
   @override
-  String get productionSiteChildrenNote =>
-      'Production sites only manage warehouses: they have no points of sale or cash drawers.';
-
-  @override
   String get pointSaleForeignFacilityBadge => 'Other facility';
 
   @override
@@ -3745,4 +3741,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get salesOrderViewDocumentAction => 'View sales order';
+
+  @override
+  String get customerAddressesSection => 'Addresses';
+
+  @override
+  String get customerContactsSection => 'Contacts';
+
+  @override
+  String get customerTaxpayersSection => 'Tax recipients';
+
+  @override
+  String get customerAddressesEmpty => 'No addresses linked.';
+
+  @override
+  String get customerContactsEmpty => 'No contacts linked.';
+
+  @override
+  String get customerTaxpayersEmpty => 'No tax recipients linked.';
+
+  @override
+  String get customerAddressLinkLabel => 'Link an existing address';
+
+  @override
+  String get customerContactLinkLabel => 'Link an existing contact';
+
+  @override
+  String get customerTaxpayerLinkLabel => 'Link an existing tax recipient';
+
+  @override
+  String get linkedRecordUnlinkTooltip => 'Unlink';
+
+  @override
+  String get linkedRecordNewAction => 'New';
 }

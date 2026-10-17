@@ -26,6 +26,7 @@ void main() {
   setUp(() {
     repository = MockTaxpayerIssuerRepository();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         taxpayerIssuerRepositoryProvider.overrideWithValue(repository),
       ],

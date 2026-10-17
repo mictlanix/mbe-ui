@@ -104,7 +104,7 @@ void main() {
       tester,
       initialLocation: query.toUri('/sales/quotes').toString(),
       overrides: [
-        authNotifierProvider.overrideWith(
+        authProvider.overrideWith(
           () => _FixedAuthNotifier(
             AuthState.authenticated(token: 't', user: user ?? _user()),
           ),

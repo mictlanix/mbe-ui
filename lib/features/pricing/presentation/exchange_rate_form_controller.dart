@@ -30,7 +30,7 @@ abstract final class ExchangeRateFormErrorCode {
 /// Create/edit form state for a single exchange rate. [exchangeRateId] is
 /// `null` in create mode.
 @freezed
-class ExchangeRateFormState with _$ExchangeRateFormState {
+abstract class ExchangeRateFormState with _$ExchangeRateFormState {
   const factory ExchangeRateFormState({
     int? exchangeRateId,
     DateTime? date,

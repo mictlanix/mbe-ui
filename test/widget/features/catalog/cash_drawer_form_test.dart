@@ -97,6 +97,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           cashDrawerRepositoryProvider.overrideWithValue(repository),
           facilityRepositoryProvider.overrideWithValue(facilityRepository),
@@ -225,6 +226,7 @@ void main() {
       );
 
       final container = ProviderContainer(
+        retry: (_, _) => null,
         overrides: [
           cashDrawerRepositoryProvider.overrideWithValue(repository),
           facilityRepositoryProvider.overrideWithValue(facilityRepository),
@@ -284,6 +286,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             cashDrawerRepositoryProvider.overrideWithValue(repository),
             facilityRepositoryProvider.overrideWithValue(facilityRepository),
@@ -344,6 +347,7 @@ void main() {
       final key = GlobalKey<CashDrawerFormPanelState>();
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             cashDrawerRepositoryProvider.overrideWithValue(repository),
             facilityRepositoryProvider.overrideWithValue(facilityRepository),
@@ -373,6 +377,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             cashDrawerRepositoryProvider.overrideWithValue(repository),
             facilityRepositoryProvider.overrideWithValue(facilityRepository),

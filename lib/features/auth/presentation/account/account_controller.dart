@@ -9,7 +9,7 @@ part 'account_controller.g.dart';
 
 /// Form state for `POST /api/v1/auth/change-password` (FR-009).
 @freezed
-class ChangePasswordFormState with _$ChangePasswordFormState {
+abstract class ChangePasswordFormState with _$ChangePasswordFormState {
   const factory ChangePasswordFormState({
     @Default('') String oldPassword,
     @Default('') String newPassword,
@@ -64,7 +64,7 @@ class ChangePasswordController extends _$ChangePasswordController {
 
 /// Form state for `POST /api/v1/auth/recover` (FR-010 — user-initiated confirm).
 @freezed
-class RecoveryFormState with _$RecoveryFormState {
+abstract class RecoveryFormState with _$RecoveryFormState {
   const factory RecoveryFormState({
     @Default('') String recoveryToken,
     @Default('') String newPassword,

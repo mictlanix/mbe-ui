@@ -6,7 +6,7 @@ part 'label_item.freezed.dart';
 /// A label used for both the multi-picker on the product form and the filter
 /// dropdown on the products list (data-model.md "LabelItem").
 @freezed
-class LabelItem with _$LabelItem {
+abstract class LabelItem with _$LabelItem {
   const factory LabelItem({required int labelId, required String name}) =
       _LabelItem;
 

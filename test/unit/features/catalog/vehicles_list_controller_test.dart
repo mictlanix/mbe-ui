@@ -27,6 +27,7 @@ void main() {
   setUp(() {
     repository = MockVehicleRepository();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [vehicleRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(container.dispose);

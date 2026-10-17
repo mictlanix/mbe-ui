@@ -54,7 +54,7 @@ void main() {
       tester,
       initialLocation: query.toUri('/sales/orders').toString(),
       overrides: [
-        authNotifierProvider.overrideWith(
+        authProvider.overrideWith(
           () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: _user())),
         ),
         salesOrderOverride(salesOrders),

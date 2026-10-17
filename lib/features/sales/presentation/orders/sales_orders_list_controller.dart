@@ -33,7 +33,7 @@ final _dateFacetFormat = DateFormat('yyyy-MM-dd');
 /// hand-edited-address edge case is closed — in the decoder, not the
 /// drawer.
 @freezed
-class SalesOrdersFilter with _$SalesOrdersFilter {
+abstract class SalesOrdersFilter with _$SalesOrdersFilter {
   const factory SalesOrdersFilter({
     required DateTime from,
     required DateTime to,

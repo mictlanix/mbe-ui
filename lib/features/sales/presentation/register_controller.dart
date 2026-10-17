@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
@@ -20,7 +19,7 @@ part 'register_controller.g.dart';
 /// falls back to whatever the sale in hand reports.
 @riverpod
 int? registerPointSale(Ref ref) {
-  final state = ref.watch(authNotifierProvider).valueOrNull;
+  final state = ref.watch(authProvider).value;
   return state is AuthAuthenticated ? state.user.settings?.pointSaleId : null;
 }
 
@@ -31,6 +30,6 @@ int? registerPointSale(Ref ref) {
 /// [registerPointSale]'s `null`, which only blocks *creating* an order).
 @riverpod
 int? userFacilityId(Ref ref) {
-  final state = ref.watch(authNotifierProvider).valueOrNull;
+  final state = ref.watch(authProvider).value;
   return state is AuthAuthenticated ? state.user.settings?.facilityId : null;
 }

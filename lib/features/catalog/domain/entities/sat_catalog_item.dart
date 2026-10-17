@@ -9,7 +9,7 @@ part 'sat_catalog_item.freezed.dart';
 /// (id + description); the richer `SatUnitOfMeasurementResponse` (with name
 /// and symbol) is only available embedded in a `ProductResponse`.
 @freezed
-class SatCatalogItem with _$SatCatalogItem {
+abstract class SatCatalogItem with _$SatCatalogItem {
   const factory SatCatalogItem({required String code, String? description}) =
       _SatCatalogItem;
 

@@ -56,6 +56,7 @@ ProviderContainer _containerFor(
   VehicleOperatorRepository repository,
 ) {
   return ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       vehicleOperatorRepositoryProvider.overrideWithValue(repository),
       accessControlProvider.overrideWithValue(

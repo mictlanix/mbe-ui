@@ -65,7 +65,7 @@ void main() {
       tester,
       Consumer(
         builder: (context, ref, _) => CaptureStep(
-          sale: ref.watch(posSaleControllerProvider).valueOrNull,
+          sale: ref.watch(posSaleControllerProvider).value,
           onContinue: () {},
         ),
       ),
@@ -210,7 +210,7 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(() => anyOpen(salesOrders)).called(1);
-      expect(container.read(posSaleControllerProvider).valueOrNull, isNotNull);
+      expect(container.read(posSaleControllerProvider).value, isNotNull);
     });
 
     testWidgets('so does a product lookup — pricing needs the customer, and '
@@ -242,12 +242,12 @@ void main() {
       final notifier = container.read(posSaleControllerProvider.notifier);
 
       await notifier.ensureOpen();
-      expect(container.read(posSaleControllerProvider).valueOrNull, isNotNull);
+      expect(container.read(posSaleControllerProvider).value, isNotNull);
 
       await notifier.startNew();
       await tester.pumpAndSettle();
 
-      expect(container.read(posSaleControllerProvider).valueOrNull, isNull);
+      expect(container.read(posSaleControllerProvider).value, isNull);
       verify(() => anyOpen(salesOrders)).called(1);
     });
   });

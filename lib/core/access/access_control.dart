@@ -8,7 +8,7 @@ import 'system_object.dart';
 
 /// Deny-by-default RBAC surface consumed by every feature (constitution
 /// §IV, contracts/access_control.md). Derived (read-only) from
-/// `authNotifierProvider`'s current `AuthState`.
+/// `authProvider`'s current `AuthState`.
 class AccessControlService {
   const AccessControlService(this._authState);
 
@@ -45,7 +45,6 @@ class AccessControlService {
 
 final accessControlProvider = Provider<AccessControlService>((ref) {
   final authState =
-      ref.watch(authNotifierProvider).valueOrNull ??
-      const AuthState.unauthenticated();
+      ref.watch(authProvider).value ?? const AuthState.unauthenticated();
   return AccessControlService(authState);
 });

@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/core/access/privilege.dart';
@@ -25,7 +26,7 @@ const _pageSize = 20;
 /// search and a status facet. Derived from the route's [ListQuery] — the
 /// URL, not a mutable notifier, is the source of truth.
 @freezed
-class UserFilter with _$UserFilter {
+abstract class UserFilter with _$UserFilter {
   const factory UserFilter({
     @Default('') String search,
     EntityStatus? status,
@@ -85,7 +86,7 @@ abstract final class UserFormErrorCode {
 /// Supports both create and edit modes; local UI state, not persisted
 /// (constitution §II).
 @freezed
-class UserFormState with _$UserFormState {
+abstract class UserFormState with _$UserFormState {
   const factory UserFormState({
     @Default('') String userId,
     @Default('') String password,
@@ -345,7 +346,7 @@ class UserFormController extends _$UserFormController {
           privileges: state.privileges,
           settings: state.settings,
         );
-        ref.read(authNotifierProvider.notifier).refreshCurrentUser(updated);
+        ref.read(authProvider.notifier).refreshCurrentUser(updated);
       } else {
         await repo.create(
           userId: state.userId,

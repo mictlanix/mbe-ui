@@ -6,7 +6,6 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
-import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/point_sale_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/catalog_field_validators.dart';
 import 'package:mbe_ui/features/catalog/presentation/facility_children_controller.dart';
@@ -33,7 +32,7 @@ abstract final class PointSaleFormErrorCode {
 /// Create/edit form state for a single point of sale. [pointSaleId] is
 /// `null` in create mode.
 @freezed
-class PointSaleFormState with _$PointSaleFormState {
+abstract class PointSaleFormState with _$PointSaleFormState {
   const factory PointSaleFormState({
     int? pointSaleId,
     int? facilityId,
@@ -183,17 +182,7 @@ class PointSaleFormController extends _$PointSaleFormController {
   }
 
   Future<void> _invalidateFacilityChildren(int facilityId) async {
-    try {
-      final facility = await ref
-          .read(facilityRepositoryProvider)
-          .get(facilityId: facilityId);
-      ref.invalidate(
-        facilityChildrenControllerProvider(facilityId, facility.type),
-      );
-    } on AppError {
-      // Best-effort — if the facility can no longer be resolved (e.g.
-      // deleted concurrently), there is no live card to refresh.
-    }
+    ref.invalidate(facilityChildrenControllerProvider(facilityId));
   }
 
   /// Creates the point of sale (FR-019, FR-020). Re-checks the caller's

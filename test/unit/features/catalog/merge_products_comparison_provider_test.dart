@@ -34,6 +34,7 @@ Product _product({required int productId, required String code}) => Product(
 
 ProviderContainer _containerWith(ProductRepository repository) {
   return ProviderContainer(
+    retry: (_, _) => null,
     overrides: [productRepositoryProvider.overrideWithValue(repository)],
   );
 }

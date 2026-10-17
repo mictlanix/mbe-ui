@@ -11,7 +11,7 @@ part 'product_price_row.freezed.dart';
 /// per list; [price] is `null` when the product has no price on that list
 /// yet, which is what makes "not set" ≠ `0.00` representable (FR-008).
 @freezed
-class ProductPriceRow with _$ProductPriceRow {
+abstract class ProductPriceRow with _$ProductPriceRow {
   const factory ProductPriceRow({
     required PriceList priceList,
     ProductPrice? price,

@@ -6,11 +6,16 @@ import 'package:flutter/material.dart';
 /// create/edit form's in-progress preview (data-model.md "Derived display
 /// rule") — constitution §VI requires shared visual components to live once
 /// in `core/widgets/`.
+///
+/// When [onTap] is given (046-catalog-improvements FR-014), the loaded photo
+/// is clickable; the placeholders never are (FR-017), so a product without a
+/// photo, or one whose image failed to load, opens nothing.
 class ProductPhoto extends StatelessWidget {
-  const ProductPhoto({super.key, this.photoUrl, this.size = 84});
+  const ProductPhoto({super.key, this.photoUrl, this.size = 84, this.onTap});
 
   final String? photoUrl;
   final double size;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +29,19 @@ class ProductPhoto extends StatelessWidget {
         width: size,
         height: size,
         fit: BoxFit.contain,
+        frameBuilder: onTap == null
+            ? null
+            : (context, child, frame, wasSynchronouslyLoaded) {
+                if (frame == null && !wasSynchronouslyLoaded) return child;
+                return MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: onTap,
+                    child: child,
+                  ),
+                );
+              },
         errorBuilder: (context, error, stackTrace) => _placeholder(context),
       ),
     );

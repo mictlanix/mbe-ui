@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'app_error.dart';
@@ -9,1287 +9,883 @@ part of 'app_error.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
 /// @nodoc
 mixin _$AppError {
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(List<FieldError> errors) validation,
-    required TResult Function(String? message) auth,
-    required TResult Function(String? message) notFound,
-    required TResult Function(int? statusCode, String? message) server,
-    required TResult Function(String? message) network,
-    required TResult Function(String? message) creditHold,
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(List<FieldError> errors)? validation,
-    TResult? Function(String? message)? auth,
-    TResult? Function(String? message)? notFound,
-    TResult? Function(int? statusCode, String? message)? server,
-    TResult? Function(String? message)? network,
-    TResult? Function(String? message)? creditHold,
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<FieldError> errors)? validation,
-    TResult Function(String? message)? auth,
-    TResult Function(String? message)? notFound,
-    TResult Function(int? statusCode, String? message)? server,
-    TResult Function(String? message)? network,
-    TResult Function(String? message)? creditHold,
-    required TResult orElse(),
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ValidationError value) validation,
-    required TResult Function(AuthError value) auth,
-    required TResult Function(NotFoundError value) notFound,
-    required TResult Function(ServerError value) server,
-    required TResult Function(NetworkError value) network,
-    required TResult Function(CreditHoldError value) creditHold,
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(ValidationError value)? validation,
-    TResult? Function(AuthError value)? auth,
-    TResult? Function(NotFoundError value)? notFound,
-    TResult? Function(ServerError value)? server,
-    TResult? Function(NetworkError value)? network,
-    TResult? Function(CreditHoldError value)? creditHold,
-  }) => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ValidationError value)? validation,
-    TResult Function(AuthError value)? auth,
-    TResult Function(NotFoundError value)? notFound,
-    TResult Function(ServerError value)? server,
-    TResult Function(NetworkError value)? network,
-    TResult Function(CreditHoldError value)? creditHold,
-    required TResult orElse(),
-  }) => throw _privateConstructorUsedError;
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is AppError);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+    return 'AppError()';
+}
+
+
 }
 
 /// @nodoc
-abstract class $AppErrorCopyWith<$Res> {
-  factory $AppErrorCopyWith(AppError value, $Res Function(AppError) then) =
-      _$AppErrorCopyWithImpl<$Res, AppError>;
+class $AppErrorCopyWith<$Res>  {
+$AppErrorCopyWith(AppError _, $Res Function(AppError) __);
+}
+
+
+/// Adds pattern-matching-related methods to [AppError].
+extension AppErrorPatterns on AppError {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ValidationError value)?  validation,TResult Function( AuthError value)?  auth,TResult Function( NotFoundError value)?  notFound,TResult Function( ServerError value)?  server,TResult Function( NetworkError value)?  network,TResult Function( CreditHoldError value)?  creditHold,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case ValidationError() when validation != null:
+return validation(_that);case AuthError() when auth != null:
+return auth(_that);case NotFoundError() when notFound != null:
+return notFound(_that);case ServerError() when server != null:
+return server(_that);case NetworkError() when network != null:
+return network(_that);case CreditHoldError() when creditHold != null:
+return creditHold(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ValidationError value)  validation,required TResult Function( AuthError value)  auth,required TResult Function( NotFoundError value)  notFound,required TResult Function( ServerError value)  server,required TResult Function( NetworkError value)  network,required TResult Function( CreditHoldError value)  creditHold,}){
+final _that = this;
+switch (_that) {
+case ValidationError():
+return validation(_that);case AuthError():
+return auth(_that);case NotFoundError():
+return notFound(_that);case ServerError():
+return server(_that);case NetworkError():
+return network(_that);case CreditHoldError():
+return creditHold(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ValidationError value)?  validation,TResult? Function( AuthError value)?  auth,TResult? Function( NotFoundError value)?  notFound,TResult? Function( ServerError value)?  server,TResult? Function( NetworkError value)?  network,TResult? Function( CreditHoldError value)?  creditHold,}){
+final _that = this;
+switch (_that) {
+case ValidationError() when validation != null:
+return validation(_that);case AuthError() when auth != null:
+return auth(_that);case NotFoundError() when notFound != null:
+return notFound(_that);case ServerError() when server != null:
+return server(_that);case NetworkError() when network != null:
+return network(_that);case CreditHoldError() when creditHold != null:
+return creditHold(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( List<FieldError> errors)?  validation,TResult Function( String? message)?  auth,TResult Function( String? message)?  notFound,TResult Function( int? statusCode,  String? message)?  server,TResult Function( String? message)?  network,TResult Function( String? message)?  creditHold,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case ValidationError() when validation != null:
+return validation(_that.errors);case AuthError() when auth != null:
+return auth(_that.message);case NotFoundError() when notFound != null:
+return notFound(_that.message);case ServerError() when server != null:
+return server(_that.statusCode,_that.message);case NetworkError() when network != null:
+return network(_that.message);case CreditHoldError() when creditHold != null:
+return creditHold(_that.message);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( List<FieldError> errors)  validation,required TResult Function( String? message)  auth,required TResult Function( String? message)  notFound,required TResult Function( int? statusCode,  String? message)  server,required TResult Function( String? message)  network,required TResult Function( String? message)  creditHold,}) {final _that = this;
+switch (_that) {
+case ValidationError():
+return validation(_that.errors);case AuthError():
+return auth(_that.message);case NotFoundError():
+return notFound(_that.message);case ServerError():
+return server(_that.statusCode,_that.message);case NetworkError():
+return network(_that.message);case CreditHoldError():
+return creditHold(_that.message);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( List<FieldError> errors)?  validation,TResult? Function( String? message)?  auth,TResult? Function( String? message)?  notFound,TResult? Function( int? statusCode,  String? message)?  server,TResult? Function( String? message)?  network,TResult? Function( String? message)?  creditHold,}) {final _that = this;
+switch (_that) {
+case ValidationError() when validation != null:
+return validation(_that.errors);case AuthError() when auth != null:
+return auth(_that.message);case NotFoundError() when notFound != null:
+return notFound(_that.message);case ServerError() when server != null:
+return server(_that.statusCode,_that.message);case NetworkError() when network != null:
+return network(_that.message);case CreditHoldError() when creditHold != null:
+return creditHold(_that.message);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-class _$AppErrorCopyWithImpl<$Res, $Val extends AppError>
-    implements $AppErrorCopyWith<$Res> {
-  _$AppErrorCopyWithImpl(this._value, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
 
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
+class ValidationError implements AppError {
+  const ValidationError( List<FieldError> errors): _errors = errors;
+  
+
+ final  List<FieldError> _errors;
+ List<FieldError> get errors {
+  if (_errors is EqualUnmodifiableListView) return _errors;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_errors);
 }
 
-/// @nodoc
-abstract class _$$ValidationErrorImplCopyWith<$Res> {
-  factory _$$ValidationErrorImplCopyWith(
-    _$ValidationErrorImpl value,
-    $Res Function(_$ValidationErrorImpl) then,
-  ) = __$$ValidationErrorImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({List<FieldError> errors});
+
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ValidationErrorCopyWith<ValidationError> get copyWith => _$ValidationErrorCopyWithImpl<ValidationError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is ValidationError&&const DeepCollectionEquality().equals(other.errors, _errors));
 }
 
-/// @nodoc
-class __$$ValidationErrorImplCopyWithImpl<$Res>
-    extends _$AppErrorCopyWithImpl<$Res, _$ValidationErrorImpl>
-    implements _$$ValidationErrorImplCopyWith<$Res> {
-  __$$ValidationErrorImplCopyWithImpl(
-    _$ValidationErrorImpl _value,
-    $Res Function(_$ValidationErrorImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? errors = null}) {
-    return _then(
-      _$ValidationErrorImpl(
-        null == errors
-            ? _value._errors
-            : errors // ignore: cast_nullable_to_non_nullable
-                  as List<FieldError>,
-      ),
-    );
-  }
+@override
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_errors));
 }
 
-/// @nodoc
-
-class _$ValidationErrorImpl implements ValidationError {
-  const _$ValidationErrorImpl(final List<FieldError> errors) : _errors = errors;
-
-  final List<FieldError> _errors;
-  @override
-  List<FieldError> get errors {
-    if (_errors is EqualUnmodifiableListView) return _errors;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_errors);
-  }
-
-  @override
-  String toString() {
+@override
+String toString() {
     return 'AppError.validation(errors: $errors)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ValidationErrorImpl &&
-            const DeepCollectionEquality().equals(other._errors, _errors));
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_errors));
-
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ValidationErrorImplCopyWith<_$ValidationErrorImpl> get copyWith =>
-      __$$ValidationErrorImplCopyWithImpl<_$ValidationErrorImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(List<FieldError> errors) validation,
-    required TResult Function(String? message) auth,
-    required TResult Function(String? message) notFound,
-    required TResult Function(int? statusCode, String? message) server,
-    required TResult Function(String? message) network,
-    required TResult Function(String? message) creditHold,
-  }) {
-    return validation(errors);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(List<FieldError> errors)? validation,
-    TResult? Function(String? message)? auth,
-    TResult? Function(String? message)? notFound,
-    TResult? Function(int? statusCode, String? message)? server,
-    TResult? Function(String? message)? network,
-    TResult? Function(String? message)? creditHold,
-  }) {
-    return validation?.call(errors);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<FieldError> errors)? validation,
-    TResult Function(String? message)? auth,
-    TResult Function(String? message)? notFound,
-    TResult Function(int? statusCode, String? message)? server,
-    TResult Function(String? message)? network,
-    TResult Function(String? message)? creditHold,
-    required TResult orElse(),
-  }) {
-    if (validation != null) {
-      return validation(errors);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ValidationError value) validation,
-    required TResult Function(AuthError value) auth,
-    required TResult Function(NotFoundError value) notFound,
-    required TResult Function(ServerError value) server,
-    required TResult Function(NetworkError value) network,
-    required TResult Function(CreditHoldError value) creditHold,
-  }) {
-    return validation(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(ValidationError value)? validation,
-    TResult? Function(AuthError value)? auth,
-    TResult? Function(NotFoundError value)? notFound,
-    TResult? Function(ServerError value)? server,
-    TResult? Function(NetworkError value)? network,
-    TResult? Function(CreditHoldError value)? creditHold,
-  }) {
-    return validation?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ValidationError value)? validation,
-    TResult Function(AuthError value)? auth,
-    TResult Function(NotFoundError value)? notFound,
-    TResult Function(ServerError value)? server,
-    TResult Function(NetworkError value)? network,
-    TResult Function(CreditHoldError value)? creditHold,
-    required TResult orElse(),
-  }) {
-    if (validation != null) {
-      return validation(this);
-    }
-    return orElse();
-  }
 }
 
-abstract class ValidationError implements AppError {
-  const factory ValidationError(final List<FieldError> errors) =
-      _$ValidationErrorImpl;
 
-  List<FieldError> get errors;
-
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ValidationErrorImplCopyWith<_$ValidationErrorImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$AuthErrorImplCopyWith<$Res> {
-  factory _$$AuthErrorImplCopyWith(
-    _$AuthErrorImpl value,
-    $Res Function(_$AuthErrorImpl) then,
-  ) = __$$AuthErrorImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({String? message});
+abstract mixin class $ValidationErrorCopyWith<$Res> implements $AppErrorCopyWith<$Res> {
+  factory $ValidationErrorCopyWith(ValidationError value, $Res Function(ValidationError) _then) = _$ValidationErrorCopyWithImpl;
+@useResult
+$Res call({
+ List<FieldError> errors
+});
+
+
+
+
+}
+/// @nodoc
+class _$ValidationErrorCopyWithImpl<$Res>
+    implements $ValidationErrorCopyWith<$Res> {
+  _$ValidationErrorCopyWithImpl(this._self, this._then);
+
+  final ValidationError _self;
+  final $Res Function(ValidationError) _then;
+
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? errors = null,}) {
+  return _then(ValidationError(
+null == errors ? _self._errors : errors // ignore: cast_nullable_to_non_nullable
+as List<FieldError>,
+  ));
 }
 
-/// @nodoc
-class __$$AuthErrorImplCopyWithImpl<$Res>
-    extends _$AppErrorCopyWithImpl<$Res, _$AuthErrorImpl>
-    implements _$$AuthErrorImplCopyWith<$Res> {
-  __$$AuthErrorImplCopyWithImpl(
-    _$AuthErrorImpl _value,
-    $Res Function(_$AuthErrorImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? message = freezed}) {
-    return _then(
-      _$AuthErrorImpl(
-        freezed == message
-            ? _value.message
-            : message // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
-  }
 }
 
 /// @nodoc
 
-class _$AuthErrorImpl implements AuthError {
-  const _$AuthErrorImpl([this.message]);
 
-  @override
-  final String? message;
+class AuthError implements AppError {
+  const AuthError([this.message]);
+  
 
-  @override
-  String toString() {
+ final  String? message;
+
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AuthErrorCopyWith<AuthError> get copyWith => _$AuthErrorCopyWithImpl<AuthError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthError&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,message);
+}
+
+@override
+String toString() {
     return 'AppError.auth(message: $message)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$AuthErrorImpl &&
-            (identical(other.message, message) || other.message == message));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, message);
-
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$AuthErrorImplCopyWith<_$AuthErrorImpl> get copyWith =>
-      __$$AuthErrorImplCopyWithImpl<_$AuthErrorImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(List<FieldError> errors) validation,
-    required TResult Function(String? message) auth,
-    required TResult Function(String? message) notFound,
-    required TResult Function(int? statusCode, String? message) server,
-    required TResult Function(String? message) network,
-    required TResult Function(String? message) creditHold,
-  }) {
-    return auth(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(List<FieldError> errors)? validation,
-    TResult? Function(String? message)? auth,
-    TResult? Function(String? message)? notFound,
-    TResult? Function(int? statusCode, String? message)? server,
-    TResult? Function(String? message)? network,
-    TResult? Function(String? message)? creditHold,
-  }) {
-    return auth?.call(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<FieldError> errors)? validation,
-    TResult Function(String? message)? auth,
-    TResult Function(String? message)? notFound,
-    TResult Function(int? statusCode, String? message)? server,
-    TResult Function(String? message)? network,
-    TResult Function(String? message)? creditHold,
-    required TResult orElse(),
-  }) {
-    if (auth != null) {
-      return auth(message);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ValidationError value) validation,
-    required TResult Function(AuthError value) auth,
-    required TResult Function(NotFoundError value) notFound,
-    required TResult Function(ServerError value) server,
-    required TResult Function(NetworkError value) network,
-    required TResult Function(CreditHoldError value) creditHold,
-  }) {
-    return auth(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(ValidationError value)? validation,
-    TResult? Function(AuthError value)? auth,
-    TResult? Function(NotFoundError value)? notFound,
-    TResult? Function(ServerError value)? server,
-    TResult? Function(NetworkError value)? network,
-    TResult? Function(CreditHoldError value)? creditHold,
-  }) {
-    return auth?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ValidationError value)? validation,
-    TResult Function(AuthError value)? auth,
-    TResult Function(NotFoundError value)? notFound,
-    TResult Function(ServerError value)? server,
-    TResult Function(NetworkError value)? network,
-    TResult Function(CreditHoldError value)? creditHold,
-    required TResult orElse(),
-  }) {
-    if (auth != null) {
-      return auth(this);
-    }
-    return orElse();
-  }
 }
 
-abstract class AuthError implements AppError {
-  const factory AuthError([final String? message]) = _$AuthErrorImpl;
 
-  String? get message;
-
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$AuthErrorImplCopyWith<_$AuthErrorImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$NotFoundErrorImplCopyWith<$Res> {
-  factory _$$NotFoundErrorImplCopyWith(
-    _$NotFoundErrorImpl value,
-    $Res Function(_$NotFoundErrorImpl) then,
-  ) = __$$NotFoundErrorImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({String? message});
+abstract mixin class $AuthErrorCopyWith<$Res> implements $AppErrorCopyWith<$Res> {
+  factory $AuthErrorCopyWith(AuthError value, $Res Function(AuthError) _then) = _$AuthErrorCopyWithImpl;
+@useResult
+$Res call({
+ String? message
+});
+
+
+
+
+}
+/// @nodoc
+class _$AuthErrorCopyWithImpl<$Res>
+    implements $AuthErrorCopyWith<$Res> {
+  _$AuthErrorCopyWithImpl(this._self, this._then);
+
+  final AuthError _self;
+  final $Res Function(AuthError) _then;
+
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
+  return _then(AuthError(
+freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
 }
 
-/// @nodoc
-class __$$NotFoundErrorImplCopyWithImpl<$Res>
-    extends _$AppErrorCopyWithImpl<$Res, _$NotFoundErrorImpl>
-    implements _$$NotFoundErrorImplCopyWith<$Res> {
-  __$$NotFoundErrorImplCopyWithImpl(
-    _$NotFoundErrorImpl _value,
-    $Res Function(_$NotFoundErrorImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? message = freezed}) {
-    return _then(
-      _$NotFoundErrorImpl(
-        freezed == message
-            ? _value.message
-            : message // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
-  }
 }
 
 /// @nodoc
 
-class _$NotFoundErrorImpl implements NotFoundError {
-  const _$NotFoundErrorImpl([this.message]);
 
-  @override
-  final String? message;
+class NotFoundError implements AppError {
+  const NotFoundError([this.message]);
+  
 
-  @override
-  String toString() {
+ final  String? message;
+
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$NotFoundErrorCopyWith<NotFoundError> get copyWith => _$NotFoundErrorCopyWithImpl<NotFoundError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is NotFoundError&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,message);
+}
+
+@override
+String toString() {
     return 'AppError.notFound(message: $message)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$NotFoundErrorImpl &&
-            (identical(other.message, message) || other.message == message));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, message);
-
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$NotFoundErrorImplCopyWith<_$NotFoundErrorImpl> get copyWith =>
-      __$$NotFoundErrorImplCopyWithImpl<_$NotFoundErrorImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(List<FieldError> errors) validation,
-    required TResult Function(String? message) auth,
-    required TResult Function(String? message) notFound,
-    required TResult Function(int? statusCode, String? message) server,
-    required TResult Function(String? message) network,
-    required TResult Function(String? message) creditHold,
-  }) {
-    return notFound(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(List<FieldError> errors)? validation,
-    TResult? Function(String? message)? auth,
-    TResult? Function(String? message)? notFound,
-    TResult? Function(int? statusCode, String? message)? server,
-    TResult? Function(String? message)? network,
-    TResult? Function(String? message)? creditHold,
-  }) {
-    return notFound?.call(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<FieldError> errors)? validation,
-    TResult Function(String? message)? auth,
-    TResult Function(String? message)? notFound,
-    TResult Function(int? statusCode, String? message)? server,
-    TResult Function(String? message)? network,
-    TResult Function(String? message)? creditHold,
-    required TResult orElse(),
-  }) {
-    if (notFound != null) {
-      return notFound(message);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ValidationError value) validation,
-    required TResult Function(AuthError value) auth,
-    required TResult Function(NotFoundError value) notFound,
-    required TResult Function(ServerError value) server,
-    required TResult Function(NetworkError value) network,
-    required TResult Function(CreditHoldError value) creditHold,
-  }) {
-    return notFound(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(ValidationError value)? validation,
-    TResult? Function(AuthError value)? auth,
-    TResult? Function(NotFoundError value)? notFound,
-    TResult? Function(ServerError value)? server,
-    TResult? Function(NetworkError value)? network,
-    TResult? Function(CreditHoldError value)? creditHold,
-  }) {
-    return notFound?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ValidationError value)? validation,
-    TResult Function(AuthError value)? auth,
-    TResult Function(NotFoundError value)? notFound,
-    TResult Function(ServerError value)? server,
-    TResult Function(NetworkError value)? network,
-    TResult Function(CreditHoldError value)? creditHold,
-    required TResult orElse(),
-  }) {
-    if (notFound != null) {
-      return notFound(this);
-    }
-    return orElse();
-  }
 }
 
-abstract class NotFoundError implements AppError {
-  const factory NotFoundError([final String? message]) = _$NotFoundErrorImpl;
 
-  String? get message;
-
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$NotFoundErrorImplCopyWith<_$NotFoundErrorImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$ServerErrorImplCopyWith<$Res> {
-  factory _$$ServerErrorImplCopyWith(
-    _$ServerErrorImpl value,
-    $Res Function(_$ServerErrorImpl) then,
-  ) = __$$ServerErrorImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({int? statusCode, String? message});
+abstract mixin class $NotFoundErrorCopyWith<$Res> implements $AppErrorCopyWith<$Res> {
+  factory $NotFoundErrorCopyWith(NotFoundError value, $Res Function(NotFoundError) _then) = _$NotFoundErrorCopyWithImpl;
+@useResult
+$Res call({
+ String? message
+});
+
+
+
+
+}
+/// @nodoc
+class _$NotFoundErrorCopyWithImpl<$Res>
+    implements $NotFoundErrorCopyWith<$Res> {
+  _$NotFoundErrorCopyWithImpl(this._self, this._then);
+
+  final NotFoundError _self;
+  final $Res Function(NotFoundError) _then;
+
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
+  return _then(NotFoundError(
+freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
 }
 
-/// @nodoc
-class __$$ServerErrorImplCopyWithImpl<$Res>
-    extends _$AppErrorCopyWithImpl<$Res, _$ServerErrorImpl>
-    implements _$$ServerErrorImplCopyWith<$Res> {
-  __$$ServerErrorImplCopyWithImpl(
-    _$ServerErrorImpl _value,
-    $Res Function(_$ServerErrorImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? statusCode = freezed, Object? message = freezed}) {
-    return _then(
-      _$ServerErrorImpl(
-        statusCode: freezed == statusCode
-            ? _value.statusCode
-            : statusCode // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        message: freezed == message
-            ? _value.message
-            : message // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
-  }
 }
 
 /// @nodoc
 
-class _$ServerErrorImpl implements ServerError {
-  const _$ServerErrorImpl({this.statusCode, this.message});
 
-  @override
-  final int? statusCode;
-  @override
-  final String? message;
+class ServerError implements AppError {
+  const ServerError({this.statusCode, this.message});
+  
 
-  @override
-  String toString() {
+ final  int? statusCode;
+ final  String? message;
+
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ServerErrorCopyWith<ServerError> get copyWith => _$ServerErrorCopyWithImpl<ServerError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is ServerError&&(identical(other.statusCode, statusCode) || other.statusCode == statusCode)&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,statusCode,message);
+}
+
+@override
+String toString() {
     return 'AppError.server(statusCode: $statusCode, message: $message)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$ServerErrorImpl &&
-            (identical(other.statusCode, statusCode) ||
-                other.statusCode == statusCode) &&
-            (identical(other.message, message) || other.message == message));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, statusCode, message);
-
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$ServerErrorImplCopyWith<_$ServerErrorImpl> get copyWith =>
-      __$$ServerErrorImplCopyWithImpl<_$ServerErrorImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(List<FieldError> errors) validation,
-    required TResult Function(String? message) auth,
-    required TResult Function(String? message) notFound,
-    required TResult Function(int? statusCode, String? message) server,
-    required TResult Function(String? message) network,
-    required TResult Function(String? message) creditHold,
-  }) {
-    return server(statusCode, message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(List<FieldError> errors)? validation,
-    TResult? Function(String? message)? auth,
-    TResult? Function(String? message)? notFound,
-    TResult? Function(int? statusCode, String? message)? server,
-    TResult? Function(String? message)? network,
-    TResult? Function(String? message)? creditHold,
-  }) {
-    return server?.call(statusCode, message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<FieldError> errors)? validation,
-    TResult Function(String? message)? auth,
-    TResult Function(String? message)? notFound,
-    TResult Function(int? statusCode, String? message)? server,
-    TResult Function(String? message)? network,
-    TResult Function(String? message)? creditHold,
-    required TResult orElse(),
-  }) {
-    if (server != null) {
-      return server(statusCode, message);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ValidationError value) validation,
-    required TResult Function(AuthError value) auth,
-    required TResult Function(NotFoundError value) notFound,
-    required TResult Function(ServerError value) server,
-    required TResult Function(NetworkError value) network,
-    required TResult Function(CreditHoldError value) creditHold,
-  }) {
-    return server(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(ValidationError value)? validation,
-    TResult? Function(AuthError value)? auth,
-    TResult? Function(NotFoundError value)? notFound,
-    TResult? Function(ServerError value)? server,
-    TResult? Function(NetworkError value)? network,
-    TResult? Function(CreditHoldError value)? creditHold,
-  }) {
-    return server?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ValidationError value)? validation,
-    TResult Function(AuthError value)? auth,
-    TResult Function(NotFoundError value)? notFound,
-    TResult Function(ServerError value)? server,
-    TResult Function(NetworkError value)? network,
-    TResult Function(CreditHoldError value)? creditHold,
-    required TResult orElse(),
-  }) {
-    if (server != null) {
-      return server(this);
-    }
-    return orElse();
-  }
 }
 
-abstract class ServerError implements AppError {
-  const factory ServerError({final int? statusCode, final String? message}) =
-      _$ServerErrorImpl;
 
-  int? get statusCode;
-  String? get message;
-
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ServerErrorImplCopyWith<_$ServerErrorImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$NetworkErrorImplCopyWith<$Res> {
-  factory _$$NetworkErrorImplCopyWith(
-    _$NetworkErrorImpl value,
-    $Res Function(_$NetworkErrorImpl) then,
-  ) = __$$NetworkErrorImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({String? message});
+abstract mixin class $ServerErrorCopyWith<$Res> implements $AppErrorCopyWith<$Res> {
+  factory $ServerErrorCopyWith(ServerError value, $Res Function(ServerError) _then) = _$ServerErrorCopyWithImpl;
+@useResult
+$Res call({
+ int? statusCode, String? message
+});
+
+
+
+
+}
+/// @nodoc
+class _$ServerErrorCopyWithImpl<$Res>
+    implements $ServerErrorCopyWith<$Res> {
+  _$ServerErrorCopyWithImpl(this._self, this._then);
+
+  final ServerError _self;
+  final $Res Function(ServerError) _then;
+
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? statusCode = freezed,Object? message = freezed,}) {
+  return _then(ServerError(
+statusCode: freezed == statusCode ? _self.statusCode : statusCode // ignore: cast_nullable_to_non_nullable
+as int?,message: freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
 }
 
-/// @nodoc
-class __$$NetworkErrorImplCopyWithImpl<$Res>
-    extends _$AppErrorCopyWithImpl<$Res, _$NetworkErrorImpl>
-    implements _$$NetworkErrorImplCopyWith<$Res> {
-  __$$NetworkErrorImplCopyWithImpl(
-    _$NetworkErrorImpl _value,
-    $Res Function(_$NetworkErrorImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? message = freezed}) {
-    return _then(
-      _$NetworkErrorImpl(
-        freezed == message
-            ? _value.message
-            : message // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
-  }
 }
 
 /// @nodoc
 
-class _$NetworkErrorImpl implements NetworkError {
-  const _$NetworkErrorImpl([this.message]);
 
-  @override
-  final String? message;
+class NetworkError implements AppError {
+  const NetworkError([this.message]);
+  
 
-  @override
-  String toString() {
+ final  String? message;
+
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$NetworkErrorCopyWith<NetworkError> get copyWith => _$NetworkErrorCopyWithImpl<NetworkError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is NetworkError&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,message);
+}
+
+@override
+String toString() {
     return 'AppError.network(message: $message)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$NetworkErrorImpl &&
-            (identical(other.message, message) || other.message == message));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, message);
-
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$NetworkErrorImplCopyWith<_$NetworkErrorImpl> get copyWith =>
-      __$$NetworkErrorImplCopyWithImpl<_$NetworkErrorImpl>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(List<FieldError> errors) validation,
-    required TResult Function(String? message) auth,
-    required TResult Function(String? message) notFound,
-    required TResult Function(int? statusCode, String? message) server,
-    required TResult Function(String? message) network,
-    required TResult Function(String? message) creditHold,
-  }) {
-    return network(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(List<FieldError> errors)? validation,
-    TResult? Function(String? message)? auth,
-    TResult? Function(String? message)? notFound,
-    TResult? Function(int? statusCode, String? message)? server,
-    TResult? Function(String? message)? network,
-    TResult? Function(String? message)? creditHold,
-  }) {
-    return network?.call(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<FieldError> errors)? validation,
-    TResult Function(String? message)? auth,
-    TResult Function(String? message)? notFound,
-    TResult Function(int? statusCode, String? message)? server,
-    TResult Function(String? message)? network,
-    TResult Function(String? message)? creditHold,
-    required TResult orElse(),
-  }) {
-    if (network != null) {
-      return network(message);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ValidationError value) validation,
-    required TResult Function(AuthError value) auth,
-    required TResult Function(NotFoundError value) notFound,
-    required TResult Function(ServerError value) server,
-    required TResult Function(NetworkError value) network,
-    required TResult Function(CreditHoldError value) creditHold,
-  }) {
-    return network(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(ValidationError value)? validation,
-    TResult? Function(AuthError value)? auth,
-    TResult? Function(NotFoundError value)? notFound,
-    TResult? Function(ServerError value)? server,
-    TResult? Function(NetworkError value)? network,
-    TResult? Function(CreditHoldError value)? creditHold,
-  }) {
-    return network?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ValidationError value)? validation,
-    TResult Function(AuthError value)? auth,
-    TResult Function(NotFoundError value)? notFound,
-    TResult Function(ServerError value)? server,
-    TResult Function(NetworkError value)? network,
-    TResult Function(CreditHoldError value)? creditHold,
-    required TResult orElse(),
-  }) {
-    if (network != null) {
-      return network(this);
-    }
-    return orElse();
-  }
 }
 
-abstract class NetworkError implements AppError {
-  const factory NetworkError([final String? message]) = _$NetworkErrorImpl;
 
-  String? get message;
-
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$NetworkErrorImplCopyWith<_$NetworkErrorImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$CreditHoldErrorImplCopyWith<$Res> {
-  factory _$$CreditHoldErrorImplCopyWith(
-    _$CreditHoldErrorImpl value,
-    $Res Function(_$CreditHoldErrorImpl) then,
-  ) = __$$CreditHoldErrorImplCopyWithImpl<$Res>;
-  @useResult
-  $Res call({String? message});
+abstract mixin class $NetworkErrorCopyWith<$Res> implements $AppErrorCopyWith<$Res> {
+  factory $NetworkErrorCopyWith(NetworkError value, $Res Function(NetworkError) _then) = _$NetworkErrorCopyWithImpl;
+@useResult
+$Res call({
+ String? message
+});
+
+
+
+
+}
+/// @nodoc
+class _$NetworkErrorCopyWithImpl<$Res>
+    implements $NetworkErrorCopyWith<$Res> {
+  _$NetworkErrorCopyWithImpl(this._self, this._then);
+
+  final NetworkError _self;
+  final $Res Function(NetworkError) _then;
+
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
+  return _then(NetworkError(
+freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
 }
 
-/// @nodoc
-class __$$CreditHoldErrorImplCopyWithImpl<$Res>
-    extends _$AppErrorCopyWithImpl<$Res, _$CreditHoldErrorImpl>
-    implements _$$CreditHoldErrorImplCopyWith<$Res> {
-  __$$CreditHoldErrorImplCopyWithImpl(
-    _$CreditHoldErrorImpl _value,
-    $Res Function(_$CreditHoldErrorImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? message = freezed}) {
-    return _then(
-      _$CreditHoldErrorImpl(
-        freezed == message
-            ? _value.message
-            : message // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
-  }
 }
 
 /// @nodoc
 
-class _$CreditHoldErrorImpl implements CreditHoldError {
-  const _$CreditHoldErrorImpl([this.message]);
 
-  @override
-  final String? message;
+class CreditHoldError implements AppError {
+  const CreditHoldError([this.message]);
+  
 
-  @override
-  String toString() {
+ final  String? message;
+
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$CreditHoldErrorCopyWith<CreditHoldError> get copyWith => _$CreditHoldErrorCopyWithImpl<CreditHoldError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is CreditHoldError&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,message);
+}
+
+@override
+String toString() {
     return 'AppError.creditHold(message: $message)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$CreditHoldErrorImpl &&
-            (identical(other.message, message) || other.message == message));
-  }
-
-  @override
-  int get hashCode => Object.hash(runtimeType, message);
-
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$CreditHoldErrorImplCopyWith<_$CreditHoldErrorImpl> get copyWith =>
-      __$$CreditHoldErrorImplCopyWithImpl<_$CreditHoldErrorImpl>(
-        this,
-        _$identity,
-      );
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(List<FieldError> errors) validation,
-    required TResult Function(String? message) auth,
-    required TResult Function(String? message) notFound,
-    required TResult Function(int? statusCode, String? message) server,
-    required TResult Function(String? message) network,
-    required TResult Function(String? message) creditHold,
-  }) {
-    return creditHold(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(List<FieldError> errors)? validation,
-    TResult? Function(String? message)? auth,
-    TResult? Function(String? message)? notFound,
-    TResult? Function(int? statusCode, String? message)? server,
-    TResult? Function(String? message)? network,
-    TResult? Function(String? message)? creditHold,
-  }) {
-    return creditHold?.call(message);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(List<FieldError> errors)? validation,
-    TResult Function(String? message)? auth,
-    TResult Function(String? message)? notFound,
-    TResult Function(int? statusCode, String? message)? server,
-    TResult Function(String? message)? network,
-    TResult Function(String? message)? creditHold,
-    required TResult orElse(),
-  }) {
-    if (creditHold != null) {
-      return creditHold(message);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(ValidationError value) validation,
-    required TResult Function(AuthError value) auth,
-    required TResult Function(NotFoundError value) notFound,
-    required TResult Function(ServerError value) server,
-    required TResult Function(NetworkError value) network,
-    required TResult Function(CreditHoldError value) creditHold,
-  }) {
-    return creditHold(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(ValidationError value)? validation,
-    TResult? Function(AuthError value)? auth,
-    TResult? Function(NotFoundError value)? notFound,
-    TResult? Function(ServerError value)? server,
-    TResult? Function(NetworkError value)? network,
-    TResult? Function(CreditHoldError value)? creditHold,
-  }) {
-    return creditHold?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(ValidationError value)? validation,
-    TResult Function(AuthError value)? auth,
-    TResult Function(NotFoundError value)? notFound,
-    TResult Function(ServerError value)? server,
-    TResult Function(NetworkError value)? network,
-    TResult Function(CreditHoldError value)? creditHold,
-    required TResult orElse(),
-  }) {
-    if (creditHold != null) {
-      return creditHold(this);
-    }
-    return orElse();
-  }
 }
 
-abstract class CreditHoldError implements AppError {
-  const factory CreditHoldError([final String? message]) =
-      _$CreditHoldErrorImpl;
 
-  String? get message;
+}
 
-  /// Create a copy of AppError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$CreditHoldErrorImplCopyWith<_$CreditHoldErrorImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+/// @nodoc
+abstract mixin class $CreditHoldErrorCopyWith<$Res> implements $AppErrorCopyWith<$Res> {
+  factory $CreditHoldErrorCopyWith(CreditHoldError value, $Res Function(CreditHoldError) _then) = _$CreditHoldErrorCopyWithImpl;
+@useResult
+$Res call({
+ String? message
+});
+
+
+
+
+}
+/// @nodoc
+class _$CreditHoldErrorCopyWithImpl<$Res>
+    implements $CreditHoldErrorCopyWith<$Res> {
+  _$CreditHoldErrorCopyWithImpl(this._self, this._then);
+
+  final CreditHoldError _self;
+  final $Res Function(CreditHoldError) _then;
+
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
+  return _then(CreditHoldError(
+freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
 }
 
 /// @nodoc
 mixin _$FieldError {
-  List<String> get loc => throw _privateConstructorUsedError;
-  String get msg => throw _privateConstructorUsedError;
-  String get type => throw _privateConstructorUsedError;
 
-  /// Create a copy of FieldError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $FieldErrorCopyWith<FieldError> get copyWith =>
-      throw _privateConstructorUsedError;
+ List<String> get loc; String get msg; String get type;
+/// Create a copy of FieldError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FieldErrorCopyWith<FieldError> get copyWith => _$FieldErrorCopyWithImpl<FieldError>(this as FieldError, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as FieldError;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FieldError&&const DeepCollectionEquality().equals(other.loc, _this.loc)&&(identical(other.msg, _this.msg) || other.msg == _this.msg)&&(identical(other.type, _this.type) || other.type == _this.type));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as FieldError;
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.loc),_this.msg,_this.type);
+}
+
+@override
+String toString() {
+  final _this = this as FieldError;
+  return 'FieldError(loc: ${_this.loc}, msg: ${_this.msg}, type: ${_this.type})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $FieldErrorCopyWith<$Res> {
-  factory $FieldErrorCopyWith(
-    FieldError value,
-    $Res Function(FieldError) then,
-  ) = _$FieldErrorCopyWithImpl<$Res, FieldError>;
-  @useResult
-  $Res call({List<String> loc, String msg, String type});
-}
+abstract mixin class $FieldErrorCopyWith<$Res>  {
+  factory $FieldErrorCopyWith(FieldError value, $Res Function(FieldError) _then) = _$FieldErrorCopyWithImpl;
+@useResult
+$Res call({
+ List<String> loc, String msg, String type
+});
 
+
+
+
+}
 /// @nodoc
-class _$FieldErrorCopyWithImpl<$Res, $Val extends FieldError>
+class _$FieldErrorCopyWithImpl<$Res>
     implements $FieldErrorCopyWith<$Res> {
-  _$FieldErrorCopyWithImpl(this._value, this._then);
+  _$FieldErrorCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final FieldError _self;
+  final $Res Function(FieldError) _then;
 
-  /// Create a copy of FieldError
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? loc = null, Object? msg = null, Object? type = null}) {
-    return _then(
-      _value.copyWith(
-            loc: null == loc
-                ? _value.loc
-                : loc // ignore: cast_nullable_to_non_nullable
-                      as List<String>,
-            msg: null == msg
-                ? _value.msg
-                : msg // ignore: cast_nullable_to_non_nullable
-                      as String,
-            type: null == type
-                ? _value.type
-                : type // ignore: cast_nullable_to_non_nullable
-                      as String,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of FieldError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? loc = null,Object? msg = null,Object? type = null,}) {
+  return _then(FieldError(
+loc: null == loc ? _self.loc : loc // ignore: cast_nullable_to_non_nullable
+as List<String>,msg: null == msg ? _self.msg : msg // ignore: cast_nullable_to_non_nullable
+as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [FieldError].
+extension FieldErrorPatterns on FieldError {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _FieldError value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _FieldError() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _FieldError value)  $default,){
+final _that = this;
+switch (_that) {
+case _FieldError():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _FieldError value)?  $default,){
+final _that = this;
+switch (_that) {
+case _FieldError() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<String> loc,  String msg,  String type)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _FieldError() when $default != null:
+return $default(_that.loc,_that.msg,_that.type);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<String> loc,  String msg,  String type)  $default,) {final _that = this;
+switch (_that) {
+case _FieldError():
+return $default(_that.loc,_that.msg,_that.type);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<String> loc,  String msg,  String type)?  $default,) {final _that = this;
+switch (_that) {
+case _FieldError() when $default != null:
+return $default(_that.loc,_that.msg,_that.type);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$FieldErrorImplCopyWith<$Res>
-    implements $FieldErrorCopyWith<$Res> {
-  factory _$$FieldErrorImplCopyWith(
-    _$FieldErrorImpl value,
-    $Res Function(_$FieldErrorImpl) then,
-  ) = __$$FieldErrorImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({List<String> loc, String msg, String type});
+
+
+class _FieldError implements FieldError {
+  const _FieldError({required  List<String> loc, required this.msg, required this.type}): _loc = loc;
+  
+
+ final  List<String> _loc;
+@override List<String> get loc {
+  if (_loc is EqualUnmodifiableListView) return _loc;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_loc);
 }
 
-/// @nodoc
-class __$$FieldErrorImplCopyWithImpl<$Res>
-    extends _$FieldErrorCopyWithImpl<$Res, _$FieldErrorImpl>
-    implements _$$FieldErrorImplCopyWith<$Res> {
-  __$$FieldErrorImplCopyWithImpl(
-    _$FieldErrorImpl _value,
-    $Res Function(_$FieldErrorImpl) _then,
-  ) : super(_value, _then);
+@override final  String msg;
+@override final  String type;
 
-  /// Create a copy of FieldError
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({Object? loc = null, Object? msg = null, Object? type = null}) {
-    return _then(
-      _$FieldErrorImpl(
-        loc: null == loc
-            ? _value._loc
-            : loc // ignore: cast_nullable_to_non_nullable
-                  as List<String>,
-        msg: null == msg
-            ? _value.msg
-            : msg // ignore: cast_nullable_to_non_nullable
-                  as String,
-        type: null == type
-            ? _value.type
-            : type // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
+/// Create a copy of FieldError
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$FieldErrorCopyWith<_FieldError> get copyWith => __$FieldErrorCopyWithImpl<_FieldError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FieldError&&const DeepCollectionEquality().equals(other.loc, _loc)&&(identical(other.msg, msg) || other.msg == msg)&&(identical(other.type, type) || other.type == type));
 }
 
-/// @nodoc
 
-class _$FieldErrorImpl implements _FieldError {
-  const _$FieldErrorImpl({
-    required final List<String> loc,
-    required this.msg,
-    required this.type,
-  }) : _loc = loc;
+@override
+int get hashCode {
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_loc),msg,type);
+}
 
-  final List<String> _loc;
-  @override
-  List<String> get loc {
-    if (_loc is EqualUnmodifiableListView) return _loc;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_loc);
-  }
-
-  @override
-  final String msg;
-  @override
-  final String type;
-
-  @override
-  String toString() {
+@override
+String toString() {
     return 'FieldError(loc: $loc, msg: $msg, type: $type)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$FieldErrorImpl &&
-            const DeepCollectionEquality().equals(other._loc, _loc) &&
-            (identical(other.msg, msg) || other.msg == msg) &&
-            (identical(other.type, type) || other.type == type));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    const DeepCollectionEquality().hash(_loc),
-    msg,
-    type,
-  );
-
-  /// Create a copy of FieldError
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$FieldErrorImplCopyWith<_$FieldErrorImpl> get copyWith =>
-      __$$FieldErrorImplCopyWithImpl<_$FieldErrorImpl>(this, _$identity);
 }
 
-abstract class _FieldError implements FieldError {
-  const factory _FieldError({
-    required final List<String> loc,
-    required final String msg,
-    required final String type,
-  }) = _$FieldErrorImpl;
 
-  @override
-  List<String> get loc;
-  @override
-  String get msg;
-  @override
-  String get type;
-
-  /// Create a copy of FieldError
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$FieldErrorImplCopyWith<_$FieldErrorImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+abstract mixin class _$FieldErrorCopyWith<$Res> implements $FieldErrorCopyWith<$Res> {
+  factory _$FieldErrorCopyWith(_FieldError value, $Res Function(_FieldError) _then) = __$FieldErrorCopyWithImpl;
+@override @useResult
+$Res call({
+ List<String> loc, String msg, String type
+});
+
+
+
+
+}
+/// @nodoc
+class __$FieldErrorCopyWithImpl<$Res>
+    implements _$FieldErrorCopyWith<$Res> {
+  __$FieldErrorCopyWithImpl(this._self, this._then);
+
+  final _FieldError _self;
+  final $Res Function(_FieldError) _then;
+
+/// Create a copy of FieldError
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? loc = null,Object? msg = null,Object? type = null,}) {
+  return _then(_FieldError(
+loc: null == loc ? _self._loc : loc // ignore: cast_nullable_to_non_nullable
+as List<String>,msg: null == msg ? _self.msg : msg // ignore: cast_nullable_to_non_nullable
+as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

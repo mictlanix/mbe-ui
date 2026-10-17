@@ -6,7 +6,6 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
-import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/catalog_field_validators.dart';
 import 'package:mbe_ui/features/catalog/presentation/facility_children_controller.dart';
@@ -32,7 +31,7 @@ abstract final class WarehouseFormErrorCode {
 /// Create/edit form state for a single warehouse. [warehouseId] is `null` in
 /// create mode.
 @freezed
-class WarehouseFormState with _$WarehouseFormState {
+abstract class WarehouseFormState with _$WarehouseFormState {
   const factory WarehouseFormState({
     int? warehouseId,
     int? facilityId,
@@ -160,17 +159,7 @@ class WarehouseFormController extends _$WarehouseFormController {
   }
 
   Future<void> _invalidateFacilityChildren(int facilityId) async {
-    try {
-      final facility = await ref
-          .read(facilityRepositoryProvider)
-          .get(facilityId: facilityId);
-      ref.invalidate(
-        facilityChildrenControllerProvider(facilityId, facility.type),
-      );
-    } on AppError {
-      // Best-effort — if the facility can no longer be resolved (e.g.
-      // deleted concurrently), there is no live card to refresh.
-    }
+    ref.invalidate(facilityChildrenControllerProvider(facilityId));
   }
 
   /// Creates the warehouse (FR-013, FR-014). Re-checks the caller's

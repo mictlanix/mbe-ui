@@ -3,7 +3,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 
+import '../../../helpers/network_image_stub.dart';
+
 void main() {
+  setUpAll(
+    () => stubNetworkImages(isBroken: (url) => url.path.contains('broken')),
+  );
+
   testWidgets('renders the network image for a non-null photo URL (FR-001)', (
     tester,
   ) async {
@@ -87,5 +93,47 @@ void main() {
     await tester.pumpWidget(MaterialApp(home: Scaffold(body: fallback)));
 
     expect(find.byIcon(Icons.inventory_2_outlined), findsOneWidget);
+  });
+
+  group('onTap (046-catalog-improvements FR-014, FR-017)', () {
+    Future<List<int>> pumpTappable(WidgetTester tester, String? url) async {
+      final taps = <int>[];
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ProductPhoto(photoUrl: url, onTap: () => taps.add(1)),
+          ),
+        ),
+      );
+      await pumpUntilImagesLoad(tester);
+      return taps;
+    }
+
+    testWidgets('a loaded photo is clickable', (tester) async {
+      final taps = await pumpTappable(tester, 'https://example.com/photo.png');
+
+      await tester.tap(find.byType(ProductPhoto));
+
+      expect(taps, [1]);
+    });
+
+    testWidgets('the placeholder for a missing photo is not', (tester) async {
+      final taps = await pumpTappable(tester, null);
+
+      await tester.tap(find.byType(ProductPhoto), warnIfMissed: false);
+
+      expect(taps, isEmpty);
+    });
+
+    testWidgets('the placeholder for a photo that failed to load is not', (
+      tester,
+    ) async {
+      final taps = await pumpTappable(tester, 'https://example.com/broken.png');
+      expect(find.byIcon(Icons.inventory_2_outlined), findsOneWidget);
+
+      await tester.tap(find.byType(ProductPhoto), warnIfMissed: false);
+
+      expect(taps, isEmpty);
+    });
   });
 }

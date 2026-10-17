@@ -77,6 +77,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           taxpayerRecipientRepositoryProvider.overrideWithValue(repository),
           satCatalogRepositoryProvider.overrideWithValue(satRepository),
@@ -269,6 +270,7 @@ void main() {
       final key = GlobalKey<TaxpayerRecipientFormPanelState>();
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             taxpayerRecipientRepositoryProvider.overrideWithValue(repository),
             satCatalogRepositoryProvider.overrideWithValue(satRepository),
@@ -298,6 +300,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             taxpayerRecipientRepositoryProvider.overrideWithValue(repository),
             satCatalogRepositoryProvider.overrideWithValue(satRepository),

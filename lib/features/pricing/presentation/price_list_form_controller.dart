@@ -28,7 +28,7 @@ abstract final class PriceListFormErrorCode {
 /// Create/edit form state for a single price list. [priceListId] is `null`
 /// in create mode.
 @freezed
-class PriceListFormState with _$PriceListFormState {
+abstract class PriceListFormState with _$PriceListFormState {
   const factory PriceListFormState({
     int? priceListId,
     @Default('') String name,

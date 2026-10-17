@@ -70,6 +70,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           vehicleRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
@@ -225,6 +226,7 @@ void main() {
       final key = GlobalKey<VehicleFormPanelState>();
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             vehicleRepositoryProvider.overrideWithValue(repository),
             accessControlProvider.overrideWithValue(
@@ -253,6 +255,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             vehicleRepositoryProvider.overrideWithValue(repository),
             accessControlProvider.overrideWithValue(

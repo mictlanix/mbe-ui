@@ -7,7 +7,7 @@ part 'price_list.freezed.dart';
 /// Margins are kept as `String` end-to-end (research.md §3) — never parsed
 /// to `double`.
 @freezed
-class PriceList with _$PriceList {
+abstract class PriceList with _$PriceList {
   const factory PriceList({
     required int priceListId,
     required String name,

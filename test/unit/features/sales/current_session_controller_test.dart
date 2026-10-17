@@ -35,6 +35,7 @@ void main() {
   setUp(() {
     repository = MockCashSessionRepository();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [cashSessionRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(container.dispose);

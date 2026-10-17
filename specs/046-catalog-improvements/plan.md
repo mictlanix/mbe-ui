@@ -25,7 +25,9 @@ This plan covers three independent slices across three catalogs. None needs a ba
 
 **Language/Version**: Dart `^3.10.3`, Flutter 3.44.2 stable (unchanged)
 
-**Primary Dependencies**: Riverpod (`riverpod_annotation`), `freezed`, `go_router`, `data_table_2` 2.7.2, and the generated `mbe_api_client`. No new packages. No codegen re-run: the client already exposes everything this plan uses (contracts C7).
+**Primary Dependencies**: Riverpod (`riverpod_annotation`), `freezed`, `go_router`, `data_table_2` 2.7.2, and the generated `mbe_api_client`. No new packages. No OpenAPI codegen re-run: the client already exposes everything this plan uses (contracts C7).
+
+**Added during implementation**: the code generators were upgraded (Riverpod 3 / riverpod_generator 4, freezed 4, build_runner 2.16) because `build_runner` could not run on Flutter 3.47.7 — see research R15.
 
 **Storage**: N/A (online-only, §VII)
 

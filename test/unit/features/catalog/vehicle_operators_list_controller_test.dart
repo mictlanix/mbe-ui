@@ -31,6 +31,7 @@ void main() {
   setUp(() {
     repository = MockVehicleOperatorRepository();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         vehicleOperatorRepositoryProvider.overrideWithValue(repository),
       ],

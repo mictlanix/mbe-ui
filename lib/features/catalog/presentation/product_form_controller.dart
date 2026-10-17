@@ -45,7 +45,7 @@ const _validPhotoExtensions = ['.jpg', '.jpeg', '.png'];
 /// Create/edit form state for a single product. Local UI state, not
 /// persisted (constitution §II). [productId] is `null` in create mode.
 @freezed
-class ProductFormState with _$ProductFormState {
+abstract class ProductFormState with _$ProductFormState {
   const factory ProductFormState({
     int? productId,
     @Default('') String code,
@@ -244,7 +244,7 @@ class ProductFormController extends _$ProductFormController {
   /// FR-009). Whether the form renders read-only (FR-013) is derived
   /// reactively in the screen from `accessControlProvider`, not snapshotted
   /// here — `ref.read` at this one-shot async call site could race with
-  /// `authNotifierProvider`'s own async session restore.
+  /// `authProvider`'s own async session restore.
   Future<void> loadForEdit(int productId) async {
     state = state.copyWith(loading: true, error: null, errorDetail: null);
     try {

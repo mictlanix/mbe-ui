@@ -11,7 +11,7 @@ part 'exchange_rate.freezed.dart';
 /// mapper doesn't recognize (data-model.md §4) — `rawBase`/`rawTarget`
 /// preserve the original `int` for display in that case.
 @freezed
-class ExchangeRate with _$ExchangeRate {
+abstract class ExchangeRate with _$ExchangeRate {
   const factory ExchangeRate({
     required int exchangeRateId,
     required DateTime date,

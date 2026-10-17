@@ -11,7 +11,7 @@ part 'facility_list_item.freezed.dart';
 /// Points of Sale forms' facility `CatalogEntityPicker` and their list
 /// screens' facility filter facet (data-model.md, FR-015/FR-018/FR-021).
 @freezed
-class FacilityListItem with _$FacilityListItem {
+abstract class FacilityListItem with _$FacilityListItem {
   const factory FacilityListItem({
     required int facilityId,
     required String code,

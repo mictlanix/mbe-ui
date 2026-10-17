@@ -58,6 +58,7 @@ void main() {
     priceListRepository = MockPriceListRepository();
     productPriceRepository = MockProductPriceRepository();
     final c = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         priceListRepositoryProvider.overrideWithValue(priceListRepository),
         productPriceRepositoryProvider.overrideWithValue(

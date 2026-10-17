@@ -96,6 +96,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           paymentMethodOptionRepositoryProvider.overrideWithValue(repository),
@@ -296,6 +297,7 @@ void main() {
         SharedPreferences.setMockInitialValues({});
         final sharedPreferences = await SharedPreferences.getInstance();
         final container = ProviderContainer(
+          retry: (_, _) => null,
           overrides: [
             sharedPreferencesProvider.overrideWithValue(sharedPreferences),
             paymentMethodOptionRepositoryProvider.overrideWithValue(
@@ -397,6 +399,7 @@ void main() {
       final key = GlobalKey<PaymentMethodOptionFormPanelState>();
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             sharedPreferencesProvider.overrideWithValue(sharedPreferences),
             paymentMethodOptionRepositoryProvider.overrideWithValue(
@@ -434,6 +437,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             sharedPreferencesProvider.overrideWithValue(sharedPreferences),
             paymentMethodOptionRepositoryProvider.overrideWithValue(

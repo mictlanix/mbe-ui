@@ -122,6 +122,7 @@ ProviderContainer documentContainer({
   FakeDocumentOutput? output,
 }) {
   final container = ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       accessControlProvider.overrideWithValue(accessFor(user)),
       documentSourceProvider.overrideWithValue(source ?? FakeDocumentSource()),

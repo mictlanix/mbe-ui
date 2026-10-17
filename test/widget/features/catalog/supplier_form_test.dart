@@ -68,6 +68,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           supplierRepositoryProvider.overrideWithValue(repository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
@@ -203,6 +204,7 @@ void main() {
       final key = GlobalKey<SupplierFormPanelState>();
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             supplierRepositoryProvider.overrideWithValue(repository),
             accessControlProvider.overrideWithValue(
@@ -231,6 +233,7 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           overrides: [
             supplierRepositoryProvider.overrideWithValue(repository),
             accessControlProvider.overrideWithValue(

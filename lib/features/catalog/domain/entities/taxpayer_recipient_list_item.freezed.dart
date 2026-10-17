@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'taxpayer_recipient_list_item.dart';
@@ -9,196 +9,277 @@ part of 'taxpayer_recipient_list_item.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
 /// @nodoc
 mixin _$TaxpayerRecipientListItem {
-  String get taxpayerRecipientId => throw _privateConstructorUsedError;
-  String get name => throw _privateConstructorUsedError;
-  String get email => throw _privateConstructorUsedError;
 
-  /// Create a copy of TaxpayerRecipientListItem
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $TaxpayerRecipientListItemCopyWith<TaxpayerRecipientListItem> get copyWith =>
-      throw _privateConstructorUsedError;
+ String get taxpayerRecipientId; String get name; String get email;
+/// Create a copy of TaxpayerRecipientListItem
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TaxpayerRecipientListItemCopyWith<TaxpayerRecipientListItem> get copyWith => _$TaxpayerRecipientListItemCopyWithImpl<TaxpayerRecipientListItem>(this as TaxpayerRecipientListItem, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as TaxpayerRecipientListItem;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TaxpayerRecipientListItem&&(identical(other.taxpayerRecipientId, _this.taxpayerRecipientId) || other.taxpayerRecipientId == _this.taxpayerRecipientId)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.email, _this.email) || other.email == _this.email));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as TaxpayerRecipientListItem;
+  return Object.hash(runtimeType,_this.taxpayerRecipientId,_this.name,_this.email);
+}
+
+@override
+String toString() {
+  final _this = this as TaxpayerRecipientListItem;
+  return 'TaxpayerRecipientListItem(taxpayerRecipientId: ${_this.taxpayerRecipientId}, name: ${_this.name}, email: ${_this.email})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $TaxpayerRecipientListItemCopyWith<$Res> {
-  factory $TaxpayerRecipientListItemCopyWith(
-    TaxpayerRecipientListItem value,
-    $Res Function(TaxpayerRecipientListItem) then,
-  ) = _$TaxpayerRecipientListItemCopyWithImpl<$Res, TaxpayerRecipientListItem>;
-  @useResult
-  $Res call({String taxpayerRecipientId, String name, String email});
-}
+abstract mixin class $TaxpayerRecipientListItemCopyWith<$Res>  {
+  factory $TaxpayerRecipientListItemCopyWith(TaxpayerRecipientListItem value, $Res Function(TaxpayerRecipientListItem) _then) = _$TaxpayerRecipientListItemCopyWithImpl;
+@useResult
+$Res call({
+ String taxpayerRecipientId, String name, String email
+});
 
+
+
+
+}
 /// @nodoc
-class _$TaxpayerRecipientListItemCopyWithImpl<
-  $Res,
-  $Val extends TaxpayerRecipientListItem
->
+class _$TaxpayerRecipientListItemCopyWithImpl<$Res>
     implements $TaxpayerRecipientListItemCopyWith<$Res> {
-  _$TaxpayerRecipientListItemCopyWithImpl(this._value, this._then);
+  _$TaxpayerRecipientListItemCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final TaxpayerRecipientListItem _self;
+  final $Res Function(TaxpayerRecipientListItem) _then;
 
-  /// Create a copy of TaxpayerRecipientListItem
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? taxpayerRecipientId = null,
-    Object? name = null,
-    Object? email = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            taxpayerRecipientId: null == taxpayerRecipientId
-                ? _value.taxpayerRecipientId
-                : taxpayerRecipientId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            name: null == name
-                ? _value.name
-                : name // ignore: cast_nullable_to_non_nullable
-                      as String,
-            email: null == email
-                ? _value.email
-                : email // ignore: cast_nullable_to_non_nullable
-                      as String,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of TaxpayerRecipientListItem
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? taxpayerRecipientId = null,Object? name = null,Object? email = null,}) {
+  return _then(TaxpayerRecipientListItem(
+taxpayerRecipientId: null == taxpayerRecipientId ? _self.taxpayerRecipientId : taxpayerRecipientId // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [TaxpayerRecipientListItem].
+extension TaxpayerRecipientListItemPatterns on TaxpayerRecipientListItem {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TaxpayerRecipientListItem value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _TaxpayerRecipientListItem() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TaxpayerRecipientListItem value)  $default,){
+final _that = this;
+switch (_that) {
+case _TaxpayerRecipientListItem():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TaxpayerRecipientListItem value)?  $default,){
+final _that = this;
+switch (_that) {
+case _TaxpayerRecipientListItem() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String taxpayerRecipientId,  String name,  String email)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _TaxpayerRecipientListItem() when $default != null:
+return $default(_that.taxpayerRecipientId,_that.name,_that.email);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String taxpayerRecipientId,  String name,  String email)  $default,) {final _that = this;
+switch (_that) {
+case _TaxpayerRecipientListItem():
+return $default(_that.taxpayerRecipientId,_that.name,_that.email);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String taxpayerRecipientId,  String name,  String email)?  $default,) {final _that = this;
+switch (_that) {
+case _TaxpayerRecipientListItem() when $default != null:
+return $default(_that.taxpayerRecipientId,_that.name,_that.email);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$TaxpayerRecipientListItemImplCopyWith<$Res>
-    implements $TaxpayerRecipientListItemCopyWith<$Res> {
-  factory _$$TaxpayerRecipientListItemImplCopyWith(
-    _$TaxpayerRecipientListItemImpl value,
-    $Res Function(_$TaxpayerRecipientListItemImpl) then,
-  ) = __$$TaxpayerRecipientListItemImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({String taxpayerRecipientId, String name, String email});
+
+
+class _TaxpayerRecipientListItem implements TaxpayerRecipientListItem {
+  const _TaxpayerRecipientListItem({required this.taxpayerRecipientId, required this.name, required this.email});
+  
+
+@override final  String taxpayerRecipientId;
+@override final  String name;
+@override final  String email;
+
+/// Create a copy of TaxpayerRecipientListItem
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$TaxpayerRecipientListItemCopyWith<_TaxpayerRecipientListItem> get copyWith => __$TaxpayerRecipientListItemCopyWithImpl<_TaxpayerRecipientListItem>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TaxpayerRecipientListItem&&(identical(other.taxpayerRecipientId, taxpayerRecipientId) || other.taxpayerRecipientId == taxpayerRecipientId)&&(identical(other.name, name) || other.name == name)&&(identical(other.email, email) || other.email == email));
 }
 
-/// @nodoc
-class __$$TaxpayerRecipientListItemImplCopyWithImpl<$Res>
-    extends
-        _$TaxpayerRecipientListItemCopyWithImpl<
-          $Res,
-          _$TaxpayerRecipientListItemImpl
-        >
-    implements _$$TaxpayerRecipientListItemImplCopyWith<$Res> {
-  __$$TaxpayerRecipientListItemImplCopyWithImpl(
-    _$TaxpayerRecipientListItemImpl _value,
-    $Res Function(_$TaxpayerRecipientListItemImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of TaxpayerRecipientListItem
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? taxpayerRecipientId = null,
-    Object? name = null,
-    Object? email = null,
-  }) {
-    return _then(
-      _$TaxpayerRecipientListItemImpl(
-        taxpayerRecipientId: null == taxpayerRecipientId
-            ? _value.taxpayerRecipientId
-            : taxpayerRecipientId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        name: null == name
-            ? _value.name
-            : name // ignore: cast_nullable_to_non_nullable
-                  as String,
-        email: null == email
-            ? _value.email
-            : email // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
+@override
+int get hashCode {
+    return Object.hash(runtimeType,taxpayerRecipientId,name,email);
 }
 
-/// @nodoc
-
-class _$TaxpayerRecipientListItemImpl implements _TaxpayerRecipientListItem {
-  const _$TaxpayerRecipientListItemImpl({
-    required this.taxpayerRecipientId,
-    required this.name,
-    required this.email,
-  });
-
-  @override
-  final String taxpayerRecipientId;
-  @override
-  final String name;
-  @override
-  final String email;
-
-  @override
-  String toString() {
+@override
+String toString() {
     return 'TaxpayerRecipientListItem(taxpayerRecipientId: $taxpayerRecipientId, name: $name, email: $email)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$TaxpayerRecipientListItemImpl &&
-            (identical(other.taxpayerRecipientId, taxpayerRecipientId) ||
-                other.taxpayerRecipientId == taxpayerRecipientId) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.email, email) || other.email == email));
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, taxpayerRecipientId, name, email);
-
-  /// Create a copy of TaxpayerRecipientListItem
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$TaxpayerRecipientListItemImplCopyWith<_$TaxpayerRecipientListItemImpl>
-  get copyWith =>
-      __$$TaxpayerRecipientListItemImplCopyWithImpl<
-        _$TaxpayerRecipientListItemImpl
-      >(this, _$identity);
 }
 
-abstract class _TaxpayerRecipientListItem implements TaxpayerRecipientListItem {
-  const factory _TaxpayerRecipientListItem({
-    required final String taxpayerRecipientId,
-    required final String name,
-    required final String email,
-  }) = _$TaxpayerRecipientListItemImpl;
 
-  @override
-  String get taxpayerRecipientId;
-  @override
-  String get name;
-  @override
-  String get email;
-
-  /// Create a copy of TaxpayerRecipientListItem
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$TaxpayerRecipientListItemImplCopyWith<_$TaxpayerRecipientListItemImpl>
-  get copyWith => throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+abstract mixin class _$TaxpayerRecipientListItemCopyWith<$Res> implements $TaxpayerRecipientListItemCopyWith<$Res> {
+  factory _$TaxpayerRecipientListItemCopyWith(_TaxpayerRecipientListItem value, $Res Function(_TaxpayerRecipientListItem) _then) = __$TaxpayerRecipientListItemCopyWithImpl;
+@override @useResult
+$Res call({
+ String taxpayerRecipientId, String name, String email
+});
+
+
+
+
+}
+/// @nodoc
+class __$TaxpayerRecipientListItemCopyWithImpl<$Res>
+    implements _$TaxpayerRecipientListItemCopyWith<$Res> {
+  __$TaxpayerRecipientListItemCopyWithImpl(this._self, this._then);
+
+  final _TaxpayerRecipientListItem _self;
+  final $Res Function(_TaxpayerRecipientListItem) _then;
+
+/// Create a copy of TaxpayerRecipientListItem
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? taxpayerRecipientId = null,Object? name = null,Object? email = null,}) {
+  return _then(_TaxpayerRecipientListItem(
+taxpayerRecipientId: null == taxpayerRecipientId ? _self.taxpayerRecipientId : taxpayerRecipientId // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

@@ -69,6 +69,7 @@ Future<void> _pumpShell(WidgetTester tester, {required Size size}) async {
 
   await tester.pumpWidget(
     ProviderScope(
+      retry: (_, _) => null,
       overrides: [
         accessControlProvider.overrideWithValue(_accessFor(_bothUser)),
       ],

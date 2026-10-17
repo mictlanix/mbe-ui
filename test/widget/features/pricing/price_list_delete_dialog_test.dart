@@ -53,6 +53,7 @@ void main() {
     final sharedPreferences = await SharedPreferences.getInstance();
 
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         priceListRepositoryProvider.overrideWithValue(repository),

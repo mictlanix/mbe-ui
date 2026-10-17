@@ -469,13 +469,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-/// Notifies `GoRouter` to re-run [_redirect] whenever [authNotifierProvider]
+/// Notifies `GoRouter` to re-run [_redirect] whenever [authProvider]
 /// changes — including the `401`-triggered transition to `unauthenticated`
 /// (FR-003, SC-003; research.md §4).
 class _AuthRefreshListenable extends ChangeNotifier {
   _AuthRefreshListenable(Ref ref) {
     _subscription = ref.listen(
-      authNotifierProvider,
+      authProvider,
       (_, _) => notifyListeners(),
     );
   }
@@ -490,9 +490,9 @@ class _AuthRefreshListenable extends ChangeNotifier {
 }
 
 String? _redirect(Ref ref, GoRouterState state) {
-  final authState = ref.read(authNotifierProvider).valueOrNull;
+  final authState = ref.read(authProvider).value;
   // Still loading/erroring: let it settle, refreshListenable will re-run
-  // this once `authNotifierProvider` resolves.
+  // this once `authProvider` resolves.
   if (authState == null || authState is AuthAuthenticating) return null;
 
   final isAuthRoute = state.matchedLocation.startsWith('/auth/');

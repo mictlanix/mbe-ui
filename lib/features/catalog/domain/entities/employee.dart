@@ -16,7 +16,7 @@ part 'employee.freezed.dart';
 /// finding U1) is gone: mbe-api#80 collapsed both into the single [status]
 /// field shared by every catalog entity.
 @freezed
-class Employee with _$Employee {
+abstract class Employee with _$Employee {
   const factory Employee({
     required int employeeId,
     required String firstName,

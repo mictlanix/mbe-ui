@@ -18,7 +18,7 @@ part 'facility_children.freezed.dart';
 /// from "you may not see them" (FR-029, section omitted) without the widget
 /// re-reading access control itself.
 @freezed
-class FacilityChildren with _$FacilityChildren {
+abstract class FacilityChildren with _$FacilityChildren {
   const factory FacilityChildren({
     required int facilityId,
     @Default(<Warehouse>[]) List<Warehouse> warehouses,

@@ -11,7 +11,7 @@ part 'product_list_item.freezed.dart';
 /// mapped from `ProductListItem` — a smaller projection than the full
 /// [Product] detail entity.
 @freezed
-class ProductListItem with _$ProductListItem {
+abstract class ProductListItem with _$ProductListItem {
   const factory ProductListItem({
     required int productId,
     required String code,

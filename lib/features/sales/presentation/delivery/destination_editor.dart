@@ -94,7 +94,7 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
       customerId: widget.sale.customer,
     );
     if (id == null || !mounted) return;
-    final customer = ref.read(saleCustomerControllerProvider(widget.sale.customer)).valueOrNull;
+    final customer = ref.read(saleCustomerControllerProvider(widget.sale.customer)).value;
     setState(() {
       _shipTo = id;
       _addressLabel = customer
@@ -111,7 +111,7 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
       customerId: widget.sale.customer,
     );
     if (id == null || !mounted) return;
-    final customer = ref.read(saleCustomerControllerProvider(widget.sale.customer)).valueOrNull;
+    final customer = ref.read(saleCustomerControllerProvider(widget.sale.customer)).value;
     setState(() {
       _contact = id;
       _contactLabel = customer

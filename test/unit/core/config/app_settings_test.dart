@@ -74,6 +74,7 @@ void main() {
         formatting: FormattingSettings(),
       );
       final container = ProviderContainer(
+        retry: (_, _) => null,
         overrides: [appSettingsProvider.overrideWithValue(overridden)],
       );
       addTearDown(container.dispose);
@@ -94,6 +95,7 @@ void main() {
         formatting: FormattingSettings(),
       );
       final container = ProviderContainer(
+        retry: (_, _) => null,
         overrides: [appSettingsProvider.overrideWithValue(overridden)],
       );
       addTearDown(container.dispose);

@@ -10,7 +10,7 @@ part 'vehicle.freezed.dart';
 /// consumer, so this single entity covers both list and detail rendering
 /// (research.md §3).
 @freezed
-class Vehicle with _$Vehicle {
+abstract class Vehicle with _$Vehicle {
   const factory Vehicle({
     required int vehicleId,
     required String licensePlate,

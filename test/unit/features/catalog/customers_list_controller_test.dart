@@ -29,6 +29,7 @@ void main() {
   setUp(() {
     repository = MockCustomerRepository();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [customerRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(container.dispose);

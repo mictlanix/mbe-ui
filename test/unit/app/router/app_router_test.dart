@@ -546,12 +546,13 @@ void main() {
     final sharedPreferences = await SharedPreferences.getInstance();
 
     final container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         // formattersProvider (spec 028) reads through resolvedLocaleProvider,
         // which needs a real SharedPreferences instance — every destination
         // screen migrated to the formatting surface now needs this.
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
-        authNotifierProvider.overrideWith(
+        authProvider.overrideWith(
           () => _FixedAuthNotifier(
             AuthState.authenticated(token: 't', user: user),
           ),

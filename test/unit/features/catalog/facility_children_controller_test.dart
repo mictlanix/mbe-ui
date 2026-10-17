@@ -90,6 +90,7 @@ void main() {
   late MockCashDrawerRepository cashDrawerRepository;
 
   ProviderContainer containerFor(User user) => ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       warehouseRepositoryProvider.overrideWithValue(warehouseRepository),
       pointSaleRepositoryProvider.overrideWithValue(pointSaleRepository),
@@ -129,7 +130,7 @@ void main() {
       addTearDown(container.dispose);
 
       final result = await container.read(
-        facilityChildrenControllerProvider(1, FacilityType.store).future,
+        facilityChildrenControllerProvider(1).future,
       );
 
       expect(result.warehouses, hasLength(1));
@@ -146,35 +147,40 @@ void main() {
       ).called(1);
     });
 
-    test('a production site issues only the warehouse fetch — points of sale '
-        'and cash drawers are never requested', () async {
+    test('a production site requests all three child types, like a store '
+        '(046-catalog-improvements FR-010)', () async {
       when(
         () => warehouseRepository.list(facilityId: 2, skip: 0, limit: 100),
       ).thenAnswer(
         (_) async => WarehouseListResult(items: [_warehouse(2, 2)], total: 1),
+      );
+      when(
+        () => pointSaleRepository.list(facilityId: 2, skip: 0, limit: 100),
+      ).thenAnswer(
+        (_) async => const PointSaleListResult(items: [], total: 0),
+      );
+      when(
+        () => cashDrawerRepository.list(facilityId: 2, skip: 0, limit: 100),
+      ).thenAnswer(
+        (_) async => const CashDrawerListResult(items: [], total: 0),
       );
 
       final container = containerFor(_fullAccessUser);
       addTearDown(container.dispose);
 
       final result = await container.read(
-        facilityChildrenControllerProvider(
-          2,
-          FacilityType.productionSite,
-        ).future,
+        facilityChildrenControllerProvider(2).future,
       );
 
       expect(result.warehouses, hasLength(1));
-      expect(result.pointsOfSale, isEmpty);
-      expect(result.cashDrawers, isEmpty);
-      expect(result.pointsOfSaleReadable, isFalse);
-      expect(result.cashDrawersReadable, isFalse);
-      verifyNever(
-        () => pointSaleRepository.list(facilityId: any(named: 'facilityId')),
-      );
-      verifyNever(
-        () => cashDrawerRepository.list(facilityId: any(named: 'facilityId')),
-      );
+      expect(result.pointsOfSaleReadable, isTrue);
+      expect(result.cashDrawersReadable, isTrue);
+      verify(
+        () => pointSaleRepository.list(facilityId: 2, skip: 0, limit: 100),
+      ).called(1);
+      verify(
+        () => cashDrawerRepository.list(facilityId: 2, skip: 0, limit: 100),
+      ).called(1);
     });
 
     test('a store with no cash-drawer read privilege does not request cash '
@@ -187,7 +193,7 @@ void main() {
       addTearDown(container.dispose);
 
       final result = await container.read(
-        facilityChildrenControllerProvider(3, FacilityType.store).future,
+        facilityChildrenControllerProvider(3).future,
       );
 
       expect(result.warehousesReadable, isTrue);
@@ -239,7 +245,7 @@ void main() {
         addTearDown(container.dispose);
 
         final result = await container.read(
-          facilityChildrenControllerProvider(4, FacilityType.store).future,
+          facilityChildrenControllerProvider(4).future,
         );
 
         expect(result.warehouses, hasLength(137));
@@ -274,13 +280,13 @@ void main() {
 
         await expectLater(
           container.read(
-            facilityChildrenControllerProvider(5, FacilityType.store).future,
+            facilityChildrenControllerProvider(5).future,
           ),
           throwsException,
         );
 
         final state = container.read(
-          facilityChildrenControllerProvider(5, FacilityType.store),
+          facilityChildrenControllerProvider(5),
         );
         expect(state.hasError, isTrue);
       },
@@ -353,6 +359,7 @@ void main() {
         );
 
         final container = ProviderContainer(
+          retry: (_, _) => null,
           overrides: [
             warehouseRepositoryProvider.overrideWithValue(warehouseRepository),
             pointSaleRepositoryProvider.overrideWithValue(pointSaleRepository),
@@ -373,20 +380,20 @@ void main() {
         // would) so an invalidation triggers an observable rebuild rather
         // than being silently dropped by auto-dispose.
         container.listen(
-          facilityChildrenControllerProvider(1, FacilityType.store),
+          facilityChildrenControllerProvider(1),
           (_, _) {},
           fireImmediately: true,
         );
         container.listen(
-          facilityChildrenControllerProvider(2, FacilityType.store),
+          facilityChildrenControllerProvider(2),
           (_, _) {},
           fireImmediately: true,
         );
         await container.read(
-          facilityChildrenControllerProvider(1, FacilityType.store).future,
+          facilityChildrenControllerProvider(1).future,
         );
         await container.read(
-          facilityChildrenControllerProvider(2, FacilityType.store).future,
+          facilityChildrenControllerProvider(2).future,
         );
         verify(
           () => warehouseRepository.list(facilityId: 1, skip: 0, limit: 100),
@@ -411,10 +418,10 @@ void main() {
 
         // Both facilities' children re-fetched — not just the new one.
         await container.read(
-          facilityChildrenControllerProvider(1, FacilityType.store).future,
+          facilityChildrenControllerProvider(1).future,
         );
         await container.read(
-          facilityChildrenControllerProvider(2, FacilityType.store).future,
+          facilityChildrenControllerProvider(2).future,
         );
         verify(
           () => warehouseRepository.list(facilityId: 1, skip: 0, limit: 100),

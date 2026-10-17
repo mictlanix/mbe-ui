@@ -1,5 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/features/sales/data/sales_quote_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
@@ -22,15 +20,22 @@ import 'package:mbe_ui/features/sales/presentation/tracked_editing.dart';
 mixin QuoteEditing on TrackedEditing implements SaleEditor {
   @override
   Future<Sale> ensureOpen() async {
-    final current = state.valueOrNull;
+    final current = state.value;
     if (current != null) return current;
     // Unlike `SaleEditing.ensureOpen`, no `origin` is sent — a quote has no
     // such field on `SalesQuoteCreate`, and no path other than conversion
     // (which mbe-api itself stamps) ever needs to tell a quote's raising
     // workflow apart.
-    final opened = await ref.read(salesQuoteRepositoryProvider).open();
-    state = AsyncValue.data(opened);
-    return opened;
+    // Kept alive across the request, like every `tracked` write: a lookup
+    // can open the document from a provider that does not watch this one.
+    final keepAlive = ref.keepAlive();
+    try {
+      final opened = await ref.read(salesQuoteRepositoryProvider).open();
+      publish(opened);
+      return opened;
+    } finally {
+      keepAlive.close();
+    }
   }
 
   @override
@@ -67,13 +72,13 @@ mixin QuoteEditing on TrackedEditing implements SaleEditor {
     // *other* field requested alongside still falls through to the general
     // path unchanged, since `open()` takes only these two — mirroring
     // `SaleEditing.updateHeader`'s own fast path (spec 036 research.md R5).
-    if (state.valueOrNull == null &&
+    if (state.value == null &&
         paymentTerms == null &&
         currency == null &&
         shipTo == null &&
         contact == null &&
         comment == null) {
-      state = AsyncValue.data(
+      publish(
         await repository.open(customer: customer, salesperson: salesperson),
       );
       return;
@@ -90,7 +95,7 @@ mixin QuoteEditing on TrackedEditing implements SaleEditor {
       shipTo: shipTo,
       comment: comment,
     );
-    state = AsyncValue.data(updated);
+    publish(updated);
   });
 
   @override
@@ -109,8 +114,8 @@ mixin QuoteEditing on TrackedEditing implements SaleEditor {
     int? warehouse,
     String? comment,
   }) => tracked(() async {
-    final current = await ensureOpen();
     final repository = ref.read(salesQuoteRepositoryProvider);
+    final current = await ensureOpen();
     final updated = await repository.addLine(
       quoteId: current.id,
       product: product,
@@ -119,7 +124,7 @@ mixin QuoteEditing on TrackedEditing implements SaleEditor {
       discountRate: discountRate,
       comment: comment,
     );
-    state = AsyncValue.data(updated);
+    publish(updated);
   });
 
   @override
@@ -142,7 +147,7 @@ mixin QuoteEditing on TrackedEditing implements SaleEditor {
       discountRate: discountRate,
       comment: comment,
     );
-    state = AsyncValue.data(updated);
+    publish(updated);
   });
 
   @override
@@ -153,7 +158,7 @@ mixin QuoteEditing on TrackedEditing implements SaleEditor {
       quoteId: current.id,
       lineId: lineId,
     );
-    state = AsyncValue.data(updated);
+    publish(updated);
   });
 
   @override
@@ -161,6 +166,6 @@ mixin QuoteEditing on TrackedEditing implements SaleEditor {
     final current = openSale;
     final repository = ref.read(salesQuoteRepositoryProvider);
     final updated = await repository.confirm(quoteId: current.id);
-    state = AsyncValue.data(updated);
+    publish(updated);
   });
 }

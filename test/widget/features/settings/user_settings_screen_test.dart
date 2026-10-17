@@ -14,6 +14,7 @@ Future<void> _pump(WidgetTester tester, {Map<String, Object> prefs = const {}}) 
   final sharedPreferences = await SharedPreferences.getInstance();
   await tester.pumpWidget(
     ProviderScope(
+      retry: (_, _) => null,
       overrides: [sharedPreferencesProvider.overrideWithValue(sharedPreferences)],
       child: MaterialApp(
         locale: const Locale('en'),

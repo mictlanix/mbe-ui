@@ -22,6 +22,7 @@ Future<ThemeData> _pumpAtWidth(WidgetTester tester, double width) async {
   late ThemeData resolved;
   await tester.pumpWidget(
     ProviderScope(
+      retry: (_, _) => null,
       child: MaterialApp(
         theme: AppTheme.of(_defaultBrand).light,
         builder: (context, child) {
@@ -79,6 +80,7 @@ void main() {
       late BuildContext routeContext;
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           child: MaterialApp(
             theme: AppTheme.of(_defaultBrand).light,
             builder: (context, child) {
@@ -155,6 +157,7 @@ void main() {
         final theme = await _pumpAtWidth(tester, width);
         await tester.pumpWidget(
           ProviderScope(
+            retry: (_, _) => null,
             child: MaterialApp(
               theme: theme,
               builder: (context, child) {

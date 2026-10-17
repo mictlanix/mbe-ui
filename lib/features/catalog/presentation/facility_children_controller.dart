@@ -3,7 +3,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
-import 'package:mbe_ui/core/domain/facility_type.dart';
 import 'package:mbe_ui/features/catalog/data/cash_drawer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/point_sale_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
@@ -22,31 +21,28 @@ const _pageLimit = 100;
 /// Loads and holds one facility's complete child set for the nested
 /// Facilities hierarchy (018-nested-facility-management FR-017/018/019).
 ///
-/// Keyed by [facilityId] **and** [facilityType]: the type decides which
-/// child types are requested at all (research §2) — a production site never
-/// issues a points-of-sale or cash-drawers request. The type is supplied by
-/// the caller (`FacilityCard`, which already holds the `FacilityListItem`
-/// it is rendering) rather than fetched here, so this controller costs
-/// exactly the requests its own child types need — no extra "get this
-/// facility" round trip.
+/// Keyed by [facilityId] alone. Every facility type — store or production
+/// site — can hold warehouses, points of sale and cash drawers
+/// (046-catalog-improvements FR-010), so each child type is requested
+/// whenever the caller may read it.
 @riverpod
 class FacilityChildrenController extends _$FacilityChildrenController {
   @override
-  Future<FacilityChildren> build(
-    int facilityId,
-    FacilityType facilityType,
-  ) async {
+  Future<FacilityChildren> build(int facilityId) async {
     final access = ref.watch(accessControlProvider);
-    final isStore = facilityType == FacilityType.store;
 
     final warehousesReadable = access.can(
       SystemObject.warehouses,
       AccessRight.read,
     );
-    final pointsOfSaleReadable =
-        isStore && access.can(SystemObject.pointsOfSale, AccessRight.read);
-    final cashDrawersReadable =
-        isStore && access.can(SystemObject.cashDrawers, AccessRight.read);
+    final pointsOfSaleReadable = access.can(
+      SystemObject.pointsOfSale,
+      AccessRight.read,
+    );
+    final cashDrawersReadable = access.can(
+      SystemObject.cashDrawers,
+      AccessRight.read,
+    );
 
     final warehouses = warehousesReadable
         ? await _fetchAllWarehouses(facilityId)

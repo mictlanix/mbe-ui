@@ -26,6 +26,7 @@ void main() {
   setUp(() {
     repository = MockEmployeeRepository();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [employeeRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(container.dispose);

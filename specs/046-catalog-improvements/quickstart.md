@@ -21,7 +21,11 @@ flutter test test/unit/features/catalog/customer_form_controller_test.dart \
              test/widget/features/catalog/facilities_list_screen_test.dart \
              test/widget/core/widgets/product_photo_test.dart \
              test/widget/core/widgets/product_photo_preview_test.dart \
-             test/widget/features/catalog/products_list_screen_test.dart
+             test/widget/features/catalog/products_list_screen_test.dart \
+             test/widget/features/catalog/facility_detail_screen_test.dart \
+             test/unit/features/catalog/address_repository_impl_test.dart \
+             test/unit/features/catalog/taxpayer_recipient_form_controller_test.dart \
+             test/widget/features/sales/sale_editor_isolation_test.dart
 flutter test   # full suite, including formatting_guard_test
 ```
 

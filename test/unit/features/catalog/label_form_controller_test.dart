@@ -36,6 +36,7 @@ const _fullAccessUser = User(
 
 ProviderContainer _containerFor(User user, LabelRepository repository) {
   return ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       labelRepositoryProvider.overrideWithValue(repository),
       accessControlProvider.overrideWithValue(

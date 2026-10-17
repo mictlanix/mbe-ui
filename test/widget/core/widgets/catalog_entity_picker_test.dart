@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/core/config/app_settings_provider.dart';
@@ -25,6 +26,7 @@ void main() {
   }) async {
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: overrides,
         child: MaterialApp(
           home: Scaffold(
@@ -118,6 +120,7 @@ void main() {
     _Item? selected;
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         child: MaterialApp(
           home: Scaffold(
             body: CatalogEntityPicker<_Item>(

@@ -215,15 +215,11 @@ class _CustomerFiltersPanel extends ConsumerWidget {
     final priceListRepo = ref.read(priceListRepositoryProvider);
     final employeeRepo = ref.read(employeeRepositoryProvider);
     final priceListDisplayText = filter.priceListId != null
-        ? ref
-                  .watch(priceListDisplayNameProvider(filter.priceListId!))
-                  .valueOrNull ??
+        ? ref.watch(priceListDisplayNameProvider(filter.priceListId!)).value ??
               '${filter.priceListId}'
         : '';
     final salespersonDisplayText = filter.salespersonId != null
-        ? ref
-                  .watch(employeeDisplayNameProvider(filter.salespersonId!))
-                  .valueOrNull ??
+        ? ref.watch(employeeDisplayNameProvider(filter.salespersonId!)).value ??
               '${filter.salespersonId}'
         : '';
 

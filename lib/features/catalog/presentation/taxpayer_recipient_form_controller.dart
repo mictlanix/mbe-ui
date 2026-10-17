@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_recipient_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/catalog_field_validators.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipients_list_controller.dart';
 
 part 'taxpayer_recipient_form_controller.freezed.dart';
@@ -34,7 +35,7 @@ abstract final class TaxpayerRecipientFormErrorCode {
 /// (research.md §9). [taxpayerRecipientId] holds the *editable* create-mode
 /// input.
 @freezed
-class TaxpayerRecipientFormState with _$TaxpayerRecipientFormState {
+abstract class TaxpayerRecipientFormState with _$TaxpayerRecipientFormState {
   const factory TaxpayerRecipientFormState({
     String? existingTaxpayerRecipientId,
     @Default('') String taxpayerRecipientId,
@@ -48,6 +49,11 @@ class TaxpayerRecipientFormState with _$TaxpayerRecipientFormState {
     @Default(false) bool submitting,
     @Default(false) bool saved,
     @Default(false) bool deleted,
+
+    /// The recipient a successful create returned, so a caller that opened
+    /// the form to create one (the customer form's inline dialog,
+    /// 046-catalog-improvements research R7) receives it. `null` otherwise.
+    TaxpayerRecipient? created,
     String? error,
     String? errorDetail,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
@@ -162,7 +168,7 @@ class TaxpayerRecipientFormController
       fieldErrors: const {},
     );
     try {
-      await ref
+      final created = await ref
           .read(taxpayerRecipientRepositoryProvider)
           .create(
             taxpayerRecipientId: state.taxpayerRecipientId,
@@ -172,7 +178,7 @@ class TaxpayerRecipientFormController
             regime: state.regime,
           );
       ref.invalidate(taxpayerRecipientsListControllerProvider);
-      state = state.copyWith(submitting: false, saved: true);
+      state = state.copyWith(submitting: false, saved: true, created: created);
     } on AppError catch (e) {
       if (e is ValidationError) {
         state = state.copyWith(

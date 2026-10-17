@@ -92,7 +92,7 @@ void main() {
       initialLocation: '/sales/orders/42',
       surface: surface ?? const Size(1440, 2400),
       overrides: [
-        authNotifierProvider.overrideWith(
+        authProvider.overrideWith(
           () => _FixedAuthNotifier(
             AuthState.authenticated(token: 't', user: _updaterUser),
           ),

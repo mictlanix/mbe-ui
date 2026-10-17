@@ -17,7 +17,7 @@ class UserMenuButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authNotifierProvider).valueOrNull;
+    final authState = ref.watch(authProvider).value;
     if (authState is! AuthAuthenticated) return const SizedBox.shrink();
 
     final l10n = AppLocalizations.of(context)!;
@@ -58,7 +58,7 @@ class UserMenuButton extends ConsumerWidget {
         MenuItemButton(
           key: const Key('user_menu_logout'),
           leadingIcon: const Icon(Icons.logout),
-          onPressed: () => ref.read(authNotifierProvider.notifier).signOut(),
+          onPressed: () => ref.read(authProvider.notifier).signOut(),
           child: Text(l10n.userMenuLogout),
         ),
       ],

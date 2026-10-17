@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -26,7 +25,7 @@ bool? _parseTriState(String? raw) {
 /// Derived from the route's [ListQuery] — the URL, not a mutable notifier,
 /// is the source of truth.
 @freezed
-class ProductFilter with _$ProductFilter {
+abstract class ProductFilter with _$ProductFilter {
   const factory ProductFilter({
     @Default('') String search,
     EntityStatus? status,
@@ -127,7 +126,7 @@ class ProductsListController extends _$ProductsListController {
 ///
 /// `autoDispose`, so the facet lookup fires only while the filter drawer
 /// (`_ProductFiltersPanel`) is watching it, and re-runs on every filter change
-/// (label/attribute toggle or submitted search). Consumers read `.valueOrNull`
+/// (label/attribute toggle or submitted search). Consumers read `.value`
 /// and treat `null` (loading/error) as "availability unknown" → all chips
 /// enabled, so a facet failure never blocks filtering (FR-010).
 @riverpod

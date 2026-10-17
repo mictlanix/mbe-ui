@@ -34,6 +34,7 @@ void main() {
     authRepository = MockAuthRepository();
     tokenStorage = MockTokenStorage();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         authRepositoryProvider.overrideWithValue(authRepository),
         tokenStorageProvider.overrideWithValue(tokenStorage),
@@ -48,7 +49,7 @@ void main() {
   test('app-start restore: no stored token starts unauthenticated', () async {
     when(() => tokenStorage.read()).thenAnswer((_) async => null);
 
-    final state = await container.read(authNotifierProvider.future);
+    final state = await container.read(authProvider.future);
 
     expect(state, const AuthState.unauthenticated());
     verifyNever(() => authRepository.me());
@@ -60,7 +61,7 @@ void main() {
       when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');
       when(() => authRepository.me()).thenAnswer((_) async => testUser);
 
-      final state = await container.read(authNotifierProvider.future);
+      final state = await container.read(authProvider.future);
 
       expect(
         state,
@@ -75,7 +76,7 @@ void main() {
       when(() => tokenStorage.read()).thenAnswer((_) async => 'stale-token');
       when(() => authRepository.me()).thenThrow(const AppError.auth());
 
-      final state = await container.read(authNotifierProvider.future);
+      final state = await container.read(authProvider.future);
 
       expect(
         state,
@@ -93,7 +94,7 @@ void main() {
         () => authRepository.me(),
       ).thenThrow(const AppError.network('Connection refused'));
 
-      final state = await container.read(authNotifierProvider.future);
+      final state = await container.read(authProvider.future);
 
       expect(
         state,
@@ -117,12 +118,12 @@ void main() {
       ).thenAnswer((_) async => 'new-token');
       when(() => authRepository.me()).thenAnswer((_) async => testUser);
 
-      await container.read(authNotifierProvider.future);
+      await container.read(authProvider.future);
       await container
-          .read(authNotifierProvider.notifier)
+          .read(authProvider.notifier)
           .signIn(username: 'jdoe', password: 'secret');
 
-      final state = container.read(authNotifierProvider).value;
+      final state = container.read(authProvider).value;
       expect(
         state,
         const AuthState.authenticated(token: 'new-token', user: testUser),
@@ -142,12 +143,12 @@ void main() {
         ),
       ).thenThrow(const AppError.auth());
 
-      await container.read(authNotifierProvider.future);
+      await container.read(authProvider.future);
       await container
-          .read(authNotifierProvider.notifier)
+          .read(authProvider.notifier)
           .signIn(username: 'jdoe', password: 'wrong');
 
-      final state = container.read(authNotifierProvider).value;
+      final state = container.read(authProvider).value;
       expect(
         state,
         const AuthState.unauthenticated(
@@ -169,12 +170,12 @@ void main() {
         ),
       ).thenThrow(const AppError.network('Connection refused'));
 
-      await container.read(authNotifierProvider.future);
+      await container.read(authProvider.future);
       await container
-          .read(authNotifierProvider.notifier)
+          .read(authProvider.notifier)
           .signIn(username: 'jdoe', password: 'secret');
 
-      final state = container.read(authNotifierProvider).value;
+      final state = container.read(authProvider).value;
       expect(
         state,
         const AuthState.unauthenticated(
@@ -190,10 +191,10 @@ void main() {
       when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');
       when(() => authRepository.me()).thenAnswer((_) async => testUser);
 
-      await container.read(authNotifierProvider.future);
-      await container.read(authNotifierProvider.notifier).signOut();
+      await container.read(authProvider.future);
+      await container.read(authProvider.notifier).signOut();
 
-      final state = container.read(authNotifierProvider).value;
+      final state = container.read(authProvider).value;
       expect(
         state,
         const AuthState.unauthenticated(reason: SignOutReason.signedOut),
@@ -208,10 +209,10 @@ void main() {
       when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');
       when(() => authRepository.me()).thenAnswer((_) async => testUser);
 
-      await container.read(authNotifierProvider.future);
-      container.read(authNotifierProvider.notifier).handleSessionInvalid();
+      await container.read(authProvider.future);
+      container.read(authProvider.notifier).handleSessionInvalid();
 
-      final state = container.read(authNotifierProvider).value;
+      final state = container.read(authProvider).value;
       expect(
         state,
         const AuthState.unauthenticated(reason: SignOutReason.sessionInvalid),

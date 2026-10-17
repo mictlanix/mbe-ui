@@ -9,7 +9,7 @@ part 'privilege.freezed.dart';
 /// A single user's CRUD bitmask for one [SystemObject] (data-model.md
 /// "Privilege"). Maps `PrivilegeResponse` / `PrivilegeUpdate`.
 @freezed
-class Privilege with _$Privilege {
+abstract class Privilege with _$Privilege {
   const Privilege._();
 
   @Assert('rawValue >= 0 && rawValue <= 15', 'rawValue must be in 0..15')

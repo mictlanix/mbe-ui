@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:mbe_api_client/mbe_api_client.dart' hide AddressType;
+import 'package:mbe_api_client/mbe_api_client.dart'
+    hide AddressType, EntityStatus;
 
+import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
@@ -22,12 +24,14 @@ class AddressRepositoryImpl implements AddressRepository {
   @override
   Future<AddressListResult> list({
     String? search,
+    EntityStatus? status,
     int skip = 0,
     int limit = 20,
   }) async {
     try {
       final response = await _api.listAddressesApiV1AddressesGet(
         search: search,
+        status: status?.toApi(),
         skip: skip,
         limit: limit,
       );

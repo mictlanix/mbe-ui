@@ -17,7 +17,7 @@ const _pageSize = 20;
 /// FR-009, FR-017), derived from the route's [ListQuery] — the URL, not a
 /// mutable notifier, is the source of truth (data-model.md §2).
 @freezed
-class VehicleFilter with _$VehicleFilter {
+abstract class VehicleFilter with _$VehicleFilter {
   const factory VehicleFilter({
     @Default('') String search,
     EntityStatus? status,

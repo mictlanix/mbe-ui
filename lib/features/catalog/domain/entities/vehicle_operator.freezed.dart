@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'vehicle_operator.dart';
@@ -9,356 +9,298 @@ part of 'vehicle_operator.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
 /// @nodoc
 mixin _$VehicleOperator {
-  int get vehicleOperatorId => throw _privateConstructorUsedError;
-  int get driverId => throw _privateConstructorUsedError;
-  String get driverName => throw _privateConstructorUsedError;
-  String get licenseType => throw _privateConstructorUsedError;
-  String get driverLicenseNumber => throw _privateConstructorUsedError;
-  DateTime get issueDate => throw _privateConstructorUsedError;
-  DateTime get expirationDate => throw _privateConstructorUsedError;
-  String get issuingLocation => throw _privateConstructorUsedError;
-  EntityStatus get status => throw _privateConstructorUsedError;
-  int? get daysUntilExpiry => throw _privateConstructorUsedError;
 
-  /// Create a copy of VehicleOperator
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $VehicleOperatorCopyWith<VehicleOperator> get copyWith =>
-      throw _privateConstructorUsedError;
+ int get vehicleOperatorId; int get driverId; String get driverName; String get licenseType; String get driverLicenseNumber; DateTime get issueDate; DateTime get expirationDate; String get issuingLocation; EntityStatus get status; int? get daysUntilExpiry;
+/// Create a copy of VehicleOperator
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$VehicleOperatorCopyWith<VehicleOperator> get copyWith => _$VehicleOperatorCopyWithImpl<VehicleOperator>(this as VehicleOperator, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as VehicleOperator;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VehicleOperator&&(identical(other.vehicleOperatorId, _this.vehicleOperatorId) || other.vehicleOperatorId == _this.vehicleOperatorId)&&(identical(other.driverId, _this.driverId) || other.driverId == _this.driverId)&&(identical(other.driverName, _this.driverName) || other.driverName == _this.driverName)&&(identical(other.licenseType, _this.licenseType) || other.licenseType == _this.licenseType)&&(identical(other.driverLicenseNumber, _this.driverLicenseNumber) || other.driverLicenseNumber == _this.driverLicenseNumber)&&(identical(other.issueDate, _this.issueDate) || other.issueDate == _this.issueDate)&&(identical(other.expirationDate, _this.expirationDate) || other.expirationDate == _this.expirationDate)&&(identical(other.issuingLocation, _this.issuingLocation) || other.issuingLocation == _this.issuingLocation)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.daysUntilExpiry, _this.daysUntilExpiry) || other.daysUntilExpiry == _this.daysUntilExpiry));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as VehicleOperator;
+  return Object.hash(runtimeType,_this.vehicleOperatorId,_this.driverId,_this.driverName,_this.licenseType,_this.driverLicenseNumber,_this.issueDate,_this.expirationDate,_this.issuingLocation,_this.status,_this.daysUntilExpiry);
+}
+
+@override
+String toString() {
+  final _this = this as VehicleOperator;
+  return 'VehicleOperator(vehicleOperatorId: ${_this.vehicleOperatorId}, driverId: ${_this.driverId}, driverName: ${_this.driverName}, licenseType: ${_this.licenseType}, driverLicenseNumber: ${_this.driverLicenseNumber}, issueDate: ${_this.issueDate}, expirationDate: ${_this.expirationDate}, issuingLocation: ${_this.issuingLocation}, status: ${_this.status}, daysUntilExpiry: ${_this.daysUntilExpiry})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $VehicleOperatorCopyWith<$Res> {
-  factory $VehicleOperatorCopyWith(
-    VehicleOperator value,
-    $Res Function(VehicleOperator) then,
-  ) = _$VehicleOperatorCopyWithImpl<$Res, VehicleOperator>;
-  @useResult
-  $Res call({
-    int vehicleOperatorId,
-    int driverId,
-    String driverName,
-    String licenseType,
-    String driverLicenseNumber,
-    DateTime issueDate,
-    DateTime expirationDate,
-    String issuingLocation,
-    EntityStatus status,
-    int? daysUntilExpiry,
-  });
-}
+abstract mixin class $VehicleOperatorCopyWith<$Res>  {
+  factory $VehicleOperatorCopyWith(VehicleOperator value, $Res Function(VehicleOperator) _then) = _$VehicleOperatorCopyWithImpl;
+@useResult
+$Res call({
+ int vehicleOperatorId, int driverId, String driverName, String licenseType, String driverLicenseNumber, DateTime issueDate, DateTime expirationDate, String issuingLocation, EntityStatus status, int? daysUntilExpiry
+});
 
+
+
+
+}
 /// @nodoc
-class _$VehicleOperatorCopyWithImpl<$Res, $Val extends VehicleOperator>
+class _$VehicleOperatorCopyWithImpl<$Res>
     implements $VehicleOperatorCopyWith<$Res> {
-  _$VehicleOperatorCopyWithImpl(this._value, this._then);
+  _$VehicleOperatorCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final VehicleOperator _self;
+  final $Res Function(VehicleOperator) _then;
 
-  /// Create a copy of VehicleOperator
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? vehicleOperatorId = null,
-    Object? driverId = null,
-    Object? driverName = null,
-    Object? licenseType = null,
-    Object? driverLicenseNumber = null,
-    Object? issueDate = null,
-    Object? expirationDate = null,
-    Object? issuingLocation = null,
-    Object? status = null,
-    Object? daysUntilExpiry = freezed,
-  }) {
-    return _then(
-      _value.copyWith(
-            vehicleOperatorId: null == vehicleOperatorId
-                ? _value.vehicleOperatorId
-                : vehicleOperatorId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            driverId: null == driverId
-                ? _value.driverId
-                : driverId // ignore: cast_nullable_to_non_nullable
-                      as int,
-            driverName: null == driverName
-                ? _value.driverName
-                : driverName // ignore: cast_nullable_to_non_nullable
-                      as String,
-            licenseType: null == licenseType
-                ? _value.licenseType
-                : licenseType // ignore: cast_nullable_to_non_nullable
-                      as String,
-            driverLicenseNumber: null == driverLicenseNumber
-                ? _value.driverLicenseNumber
-                : driverLicenseNumber // ignore: cast_nullable_to_non_nullable
-                      as String,
-            issueDate: null == issueDate
-                ? _value.issueDate
-                : issueDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            expirationDate: null == expirationDate
-                ? _value.expirationDate
-                : expirationDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            issuingLocation: null == issuingLocation
-                ? _value.issuingLocation
-                : issuingLocation // ignore: cast_nullable_to_non_nullable
-                      as String,
-            status: null == status
-                ? _value.status
-                : status // ignore: cast_nullable_to_non_nullable
-                      as EntityStatus,
-            daysUntilExpiry: freezed == daysUntilExpiry
-                ? _value.daysUntilExpiry
-                : daysUntilExpiry // ignore: cast_nullable_to_non_nullable
-                      as int?,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of VehicleOperator
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? vehicleOperatorId = null,Object? driverId = null,Object? driverName = null,Object? licenseType = null,Object? driverLicenseNumber = null,Object? issueDate = null,Object? expirationDate = null,Object? issuingLocation = null,Object? status = null,Object? daysUntilExpiry = freezed,}) {
+  return _then(VehicleOperator(
+vehicleOperatorId: null == vehicleOperatorId ? _self.vehicleOperatorId : vehicleOperatorId // ignore: cast_nullable_to_non_nullable
+as int,driverId: null == driverId ? _self.driverId : driverId // ignore: cast_nullable_to_non_nullable
+as int,driverName: null == driverName ? _self.driverName : driverName // ignore: cast_nullable_to_non_nullable
+as String,licenseType: null == licenseType ? _self.licenseType : licenseType // ignore: cast_nullable_to_non_nullable
+as String,driverLicenseNumber: null == driverLicenseNumber ? _self.driverLicenseNumber : driverLicenseNumber // ignore: cast_nullable_to_non_nullable
+as String,issueDate: null == issueDate ? _self.issueDate : issueDate // ignore: cast_nullable_to_non_nullable
+as DateTime,expirationDate: null == expirationDate ? _self.expirationDate : expirationDate // ignore: cast_nullable_to_non_nullable
+as DateTime,issuingLocation: null == issuingLocation ? _self.issuingLocation : issuingLocation // ignore: cast_nullable_to_non_nullable
+as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as EntityStatus,daysUntilExpiry: freezed == daysUntilExpiry ? _self.daysUntilExpiry : daysUntilExpiry // ignore: cast_nullable_to_non_nullable
+as int?,
+  ));
 }
 
-/// @nodoc
-abstract class _$$VehicleOperatorImplCopyWith<$Res>
-    implements $VehicleOperatorCopyWith<$Res> {
-  factory _$$VehicleOperatorImplCopyWith(
-    _$VehicleOperatorImpl value,
-    $Res Function(_$VehicleOperatorImpl) then,
-  ) = __$$VehicleOperatorImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    int vehicleOperatorId,
-    int driverId,
-    String driverName,
-    String licenseType,
-    String driverLicenseNumber,
-    DateTime issueDate,
-    DateTime expirationDate,
-    String issuingLocation,
-    EntityStatus status,
-    int? daysUntilExpiry,
-  });
 }
 
-/// @nodoc
-class __$$VehicleOperatorImplCopyWithImpl<$Res>
-    extends _$VehicleOperatorCopyWithImpl<$Res, _$VehicleOperatorImpl>
-    implements _$$VehicleOperatorImplCopyWith<$Res> {
-  __$$VehicleOperatorImplCopyWithImpl(
-    _$VehicleOperatorImpl _value,
-    $Res Function(_$VehicleOperatorImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of VehicleOperator
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? vehicleOperatorId = null,
-    Object? driverId = null,
-    Object? driverName = null,
-    Object? licenseType = null,
-    Object? driverLicenseNumber = null,
-    Object? issueDate = null,
-    Object? expirationDate = null,
-    Object? issuingLocation = null,
-    Object? status = null,
-    Object? daysUntilExpiry = freezed,
-  }) {
-    return _then(
-      _$VehicleOperatorImpl(
-        vehicleOperatorId: null == vehicleOperatorId
-            ? _value.vehicleOperatorId
-            : vehicleOperatorId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        driverId: null == driverId
-            ? _value.driverId
-            : driverId // ignore: cast_nullable_to_non_nullable
-                  as int,
-        driverName: null == driverName
-            ? _value.driverName
-            : driverName // ignore: cast_nullable_to_non_nullable
-                  as String,
-        licenseType: null == licenseType
-            ? _value.licenseType
-            : licenseType // ignore: cast_nullable_to_non_nullable
-                  as String,
-        driverLicenseNumber: null == driverLicenseNumber
-            ? _value.driverLicenseNumber
-            : driverLicenseNumber // ignore: cast_nullable_to_non_nullable
-                  as String,
-        issueDate: null == issueDate
-            ? _value.issueDate
-            : issueDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        expirationDate: null == expirationDate
-            ? _value.expirationDate
-            : expirationDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        issuingLocation: null == issuingLocation
-            ? _value.issuingLocation
-            : issuingLocation // ignore: cast_nullable_to_non_nullable
-                  as String,
-        status: null == status
-            ? _value.status
-            : status // ignore: cast_nullable_to_non_nullable
-                  as EntityStatus,
-        daysUntilExpiry: freezed == daysUntilExpiry
-            ? _value.daysUntilExpiry
-            : daysUntilExpiry // ignore: cast_nullable_to_non_nullable
-                  as int?,
-      ),
-    );
-  }
+/// Adds pattern-matching-related methods to [VehicleOperator].
+extension VehicleOperatorPatterns on VehicleOperator {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _VehicleOperator value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _VehicleOperator() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _VehicleOperator value)  $default,){
+final _that = this;
+switch (_that) {
+case _VehicleOperator():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _VehicleOperator value)?  $default,){
+final _that = this;
+switch (_that) {
+case _VehicleOperator() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int vehicleOperatorId,  int driverId,  String driverName,  String licenseType,  String driverLicenseNumber,  DateTime issueDate,  DateTime expirationDate,  String issuingLocation,  EntityStatus status,  int? daysUntilExpiry)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _VehicleOperator() when $default != null:
+return $default(_that.vehicleOperatorId,_that.driverId,_that.driverName,_that.licenseType,_that.driverLicenseNumber,_that.issueDate,_that.expirationDate,_that.issuingLocation,_that.status,_that.daysUntilExpiry);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int vehicleOperatorId,  int driverId,  String driverName,  String licenseType,  String driverLicenseNumber,  DateTime issueDate,  DateTime expirationDate,  String issuingLocation,  EntityStatus status,  int? daysUntilExpiry)  $default,) {final _that = this;
+switch (_that) {
+case _VehicleOperator():
+return $default(_that.vehicleOperatorId,_that.driverId,_that.driverName,_that.licenseType,_that.driverLicenseNumber,_that.issueDate,_that.expirationDate,_that.issuingLocation,_that.status,_that.daysUntilExpiry);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int vehicleOperatorId,  int driverId,  String driverName,  String licenseType,  String driverLicenseNumber,  DateTime issueDate,  DateTime expirationDate,  String issuingLocation,  EntityStatus status,  int? daysUntilExpiry)?  $default,) {final _that = this;
+switch (_that) {
+case _VehicleOperator() when $default != null:
+return $default(_that.vehicleOperatorId,_that.driverId,_that.driverName,_that.licenseType,_that.driverLicenseNumber,_that.issueDate,_that.expirationDate,_that.issuingLocation,_that.status,_that.daysUntilExpiry);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
 
-class _$VehicleOperatorImpl implements _VehicleOperator {
-  const _$VehicleOperatorImpl({
-    required this.vehicleOperatorId,
-    required this.driverId,
-    required this.driverName,
-    required this.licenseType,
-    required this.driverLicenseNumber,
-    required this.issueDate,
-    required this.expirationDate,
-    required this.issuingLocation,
-    required this.status,
-    this.daysUntilExpiry,
-  });
 
-  @override
-  final int vehicleOperatorId;
-  @override
-  final int driverId;
-  @override
-  final String driverName;
-  @override
-  final String licenseType;
-  @override
-  final String driverLicenseNumber;
-  @override
-  final DateTime issueDate;
-  @override
-  final DateTime expirationDate;
-  @override
-  final String issuingLocation;
-  @override
-  final EntityStatus status;
-  @override
-  final int? daysUntilExpiry;
+class _VehicleOperator implements VehicleOperator {
+  const _VehicleOperator({required this.vehicleOperatorId, required this.driverId, required this.driverName, required this.licenseType, required this.driverLicenseNumber, required this.issueDate, required this.expirationDate, required this.issuingLocation, required this.status, this.daysUntilExpiry});
+  
 
-  @override
-  String toString() {
+@override final  int vehicleOperatorId;
+@override final  int driverId;
+@override final  String driverName;
+@override final  String licenseType;
+@override final  String driverLicenseNumber;
+@override final  DateTime issueDate;
+@override final  DateTime expirationDate;
+@override final  String issuingLocation;
+@override final  EntityStatus status;
+@override final  int? daysUntilExpiry;
+
+/// Create a copy of VehicleOperator
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$VehicleOperatorCopyWith<_VehicleOperator> get copyWith => __$VehicleOperatorCopyWithImpl<_VehicleOperator>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _VehicleOperator&&(identical(other.vehicleOperatorId, vehicleOperatorId) || other.vehicleOperatorId == vehicleOperatorId)&&(identical(other.driverId, driverId) || other.driverId == driverId)&&(identical(other.driverName, driverName) || other.driverName == driverName)&&(identical(other.licenseType, licenseType) || other.licenseType == licenseType)&&(identical(other.driverLicenseNumber, driverLicenseNumber) || other.driverLicenseNumber == driverLicenseNumber)&&(identical(other.issueDate, issueDate) || other.issueDate == issueDate)&&(identical(other.expirationDate, expirationDate) || other.expirationDate == expirationDate)&&(identical(other.issuingLocation, issuingLocation) || other.issuingLocation == issuingLocation)&&(identical(other.status, status) || other.status == status)&&(identical(other.daysUntilExpiry, daysUntilExpiry) || other.daysUntilExpiry == daysUntilExpiry));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,vehicleOperatorId,driverId,driverName,licenseType,driverLicenseNumber,issueDate,expirationDate,issuingLocation,status,daysUntilExpiry);
+}
+
+@override
+String toString() {
     return 'VehicleOperator(vehicleOperatorId: $vehicleOperatorId, driverId: $driverId, driverName: $driverName, licenseType: $licenseType, driverLicenseNumber: $driverLicenseNumber, issueDate: $issueDate, expirationDate: $expirationDate, issuingLocation: $issuingLocation, status: $status, daysUntilExpiry: $daysUntilExpiry)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$VehicleOperatorImpl &&
-            (identical(other.vehicleOperatorId, vehicleOperatorId) ||
-                other.vehicleOperatorId == vehicleOperatorId) &&
-            (identical(other.driverId, driverId) ||
-                other.driverId == driverId) &&
-            (identical(other.driverName, driverName) ||
-                other.driverName == driverName) &&
-            (identical(other.licenseType, licenseType) ||
-                other.licenseType == licenseType) &&
-            (identical(other.driverLicenseNumber, driverLicenseNumber) ||
-                other.driverLicenseNumber == driverLicenseNumber) &&
-            (identical(other.issueDate, issueDate) ||
-                other.issueDate == issueDate) &&
-            (identical(other.expirationDate, expirationDate) ||
-                other.expirationDate == expirationDate) &&
-            (identical(other.issuingLocation, issuingLocation) ||
-                other.issuingLocation == issuingLocation) &&
-            (identical(other.status, status) || other.status == status) &&
-            (identical(other.daysUntilExpiry, daysUntilExpiry) ||
-                other.daysUntilExpiry == daysUntilExpiry));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    vehicleOperatorId,
-    driverId,
-    driverName,
-    licenseType,
-    driverLicenseNumber,
-    issueDate,
-    expirationDate,
-    issuingLocation,
-    status,
-    daysUntilExpiry,
-  );
-
-  /// Create a copy of VehicleOperator
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$VehicleOperatorImplCopyWith<_$VehicleOperatorImpl> get copyWith =>
-      __$$VehicleOperatorImplCopyWithImpl<_$VehicleOperatorImpl>(
-        this,
-        _$identity,
-      );
 }
 
-abstract class _VehicleOperator implements VehicleOperator {
-  const factory _VehicleOperator({
-    required final int vehicleOperatorId,
-    required final int driverId,
-    required final String driverName,
-    required final String licenseType,
-    required final String driverLicenseNumber,
-    required final DateTime issueDate,
-    required final DateTime expirationDate,
-    required final String issuingLocation,
-    required final EntityStatus status,
-    final int? daysUntilExpiry,
-  }) = _$VehicleOperatorImpl;
 
-  @override
-  int get vehicleOperatorId;
-  @override
-  int get driverId;
-  @override
-  String get driverName;
-  @override
-  String get licenseType;
-  @override
-  String get driverLicenseNumber;
-  @override
-  DateTime get issueDate;
-  @override
-  DateTime get expirationDate;
-  @override
-  String get issuingLocation;
-  @override
-  EntityStatus get status;
-  @override
-  int? get daysUntilExpiry;
-
-  /// Create a copy of VehicleOperator
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$VehicleOperatorImplCopyWith<_$VehicleOperatorImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+abstract mixin class _$VehicleOperatorCopyWith<$Res> implements $VehicleOperatorCopyWith<$Res> {
+  factory _$VehicleOperatorCopyWith(_VehicleOperator value, $Res Function(_VehicleOperator) _then) = __$VehicleOperatorCopyWithImpl;
+@override @useResult
+$Res call({
+ int vehicleOperatorId, int driverId, String driverName, String licenseType, String driverLicenseNumber, DateTime issueDate, DateTime expirationDate, String issuingLocation, EntityStatus status, int? daysUntilExpiry
+});
+
+
+
+
+}
+/// @nodoc
+class __$VehicleOperatorCopyWithImpl<$Res>
+    implements _$VehicleOperatorCopyWith<$Res> {
+  __$VehicleOperatorCopyWithImpl(this._self, this._then);
+
+  final _VehicleOperator _self;
+  final $Res Function(_VehicleOperator) _then;
+
+/// Create a copy of VehicleOperator
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? vehicleOperatorId = null,Object? driverId = null,Object? driverName = null,Object? licenseType = null,Object? driverLicenseNumber = null,Object? issueDate = null,Object? expirationDate = null,Object? issuingLocation = null,Object? status = null,Object? daysUntilExpiry = freezed,}) {
+  return _then(_VehicleOperator(
+vehicleOperatorId: null == vehicleOperatorId ? _self.vehicleOperatorId : vehicleOperatorId // ignore: cast_nullable_to_non_nullable
+as int,driverId: null == driverId ? _self.driverId : driverId // ignore: cast_nullable_to_non_nullable
+as int,driverName: null == driverName ? _self.driverName : driverName // ignore: cast_nullable_to_non_nullable
+as String,licenseType: null == licenseType ? _self.licenseType : licenseType // ignore: cast_nullable_to_non_nullable
+as String,driverLicenseNumber: null == driverLicenseNumber ? _self.driverLicenseNumber : driverLicenseNumber // ignore: cast_nullable_to_non_nullable
+as String,issueDate: null == issueDate ? _self.issueDate : issueDate // ignore: cast_nullable_to_non_nullable
+as DateTime,expirationDate: null == expirationDate ? _self.expirationDate : expirationDate // ignore: cast_nullable_to_non_nullable
+as DateTime,issuingLocation: null == issuingLocation ? _self.issuingLocation : issuingLocation // ignore: cast_nullable_to_non_nullable
+as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as EntityStatus,daysUntilExpiry: freezed == daysUntilExpiry ? _self.daysUntilExpiry : daysUntilExpiry // ignore: cast_nullable_to_non_nullable
+as int?,
+  ));
+}
+
+
+}
+
+// dart format on

@@ -15,7 +15,7 @@ part 'cash_session.freezed.dart';
 /// FK. A closed session's status is never returned by the API — deliberately
 /// absent here; see `cash_session_status.dart`.
 @freezed
-class CashSession with _$CashSession {
+abstract class CashSession with _$CashSession {
   const factory CashSession({
     required int cashSessionId,
     required int cashDrawerId,
@@ -61,7 +61,7 @@ class CashSession with _$CashSession {
 /// lower than the gross received, and in principle negative. Never describe
 /// this as "cash received."
 @freezed
-class PaymentMethodTotal with _$PaymentMethodTotal {
+abstract class PaymentMethodTotal with _$PaymentMethodTotal {
   const factory PaymentMethodTotal({required int method, required String total}) =
       _PaymentMethodTotal;
 

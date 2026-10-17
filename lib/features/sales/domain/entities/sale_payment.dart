@@ -21,7 +21,7 @@ part 'sale_payment.freezed.dart';
 /// `paymentMethodLabel`, which is the SAT catalog wording rather than the
 /// facility's own.
 @freezed
-class SalePayment with _$SalePayment {
+abstract class SalePayment with _$SalePayment {
   const SalePayment._();
 
   const factory SalePayment({

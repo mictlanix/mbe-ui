@@ -39,6 +39,7 @@ void main() {
   setUp(() {
     repository = MockTaxpayerCertificateRepository();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         taxpayerCertificateRepositoryProvider.overrideWithValue(repository),
         accessControlProvider.overrideWithValue(_accessFor(_createUser)),

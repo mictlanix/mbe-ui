@@ -136,7 +136,7 @@ void main() {
   Future<void> pumpQuote(WidgetTester tester, {User? user}) => pumpQuotesRouted(
     tester,
     overrides: [
-      authNotifierProvider.overrideWith(
+      authProvider.overrideWith(
         () => _FixedAuthNotifier(
           AuthState.authenticated(token: 't', user: user ?? _updaterUser),
         ),
@@ -184,6 +184,8 @@ void main() {
         creditDays: any(named: 'creditDays'),
         salesperson: any(named: 'salesperson'),
         comment: any(named: 'comment'),
+        addresses: any(named: 'addresses'),
+        contacts: any(named: 'contacts'),
         taxpayers: any(named: 'taxpayers'),
       ),
     ).thenAnswer((_) async => result);
@@ -262,6 +264,8 @@ void main() {
         creditDays: any(named: 'creditDays'),
         salesperson: any(named: 'salesperson'),
         comment: any(named: 'comment'),
+        addresses: any(named: 'addresses'),
+        contacts: any(named: 'contacts'),
         taxpayers: any(named: 'taxpayers'),
       ),
     );
@@ -287,6 +291,8 @@ void main() {
         creditDays: any(named: 'creditDays'),
         salesperson: any(named: 'salesperson'),
         comment: any(named: 'comment'),
+        addresses: any(named: 'addresses'),
+        contacts: any(named: 'contacts'),
         taxpayers: any(named: 'taxpayers'),
       ),
     ).thenThrow(

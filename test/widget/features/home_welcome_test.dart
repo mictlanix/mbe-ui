@@ -53,6 +53,7 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         overrides: [
           brandConfigProvider.overrideWithValue(brand),
           authRepositoryProvider.overrideWithValue(authRepository),

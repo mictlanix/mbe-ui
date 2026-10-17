@@ -10,7 +10,7 @@ part 'login_controller.g.dart';
 /// Sign-in form state (data-model.md "Login form state"). Local UI state,
 /// not persisted (constitution §II).
 @freezed
-class LoginFormState with _$LoginFormState {
+abstract class LoginFormState with _$LoginFormState {
   const factory LoginFormState({
     @Default('') String username,
     @Default('') String password,
@@ -44,10 +44,10 @@ class LoginController extends _$LoginController {
     state = state.copyWith(submitting: true, error: null);
 
     await ref
-        .read(authNotifierProvider.notifier)
+        .read(authProvider.notifier)
         .signIn(username: state.username, password: state.password);
 
-    final authState = ref.read(authNotifierProvider).valueOrNull;
+    final authState = ref.read(authProvider).value;
     final reason = authState is AuthUnauthenticated ? authState.reason : null;
 
     state = state.copyWith(

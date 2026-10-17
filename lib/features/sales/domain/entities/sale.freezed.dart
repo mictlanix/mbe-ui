@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'sale.dart';
@@ -9,829 +9,358 @@ part of 'sale.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
 /// @nodoc
 mixin _$Sale {
-  int get id => throw _privateConstructorUsedError;
-  int? get serial => throw _privateConstructorUsedError;
-  int get facility =>
-      throw _privateConstructorUsedError; // Nullable since spec 040: a quote is raised by a person, not a
-  // register, and has no point of sale at all. `null` here means "not a
-  // register document" — `capture_step.dart`'s own default-warehouse
-  // resolution already treats it that way (`sale?.pointSale ?? ...`), so
-  // widening this cost no reader outside spec 040's own three sites
-  // (data-model.md §1).
-  int? get pointSale => throw _privateConstructorUsedError;
-  int get salesperson => throw _privateConstructorUsedError;
-  int get customer => throw _privateConstructorUsedError;
-  String? get customerName => throw _privateConstructorUsedError;
-  PaymentTerms get paymentTerms => throw _privateConstructorUsedError;
-  Currency get currency => throw _privateConstructorUsedError;
-  String get exchangeRate => throw _privateConstructorUsedError;
-  int? get shipTo =>
-      throw _privateConstructorUsedError; // `null` for a sale predating mbe-api#171 or raised by a client that
-  // never asked — "not recorded", not "delivery" (FulfillmentMode.fromApi
-  // keeps that distinction rather than guessing). The capture step writes
-  // this via `updateHeader` once the cashier picks a mode.
-  FulfillmentMode? get fulfillmentIntent =>
-      throw _privateConstructorUsedError; // Which workflow raised this order (mbe-api#209, spec 039 FR-051).
-  // `null` is "never recorded" — every order predating mbe-api migration
-  // 020 — and is **not** a synonym for either member: nothing infers it
-  // (spec 039 A9). Written once, at create, by whichever `SaleEditor`
-  // opened the order; `SalesOrderUpdate` has no such field, so it cannot
-  // be edited afterwards.
-  SaleOrigin? get origin =>
-      throw _privateConstructorUsedError; // Nullable since spec 040: a quote promises nothing — delivery is
-  // planned only on the order a conversion produces (data-model.md §1).
-  DateTime? get promiseDate => throw _privateConstructorUsedError;
-  SaleStatus get status => throw _privateConstructorUsedError;
-  List<SaleLine> get lines => throw _privateConstructorUsedError;
-  String get subtotal => throw _privateConstructorUsedError;
-  String get taxTotal => throw _privateConstructorUsedError;
-  String get total =>
-      throw _privateConstructorUsedError; // Nullable since spec 040: a quote is never payable. Read
-  // [balanceOrZero] rather than this field directly outside the payment
-  // surface, so "an order always has a balance; only a quote does not" is
-  // asserted once here instead of at every call site (data-model.md §1).
-  String? get balance =>
-      throw _privateConstructorUsedError; // Back-office order screen fields (spec 029) — all already on the wire in
-  // `SalesOrderResponse`, simply never mapped until this feature needed them.
-  // POS never reads any of these; adding them is additive.
-  DateTime get date =>
-      throw _privateConstructorUsedError; // Display-only (FR-018): derived server-side from terms + customer credit
-  // days (`derive_due_date`) and absent from `SalesOrderUpdate` — never sent.
-  DateTime get dueDate => throw _privateConstructorUsedError;
-  int? get contact => throw _privateConstructorUsedError;
-  String? get recipient => throw _privateConstructorUsedError;
-  String? get recipientName =>
-      throw _privateConstructorUsedError; // Nullable since spec 040: priority is an order-only concept a quote has
-  // no wire field for (data-model.md §1).
-  Priority? get priority => throw _privateConstructorUsedError;
-  String? get comment =>
-      throw _privateConstructorUsedError; // Quote-only (spec 040 data-model.md §1): whether the quote's due date
-  // has passed. Orthogonal to `status` — a quote can be both `completed`
-  // and expired. Always `false` for an order, which has no such field.
-  bool get hasExpired => throw _privateConstructorUsedError;
 
-  /// Create a copy of Sale
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $SaleCopyWith<Sale> get copyWith => throw _privateConstructorUsedError;
+ int get id; int? get serial; int get facility; int? get pointSale; int get salesperson; int get customer; String? get customerName; PaymentTerms get paymentTerms; Currency get currency; String get exchangeRate; int? get shipTo; FulfillmentMode? get fulfillmentIntent; SaleOrigin? get origin; DateTime? get promiseDate; SaleStatus get status; List<SaleLine> get lines; String get subtotal; String get taxTotal; String get total; String? get balance; DateTime get date; DateTime get dueDate; int? get contact; String? get recipient; String? get recipientName; Priority? get priority; String? get comment; bool get hasExpired;
+/// Create a copy of Sale
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SaleCopyWith<Sale> get copyWith => _$SaleCopyWithImpl<Sale>(this as Sale, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as Sale;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Sale&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.facility, _this.facility) || other.facility == _this.facility)&&(identical(other.pointSale, _this.pointSale) || other.pointSale == _this.pointSale)&&(identical(other.salesperson, _this.salesperson) || other.salesperson == _this.salesperson)&&(identical(other.customer, _this.customer) || other.customer == _this.customer)&&(identical(other.customerName, _this.customerName) || other.customerName == _this.customerName)&&(identical(other.paymentTerms, _this.paymentTerms) || other.paymentTerms == _this.paymentTerms)&&(identical(other.currency, _this.currency) || other.currency == _this.currency)&&(identical(other.exchangeRate, _this.exchangeRate) || other.exchangeRate == _this.exchangeRate)&&(identical(other.shipTo, _this.shipTo) || other.shipTo == _this.shipTo)&&(identical(other.fulfillmentIntent, _this.fulfillmentIntent) || other.fulfillmentIntent == _this.fulfillmentIntent)&&(identical(other.origin, _this.origin) || other.origin == _this.origin)&&(identical(other.promiseDate, _this.promiseDate) || other.promiseDate == _this.promiseDate)&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.lines, _this.lines)&&(identical(other.subtotal, _this.subtotal) || other.subtotal == _this.subtotal)&&(identical(other.taxTotal, _this.taxTotal) || other.taxTotal == _this.taxTotal)&&(identical(other.total, _this.total) || other.total == _this.total)&&(identical(other.balance, _this.balance) || other.balance == _this.balance)&&(identical(other.date, _this.date) || other.date == _this.date)&&(identical(other.dueDate, _this.dueDate) || other.dueDate == _this.dueDate)&&(identical(other.contact, _this.contact) || other.contact == _this.contact)&&(identical(other.recipient, _this.recipient) || other.recipient == _this.recipient)&&(identical(other.recipientName, _this.recipientName) || other.recipientName == _this.recipientName)&&(identical(other.priority, _this.priority) || other.priority == _this.priority)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.hasExpired, _this.hasExpired) || other.hasExpired == _this.hasExpired));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as Sale;
+  return Object.hashAll([runtimeType,_this.id,_this.serial,_this.facility,_this.pointSale,_this.salesperson,_this.customer,_this.customerName,_this.paymentTerms,_this.currency,_this.exchangeRate,_this.shipTo,_this.fulfillmentIntent,_this.origin,_this.promiseDate,_this.status,const DeepCollectionEquality().hash(_this.lines),_this.subtotal,_this.taxTotal,_this.total,_this.balance,_this.date,_this.dueDate,_this.contact,_this.recipient,_this.recipientName,_this.priority,_this.comment,_this.hasExpired]);
+}
+
+@override
+String toString() {
+  final _this = this as Sale;
+  return 'Sale(id: ${_this.id}, serial: ${_this.serial}, facility: ${_this.facility}, pointSale: ${_this.pointSale}, salesperson: ${_this.salesperson}, customer: ${_this.customer}, customerName: ${_this.customerName}, paymentTerms: ${_this.paymentTerms}, currency: ${_this.currency}, exchangeRate: ${_this.exchangeRate}, shipTo: ${_this.shipTo}, fulfillmentIntent: ${_this.fulfillmentIntent}, origin: ${_this.origin}, promiseDate: ${_this.promiseDate}, status: ${_this.status}, lines: ${_this.lines}, subtotal: ${_this.subtotal}, taxTotal: ${_this.taxTotal}, total: ${_this.total}, balance: ${_this.balance}, date: ${_this.date}, dueDate: ${_this.dueDate}, contact: ${_this.contact}, recipient: ${_this.recipient}, recipientName: ${_this.recipientName}, priority: ${_this.priority}, comment: ${_this.comment}, hasExpired: ${_this.hasExpired})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $SaleCopyWith<$Res> {
-  factory $SaleCopyWith(Sale value, $Res Function(Sale) then) =
-      _$SaleCopyWithImpl<$Res, Sale>;
-  @useResult
-  $Res call({
-    int id,
-    int? serial,
-    int facility,
-    int? pointSale,
-    int salesperson,
-    int customer,
-    String? customerName,
-    PaymentTerms paymentTerms,
-    Currency currency,
-    String exchangeRate,
-    int? shipTo,
-    FulfillmentMode? fulfillmentIntent,
-    SaleOrigin? origin,
-    DateTime? promiseDate,
-    SaleStatus status,
-    List<SaleLine> lines,
-    String subtotal,
-    String taxTotal,
-    String total,
-    String? balance,
-    DateTime date,
-    DateTime dueDate,
-    int? contact,
-    String? recipient,
-    String? recipientName,
-    Priority? priority,
-    String? comment,
-    bool hasExpired,
-  });
-}
+abstract mixin class $SaleCopyWith<$Res>  {
+  factory $SaleCopyWith(Sale value, $Res Function(Sale) _then) = _$SaleCopyWithImpl;
+@useResult
+$Res call({
+ int id, int? serial, int facility, int? pointSale, int salesperson, int customer, String? customerName, PaymentTerms paymentTerms, Currency currency, String exchangeRate, int? shipTo, FulfillmentMode? fulfillmentIntent, SaleOrigin? origin, DateTime? promiseDate, SaleStatus status, List<SaleLine> lines, String subtotal, String taxTotal, String total, String? balance, DateTime date, DateTime dueDate, int? contact, String? recipient, String? recipientName, Priority? priority, String? comment, bool hasExpired
+});
 
+
+
+
+}
 /// @nodoc
-class _$SaleCopyWithImpl<$Res, $Val extends Sale>
+class _$SaleCopyWithImpl<$Res>
     implements $SaleCopyWith<$Res> {
-  _$SaleCopyWithImpl(this._value, this._then);
+  _$SaleCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final Sale _self;
+  final $Res Function(Sale) _then;
 
-  /// Create a copy of Sale
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? serial = freezed,
-    Object? facility = null,
-    Object? pointSale = freezed,
-    Object? salesperson = null,
-    Object? customer = null,
-    Object? customerName = freezed,
-    Object? paymentTerms = null,
-    Object? currency = null,
-    Object? exchangeRate = null,
-    Object? shipTo = freezed,
-    Object? fulfillmentIntent = freezed,
-    Object? origin = freezed,
-    Object? promiseDate = freezed,
-    Object? status = null,
-    Object? lines = null,
-    Object? subtotal = null,
-    Object? taxTotal = null,
-    Object? total = null,
-    Object? balance = freezed,
-    Object? date = null,
-    Object? dueDate = null,
-    Object? contact = freezed,
-    Object? recipient = freezed,
-    Object? recipientName = freezed,
-    Object? priority = freezed,
-    Object? comment = freezed,
-    Object? hasExpired = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            id: null == id
-                ? _value.id
-                : id // ignore: cast_nullable_to_non_nullable
-                      as int,
-            serial: freezed == serial
-                ? _value.serial
-                : serial // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            facility: null == facility
-                ? _value.facility
-                : facility // ignore: cast_nullable_to_non_nullable
-                      as int,
-            pointSale: freezed == pointSale
-                ? _value.pointSale
-                : pointSale // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            salesperson: null == salesperson
-                ? _value.salesperson
-                : salesperson // ignore: cast_nullable_to_non_nullable
-                      as int,
-            customer: null == customer
-                ? _value.customer
-                : customer // ignore: cast_nullable_to_non_nullable
-                      as int,
-            customerName: freezed == customerName
-                ? _value.customerName
-                : customerName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            paymentTerms: null == paymentTerms
-                ? _value.paymentTerms
-                : paymentTerms // ignore: cast_nullable_to_non_nullable
-                      as PaymentTerms,
-            currency: null == currency
-                ? _value.currency
-                : currency // ignore: cast_nullable_to_non_nullable
-                      as Currency,
-            exchangeRate: null == exchangeRate
-                ? _value.exchangeRate
-                : exchangeRate // ignore: cast_nullable_to_non_nullable
-                      as String,
-            shipTo: freezed == shipTo
-                ? _value.shipTo
-                : shipTo // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            fulfillmentIntent: freezed == fulfillmentIntent
-                ? _value.fulfillmentIntent
-                : fulfillmentIntent // ignore: cast_nullable_to_non_nullable
-                      as FulfillmentMode?,
-            origin: freezed == origin
-                ? _value.origin
-                : origin // ignore: cast_nullable_to_non_nullable
-                      as SaleOrigin?,
-            promiseDate: freezed == promiseDate
-                ? _value.promiseDate
-                : promiseDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime?,
-            status: null == status
-                ? _value.status
-                : status // ignore: cast_nullable_to_non_nullable
-                      as SaleStatus,
-            lines: null == lines
-                ? _value.lines
-                : lines // ignore: cast_nullable_to_non_nullable
-                      as List<SaleLine>,
-            subtotal: null == subtotal
-                ? _value.subtotal
-                : subtotal // ignore: cast_nullable_to_non_nullable
-                      as String,
-            taxTotal: null == taxTotal
-                ? _value.taxTotal
-                : taxTotal // ignore: cast_nullable_to_non_nullable
-                      as String,
-            total: null == total
-                ? _value.total
-                : total // ignore: cast_nullable_to_non_nullable
-                      as String,
-            balance: freezed == balance
-                ? _value.balance
-                : balance // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            date: null == date
-                ? _value.date
-                : date // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            dueDate: null == dueDate
-                ? _value.dueDate
-                : dueDate // ignore: cast_nullable_to_non_nullable
-                      as DateTime,
-            contact: freezed == contact
-                ? _value.contact
-                : contact // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            recipient: freezed == recipient
-                ? _value.recipient
-                : recipient // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            recipientName: freezed == recipientName
-                ? _value.recipientName
-                : recipientName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            priority: freezed == priority
-                ? _value.priority
-                : priority // ignore: cast_nullable_to_non_nullable
-                      as Priority?,
-            comment: freezed == comment
-                ? _value.comment
-                : comment // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            hasExpired: null == hasExpired
-                ? _value.hasExpired
-                : hasExpired // ignore: cast_nullable_to_non_nullable
-                      as bool,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of Sale
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? serial = freezed,Object? facility = null,Object? pointSale = freezed,Object? salesperson = null,Object? customer = null,Object? customerName = freezed,Object? paymentTerms = null,Object? currency = null,Object? exchangeRate = null,Object? shipTo = freezed,Object? fulfillmentIntent = freezed,Object? origin = freezed,Object? promiseDate = freezed,Object? status = null,Object? lines = null,Object? subtotal = null,Object? taxTotal = null,Object? total = null,Object? balance = freezed,Object? date = null,Object? dueDate = null,Object? contact = freezed,Object? recipient = freezed,Object? recipientName = freezed,Object? priority = freezed,Object? comment = freezed,Object? hasExpired = null,}) {
+  return _then(Sale(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
+as int?,facility: null == facility ? _self.facility : facility // ignore: cast_nullable_to_non_nullable
+as int,pointSale: freezed == pointSale ? _self.pointSale : pointSale // ignore: cast_nullable_to_non_nullable
+as int?,salesperson: null == salesperson ? _self.salesperson : salesperson // ignore: cast_nullable_to_non_nullable
+as int,customer: null == customer ? _self.customer : customer // ignore: cast_nullable_to_non_nullable
+as int,customerName: freezed == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
+as String?,paymentTerms: null == paymentTerms ? _self.paymentTerms : paymentTerms // ignore: cast_nullable_to_non_nullable
+as PaymentTerms,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as Currency,exchangeRate: null == exchangeRate ? _self.exchangeRate : exchangeRate // ignore: cast_nullable_to_non_nullable
+as String,shipTo: freezed == shipTo ? _self.shipTo : shipTo // ignore: cast_nullable_to_non_nullable
+as int?,fulfillmentIntent: freezed == fulfillmentIntent ? _self.fulfillmentIntent : fulfillmentIntent // ignore: cast_nullable_to_non_nullable
+as FulfillmentMode?,origin: freezed == origin ? _self.origin : origin // ignore: cast_nullable_to_non_nullable
+as SaleOrigin?,promiseDate: freezed == promiseDate ? _self.promiseDate : promiseDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as SaleStatus,lines: null == lines ? _self.lines : lines // ignore: cast_nullable_to_non_nullable
+as List<SaleLine>,subtotal: null == subtotal ? _self.subtotal : subtotal // ignore: cast_nullable_to_non_nullable
+as String,taxTotal: null == taxTotal ? _self.taxTotal : taxTotal // ignore: cast_nullable_to_non_nullable
+as String,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
+as String,balance: freezed == balance ? _self.balance : balance // ignore: cast_nullable_to_non_nullable
+as String?,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as DateTime,dueDate: null == dueDate ? _self.dueDate : dueDate // ignore: cast_nullable_to_non_nullable
+as DateTime,contact: freezed == contact ? _self.contact : contact // ignore: cast_nullable_to_non_nullable
+as int?,recipient: freezed == recipient ? _self.recipient : recipient // ignore: cast_nullable_to_non_nullable
+as String?,recipientName: freezed == recipientName ? _self.recipientName : recipientName // ignore: cast_nullable_to_non_nullable
+as String?,priority: freezed == priority ? _self.priority : priority // ignore: cast_nullable_to_non_nullable
+as Priority?,comment: freezed == comment ? _self.comment : comment // ignore: cast_nullable_to_non_nullable
+as String?,hasExpired: null == hasExpired ? _self.hasExpired : hasExpired // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
 }
 
-/// @nodoc
-abstract class _$$SaleImplCopyWith<$Res> implements $SaleCopyWith<$Res> {
-  factory _$$SaleImplCopyWith(
-    _$SaleImpl value,
-    $Res Function(_$SaleImpl) then,
-  ) = __$$SaleImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    int id,
-    int? serial,
-    int facility,
-    int? pointSale,
-    int salesperson,
-    int customer,
-    String? customerName,
-    PaymentTerms paymentTerms,
-    Currency currency,
-    String exchangeRate,
-    int? shipTo,
-    FulfillmentMode? fulfillmentIntent,
-    SaleOrigin? origin,
-    DateTime? promiseDate,
-    SaleStatus status,
-    List<SaleLine> lines,
-    String subtotal,
-    String taxTotal,
-    String total,
-    String? balance,
-    DateTime date,
-    DateTime dueDate,
-    int? contact,
-    String? recipient,
-    String? recipientName,
-    Priority? priority,
-    String? comment,
-    bool hasExpired,
-  });
 }
 
-/// @nodoc
-class __$$SaleImplCopyWithImpl<$Res>
-    extends _$SaleCopyWithImpl<$Res, _$SaleImpl>
-    implements _$$SaleImplCopyWith<$Res> {
-  __$$SaleImplCopyWithImpl(_$SaleImpl _value, $Res Function(_$SaleImpl) _then)
-    : super(_value, _then);
 
-  /// Create a copy of Sale
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? id = null,
-    Object? serial = freezed,
-    Object? facility = null,
-    Object? pointSale = freezed,
-    Object? salesperson = null,
-    Object? customer = null,
-    Object? customerName = freezed,
-    Object? paymentTerms = null,
-    Object? currency = null,
-    Object? exchangeRate = null,
-    Object? shipTo = freezed,
-    Object? fulfillmentIntent = freezed,
-    Object? origin = freezed,
-    Object? promiseDate = freezed,
-    Object? status = null,
-    Object? lines = null,
-    Object? subtotal = null,
-    Object? taxTotal = null,
-    Object? total = null,
-    Object? balance = freezed,
-    Object? date = null,
-    Object? dueDate = null,
-    Object? contact = freezed,
-    Object? recipient = freezed,
-    Object? recipientName = freezed,
-    Object? priority = freezed,
-    Object? comment = freezed,
-    Object? hasExpired = null,
-  }) {
-    return _then(
-      _$SaleImpl(
-        id: null == id
-            ? _value.id
-            : id // ignore: cast_nullable_to_non_nullable
-                  as int,
-        serial: freezed == serial
-            ? _value.serial
-            : serial // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        facility: null == facility
-            ? _value.facility
-            : facility // ignore: cast_nullable_to_non_nullable
-                  as int,
-        pointSale: freezed == pointSale
-            ? _value.pointSale
-            : pointSale // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        salesperson: null == salesperson
-            ? _value.salesperson
-            : salesperson // ignore: cast_nullable_to_non_nullable
-                  as int,
-        customer: null == customer
-            ? _value.customer
-            : customer // ignore: cast_nullable_to_non_nullable
-                  as int,
-        customerName: freezed == customerName
-            ? _value.customerName
-            : customerName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        paymentTerms: null == paymentTerms
-            ? _value.paymentTerms
-            : paymentTerms // ignore: cast_nullable_to_non_nullable
-                  as PaymentTerms,
-        currency: null == currency
-            ? _value.currency
-            : currency // ignore: cast_nullable_to_non_nullable
-                  as Currency,
-        exchangeRate: null == exchangeRate
-            ? _value.exchangeRate
-            : exchangeRate // ignore: cast_nullable_to_non_nullable
-                  as String,
-        shipTo: freezed == shipTo
-            ? _value.shipTo
-            : shipTo // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        fulfillmentIntent: freezed == fulfillmentIntent
-            ? _value.fulfillmentIntent
-            : fulfillmentIntent // ignore: cast_nullable_to_non_nullable
-                  as FulfillmentMode?,
-        origin: freezed == origin
-            ? _value.origin
-            : origin // ignore: cast_nullable_to_non_nullable
-                  as SaleOrigin?,
-        promiseDate: freezed == promiseDate
-            ? _value.promiseDate
-            : promiseDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime?,
-        status: null == status
-            ? _value.status
-            : status // ignore: cast_nullable_to_non_nullable
-                  as SaleStatus,
-        lines: null == lines
-            ? _value._lines
-            : lines // ignore: cast_nullable_to_non_nullable
-                  as List<SaleLine>,
-        subtotal: null == subtotal
-            ? _value.subtotal
-            : subtotal // ignore: cast_nullable_to_non_nullable
-                  as String,
-        taxTotal: null == taxTotal
-            ? _value.taxTotal
-            : taxTotal // ignore: cast_nullable_to_non_nullable
-                  as String,
-        total: null == total
-            ? _value.total
-            : total // ignore: cast_nullable_to_non_nullable
-                  as String,
-        balance: freezed == balance
-            ? _value.balance
-            : balance // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        date: null == date
-            ? _value.date
-            : date // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        dueDate: null == dueDate
-            ? _value.dueDate
-            : dueDate // ignore: cast_nullable_to_non_nullable
-                  as DateTime,
-        contact: freezed == contact
-            ? _value.contact
-            : contact // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        recipient: freezed == recipient
-            ? _value.recipient
-            : recipient // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        recipientName: freezed == recipientName
-            ? _value.recipientName
-            : recipientName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        priority: freezed == priority
-            ? _value.priority
-            : priority // ignore: cast_nullable_to_non_nullable
-                  as Priority?,
-        comment: freezed == comment
-            ? _value.comment
-            : comment // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        hasExpired: null == hasExpired
-            ? _value.hasExpired
-            : hasExpired // ignore: cast_nullable_to_non_nullable
-                  as bool,
-      ),
-    );
-  }
+/// Adds pattern-matching-related methods to [Sale].
+extension SalePatterns on Sale {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _Sale value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _Sale() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _Sale value)  $default,){
+final _that = this;
+switch (_that) {
+case _Sale():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _Sale value)?  $default,){
+final _that = this;
+switch (_that) {
+case _Sale() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int? serial,  int facility,  int? pointSale,  int salesperson,  int customer,  String? customerName,  PaymentTerms paymentTerms,  Currency currency,  String exchangeRate,  int? shipTo,  FulfillmentMode? fulfillmentIntent,  SaleOrigin? origin,  DateTime? promiseDate,  SaleStatus status,  List<SaleLine> lines,  String subtotal,  String taxTotal,  String total,  String? balance,  DateTime date,  DateTime dueDate,  int? contact,  String? recipient,  String? recipientName,  Priority? priority,  String? comment,  bool hasExpired)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _Sale() when $default != null:
+return $default(_that.id,_that.serial,_that.facility,_that.pointSale,_that.salesperson,_that.customer,_that.customerName,_that.paymentTerms,_that.currency,_that.exchangeRate,_that.shipTo,_that.fulfillmentIntent,_that.origin,_that.promiseDate,_that.status,_that.lines,_that.subtotal,_that.taxTotal,_that.total,_that.balance,_that.date,_that.dueDate,_that.contact,_that.recipient,_that.recipientName,_that.priority,_that.comment,_that.hasExpired);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int? serial,  int facility,  int? pointSale,  int salesperson,  int customer,  String? customerName,  PaymentTerms paymentTerms,  Currency currency,  String exchangeRate,  int? shipTo,  FulfillmentMode? fulfillmentIntent,  SaleOrigin? origin,  DateTime? promiseDate,  SaleStatus status,  List<SaleLine> lines,  String subtotal,  String taxTotal,  String total,  String? balance,  DateTime date,  DateTime dueDate,  int? contact,  String? recipient,  String? recipientName,  Priority? priority,  String? comment,  bool hasExpired)  $default,) {final _that = this;
+switch (_that) {
+case _Sale():
+return $default(_that.id,_that.serial,_that.facility,_that.pointSale,_that.salesperson,_that.customer,_that.customerName,_that.paymentTerms,_that.currency,_that.exchangeRate,_that.shipTo,_that.fulfillmentIntent,_that.origin,_that.promiseDate,_that.status,_that.lines,_that.subtotal,_that.taxTotal,_that.total,_that.balance,_that.date,_that.dueDate,_that.contact,_that.recipient,_that.recipientName,_that.priority,_that.comment,_that.hasExpired);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int? serial,  int facility,  int? pointSale,  int salesperson,  int customer,  String? customerName,  PaymentTerms paymentTerms,  Currency currency,  String exchangeRate,  int? shipTo,  FulfillmentMode? fulfillmentIntent,  SaleOrigin? origin,  DateTime? promiseDate,  SaleStatus status,  List<SaleLine> lines,  String subtotal,  String taxTotal,  String total,  String? balance,  DateTime date,  DateTime dueDate,  int? contact,  String? recipient,  String? recipientName,  Priority? priority,  String? comment,  bool hasExpired)?  $default,) {final _that = this;
+switch (_that) {
+case _Sale() when $default != null:
+return $default(_that.id,_that.serial,_that.facility,_that.pointSale,_that.salesperson,_that.customer,_that.customerName,_that.paymentTerms,_that.currency,_that.exchangeRate,_that.shipTo,_that.fulfillmentIntent,_that.origin,_that.promiseDate,_that.status,_that.lines,_that.subtotal,_that.taxTotal,_that.total,_that.balance,_that.date,_that.dueDate,_that.contact,_that.recipient,_that.recipientName,_that.priority,_that.comment,_that.hasExpired);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
 
-class _$SaleImpl extends _Sale {
-  const _$SaleImpl({
-    required this.id,
-    this.serial,
-    required this.facility,
-    this.pointSale,
-    required this.salesperson,
-    required this.customer,
-    this.customerName,
-    required this.paymentTerms,
-    required this.currency,
-    required this.exchangeRate,
-    this.shipTo,
-    this.fulfillmentIntent,
-    this.origin,
-    this.promiseDate,
-    required this.status,
-    final List<SaleLine> lines = const <SaleLine>[],
-    required this.subtotal,
-    required this.taxTotal,
-    required this.total,
-    this.balance,
-    required this.date,
-    required this.dueDate,
-    this.contact,
-    this.recipient,
-    this.recipientName,
-    this.priority,
-    this.comment,
-    this.hasExpired = false,
-  }) : _lines = lines,
-       super._();
 
-  @override
-  final int id;
-  @override
-  final int? serial;
-  @override
-  final int facility;
-  // Nullable since spec 040: a quote is raised by a person, not a
-  // register, and has no point of sale at all. `null` here means "not a
-  // register document" — `capture_step.dart`'s own default-warehouse
-  // resolution already treats it that way (`sale?.pointSale ?? ...`), so
-  // widening this cost no reader outside spec 040's own three sites
-  // (data-model.md §1).
-  @override
-  final int? pointSale;
-  @override
-  final int salesperson;
-  @override
-  final int customer;
-  @override
-  final String? customerName;
-  @override
-  final PaymentTerms paymentTerms;
-  @override
-  final Currency currency;
-  @override
-  final String exchangeRate;
-  @override
-  final int? shipTo;
-  // `null` for a sale predating mbe-api#171 or raised by a client that
-  // never asked — "not recorded", not "delivery" (FulfillmentMode.fromApi
-  // keeps that distinction rather than guessing). The capture step writes
-  // this via `updateHeader` once the cashier picks a mode.
-  @override
-  final FulfillmentMode? fulfillmentIntent;
-  // Which workflow raised this order (mbe-api#209, spec 039 FR-051).
-  // `null` is "never recorded" — every order predating mbe-api migration
-  // 020 — and is **not** a synonym for either member: nothing infers it
-  // (spec 039 A9). Written once, at create, by whichever `SaleEditor`
-  // opened the order; `SalesOrderUpdate` has no such field, so it cannot
-  // be edited afterwards.
-  @override
-  final SaleOrigin? origin;
-  // Nullable since spec 040: a quote promises nothing — delivery is
-  // planned only on the order a conversion produces (data-model.md §1).
-  @override
-  final DateTime? promiseDate;
-  @override
-  final SaleStatus status;
-  final List<SaleLine> _lines;
-  @override
-  @JsonKey()
-  List<SaleLine> get lines {
-    if (_lines is EqualUnmodifiableListView) return _lines;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_lines);
-  }
+class _Sale extends Sale {
+  const _Sale({required this.id, this.serial, required this.facility, this.pointSale, required this.salesperson, required this.customer, this.customerName, required this.paymentTerms, required this.currency, required this.exchangeRate, this.shipTo, this.fulfillmentIntent, this.origin, this.promiseDate, required this.status,  List<SaleLine> lines = const <SaleLine>[], required this.subtotal, required this.taxTotal, required this.total, this.balance, required this.date, required this.dueDate, this.contact, this.recipient, this.recipientName, this.priority, this.comment, this.hasExpired = false}): _lines = lines,super._();
+  
 
-  @override
-  final String subtotal;
-  @override
-  final String taxTotal;
-  @override
-  final String total;
-  // Nullable since spec 040: a quote is never payable. Read
-  // [balanceOrZero] rather than this field directly outside the payment
-  // surface, so "an order always has a balance; only a quote does not" is
-  // asserted once here instead of at every call site (data-model.md §1).
-  @override
-  final String? balance;
-  // Back-office order screen fields (spec 029) — all already on the wire in
-  // `SalesOrderResponse`, simply never mapped until this feature needed them.
-  // POS never reads any of these; adding them is additive.
-  @override
-  final DateTime date;
-  // Display-only (FR-018): derived server-side from terms + customer credit
-  // days (`derive_due_date`) and absent from `SalesOrderUpdate` — never sent.
-  @override
-  final DateTime dueDate;
-  @override
-  final int? contact;
-  @override
-  final String? recipient;
-  @override
-  final String? recipientName;
-  // Nullable since spec 040: priority is an order-only concept a quote has
-  // no wire field for (data-model.md §1).
-  @override
-  final Priority? priority;
-  @override
-  final String? comment;
-  // Quote-only (spec 040 data-model.md §1): whether the quote's due date
-  // has passed. Orthogonal to `status` — a quote can be both `completed`
-  // and expired. Always `false` for an order, which has no such field.
-  @override
-  @JsonKey()
-  final bool hasExpired;
+@override final  int id;
+@override final  int? serial;
+@override final  int facility;
+@override final  int? pointSale;
+@override final  int salesperson;
+@override final  int customer;
+@override final  String? customerName;
+@override final  PaymentTerms paymentTerms;
+@override final  Currency currency;
+@override final  String exchangeRate;
+@override final  int? shipTo;
+@override final  FulfillmentMode? fulfillmentIntent;
+@override final  SaleOrigin? origin;
+@override final  DateTime? promiseDate;
+@override final  SaleStatus status;
+ final  List<SaleLine> _lines;
+@override@JsonKey() List<SaleLine> get lines {
+  if (_lines is EqualUnmodifiableListView) return _lines;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_lines);
+}
 
-  @override
-  String toString() {
+@override final  String subtotal;
+@override final  String taxTotal;
+@override final  String total;
+@override final  String? balance;
+@override final  DateTime date;
+@override final  DateTime dueDate;
+@override final  int? contact;
+@override final  String? recipient;
+@override final  String? recipientName;
+@override final  Priority? priority;
+@override final  String? comment;
+@override@JsonKey() final  bool hasExpired;
+
+/// Create a copy of Sale
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SaleCopyWith<_Sale> get copyWith => __$SaleCopyWithImpl<_Sale>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _Sale&&(identical(other.id, id) || other.id == id)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.facility, facility) || other.facility == facility)&&(identical(other.pointSale, pointSale) || other.pointSale == pointSale)&&(identical(other.salesperson, salesperson) || other.salesperson == salesperson)&&(identical(other.customer, customer) || other.customer == customer)&&(identical(other.customerName, customerName) || other.customerName == customerName)&&(identical(other.paymentTerms, paymentTerms) || other.paymentTerms == paymentTerms)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.exchangeRate, exchangeRate) || other.exchangeRate == exchangeRate)&&(identical(other.shipTo, shipTo) || other.shipTo == shipTo)&&(identical(other.fulfillmentIntent, fulfillmentIntent) || other.fulfillmentIntent == fulfillmentIntent)&&(identical(other.origin, origin) || other.origin == origin)&&(identical(other.promiseDate, promiseDate) || other.promiseDate == promiseDate)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.lines, _lines)&&(identical(other.subtotal, subtotal) || other.subtotal == subtotal)&&(identical(other.taxTotal, taxTotal) || other.taxTotal == taxTotal)&&(identical(other.total, total) || other.total == total)&&(identical(other.balance, balance) || other.balance == balance)&&(identical(other.date, date) || other.date == date)&&(identical(other.dueDate, dueDate) || other.dueDate == dueDate)&&(identical(other.contact, contact) || other.contact == contact)&&(identical(other.recipient, recipient) || other.recipient == recipient)&&(identical(other.recipientName, recipientName) || other.recipientName == recipientName)&&(identical(other.priority, priority) || other.priority == priority)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.hasExpired, hasExpired) || other.hasExpired == hasExpired));
+}
+
+
+@override
+int get hashCode {
+    return Object.hashAll([runtimeType,id,serial,facility,pointSale,salesperson,customer,customerName,paymentTerms,currency,exchangeRate,shipTo,fulfillmentIntent,origin,promiseDate,status,const DeepCollectionEquality().hash(_lines),subtotal,taxTotal,total,balance,date,dueDate,contact,recipient,recipientName,priority,comment,hasExpired]);
+}
+
+@override
+String toString() {
     return 'Sale(id: $id, serial: $serial, facility: $facility, pointSale: $pointSale, salesperson: $salesperson, customer: $customer, customerName: $customerName, paymentTerms: $paymentTerms, currency: $currency, exchangeRate: $exchangeRate, shipTo: $shipTo, fulfillmentIntent: $fulfillmentIntent, origin: $origin, promiseDate: $promiseDate, status: $status, lines: $lines, subtotal: $subtotal, taxTotal: $taxTotal, total: $total, balance: $balance, date: $date, dueDate: $dueDate, contact: $contact, recipient: $recipient, recipientName: $recipientName, priority: $priority, comment: $comment, hasExpired: $hasExpired)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$SaleImpl &&
-            (identical(other.id, id) || other.id == id) &&
-            (identical(other.serial, serial) || other.serial == serial) &&
-            (identical(other.facility, facility) ||
-                other.facility == facility) &&
-            (identical(other.pointSale, pointSale) ||
-                other.pointSale == pointSale) &&
-            (identical(other.salesperson, salesperson) ||
-                other.salesperson == salesperson) &&
-            (identical(other.customer, customer) ||
-                other.customer == customer) &&
-            (identical(other.customerName, customerName) ||
-                other.customerName == customerName) &&
-            (identical(other.paymentTerms, paymentTerms) ||
-                other.paymentTerms == paymentTerms) &&
-            (identical(other.currency, currency) ||
-                other.currency == currency) &&
-            (identical(other.exchangeRate, exchangeRate) ||
-                other.exchangeRate == exchangeRate) &&
-            (identical(other.shipTo, shipTo) || other.shipTo == shipTo) &&
-            (identical(other.fulfillmentIntent, fulfillmentIntent) ||
-                other.fulfillmentIntent == fulfillmentIntent) &&
-            (identical(other.origin, origin) || other.origin == origin) &&
-            (identical(other.promiseDate, promiseDate) ||
-                other.promiseDate == promiseDate) &&
-            (identical(other.status, status) || other.status == status) &&
-            const DeepCollectionEquality().equals(other._lines, _lines) &&
-            (identical(other.subtotal, subtotal) ||
-                other.subtotal == subtotal) &&
-            (identical(other.taxTotal, taxTotal) ||
-                other.taxTotal == taxTotal) &&
-            (identical(other.total, total) || other.total == total) &&
-            (identical(other.balance, balance) || other.balance == balance) &&
-            (identical(other.date, date) || other.date == date) &&
-            (identical(other.dueDate, dueDate) || other.dueDate == dueDate) &&
-            (identical(other.contact, contact) || other.contact == contact) &&
-            (identical(other.recipient, recipient) ||
-                other.recipient == recipient) &&
-            (identical(other.recipientName, recipientName) ||
-                other.recipientName == recipientName) &&
-            (identical(other.priority, priority) ||
-                other.priority == priority) &&
-            (identical(other.comment, comment) || other.comment == comment) &&
-            (identical(other.hasExpired, hasExpired) ||
-                other.hasExpired == hasExpired));
-  }
-
-  @override
-  int get hashCode => Object.hashAll([
-    runtimeType,
-    id,
-    serial,
-    facility,
-    pointSale,
-    salesperson,
-    customer,
-    customerName,
-    paymentTerms,
-    currency,
-    exchangeRate,
-    shipTo,
-    fulfillmentIntent,
-    origin,
-    promiseDate,
-    status,
-    const DeepCollectionEquality().hash(_lines),
-    subtotal,
-    taxTotal,
-    total,
-    balance,
-    date,
-    dueDate,
-    contact,
-    recipient,
-    recipientName,
-    priority,
-    comment,
-    hasExpired,
-  ]);
-
-  /// Create a copy of Sale
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$SaleImplCopyWith<_$SaleImpl> get copyWith =>
-      __$$SaleImplCopyWithImpl<_$SaleImpl>(this, _$identity);
 }
 
-abstract class _Sale extends Sale {
-  const factory _Sale({
-    required final int id,
-    final int? serial,
-    required final int facility,
-    final int? pointSale,
-    required final int salesperson,
-    required final int customer,
-    final String? customerName,
-    required final PaymentTerms paymentTerms,
-    required final Currency currency,
-    required final String exchangeRate,
-    final int? shipTo,
-    final FulfillmentMode? fulfillmentIntent,
-    final SaleOrigin? origin,
-    final DateTime? promiseDate,
-    required final SaleStatus status,
-    final List<SaleLine> lines,
-    required final String subtotal,
-    required final String taxTotal,
-    required final String total,
-    final String? balance,
-    required final DateTime date,
-    required final DateTime dueDate,
-    final int? contact,
-    final String? recipient,
-    final String? recipientName,
-    final Priority? priority,
-    final String? comment,
-    final bool hasExpired,
-  }) = _$SaleImpl;
-  const _Sale._() : super._();
 
-  @override
-  int get id;
-  @override
-  int? get serial;
-  @override
-  int get facility; // Nullable since spec 040: a quote is raised by a person, not a
-  // register, and has no point of sale at all. `null` here means "not a
-  // register document" — `capture_step.dart`'s own default-warehouse
-  // resolution already treats it that way (`sale?.pointSale ?? ...`), so
-  // widening this cost no reader outside spec 040's own three sites
-  // (data-model.md §1).
-  @override
-  int? get pointSale;
-  @override
-  int get salesperson;
-  @override
-  int get customer;
-  @override
-  String? get customerName;
-  @override
-  PaymentTerms get paymentTerms;
-  @override
-  Currency get currency;
-  @override
-  String get exchangeRate;
-  @override
-  int? get shipTo; // `null` for a sale predating mbe-api#171 or raised by a client that
-  // never asked — "not recorded", not "delivery" (FulfillmentMode.fromApi
-  // keeps that distinction rather than guessing). The capture step writes
-  // this via `updateHeader` once the cashier picks a mode.
-  @override
-  FulfillmentMode? get fulfillmentIntent; // Which workflow raised this order (mbe-api#209, spec 039 FR-051).
-  // `null` is "never recorded" — every order predating mbe-api migration
-  // 020 — and is **not** a synonym for either member: nothing infers it
-  // (spec 039 A9). Written once, at create, by whichever `SaleEditor`
-  // opened the order; `SalesOrderUpdate` has no such field, so it cannot
-  // be edited afterwards.
-  @override
-  SaleOrigin? get origin; // Nullable since spec 040: a quote promises nothing — delivery is
-  // planned only on the order a conversion produces (data-model.md §1).
-  @override
-  DateTime? get promiseDate;
-  @override
-  SaleStatus get status;
-  @override
-  List<SaleLine> get lines;
-  @override
-  String get subtotal;
-  @override
-  String get taxTotal;
-  @override
-  String get total; // Nullable since spec 040: a quote is never payable. Read
-  // [balanceOrZero] rather than this field directly outside the payment
-  // surface, so "an order always has a balance; only a quote does not" is
-  // asserted once here instead of at every call site (data-model.md §1).
-  @override
-  String? get balance; // Back-office order screen fields (spec 029) — all already on the wire in
-  // `SalesOrderResponse`, simply never mapped until this feature needed them.
-  // POS never reads any of these; adding them is additive.
-  @override
-  DateTime get date; // Display-only (FR-018): derived server-side from terms + customer credit
-  // days (`derive_due_date`) and absent from `SalesOrderUpdate` — never sent.
-  @override
-  DateTime get dueDate;
-  @override
-  int? get contact;
-  @override
-  String? get recipient;
-  @override
-  String? get recipientName; // Nullable since spec 040: priority is an order-only concept a quote has
-  // no wire field for (data-model.md §1).
-  @override
-  Priority? get priority;
-  @override
-  String? get comment; // Quote-only (spec 040 data-model.md §1): whether the quote's due date
-  // has passed. Orthogonal to `status` — a quote can be both `completed`
-  // and expired. Always `false` for an order, which has no such field.
-  @override
-  bool get hasExpired;
-
-  /// Create a copy of Sale
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$SaleImplCopyWith<_$SaleImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+abstract mixin class _$SaleCopyWith<$Res> implements $SaleCopyWith<$Res> {
+  factory _$SaleCopyWith(_Sale value, $Res Function(_Sale) _then) = __$SaleCopyWithImpl;
+@override @useResult
+$Res call({
+ int id, int? serial, int facility, int? pointSale, int salesperson, int customer, String? customerName, PaymentTerms paymentTerms, Currency currency, String exchangeRate, int? shipTo, FulfillmentMode? fulfillmentIntent, SaleOrigin? origin, DateTime? promiseDate, SaleStatus status, List<SaleLine> lines, String subtotal, String taxTotal, String total, String? balance, DateTime date, DateTime dueDate, int? contact, String? recipient, String? recipientName, Priority? priority, String? comment, bool hasExpired
+});
+
+
+
+
+}
+/// @nodoc
+class __$SaleCopyWithImpl<$Res>
+    implements _$SaleCopyWith<$Res> {
+  __$SaleCopyWithImpl(this._self, this._then);
+
+  final _Sale _self;
+  final $Res Function(_Sale) _then;
+
+/// Create a copy of Sale
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? serial = freezed,Object? facility = null,Object? pointSale = freezed,Object? salesperson = null,Object? customer = null,Object? customerName = freezed,Object? paymentTerms = null,Object? currency = null,Object? exchangeRate = null,Object? shipTo = freezed,Object? fulfillmentIntent = freezed,Object? origin = freezed,Object? promiseDate = freezed,Object? status = null,Object? lines = null,Object? subtotal = null,Object? taxTotal = null,Object? total = null,Object? balance = freezed,Object? date = null,Object? dueDate = null,Object? contact = freezed,Object? recipient = freezed,Object? recipientName = freezed,Object? priority = freezed,Object? comment = freezed,Object? hasExpired = null,}) {
+  return _then(_Sale(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
+as int?,facility: null == facility ? _self.facility : facility // ignore: cast_nullable_to_non_nullable
+as int,pointSale: freezed == pointSale ? _self.pointSale : pointSale // ignore: cast_nullable_to_non_nullable
+as int?,salesperson: null == salesperson ? _self.salesperson : salesperson // ignore: cast_nullable_to_non_nullable
+as int,customer: null == customer ? _self.customer : customer // ignore: cast_nullable_to_non_nullable
+as int,customerName: freezed == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
+as String?,paymentTerms: null == paymentTerms ? _self.paymentTerms : paymentTerms // ignore: cast_nullable_to_non_nullable
+as PaymentTerms,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
+as Currency,exchangeRate: null == exchangeRate ? _self.exchangeRate : exchangeRate // ignore: cast_nullable_to_non_nullable
+as String,shipTo: freezed == shipTo ? _self.shipTo : shipTo // ignore: cast_nullable_to_non_nullable
+as int?,fulfillmentIntent: freezed == fulfillmentIntent ? _self.fulfillmentIntent : fulfillmentIntent // ignore: cast_nullable_to_non_nullable
+as FulfillmentMode?,origin: freezed == origin ? _self.origin : origin // ignore: cast_nullable_to_non_nullable
+as SaleOrigin?,promiseDate: freezed == promiseDate ? _self.promiseDate : promiseDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as SaleStatus,lines: null == lines ? _self._lines : lines // ignore: cast_nullable_to_non_nullable
+as List<SaleLine>,subtotal: null == subtotal ? _self.subtotal : subtotal // ignore: cast_nullable_to_non_nullable
+as String,taxTotal: null == taxTotal ? _self.taxTotal : taxTotal // ignore: cast_nullable_to_non_nullable
+as String,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
+as String,balance: freezed == balance ? _self.balance : balance // ignore: cast_nullable_to_non_nullable
+as String?,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as DateTime,dueDate: null == dueDate ? _self.dueDate : dueDate // ignore: cast_nullable_to_non_nullable
+as DateTime,contact: freezed == contact ? _self.contact : contact // ignore: cast_nullable_to_non_nullable
+as int?,recipient: freezed == recipient ? _self.recipient : recipient // ignore: cast_nullable_to_non_nullable
+as String?,recipientName: freezed == recipientName ? _self.recipientName : recipientName // ignore: cast_nullable_to_non_nullable
+as String?,priority: freezed == priority ? _self.priority : priority // ignore: cast_nullable_to_non_nullable
+as Priority?,comment: freezed == comment ? _self.comment : comment // ignore: cast_nullable_to_non_nullable
+as String?,hasExpired: null == hasExpired ? _self.hasExpired : hasExpired // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+// dart format on

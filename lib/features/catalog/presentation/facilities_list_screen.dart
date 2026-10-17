@@ -177,12 +177,12 @@ class _FacilitiesListScreenState extends ConsumerState<FacilitiesListScreen> {
             ),
             actions: [
               _ExpandAllButton(
-                facilities: pageAsync.valueOrNull?.items ?? const [],
+                facilities: pageAsync.value?.items ?? const [],
                 allExpanded: _allExpanded(
-                  pageAsync.valueOrNull?.items ?? const [],
+                  pageAsync.value?.items ?? const [],
                 ),
                 onPressed: () =>
-                    _toggleAll(pageAsync.valueOrNull?.items ?? const []),
+                    _toggleAll(pageAsync.value?.items ?? const []),
               ),
               if (!isCompact && canCreateFacility)
                 FilledButton.icon(

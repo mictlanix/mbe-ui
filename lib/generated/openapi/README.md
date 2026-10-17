@@ -167,6 +167,10 @@ Class | Method | HTTP request | Description
 [*FacilitiesApi*](doc/FacilitiesApi.md) | [**listFacilitiesApiV1FacilitiesGet**](doc/FacilitiesApi.md#listfacilitiesapiv1facilitiesget) | **GET** /api/v1/facilities | List Facilities
 [*FacilitiesApi*](doc/FacilitiesApi.md) | [**updateFacilityApiV1FacilitiesFacilityIdPut**](doc/FacilitiesApi.md#updatefacilityapiv1facilitiesfacilityidput) | **PUT** /api/v1/facilities/{facility_id} | Update Facility
 [*FacilitiesApi*](doc/FacilitiesApi.md) | [**uploadFacilityLogoApiV1FacilitiesFacilityIdLogoPost**](doc/FacilitiesApi.md#uploadfacilitylogoapiv1facilitiesfacilityidlogopost) | **POST** /api/v1/facilities/{facility_id}/logo | Upload Facility Logo
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**downloadFiscalDocumentXmlApiV1FiscalDocumentsFiscalDocumentIdXmlGet**](doc/FiscalDocumentsApi.md#downloadfiscaldocumentxmlapiv1fiscaldocumentsfiscaldocumentidxmlget) | **GET** /api/v1/fiscal-documents/{fiscal_document_id}/xml | Download Fiscal Document Xml
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**getFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdGet**](doc/FiscalDocumentsApi.md#getfiscaldocumentapiv1fiscaldocumentsfiscaldocumentidget) | **GET** /api/v1/fiscal-documents/{fiscal_document_id} | Get Fiscal Document
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**listFiscalDocumentsApiV1FiscalDocumentsGet**](doc/FiscalDocumentsApi.md#listfiscaldocumentsapiv1fiscaldocumentsget) | **GET** /api/v1/fiscal-documents | List Fiscal Documents
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**printFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdPdfGet**](doc/FiscalDocumentsApi.md#printfiscaldocumentapiv1fiscaldocumentsfiscaldocumentidpdfget) | **GET** /api/v1/fiscal-documents/{fiscal_document_id}/pdf | Print Fiscal Document
 [*HealthApi*](doc/HealthApi.md) | [**healthCheckApiV1HealthGet**](doc/HealthApi.md#healthcheckapiv1healthget) | **GET** /api/v1/health | Health Check
 [*LabelsApi*](doc/LabelsApi.md) | [**createLabelApiV1LabelsPost**](doc/LabelsApi.md#createlabelapiv1labelspost) | **POST** /api/v1/labels | Create Label
 [*LabelsApi*](doc/LabelsApi.md) | [**deleteLabelApiV1LabelsLabelIdDelete**](doc/LabelsApi.md#deletelabelapiv1labelslabeliddelete) | **DELETE** /api/v1/labels/{label_id} | Delete Label
@@ -386,6 +390,9 @@ Class | Method | HTTP request | Description
  - [FacilityType](doc/FacilityType.md)
  - [FacilityUpdate](doc/FacilityUpdate.md)
  - [FiscalCertificationProvider](doc/FiscalCertificationProvider.md)
+ - [FiscalDocumentLine](doc/FiscalDocumentLine.md)
+ - [FiscalDocumentResponse](doc/FiscalDocumentResponse.md)
+ - [FiscalDocumentSummary](doc/FiscalDocumentSummary.md)
  - [FulfillmentType](doc/FulfillmentType.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [HighProfit](doc/HighProfit.md)
@@ -414,6 +421,7 @@ Class | Method | HTTP request | Description
  - [ListResponseExchangeRateResponse](doc/ListResponseExchangeRateResponse.md)
  - [ListResponseExpenseResponse](doc/ListResponseExpenseResponse.md)
  - [ListResponseFacilityResponse](doc/ListResponseFacilityResponse.md)
+ - [ListResponseFiscalDocumentSummary](doc/ListResponseFiscalDocumentSummary.md)
  - [ListResponseItinerarySummary](doc/ListResponseItinerarySummary.md)
  - [ListResponseLabelResponse](doc/ListResponseLabelResponse.md)
  - [ListResponseOutstandingOrderResponse](doc/ListResponseOutstandingOrderResponse.md)

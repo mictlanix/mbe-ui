@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/design/design_theme_extensions.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
@@ -19,6 +20,7 @@ import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
+import 'package:mbe_ui/core/widgets/product_photo_preview.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/supplier_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/label_item.dart';
@@ -127,8 +129,30 @@ class ProductsListScreen extends ConsumerWidget {
               columns: [
                 DataTableColumn(
                   label: '',
-                  fixedWidth: 120,
-                  cellBuilder: (context, p) => ProductPhoto(photoUrl: p.photo),
+                  fixedWidth: _photoMetrics(context).columnWidth,
+                  cellBuilder: (context, p) {
+                    final metrics = _photoMetrics(context);
+                    final photo = p.photo;
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                        vertical: metrics.verticalInset,
+                        horizontal: metrics.horizontalInset,
+                      ),
+                      child: Center(
+                        child: ProductPhoto(
+                          photoUrl: photo,
+                          size: metrics.size,
+                          onTap: photo == null
+                              ? null
+                              : () => showProductPhotoPreview(
+                                  context,
+                                  photoUrl: photo,
+                                  title: p.name,
+                                ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
                 DataTableColumn(
                   label: l10n.columnCode,
@@ -243,17 +267,17 @@ class _ProductFiltersPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final filter = ProductFilter.fromQuery(query);
     final l10n = AppLocalizations.of(context)!;
-    final allLabels = ref.watch(allLabelsProvider).valueOrNull ?? <LabelItem>[];
+    final allLabels = ref.watch(allLabelsProvider).value ?? <LabelItem>[];
     // `null` while loading/errored => every chip stays enabled (fail open,
     // spec 009 FR-010) rather than blocking the user on a facet failure.
     final labelCounts = ref
         .watch(productLabelFacetsProvider(filter))
-        .valueOrNull;
+        .value;
     final supplierRepo = ref.read(supplierRepositoryProvider);
     final supplierDisplayText = filter.supplier != null
         ? ref
                   .watch(supplierDisplayNameProvider(filter.supplier!))
-                  .valueOrNull ??
+                  .value ??
               '${filter.supplier}'
         : '';
 
@@ -404,4 +428,21 @@ class _TriStateFilterChip extends StatelessWidget {
       }),
     );
   }
+}
+
+/// Sizes of the thumbnail column, derived from the shared table row height so
+/// the photo always fits inside the row with a symmetric inset above and below
+/// (046-catalog-improvements FR-018) instead of being clipped by it.
+({double size, double verticalInset, double horizontalInset, double columnWidth})
+_photoMetrics(BuildContext context) {
+  final theme = Theme.of(context);
+  final spacing = theme.spacing;
+  final rowHeight = theme.density.tableDataRowHeight ?? 44;
+  final size = rowHeight - 2 * spacing.xxs;
+  return (
+    size: size,
+    verticalInset: spacing.xxs,
+    horizontalInset: spacing.xs,
+    columnWidth: size + 2 * spacing.xs,
+  );
 }

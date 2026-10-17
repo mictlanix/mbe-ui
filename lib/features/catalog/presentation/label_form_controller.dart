@@ -28,7 +28,7 @@ abstract final class LabelFormErrorCode {
 /// Create/edit form state for a single label. [labelId] is `null` in create
 /// mode.
 @freezed
-class LabelFormState with _$LabelFormState {
+abstract class LabelFormState with _$LabelFormState {
   const factory LabelFormState({
     int? labelId,
     @Default('') String name,

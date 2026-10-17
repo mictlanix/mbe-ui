@@ -8,6 +8,7 @@ void main() {
   Future<void> pump(WidgetTester tester, Widget child) async {
     await tester.pumpWidget(
       ProviderScope(
+        retry: (_, _) => null,
         child: MaterialApp(home: Scaffold(body: child)),
       ),
     );
@@ -120,6 +121,7 @@ void main() {
     ) async {
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           child: MaterialApp(
             theme: ThemeData(brightness: Brightness.dark),
             home: const Scaffold(body: BrandWatermark(width: 100)),
@@ -138,6 +140,7 @@ void main() {
     ) async {
       await tester.pumpWidget(
         ProviderScope(
+          retry: (_, _) => null,
           child: MaterialApp(
             theme: ThemeData(brightness: Brightness.light),
             home: const Scaffold(body: BrandWatermark(width: 100)),

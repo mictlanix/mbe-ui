@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -22,7 +21,7 @@ const _pageSize = 20;
 /// route's [ListQuery] — the URL, not a mutable notifier, is the source of
 /// truth.
 @freezed
-class UserProfileFilter with _$UserProfileFilter {
+abstract class UserProfileFilter with _$UserProfileFilter {
   const factory UserProfileFilter({
     @Default('') String search,
     EntityStatus? status,
@@ -61,7 +60,7 @@ abstract final class UserProfileFormErrorCode {
 /// both create and edit modes; local UI state, not persisted (constitution
 /// §II).
 @freezed
-class UserProfileFormState with _$UserProfileFormState {
+abstract class UserProfileFormState with _$UserProfileFormState {
   const factory UserProfileFormState({
     @Default('') String name,
     @Default('') String description,

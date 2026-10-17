@@ -65,9 +65,9 @@ class FacilityCard extends ConsumerWidget {
     final isStore = facility.type == FacilityType.store;
 
     final childrenAsync = ref.watch(
-      facilityChildrenControllerProvider(facility.facilityId, facility.type),
+      facilityChildrenControllerProvider(facility.facilityId),
     );
-    final children = childrenAsync.valueOrNull;
+    final children = childrenAsync.value;
 
     return Card(
       key: Key('facility_card_${facility.facilityId}'),
@@ -93,7 +93,6 @@ class FacilityCard extends ConsumerWidget {
                 data: (data) => _ExpandedBody(
                   facility: facility,
                   data: data,
-                  isStore: isStore,
                   warehouseActions: warehouseActions,
                   pointSaleActions: pointSaleActions,
                   cashDrawerActions: cashDrawerActions,
@@ -126,7 +125,6 @@ class FacilityCard extends ConsumerWidget {
                         onPressed: () => ref.invalidate(
                           facilityChildrenControllerProvider(
                             facility.facilityId,
-                            facility.type,
                           ),
                         ),
                         child: Text(l10n.retryButton),
@@ -236,7 +234,6 @@ class _Header extends StatelessWidget {
     );
 
     final countsRow = _CountsRow(
-      isStore: isStore,
       children: children,
       hasError: hasError,
     );
@@ -307,13 +304,8 @@ class _Header extends StatelessWidget {
 /// (contracts/ui-contracts.md §5) — a wrong count is worse than no count on
 /// a screen whose purpose is spotting misconfiguration.
 class _CountsRow extends StatelessWidget {
-  const _CountsRow({
-    required this.isStore,
-    required this.children,
-    required this.hasError,
-  });
+  const _CountsRow({required this.children, required this.hasError});
 
-  final bool isStore;
   final FacilityChildren? children;
   final bool hasError;
 
@@ -321,9 +313,6 @@ class _CountsRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
-      // Uniform 14px gap between however many badges actually render —
-      // `spacing` applies to the rendered list, so it is correct whether
-      // `isStore` contributes its two extra badges or not (spec 028 US2).
       spacing: 14,
       children: [
         _CountBadge(
@@ -332,20 +321,18 @@ class _CountsRow extends StatelessWidget {
           hasError: hasError,
           readable: children?.warehousesReadable ?? true,
         ),
-        if (isStore) ...[
-          _CountBadge(
-            icon: Icons.point_of_sale_outlined,
-            count: children?.pointSaleCount,
-            hasError: hasError,
-            readable: children?.pointsOfSaleReadable ?? true,
-          ),
-          _CountBadge(
-            icon: Icons.account_balance_wallet_outlined,
-            count: children?.cashDrawerCount,
-            hasError: hasError,
-            readable: children?.cashDrawersReadable ?? true,
-          ),
-        ],
+        _CountBadge(
+          icon: Icons.point_of_sale_outlined,
+          count: children?.pointSaleCount,
+          hasError: hasError,
+          readable: children?.pointsOfSaleReadable ?? true,
+        ),
+        _CountBadge(
+          icon: Icons.account_balance_wallet_outlined,
+          count: children?.cashDrawerCount,
+          hasError: hasError,
+          readable: children?.cashDrawersReadable ?? true,
+        ),
       ],
     );
   }
@@ -402,7 +389,6 @@ class _ExpandedBody extends StatelessWidget {
   const _ExpandedBody({
     required this.facility,
     required this.data,
-    required this.isStore,
     required this.warehouseActions,
     required this.pointSaleActions,
     required this.cashDrawerActions,
@@ -410,7 +396,6 @@ class _ExpandedBody extends StatelessWidget {
 
   final FacilityListItem facility;
   final FacilityChildren data;
-  final bool isStore;
   final FacilityChildActions warehouseActions;
   final FacilityChildActions pointSaleActions;
   final FacilityChildActions cashDrawerActions;
@@ -418,7 +403,6 @@ class _ExpandedBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
     final isCompact = LayoutBreakpoints.isCompact(context);
     final id = facility.facilityId;
 
@@ -454,61 +438,59 @@ class _ExpandedBody extends StatelessWidget {
       );
     }
 
-    if (isStore) {
-      if (data.pointsOfSaleReadable) {
-        sections.add(
-          FacilityChildSection(
-            sectionKey: Key('facility_section_points_of_sale_$id'),
-            label: l10n.pointsOfSaleMenuTitle,
-            count: data.pointSaleCount,
-            emptyMessage: l10n.noPointsOfSaleInFacility,
-            createLabel: l10n.newPointSaleInFacility,
-            onCreate: pointSaleActions.onCreate,
-            createKey: Key('facility_create_point_sale_$id'),
-            showCreateInHeader: !isCompact,
-            children: [
-              for (final pointSale in data.pointsOfSale)
-                PointSaleChildRow(
-                  key: ValueKey('point_sale_${pointSale.pointSaleId}'),
-                  pointSale: pointSale,
-                  isCrossFacility: data.isCrossFacility(pointSale),
-                  onTap: () => pointSaleActions.onView(pointSale.pointSaleId),
-                  onEdit: pointSaleActions.onEdit == null
-                      ? null
-                      : () => pointSaleActions.onEdit!(pointSale.pointSaleId),
-                ),
-            ],
-          ),
-        );
-      }
+    if (data.pointsOfSaleReadable) {
+      sections.add(
+        FacilityChildSection(
+          sectionKey: Key('facility_section_points_of_sale_$id'),
+          label: l10n.pointsOfSaleMenuTitle,
+          count: data.pointSaleCount,
+          emptyMessage: l10n.noPointsOfSaleInFacility,
+          createLabel: l10n.newPointSaleInFacility,
+          onCreate: pointSaleActions.onCreate,
+          createKey: Key('facility_create_point_sale_$id'),
+          showCreateInHeader: !isCompact,
+          children: [
+            for (final pointSale in data.pointsOfSale)
+              PointSaleChildRow(
+                key: ValueKey('point_sale_${pointSale.pointSaleId}'),
+                pointSale: pointSale,
+                isCrossFacility: data.isCrossFacility(pointSale),
+                onTap: () => pointSaleActions.onView(pointSale.pointSaleId),
+                onEdit: pointSaleActions.onEdit == null
+                    ? null
+                    : () => pointSaleActions.onEdit!(pointSale.pointSaleId),
+              ),
+          ],
+        ),
+      );
+    }
 
-      if (data.cashDrawersReadable) {
-        sections.add(
-          FacilityChildSection(
-            sectionKey: Key('facility_section_cash_drawers_$id'),
-            label: l10n.cashDrawersMenuTitle,
-            count: data.cashDrawerCount,
-            emptyMessage: l10n.noCashDrawersInFacility,
-            createLabel: l10n.newCashDrawerInFacility,
-            onCreate: cashDrawerActions.onCreate,
-            createKey: Key('facility_create_cash_drawer_$id'),
-            showCreateInHeader: !isCompact,
-            children: [
-              for (final cashDrawer in data.cashDrawers)
-                CashDrawerChildRow(
-                  key: ValueKey('cash_drawer_${cashDrawer.cashDrawerId}'),
-                  cashDrawer: cashDrawer,
-                  onTap: () =>
-                      cashDrawerActions.onView(cashDrawer.cashDrawerId),
-                  onEdit: cashDrawerActions.onEdit == null
-                      ? null
-                      : () =>
-                            cashDrawerActions.onEdit!(cashDrawer.cashDrawerId),
-                ),
-            ],
-          ),
-        );
-      }
+    if (data.cashDrawersReadable) {
+      sections.add(
+        FacilityChildSection(
+          sectionKey: Key('facility_section_cash_drawers_$id'),
+          label: l10n.cashDrawersMenuTitle,
+          count: data.cashDrawerCount,
+          emptyMessage: l10n.noCashDrawersInFacility,
+          createLabel: l10n.newCashDrawerInFacility,
+          onCreate: cashDrawerActions.onCreate,
+          createKey: Key('facility_create_cash_drawer_$id'),
+          showCreateInHeader: !isCompact,
+          children: [
+            for (final cashDrawer in data.cashDrawers)
+              CashDrawerChildRow(
+                key: ValueKey('cash_drawer_${cashDrawer.cashDrawerId}'),
+                cashDrawer: cashDrawer,
+                onTap: () =>
+                    cashDrawerActions.onView(cashDrawer.cashDrawerId),
+                onEdit: cashDrawerActions.onEdit == null
+                    ? null
+                    : () =>
+                          cashDrawerActions.onEdit!(cashDrawer.cashDrawerId),
+              ),
+          ],
+        ),
+      );
     }
 
     return Column(
@@ -518,33 +500,6 @@ class _ExpandedBody extends StatelessWidget {
           section,
           const SizedBox(height: 18),
         ],
-        if (!isStore)
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest,
-              borderRadius: theme.shapes.mdRadius,
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              spacing: 10,
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  size: 18,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                Expanded(
-                  child: Text(
-                    l10n.productionSiteChildrenNote,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         if (isCompact)
           Padding(
             padding: const EdgeInsets.only(top: 4),

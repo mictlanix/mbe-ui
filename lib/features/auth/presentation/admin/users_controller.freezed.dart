@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'users_controller.dart';
@@ -9,871 +9,670 @@ part of 'users_controller.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
 /// @nodoc
 mixin _$UserFilter {
-  String get search => throw _privateConstructorUsedError;
-  EntityStatus? get status => throw _privateConstructorUsedError;
 
-  /// Narrows to accounts provisioned from this profile
-  /// (024-user-profiles FR-028), decoded from the `profile` facet — the
-  /// app's own vocabulary for the wire's `profile_id` query parameter,
-  /// consistent with `cash-drawer`/`cashier` elsewhere in this file's
-  /// counterparts.
-  int? get profileId => throw _privateConstructorUsedError;
-  int get pageIndex => throw _privateConstructorUsedError;
+ String get search; EntityStatus? get status;/// Narrows to accounts provisioned from this profile
+/// (024-user-profiles FR-028), decoded from the `profile` facet — the
+/// app's own vocabulary for the wire's `profile_id` query parameter,
+/// consistent with `cash-drawer`/`cashier` elsewhere in this file's
+/// counterparts.
+ int? get profileId; int get pageIndex;
+/// Create a copy of UserFilter
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$UserFilterCopyWith<UserFilter> get copyWith => _$UserFilterCopyWithImpl<UserFilter>(this as UserFilter, _$identity);
 
-  /// Create a copy of UserFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $UserFilterCopyWith<UserFilter> get copyWith =>
-      throw _privateConstructorUsedError;
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as UserFilter;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserFilter&&(identical(other.search, _this.search) || other.search == _this.search)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.profileId, _this.profileId) || other.profileId == _this.profileId)&&(identical(other.pageIndex, _this.pageIndex) || other.pageIndex == _this.pageIndex));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as UserFilter;
+  return Object.hash(runtimeType,_this.search,_this.status,_this.profileId,_this.pageIndex);
+}
+
+@override
+String toString() {
+  final _this = this as UserFilter;
+  return 'UserFilter(search: ${_this.search}, status: ${_this.status}, profileId: ${_this.profileId}, pageIndex: ${_this.pageIndex})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $UserFilterCopyWith<$Res> {
-  factory $UserFilterCopyWith(
-    UserFilter value,
-    $Res Function(UserFilter) then,
-  ) = _$UserFilterCopyWithImpl<$Res, UserFilter>;
-  @useResult
-  $Res call({
-    String search,
-    EntityStatus? status,
-    int? profileId,
-    int pageIndex,
-  });
-}
+abstract mixin class $UserFilterCopyWith<$Res>  {
+  factory $UserFilterCopyWith(UserFilter value, $Res Function(UserFilter) _then) = _$UserFilterCopyWithImpl;
+@useResult
+$Res call({
+ String search, EntityStatus? status, int? profileId, int pageIndex
+});
 
+
+
+
+}
 /// @nodoc
-class _$UserFilterCopyWithImpl<$Res, $Val extends UserFilter>
+class _$UserFilterCopyWithImpl<$Res>
     implements $UserFilterCopyWith<$Res> {
-  _$UserFilterCopyWithImpl(this._value, this._then);
+  _$UserFilterCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final UserFilter _self;
+  final $Res Function(UserFilter) _then;
 
-  /// Create a copy of UserFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? search = null,
-    Object? status = freezed,
-    Object? profileId = freezed,
-    Object? pageIndex = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            search: null == search
-                ? _value.search
-                : search // ignore: cast_nullable_to_non_nullable
-                      as String,
-            status: freezed == status
-                ? _value.status
-                : status // ignore: cast_nullable_to_non_nullable
-                      as EntityStatus?,
-            profileId: freezed == profileId
-                ? _value.profileId
-                : profileId // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            pageIndex: null == pageIndex
-                ? _value.pageIndex
-                : pageIndex // ignore: cast_nullable_to_non_nullable
-                      as int,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of UserFilter
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? search = null,Object? status = freezed,Object? profileId = freezed,Object? pageIndex = null,}) {
+  return _then(UserFilter(
+search: null == search ? _self.search : search // ignore: cast_nullable_to_non_nullable
+as String,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as EntityStatus?,profileId: freezed == profileId ? _self.profileId : profileId // ignore: cast_nullable_to_non_nullable
+as int?,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [UserFilter].
+extension UserFilterPatterns on UserFilter {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _UserFilter value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _UserFilter() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _UserFilter value)  $default,){
+final _that = this;
+switch (_that) {
+case _UserFilter():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _UserFilter value)?  $default,){
+final _that = this;
+switch (_that) {
+case _UserFilter() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String search,  EntityStatus? status,  int? profileId,  int pageIndex)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _UserFilter() when $default != null:
+return $default(_that.search,_that.status,_that.profileId,_that.pageIndex);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String search,  EntityStatus? status,  int? profileId,  int pageIndex)  $default,) {final _that = this;
+switch (_that) {
+case _UserFilter():
+return $default(_that.search,_that.status,_that.profileId,_that.pageIndex);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String search,  EntityStatus? status,  int? profileId,  int pageIndex)?  $default,) {final _that = this;
+switch (_that) {
+case _UserFilter() when $default != null:
+return $default(_that.search,_that.status,_that.profileId,_that.pageIndex);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$UserFilterImplCopyWith<$Res>
-    implements $UserFilterCopyWith<$Res> {
-  factory _$$UserFilterImplCopyWith(
-    _$UserFilterImpl value,
-    $Res Function(_$UserFilterImpl) then,
-  ) = __$$UserFilterImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    String search,
-    EntityStatus? status,
-    int? profileId,
-    int pageIndex,
-  });
+
+
+class _UserFilter implements UserFilter {
+  const _UserFilter({this.search = '', this.status, this.profileId, this.pageIndex = 0});
+  
+
+@override@JsonKey() final  String search;
+@override final  EntityStatus? status;
+/// Narrows to accounts provisioned from this profile
+/// (024-user-profiles FR-028), decoded from the `profile` facet — the
+/// app's own vocabulary for the wire's `profile_id` query parameter,
+/// consistent with `cash-drawer`/`cashier` elsewhere in this file's
+/// counterparts.
+@override final  int? profileId;
+@override@JsonKey() final  int pageIndex;
+
+/// Create a copy of UserFilter
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UserFilterCopyWith<_UserFilter> get copyWith => __$UserFilterCopyWithImpl<_UserFilter>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserFilter&&(identical(other.search, search) || other.search == search)&&(identical(other.status, status) || other.status == status)&&(identical(other.profileId, profileId) || other.profileId == profileId)&&(identical(other.pageIndex, pageIndex) || other.pageIndex == pageIndex));
 }
 
-/// @nodoc
-class __$$UserFilterImplCopyWithImpl<$Res>
-    extends _$UserFilterCopyWithImpl<$Res, _$UserFilterImpl>
-    implements _$$UserFilterImplCopyWith<$Res> {
-  __$$UserFilterImplCopyWithImpl(
-    _$UserFilterImpl _value,
-    $Res Function(_$UserFilterImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of UserFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? search = null,
-    Object? status = freezed,
-    Object? profileId = freezed,
-    Object? pageIndex = null,
-  }) {
-    return _then(
-      _$UserFilterImpl(
-        search: null == search
-            ? _value.search
-            : search // ignore: cast_nullable_to_non_nullable
-                  as String,
-        status: freezed == status
-            ? _value.status
-            : status // ignore: cast_nullable_to_non_nullable
-                  as EntityStatus?,
-        profileId: freezed == profileId
-            ? _value.profileId
-            : profileId // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        pageIndex: null == pageIndex
-            ? _value.pageIndex
-            : pageIndex // ignore: cast_nullable_to_non_nullable
-                  as int,
-      ),
-    );
-  }
+@override
+int get hashCode {
+    return Object.hash(runtimeType,search,status,profileId,pageIndex);
 }
 
-/// @nodoc
-
-class _$UserFilterImpl implements _UserFilter {
-  const _$UserFilterImpl({
-    this.search = '',
-    this.status,
-    this.profileId,
-    this.pageIndex = 0,
-  });
-
-  @override
-  @JsonKey()
-  final String search;
-  @override
-  final EntityStatus? status;
-
-  /// Narrows to accounts provisioned from this profile
-  /// (024-user-profiles FR-028), decoded from the `profile` facet — the
-  /// app's own vocabulary for the wire's `profile_id` query parameter,
-  /// consistent with `cash-drawer`/`cashier` elsewhere in this file's
-  /// counterparts.
-  @override
-  final int? profileId;
-  @override
-  @JsonKey()
-  final int pageIndex;
-
-  @override
-  String toString() {
+@override
+String toString() {
     return 'UserFilter(search: $search, status: $status, profileId: $profileId, pageIndex: $pageIndex)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$UserFilterImpl &&
-            (identical(other.search, search) || other.search == search) &&
-            (identical(other.status, status) || other.status == status) &&
-            (identical(other.profileId, profileId) ||
-                other.profileId == profileId) &&
-            (identical(other.pageIndex, pageIndex) ||
-                other.pageIndex == pageIndex));
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, search, status, profileId, pageIndex);
-
-  /// Create a copy of UserFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$UserFilterImplCopyWith<_$UserFilterImpl> get copyWith =>
-      __$$UserFilterImplCopyWithImpl<_$UserFilterImpl>(this, _$identity);
 }
 
-abstract class _UserFilter implements UserFilter {
-  const factory _UserFilter({
-    final String search,
-    final EntityStatus? status,
-    final int? profileId,
-    final int pageIndex,
-  }) = _$UserFilterImpl;
 
-  @override
-  String get search;
-  @override
-  EntityStatus? get status;
+}
 
-  /// Narrows to accounts provisioned from this profile
-  /// (024-user-profiles FR-028), decoded from the `profile` facet — the
-  /// app's own vocabulary for the wire's `profile_id` query parameter,
-  /// consistent with `cash-drawer`/`cashier` elsewhere in this file's
-  /// counterparts.
-  @override
-  int? get profileId;
-  @override
-  int get pageIndex;
+/// @nodoc
+abstract mixin class _$UserFilterCopyWith<$Res> implements $UserFilterCopyWith<$Res> {
+  factory _$UserFilterCopyWith(_UserFilter value, $Res Function(_UserFilter) _then) = __$UserFilterCopyWithImpl;
+@override @useResult
+$Res call({
+ String search, EntityStatus? status, int? profileId, int pageIndex
+});
 
-  /// Create a copy of UserFilter
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$UserFilterImplCopyWith<_$UserFilterImpl> get copyWith =>
-      throw _privateConstructorUsedError;
+
+
+
+}
+/// @nodoc
+class __$UserFilterCopyWithImpl<$Res>
+    implements _$UserFilterCopyWith<$Res> {
+  __$UserFilterCopyWithImpl(this._self, this._then);
+
+  final _UserFilter _self;
+  final $Res Function(_UserFilter) _then;
+
+/// Create a copy of UserFilter
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? search = null,Object? status = freezed,Object? profileId = freezed,Object? pageIndex = null,}) {
+  return _then(_UserFilter(
+search: null == search ? _self.search : search // ignore: cast_nullable_to_non_nullable
+as String,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as EntityStatus?,profileId: freezed == profileId ? _self.profileId : profileId // ignore: cast_nullable_to_non_nullable
+as int?,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
 }
 
 /// @nodoc
 mixin _$UserFormState {
-  String get userId => throw _privateConstructorUsedError;
-  String get password => throw _privateConstructorUsedError;
-  String get email => throw _privateConstructorUsedError;
-  int? get employeeId => throw _privateConstructorUsedError;
 
-  /// The selected employee's display name, shown in the employee picker.
-  /// Pre-filled by [UserFormController.loadUser] (resolved via a lookup,
-  /// since `UserResponse.employeeId` is a bare id with no expansion) and
-  /// set directly by [UserFormController.employeeSelected] when the user
-  /// picks a new one.
-  String get employeeDisplayText => throw _privateConstructorUsedError;
-  bool get administrator => throw _privateConstructorUsedError;
-  EntityStatus get status => throw _privateConstructorUsedError;
-  List<Privilege> get privileges => throw _privateConstructorUsedError;
-  UserSettings? get settings => throw _privateConstructorUsedError;
-  bool get loading => throw _privateConstructorUsedError;
-  bool get submitting => throw _privateConstructorUsedError;
-  bool get saved => throw _privateConstructorUsedError;
-  bool get deleted => throw _privateConstructorUsedError;
-  String? get error => throw _privateConstructorUsedError;
+ String get userId; String get password; String get email; int? get employeeId;/// The selected employee's display name, shown in the employee picker.
+/// Pre-filled by [UserFormController.loadUser] (resolved via a lookup,
+/// since `UserResponse.employeeId` is a bare id with no expansion) and
+/// set directly by [UserFormController.employeeSelected] when the user
+/// picks a new one.
+ String get employeeDisplayText; bool get administrator; EntityStatus get status; List<Privilege> get privileges; UserSettings? get settings; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error;/// The server-provided detail behind [error] (e.g. mbe-api's `detail`
+/// string on a `404`/`5xx`), shown alongside the localized [error]
+/// message since it can't be localized client-side. `null` for
+/// client-side-only errors and for a [ValidationError]'s message
+/// (already raw server text stored directly in `error`).
+ String? get errorDetail; String? get recoveryToken; String? get recoveryExpiresAt;/// The profile chosen on the new-user form (create mode), or the
+/// profile this account was last provisioned from (edit mode) —
+/// (024-user-profiles data-model.md §3). `null` means no profile
+/// chosen/recorded.
+ int? get profileId;/// Display text for [profileId]: the picker's selection in create mode,
+/// or the provenance line's label in edit mode.
+ String get profileName;
+/// Create a copy of UserFormState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$UserFormStateCopyWith<UserFormState> get copyWith => _$UserFormStateCopyWithImpl<UserFormState>(this as UserFormState, _$identity);
 
-  /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
-  /// string on a `404`/`5xx`), shown alongside the localized [error]
-  /// message since it can't be localized client-side. `null` for
-  /// client-side-only errors and for a [ValidationError]'s message
-  /// (already raw server text stored directly in `error`).
-  String? get errorDetail => throw _privateConstructorUsedError;
-  String? get recoveryToken => throw _privateConstructorUsedError;
-  String? get recoveryExpiresAt => throw _privateConstructorUsedError;
 
-  /// The profile chosen on the new-user form (create mode), or the
-  /// profile this account was last provisioned from (edit mode) —
-  /// (024-user-profiles data-model.md §3). `null` means no profile
-  /// chosen/recorded.
-  int? get profileId => throw _privateConstructorUsedError;
 
-  /// Display text for [profileId]: the picker's selection in create mode,
-  /// or the provenance line's label in edit mode.
-  String get profileName => throw _privateConstructorUsedError;
+@override
+bool operator ==(Object other) {
+  final _this = this as UserFormState;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserFormState&&(identical(other.userId, _this.userId) || other.userId == _this.userId)&&(identical(other.password, _this.password) || other.password == _this.password)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.employeeId, _this.employeeId) || other.employeeId == _this.employeeId)&&(identical(other.employeeDisplayText, _this.employeeDisplayText) || other.employeeDisplayText == _this.employeeDisplayText)&&(identical(other.administrator, _this.administrator) || other.administrator == _this.administrator)&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.privileges, _this.privileges)&&(identical(other.settings, _this.settings) || other.settings == _this.settings)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&(identical(other.recoveryToken, _this.recoveryToken) || other.recoveryToken == _this.recoveryToken)&&(identical(other.recoveryExpiresAt, _this.recoveryExpiresAt) || other.recoveryExpiresAt == _this.recoveryExpiresAt)&&(identical(other.profileId, _this.profileId) || other.profileId == _this.profileId)&&(identical(other.profileName, _this.profileName) || other.profileName == _this.profileName));
+}
 
-  /// Create a copy of UserFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $UserFormStateCopyWith<UserFormState> get copyWith =>
-      throw _privateConstructorUsedError;
+
+@override
+int get hashCode {
+  final _this = this as UserFormState;
+  return Object.hashAll([runtimeType,_this.userId,_this.password,_this.email,_this.employeeId,_this.employeeDisplayText,_this.administrator,_this.status,const DeepCollectionEquality().hash(_this.privileges),_this.settings,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorDetail,_this.recoveryToken,_this.recoveryExpiresAt,_this.profileId,_this.profileName]);
+}
+
+@override
+String toString() {
+  final _this = this as UserFormState;
+  return 'UserFormState(userId: ${_this.userId}, password: ${_this.password}, email: ${_this.email}, employeeId: ${_this.employeeId}, employeeDisplayText: ${_this.employeeDisplayText}, administrator: ${_this.administrator}, status: ${_this.status}, privileges: ${_this.privileges}, settings: ${_this.settings}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, recoveryToken: ${_this.recoveryToken}, recoveryExpiresAt: ${_this.recoveryExpiresAt}, profileId: ${_this.profileId}, profileName: ${_this.profileName})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $UserFormStateCopyWith<$Res> {
-  factory $UserFormStateCopyWith(
-    UserFormState value,
-    $Res Function(UserFormState) then,
-  ) = _$UserFormStateCopyWithImpl<$Res, UserFormState>;
-  @useResult
-  $Res call({
-    String userId,
-    String password,
-    String email,
-    int? employeeId,
-    String employeeDisplayText,
-    bool administrator,
-    EntityStatus status,
-    List<Privilege> privileges,
-    UserSettings? settings,
-    bool loading,
-    bool submitting,
-    bool saved,
-    bool deleted,
-    String? error,
-    String? errorDetail,
-    String? recoveryToken,
-    String? recoveryExpiresAt,
-    int? profileId,
-    String profileName,
-  });
+abstract mixin class $UserFormStateCopyWith<$Res>  {
+  factory $UserFormStateCopyWith(UserFormState value, $Res Function(UserFormState) _then) = _$UserFormStateCopyWithImpl;
+@useResult
+$Res call({
+ String userId, String password, String email, int? employeeId, String employeeDisplayText, bool administrator, EntityStatus status, List<Privilege> privileges, UserSettings? settings, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, String? recoveryToken, String? recoveryExpiresAt, int? profileId, String profileName
+});
 
-  $UserSettingsCopyWith<$Res>? get settings;
+
+$UserSettingsCopyWith<$Res>? get settings;
+
 }
-
 /// @nodoc
-class _$UserFormStateCopyWithImpl<$Res, $Val extends UserFormState>
+class _$UserFormStateCopyWithImpl<$Res>
     implements $UserFormStateCopyWith<$Res> {
-  _$UserFormStateCopyWithImpl(this._value, this._then);
+  _$UserFormStateCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final UserFormState _self;
+  final $Res Function(UserFormState) _then;
 
-  /// Create a copy of UserFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? userId = null,
-    Object? password = null,
-    Object? email = null,
-    Object? employeeId = freezed,
-    Object? employeeDisplayText = null,
-    Object? administrator = null,
-    Object? status = null,
-    Object? privileges = null,
-    Object? settings = freezed,
-    Object? loading = null,
-    Object? submitting = null,
-    Object? saved = null,
-    Object? deleted = null,
-    Object? error = freezed,
-    Object? errorDetail = freezed,
-    Object? recoveryToken = freezed,
-    Object? recoveryExpiresAt = freezed,
-    Object? profileId = freezed,
-    Object? profileName = null,
-  }) {
-    return _then(
-      _value.copyWith(
-            userId: null == userId
-                ? _value.userId
-                : userId // ignore: cast_nullable_to_non_nullable
-                      as String,
-            password: null == password
-                ? _value.password
-                : password // ignore: cast_nullable_to_non_nullable
-                      as String,
-            email: null == email
-                ? _value.email
-                : email // ignore: cast_nullable_to_non_nullable
-                      as String,
-            employeeId: freezed == employeeId
-                ? _value.employeeId
-                : employeeId // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            employeeDisplayText: null == employeeDisplayText
-                ? _value.employeeDisplayText
-                : employeeDisplayText // ignore: cast_nullable_to_non_nullable
-                      as String,
-            administrator: null == administrator
-                ? _value.administrator
-                : administrator // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            status: null == status
-                ? _value.status
-                : status // ignore: cast_nullable_to_non_nullable
-                      as EntityStatus,
-            privileges: null == privileges
-                ? _value.privileges
-                : privileges // ignore: cast_nullable_to_non_nullable
-                      as List<Privilege>,
-            settings: freezed == settings
-                ? _value.settings
-                : settings // ignore: cast_nullable_to_non_nullable
-                      as UserSettings?,
-            loading: null == loading
-                ? _value.loading
-                : loading // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            submitting: null == submitting
-                ? _value.submitting
-                : submitting // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            saved: null == saved
-                ? _value.saved
-                : saved // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            deleted: null == deleted
-                ? _value.deleted
-                : deleted // ignore: cast_nullable_to_non_nullable
-                      as bool,
-            error: freezed == error
-                ? _value.error
-                : error // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            errorDetail: freezed == errorDetail
-                ? _value.errorDetail
-                : errorDetail // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            recoveryToken: freezed == recoveryToken
-                ? _value.recoveryToken
-                : recoveryToken // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            recoveryExpiresAt: freezed == recoveryExpiresAt
-                ? _value.recoveryExpiresAt
-                : recoveryExpiresAt // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            profileId: freezed == profileId
-                ? _value.profileId
-                : profileId // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            profileName: null == profileName
-                ? _value.profileName
-                : profileName // ignore: cast_nullable_to_non_nullable
-                      as String,
-          )
-          as $Val,
-    );
-  }
-
-  /// Create a copy of UserFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $UserSettingsCopyWith<$Res>? get settings {
-    if (_value.settings == null) {
-      return null;
-    }
-
-    return $UserSettingsCopyWith<$Res>(_value.settings!, (value) {
-      return _then(_value.copyWith(settings: value) as $Val);
-    });
-  }
+/// Create a copy of UserFormState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? password = null,Object? email = null,Object? employeeId = freezed,Object? employeeDisplayText = null,Object? administrator = null,Object? status = null,Object? privileges = null,Object? settings = freezed,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? recoveryToken = freezed,Object? recoveryExpiresAt = freezed,Object? profileId = freezed,Object? profileName = null,}) {
+  return _then(UserFormState(
+userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,employeeId: freezed == employeeId ? _self.employeeId : employeeId // ignore: cast_nullable_to_non_nullable
+as int?,employeeDisplayText: null == employeeDisplayText ? _self.employeeDisplayText : employeeDisplayText // ignore: cast_nullable_to_non_nullable
+as String,administrator: null == administrator ? _self.administrator : administrator // ignore: cast_nullable_to_non_nullable
+as bool,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as EntityStatus,privileges: null == privileges ? _self.privileges : privileges // ignore: cast_nullable_to_non_nullable
+as List<Privilege>,settings: freezed == settings ? _self.settings : settings // ignore: cast_nullable_to_non_nullable
+as UserSettings?,loading: null == loading ? _self.loading : loading // ignore: cast_nullable_to_non_nullable
+as bool,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
+as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
+as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
+as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
+as String?,recoveryToken: freezed == recoveryToken ? _self.recoveryToken : recoveryToken // ignore: cast_nullable_to_non_nullable
+as String?,recoveryExpiresAt: freezed == recoveryExpiresAt ? _self.recoveryExpiresAt : recoveryExpiresAt // ignore: cast_nullable_to_non_nullable
+as String?,profileId: freezed == profileId ? _self.profileId : profileId // ignore: cast_nullable_to_non_nullable
+as int?,profileName: null == profileName ? _self.profileName : profileName // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
 }
+/// Create a copy of UserFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserSettingsCopyWith<$Res>? get settings {
+    if (_self.settings == null) {
+    return null;
+  }
 
-/// @nodoc
-abstract class _$$UserFormStateImplCopyWith<$Res>
-    implements $UserFormStateCopyWith<$Res> {
-  factory _$$UserFormStateImplCopyWith(
-    _$UserFormStateImpl value,
-    $Res Function(_$UserFormStateImpl) then,
-  ) = __$$UserFormStateImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    String userId,
-    String password,
-    String email,
-    int? employeeId,
-    String employeeDisplayText,
-    bool administrator,
-    EntityStatus status,
-    List<Privilege> privileges,
-    UserSettings? settings,
-    bool loading,
-    bool submitting,
-    bool saved,
-    bool deleted,
-    String? error,
-    String? errorDetail,
-    String? recoveryToken,
-    String? recoveryExpiresAt,
-    int? profileId,
-    String profileName,
+  return $UserSettingsCopyWith<$Res>(_self.settings!, (value) {
+    return _then(_self.copyWith(settings: value));
   });
+}
+}
 
-  @override
-  $UserSettingsCopyWith<$Res>? get settings;
+
+/// Adds pattern-matching-related methods to [UserFormState].
+extension UserFormStatePatterns on UserFormState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _UserFormState value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _UserFormState() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _UserFormState value)  $default,){
+final _that = this;
+switch (_that) {
+case _UserFormState():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _UserFormState value)?  $default,){
+final _that = this;
+switch (_that) {
+case _UserFormState() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String userId,  String password,  String email,  int? employeeId,  String employeeDisplayText,  bool administrator,  EntityStatus status,  List<Privilege> privileges,  UserSettings? settings,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  String? recoveryToken,  String? recoveryExpiresAt,  int? profileId,  String profileName)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _UserFormState() when $default != null:
+return $default(_that.userId,_that.password,_that.email,_that.employeeId,_that.employeeDisplayText,_that.administrator,_that.status,_that.privileges,_that.settings,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.recoveryToken,_that.recoveryExpiresAt,_that.profileId,_that.profileName);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String userId,  String password,  String email,  int? employeeId,  String employeeDisplayText,  bool administrator,  EntityStatus status,  List<Privilege> privileges,  UserSettings? settings,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  String? recoveryToken,  String? recoveryExpiresAt,  int? profileId,  String profileName)  $default,) {final _that = this;
+switch (_that) {
+case _UserFormState():
+return $default(_that.userId,_that.password,_that.email,_that.employeeId,_that.employeeDisplayText,_that.administrator,_that.status,_that.privileges,_that.settings,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.recoveryToken,_that.recoveryExpiresAt,_that.profileId,_that.profileName);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String userId,  String password,  String email,  int? employeeId,  String employeeDisplayText,  bool administrator,  EntityStatus status,  List<Privilege> privileges,  UserSettings? settings,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  String? recoveryToken,  String? recoveryExpiresAt,  int? profileId,  String profileName)?  $default,) {final _that = this;
+switch (_that) {
+case _UserFormState() when $default != null:
+return $default(_that.userId,_that.password,_that.email,_that.employeeId,_that.employeeDisplayText,_that.administrator,_that.status,_that.privileges,_that.settings,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.recoveryToken,_that.recoveryExpiresAt,_that.profileId,_that.profileName);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-class __$$UserFormStateImplCopyWithImpl<$Res>
-    extends _$UserFormStateCopyWithImpl<$Res, _$UserFormStateImpl>
-    implements _$$UserFormStateImplCopyWith<$Res> {
-  __$$UserFormStateImplCopyWithImpl(
-    _$UserFormStateImpl _value,
-    $Res Function(_$UserFormStateImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of UserFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? userId = null,
-    Object? password = null,
-    Object? email = null,
-    Object? employeeId = freezed,
-    Object? employeeDisplayText = null,
-    Object? administrator = null,
-    Object? status = null,
-    Object? privileges = null,
-    Object? settings = freezed,
-    Object? loading = null,
-    Object? submitting = null,
-    Object? saved = null,
-    Object? deleted = null,
-    Object? error = freezed,
-    Object? errorDetail = freezed,
-    Object? recoveryToken = freezed,
-    Object? recoveryExpiresAt = freezed,
-    Object? profileId = freezed,
-    Object? profileName = null,
-  }) {
-    return _then(
-      _$UserFormStateImpl(
-        userId: null == userId
-            ? _value.userId
-            : userId // ignore: cast_nullable_to_non_nullable
-                  as String,
-        password: null == password
-            ? _value.password
-            : password // ignore: cast_nullable_to_non_nullable
-                  as String,
-        email: null == email
-            ? _value.email
-            : email // ignore: cast_nullable_to_non_nullable
-                  as String,
-        employeeId: freezed == employeeId
-            ? _value.employeeId
-            : employeeId // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        employeeDisplayText: null == employeeDisplayText
-            ? _value.employeeDisplayText
-            : employeeDisplayText // ignore: cast_nullable_to_non_nullable
-                  as String,
-        administrator: null == administrator
-            ? _value.administrator
-            : administrator // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        status: null == status
-            ? _value.status
-            : status // ignore: cast_nullable_to_non_nullable
-                  as EntityStatus,
-        privileges: null == privileges
-            ? _value._privileges
-            : privileges // ignore: cast_nullable_to_non_nullable
-                  as List<Privilege>,
-        settings: freezed == settings
-            ? _value.settings
-            : settings // ignore: cast_nullable_to_non_nullable
-                  as UserSettings?,
-        loading: null == loading
-            ? _value.loading
-            : loading // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        submitting: null == submitting
-            ? _value.submitting
-            : submitting // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        saved: null == saved
-            ? _value.saved
-            : saved // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        deleted: null == deleted
-            ? _value.deleted
-            : deleted // ignore: cast_nullable_to_non_nullable
-                  as bool,
-        error: freezed == error
-            ? _value.error
-            : error // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        errorDetail: freezed == errorDetail
-            ? _value.errorDetail
-            : errorDetail // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        recoveryToken: freezed == recoveryToken
-            ? _value.recoveryToken
-            : recoveryToken // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        recoveryExpiresAt: freezed == recoveryExpiresAt
-            ? _value.recoveryExpiresAt
-            : recoveryExpiresAt // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        profileId: freezed == profileId
-            ? _value.profileId
-            : profileId // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        profileName: null == profileName
-            ? _value.profileName
-            : profileName // ignore: cast_nullable_to_non_nullable
-                  as String,
-      ),
-    );
-  }
+
+class _UserFormState implements UserFormState {
+  const _UserFormState({this.userId = '', this.password = '', this.email = '', this.employeeId, this.employeeDisplayText = '', this.administrator = false, this.status = EntityStatus.active,  List<Privilege> privileges = const <Privilege>[], this.settings, this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorDetail, this.recoveryToken, this.recoveryExpiresAt, this.profileId, this.profileName = ''}): _privileges = privileges;
+  
+
+@override@JsonKey() final  String userId;
+@override@JsonKey() final  String password;
+@override@JsonKey() final  String email;
+@override final  int? employeeId;
+/// The selected employee's display name, shown in the employee picker.
+/// Pre-filled by [UserFormController.loadUser] (resolved via a lookup,
+/// since `UserResponse.employeeId` is a bare id with no expansion) and
+/// set directly by [UserFormController.employeeSelected] when the user
+/// picks a new one.
+@override@JsonKey() final  String employeeDisplayText;
+@override@JsonKey() final  bool administrator;
+@override@JsonKey() final  EntityStatus status;
+ final  List<Privilege> _privileges;
+@override@JsonKey() List<Privilege> get privileges {
+  if (_privileges is EqualUnmodifiableListView) return _privileges;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_privileges);
 }
 
-/// @nodoc
+@override final  UserSettings? settings;
+@override@JsonKey() final  bool loading;
+@override@JsonKey() final  bool submitting;
+@override@JsonKey() final  bool saved;
+@override@JsonKey() final  bool deleted;
+@override final  String? error;
+/// The server-provided detail behind [error] (e.g. mbe-api's `detail`
+/// string on a `404`/`5xx`), shown alongside the localized [error]
+/// message since it can't be localized client-side. `null` for
+/// client-side-only errors and for a [ValidationError]'s message
+/// (already raw server text stored directly in `error`).
+@override final  String? errorDetail;
+@override final  String? recoveryToken;
+@override final  String? recoveryExpiresAt;
+/// The profile chosen on the new-user form (create mode), or the
+/// profile this account was last provisioned from (edit mode) —
+/// (024-user-profiles data-model.md §3). `null` means no profile
+/// chosen/recorded.
+@override final  int? profileId;
+/// Display text for [profileId]: the picker's selection in create mode,
+/// or the provenance line's label in edit mode.
+@override@JsonKey() final  String profileName;
 
-class _$UserFormStateImpl implements _UserFormState {
-  const _$UserFormStateImpl({
-    this.userId = '',
-    this.password = '',
-    this.email = '',
-    this.employeeId,
-    this.employeeDisplayText = '',
-    this.administrator = false,
-    this.status = EntityStatus.active,
-    final List<Privilege> privileges = const <Privilege>[],
-    this.settings,
-    this.loading = false,
-    this.submitting = false,
-    this.saved = false,
-    this.deleted = false,
-    this.error,
-    this.errorDetail,
-    this.recoveryToken,
-    this.recoveryExpiresAt,
-    this.profileId,
-    this.profileName = '',
-  }) : _privileges = privileges;
+/// Create a copy of UserFormState
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UserFormStateCopyWith<_UserFormState> get copyWith => __$UserFormStateCopyWithImpl<_UserFormState>(this, _$identity);
 
-  @override
-  @JsonKey()
-  final String userId;
-  @override
-  @JsonKey()
-  final String password;
-  @override
-  @JsonKey()
-  final String email;
-  @override
-  final int? employeeId;
 
-  /// The selected employee's display name, shown in the employee picker.
-  /// Pre-filled by [UserFormController.loadUser] (resolved via a lookup,
-  /// since `UserResponse.employeeId` is a bare id with no expansion) and
-  /// set directly by [UserFormController.employeeSelected] when the user
-  /// picks a new one.
-  @override
-  @JsonKey()
-  final String employeeDisplayText;
-  @override
-  @JsonKey()
-  final bool administrator;
-  @override
-  @JsonKey()
-  final EntityStatus status;
-  final List<Privilege> _privileges;
-  @override
-  @JsonKey()
-  List<Privilege> get privileges {
-    if (_privileges is EqualUnmodifiableListView) return _privileges;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_privileges);
-  }
 
-  @override
-  final UserSettings? settings;
-  @override
-  @JsonKey()
-  final bool loading;
-  @override
-  @JsonKey()
-  final bool submitting;
-  @override
-  @JsonKey()
-  final bool saved;
-  @override
-  @JsonKey()
-  final bool deleted;
-  @override
-  final String? error;
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserFormState&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.password, password) || other.password == password)&&(identical(other.email, email) || other.email == email)&&(identical(other.employeeId, employeeId) || other.employeeId == employeeId)&&(identical(other.employeeDisplayText, employeeDisplayText) || other.employeeDisplayText == employeeDisplayText)&&(identical(other.administrator, administrator) || other.administrator == administrator)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.privileges, _privileges)&&(identical(other.settings, settings) || other.settings == settings)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&(identical(other.recoveryToken, recoveryToken) || other.recoveryToken == recoveryToken)&&(identical(other.recoveryExpiresAt, recoveryExpiresAt) || other.recoveryExpiresAt == recoveryExpiresAt)&&(identical(other.profileId, profileId) || other.profileId == profileId)&&(identical(other.profileName, profileName) || other.profileName == profileName));
+}
 
-  /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
-  /// string on a `404`/`5xx`), shown alongside the localized [error]
-  /// message since it can't be localized client-side. `null` for
-  /// client-side-only errors and for a [ValidationError]'s message
-  /// (already raw server text stored directly in `error`).
-  @override
-  final String? errorDetail;
-  @override
-  final String? recoveryToken;
-  @override
-  final String? recoveryExpiresAt;
 
-  /// The profile chosen on the new-user form (create mode), or the
-  /// profile this account was last provisioned from (edit mode) —
-  /// (024-user-profiles data-model.md §3). `null` means no profile
-  /// chosen/recorded.
-  @override
-  final int? profileId;
+@override
+int get hashCode {
+    return Object.hashAll([runtimeType,userId,password,email,employeeId,employeeDisplayText,administrator,status,const DeepCollectionEquality().hash(_privileges),settings,loading,submitting,saved,deleted,error,errorDetail,recoveryToken,recoveryExpiresAt,profileId,profileName]);
+}
 
-  /// Display text for [profileId]: the picker's selection in create mode,
-  /// or the provenance line's label in edit mode.
-  @override
-  @JsonKey()
-  final String profileName;
-
-  @override
-  String toString() {
+@override
+String toString() {
     return 'UserFormState(userId: $userId, password: $password, email: $email, employeeId: $employeeId, employeeDisplayText: $employeeDisplayText, administrator: $administrator, status: $status, privileges: $privileges, settings: $settings, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, recoveryToken: $recoveryToken, recoveryExpiresAt: $recoveryExpiresAt, profileId: $profileId, profileName: $profileName)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$UserFormStateImpl &&
-            (identical(other.userId, userId) || other.userId == userId) &&
-            (identical(other.password, password) ||
-                other.password == password) &&
-            (identical(other.email, email) || other.email == email) &&
-            (identical(other.employeeId, employeeId) ||
-                other.employeeId == employeeId) &&
-            (identical(other.employeeDisplayText, employeeDisplayText) ||
-                other.employeeDisplayText == employeeDisplayText) &&
-            (identical(other.administrator, administrator) ||
-                other.administrator == administrator) &&
-            (identical(other.status, status) || other.status == status) &&
-            const DeepCollectionEquality().equals(
-              other._privileges,
-              _privileges,
-            ) &&
-            (identical(other.settings, settings) ||
-                other.settings == settings) &&
-            (identical(other.loading, loading) || other.loading == loading) &&
-            (identical(other.submitting, submitting) ||
-                other.submitting == submitting) &&
-            (identical(other.saved, saved) || other.saved == saved) &&
-            (identical(other.deleted, deleted) || other.deleted == deleted) &&
-            (identical(other.error, error) || other.error == error) &&
-            (identical(other.errorDetail, errorDetail) ||
-                other.errorDetail == errorDetail) &&
-            (identical(other.recoveryToken, recoveryToken) ||
-                other.recoveryToken == recoveryToken) &&
-            (identical(other.recoveryExpiresAt, recoveryExpiresAt) ||
-                other.recoveryExpiresAt == recoveryExpiresAt) &&
-            (identical(other.profileId, profileId) ||
-                other.profileId == profileId) &&
-            (identical(other.profileName, profileName) ||
-                other.profileName == profileName));
-  }
-
-  @override
-  int get hashCode => Object.hashAll([
-    runtimeType,
-    userId,
-    password,
-    email,
-    employeeId,
-    employeeDisplayText,
-    administrator,
-    status,
-    const DeepCollectionEquality().hash(_privileges),
-    settings,
-    loading,
-    submitting,
-    saved,
-    deleted,
-    error,
-    errorDetail,
-    recoveryToken,
-    recoveryExpiresAt,
-    profileId,
-    profileName,
-  ]);
-
-  /// Create a copy of UserFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$UserFormStateImplCopyWith<_$UserFormStateImpl> get copyWith =>
-      __$$UserFormStateImplCopyWithImpl<_$UserFormStateImpl>(this, _$identity);
 }
 
-abstract class _UserFormState implements UserFormState {
-  const factory _UserFormState({
-    final String userId,
-    final String password,
-    final String email,
-    final int? employeeId,
-    final String employeeDisplayText,
-    final bool administrator,
-    final EntityStatus status,
-    final List<Privilege> privileges,
-    final UserSettings? settings,
-    final bool loading,
-    final bool submitting,
-    final bool saved,
-    final bool deleted,
-    final String? error,
-    final String? errorDetail,
-    final String? recoveryToken,
-    final String? recoveryExpiresAt,
-    final int? profileId,
-    final String profileName,
-  }) = _$UserFormStateImpl;
 
-  @override
-  String get userId;
-  @override
-  String get password;
-  @override
-  String get email;
-  @override
-  int? get employeeId;
-
-  /// The selected employee's display name, shown in the employee picker.
-  /// Pre-filled by [UserFormController.loadUser] (resolved via a lookup,
-  /// since `UserResponse.employeeId` is a bare id with no expansion) and
-  /// set directly by [UserFormController.employeeSelected] when the user
-  /// picks a new one.
-  @override
-  String get employeeDisplayText;
-  @override
-  bool get administrator;
-  @override
-  EntityStatus get status;
-  @override
-  List<Privilege> get privileges;
-  @override
-  UserSettings? get settings;
-  @override
-  bool get loading;
-  @override
-  bool get submitting;
-  @override
-  bool get saved;
-  @override
-  bool get deleted;
-  @override
-  String? get error;
-
-  /// The server-provided detail behind [error] (e.g. mbe-api's `detail`
-  /// string on a `404`/`5xx`), shown alongside the localized [error]
-  /// message since it can't be localized client-side. `null` for
-  /// client-side-only errors and for a [ValidationError]'s message
-  /// (already raw server text stored directly in `error`).
-  @override
-  String? get errorDetail;
-  @override
-  String? get recoveryToken;
-  @override
-  String? get recoveryExpiresAt;
-
-  /// The profile chosen on the new-user form (create mode), or the
-  /// profile this account was last provisioned from (edit mode) —
-  /// (024-user-profiles data-model.md §3). `null` means no profile
-  /// chosen/recorded.
-  @override
-  int? get profileId;
-
-  /// Display text for [profileId]: the picker's selection in create mode,
-  /// or the provenance line's label in edit mode.
-  @override
-  String get profileName;
-
-  /// Create a copy of UserFormState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$UserFormStateImplCopyWith<_$UserFormStateImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+abstract mixin class _$UserFormStateCopyWith<$Res> implements $UserFormStateCopyWith<$Res> {
+  factory _$UserFormStateCopyWith(_UserFormState value, $Res Function(_UserFormState) _then) = __$UserFormStateCopyWithImpl;
+@override @useResult
+$Res call({
+ String userId, String password, String email, int? employeeId, String employeeDisplayText, bool administrator, EntityStatus status, List<Privilege> privileges, UserSettings? settings, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, String? recoveryToken, String? recoveryExpiresAt, int? profileId, String profileName
+});
+
+
+@override $UserSettingsCopyWith<$Res>? get settings;
+
+}
+/// @nodoc
+class __$UserFormStateCopyWithImpl<$Res>
+    implements _$UserFormStateCopyWith<$Res> {
+  __$UserFormStateCopyWithImpl(this._self, this._then);
+
+  final _UserFormState _self;
+  final $Res Function(_UserFormState) _then;
+
+/// Create a copy of UserFormState
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? password = null,Object? email = null,Object? employeeId = freezed,Object? employeeDisplayText = null,Object? administrator = null,Object? status = null,Object? privileges = null,Object? settings = freezed,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? recoveryToken = freezed,Object? recoveryExpiresAt = freezed,Object? profileId = freezed,Object? profileName = null,}) {
+  return _then(_UserFormState(
+userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,password: null == password ? _self.password : password // ignore: cast_nullable_to_non_nullable
+as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
+as String,employeeId: freezed == employeeId ? _self.employeeId : employeeId // ignore: cast_nullable_to_non_nullable
+as int?,employeeDisplayText: null == employeeDisplayText ? _self.employeeDisplayText : employeeDisplayText // ignore: cast_nullable_to_non_nullable
+as String,administrator: null == administrator ? _self.administrator : administrator // ignore: cast_nullable_to_non_nullable
+as bool,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as EntityStatus,privileges: null == privileges ? _self._privileges : privileges // ignore: cast_nullable_to_non_nullable
+as List<Privilege>,settings: freezed == settings ? _self.settings : settings // ignore: cast_nullable_to_non_nullable
+as UserSettings?,loading: null == loading ? _self.loading : loading // ignore: cast_nullable_to_non_nullable
+as bool,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
+as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
+as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
+as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
+as String?,recoveryToken: freezed == recoveryToken ? _self.recoveryToken : recoveryToken // ignore: cast_nullable_to_non_nullable
+as String?,recoveryExpiresAt: freezed == recoveryExpiresAt ? _self.recoveryExpiresAt : recoveryExpiresAt // ignore: cast_nullable_to_non_nullable
+as String?,profileId: freezed == profileId ? _self.profileId : profileId // ignore: cast_nullable_to_non_nullable
+as int?,profileName: null == profileName ? _self.profileName : profileName // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+/// Create a copy of UserFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserSettingsCopyWith<$Res>? get settings {
+    if (_self.settings == null) {
+    return null;
+  }
+
+  return $UserSettingsCopyWith<$Res>(_self.settings!, (value) {
+    return _then(_self.copyWith(settings: value));
+  });
+}
+}
+
+// dart format on

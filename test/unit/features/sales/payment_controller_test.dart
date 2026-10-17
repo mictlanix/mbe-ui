@@ -84,6 +84,7 @@ void main() {
   /// (`autoDispose`) alive with a live listener for the rest of the test.
   ProviderContainer containerFor(Sale sale) {
     final c = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         customerPaymentRepositoryProvider.overrideWithValue(payments),
         salesOrderRepositoryProvider.overrideWithValue(salesOrders),

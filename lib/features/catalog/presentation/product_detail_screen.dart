@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/design/design_theme_extensions.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
@@ -14,6 +15,7 @@ import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
+import 'package:mbe_ui/core/widgets/product_photo_preview.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/sat_catalog_repository_impl.dart';
@@ -70,7 +72,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final canUpdate = access.can(SystemObject.products, AccessRight.update);
     final readOnly = (_isEdit && !canUpdate) || widget.forceReadOnly;
     final l10n = AppLocalizations.of(context)!;
-    final allLabels = ref.watch(allLabelsProvider).valueOrNull ?? <LabelItem>[];
+    final allLabels = ref.watch(allLabelsProvider).value ?? <LabelItem>[];
     final satRepo = ref.read(satCatalogRepositoryProvider);
     final supplierRepo = ref.read(supplierRepositoryProvider);
 
@@ -544,7 +546,7 @@ class _PhotoSection extends StatelessWidget {
   final String replaceLabel;
   final String removeLabel;
 
-  Widget _thumbnail() {
+  Widget _thumbnail(BuildContext context) {
     if (formState.pendingPhotoBytes != null) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(4),
@@ -556,9 +558,17 @@ class _PhotoSection extends StatelessWidget {
         ),
       );
     }
+    final photo = formState.photoMarkedForRemoval ? null : formState.photo;
     return ProductPhoto(
-      photoUrl: formState.photoMarkedForRemoval ? null : formState.photo,
+      photoUrl: photo,
       size: 168,
+      onTap: photo == null
+          ? null
+          : () => showProductPhotoPreview(
+              context,
+              photoUrl: photo,
+              title: formState.name,
+            ),
     );
   }
 
@@ -608,7 +618,10 @@ class _PhotoSection extends StatelessWidget {
     // (FR-012, spec.md Edge Cases).
     final compact = LayoutBreakpoints.isCompact(context);
     final actions = _actions(horizontal: !compact);
-    final thumbnail = _thumbnail();
+    final thumbnail = Padding(
+      padding: EdgeInsets.all(Theme.of(context).spacing.xs),
+      child: _thumbnail(context),
+    );
 
     final Widget media;
     if (actions == null) {

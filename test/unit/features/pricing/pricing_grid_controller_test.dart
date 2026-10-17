@@ -180,6 +180,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final sharedPreferences = await SharedPreferences.getInstance();
       container = ProviderContainer(
+        retry: (_, _) => null,
         overrides: [
           sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           productRepositoryProvider.overrideWithValue(productRepository),
@@ -632,6 +633,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final sharedPreferences = await SharedPreferences.getInstance();
       container = ProviderContainer(
+        retry: (_, _) => null,
         overrides: [
           sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           productRepositoryProvider.overrideWithValue(productRepository),
@@ -887,6 +889,7 @@ void main() {
       SharedPreferences.setMockInitialValues({});
       final sharedPreferences = await SharedPreferences.getInstance();
       container = ProviderContainer(
+        retry: (_, _) => null,
         overrides: [
           sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           productRepositoryProvider.overrideWithValue(productRepository),

@@ -7,7 +7,7 @@ part 'product_label.freezed.dart';
 /// (data-model.md "ProductLabel"). Display only — assignment is done
 /// via [ProductFormState.labelIds] on create/update.
 @freezed
-class ProductLabel with _$ProductLabel {
+abstract class ProductLabel with _$ProductLabel {
   const factory ProductLabel({required int labelId, required String name}) =
       _ProductLabel;
 

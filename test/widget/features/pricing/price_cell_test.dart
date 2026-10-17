@@ -66,6 +66,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         productRepositoryProvider.overrideWithValue(productRepository),
@@ -205,6 +206,7 @@ void main() {
     'count (spec 036 US8)',
     (tester) async {
       final customContainer = ProviderContainer(
+        retry: (_, _) => null,
         overrides: [
           sharedPreferencesProvider.overrideWithValue(
             await SharedPreferences.getInstance(),

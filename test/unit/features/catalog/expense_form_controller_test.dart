@@ -36,6 +36,7 @@ const _fullAccessUser = User(
 
 ProviderContainer _containerFor(User user, ExpenseRepository repository) {
   return ProviderContainer(
+    retry: (_, _) => null,
     overrides: [
       expenseRepositoryProvider.overrideWithValue(repository),
       accessControlProvider.overrideWithValue(

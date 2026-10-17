@@ -1,6 +1,6 @@
-// coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
-// ignore_for_file: type=lint
+// coverage:ignore-file
+// ignore_for_file: type=lint, type=warning, deprecated_member_use, deprecated_member_use_from_same_package
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'user_settings.dart';
@@ -9,333 +9,295 @@ part of 'user_settings.dart';
 // FreezedGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// dart format off
 T _$identity<T>(T value) => value;
-
-final _privateConstructorUsedError = UnsupportedError(
-  'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models',
-);
-
 /// @nodoc
 mixin _$UserSettings {
-  int? get facilityId => throw _privateConstructorUsedError;
-  String? get facilityCode => throw _privateConstructorUsedError;
-  String? get facilityName => throw _privateConstructorUsedError;
-  int? get pointSaleId => throw _privateConstructorUsedError;
-  String? get pointSaleCode => throw _privateConstructorUsedError;
-  String? get pointSaleName => throw _privateConstructorUsedError;
-  int? get cashDrawerId => throw _privateConstructorUsedError;
-  String? get cashDrawerCode => throw _privateConstructorUsedError;
-  String? get cashDrawerName => throw _privateConstructorUsedError;
 
-  /// Create a copy of UserSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  $UserSettingsCopyWith<UserSettings> get copyWith =>
-      throw _privateConstructorUsedError;
+ int? get facilityId; String? get facilityCode; String? get facilityName; int? get pointSaleId; String? get pointSaleCode; String? get pointSaleName; int? get cashDrawerId; String? get cashDrawerCode; String? get cashDrawerName;
+/// Create a copy of UserSettings
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$UserSettingsCopyWith<UserSettings> get copyWith => _$UserSettingsCopyWithImpl<UserSettings>(this as UserSettings, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as UserSettings;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserSettings&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.facilityCode, _this.facilityCode) || other.facilityCode == _this.facilityCode)&&(identical(other.facilityName, _this.facilityName) || other.facilityName == _this.facilityName)&&(identical(other.pointSaleId, _this.pointSaleId) || other.pointSaleId == _this.pointSaleId)&&(identical(other.pointSaleCode, _this.pointSaleCode) || other.pointSaleCode == _this.pointSaleCode)&&(identical(other.pointSaleName, _this.pointSaleName) || other.pointSaleName == _this.pointSaleName)&&(identical(other.cashDrawerId, _this.cashDrawerId) || other.cashDrawerId == _this.cashDrawerId)&&(identical(other.cashDrawerCode, _this.cashDrawerCode) || other.cashDrawerCode == _this.cashDrawerCode)&&(identical(other.cashDrawerName, _this.cashDrawerName) || other.cashDrawerName == _this.cashDrawerName));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as UserSettings;
+  return Object.hash(runtimeType,_this.facilityId,_this.facilityCode,_this.facilityName,_this.pointSaleId,_this.pointSaleCode,_this.pointSaleName,_this.cashDrawerId,_this.cashDrawerCode,_this.cashDrawerName);
+}
+
+@override
+String toString() {
+  final _this = this as UserSettings;
+  return 'UserSettings(facilityId: ${_this.facilityId}, facilityCode: ${_this.facilityCode}, facilityName: ${_this.facilityName}, pointSaleId: ${_this.pointSaleId}, pointSaleCode: ${_this.pointSaleCode}, pointSaleName: ${_this.pointSaleName}, cashDrawerId: ${_this.cashDrawerId}, cashDrawerCode: ${_this.cashDrawerCode}, cashDrawerName: ${_this.cashDrawerName})';
+}
+
+
 }
 
 /// @nodoc
-abstract class $UserSettingsCopyWith<$Res> {
-  factory $UserSettingsCopyWith(
-    UserSettings value,
-    $Res Function(UserSettings) then,
-  ) = _$UserSettingsCopyWithImpl<$Res, UserSettings>;
-  @useResult
-  $Res call({
-    int? facilityId,
-    String? facilityCode,
-    String? facilityName,
-    int? pointSaleId,
-    String? pointSaleCode,
-    String? pointSaleName,
-    int? cashDrawerId,
-    String? cashDrawerCode,
-    String? cashDrawerName,
-  });
-}
+abstract mixin class $UserSettingsCopyWith<$Res>  {
+  factory $UserSettingsCopyWith(UserSettings value, $Res Function(UserSettings) _then) = _$UserSettingsCopyWithImpl;
+@useResult
+$Res call({
+ int? facilityId, String? facilityCode, String? facilityName, int? pointSaleId, String? pointSaleCode, String? pointSaleName, int? cashDrawerId, String? cashDrawerCode, String? cashDrawerName
+});
 
+
+
+
+}
 /// @nodoc
-class _$UserSettingsCopyWithImpl<$Res, $Val extends UserSettings>
+class _$UserSettingsCopyWithImpl<$Res>
     implements $UserSettingsCopyWith<$Res> {
-  _$UserSettingsCopyWithImpl(this._value, this._then);
+  _$UserSettingsCopyWithImpl(this._self, this._then);
 
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
+  final UserSettings _self;
+  final $Res Function(UserSettings) _then;
 
-  /// Create a copy of UserSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? facilityId = freezed,
-    Object? facilityCode = freezed,
-    Object? facilityName = freezed,
-    Object? pointSaleId = freezed,
-    Object? pointSaleCode = freezed,
-    Object? pointSaleName = freezed,
-    Object? cashDrawerId = freezed,
-    Object? cashDrawerCode = freezed,
-    Object? cashDrawerName = freezed,
-  }) {
-    return _then(
-      _value.copyWith(
-            facilityId: freezed == facilityId
-                ? _value.facilityId
-                : facilityId // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            facilityCode: freezed == facilityCode
-                ? _value.facilityCode
-                : facilityCode // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            facilityName: freezed == facilityName
-                ? _value.facilityName
-                : facilityName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            pointSaleId: freezed == pointSaleId
-                ? _value.pointSaleId
-                : pointSaleId // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            pointSaleCode: freezed == pointSaleCode
-                ? _value.pointSaleCode
-                : pointSaleCode // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            pointSaleName: freezed == pointSaleName
-                ? _value.pointSaleName
-                : pointSaleName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            cashDrawerId: freezed == cashDrawerId
-                ? _value.cashDrawerId
-                : cashDrawerId // ignore: cast_nullable_to_non_nullable
-                      as int?,
-            cashDrawerCode: freezed == cashDrawerCode
-                ? _value.cashDrawerCode
-                : cashDrawerCode // ignore: cast_nullable_to_non_nullable
-                      as String?,
-            cashDrawerName: freezed == cashDrawerName
-                ? _value.cashDrawerName
-                : cashDrawerName // ignore: cast_nullable_to_non_nullable
-                      as String?,
-          )
-          as $Val,
-    );
-  }
+/// Create a copy of UserSettings
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? facilityId = freezed,Object? facilityCode = freezed,Object? facilityName = freezed,Object? pointSaleId = freezed,Object? pointSaleCode = freezed,Object? pointSaleName = freezed,Object? cashDrawerId = freezed,Object? cashDrawerCode = freezed,Object? cashDrawerName = freezed,}) {
+  return _then(UserSettings(
+facilityId: freezed == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
+as int?,facilityCode: freezed == facilityCode ? _self.facilityCode : facilityCode // ignore: cast_nullable_to_non_nullable
+as String?,facilityName: freezed == facilityName ? _self.facilityName : facilityName // ignore: cast_nullable_to_non_nullable
+as String?,pointSaleId: freezed == pointSaleId ? _self.pointSaleId : pointSaleId // ignore: cast_nullable_to_non_nullable
+as int?,pointSaleCode: freezed == pointSaleCode ? _self.pointSaleCode : pointSaleCode // ignore: cast_nullable_to_non_nullable
+as String?,pointSaleName: freezed == pointSaleName ? _self.pointSaleName : pointSaleName // ignore: cast_nullable_to_non_nullable
+as String?,cashDrawerId: freezed == cashDrawerId ? _self.cashDrawerId : cashDrawerId // ignore: cast_nullable_to_non_nullable
+as int?,cashDrawerCode: freezed == cashDrawerCode ? _self.cashDrawerCode : cashDrawerCode // ignore: cast_nullable_to_non_nullable
+as String?,cashDrawerName: freezed == cashDrawerName ? _self.cashDrawerName : cashDrawerName // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [UserSettings].
+extension UserSettingsPatterns on UserSettings {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _UserSettings value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _UserSettings() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _UserSettings value)  $default,){
+final _that = this;
+switch (_that) {
+case _UserSettings():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _UserSettings value)?  $default,){
+final _that = this;
+switch (_that) {
+case _UserSettings() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? facilityId,  String? facilityCode,  String? facilityName,  int? pointSaleId,  String? pointSaleCode,  String? pointSaleName,  int? cashDrawerId,  String? cashDrawerCode,  String? cashDrawerName)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _UserSettings() when $default != null:
+return $default(_that.facilityId,_that.facilityCode,_that.facilityName,_that.pointSaleId,_that.pointSaleCode,_that.pointSaleName,_that.cashDrawerId,_that.cashDrawerCode,_that.cashDrawerName);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? facilityId,  String? facilityCode,  String? facilityName,  int? pointSaleId,  String? pointSaleCode,  String? pointSaleName,  int? cashDrawerId,  String? cashDrawerCode,  String? cashDrawerName)  $default,) {final _that = this;
+switch (_that) {
+case _UserSettings():
+return $default(_that.facilityId,_that.facilityCode,_that.facilityName,_that.pointSaleId,_that.pointSaleCode,_that.pointSaleName,_that.cashDrawerId,_that.cashDrawerCode,_that.cashDrawerName);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? facilityId,  String? facilityCode,  String? facilityName,  int? pointSaleId,  String? pointSaleCode,  String? pointSaleName,  int? cashDrawerId,  String? cashDrawerCode,  String? cashDrawerName)?  $default,) {final _that = this;
+switch (_that) {
+case _UserSettings() when $default != null:
+return $default(_that.facilityId,_that.facilityCode,_that.facilityName,_that.pointSaleId,_that.pointSaleCode,_that.pointSaleName,_that.cashDrawerId,_that.cashDrawerCode,_that.cashDrawerName);case _:
+  return null;
+
+}
+}
+
 }
 
 /// @nodoc
-abstract class _$$UserSettingsImplCopyWith<$Res>
-    implements $UserSettingsCopyWith<$Res> {
-  factory _$$UserSettingsImplCopyWith(
-    _$UserSettingsImpl value,
-    $Res Function(_$UserSettingsImpl) then,
-  ) = __$$UserSettingsImplCopyWithImpl<$Res>;
-  @override
-  @useResult
-  $Res call({
-    int? facilityId,
-    String? facilityCode,
-    String? facilityName,
-    int? pointSaleId,
-    String? pointSaleCode,
-    String? pointSaleName,
-    int? cashDrawerId,
-    String? cashDrawerCode,
-    String? cashDrawerName,
-  });
+
+
+class _UserSettings extends UserSettings {
+  const _UserSettings({this.facilityId, this.facilityCode, this.facilityName, this.pointSaleId, this.pointSaleCode, this.pointSaleName, this.cashDrawerId, this.cashDrawerCode, this.cashDrawerName}): super._();
+  
+
+@override final  int? facilityId;
+@override final  String? facilityCode;
+@override final  String? facilityName;
+@override final  int? pointSaleId;
+@override final  String? pointSaleCode;
+@override final  String? pointSaleName;
+@override final  int? cashDrawerId;
+@override final  String? cashDrawerCode;
+@override final  String? cashDrawerName;
+
+/// Create a copy of UserSettings
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$UserSettingsCopyWith<_UserSettings> get copyWith => __$UserSettingsCopyWithImpl<_UserSettings>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserSettings&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.facilityCode, facilityCode) || other.facilityCode == facilityCode)&&(identical(other.facilityName, facilityName) || other.facilityName == facilityName)&&(identical(other.pointSaleId, pointSaleId) || other.pointSaleId == pointSaleId)&&(identical(other.pointSaleCode, pointSaleCode) || other.pointSaleCode == pointSaleCode)&&(identical(other.pointSaleName, pointSaleName) || other.pointSaleName == pointSaleName)&&(identical(other.cashDrawerId, cashDrawerId) || other.cashDrawerId == cashDrawerId)&&(identical(other.cashDrawerCode, cashDrawerCode) || other.cashDrawerCode == cashDrawerCode)&&(identical(other.cashDrawerName, cashDrawerName) || other.cashDrawerName == cashDrawerName));
 }
 
-/// @nodoc
-class __$$UserSettingsImplCopyWithImpl<$Res>
-    extends _$UserSettingsCopyWithImpl<$Res, _$UserSettingsImpl>
-    implements _$$UserSettingsImplCopyWith<$Res> {
-  __$$UserSettingsImplCopyWithImpl(
-    _$UserSettingsImpl _value,
-    $Res Function(_$UserSettingsImpl) _then,
-  ) : super(_value, _then);
 
-  /// Create a copy of UserSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? facilityId = freezed,
-    Object? facilityCode = freezed,
-    Object? facilityName = freezed,
-    Object? pointSaleId = freezed,
-    Object? pointSaleCode = freezed,
-    Object? pointSaleName = freezed,
-    Object? cashDrawerId = freezed,
-    Object? cashDrawerCode = freezed,
-    Object? cashDrawerName = freezed,
-  }) {
-    return _then(
-      _$UserSettingsImpl(
-        facilityId: freezed == facilityId
-            ? _value.facilityId
-            : facilityId // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        facilityCode: freezed == facilityCode
-            ? _value.facilityCode
-            : facilityCode // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        facilityName: freezed == facilityName
-            ? _value.facilityName
-            : facilityName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        pointSaleId: freezed == pointSaleId
-            ? _value.pointSaleId
-            : pointSaleId // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        pointSaleCode: freezed == pointSaleCode
-            ? _value.pointSaleCode
-            : pointSaleCode // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        pointSaleName: freezed == pointSaleName
-            ? _value.pointSaleName
-            : pointSaleName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        cashDrawerId: freezed == cashDrawerId
-            ? _value.cashDrawerId
-            : cashDrawerId // ignore: cast_nullable_to_non_nullable
-                  as int?,
-        cashDrawerCode: freezed == cashDrawerCode
-            ? _value.cashDrawerCode
-            : cashDrawerCode // ignore: cast_nullable_to_non_nullable
-                  as String?,
-        cashDrawerName: freezed == cashDrawerName
-            ? _value.cashDrawerName
-            : cashDrawerName // ignore: cast_nullable_to_non_nullable
-                  as String?,
-      ),
-    );
-  }
+@override
+int get hashCode {
+    return Object.hash(runtimeType,facilityId,facilityCode,facilityName,pointSaleId,pointSaleCode,pointSaleName,cashDrawerId,cashDrawerCode,cashDrawerName);
 }
 
-/// @nodoc
-
-class _$UserSettingsImpl extends _UserSettings {
-  const _$UserSettingsImpl({
-    this.facilityId,
-    this.facilityCode,
-    this.facilityName,
-    this.pointSaleId,
-    this.pointSaleCode,
-    this.pointSaleName,
-    this.cashDrawerId,
-    this.cashDrawerCode,
-    this.cashDrawerName,
-  }) : super._();
-
-  @override
-  final int? facilityId;
-  @override
-  final String? facilityCode;
-  @override
-  final String? facilityName;
-  @override
-  final int? pointSaleId;
-  @override
-  final String? pointSaleCode;
-  @override
-  final String? pointSaleName;
-  @override
-  final int? cashDrawerId;
-  @override
-  final String? cashDrawerCode;
-  @override
-  final String? cashDrawerName;
-
-  @override
-  String toString() {
+@override
+String toString() {
     return 'UserSettings(facilityId: $facilityId, facilityCode: $facilityCode, facilityName: $facilityName, pointSaleId: $pointSaleId, pointSaleCode: $pointSaleCode, pointSaleName: $pointSaleName, cashDrawerId: $cashDrawerId, cashDrawerCode: $cashDrawerCode, cashDrawerName: $cashDrawerName)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$UserSettingsImpl &&
-            (identical(other.facilityId, facilityId) ||
-                other.facilityId == facilityId) &&
-            (identical(other.facilityCode, facilityCode) ||
-                other.facilityCode == facilityCode) &&
-            (identical(other.facilityName, facilityName) ||
-                other.facilityName == facilityName) &&
-            (identical(other.pointSaleId, pointSaleId) ||
-                other.pointSaleId == pointSaleId) &&
-            (identical(other.pointSaleCode, pointSaleCode) ||
-                other.pointSaleCode == pointSaleCode) &&
-            (identical(other.pointSaleName, pointSaleName) ||
-                other.pointSaleName == pointSaleName) &&
-            (identical(other.cashDrawerId, cashDrawerId) ||
-                other.cashDrawerId == cashDrawerId) &&
-            (identical(other.cashDrawerCode, cashDrawerCode) ||
-                other.cashDrawerCode == cashDrawerCode) &&
-            (identical(other.cashDrawerName, cashDrawerName) ||
-                other.cashDrawerName == cashDrawerName));
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    runtimeType,
-    facilityId,
-    facilityCode,
-    facilityName,
-    pointSaleId,
-    pointSaleCode,
-    pointSaleName,
-    cashDrawerId,
-    cashDrawerCode,
-    cashDrawerName,
-  );
-
-  /// Create a copy of UserSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$UserSettingsImplCopyWith<_$UserSettingsImpl> get copyWith =>
-      __$$UserSettingsImplCopyWithImpl<_$UserSettingsImpl>(this, _$identity);
 }
 
-abstract class _UserSettings extends UserSettings {
-  const factory _UserSettings({
-    final int? facilityId,
-    final String? facilityCode,
-    final String? facilityName,
-    final int? pointSaleId,
-    final String? pointSaleCode,
-    final String? pointSaleName,
-    final int? cashDrawerId,
-    final String? cashDrawerCode,
-    final String? cashDrawerName,
-  }) = _$UserSettingsImpl;
-  const _UserSettings._() : super._();
 
-  @override
-  int? get facilityId;
-  @override
-  String? get facilityCode;
-  @override
-  String? get facilityName;
-  @override
-  int? get pointSaleId;
-  @override
-  String? get pointSaleCode;
-  @override
-  String? get pointSaleName;
-  @override
-  int? get cashDrawerId;
-  @override
-  String? get cashDrawerCode;
-  @override
-  String? get cashDrawerName;
-
-  /// Create a copy of UserSettings
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$UserSettingsImplCopyWith<_$UserSettingsImpl> get copyWith =>
-      throw _privateConstructorUsedError;
 }
+
+/// @nodoc
+abstract mixin class _$UserSettingsCopyWith<$Res> implements $UserSettingsCopyWith<$Res> {
+  factory _$UserSettingsCopyWith(_UserSettings value, $Res Function(_UserSettings) _then) = __$UserSettingsCopyWithImpl;
+@override @useResult
+$Res call({
+ int? facilityId, String? facilityCode, String? facilityName, int? pointSaleId, String? pointSaleCode, String? pointSaleName, int? cashDrawerId, String? cashDrawerCode, String? cashDrawerName
+});
+
+
+
+
+}
+/// @nodoc
+class __$UserSettingsCopyWithImpl<$Res>
+    implements _$UserSettingsCopyWith<$Res> {
+  __$UserSettingsCopyWithImpl(this._self, this._then);
+
+  final _UserSettings _self;
+  final $Res Function(_UserSettings) _then;
+
+/// Create a copy of UserSettings
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? facilityId = freezed,Object? facilityCode = freezed,Object? facilityName = freezed,Object? pointSaleId = freezed,Object? pointSaleCode = freezed,Object? pointSaleName = freezed,Object? cashDrawerId = freezed,Object? cashDrawerCode = freezed,Object? cashDrawerName = freezed,}) {
+  return _then(_UserSettings(
+facilityId: freezed == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
+as int?,facilityCode: freezed == facilityCode ? _self.facilityCode : facilityCode // ignore: cast_nullable_to_non_nullable
+as String?,facilityName: freezed == facilityName ? _self.facilityName : facilityName // ignore: cast_nullable_to_non_nullable
+as String?,pointSaleId: freezed == pointSaleId ? _self.pointSaleId : pointSaleId // ignore: cast_nullable_to_non_nullable
+as int?,pointSaleCode: freezed == pointSaleCode ? _self.pointSaleCode : pointSaleCode // ignore: cast_nullable_to_non_nullable
+as String?,pointSaleName: freezed == pointSaleName ? _self.pointSaleName : pointSaleName // ignore: cast_nullable_to_non_nullable
+as String?,cashDrawerId: freezed == cashDrawerId ? _self.cashDrawerId : cashDrawerId // ignore: cast_nullable_to_non_nullable
+as int?,cashDrawerCode: freezed == cashDrawerCode ? _self.cashDrawerCode : cashDrawerCode // ignore: cast_nullable_to_non_nullable
+as String?,cashDrawerName: freezed == cashDrawerName ? _self.cashDrawerName : cashDrawerName // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
+
+// dart format on

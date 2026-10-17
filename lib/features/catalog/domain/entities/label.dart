@@ -8,7 +8,7 @@ part 'label.freezed.dart';
 /// `LabelItem` (id/name) remains the product form's multi-picker and
 /// products-list filter item type, unaffected by this entity.
 @freezed
-class Label with _$Label {
+abstract class Label with _$Label {
   const factory Label({
     required int labelId,
     required String name,

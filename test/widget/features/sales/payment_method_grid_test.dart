@@ -208,6 +208,7 @@ void main() {
     ).thenAnswer((_) => Completer<PaymentMethodOptionPage>().future);
 
     final container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [
         paymentMethodOptionRepositoryProvider.overrideWithValue(optionRepository),
       ],

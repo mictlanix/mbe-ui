@@ -32,7 +32,7 @@ abstract final class VehicleFormErrorCode {
 /// Create/edit form state for a single vehicle. [vehicleId] is `null` in
 /// create mode.
 @freezed
-class VehicleFormState with _$VehicleFormState {
+abstract class VehicleFormState with _$VehicleFormState {
   const factory VehicleFormState({
     int? vehicleId,
     @Default('') String licensePlate,

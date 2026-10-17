@@ -9,7 +9,7 @@ part 'open_sale.freezed.dart';
 /// `GET /sales-orders?point_sale=<id>` (resolved, research.md §5 — scoped
 /// to the cashier's own register, not the whole facility).
 @freezed
-class OpenSale with _$OpenSale {
+abstract class OpenSale with _$OpenSale {
   const factory OpenSale({
     required int id,
     int? serial,

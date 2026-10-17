@@ -26,6 +26,7 @@ void main() {
   setUp(() {
     repository = MockExchangeRateRepository();
     container = ProviderContainer(
+      retry: (_, _) => null,
       overrides: [exchangeRateRepositoryProvider.overrideWithValue(repository)],
     );
     addTearDown(container.dispose);
