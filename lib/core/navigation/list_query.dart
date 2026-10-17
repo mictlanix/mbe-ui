@@ -129,6 +129,18 @@ extension ListQueryX on ListQuery {
   }
 }
 
+/// The URI the user is looking at: the top-most pushed (imperative) route's
+/// URI when there is one, else the base configuration's.
+///
+/// In go_router 17.x `push`/`replace` add an [ImperativeRouteMatch] and leave
+/// `currentConfiguration.uri` at the base route, so reading that alone misses
+/// the query of a pushed screen.
+Uri currentRouteUri(GoRouter router) {
+  final configuration = router.routerDelegate.currentConfiguration;
+  final top = configuration.matches.lastOrNull;
+  return top is ImperativeRouteMatch ? top.matches.uri : configuration.uri;
+}
+
 /// Rebuilds [builder] with the [ListQuery] decoded from the **current**
 /// route location, live.
 ///
@@ -159,7 +171,7 @@ class CurrentListQueryBuilder extends StatelessWidget {
       listenable: router.routerDelegate,
       builder: (context, _) => builder(
         context,
-        ListQuery.fromUri(router.routerDelegate.currentConfiguration.uri),
+        ListQuery.fromUri(currentRouteUri(router)),
       ),
     );
   }
