@@ -107,12 +107,12 @@ Facilities
   -  ~~Replace `Sitio de Produccion` to `Planta``~~
   
 Pos Sales
-  - Can't start a sale if there is no cash session. If session is expired, redirect to close it.
-  - Label filtering not working
-  - Warehouse selector not rendering correctly. Change to pop up
-  - Capture step shouldn't let continue if stock is insufficient
-  - Payment step's `Apply payment` isn't necessary, it should apply payment on type selection
-  - Payment of type cash should accept greater amount's than the charged, and show how much to give back.
+  - ~~Can't start a sale if there is no cash session. If session is expired, redirect to close it.~~
+  - ~~Label filtering not working~~
+  - ~~Warehouse selector not rendering correctly. Change to pop up~~
+  - ~~Capture step shouldn't let continue if stock is insufficient~~
+  - ~~Payment step's `Apply payment` isn't necessary, it should apply payment on type selection~~
+  - ~~Payment of type cash should accept greater amount's than the charged, and show how much to give back.~~
   - Completed sale should show details (read only), but it's redirecting to payment
 
 Customers
@@ -121,3 +121,7 @@ Customers
 Login
   - Change pwd should ask to confirm the new one
   
+## 2026-10-18
+
+Pos Sales
+  - Show stock from other facilities
