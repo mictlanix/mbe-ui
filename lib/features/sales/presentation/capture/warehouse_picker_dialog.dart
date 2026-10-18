@@ -102,11 +102,18 @@ class _WarehousePickerDialog extends ConsumerWidget {
                       key: Key('warehouse_option_${w.warehouseId}'),
                       minTileHeight: 56,
                       selected: isCurrent,
-                      selectedTileColor: scheme.primaryContainer,
-                      selectedColor: scheme.onPrimaryContainer,
+                      // A translucent tint, not a solid primaryContainer: on
+                      // the solid fill the red short/no-stock flag was barely
+                      // legible. The name keeps the regular text colour (an
+                      // amber name on the light theme's cream tint did not
+                      // read); the check alone carries `primary`.
+                      selectedTileColor: scheme.primary.withValues(alpha: 0.16),
+                      selectedColor: scheme.onSurface,
                       leading: SizedBox(
                         width: 24,
-                        child: isCurrent ? const Icon(Icons.check) : null,
+                        child: isCurrent
+                            ? Icon(Icons.check, color: scheme.primary)
+                            : null,
                       ),
                       title: Text(w.name),
                       subtitle: notTracked
@@ -160,7 +167,7 @@ class WarehouseStockFlag extends ConsumerWidget {
     final fmt = ref.watch(formattersProvider);
     final theme = Theme.of(context);
     final outline = theme.textTheme.labelSmall?.copyWith(
-      color: theme.colorScheme.outline,
+      color: theme.colorScheme.onSurfaceVariant,
     );
     final warning = theme.textTheme.labelSmall?.copyWith(
       color: theme.colorScheme.error,
