@@ -37,7 +37,7 @@ flutter test   # full suite, including goldens
 | 7 | S2 | Same view → Ticket | The preview opens, with Print |
 | 8 | S2 | Open a completed sale with a balance, then a paid delivery sale with pending distribution, then a fully distributed one | Cobro, then Entrega, then the detail view |
 | 9 | S2 | Log in as the cashier without `customerPayments` read and open a paid sale | The detail shows, and the payments area reads "No tienes permiso…" |
-| 10 | S3 | New sale. Add a product stocked in another facility, then open the line's warehouse field | Local warehouses, then "Otras sucursales" with facility subheaders and stock flags |
+| 10 | S3 | **As the cashier** (verifies FR-024). New sale. Add a product stocked in another facility, then open the line's warehouse field | Local warehouses, then "Otras sucursales" with facility subheaders and stock flags |
 | 11 | S3 | Pick an other-facility row | The dialog closes, and the line shows "<warehouse> · <facility>". The stock gate uses that warehouse |
 | 12 | S3 | Use a product with no stock elsewhere, then a non-stockable product | First "No hay existencia en otras sucursales.", then local warehouses only |
 | 13 | S3 | Resize to 390 px with a long list | The dialog scrolls, with no overflow |
@@ -45,3 +45,4 @@ flutter test   # full suite, including goldens
 | 15 | S5 | As admin, create a user. Log in as that user | The forced-change screen appears, and typed URLs (e.g. `/sales/pos`) bring the user back |
 | 16 | S5 | On that screen, Logout | Back on login |
 | 17 | S5 | Log in again and change the password (confirm, policy) | The app opens at `/`. On the next login there's no forced screen |
+| 18 | S4 (FR-033) | Log in with an existing account whose password breaks the policy (e.g. a 6-character one set before #241) | Login succeeds, and no password prompt appears |

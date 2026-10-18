@@ -53,9 +53,9 @@ The old `< 6` validators and `fieldMinLength6` / `userPasswordLengthError` usage
   - No back arrow (`automaticallyImplyLeading: false`) and `PopScope(canPop: false)`.
   - Title `passwordRequiredTitle`. The body starts with `passwordRequiredExplanation`.
   - Fields: current password (`current_password_field`), then C1.
-  - Logout button `Key('userMenuLogout')` calls `authProvider.notifier.signOut()`.
+  - Logout button `Key('forced_change_logout')`, labeled with the existing `l10n.userMenuLogout`, calls `authProvider.notifier.signOut()`. (The user menu's own item is keyed `user_menu_logout`; this is a separate button.)
   - On success, it calls `AuthNotifier.reloadCurrentUser()`. No `_SuccessView` is shown, and the redirect takes the user to `/`.
-- **Interceptor**: a `403` whose detail is `password_change_required` invokes `onPasswordChangeRequired`, which sets the flag. The request still fails with its normal error, and the redirect then moves the user. The forced-change screen doesn't show those errors.
+- **Interceptor**: a `403` whose detail is `password_change_required` invokes `onPasswordChangeRequired`, which sets the flag. The request still fails with its normal error, and the redirect then moves the user.
 - **Policy rejection**: a `422 password_policy` from change-password shows one localized `passwordRule*` message per rule in `failedRules` (R3).
 
 ---
@@ -64,7 +64,7 @@ The old `< 6` validators and `fieldMinLength6` / `userPasswordLengthError` usage
 
 **When it shows**: `PosStepState.detail == true` (R6 predicate). In that case:
 - The workspace body renders `PosSaleDetailView(sale)`, keyed `Key('pos_sale_detail')`.
-- The AppBar keeps Back, and its title is `posSaleDetailTitle`.
+- The AppBar keeps Back, and its title is `posSaleDetailTitle` ("Ver venta" / "View sale"). Constitution VI requires a read-only surface to label itself as a View. No edit toggle is offered, because a paid sale can't be edited.
 - These are **not** rendered:
   - `OpenSalesSelector`
   - `_StepIndicator`
@@ -106,7 +106,7 @@ The old `< 6` validators and `fieldMinLength6` / `userPasswordLengthError` usage
 - **Section visibility**: the section shows when `stock != null && stock.stockable`, even if the sale doesn't require a stock check. It also shows when the line's current warehouse is outside the sale facility (FR-026).
 - **Section**: keyed `Key('warehouse_other_facilities')`, below the sale facility's list and inside the same scroll area (capped at about 420 px).
   - **Header**: `posWarehousePickerOtherFacilities`.
-  - **Group subheader**: the facility name (`labelMedium`, `onSurfaceVariant`), or `posWarehousePickerOtherWarehouses` for a group without a facility name.
+  - **Group subheader**: the facility name (`labelMedium`, `onSurfaceVariant`). Stock rows without a facility are skipped.
   - **Rows**: built exactly like the local rows, keyed `warehouse_other_<warehouseId>`:
     - the same `ListTile`, `minTileHeight: 56`;
     - the same `WarehouseStockFlag` against the line's quantity;
@@ -127,5 +127,4 @@ The old `< 6` validators and `fieldMinLength6` / `userPasswordLengthError` usage
 
 **New strings**:
 - `posWarehousePickerOtherFacilities`
-- `posWarehousePickerOtherWarehouses`
 - `posWarehousePickerOtherNone`

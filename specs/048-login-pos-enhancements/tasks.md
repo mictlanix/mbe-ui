@@ -40,8 +40,8 @@ Flutter, feature-first. Auth code is under `lib/features/auth/` (shortened to `a
 
 - [ ] T002 Add the new strings for all five stories to both `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`, following the existing `pos*` and `password*` key naming. Each key's `description` cites spec 048. Then regenerate `lib/l10n/app_localizations*.dart` with `flutter gen-l10n` (do not hand-edit them). Keys:
   - US1: `confirmPasswordLabel`, `confirmNewPasswordLabel`, `passwordMismatchError` ("Las contraseñas no coinciden" / "Passwords don't match")
-  - US2: `posSaleDetailTitle`, `posSaleDetailDateLabel`, `posSaleDetailRegisterLabel`, `posSaleDetailPaymentsForbidden` ("No tienes permiso para ver los pagos de esta venta"), `posPaymentDateLabel`
-  - US3: `posWarehousePickerOtherFacilities` ("Otras sucursales"), `posWarehousePickerOtherWarehouses` ("Otros almacenes", the subheader for a group without a facility name), `posWarehousePickerOtherNone` ("No hay existencia en otras sucursales.")
+  - US2: `posSaleDetailTitle` ("Ver venta" / "View sale"; constitution VI labels a read-only surface as a View), `posSaleDetailDateLabel`, `posSaleDetailRegisterLabel`, `posSaleDetailPaymentsForbidden` ("No tienes permiso para ver los pagos de esta venta"), `posPaymentDateLabel`
+  - US3: `posWarehousePickerOtherFacilities` ("Otras sucursales"), `posWarehousePickerOtherNone` ("No hay existencia en otras sucursales.")
   - US4: `passwordRuleMinLength(count)`, `passwordRuleUpper`, `passwordRuleLower`, `passwordRuleDigit`, `passwordRuleSymbol`, `passwordRulesUnavailable`
   - US5: `passwordRequiredTitle`, `passwordRequiredExplanation`
 
@@ -66,8 +66,8 @@ Flutter, feature-first. Auth code is under `lib/features/auth/` (shortened to `a
   - the confirmation field `new_password_confirm_field`, labeled with a `confirmLabel` parameter.
 
   It keeps a `GlobalKey<FormFieldState>` on the confirmation, and calls `validate()` on it when the new password changes and the confirmation is non-empty. Parameters: `newFieldKey`, `newLabel`, `confirmLabel`, `newValidator`, `enabled`, `onNewChanged`, `onConfirmChanged`, `onSubmitted`
-- [ ] T005 [P] [US1] In `auth/presentation/account/account_controller.dart`, give `ChangePasswordController` a `confirmPassword` field, a `confirmPasswordChanged` method, and a guard in `submit()` that refuses to call the repository when `newPassword != confirmPassword`. Surface the failure as a mismatch error code, not an English string, and convert this controller's existing hard-coded English strings (:36-45) to codes too (data-model §3; plan Constitution Check, principle V)
-- [ ] T006 [US1] In the same file, `auth/presentation/account/account_controller.dart`, apply T005's change to `RecoveryController` (:79-118): `confirmPassword`, `confirmPasswordChanged`, the mismatch guard, and error codes in place of its hard-coded English strings. Run after T005 (same file), and keep the two controllers' shapes identical
+- [ ] T005 [P] [US1] In `auth/presentation/account/account_controller.dart`, give `ChangePasswordController` a `confirmPassword` field, a `confirmPasswordChanged` method, and a guard in `submit()` that refuses to call the repository when `newPassword != confirmPassword`. Surface the failure as a mismatch error code, not an English string, and convert this controller's existing hard-coded English strings (:36-45) to codes too. The codes localize to existing keys: an empty field to `fieldRequired`, and the mismatch to `passwordMismatchError`. Repository failures stay `AppError`s surfaced through the shared `ErrorBanner` (`errorServerGeneric`, `errorNetworkGeneric`, etc.), not a new per-form string (data-model §3; plan Constitution Check, principles III and V)
+- [ ] T006 [US1] In the same file, `auth/presentation/account/account_controller.dart`, apply T005's change to `RecoveryController` (:79-118): `confirmPassword`, `confirmPasswordChanged`, the mismatch guard, and error codes in place of its hard-coded English strings, localized the same way as T005. Run after T005 (same file), and keep the two controllers' shapes identical
 - [ ] T007 [P] [US1] In `auth/presentation/admin/users_controller.dart`, give `UserFormController` a `confirmPassword` field and `passwordConfirmChanged`, and add `UserFormErrorCode.passwordMismatch`. `save()` (:299-384) refuses a create-mode save when the password and confirmation differ. Regenerate the freezed output
 - [ ] T008 [US1] Wire `NewPasswordFields` into `auth/presentation/account/change_password_screen.dart`:
   - the current-password field stays as is;
@@ -128,7 +128,7 @@ Flutter, feature-first. Auth code is under `lib/features/auth/` (shortened to `a
 
   Expanded: a payments rail beside the lines. Compact: one scrolling column. Depends on T017, T018, T019
 - [ ] T021 [US2] In `sales/presentation/pos_workspace_screen.dart`:
-  - In `_syncStepTo` (:174-202), decide the mode once per sale id. For a paid, zero-balance sale, read `saleDestinationsProvider` only when `saleIsDelivery` is true, and wait for it like the facility address (`hasValue || hasError`). Then call `opensAsReadOnlyDetail` and `jumpTo(..., detail: true)`.
+  - In `_syncStepTo` (:174-202), decide the mode once per sale id. For a paid, zero-balance sale, read `saleDestinationsProvider` only when `saleIsDelivery` is true, and wait for it like the facility address (`hasValue || hasError`), showing the same loading state the workspace already shows during that wait. Then call `opensAsReadOnlyDetail` and `jumpTo(..., detail: true)`.
   - In `build()`, when `step.detail` is set, render `PosSaleDetailView` instead of the step host (:670-685), and hide `OpenSalesSelector`, `_StepIndicator` and `PosSessionBlockedBanner`.
   - Correct the comment at :282-284.
 
@@ -157,8 +157,8 @@ Flutter, feature-first. Auth code is under `lib/features/auth/` (shortened to `a
 - [ ] T023 [P] [US3] Write `test/unit/features/sales/other_facility_stock_test.dart` in the style of `stock_gate_test.dart`. Cover `otherFacilityStock`:
   - rows with `available <= 0` are dropped, except the `currentWarehouse` row;
   - a row whose `facilityId` differs from the sale facility is "other";
-  - a null-`facilityId` row is "other" only when its id is not a sale warehouse;
-  - groups sort by name with null last, and warehouses sort by name;
+  - a row without a `facilityId` is skipped;
+  - groups sort by facility name, and warehouses sort by name;
   - no other stock gives an empty list.
 
   Cover `lineWarehouseLabel`:
@@ -166,12 +166,13 @@ Flutter, feature-first. Auth code is under `lib/features/auth/` (shortened to `a
   - then the stock row's `"<name> · <facility>"`;
   - then `#<id>`;
   - never empty.
-- [ ] T024 [P] [US3] Write `test/unit/features/sales/product_lookup_result_test.dart`: `WarehouseStock.fromResponse` maps `facility` and `facilityName`, and keeps them null when the response has none
+- [ ] T024 [P] [US3] Write `test/unit/features/sales/product_lookup_result_test.dart`: `WarehouseStock.fromResponse` maps `facility` and `facilityName`
 - [ ] T025 [P] [US3] Extend `test/widget/features/sales/warehouse_picker_dialog_test.dart`, using its `openPicker` helper and `const ProductStock(...)` fixtures:
   - the section renders below the local list, with a facility subheader per group;
   - tapping an other-facility row **pops its warehouse id**;
   - a line whose current warehouse is another facility's shows that row as selected;
   - a current warehouse in neither list shows as a selected `#id` row;
+  - **the #182 case**: a non-stockable product, and an uncached one (`stock == null`), whose line is booked to another facility's warehouse still list that warehouse, selected, as a `#id` row;
   - the empty message shows when nothing is available elsewhere;
   - a non-stockable product shows no other rows;
   - a stockable product with `stockRequired == false` still shows them;
@@ -180,14 +181,14 @@ Flutter, feature-first. Auth code is under `lib/features/auth/` (shortened to `a
 ### Implementation for User Story 3
 
 - [ ] T026 [US3] Add `int? facilityId` and `String? facilityName` to `WarehouseStock` in `lib/features/sales/domain/entities/product_lookup_result.dart`, map them in `fromResponse` (:60-75) from `ProductStockResponse.facility` / `.facilityName`, and regenerate the freezed output
-- [ ] T027 [US3] Create `sales/presentation/capture/other_facility_stock.dart` with `OtherFacilityGroup {facilityId?, facilityName?, warehouses}`. Add two pure functions, exactly as in data-model §7 and R8:
+- [ ] T027 [US3] Create `sales/presentation/capture/other_facility_stock.dart` with `OtherFacilityGroup {facilityId, facilityName, warehouses}`. Rows without a facility are skipped. Add two pure functions, exactly as in data-model §7 and R8:
   - `otherFacilityStock(ProductStock, {required int saleFacilityId, required Set<int> saleWarehouseIds, int? currentWarehouse})`;
   - `lineWarehouseLabel(int warehouseId, {required List<Warehouse> facilityWarehouses, ProductStock? stock})`.
 
   Depends on T026
 - [ ] T028 [US3] In `sales/presentation/capture/warehouse_picker_dialog.dart`, add `required int facilityId` to `showWarehousePicker` (:17-35), and derive the sale's warehouse ids from the `warehouses` it already receives. Render the C4 section:
   - header `posWarehousePickerOtherFacilities`;
-  - a subheader per group (facility name, or `posWarehousePickerOtherWarehouses` when unnamed);
+  - a subheader per group (the facility name);
   - rows built exactly like the local ones: `ListTile`, `minTileHeight: 56`, the same `WarehouseStockFlag` against the line's quantity, the selected tint and check on the current warehouse, and **tap pops the id**. Key them `warehouse_other_<id>`;
   - the `#id` row for a current warehouse found in neither list;
   - the empty message.
@@ -236,9 +237,9 @@ Flutter, feature-first. Auth code is under `lib/features/auth/` (shortened to `a
   - `passwordRulesUnavailable` on error;
   - hidden while loading.
 
-  Remove the `newValidator` parameter that US1 added, since the policy replaces it. Depends on T035
+  Keep the `newValidator` parameter for now; T038 removes it together with its call sites, so the build never breaks in between. Depends on T035
 - [ ] T038 [US4] Replace the duplicated length checks with the policy:
-  - In `change_password_screen.dart`, `forgot_password_screen.dart` and `admin/user_detail_screen.dart`, pass `policy: ref.watch(passwordPolicyProvider)`.
+  - In `change_password_screen.dart`, `forgot_password_screen.dart` and `admin/user_detail_screen.dart`, pass `policy: ref.watch(passwordPolicyProvider)` and stop passing `newValidator`. Then remove the `newValidator` parameter from `NewPasswordFields`, since the policy replaces it.
   - In `account_controller.dart` (both controllers) and `users_controller.dart`, replace the `< 6` / `UserFormErrorCode.passwordLength` guards with `policy.unmet(newPassword).isEmpty` when the policy loaded. When it didn't load, don't block.
   - Remove the `fieldMinLength6`, `passwordLengthError` and `userPasswordLengthError` usages on these forms. Delete a key from both `.arb` files only if nothing else uses it.
 
@@ -283,10 +284,10 @@ Flutter, feature-first. Auth code is under `lib/features/auth/` (shortened to `a
 - [ ] T046 [US5] Add a `forced` mode to `ChangePasswordScreen` (`auth/presentation/account/change_password_screen.dart`, C2):
   - no back arrow (`automaticallyImplyLeading: false`), and `PopScope(canPop: false)`;
   - title `passwordRequiredTitle`, then a `passwordRequiredExplanation` body;
-  - a Logout button keyed `userMenuLogout` that calls `authProvider.notifier.signOut()`;
+  - a Logout button keyed `forced_change_logout`, labeled with the existing `l10n.userMenuLogout`, that calls `authProvider.notifier.signOut()`;
   - on success, `reloadCurrentUser()` instead of `_SuccessView`.
 
-  Errors from `403 password_change_required` requests made by other providers must not appear here. Depends on T045
+  Depends on T045
 - [ ] T047 [US5] In `lib/app/router/app_router.dart`:
   - add `GoRoute('/auth/password-required')` building `ChangePasswordScreen(forced: true)`, next to the other `/auth/*` routes (:319-334);
   - add it to the `requiresSession` check (:513);
@@ -295,7 +296,7 @@ Flutter, feature-first. Auth code is under `lib/features/auth/` (shortened to `a
   Make T042 pass. Depends on T043, T046
 - [ ] T048 [US5] Add widget tests for the forced mode in `test/widget/features/auth/change_password_screen_test.dart`:
   - no back button;
-  - logout signs out;
+  - `forced_change_logout` signs out;
   - a successful change calls `reloadCurrentUser` and leaves the screen;
   - a `422 password_policy` shows the rule messages;
   - no horizontal scroll at 390 px.
@@ -312,8 +313,8 @@ Flutter, feature-first. Auth code is under `lib/features/auth/` (shortened to `a
 
 - [ ] T049 [P] Run `flutter analyze` and fix anything this feature introduced (the Dart MCP `analyze_files` tool is fine). Then run `dart format` on the touched files only
 - [ ] T050 Run the full suite (`flutter test`) and compare against the baseline recorded in T001
-- [ ] T051 Walk quickstart scenarios 1–17 in `flutter run -d chrome` against a dev backend with migration `021` applied, using the `MBE_POS_*` admin account plus a cashier without `customerPayments` read for scenario 9. Check 390 px for scenarios 6, 10, 13 and 15
-- [ ] T052 Set the **Status** of `specs/048-login-pos-enhancements/spec.md` to Implemented. Note in the PR description that it fixes mictlanix/mbe-ui#182, so merging closes it
+- [ ] T051 Walk quickstart scenarios 1–18 in `flutter run -d chrome` against a dev backend with migration `021` applied, using the `MBE_POS_*` admin account plus a cashier without `customerPayments` read for scenarios 9 and 10. Scenario 10 run as the cashier verifies FR-024, and scenario 18 verifies FR-033. Check 390 px for scenarios 6, 10, 13 and 15
+- [ ] T052 Set the **Status** of `specs/048-login-pos-enhancements/spec.md` to Implemented, then run `/speckit-companion-mark-complete` to record `completed`, as spec 047 did. Note in the PR description that it fixes mictlanix/mbe-ui#182, so merging closes it
 
 ---
 

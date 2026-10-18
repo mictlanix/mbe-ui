@@ -62,11 +62,9 @@ Each entry gives the decision, why it was chosen, and what was rejected. File re
 - **User flag**: `User` (`core/access/user.dart`) gains `@Default(false) bool mustChangePassword`, mapped in `User.fromResponse` from `UserResponse.mustChangePassword` (nullable in the generated model, so treat `null` as false). Login already calls `me()` after the token, so the `TokenResponse` copy isn't needed.
 - **Route**: a new `/auth/password-required` route, added to `requiresSession` (`app_router.dart:513`).
 - **Redirect**: in `_redirect`, after the unauthenticated branch and before `/auth/login → /`, a flagged user is sent to `/auth/password-required`, and an unflagged user who lands there goes to `/`. `_AuthRefreshListenable` already re-runs the redirect when the session changes.
-- **Screen**: `ChangePasswordScreen(forced: true)`. It has no back button, uses `PopScope(canPop: false)`, shows an explanation, and offers a Logout action (`authProvider.notifier.signOut()`, key `userMenuLogout`).
+- **Screen**: `ChangePasswordScreen(forced: true)`. It has no back button, uses `PopScope(canPop: false)`, shows an explanation, and offers a Logout button (`authProvider.notifier.signOut()`, key `forced_change_logout`, labeled with the existing `l10n.userMenuLogout`; the user menu's item is keyed `user_menu_logout`).
 - **After the change**: success calls a new `AuthNotifier.reloadCurrentUser()` (`me()` → new authenticated state). The flag clears, and the redirect continues to `/` (FR-043; the normal post-login destination is always `/`).
 - **Server refusal (FR-044)**: `AuthInterceptor` gains `onPasswordChangeRequired`, mirroring `onUnauthorized`. It fires on a `403` whose detail is `password_change_required`. `AuthNotifier` wires it to set `mustChangePassword: true`.
-
-**Post-login 403s**: right after login, screens that load before the redirect settles may fire requests that come back `403 password_change_required`. The interceptor hook turns those into the redirect, and they must not show an error banner on the forced-change screen.
 
 **Verified**: PR #246 confirms that `change_password` and `complete_recovery` still do **not** bump `session_version`, so the follow-up `/auth/me` succeeds. `reloadCurrentUser` still signs out on a `401` in case that changes later.
 
@@ -136,7 +134,7 @@ bool opensAsReadOnlyDetail(Sale sale, {required bool isDelivery, List<Destinatio
 - **Entity**: `WarehouseStock` gains `int? facilityId` and `String? facilityName`, mapped in `fromResponse` from the regenerated `ProductStockResponse.facility` / `facilityName`. PR #244 makes both nullable: they are null only for an explicitly requested warehouse that doesn't exist, which the capture never asks for.
 - **Pure helper**: `otherFacilityStock(ProductStock, {required int saleFacilityId, required Set<int> saleWarehouseIds, int? currentWarehouse})` in `capture/other_facility_stock.dart`.
   - It keeps a row when `available > 0`, or when the row is the line's current warehouse.
-  - A row is "other" when its `facilityId` differs from the sale's facility. A row with a null `facilityId` is "other" when its id isn't one of the sale facility's warehouses.
+  - A row is "other" when its `facilityId` differs from the sale's facility. A row without a facility is skipped: since #242 that happens only for an explicitly requested warehouse that doesn't exist, which the capture never asks for.
   - It groups rows by facility, sorts groups by name, and sorts warehouses by name inside each group.
 - **Dialog**: `showWarehousePicker` gains `required int facilityId`.
   - **Section**: shown when `stock != null && stock.stockable`, even when the sale doesn't require a stock check. An uncached product shows no section, rather than wrongly saying "not available".

@@ -92,13 +92,13 @@ All three existing controllers gain the same two members:
 
 | Field | Type |
 |---|---|
-| `facilityId` | `int?` (null only when the row has no facility, which the capture never requests) |
-| `facilityName` | `String?` |
+| `facilityId` | `int` |
+| `facilityName` | `String` (falls back to `#<facilityId>` if the row has no name) |
 | `warehouses` | `List<WarehouseStock>` |
 
 `otherFacilityStock(stock, saleFacilityId, saleWarehouseIds, currentWarehouse) → List<OtherFacilityGroup>`:
-- **Kept rows**: other-facility rows with `available > 0`, plus the row for `currentWarehouse` whatever its stock.
-- **Sorting**: groups sort by `facilityName`, with null last. Warehouses sort by `warehouseName`.
+- **Kept rows**: other-facility rows with `available > 0`, plus the row for `currentWarehouse` whatever its stock. Rows without a `facilityId` are skipped.
+- **Sorting**: groups sort by `facilityName`. Warehouses sort by `warehouseName`.
 
 `lineWarehouseLabel(warehouseId, facilityWarehouses, stock) → String` (FR-025) tries each source in order:
 1. the facility list's name;
