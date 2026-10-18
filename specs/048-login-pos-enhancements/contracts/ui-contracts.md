@@ -43,7 +43,7 @@ The old `< 6` validators and `fieldMinLength6` / `userPasswordLengthError` usage
 
 ---
 
-## C2: Forced password change (Story 5, **blocked on #240**)
+## C2: Forced password change (Story 5)
 
 - **Route** `/auth/password-required`: requires a session (it is added to the `requiresSession` check).
 - **Redirect**:
@@ -55,7 +55,8 @@ The old `< 6` validators and `fieldMinLength6` / `userPasswordLengthError` usage
   - Fields: current password (`current_password_field`), then C1.
   - Logout button `Key('userMenuLogout')` calls `authProvider.notifier.signOut()`.
   - On success, it calls `AuthNotifier.reloadCurrentUser()`. No `_SuccessView` is shown, and the redirect takes the user to `/`.
-- **Interceptor**: a `403` whose detail is `password_change_required` invokes `onPasswordChangeRequired`, which sets the flag. The request still fails with its normal error. The redirect then moves the user.
+- **Interceptor**: a `403` whose detail is `password_change_required` invokes `onPasswordChangeRequired`, which sets the flag. The request still fails with its normal error, and the redirect then moves the user. The forced-change screen doesn't show those errors.
+- **Policy rejection**: a `422 password_policy` from change-password shows one localized `passwordRule*` message per rule in `failedRules` (R3).
 
 ---
 
@@ -99,16 +100,30 @@ The old `< 6` validators and `fieldMinLength6` / `userPasswordLengthError` usage
 
 ---
 
-## C4: Warehouse pop-up, other-facilities section (Story 3): `capture/warehouse_picker_dialog.dart`
+## C4: Warehouse pop-up, other-facilities section (Story 3, mbe-ui#182): `capture/warehouse_picker_dialog.dart`
 
 - **Signature**: `showWarehousePicker(..., required int facilityId)`. The caller, `sale_line_editing.dart`, passes the sale's facility.
-- **Visibility**: the section shows only when `stock != null && stock.stockable`.
+- **Section visibility**: the section shows when `stock != null && stock.stockable`, even if the sale doesn't require a stock check. It also shows when the line's current warehouse is outside the sale facility (FR-026).
 - **Section**: keyed `Key('warehouse_other_facilities')`, below the sale facility's list and inside the same scroll area (capped at about 420 px).
-  - **Header**: `posWarehousePickerOtherFacilities` once facility data is present. Before #242, the single null group's heading is `posWarehousePickerOtherWarehouses`.
-  - **Group subheader**: the facility name (`labelMedium`, `onSurfaceVariant`).
-  - **Rows**: `ListTile(enabled: false)` with no `onTap`, keyed `warehouse_other_<warehouseId>`. Each has `Icons.store_outlined`, the warehouse name (or `#id`), and trailing `fmt.field.quantity(available)`.
-  - **Empty**: when there are no groups, the section shows `posWarehousePickerOtherNone`.
-- **Selection**: tapping another facility's row pops nothing and leaves the selection unchanged.
+  - **Header**: `posWarehousePickerOtherFacilities`.
+  - **Group subheader**: the facility name (`labelMedium`, `onSurfaceVariant`), or `posWarehousePickerOtherWarehouses` for a group without a facility name.
+  - **Rows**: built exactly like the local rows, keyed `warehouse_other_<warehouseId>`:
+    - the same `ListTile`, `minTileHeight: 56`;
+    - the same `WarehouseStockFlag` against the line's quantity;
+    - the selected tint and check on the current warehouse.
+
+    **Tapping a row pops its warehouse id**, the same as a local row (FR-022).
+  - **Current warehouse, unknown**: when the line's current warehouse is in neither list (an uncached or non-stockable product), it appears as a selected row at the top of the section, named `#<id>`, with the "unknown" flag.
+  - **Empty**: for a stockable product with no other-facility rows, the section shows `posWarehousePickerOtherNone`.
+
+## C5: Line warehouse label (FR-025, mbe-ui#182): `capture/sale_line_editing.dart`
+
+- The closed warehouse field shows `lineWarehouseLabel(...)`, which is never empty. It tries, in order:
+  1. the facility list's name;
+  2. the cached stock row's `"<warehouseName> · <facilityName>"`;
+  3. `#<id>`.
+- **Layout**: it stays a single ellipsized `Text` line, so the band's measured height and baseline are unchanged. The existing `sale_line_row_test` and `sale_line_symmetry_test` must pass.
+- **Read-only**: the read-only detail view (C3) uses the same label, through the disabled line rows.
 
 **New strings**:
 - `posWarehousePickerOtherFacilities`

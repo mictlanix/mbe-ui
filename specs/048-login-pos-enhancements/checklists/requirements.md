@@ -37,3 +37,8 @@
   - The forced change applies to new users and to admin resets. Admin resets turned out to already have the user choose their own password.
   - Other-facility stock appears in the warehouse pop-up.
   - The policy applies only when a password is set.
+- Revised on 2026-10-18 after mbe-api#240, #241 and #242 shipped (PRs #244–#246) and the client was regenerated:
+  - The staged/interim behavior was removed.
+  - Story 3 rows became **selectable**, and the story now also fixes mbe-ui#182. It gained FR-025 and FR-026, because mbe-api PR #236 accepts cross-facility lines.
+  - The admin must-change-password switch is out of scope.
+  - All items still pass.

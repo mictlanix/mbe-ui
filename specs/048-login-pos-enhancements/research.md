@@ -21,52 +21,54 @@ Each entry gives the decision, why it was chosen, and what was rejected. File re
 
 ---
 
-## R2 — Password policy: a domain entity, with an interim source until mbe-api#241 ships (Story 4)
+## R2 — Password policy: a domain entity read from the server (Story 4)
 
 **Decision**:
 - **Entity**: a freezed `PasswordPolicy {minLength, requireUpper, requireLower, requireDigit, requireSymbol}` in `features/auth/domain/entities/password_policy.dart`. It has `enum PasswordRule {minLength, upper, lower, digit, symbol}`, a pure `Set<PasswordRule> unmet(String)`, and `List<PasswordRule> get rules`.
-- **Interim value**: `PasswordPolicy.interim = (minLength: 6, all others false)`. This matches today's server rule.
-- **Source**: `AuthRepository.passwordPolicy()` is exposed as `passwordPolicyProvider`. It returns `interim` with no network call until #241 ships. After the client is regenerated, it calls the generated `GET /auth/password-policy`.
-- **No login needed**: the endpoint is public, and `AuthInterceptor` attaches a bearer token only when one is stored (`core/network/auth_interceptor.dart:28-31`). So the pre-login Forgot screen works.
+- **Source**: `AuthRepository.passwordPolicy()` calls the generated `AuthApi` operation for `GET /auth/password-policy` and maps `PasswordPolicyResponse` (`lib/generated/openapi/lib/src/model/password_policy_response.dart`). It is exposed as `passwordPolicyProvider`.
+- **No login needed**: the endpoint is public. The generated op has `'secure': []`, and `AuthInterceptor` attaches a bearer token only when one is stored (`core/network/auth_interceptor.dart:28-31`). So the pre-login Forgot screen works, and so does a flagged user (the endpoint doesn't go through the 403 check).
+- **Server default** (mbe-api PR #245): 8 characters, upper, lower and digit; no symbol.
 - **Checklist**: `NewPasswordFields` shows one row per rule, met or unmet, and the forms block submission while any rule is unmet. This replaces every hard-coded `< 6` check (widget validators and controllers).
-- **Failure to load**: the checklist shows `passwordRulesUnavailable`, the client does not block, and the server stays the source of truth.
+- **Failure to load**: the checklist shows `passwordRulesUnavailable`, the client does not block, and the server stays the source of truth. There is no hard-coded fallback policy.
 
-**Rationale**: building the checklist now removes three duplicated length checks. The swap after #241 then touches only the repository. Until #241 ships, the checklist shows a single rule ("At least 6 characters"), which is honest. FR-030 is fully met once #241 ships (recorded in plan Complexity Tracking).
+**Rationale**: the rules come from the deployment (FR-030), and three duplicated length checks go away.
 
 **Alternatives rejected**:
-- *Hard-coding the 8/upper/lower/digit default in the client now*: this breaks FR-030. It would also reject passwords the server still accepts, and the reverse once a deployment changes its policy.
-- *Waiting for #241 before building anything*: this leaves the duplicated `< 6` checks in place and makes the post-#241 work bigger.
+- *Hard-coding the server default in the client*: this breaks FR-030 the first time a deployment changes its policy.
+- *A local fallback policy when the call fails*: it could contradict the server. The server enforces regardless.
 
 ---
 
 ## R3 — Mapping server policy rejections
 
-**Decision**: a 422 already becomes `ValidationError(List<FieldError{loc, msg, type}>)` (`auth_interceptor.dart:59-60, 109-123`). Add a pure `PasswordRule? ruleFromFieldError(FieldError)` keyed on the rule names #241 proposes (`min_length`, `require_upper`, `require_lower`, `require_digit`, `require_symbol`, read from `ctx.failed` or `type`).
-- Each form maps a match to the localized `passwordRule*` string.
-- An unknown error falls back to the raw `msg`.
+**Decision**: a 422 already becomes `ValidationError(List<FieldError{loc, msg, type}>)` (`auth_interceptor.dart:59-60, 109-123`). mbe-api PR #245 settled the shape as `{"type": "password_policy", "loc": ["body", "<field>"], "ctx": {"failed": ["min_length", "require_digit"]}}`.
+- `FieldError` (`core/errors/app_error.dart:38-44`) keeps only `loc`, `msg` and `type`. `_fieldErrorsFrom` (`auth_interceptor.dart:109-123`) drops `ctx`. So add `@Default(<String>[]) List<String> failedRules` to `FieldError`, filled from `ctx.failed` when that is a list of strings. `input` (the echoed password) is still never read.
+- Add a pure `Set<PasswordRule> rulesFromFieldError(FieldError)`. It returns the rules named in `failedRules` when `type == 'password_policy'`, and an empty set otherwise. Unknown rule names are ignored.
+- Each form shows the localized `passwordRule*` string for every failed rule.
+- An unmatched error falls back to the raw `msg`.
 - The admin form currently stores only the first raw `msg` (`users_controller.dart:374-375`). It switches to the same mapper.
 
 **Rationale**: there's no new `AppError` variant, so the exhaustive switches in `app_error.dart` and `error_banner.dart` don't change.
 
 **Alternatives rejected**: a `PasswordPolicyError` subtype, which adds churn for no UX gain.
 
-**Open contract item**: the exact shape of the 422 is agreed in mbe-api#241. The mapper is the only code that depends on it.
+**Note**: like every FastAPI 422, the response echoes `input`, which here is the rejected password. The client must not log or display `input`.
 
 ---
 
-## R4 — Forced change: designed now, built when mbe-api#240 ships (Story 5)
+## R4 — Forced change (Story 5)
 
-**Decision**: Story 5's tasks are **blocked on #240**, and nothing for them ships beforehand. The design:
-- **User flag**: `User` (`core/access/user.dart`) gains `@Default(false) bool mustChangePassword`, mapped in `User.fromResponse` from the regenerated `UserResponse.must_change_password`.
+**Decision**: mbe-api PR #246 shipped the flag as specified. It is set by `POST /users`, and cleared by `POST /auth/change-password` and `POST /auth/recover`. It appears on `UserResponse`, `UserListItem` and `TokenResponse`. While the flag is set, every request answers `403 {"detail": "password_change_required"}`, except `/auth/me` and `/auth/change-password`. The design:
+- **User flag**: `User` (`core/access/user.dart`) gains `@Default(false) bool mustChangePassword`, mapped in `User.fromResponse` from `UserResponse.mustChangePassword` (nullable in the generated model, so treat `null` as false). Login already calls `me()` after the token, so the `TokenResponse` copy isn't needed.
 - **Route**: a new `/auth/password-required` route, added to `requiresSession` (`app_router.dart:513`).
 - **Redirect**: in `_redirect`, after the unauthenticated branch and before `/auth/login → /`, a flagged user is sent to `/auth/password-required`, and an unflagged user who lands there goes to `/`. `_AuthRefreshListenable` already re-runs the redirect when the session changes.
 - **Screen**: `ChangePasswordScreen(forced: true)`. It has no back button, uses `PopScope(canPop: false)`, shows an explanation, and offers a Logout action (`authProvider.notifier.signOut()`, key `userMenuLogout`).
 - **After the change**: success calls a new `AuthNotifier.reloadCurrentUser()` (`me()` → new authenticated state). The flag clears, and the redirect continues to `/` (FR-043; the normal post-login destination is always `/`).
 - **Server refusal (FR-044)**: `AuthInterceptor` gains `onPasswordChangeRequired`, mirroring `onUnauthorized`. It fires on a `403` whose detail is `password_change_required`. `AuthNotifier` wires it to set `mustChangePassword: true`.
 
-**Rationale**: with the flag always false, the code would ship inactive. That is speculative code that nothing exercises, against CLAUDE.md §2. Constitution III also says consumption proceeds once the upstream change ships.
+**Post-login 403s**: right after login, screens that load before the redirect settles may fire requests that come back `403 password_change_required`. The interceptor hook turns those into the redirect, and they must not show an error banner on the forced-change screen.
 
-**Verified risk**: mbe-api's `change_password` does **not** bump `session_version` (`user_service.py:253-255`), so the follow-up `/auth/me` succeeds rather than returning 401. If #240 also starts bumping it, `reloadCurrentUser` must handle a 401 by sending the user to login. Recorded for the #240 consumption task.
+**Verified**: PR #246 confirms that `change_password` and `complete_recovery` still do **not** bump `session_version`, so the follow-up `/auth/me` succeeds. `reloadCurrentUser` still signs out on a `401` in case that changes later.
 
 ---
 
@@ -127,50 +129,52 @@ bool opensAsReadOnlyDetail(Sale sale, {required bool isDelivery, List<Destinatio
 
 ---
 
-## R8 — Other-facility stock in the warehouse pop-up (Story 3)
+## R8 — Other-facility warehouses in the pop-up, selectable (Story 3, mbe-ui#182)
 
 **Decision**:
 - **Data**: the stock cache already holds every non-transit warehouse in every facility. `ensureStockFor` and the capture search never pass `warehouse` (`capture_step.dart:412-416`, `sales_order_repository_impl.dart:255-270`). Only the dialog hides those rows, because it iterates the facility's warehouse list.
-- **Entity**: after #242 ships, `WarehouseStock` gains `int? facilityId` and `String? facilityName`, mapped in `fromResponse`.
-- **Pure helper**: `otherFacilityStock(ProductStock, {required int saleFacilityId, required Set<int> saleWarehouseIds})` in `capture/other_facility_stock.dart`.
-  - It keeps a row only when `available > 0`.
-  - A row is "other" when its `facilityId` is set and differs from the sale's facility. A row with a null `facilityId` is "other" when its warehouse id is not one of the sale facility's warehouses.
-  - It groups rows by facility, sorts groups by name, and puts the unknown-facility group last.
-- **Dialog**: `showWarehousePicker` gains `required int facilityId`. The section shows only when `stock != null && stock.stockable`.
-  - It shows for any stock-tracked product, even when the sale doesn't require a stock check (`stockRequired == false`).
-  - An uncached product shows nothing, rather than wrongly saying "not available".
-  - Rows are `ListTile(enabled: false)` with no `onTap` (FR-022), keyed `warehouse_other_<id>`.
-  - Quantities go through `fmt.field.quantity`.
-  - Both sections share one scroll area capped at about 420 px, so long lists scroll at 390 px (§VI).
+- **Entity**: `WarehouseStock` gains `int? facilityId` and `String? facilityName`, mapped in `fromResponse` from the regenerated `ProductStockResponse.facility` / `facilityName`. PR #244 makes both nullable: they are null only for an explicitly requested warehouse that doesn't exist, which the capture never asks for.
+- **Pure helper**: `otherFacilityStock(ProductStock, {required int saleFacilityId, required Set<int> saleWarehouseIds, int? currentWarehouse})` in `capture/other_facility_stock.dart`.
+  - It keeps a row when `available > 0`, or when the row is the line's current warehouse.
+  - A row is "other" when its `facilityId` differs from the sale's facility. A row with a null `facilityId` is "other" when its id isn't one of the sale facility's warehouses.
+  - It groups rows by facility, sorts groups by name, and sorts warehouses by name inside each group.
+- **Dialog**: `showWarehousePicker` gains `required int facilityId`.
+  - **Section**: shown when `stock != null && stock.stockable`, even when the sale doesn't require a stock check. An uncached product shows no section, rather than wrongly saying "not available".
+  - **Rows**: built like the local rows. Same `ListTile`, tap pops the warehouse id (FR-022), same `WarehouseStockFlag` against the line's quantity, and the selected tint when it is the current warehouse. They are keyed `warehouse_other_<id>`.
+  - **Current warehouse elsewhere**: when the line's current warehouse is in neither the local list nor the stock rows (an uncached or non-stockable product), it gets a selected row of its own at the top of the section, named by `#id` (FR-026).
+  - **Scroll**: both sections share one scroll area capped at about 420 px, so long lists scroll at 390 px (§VI).
+- **Line field (FR-025, #182)**: today `warehousePicker` (`sale_line_editing.dart:358-361`) looks the name up only in the facility list and otherwise shows an empty string. A new pure `lineWarehouseLabel(warehouseId, {facilityWarehouses, stock})` resolves the name in this order:
+  1. the facility list;
+  2. the cached stock row, as `"<warehouseName> · <facilityName>"`;
+  3. `#<id>`.
 
-**Before and after #242**: until #242 ships, every facility is null. The helper excludes the sale facility's warehouses by id and shows the rest under one heading, "Other warehouses" (`posWarehousePickerOtherWarehouses`), without grouping. That partly meets FR-021 until #242 ships, which is recorded in Complexity Tracking. Once the client is regenerated, real facility groups appear with **no code change** beyond the entity mapping.
+  The band keeps its height: a single ellipsized `Text` line (§VI measuring tests).
+- **Stock gate**: no change is needed. `evaluateLines` (`stock_gate.dart:41-65`) looks up `stock.warehouses` by warehouse id, so it already works for any warehouse.
 
-**Rationale**: the feature ships now and finishes itself on regeneration.
+**Rationale**: legacy sells across facilities (14% of 2026 lines, mbe-api PR #236), and mbe-api accepts it. Making the rows selectable matches that. It also fixes #182 with the same data, with no extra request and no new privilege.
 
 **Alternatives rejected**:
-- *Hiding the section until #242*: no value until #242 ships.
-- *Fetching `GET /warehouses`*: cashiers lack `WAREHOUSES READ`.
+- *Read-only rows (the original spec)*: its reason (#234 forbidding cross-facility lines) didn't hold. mbe-api accepted those lines instead.
+- *Fetching `GET /warehouses` for every facility*: cashiers lack `WAREHOUSES READ`.
+- *Listing other facilities' warehouses with zero stock too*: on a multi-facility tenant this makes a long list of warehouses nobody would sell from.
 
-**Accepted risks**:
-- The cache is seeded once per screen, so the figures can be stale. The section is advisory only.
-- Until #242, a facility with more than 100 warehouses (the list's `limit`) could mislabel its own warehouses.
+**Accepted limits**:
+- Products that aren't stock-tracked return no stock rows, so they can only be booked to the sale facility's warehouses (or keep the one they have).
+- The cache is seeded once per screen, so the figures can be stale. Confirmation still checks stock on the server.
 
 ---
 
 ## R9 — Consuming the backend changes
 
-**Decision**: each mbe-api change is consumed in its own step:
-1. regenerate `lib/generated/openapi`, committed separately because it may touch unrelated DTOs;
-2. map the new fields in the domain entity;
-3. switch the interim source.
+**Status**: all three shipped on 2026-10-18, and the client was regenerated (commits `6f68797`, `401a78a`).
 
-Mapping, by issue:
+| Issue | PR | Generated surface | Consumed in |
+|---|---|---|---|
+| #242 | #244 | `ProductStockResponse.facility`, `.facilityName` (both nullable) | R8 |
+| #241 | #245 | `PasswordPolicyResponse`, `AuthApi` password-policy op, 422 `password_policy` | R2, R3 |
+| #240 | #246 | `mustChangePassword` on `UserResponse`, `UserListItem`, `TokenResponse`, `UserUpdate`; `403 password_change_required` | R4 |
 
-| Issue | Unblocks | Client change after regeneration |
-|---|---|---|
-| #242 | Story 3 grouping | `WarehouseStock.facilityId/facilityName` mapping |
-| #241 | Story 4 FR-030 | `AuthRepositoryImpl.passwordPolicy()` calls the endpoint. The R3 mapper is checked against the real 422 |
-| #240 | Story 5 | All of R4 |
+Not consumed: `UserUpdate.mustChangePassword`, the admin's manual override. Out of scope (spec Clarifications).
 
 **Rationale**: constitution III requires it: no hand-written DTOs and no edits to sibling repositories.
 

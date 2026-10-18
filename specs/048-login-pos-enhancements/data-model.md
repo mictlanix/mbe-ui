@@ -2,29 +2,39 @@
 
 **Spec**: [spec.md](./spec.md) | **Research**: [research.md](./research.md)
 
-These are client-side domain entities and state only. The app keeps nothing on the device (§VII).
+These are client-side domain entities and state only. The app keeps nothing on the device (§VII). All backend fields below exist in the regenerated client (R9).
 
 ## 1. `PasswordPolicy` (new): `features/auth/domain/entities/password_policy.dart`
 
-| Field | Type | Interim (before #241) | After #241 |
+| Field | Type | Source (`PasswordPolicyResponse`) | Server default |
 |---|---|---|---|
-| `minLength` | `int` | 6 | `GET /auth/password-policy.min_length` |
-| `requireUpper` | `bool` | false | `.require_upper` |
-| `requireLower` | `bool` | false | `.require_lower` |
-| `requireDigit` | `bool` | false | `.require_digit` |
-| `requireSymbol` | `bool` | false | `.require_symbol` |
+| `minLength` | `int` | `minLength` (`min_length`) | 8 |
+| `requireUpper` | `bool` | `requireUpper` | true |
+| `requireLower` | `bool` | `requireLower` | true |
+| `requireDigit` | `bool` | `requireDigit` | true |
+| `requireSymbol` | `bool` | `requireSymbol` | false |
 
-- `enum PasswordRule { minLength, upper, lower, digit, symbol }`
+- `enum PasswordRule { minLength, upper, lower, digit, symbol }`, each with its server name: `min_length`, `require_upper`, `require_lower`, `require_digit`, `require_symbol`.
 - `List<PasswordRule> get rules`: `minLength` plus each enabled `require*`, in that order. The checklist shows them in this order.
-- `Set<PasswordRule> unmet(String password)`: a pure function.
-  - *upper*: at least one character for which `c != c.toLowerCase()`.
-  - *lower*: the reverse of *upper*.
-  - *digit*: matches `[0-9]`.
-  - *symbol*: any character that is not a letter or a digit, so whitespace counts.
-  - *minLength*: `password.length < minLength` (code units).
-- `PasswordRule? ruleFromFieldError(FieldError)` (R3) maps a server 422 to a rule, and returns null when it can't.
+- `Set<PasswordRule> unmet(String password)` is a pure function:
+  - *upper*: at least one character for which `c != c.toLowerCase()`;
+  - *lower*: the reverse;
+  - *digit*: matches `[0-9]`;
+  - *symbol*: any character that is not a letter, not a digit and not whitespace, matching the server;
+  - *minLength*: `password.length < minLength`.
+- `Set<PasswordRule> rulesFromFieldError(FieldError)` (R3) reads the rules named in `failedRules` when `type == 'password_policy'`, and returns an empty set otherwise.
 
-## 2. Password form state (changed)
+There is no client-side fallback policy. If loading the policy fails, the checklist shows "unavailable", and the client doesn't block (R2).
+
+## 2. `FieldError` (changed): `core/errors/app_error.dart`
+
+| Field | Type | Source |
+|---|---|---|
+| `failedRules` | `List<String>`, default empty | 422 `detail[].ctx.failed`, when it is a list of strings |
+
+It is filled in `_fieldErrorsFrom` (`core/network/auth_interceptor.dart`). `ctx` is otherwise ignored, and `input` is never read.
+
+## 3. Password form state (changed)
 
 All three existing controllers gain the same two members:
 
@@ -34,30 +44,30 @@ All three existing controllers gain the same two members:
 | `RecoveryController` (`account_controller.dart`) | `confirmPassword: String` | mismatch, policy rule(s) |
 | `UserFormController` (`users_controller.dart`, create mode only) | `confirmPassword: String` | `UserFormErrorCode.passwordMismatch`, policy rule(s) |
 
-**Submit guard** (identical in each): the form submits only when all three hold:
+**Submit guard**, the same in each. The form submits only when:
 - `newPassword == confirmPassword`;
 - `policy.unmet(newPassword).isEmpty`, when the policy loaded;
-- all other existing requirements (current password, recovery token) are met.
+- the form's other existing requirements (current password, recovery token) are met.
 
-## 3. `User` (changed, **blocked on #240**): `core/access/user.dart`
+## 4. `User` (changed): `core/access/user.dart`
 
 | Field | Type | Source |
 |---|---|---|
-| `mustChangePassword` | `bool`, `@Default(false)` | `UserResponse.must_change_password` |
+| `mustChangePassword` | `bool`, `@Default(false)` | `UserResponse.mustChangePassword` (nullable; `null` → false) |
 
 **State changes**:
 - *Set*:
-  - when `GET /auth/me` returns the flag as true at login or on reload;
+  - when `GET /auth/me` returns the flag true at login or on reload;
   - when the interceptor sees `403 password_change_required` (FR-044).
-- *Cleared*: by `AuthNotifier.reloadCurrentUser()` after a successful change.
+- *Cleared*: by `AuthNotifier.reloadCurrentUser()` after a successful change. The server clears the flag on change-password.
 
-## 4. `PosStepState` (changed): `pos_step_controller.dart`
+## 5. `PosStepState` (changed): `pos_step_controller.dart`
 
 | Field | Type | Meaning |
 |---|---|---|
 | `detail` | `bool`, default false | The workspace shows `PosSaleDetailView` instead of the step host |
 
-`detail` is set once per sale id in `_syncStepTo`, using the R6 predicate. `reset()` (new sale) clears it. Nothing in the detail view sets it back to false: leaving the view means leaving the workspace.
+`_syncStepTo` sets `detail` once per sale id, using the R6 predicate. `reset()` (new sale) clears it. Nothing in the detail view sets it back to false: leaving the view means leaving the workspace.
 
 **Predicate** (R6): `opensAsReadOnlyDetail(sale, isDelivery, destinations)`
 
@@ -71,27 +81,35 @@ All three existing controllers gain the same two members:
 | draft | any | any | any | Venta (unchanged) |
 | cancelled | any | any | any | unreachable notice (unchanged) |
 
-## 5. `WarehouseStock` (changed, **mapping blocked on #242**): `domain/entities/product_lookup_result.dart`
+## 6. `WarehouseStock` (changed): `domain/entities/product_lookup_result.dart`
 
 | Field | Type | Source |
 |---|---|---|
 | `facilityId` | `int?` | `ProductStockResponse.facility` |
-| `facilityName` | `String?` | `ProductStockResponse.facility_name` |
+| `facilityName` | `String?` | `ProductStockResponse.facilityName` |
 
-## 6. `OtherFacilityGroup` (new, presentation-local): `capture/other_facility_stock.dart`
+## 7. `OtherFacilityGroup` (new, presentation-local): `capture/other_facility_stock.dart`
 
 | Field | Type |
 |---|---|
-| `facilityId` | `int?` (null means "other warehouses" while #242 is pending) |
+| `facilityId` | `int?` (null only when the row has no facility, which the capture never requests) |
 | `facilityName` | `String?` |
-| `warehouses` | `List<WarehouseStock>` (all with `available > 0`) |
+| `warehouses` | `List<WarehouseStock>` |
 
-`otherFacilityStock(stock, saleFacilityId, saleWarehouseIds) → List<OtherFacilityGroup>`:
-- Groups are sorted by `facilityName`, and the null group goes last.
-- Warehouses are sorted by `warehouseName`.
+`otherFacilityStock(stock, saleFacilityId, saleWarehouseIds, currentWarehouse) → List<OtherFacilityGroup>`:
+- **Kept rows**: other-facility rows with `available > 0`, plus the row for `currentWarehouse` whatever its stock.
+- **Sorting**: groups sort by `facilityName`, with null last. Warehouses sort by `warehouseName`.
 
-## 7. Existing entities read, unchanged
+`lineWarehouseLabel(warehouseId, facilityWarehouses, stock) → String` (FR-025) tries each source in order:
+1. the facility list's name;
+2. the stock row's `"<warehouseName> · <facilityName>"`;
+3. `#<id>`.
+
+It never returns an empty string.
+
+## 8. Existing entities read, unchanged
 
 - `Sale`: `status`, `balanceOrZero`, `customer`, `date`, `salesperson`, `facility`, `lines`, totals.
 - `SalePayment`: from `orderPaymentsControllerProvider`, with `amount`, `methodCode`, `changeAmount`, `paymentDate`, `cancelled`.
 - `Destination` and `distributionFor` / `isFullyDistributed`, from `line_distribution.dart`.
+- `StockGate` / `evaluateLines`: already keyed by warehouse id, so other-facility lines are checked the same way.
