@@ -6972,6 +6972,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Apply payment'**
   String get posPaymentReferenceConfirm;
+
+  /// spec 047: shown when stock could not be loaded for some lines; offers a retry
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 line with unverified stock} other{{count} lines with unverified stock}}'**
+  String posCaptureUnknownStock(int count);
 }
 
 class _AppLocalizationsDelegate

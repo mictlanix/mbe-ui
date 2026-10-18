@@ -29,14 +29,22 @@ final productStockCacheProvider =
 /// One batch `product-lookup` by product id (mbe-api#237). A failed lookup,
 /// or a product the lookup does not return, leaves it uncached, which reads as
 /// "unknown" and never blocks. Never throws.
-Future<void> ensureStockFor(WidgetRef ref, Sale sale) async {
+///
+/// [refresh] re-fetches those products even when they are cached — the
+/// capture step's "Reintentar" passes the products of its unknown lines.
+Future<void> ensureStockFor(
+  WidgetRef ref,
+  Sale sale, {
+  Set<int> refresh = const {},
+}) async {
   final cached = ref.read(productStockCacheProvider);
   final repository = ref.read(salesOrderRepositoryProvider);
   // Read before the await: the step may be gone by the time it finishes.
   final notifier = ref.read(productStockCacheProvider.notifier);
   final missing = {
     for (final line in sale.lines)
-      if (!cached.containsKey(line.product)) line.product,
+      if (!cached.containsKey(line.product) || refresh.contains(line.product))
+        line.product,
   };
   if (missing.isEmpty) return;
   final List<ProductLookupResult> results;
@@ -54,7 +62,15 @@ Future<void> ensureStockFor(WidgetRef ref, Sale sale) async {
       if (missing.contains(r.product)) r.product: ProductStock.fromLookup(r),
   };
   if (loaded.isEmpty) return;
-  notifier.update((cache) => {...loaded, ...cache});
+  // A product seeded meanwhile (a fresh lookup by `_addLine`) is kept unless
+  // it was asked to be refreshed.
+  notifier.update(
+    (cache) => {
+      ...cache,
+      for (final e in loaded.entries)
+        if (!cache.containsKey(e.key) || refresh.contains(e.key)) e.key: e.value,
+    },
+  );
 }
 
 /// What the product lookup said about a product's stock (spec 047).

@@ -42,6 +42,7 @@ Future<void> ensureStockFor(Sale sale); // on ProductStockCache notifier
 - `SaleTotalsBar.onContinue` is `null` while `gate.blocks`.
 - `capture_continue_blocked_reason` text shows the new `posCaptureShortLines(count)` ("{count} partidas sin existencia suficiente").
 - A line in `shortLineIds` keeps its existing short indicator. A line in `unknownLineIds` shows the existing "unknown" stock flag.
+- While any line is unknown, `capture_unknown_stock_note` shows `posCaptureUnknownStock(count)` with a `capture_unknown_stock_retry` button (`retryButton`, "Reintentar") that re-fetches those products' stock (`ensureStockFor(..., refresh:)`). It never blocks.
 
 ## C5 — Warehouse field and pop-up
 

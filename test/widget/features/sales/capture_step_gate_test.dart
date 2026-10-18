@@ -149,6 +149,46 @@ void main() {
     );
   });
 
+  testWidgets('unknown stock offers a retry that loads it (spec 047 Q1)', (
+    tester,
+  ) async {
+    var calls = 0;
+    when(
+      () => salesOrders.productLookupByIds(products: [11], customer: 7),
+    ).thenAnswer((_) async {
+      calls++;
+      if (calls == 1) throw Exception('offline');
+      return [
+        ProductLookupResult(
+          product: 11,
+          code: 'P-11',
+          name: 'Widget',
+          price: '50.00',
+          taxRate: '0.16',
+          taxIncluded: false,
+          minOrderQty: 1,
+          stockRequired: true,
+          stockable: true,
+          stock: const [WarehouseStock(warehouse: 3, onHand: '1', available: '1')],
+        ),
+      ];
+    });
+    await pumpGate(tester, testSale(lines: [testLine(quantity: '2')]));
+
+    // The first load failed: a warning with a retry, never a block.
+    expect(find.byKey(const Key('capture_unknown_stock_note')), findsOneWidget);
+    expect(continueEnabled(tester), isTrue);
+
+    await tester.tap(find.byKey(const Key('capture_unknown_stock_retry')));
+    await tester.pumpAndSettle();
+
+    // Loaded now: the line is short, so the gate blocks and the note is gone.
+    expect(calls, 2);
+    expect(find.byKey(const Key('capture_unknown_stock_note')), findsNothing);
+    expect(find.byKey(reasonKey), findsOneWidget);
+    expect(continueEnabled(tester), isFalse);
+  });
+
   testWidgets('a host that does not enforce stock is never blocked', (tester) async {
     await pumpGate(
       tester,

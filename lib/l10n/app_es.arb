@@ -1203,5 +1203,6 @@
   "posPaymentChangeDue": "Cambio a entregar",
   "posPaymentDismissChange": "Entendido",
   "posPaymentReferenceTitle": "Referencia del pago",
-  "posPaymentReferenceConfirm": "Aplicar pago"
+  "posPaymentReferenceConfirm": "Aplicar pago",
+  "posCaptureUnknownStock": "{count, plural, =1{1 partida con existencia sin verificar} other{{count} partidas con existencia sin verificar}}"
 }

@@ -3830,4 +3830,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get posPaymentReferenceConfirm => 'Apply payment';
+
+  @override
+  String posCaptureUnknownStock(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lines with unverified stock',
+      one: '1 line with unverified stock',
+    );
+    return '$_temp0';
+  }
 }

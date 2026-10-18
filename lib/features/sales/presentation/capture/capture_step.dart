@@ -168,6 +168,23 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     if (_gated && sale != null) ensureStockFor(ref, sale);
   }
 
+  bool _retryingStock = false;
+
+  /// Unknown stock only warns (spec 047 Q1), so the cashier can re-fetch it
+  /// after a failed load instead of finding out at confirmation.
+  Future<void> _retryStock(Sale sale, Set<int> unknownLineIds) async {
+    setState(() => _retryingStock = true);
+    await ensureStockFor(
+      ref,
+      sale,
+      refresh: {
+        for (final line in sale.lines)
+          if (unknownLineIds.contains(line.id)) line.product,
+      },
+    );
+    if (mounted) setState(() => _retryingStock = false);
+  }
+
   Future<void> _addLine(
     ProductLookupResult result,
     int? defaultWarehouse,
@@ -466,6 +483,29 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
               l10n.posCaptureShortLines(stockGate.shortLineIds.length),
               key: const Key('capture_continue_blocked_reason'),
               style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ),
+        if (_gated && sale != null && stockGate.unknownLineIds.isNotEmpty)
+          Padding(
+            padding: horizontalInset.add(EdgeInsets.only(bottom: spacing.xs)),
+            child: Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    l10n.posCaptureUnknownStock(stockGate.unknownLineIds.length),
+                    key: const Key('capture_unknown_stock_note'),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
+                ),
+                SizedBox(width: spacing.sm),
+                TextButton(
+                  key: const Key('capture_unknown_stock_retry'),
+                  onPressed: _retryingStock
+                      ? null
+                      : () => _retryStock(sale, stockGate.unknownLineIds),
+                  child: Text(l10n.retryButton),
+                ),
+              ],
             ),
           ),
         // One footer band: the primary action lives inside SaleTotalsBar

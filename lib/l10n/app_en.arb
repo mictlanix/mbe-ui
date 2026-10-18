@@ -2692,5 +2692,7 @@
   "posPaymentReferenceTitle": "Payment reference",
   "@posPaymentReferenceTitle": {"description": "spec 047 FR-015: title of the reference dialog"},
   "posPaymentReferenceConfirm": "Apply payment",
-  "@posPaymentReferenceConfirm": {"description": "spec 047 FR-015: confirm button of the reference dialog"}
+  "@posPaymentReferenceConfirm": {"description": "spec 047 FR-015: confirm button of the reference dialog"},
+  "posCaptureUnknownStock": "{count, plural, =1{1 line with unverified stock} other{{count} lines with unverified stock}}",
+  "@posCaptureUnknownStock": {"description": "spec 047: shown when stock could not be loaded for some lines; offers a retry", "placeholders": {"count": {"type": "int"}}}
 }

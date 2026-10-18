@@ -166,7 +166,7 @@ When a customer pays cash with more than they owe, the cashier enters the amount
 - **FR-008**: The capture step MUST know the available stock of each line's warehouse for every stock-tracked product on the sale, including on resumed sales.
 - **FR-009**: A line MUST be marked short when the total quantity of that product from that warehouse across the sale is greater than what is available there.
 - **FR-010**: *Continue* to payment MUST be disabled while any line is short, with a message identifying the short lines.
-- **FR-011**: Products that are not stock-tracked MUST NOT be checked against stock. A product is *stock-tracked* when it is both kept in inventory and configured to require a stock check, the same products the backend refuses to confirm when they are short. Lines whose stock could not be loaded MUST show an "unknown stock" warning and MUST NOT block *Continue*.
+- **FR-011**: Products that are not stock-tracked MUST NOT be checked against stock. A product is *stock-tracked* when it is both kept in inventory and configured to require a stock check, the same products the backend refuses to confirm when they are short. Lines whose stock could not be loaded MUST show an "unknown stock" warning and MUST NOT block *Continue*; the capture step MUST offer a retry that re-fetches their stock (added 2026-10-18).
 - **FR-011a**: The stock block MUST have no override: no privilege, role or sale type (including delivery sales) bypasses it.
 
 **Warehouse pop-up**

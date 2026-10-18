@@ -3877,4 +3877,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get posPaymentReferenceConfirm => 'Aplicar pago';
+
+  @override
+  String posCaptureUnknownStock(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count partidas con existencia sin verificar',
+      one: '1 partida con existencia sin verificar',
+    );
+    return '$_temp0';
+  }
 }
