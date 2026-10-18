@@ -123,7 +123,7 @@ Flutter, feature-first. Source is under `lib/features/sales/presentation/` (shor
 ### Implementation for User Story 3
 
 - [X] T021 [P] [US3] Create `lib/features/sales/presentation/capture/stock_gate.dart` with `StockGate` (`shortLineIds`, `unknownLineIds`, `blocks`) and `StockGate evaluateStock(Sale sale, Map<int, ProductStock> cache)`, implemented per the data-model rules and R5
-- [X] T022 [US3] Add `ensureStockFor(Sale sale)` to the stock cache notifier in `capture/product_stock_cache.dart`: for each distinct product on the sale without a cache entry, call `productLookup(pattern: line.productCode, customer: sale.customer)` concurrently, keep the row whose `product` matches, and leave a failed or missing product uncached (R4, Q1). Add a code comment noting that this per-code lookup is a stopgap until mbe-api#237 (batch lookup by ids) ships. Seed the new `ProductStock` fields from the lookup in `_addLine` (`capture/capture_step.dart:148-152`)
+- [X] T022 [US3] Add `ensureStockFor(Sale sale)` to the stock cache notifier in `capture/product_stock_cache.dart`: for each distinct product on the sale without a cache entry, call `productLookup(pattern: line.productCode, customer: sale.customer)` concurrently, keep the row whose `product` matches, and leave a failed or missing product uncached (R4, Q1). Add a code comment noting that this per-code lookup is a stopgap until mbe-api#237 (batch lookup by ids) ships. *(Done 2026-10-18: #237 shipped; replaced by one `productLookupByIds` call.)* Seed the new `ProductStock` fields from the lookup in `_addLine` (`capture/capture_step.dart:148-152`)
 - [X] T023 [US3] In `capture/capture_step.dart`: call `ensureStockFor` when the step opens for a sale (including a resumed one, not only on `_addLine`), watch the cache, and compute `evaluateStock`. Set `SaleTotalsBar.onContinue` to `null` while `gate.blocks` (around lines 438-444), and show `capture_continue_blocked_reason` with `posCaptureShortLines(count)` (C4)
 - [X] T024 [US3] In `capture/sale_line_editing.dart`: make the per-line short indicator and `shortfall()` agree with `evaluateStock` (so a line is marked short exactly when it blocks), keeping the existing "unknown" flag for `unknownLineIds` (C4). Do not cap the quantity field (the note at lines 52-56 stays)
 
@@ -216,8 +216,8 @@ Flutter, feature-first. Source is under `lib/features/sales/presentation/` (shor
 - [X] T043 Regenerate the POS goldens and screenshots (`test/golden/pos_capture_golden_test.dart`, `test/screenshots/pos_screens_screenshot_test.dart`) with `--update-goldens`, review every diff, and delete stale failure images only after reviewing them
 - [X] T044 [P] Verify the largest text-size level and the 390 px compact surface for the capture and payment steps (§V, §VI): no clipping or horizontal scroll
 - [X] T045 [P] Run `flutter test test/unit/core/formatting_guard_test.dart` to confirm the change card and any new amount displays use `formattersProvider`
-- [ ] T046 Run `flutter analyze` and the full test suite, then walk through every scenario in [quickstart.md](./quickstart.md) against a live mbe-api, including checking the session's cash cut after scenario 9. Also resume a sale holding a product whose `code` is 13 digits, and confirm its stock loads and the gate applies (the mbe-api#208 fallback)
-- [ ] T047 Update `specs/047-pos-sales-fixes/spec.md` status to Implemented when everything passes
+- [X] T046 Run `flutter analyze` and the full test suite, then walk through every scenario in [quickstart.md](./quickstart.md) against a live mbe-api, including checking the session's cash cut after scenario 9. Also resume a sale holding a product whose `code` is 13 digits, and confirm its stock loads and the gate applies (the mbe-api#208 fallback)
+- [X] T047 Update `specs/047-pos-sales-fixes/spec.md` status to Implemented when everything passes
 
 ---
 

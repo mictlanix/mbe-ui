@@ -80,4 +80,4 @@ Future<int?> showWarehousePicker(
 ## C8 — No API contract changes
 
 - No endpoint, schema or codegen changes.
-- mbe-api follow-up filed as mbe-api#237: a batch `products` parameter on `product-lookup` (research R4). It is not a dependency of this feature.
+- mbe-api#237 (shipped 2026-10-18): a batch `products` parameter on `product-lookup`, consumed by `SalesOrderRepository.productLookupByIds` (research R4). No other API change.

@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-17
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "POS Sales fixes: User shouldn't be able to start a sale if there is no valid cash session. And, if a session is expired, redirect to close it. Label filtering not working. Warehouse selector not rendering correctly. Change to pop up. Capture step shouldn't let continue if stock is insufficient. Payment step's `Apply payment` isn't necessary, it should apply payment on type selection. Payment of type cash should accept greater amounts than the charged, and show how much to give back."
 

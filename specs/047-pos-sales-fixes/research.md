@@ -79,6 +79,7 @@ All paths are relative to the repository root. The audit for this research was d
 - Propose an mbe-api issue for a batched `products=[ids]` parameter on `product-lookup`. The service already computes stock for a set of products at `sales_order_service.py:1365`.
 - Optionally, also propose adding `stockable` and `stock_verification` to `SalesOrderLineResponse`.
 - **Filed 2026-10-17 as mbe-api#237**: a batch `products=[ids]` parameter on `product-lookup`, plus filling the always-null `warehouse_name`. Until it ships, this feature uses the per-code lookup above. Once it ships, regenerate the client and replace the per-code calls with one batch call. That also removes the limit-20 risk described above.
+- **Shipped 2026-10-18** (mbe-api PR #238). `ensureStockFor` now makes one `productLookupByIds` call for every product missing from the cache; the per-code lookup above is gone. Stock rows now carry `warehouse_name` too.
 
 **Alternatives considered**:
 - *`GET /products/{id}`*: rejected. It needs the PRODUCTS read privilege, which the lookup was designed to avoid (#157), and it carries no stock.

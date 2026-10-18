@@ -26,39 +26,32 @@ final productStockCacheProvider =
 /// Loads the stock of every product on [sale] that has no cache entry yet, so
 /// a resumed sale is gated like a freshly built one (spec 047 FR-010, R4).
 ///
-/// Stopgap: one `product-lookup` per distinct product code, until mbe-api#237
-/// (batch lookup by product ids) ships. A failed lookup, or one that does not
-/// return the product, leaves it uncached, which reads as "unknown" and never
-/// blocks. Never throws.
+/// One batch `product-lookup` by product id (mbe-api#237). A failed lookup,
+/// or a product the lookup does not return, leaves it uncached, which reads as
+/// "unknown" and never blocks. Never throws.
 Future<void> ensureStockFor(WidgetRef ref, Sale sale) async {
   final cached = ref.read(productStockCacheProvider);
   final repository = ref.read(salesOrderRepositoryProvider);
-  // Read before the awaits: the step may be gone by the time they finish.
+  // Read before the await: the step may be gone by the time it finishes.
   final notifier = ref.read(productStockCacheProvider.notifier);
   final missing = {
     for (final line in sale.lines)
-      if (!cached.containsKey(line.product)) line.product: line.productCode,
+      if (!cached.containsKey(line.product)) line.product,
   };
-  final found = await Future.wait([
-    for (final entry in missing.entries)
-      () async {
-        try {
-          final results = await repository.productLookup(
-            pattern: entry.value,
-            customer: sale.customer,
-          );
-          for (final r in results) {
-            if (r.product == entry.key) return MapEntry(entry.key, ProductStock.fromLookup(r));
-          }
-        } on Object {
-          // Unknown stock is a warning, not a failure.
-        }
-        return null;
-      }(),
-  ]);
+  if (missing.isEmpty) return;
+  final List<ProductLookupResult> results;
+  try {
+    results = await repository.productLookupByIds(
+      products: missing.toList(),
+      customer: sale.customer,
+    );
+  } on Object {
+    // Unknown stock is a warning, not a failure.
+    return;
+  }
   final loaded = {
-    for (final e in found)
-      if (e != null) e.key: e.value,
+    for (final r in results)
+      if (missing.contains(r.product)) r.product: ProductStock.fromLookup(r),
   };
   if (loaded.isEmpty) return;
   notifier.update((cache) => {...loaded, ...cache});

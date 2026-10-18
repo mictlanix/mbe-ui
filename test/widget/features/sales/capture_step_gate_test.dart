@@ -102,10 +102,9 @@ void main() {
 
   testWidgets('unknown stock does not block', (tester) async {
     when(
-      () => salesOrders.productLookup(
-        pattern: any(named: 'pattern'),
+      () => salesOrders.productLookupByIds(
+        products: any(named: 'products'),
         customer: any(named: 'customer'),
-        warehouse: any(named: 'warehouse'),
       ),
     ).thenThrow(Exception('offline'));
     await pumpGate(tester, testSale(lines: [testLine(quantity: '99')]));
@@ -118,11 +117,7 @@ void main() {
     tester,
   ) async {
     when(
-      () => salesOrders.productLookup(
-        pattern: 'P-11',
-        customer: 7,
-        warehouse: any(named: 'warehouse'),
-      ),
+      () => salesOrders.productLookupByIds(products: [11], customer: 7),
     ).thenAnswer(
       (_) async => [
         ProductLookupResult(
@@ -143,6 +138,15 @@ void main() {
 
     expect(continueEnabled(tester), isFalse);
     expect(find.byKey(reasonKey), findsOneWidget);
+    // One batch request by id (mbe-api#237), never a per-code search.
+    verify(() => salesOrders.productLookupByIds(products: [11], customer: 7)).called(1);
+    verifyNever(
+      () => salesOrders.productLookup(
+        pattern: any(named: 'pattern'),
+        customer: any(named: 'customer'),
+        warehouse: any(named: 'warehouse'),
+      ),
+    );
   });
 
   testWidgets('a host that does not enforce stock is never blocked', (tester) async {

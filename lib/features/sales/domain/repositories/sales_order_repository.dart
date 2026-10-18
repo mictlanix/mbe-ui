@@ -121,6 +121,14 @@ abstract class SalesOrderRepository {
     int? warehouse,
   });
 
+  /// `GET /sales-orders/product-lookup?products=…` — the same rows for a
+  /// known set of products, in one request (mbe-api#237). Ids that are
+  /// unknown or not salable are simply absent from the result.
+  Future<List<ProductLookupResult>> productLookupByIds({
+    required List<int> products,
+    required int customer,
+  });
+
   /// `GET /sales-orders?point_sale=<id>&status=<status>&date_from=<from>` —
   /// the open-sales selector's data source, scoped to the cashier's own
   /// register (resolved, research.md §5 — was `facility` + `mine=true`).
