@@ -149,6 +149,7 @@ import 'package:mbe_api_client/src/model/opening_amount.dart';
 import 'package:mbe_api_client/src/model/order_application_response.dart';
 import 'package:mbe_api_client/src/model/order_origin.dart';
 import 'package:mbe_api_client/src/model/outstanding_order_response.dart';
+import 'package:mbe_api_client/src/model/password_policy_response.dart';
 import 'package:mbe_api_client/src/model/payment_method.dart';
 import 'package:mbe_api_client/src/model/payment_method_option_create.dart';
 import 'package:mbe_api_client/src/model/payment_method_option_response.dart';
@@ -396,6 +397,7 @@ part 'serializers.g.dart';
   OrderApplicationResponse,
   OrderOrigin,
   OutstandingOrderResponse,
+  PasswordPolicyResponse,
   PaymentMethod,
   PaymentMethodOptionCreate,
   PaymentMethodOptionResponse,

@@ -13,6 +13,8 @@ part 'product_stock_response.g.dart';
 /// Properties:
 /// * [warehouse]
 /// * [warehouseName]
+/// * [facility]
+/// * [facilityName]
 /// * [onHand]
 /// * [available]
 @BuiltValue()
@@ -23,6 +25,12 @@ abstract class ProductStockResponse
 
   @BuiltValueField(wireName: r'warehouse_name')
   String? get warehouseName;
+
+  @BuiltValueField(wireName: r'facility')
+  int? get facility;
+
+  @BuiltValueField(wireName: r'facility_name')
+  String? get facilityName;
 
   @BuiltValueField(wireName: r'on_hand')
   String get onHand;
@@ -68,6 +76,20 @@ class _$ProductStockResponseSerializer
       yield r'warehouse_name';
       yield serializers.serialize(
         object.warehouseName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.facility != null) {
+      yield r'facility';
+      yield serializers.serialize(
+        object.facility,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
+    if (object.facilityName != null) {
+      yield r'facility_name';
+      yield serializers.serialize(
+        object.facilityName,
         specifiedType: const FullType.nullable(String),
       );
     }
@@ -123,6 +145,26 @@ class _$ProductStockResponseSerializer
                   as String?;
           if (valueDes == null) continue;
           result.warehouseName = valueDes;
+          break;
+        case r'facility':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.facility = valueDes;
+          break;
+        case r'facility_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.facilityName = valueDes;
           break;
         case r'on_hand':
           final valueDes =

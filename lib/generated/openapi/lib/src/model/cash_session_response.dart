@@ -23,6 +23,7 @@ part 'cash_session_response.g.dart';
 /// * [cashSupervisor]
 /// * [openingAmount]
 /// * [paymentsByMethod]
+/// * [expectedCash]
 @BuiltValue()
 abstract class CashSessionResponse
     implements Built<CashSessionResponse, CashSessionResponseBuilder> {
@@ -51,6 +52,9 @@ abstract class CashSessionResponse
 
   @BuiltValueField(wireName: r'payments_by_method')
   BuiltList<MethodTotal>? get paymentsByMethod;
+
+  @BuiltValueField(wireName: r'expected_cash')
+  String? get expectedCash;
 
   CashSessionResponse._();
 
@@ -126,6 +130,13 @@ class _$CashSessionResponseSerializer
       yield serializers.serialize(
         object.paymentsByMethod,
         specifiedType: const FullType(BuiltList, [FullType(MethodTotal)]),
+      );
+    }
+    if (object.expectedCash != null) {
+      yield r'expected_cash';
+      yield serializers.serialize(
+        object.expectedCash,
+        specifiedType: const FullType.nullable(String),
       );
     }
   }
@@ -228,6 +239,16 @@ class _$CashSessionResponseSerializer
                   as BuiltList<MethodTotal>?;
           if (valueDes == null) continue;
           result.paymentsByMethod.replace(valueDes);
+          break;
+        case r'expected_cash':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.expectedCash = valueDes;
           break;
         default:
           unhandled.add(key);
