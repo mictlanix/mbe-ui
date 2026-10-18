@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -9,6 +10,8 @@ import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/capture_step.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/default_warehouse_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/product_search_field.dart';
 
 import 'pos_test_harness.dart';
 
@@ -45,6 +48,7 @@ void main() {
     Sale sale, {
     Map<int, ProductStock> cache = const {},
     bool enforceStock = true,
+    List<Override> overrides = const [],
   }) async {
     final container = await pumpPos(
       tester,
@@ -60,6 +64,7 @@ void main() {
         salesOrderOverride(salesOrders),
         saleProvider.overrideWith((ref) => sale),
         productStockCacheProvider.overrideWith((ref) => cache),
+        ...overrides,
       ],
       surface: const Size(1400, 900),
     );
@@ -150,5 +155,21 @@ void main() {
 
     expect(continueEnabled(tester), isTrue);
     expect(find.byKey(reasonKey), findsNothing);
+  });
+
+  // Found in the spec 047 live walkthrough: a search filtered to the default
+  // warehouse seeded the cache with that warehouse only, so every other one
+  // read "unknown" — the pop-up hid their stock, and switching a short line
+  // to one of them slipped past the gate.
+  testWidgets('the product search is not filtered to one warehouse', (tester) async {
+    await pumpGate(
+      tester,
+      testSale(lines: [testLine(quantity: '1')]),
+      // The register's point of sale has a default warehouse, which is
+      // exactly what the search used to be filtered to.
+      overrides: [defaultWarehouseControllerProvider.overrideWith((ref, pointSale) async => 3)],
+    );
+
+    expect(tester.widget<ProductSearchField>(find.byType(ProductSearchField)).warehouse, isNull);
   });
 }

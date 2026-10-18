@@ -392,9 +392,13 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         padding: horizontalInset.add(
           EdgeInsets.symmetric(vertical: spacing.sm),
         ),
+        // No `warehouse` filter (spec 047): the lookup's stock rows only seed
+        // the stock cache, and filtering to the default warehouse left every
+        // other warehouse "unknown" — so the warehouse pop-up could not show
+        // their stock, and switching a short line to one of them slipped
+        // past the stock gate.
         child: ProductSearchField(
           enabled: canCaptureProducts,
-          warehouse: defaultWarehouse,
           onProductSelected: (result) => _addLine(result, defaultWarehouse),
         ),
       ),
