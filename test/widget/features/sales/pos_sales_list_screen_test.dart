@@ -585,6 +585,9 @@ void main() {
 
       expect(router.state.uri.path, '/sales/cash-sessions/77');
       expect(find.text('cash-session-77'), findsOneWidget);
+      // Pushed, so Back leads out of the close screen (found live: `go`
+      // left a top-level screen with no way back).
+      expect(router.canPop(), isTrue);
       expect(
         find.text(
           'Tu sesión de caja está vencida. Ciérrala para continuar vendiendo.',

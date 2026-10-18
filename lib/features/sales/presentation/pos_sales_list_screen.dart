@@ -113,7 +113,9 @@ class PosSalesListScreen extends ConsumerWidget {
           await router.push('$_posPath/new');
         case SessionState.stale:
           messenger.showSnackBar(SnackBar(content: Text(l10n.posSessionExpiredRedirect)));
-          router.go('/sales/cash-sessions/${current.session!.cashSessionId}');
+          // Pushed, not `go`: the close screen is a top-level route with no
+          // side navigation, so replacing the stack left no way back.
+          await router.push('/sales/cash-sessions/${current.session!.cashSessionId}');
         case SessionState.none:
           messenger.showSnackBar(SnackBar(content: Text(l10n.posSalesNewSaleBlockedNoSession)));
       }

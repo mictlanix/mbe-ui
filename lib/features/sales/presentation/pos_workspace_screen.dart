@@ -105,7 +105,9 @@ class _StaleSessionRedirectState extends State<_StaleSessionRedirect> {
       if (!mounted) return;
       final message = AppLocalizations.of(context)!.posSessionExpiredRedirect;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
-      context.go('/sales/cash-sessions/${widget.sessionId}');
+      // Replaces only `/new`, so Back from the close screen returns to
+      // wherever the cashier came from instead of a dead end.
+      context.pushReplacement('/sales/cash-sessions/${widget.sessionId}');
     });
   }
 

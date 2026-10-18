@@ -140,6 +140,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('cash-session-1'), findsOneWidget);
+      // Pushed, so Back returns to the sale.
+      expect(Navigator.of(tester.element(find.text('cash-session-1'))).canPop(), isTrue);
     });
   });
 

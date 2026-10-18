@@ -138,9 +138,11 @@ class _BlockedBanner extends StatelessWidget {
           ),
           TextButton(
             key: const Key('pos_session_blocked_action'),
-            onPressed: () => context.go(
-              stale ? '/sales/cash-sessions/$sessionId' : '/sales/cash-sessions',
-            ),
+            // The close screen is pushed so Back returns to the sale; the
+            // sessions list is a shell branch, reached with `go` as before.
+            onPressed: () => stale
+                ? context.push('/sales/cash-sessions/$sessionId')
+                : context.go('/sales/cash-sessions'),
             child: Text(stale ? l10n.posSessionCloseAction : l10n.posGateOpenSessionAction),
           ),
         ],
