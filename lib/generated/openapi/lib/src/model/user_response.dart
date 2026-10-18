@@ -21,6 +21,7 @@ part 'user_response.g.dart';
 /// * [administrator]
 /// * [status]
 /// * [sessionVersion]
+/// * [mustChangePassword]
 /// * [profileId]
 /// * [profileName]
 /// * [settings]
@@ -47,6 +48,9 @@ abstract class UserResponse
   @BuiltValueField(wireName: r'session_version')
   int get sessionVersion;
 
+  @BuiltValueField(wireName: r'must_change_password')
+  bool? get mustChangePassword;
+
   @BuiltValueField(wireName: r'profile_id')
   int? get profileId;
 
@@ -64,7 +68,7 @@ abstract class UserResponse
   factory UserResponse([void updates(UserResponseBuilder b)]) = _$UserResponse;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(UserResponseBuilder b) => b;
+  static void _defaults(UserResponseBuilder b) => b..mustChangePassword = false;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<UserResponse> get serializer => _$UserResponseSerializer();
@@ -112,6 +116,13 @@ class _$UserResponseSerializer implements PrimitiveSerializer<UserResponse> {
       object.sessionVersion,
       specifiedType: const FullType(int),
     );
+    if (object.mustChangePassword != null) {
+      yield r'must_change_password';
+      yield serializers.serialize(
+        object.mustChangePassword,
+        specifiedType: const FullType(bool),
+      );
+    }
     if (object.profileId != null) {
       yield r'profile_id';
       yield serializers.serialize(
@@ -212,6 +223,16 @@ class _$UserResponseSerializer implements PrimitiveSerializer<UserResponse> {
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
           result.sessionVersion = valueDes;
+          break;
+        case r'must_change_password':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
+          if (valueDes == null) continue;
+          result.mustChangePassword = valueDes;
           break;
         case r'profile_id':
           final valueDes =
