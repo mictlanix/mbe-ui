@@ -16,6 +16,7 @@ import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.d
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_card.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_row.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_totals_bar.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/stock_gate.dart';
 import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/unconfirmed_edits_resolver.dart';
@@ -51,6 +52,7 @@ class CaptureStep extends ConsumerStatefulWidget {
     this.showAction = true,
     this.actionKey = const Key('pos_continue_to_payment'),
     this.showComment = false,
+    this.enforceStock = false,
   });
 
   /// `null` on a register nobody has started a sale on yet, or a back-office
@@ -133,11 +135,56 @@ class CaptureStep extends ConsumerStatefulWidget {
   /// default) keeps every existing host unchanged.
   final bool showComment;
 
+  /// spec 047 FR-008..FR-011a: block [onContinue] while a draft sale has a
+  /// line short of stock, and load the stock of a resumed sale's products when
+  /// the step opens. Only the register opts in; the order workspace and the
+  /// quote screen share this step but are not gated. `false` (the default)
+  /// changes nothing — no blocking, no extra lookups. Ignored when
+  /// [showWarehouse] is `false`.
+  final bool enforceStock;
+
   @override
   ConsumerState<CaptureStep> createState() => _CaptureStepState();
 }
 
 class _CaptureStepState extends ConsumerState<CaptureStep> {
+  bool get _gated => widget.enforceStock && widget.showWarehouse;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStock();
+  }
+
+  @override
+  void didUpdateWidget(covariant CaptureStep oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.sale?.id != widget.sale?.id) _loadStock();
+  }
+
+  /// A resumed sale has no stock in the cache yet (spec 047 FR-010).
+  void _loadStock() {
+    final sale = widget.sale;
+    if (_gated && sale != null) ensureStockFor(ref, sale);
+  }
+
+  bool _retryingStock = false;
+
+  /// Unknown stock only warns (spec 047 Q1), so the cashier can re-fetch it
+  /// after a failed load instead of finding out at confirmation.
+  Future<void> _retryStock(Sale sale, Set<int> unknownLineIds) async {
+    setState(() => _retryingStock = true);
+    await ensureStockFor(
+      ref,
+      sale,
+      refresh: {
+        for (final line in sale.lines)
+          if (unknownLineIds.contains(line.id)) line.product,
+      },
+    );
+    if (mounted) setState(() => _retryingStock = false);
+  }
+
   Future<void> _addLine(
     ProductLookupResult result,
     int? defaultWarehouse,
@@ -148,7 +195,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     if (widget.showWarehouse) {
       ref
           .read(productStockCacheProvider.notifier)
-          .update((cache) => {...cache, result.product: result.stock});
+          .update((cache) => {...cache, result.product: ProductStock.fromLookup(result)});
     }
     // The product table's tax rate, cached for the line's tax picker
     // (FR-038b) — the lookup is the only payload that carries it. Kept for
@@ -254,6 +301,12 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     // terms lands here — the host has already returned to this step by the
     // time this renders, on whichever host's own scope failed.
     final confirmError = ref.watch(saleConfirmErrorProvider);
+    // spec 047: judged for every warehouse host so a line's short marker and
+    // the Continue block can never disagree; only a gated host blocks on it.
+    final stockGate = sale != null && widget.showWarehouse
+        ? evaluateStock(sale, ref.watch(productStockCacheProvider))
+        : const StockGate();
+    final stockBlocks = _gated && stockGate.blocks;
 
     final header = <Widget>[
       if (confirmError != null)
@@ -356,9 +409,13 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         padding: horizontalInset.add(
           EdgeInsets.symmetric(vertical: spacing.sm),
         ),
+        // No `warehouse` filter (spec 047): the lookup's stock rows only seed
+        // the stock cache, and filtering to the default warehouse left every
+        // other warehouse "unknown" — so the warehouse pop-up could not show
+        // their stock, and switching a short line to one of them slipped
+        // past the stock gate.
         child: ProductSearchField(
           enabled: canCaptureProducts,
-          warehouse: defaultWarehouse,
           onProductSelected: (result) => _addLine(result, defaultWarehouse),
         ),
       ),
@@ -392,6 +449,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
                   ..._lines(
                     sale,
                     enabled,
+                    stockGate,
                     compact: true,
                     inset: horizontalInset,
                   ),
@@ -414,10 +472,42 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
                     // edges sit directly under the search field's rather than
                     // 12 px inside them.
                     padding: horizontalInset,
-                    children: _lines(sale, enabled, compact: false),
+                    children: _lines(sale, enabled, stockGate, compact: false),
                   ),
           ),
         ],
+        if (stockBlocks)
+          Padding(
+            padding: horizontalInset.add(EdgeInsets.only(bottom: spacing.xs)),
+            child: Text(
+              l10n.posCaptureShortLines(stockGate.shortLineIds.length),
+              key: const Key('capture_continue_blocked_reason'),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          ),
+        if (_gated && sale != null && stockGate.unknownLineIds.isNotEmpty)
+          Padding(
+            padding: horizontalInset.add(EdgeInsets.only(bottom: spacing.xs)),
+            child: Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    l10n.posCaptureUnknownStock(stockGate.unknownLineIds.length),
+                    key: const Key('capture_unknown_stock_note'),
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  ),
+                ),
+                SizedBox(width: spacing.sm),
+                TextButton(
+                  key: const Key('capture_unknown_stock_retry'),
+                  onPressed: _retryingStock
+                      ? null
+                      : () => _retryStock(sale, stockGate.unknownLineIds),
+                  child: Text(l10n.retryButton),
+                ),
+              ],
+            ),
+          ),
         // One footer band: the primary action lives inside SaleTotalsBar
         // now, not in a second Padding block beneath it (contracts/
         // pos-workspace.md §3.1) — the extra band was exactly the dead
@@ -439,6 +529,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
               (enabled &&
                   (sale?.lineCount ?? 0) > 0 &&
                   !writesPending &&
+                  !stockBlocks &&
                   widget.onContinue != null)
               ? _onContinuePressed
               : null,
@@ -455,7 +546,8 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
   /// put it on the lines `ListView` instead.
   List<Widget> _lines(
     Sale sale,
-    bool enabled, {
+    bool enabled,
+    StockGate stockGate, {
     required bool compact,
     EdgeInsets inset = EdgeInsets.zero,
   }) => [
@@ -470,6 +562,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
             enabled: enabled,
             showWarehouse: widget.showWarehouse,
             showComment: widget.showComment,
+            stockGate: stockGate,
           ),
         )
       else
@@ -480,6 +573,7 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
           enabled: enabled,
           showWarehouse: widget.showWarehouse,
           showComment: widget.showComment,
+          stockGate: stockGate,
         ),
   ];
 }

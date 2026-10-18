@@ -24,6 +24,7 @@ import 'package:mbe_ui/features/catalog/domain/repositories/payment_method_optio
 import 'package:mbe_ui/features/catalog/domain/repositories/point_sale_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
@@ -211,6 +212,78 @@ void main() {
       verify(() => salesOrders.getById(saleId: 42)).called(1);
       verifyNever(() => anyOpen(salesOrders));
     });
+  });
+
+  group('the cash session gate on the workspace routes (spec 047 C2)', () {
+    final stale = CurrentSession(
+      state: SessionState.stale,
+      session: CashSession(
+        cashSessionId: 77,
+        cashDrawerId: 1,
+        cashDrawerName: 'Caja 1',
+        cashDrawerCode: 'CJ1',
+        cashierId: 100,
+        cashierName: 'Ana López',
+        start: DateTime(2026, 8, 4, 9),
+        openingAmount: '500',
+      ),
+    );
+
+    testWidgets('/sales/pos/new under a stale session redirects to the close '
+        'screen and creates no sale', (tester) async {
+      when(() => cashSessions.getCurrent()).thenAnswer((_) async => stale);
+
+      final (router, _) = await pumpPosRouted(
+        tester,
+        initialLocation: '/sales/pos/new',
+        overrides: overrides(),
+      );
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.path, '/sales/cash-sessions/77');
+      expect(find.byKey(const Key('cash_session_stub')), findsOneWidget);
+      verifyNever(() => anyOpen(salesOrders));
+    });
+
+    testWidgets('/sales/pos/new with no session keeps the full-screen gate', (
+      tester,
+    ) async {
+      when(() => cashSessions.getCurrent()).thenAnswer(
+        (_) async => const CurrentSession(state: SessionState.none),
+      );
+
+      final (router, _) = await pumpPosRouted(
+        tester,
+        initialLocation: '/sales/pos/new',
+        overrides: overrides(),
+      );
+
+      expect(router.state.uri.path, '/sales/pos/new');
+      expect(find.byKey(const Key('pos_gate_no_session_title')), findsOneWidget);
+    });
+
+    for (final (label, current) in [
+      ('stale', stale),
+      ('none', const CurrentSession(state: SessionState.none)),
+    ]) {
+      testWidgets('/sales/pos/:saleId under $label still renders the sale, '
+          'with the blocking banner', (tester) async {
+        when(() => cashSessions.getCurrent()).thenAnswer((_) async => current);
+        when(() => salesOrders.getById(saleId: 42))
+            .thenAnswer((_) async => testSale(id: 42));
+
+        final (router, _) = await pumpPosRouted(
+          tester,
+          initialLocation: '/sales/pos/42',
+          overrides: overrides(),
+        );
+
+        expect(router.state.uri.path, '/sales/pos/42');
+        verify(() => salesOrders.getById(saleId: 42)).called(1);
+        expect(find.byKey(const Key('pos_gate_no_session_title')), findsNothing);
+        expect(find.byKey(const Key('pos_session_blocked_banner')), findsOneWidget);
+      });
+    }
   });
 
   group('an unreachable sale (contracts/pos-workspace.md §1.2)', () {

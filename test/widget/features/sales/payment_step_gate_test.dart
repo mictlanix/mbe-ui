@@ -5,10 +5,13 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/payment_method_option_repository.dart';
+import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
+import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_step.dart';
 
 import 'pos_test_harness.dart';
+import 'session_override.dart';
 
 class MockPaymentMethodOptionRepository extends Mock
     implements PaymentMethodOptionRepository {}
@@ -41,6 +44,7 @@ void main() {
     required String balance,
     PaymentTerms paymentTerms = PaymentTerms.immediate,
     VoidCallback? onClose,
+    CurrentSession? session,
   }) async {
     await pumpPos(
       tester,
@@ -54,6 +58,7 @@ void main() {
       ),
       overrides: [
         customerPaymentOverride(paymentRepository),
+        session == null ? openSessionOverride() : sessionOverride(session),
         paymentMethodOptionRepositoryProvider.overrideWithValue(optionRepository),
       ],
     );
@@ -102,45 +107,140 @@ void main() {
     });
   });
 
-  group('the tender itself', () {
-    testWidgets('applying is blocked until an amount and a method are chosen '
-        '(FR-046)', (tester) async {
+  group('the tender itself (spec 047 US5)', () {
+    void stubTender() {
+      when(
+        () => paymentRepository.createPayment(
+          customer: any(named: 'customer'),
+          amount: any(named: 'amount'),
+          method: any(named: 'method'),
+          currency: any(named: 'currency'),
+          paymentCharge: any(named: 'paymentCharge'),
+          reference: any(named: 'reference'),
+        ),
+      ).thenAnswer((_) async => 500);
+      when(
+        () => paymentRepository.applyPayment(
+          customerPaymentId: any(named: 'customerPaymentId'),
+          salesOrder: any(named: 'salesOrder'),
+          amount: any(named: 'amount'),
+          amountChange: any(named: 'amountChange'),
+        ),
+      ).thenAnswer((_) async {});
+    }
+
+    String amountText(WidgetTester tester) => tester
+        .widget<TextField>(find.byKey(const Key('payment_amount_field')))
+        .controller!
+        .text;
+
+    testWidgets('there is no apply button, and the amount opens pre-filled '
+        'with the balance (FR-016)', (tester) async {
       await pumpStep(tester, balance: '116.00');
-      final submit = tester.widget<FilledButton>(
-        find.byKey(const Key('payment_submit_button')),
-      );
-      expect(submit.onPressed, isNull);
+
+      expect(find.byKey(const Key('payment_submit_button')), findsNothing);
+      expect(find.byKey(const Key('payment_reference_field')), findsNothing);
+      expect(amountText(tester), '116.00');
     });
 
-    testWidgets('choosing a method and an amount enables applying', (tester) async {
+    testWidgets('tapping a method applies the keyed amount with that method', (
+      tester,
+    ) async {
+      stubTender();
       await pumpStep(tester, balance: '116.00');
 
-      // The facility has no options configured, so the grid falls back to the
-      // shared PaymentMethod enum — cash is code 1.
+      await tester.enterText(find.byKey(const Key('payment_amount_field')), '50.00');
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('payment_method_1')));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byKey(const Key('payment_amount_field')), '116.00');
-      await tester.pumpAndSettle();
 
-      final submit = tester.widget<FilledButton>(
-        find.byKey(const Key('payment_submit_button')),
-      );
-      expect(submit.onPressed, isNotNull);
+      verify(
+        () => paymentRepository.createPayment(
+          customer: 7,
+          amount: '50.00',
+          method: 1,
+          currency: any(named: 'currency'),
+          paymentCharge: null,
+          reference: null,
+        ),
+      ).called(1);
     });
 
-    testWidgets('an amount of zero is never submittable', (tester) async {
+    testWidgets('an empty or zero amount applies nothing and says why', (
+      tester,
+    ) async {
+      stubTender();
       await pumpStep(tester, balance: '116.00');
 
-      await tester.tap(find.byKey(const Key('payment_method_1')));
-      await tester.pumpAndSettle();
       await tester.enterText(find.byKey(const Key('payment_amount_field')), '0');
       await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('payment_method_1')));
+      await tester.pumpAndSettle();
 
-      final submit = tester.widget<FilledButton>(
-        find.byKey(const Key('payment_submit_button')),
+      expect(find.byKey(const Key('payment_issue_message')), findsOneWidget);
+      expect(find.text('Captura un monto mayor a cero.'), findsOneWidget);
+      verifyNever(
+        () => paymentRepository.createPayment(
+          customer: any(named: 'customer'),
+          amount: any(named: 'amount'),
+          method: any(named: 'method'),
+          currency: any(named: 'currency'),
+          paymentCharge: any(named: 'paymentCharge'),
+          reference: any(named: 'reference'),
+        ),
       );
-      expect(submit.onPressed, isNull);
     });
+  });
+
+  group('the cash session gate (spec 047 FR-004)', () {
+    final stale = CurrentSession(
+      state: SessionState.stale,
+      session: CashSession(
+        cashSessionId: 77,
+        cashDrawerId: 1,
+        cashDrawerName: 'Caja 1',
+        cashDrawerCode: 'CJ1',
+        cashierId: 100,
+        cashierName: 'Ana López',
+        start: DateTime(2026, 8, 4, 9),
+        openingAmount: '500',
+      ),
+    );
+
+    testWidgets('an open session shows no banner and enables the tiles', (
+      tester,
+    ) async {
+      await pumpStep(tester, balance: '116.00');
+
+      expect(find.byKey(const Key('pos_session_blocked_banner')), findsNothing);
+      final tile = tester.widget<InkWell>(
+        find.descendant(
+          of: find.byKey(const Key('payment_method_1')),
+          matching: find.byType(InkWell),
+        ),
+      );
+      expect(tile.onTap, isNotNull);
+    });
+
+    for (final (label, current) in [
+      ('stale', stale),
+      ('none', const CurrentSession(state: SessionState.none)),
+    ]) {
+      testWidgets('a $label session shows the blocking banner and disables '
+          'the tiles', (tester) async {
+        await pumpStep(tester, balance: '116.00', session: current);
+
+        expect(find.byKey(const Key('pos_session_blocked_banner')), findsOneWidget);
+        expect(find.byKey(const Key('pos_session_blocked_action')), findsOneWidget);
+        final tile = tester.widget<InkWell>(
+          find.descendant(
+            of: find.byKey(const Key('payment_method_1')),
+            matching: find.byType(InkWell),
+          ),
+        );
+        expect(tile.onTap, isNull);
+      });
+    }
   });
 
   group('the status filter passed to the option catalog', () {

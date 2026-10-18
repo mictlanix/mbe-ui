@@ -10,15 +10,11 @@ import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/facility_warehouses_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/stock_gate.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/warehouse_picker_dialog.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/widgets/quantity_stepper.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
-
-/// The warehouse picker's per-warehouse stock flag (data-model.md §6,
-/// FR-020/FR-021): whether the cached availability for this product in that
-/// warehouse covers the line's ordered quantity, falls short, is exhausted,
-/// or was never looked up this session.
-enum WarehouseStockLevel { enough, short, none, unknown }
 
 /// Everything a sale line does, minus how it is laid out: the
 /// display-formatted field controllers, the server round-trip behind every
@@ -31,6 +27,11 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// The line being edited, and the facility whose warehouses may hold it.
   SaleLine get line;
   int get facilityId;
+
+  /// The sale-wide stock judgement for this line, passed down by
+  /// [CaptureStep] so quantities of the same product in the same warehouse
+  /// are summed across lines (spec 047 FR-009). `null` judges the line alone.
+  StockGate? get stockGate => null;
 
   /// False once `Sale.isEditable` is (FR-041) — decided by the caller, never
   /// by the line itself.
@@ -332,116 +333,85 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   Future<void> removeLine() =>
       ref.read(saleEditorProvider).removeLine(line.id);
 
-  /// [decoration] and [style] let each tier size the picker as its own band
-  /// requires; both default to Material's own, which is what the compact card
-  /// wants.
+  /// The warehouse as a tap field that opens [showWarehousePicker] (spec 047
+  /// FR-012, C5). [decoration] and [style] let each tier size the field as its
+  /// own band requires; both default to Material's own, which is what the
+  /// compact card wants.
+  ///
+  /// The closed field is name-only plus a fixed-size icon, a warning when the
+  /// line is short and a help mark when its stock is unknown, never stock
+  /// text: a flag rendered here would put the shared row-height/baseline
+  /// invariant (sale_line_row_test.dart, sale_line_symmetry_test.dart) at risk
+  /// (research R11).
   Widget warehousePicker({InputDecoration? decoration, TextStyle? style}) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     final warehouses = ref.watch(
       facilityWarehousesControllerProvider(facilityId),
     );
+    final gate =
+        stockGate ?? evaluateLines([line], ref.watch(productStockCacheProvider));
+    final isShort = gate.shortLineIds.contains(line.id);
+    final isUnknown = gate.unknownLineIds.contains(line.id);
     final canEdit = enabled;
     return warehouses.when(
-      data: (list) => KeyedSubtree(
-        // As for the tax picker: a refused warehouse change must not leave the
-        // refused warehouse on screen.
-        key: ValueKey('warehouse-$_rejections'),
-        child: DropdownButtonFormField<int>(
-          initialValue: line.warehouse,
-          isExpanded: true,
-          style: style,
-          decoration:
-              decoration ??
-              InputDecoration(labelText: l10n.posLineWarehouseLabel),
-          items: [
-            for (final w in list)
-              DropdownMenuItem(
-                value: w.warehouseId,
-                // FR-020/FR-021: the chosen warehouse's stock flag for this
-                // product, shown alongside the name so choosing a warehouse
-                // is an informed choice rather than a guess-then-check —
-                // informational only (FR-022), never blocking.
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: Text(w.name, overflow: TextOverflow.ellipsis),
-                    ),
-                    const SizedBox(width: 8),
-                    _warehouseStockFlag(w.warehouseId),
-                  ],
-                ),
-              ),
-          ],
-          // The closed display stays name-only (research R11): a flag
-          // rendered here as well would put the shared row-height/baseline
-          // invariant (sale_line_row_test.dart, sale_line_symmetry_test.dart)
-          // at risk.
-          selectedItemBuilder: (context) => [
-            for (final w in list)
-              Text(w.name, overflow: TextOverflow.ellipsis),
-          ],
-          onChanged: canEdit
-              ? (value) {
-                  if (value != null) update(warehouse: value);
+      data: (list) {
+        var name = '';
+        for (final w in list) {
+          if (w.warehouseId == line.warehouse) name = w.name;
+        }
+        var base =
+            decoration ?? InputDecoration(labelText: l10n.posLineWarehouseLabel);
+        if (isShort) {
+          final border = theme.inputDecorationTheme.enabledBorder;
+          base = base.copyWith(
+            enabledBorder: border?.copyWith(
+              borderSide: BorderSide(color: theme.colorScheme.error),
+            ),
+          );
+        }
+        return InkWell(
+          key: Key('sale_line_warehouse_${line.id}'),
+          borderRadius: BorderRadius.circular(4),
+          onTap: canEdit
+              ? () async {
+                  final picked = await showWarehousePicker(
+                    context,
+                    warehouses: list,
+                    selected: line.warehouse,
+                    stock: ref.read(productStockCacheProvider)[line.product],
+                    quantity: Decimal.tryParse(line.quantity) ?? Decimal.zero,
+                    productName: line.productName,
+                  );
+                  if (picked != null && picked != line.warehouse) {
+                    update(warehouse: picked);
+                  }
                 }
               : null,
-        ),
-      ),
+          child: InputDecorator(
+            decoration: base.copyWith(enabled: canEdit),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(name, style: style, overflow: TextOverflow.ellipsis),
+                ),
+                if (isShort)
+                  Icon(Icons.warning_amber, size: 18, color: theme.colorScheme.error)
+                else if (isUnknown)
+                  Icon(Icons.help_outline, size: 18, color: theme.colorScheme.outline),
+                Icon(
+                  Icons.unfold_more,
+                  size: 24,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
       loading: () => const LinearProgressIndicator(),
       error: (error, stackTrace) => const SizedBox.shrink(),
     );
-  }
-
-  /// The picker-row rendering of [_stockLevelIn] (data-model.md §6): the
-  /// confirmed available quantity when stock is known to cover the ordered
-  /// amount — otherwise short icon-and-wording, reusing [Icons.warning_amber],
-  /// the same icon [shortfall] already warns with, so the picker and the
-  /// line-level warning never disagree. `enough` renders the figure rather
-  /// than nothing (as it once did) so a warehouse the app actually checked
-  /// reads differently from one it never looked at — a bare `null` here was
-  /// visually identical to `unknown`, which defeated the point of checking.
-  Widget _warehouseStockFlag(int warehouseId) {
-    final l10n = AppLocalizations.of(context)!;
-    final fmt = ref.read(formattersProvider);
-    final level = _stockLevelIn(warehouseId);
-    final outline = Theme.of(context).textTheme.labelSmall?.copyWith(
-      color: Theme.of(context).colorScheme.outline,
-    );
-    final warning = Theme.of(context).textTheme.labelSmall?.copyWith(
-      color: Theme.of(context).colorScheme.error,
-    );
-    return switch (level) {
-      WarehouseStockLevel.enough => Text(
-        fmt.field.quantity(_stockIn(warehouseId)!.available),
-        style: outline,
-      ),
-      WarehouseStockLevel.unknown => Text(
-        l10n.posLineWarehouseStockUnknown,
-        style: outline,
-      ),
-      WarehouseStockLevel.short => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.warning_amber, size: 14, color: warning?.color),
-          const SizedBox(width: 4),
-          Text(
-            l10n.posLineWarehouseStockShort(
-              fmt.field.quantity(_stockIn(warehouseId)!.available),
-            ),
-            style: warning,
-          ),
-        ],
-      ),
-      WarehouseStockLevel.none => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.warning_amber, size: 14, color: warning?.color),
-          const SizedBox(width: 4),
-          Text(l10n.posLineWarehouseStockNone, style: warning),
-        ],
-      ),
-    };
   }
 
   /// The cached availability entry for [warehouseId], or `null` when this
@@ -450,23 +420,10 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     if (warehouseId == null) return null;
     final cache = ref.read(productStockCacheProvider)[line.product];
     if (cache == null) return null;
-    for (final entry in cache) {
+    for (final entry in cache.warehouses) {
       if (entry.warehouse == warehouseId) return entry;
     }
     return null;
-  }
-
-  /// The 4-state stock flag (data-model.md §6, FR-020/FR-021) for
-  /// [warehouseId], computed with the exact same comparison [shortfall] uses
-  /// so the picker and the line-level warning can never disagree.
-  WarehouseStockLevel _stockLevelIn(int warehouseId) {
-    final entry = _stockIn(warehouseId);
-    if (entry == null) return WarehouseStockLevel.unknown;
-    final available = Decimal.tryParse(entry.available) ?? Decimal.zero;
-    final ordered = Decimal.tryParse(line.quantity) ?? Decimal.zero;
-    if (available.sign <= 0) return WarehouseStockLevel.none;
-    if (ordered > available) return WarehouseStockLevel.short;
-    return WarehouseStockLevel.enough;
   }
 
   /// FR-025/FR-026: a non-blocking warning when the ordered quantity exceeds
@@ -474,18 +431,16 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   /// snapshot cached at the moment the product was last looked up. `null`
   /// when there is nothing to warn about.
   String? shortfall(AppLocalizations l10n) {
-    final cached = ref.watch(productStockCacheProvider)[line.product];
+    final cache = ref.watch(productStockCacheProvider);
     final fmt = ref.watch(formattersProvider);
-    if (cached == null || line.warehouse == null) return null;
+    // Marked short exactly when it blocks Continue (spec 047 FR-008).
+    final gate = stockGate ?? evaluateLines([line], cache);
+    if (!gate.shortLineIds.contains(line.id)) return null;
     final entry = _stockIn(line.warehouse);
     if (entry == null) return null;
     final available = Decimal.tryParse(entry.available) ?? Decimal.zero;
-    final ordered = Decimal.tryParse(line.quantity) ?? Decimal.zero;
     if (available.sign <= 0) return l10n.posLineNoStock;
-    if (ordered > available) {
-      return l10n.posLineShortfall(fmt.field.quantity(entry.available));
-    }
-    return null;
+    return l10n.posLineShortfall(fmt.field.quantity(entry.available));
   }
 
   /// What "adjust to available" sets the quantity to (FR-026).

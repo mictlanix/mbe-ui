@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:mbe_ui/core/navigation/list_query.dart';
 
@@ -265,6 +267,46 @@ void main() {
         query.withFacetValues('label', const []).facetValues('label'),
         isEmpty,
       );
+    });
+  });
+
+  group('currentRouteUri', () {
+    Future<GoRouter> pumpRouter(WidgetTester tester) async {
+      final router = GoRouter(
+        initialLocation: '/base',
+        routes: [
+          GoRoute(path: '/base', builder: (_, _) => const Text('base')),
+          GoRoute(path: '/pushed', builder: (_, _) => const Text('pushed')),
+        ],
+      );
+      await tester.pumpWidget(MaterialApp.router(routerConfig: router));
+      await tester.pumpAndSettle();
+      return router;
+    }
+
+    testWidgets('returns the configuration URI when nothing is pushed', (tester) async {
+      final router = await pumpRouter(tester);
+      expect(currentRouteUri(router).toString(), '/base');
+    });
+
+    testWidgets('returns the pushed route URI, including after replace', (tester) async {
+      final router = await pumpRouter(tester);
+      router.push('/pushed?a=1');
+      await tester.pumpAndSettle();
+      expect(currentRouteUri(router).toString(), '/pushed?a=1');
+
+      router.replace('/pushed?a=1&b=2');
+      await tester.pumpAndSettle();
+      expect(currentRouteUri(router).toString(), '/pushed?a=1&b=2');
+    });
+
+    testWidgets('falls back to the base route once the pushed route is popped', (tester) async {
+      final router = await pumpRouter(tester);
+      router.push('/pushed?a=1');
+      await tester.pumpAndSettle();
+      router.pop();
+      await tester.pumpAndSettle();
+      expect(currentRouteUri(router).toString(), '/base');
     });
   });
 }

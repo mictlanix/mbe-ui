@@ -3779,4 +3779,66 @@ class AppLocalizationsEn extends AppLocalizations {
   String customerGenericTaxpayerNote(String rfc) {
     return 'This is the walk-in customer: its only tax recipient is $rfc (general public), and nothing else can be linked to it.';
   }
+
+  @override
+  String get posSessionExpiredRedirect =>
+      'Your cash session has expired. Close it to keep selling.';
+
+  @override
+  String get posSessionExpiredPaymentsBlocked =>
+      'The cash session has expired. Close it to take payments.';
+
+  @override
+  String get posSessionCloseAction => 'Close session';
+
+  @override
+  String posCaptureShortLines(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lines without enough stock',
+      one: '1 line without enough stock',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get posWarehousePickerTitle => 'Warehouse';
+
+  @override
+  String get posWarehousePickerNotTracked =>
+      'This product is not stock-tracked, so any warehouse is valid.';
+
+  @override
+  String get posPaymentAmountRequired => 'Enter an amount greater than zero.';
+
+  @override
+  String get posPaymentOverpayNonCash => 'Only cash can exceed the balance.';
+
+  @override
+  String get posPaymentSessionInvalid =>
+      'The cash session is no longer valid. Close it and open a new one to take payments.';
+
+  @override
+  String get posPaymentChangeDue => 'Change to hand back';
+
+  @override
+  String get posPaymentDismissChange => 'Dismiss';
+
+  @override
+  String get posPaymentReferenceTitle => 'Payment reference';
+
+  @override
+  String get posPaymentReferenceConfirm => 'Apply payment';
+
+  @override
+  String posCaptureUnknownStock(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lines with unverified stock',
+      one: '1 line with unverified stock',
+    );
+    return '$_temp0';
+  }
 }

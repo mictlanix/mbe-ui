@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/widgets/confirmable_text_field.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_line_editing.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/stock_gate.dart';
 import 'package:mbe_ui/features/sales/presentation/widgets/quantity_stepper.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -24,6 +25,7 @@ class SaleLineCard extends ConsumerStatefulWidget {
     this.enabled = true,
     this.showComment = false,
     this.showWarehouse = true,
+    this.stockGate,
   });
 
   final SaleLine line;
@@ -41,6 +43,10 @@ class SaleLineCard extends ConsumerStatefulWidget {
   /// unchanged.
   final bool showWarehouse;
 
+  /// The sale-wide stock judgement, so a short line is marked exactly when it
+  /// blocks Continue (spec 047). `null` judges this line alone.
+  final StockGate? stockGate;
+
   @override
   ConsumerState<SaleLineCard> createState() => _SaleLineCardState();
 }
@@ -55,6 +61,9 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
 
   @override
   bool get lineEnabled => widget.enabled;
+
+  @override
+  StockGate? get stockGate => widget.stockGate;
 
   @override
   void didUpdateWidget(covariant SaleLineCard oldWidget) {

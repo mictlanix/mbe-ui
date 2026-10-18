@@ -20,6 +20,7 @@ import 'package:mbe_ui/features/sales/presentation/payment/payment_step.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
+import 'session_override.dart';
 
 class MockCustomerRepository extends Mock implements CustomerRepository {}
 
@@ -116,6 +117,7 @@ void main() {
         warehouseOverride(warehouses),
         customerRepositoryProvider.overrideWithValue(customers),
         customerPaymentOverride(payments),
+        openSessionOverride(),
       ],
     );
   }
@@ -235,6 +237,7 @@ void main() {
         surface: phoneSurface,
         overrides: [
           customerPaymentOverride(payments),
+          openSessionOverride(),
           paymentMethodOptionRepositoryProvider.overrideWithValue(paymentOptions),
         ],
       );
@@ -245,6 +248,16 @@ void main() {
       await pumpPayment(tester);
 
       expect(find.byKey(const Key('payment_amount_field')), findsOneWidget);
+      // spec 047 US5: a tap on a method applies the payment, so there is no
+      // apply button, and the amount opens pre-filled with the balance.
+      expect(find.byKey(const Key('payment_submit_button')), findsNothing);
+      expect(
+        tester
+            .widget<TextField>(find.byKey(const Key('payment_amount_field')))
+            .controller!
+            .text,
+        '116.00',
+      );
       // Scoped to the chip: "Restante" is also the summary panel's
       // (always-pinned) balance label since spec 025's rename to that word.
       expect(

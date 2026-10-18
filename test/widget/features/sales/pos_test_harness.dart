@@ -239,6 +239,10 @@ Future<ProviderContainer> pumpPos(
 /// drives a lazy-opened sale without a full product-search simulation).
 typedef PosRoutedHarness = (GoRouter router, ProviderContainer container);
 
+/// The route [pumpPosRouted] registers as a stand-in for the cash-session
+/// close screen (spec 047).
+const cashSessionStubPath = '/sales/cash-sessions/:cashSessionId';
+
 /// Pumps a `MaterialApp.router` wired with the three real POS routes
 /// (`/sales/pos`, `/sales/pos/new`, `/sales/pos/:saleId` — mirroring
 /// `app_router.dart`'s own wiring) against the real `PosSalesListScreen` /
@@ -300,6 +304,19 @@ Future<PosRoutedHarness> pumpPosRouted(
         path: advancedSearchPath,
         builder: (context, state) =>
             AdvancedSearchScreen(query: ListQuery.fromUri(state.uri)),
+      ),
+      // spec 047: the close screen an expired session redirects to. A stub,
+      // because the real `CashSessionDetailScreen` needs a session repository
+      // the POS tests do not fake; the key and text let a test assert where
+      // the redirect landed and for which session.
+      GoRoute(
+        path: cashSessionStubPath,
+        builder: (context, state) => Scaffold(
+          body: Text(
+            'cash-session-${state.pathParameters['cashSessionId']}',
+            key: const Key('cash_session_stub'),
+          ),
+        ),
       ),
     ],
   );

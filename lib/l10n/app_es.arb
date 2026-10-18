@@ -1190,5 +1190,19 @@
   "customerTaxpayerLinkLabel": "Vincular un receptor fiscal existente",
   "linkedRecordUnlinkTooltip": "Desvincular",
   "linkedRecordNewAction": "Nuevo",
-  "customerGenericTaxpayerNote": "Este es el cliente de mostrador: su único receptor fiscal es {rfc} (público en general) y no se le puede vincular nada más."
+  "customerGenericTaxpayerNote": "Este es el cliente de mostrador: su único receptor fiscal es {rfc} (público en general) y no se le puede vincular nada más.",
+  "posSessionExpiredRedirect": "Tu sesión de caja está vencida. Ciérrala para continuar vendiendo.",
+  "posSessionExpiredPaymentsBlocked": "La sesión de caja está vencida. Ciérrala para cobrar.",
+  "posSessionCloseAction": "Cerrar sesión",
+  "posCaptureShortLines": "{count, plural, =1{1 partida sin existencia suficiente} other{{count} partidas sin existencia suficiente}}",
+  "posWarehousePickerTitle": "Almacén",
+  "posWarehousePickerNotTracked": "Este producto no controla existencia, así que cualquier almacén es válido.",
+  "posPaymentAmountRequired": "Captura un monto mayor a cero.",
+  "posPaymentOverpayNonCash": "Solo el efectivo puede exceder el saldo.",
+  "posPaymentSessionInvalid": "La sesión de caja ya no es válida. Ciérrala y abre una nueva para cobrar.",
+  "posPaymentChangeDue": "Cambio a entregar",
+  "posPaymentDismissChange": "Entendido",
+  "posPaymentReferenceTitle": "Referencia del pago",
+  "posPaymentReferenceConfirm": "Aplicar pago",
+  "posCaptureUnknownStock": "{count, plural, =1{1 partida con existencia sin verificar} other{{count} partidas con existencia sin verificar}}"
 }

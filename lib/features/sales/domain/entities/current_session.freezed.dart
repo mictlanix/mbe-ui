@@ -224,8 +224,8 @@ return $default(_that.state,_that.session);case _:
 /// @nodoc
 
 
-class _CurrentSession implements CurrentSession {
-  const _CurrentSession({required this.state, this.session});
+class _CurrentSession extends CurrentSession {
+  const _CurrentSession({required this.state, this.session}): super._();
   
 
 @override final  SessionState state;

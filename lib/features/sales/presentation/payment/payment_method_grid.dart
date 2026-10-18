@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/facility_payment_options_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/payment/payment_reference_dialog.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-/// Method selection, built from the facility's own configured
+/// Method tiles, built from the facility's own configured
 /// `PaymentMethodOption`s — each tile reads `requiresReference` directly off
 /// the option, since mbe-api computes it from the SAT code (research.md §6,
 /// resolved). There is no client-side reference table.
@@ -17,6 +19,10 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// to take money because a catalog is empty; those fall-back tiles carry no
 /// `paymentCharge` and never require a reference, which is the safe default
 /// (`PaymentMethodOption.requiresReference`'s own documented posture).
+///
+/// Tapping a tile *applies the payment* for the draft amount (spec 047 US5):
+/// the tiles are actions, not a selection, so none is ever shown as selected.
+/// A method that requires a reference asks for it in a small dialog first.
 ///
 /// Rendered as tiles, not `ChoiceChip`s (contracts/payment-surface.md §4): a
 /// `LayoutBuilder` + `Wrap` sizes two fixed-width columns when the available
@@ -28,11 +34,17 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 class PaymentMethodGrid extends ConsumerWidget {
   const PaymentMethodGrid({
     super.key,
+    required this.sale,
     required this.facilityId,
     this.enabled = true,
   });
 
+  /// The sale a tapped tile pays.
+  final Sale sale;
   final int facilityId;
+
+  /// Whether the tiles can be tapped — off while a tender is in flight or the
+  /// cash session is not valid.
   final bool enabled;
 
   static const _fallbackMethods = [
@@ -46,12 +58,44 @@ class PaymentMethodGrid extends ConsumerWidget {
   /// payment-surface.md §4).
   static const _minTileWidth = 260.0;
 
+  /// One tap, one payment: the method is applied now, and when it needs a
+  /// reference the cashier is asked for it before anything is recorded.
+  Future<void> _tender(
+    BuildContext context,
+    WidgetRef ref, {
+    required int methodCode,
+    int? paymentCharge,
+    bool requiresReference = false,
+  }) async {
+    final notifier = ref.read(paymentControllerProvider.notifier);
+    final result = await notifier.tender(
+      sale,
+      methodCode: methodCode,
+      paymentCharge: paymentCharge,
+      requiresReference: requiresReference,
+    );
+    if (result != TenderResult.needsReference || !context.mounted) return;
+    final reference = await showPaymentReferenceDialog(context);
+    if (reference == null) return;
+    await notifier.tender(
+      sale,
+      methodCode: methodCode,
+      paymentCharge: paymentCharge,
+      requiresReference: requiresReference,
+      reference: reference,
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final options = ref.watch(facilityPaymentOptionsControllerProvider(facilityId));
-    final draft = ref.watch(paymentControllerProvider);
-    final notifier = ref.read(paymentControllerProvider.notifier);
+    final options = ref.watch(
+      facilityPaymentOptionsControllerProvider(facilityId),
+    );
+    final submitting = ref.watch(
+      paymentControllerProvider.select((d) => d.submitting),
+    );
+    final active = enabled && !submitting;
 
     return options.when(
       data: (list) {
@@ -63,10 +107,8 @@ class PaymentMethodGrid extends ConsumerWidget {
                     icon: paymentMethodIcon(method.code),
                     name: paymentMethodLabel(l10n, method.code),
                     requiresReference: false,
-                    selected: draft.methodCode == method.code &&
-                        draft.paymentCharge == null,
-                    onTap: enabled
-                        ? () => notifier.selectMethod(methodCode: method.code)
+                    onTap: active
+                        ? () => _tender(context, ref, methodCode: method.code)
                         : null,
                   ),
               ]
@@ -77,9 +119,10 @@ class PaymentMethodGrid extends ConsumerWidget {
                     icon: paymentMethodIcon(option.paymentMethod),
                     name: option.name,
                     requiresReference: option.requiresReference,
-                    selected: draft.paymentCharge == option.paymentMethodOptionId,
-                    onTap: enabled
-                        ? () => notifier.selectMethod(
+                    onTap: active
+                        ? () => _tender(
+                            context,
+                            ref,
                             methodCode: option.paymentMethod,
                             paymentCharge: option.paymentMethodOptionId,
                             requiresReference: option.requiresReference,
@@ -91,8 +134,9 @@ class PaymentMethodGrid extends ConsumerWidget {
         final gutter = Theme.of(context).spacing.xs;
         return LayoutBuilder(
           builder: (context, constraints) {
-            final columns =
-                constraints.maxWidth >= _minTileWidth * 2 + gutter ? 2 : 1;
+            final columns = constraints.maxWidth >= _minTileWidth * 2 + gutter
+                ? 2
+                : 1;
             final width = columns == 1
                 ? constraints.maxWidth
                 : (constraints.maxWidth - gutter) / 2;
@@ -122,7 +166,6 @@ class _TileData {
     required this.icon,
     required this.name,
     required this.requiresReference,
-    required this.selected,
     required this.onTap,
   });
 
@@ -130,15 +173,17 @@ class _TileData {
   final IconData icon;
   final String name;
   final bool requiresReference;
-  final bool selected;
   final VoidCallback? onTap;
 }
 
-/// One tile: icon, name, a secondary line stating whether it requires a
-/// reference, and a trailing check when selected. Selection is carried by
-/// both the border and the icon, never fill alone (FR-014).
+/// One tile: icon, name, and a secondary line stating whether it requires a
+/// reference. Dimmed and inert while [_TileData.onTap] is null.
 class _MethodTile extends StatelessWidget {
-  const _MethodTile({required this.data, required this.width, required this.l10n});
+  const _MethodTile({
+    required this.data,
+    required this.width,
+    required this.l10n,
+  });
 
   final _TileData data;
   final double width;
@@ -149,61 +194,53 @@ class _MethodTile extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final spacing = theme.spacing;
-    final selected = data.selected;
-
     return SizedBox(
       key: data.key,
       width: width,
       child: Semantics(
         button: true,
-        selected: selected,
+        enabled: data.onTap != null,
         label: data.name,
-        child: Material(
-          color: selected
-              ? theme.elevations.engaged.surfaceColor
-              : Colors.transparent,
-          borderRadius: theme.shapes.mdRadius,
-          child: InkWell(
-            onTap: data.onTap,
+        child: Opacity(
+          opacity: data.onTap == null ? 0.5 : 1,
+          child: Material(
+            color: Colors.transparent,
             borderRadius: theme.shapes.mdRadius,
-            child: Container(
-              padding: EdgeInsets.all(spacing.sm),
-              decoration: BoxDecoration(
-                borderRadius: theme.shapes.mdRadius,
-                border: Border.all(
-                  color: selected
-                      ? colorScheme.primary
-                      : colorScheme.outlineVariant,
-                  width: selected ? 2 : 1,
+            child: InkWell(
+              onTap: data.onTap,
+              borderRadius: theme.shapes.mdRadius,
+              child: Container(
+                padding: EdgeInsets.all(spacing.sm),
+                decoration: BoxDecoration(
+                  borderRadius: theme.shapes.mdRadius,
+                  border: Border.all(color: colorScheme.outlineVariant),
                 ),
-              ),
-              child: Row(
-                children: [
-                  Icon(data.icon, color: colorScheme.onSurfaceVariant),
-                  SizedBox(width: spacing.sm),
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          data.name,
-                          style: theme.typeRoles.cardTitle,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          data.requiresReference
-                              ? l10n.posPaymentMethodRequiresReference
-                              : l10n.posPaymentMethodNoReference,
-                          style: theme.typeRoles.metricLabel,
-                        ),
-                      ],
+                child: Row(
+                  children: [
+                    Icon(data.icon, color: colorScheme.onSurfaceVariant),
+                    SizedBox(width: spacing.sm),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            data.name,
+                            style: theme.typeRoles.cardTitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            data.requiresReference
+                                ? l10n.posPaymentMethodRequiresReference
+                                : l10n.posPaymentMethodNoReference,
+                            style: theme.typeRoles.metricLabel,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  if (selected)
-                    Icon(Icons.check_circle, color: colorScheme.primary),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

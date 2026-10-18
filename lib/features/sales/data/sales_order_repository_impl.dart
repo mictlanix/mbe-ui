@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
@@ -241,6 +242,25 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
             pattern: pattern,
             customer: customer,
             warehouse: warehouse,
+          );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return result.map(ProductLookupResult.fromResponse).toList();
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<List<ProductLookupResult>> productLookupByIds({
+    required List<int> products,
+    required int customer,
+  }) async {
+    try {
+      final response = await _api
+          .lookupProductsApiV1SalesOrdersProductLookupGet(
+            products: BuiltList<int>(products),
+            customer: customer,
           );
       final result = response.data;
       if (result == null) throw const AppError.server();

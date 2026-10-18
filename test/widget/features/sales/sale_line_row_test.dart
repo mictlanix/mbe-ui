@@ -54,7 +54,7 @@ void main() {
     WidgetTester tester, {
     bool enabled = true,
     String quantity = '2',
-    Map<int, List<WarehouseStock>> stock = const {},
+    Map<int, ProductStock> stock = const {},
   }) async {
     await pumpPos(
       tester,
@@ -264,7 +264,7 @@ void main() {
       tester,
     ) async {
       await pumpRow(tester);
-      expect(find.byType(DropdownButtonFormField<int>), findsOneWidget);
+      expect(find.byKey(const Key('sale_line_warehouse_5')), findsOneWidget);
     });
 
     testWidgets('a confirmed sale renders every control disabled (FR-041)', (
@@ -284,7 +284,7 @@ void main() {
       }
       // Both pickers refuse a change too.
       expect(
-        tester.widget<DropdownButton<int>>(find.byType(DropdownButton<int>)).onChanged,
+        tester.widget<InkWell>(find.byKey(const Key('sale_line_warehouse_5'))).onTap,
         isNull,
       );
       expect(
@@ -356,10 +356,8 @@ void main() {
         // reaches for mid-burst.
         expect(
           tester
-              .widget<DropdownButtonFormField<int>>(
-                find.byType(DropdownButtonFormField<int>),
-              )
-              .onChanged,
+              .widget<InkWell>(find.byKey(const Key('sale_line_warehouse_5')))
+              .onTap,
           isNotNull,
         );
       }
@@ -645,9 +643,9 @@ void main() {
         tester,
         quantity: '2',
         stock: const {
-          11: [
+          11: ProductStock(warehouses: [
             WarehouseStock(warehouse: 3, onHand: '10', available: '10'),
-          ],
+          ]),
         },
       );
       expect(find.byIcon(Icons.warning_amber), findsNothing);
@@ -660,14 +658,15 @@ void main() {
         tester,
         quantity: '5',
         stock: const {
-          11: [
+          11: ProductStock(warehouses: [
             WarehouseStock(warehouse: 3, onHand: '2', available: '2'),
-          ],
+          ]),
         },
       );
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
-      expect(find.byIcon(Icons.warning_amber), findsOneWidget);
+      // The shortfall row's icon and the one on the warehouse field.
+      expect(find.byIcon(Icons.warning_amber), findsNWidgets(2));
       expect(find.text(l10n.posLineShortfall('2')), findsOneWidget);
       expect(find.text(l10n.posLineAdjustToAvailable), findsOneWidget);
     });
@@ -678,9 +677,9 @@ void main() {
         tester,
         quantity: '1',
         stock: const {
-          11: [
+          11: ProductStock(warehouses: [
             WarehouseStock(warehouse: 3, onHand: '0', available: '0'),
-          ],
+          ]),
         },
       );
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
@@ -706,11 +705,11 @@ void main() {
           tester,
           quantity: '2',
           stock: const {
-            11: [WarehouseStock(warehouse: 3, onHand: '10', available: '10')],
+            11: ProductStock(warehouses: [WarehouseStock(warehouse: 3, onHand: '10', available: '10')]),
           },
         );
 
-        await tester.tap(find.byType(DropdownButtonFormField<int>));
+        await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
         await tester.pumpAndSettle();
 
         // Warehouse 3 ("Main Warehouse") is the one with cached stock (10, ≥
@@ -731,7 +730,7 @@ void main() {
         tester,
         quantity: '5',
         stock: const {
-          11: [WarehouseStock(warehouse: 3, onHand: '2', available: '2')],
+          11: ProductStock(warehouses: [WarehouseStock(warehouse: 3, onHand: '2', available: '2')]),
         },
       );
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
@@ -740,8 +739,16 @@ void main() {
       expect(find.text(l10n.posLineWarehouseStockShort('2')), findsNothing);
       expect(find.text(l10n.posLineWarehouseStockNone), findsNothing);
       expect(find.text(l10n.posLineWarehouseStockUnknown), findsNothing);
-      // Exactly the shortfall row's own icon — the picker added none.
-      expect(find.byIcon(Icons.warning_amber), findsOneWidget);
+      // The shortfall row's own icon, plus the fixed-size one the closed
+      // field carries; no stock text in the field.
+      expect(find.byIcon(Icons.warning_amber), findsNWidgets(2));
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('sale_line_warehouse_5')),
+          matching: find.byIcon(Icons.warning_amber),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('opening the picker flags a warehouse with no cached stock '
@@ -750,12 +757,12 @@ void main() {
         tester,
         quantity: '2',
         stock: const {
-          11: [WarehouseStock(warehouse: 3, onHand: '10', available: '10')],
+          11: ProductStock(warehouses: [WarehouseStock(warehouse: 3, onHand: '10', available: '10')]),
         },
       );
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
-      await tester.tap(find.byType(DropdownButtonFormField<int>));
+      await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
       await tester.pumpAndSettle();
 
       // Warehouse 3 has enough stock (2 ≤ 10): no flag at all.
@@ -771,12 +778,12 @@ void main() {
         tester,
         quantity: '1',
         stock: const {
-          11: [WarehouseStock(warehouse: 4, onHand: '0', available: '0')],
+          11: ProductStock(warehouses: [WarehouseStock(warehouse: 4, onHand: '0', available: '0')]),
         },
       );
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
-      await tester.tap(find.byType(DropdownButtonFormField<int>));
+      await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
       await tester.pumpAndSettle();
 
       expect(find.text(l10n.posLineWarehouseStockNone), findsOneWidget);
@@ -816,7 +823,7 @@ void main() {
           salesOrderOverride(salesOrder),
           productStockCacheProvider.overrideWith(
             (ref) => const {
-              11: [WarehouseStock(warehouse: 4, onHand: '2', available: '2')],
+              11: ProductStock(warehouses: [WarehouseStock(warehouse: 4, onHand: '2', available: '2')]),
             },
           ),
         ],
@@ -826,7 +833,7 @@ void main() {
       await tester.pumpAndSettle();
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
-      await tester.tap(find.byType(DropdownButtonFormField<int>));
+      await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
       await tester.pumpAndSettle();
       // The flagged warehouse's own wording is on screen before it is
       // chosen — an informed choice, not a guess.
@@ -931,7 +938,65 @@ void main() {
         );
       }
       expect(find.byKey(const Key('pos_line_tax_rate_picker')), findsOneWidget);
-      expect(find.byType(DropdownButton<int>), findsOneWidget);
+      expect(find.byKey(const Key('sale_line_warehouse_5')), findsOneWidget);
+    });
+  });
+  group('warehouse pop-up (spec 047 US4)', () {
+    testWidgets('tapping the field opens the pop-up; the current row is marked', (
+      tester,
+    ) async {
+      await pumpRow(tester);
+
+      expect(find.byKey(const Key('warehouse_picker_dialog')), findsNothing);
+      await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('warehouse_picker_dialog')), findsOneWidget);
+      expect(find.byKey(const Key('warehouse_option_3')), findsOneWidget);
+      expect(find.byKey(const Key('warehouse_option_4')), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('warehouse_option_3')),
+          matching: find.byIcon(Icons.check),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('picking the current warehouse or cancelling writes nothing', (
+      tester,
+    ) async {
+      final salesOrder = MockSalesOrderRepository();
+      await pumpPos(
+        tester,
+        SaleLineRow(line: testLine(), facilityId: 9),
+        overrides: [
+          warehouseOverride(warehouseRepository),
+          salesOrderOverride(salesOrder),
+        ],
+        surface: const Size(1400, 900),
+      );
+
+      await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('warehouse_option_3')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(TextButton));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('warehouse_picker_dialog')), findsNothing);
+      verifyZeroInteractions(salesOrder);
+    });
+
+    testWidgets('the field does nothing on a non-editable sale', (tester) async {
+      await pumpRow(tester, enabled: false);
+
+      await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('warehouse_picker_dialog')), findsNothing);
     });
   });
 }

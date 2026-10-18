@@ -13,8 +13,9 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// The tender-capture half of the payment step (spec 025 contracts/
 /// payment-surface.md §3): the headline amount, the quick-amount chips, the
-/// payment methods beside the keypad, the reference field, and the
-/// apply-payment action at the pane's foot.
+/// payment methods beside the keypad. There is no apply button: tapping a
+/// method applies the payment (spec 047 US5), and a method that needs a
+/// reference asks for it in a dialog.
 ///
 /// Owns the single [TextEditingController] the amount field and [NumberPad]
 /// both edit — they used to be nested in one widget and could share it
@@ -46,6 +47,12 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
     super.initState();
     _amountController.addListener(() {
       ref.read(paymentControllerProvider.notifier).setAmount(_amountController.text);
+    });
+    // FR-016: open with the balance already keyed. Deferred — a provider
+    // must not change while the tree is still building.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      ref.read(paymentControllerProvider.notifier).prefillAmount(widget.sale.balanceOrZero);
     });
   }
 
@@ -83,15 +90,14 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
     final spacing = theme.spacing;
     final sale = widget.sale;
     final enabled = widget.enabled;
-    final draft = ref.watch(paymentControllerProvider);
-    final notifier = ref.read(paymentControllerProvider.notifier);
     final fmt = ref.watch(formattersProvider);
 
-    // Keep the field in step when the controller resets the draft after a
-    // successful tender.
-    if (draft.amount.isEmpty && _amountController.text.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _amountController.clear());
-    }
+    // Keep the field in step when the controller sets the amount itself — the
+    // pre-fill, and the new balance after a successful tender.
+    ref.listen(paymentControllerProvider.select((draft) => draft.amount), (_, amount) {
+      if (amount == _amountController.text) return;
+      _amountController.text = amount.isEmpty ? '' : fmt.field.price(amount);
+    });
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -130,7 +136,11 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
         // window at the widths where this matters).
         LayoutBuilder(
           builder: (context, constraints) {
-            final methods = PaymentMethodGrid(facilityId: sale.facility, enabled: enabled);
+            final methods = PaymentMethodGrid(
+              sale: sale,
+              facilityId: sale.facility,
+              enabled: enabled,
+            );
             final keypad = NumberPad(controller: _amountController, enabled: enabled);
             if (constraints.maxWidth >= 900) {
               return Row(
@@ -147,27 +157,6 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
               children: [methods, SizedBox(height: spacing.md), keypad],
             );
           },
-        ),
-        if (draft.requiresReference) ...[
-          SizedBox(height: spacing.md),
-          TextField(
-            key: const Key('payment_reference_field'),
-            enabled: enabled,
-            decoration: InputDecoration(labelText: l10n.posPaymentReferenceLabel),
-            onChanged: notifier.setReference,
-          ),
-        ],
-        SizedBox(height: spacing.md),
-        FilledButton(
-          key: const Key('payment_submit_button'),
-          onPressed: draft.isSubmittable ? () => notifier.submit(sale) : null,
-          child: draft.submitting
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text(l10n.posApplyPayment),
         ),
       ],
     );

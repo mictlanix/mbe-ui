@@ -1,6 +1,9 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
+import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 
 /// Per-warehouse availability last seen for a product, keyed by product id
 /// (FR-025, FR-026). `Sale`/`SaleLine` carry no availability field of their
@@ -11,8 +14,91 @@ import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart
 /// warning simply doesn't render for a line whose product was never looked
 /// up in this session (e.g. right after resuming a sale) — advisory, not a
 /// substitute for the authoritative check at confirmation.
+///
+/// A key that is **missing** means the product's stock is unknown; a key that
+/// is present with [ProductStock.checked] `false` means the product is not
+/// stock-tracked (spec 047, data-model.md ProductStock). The old
+/// `List<WarehouseStock>` value could not tell those two apart, because a
+/// product that is not stockable comes back with an empty list.
 final productStockCacheProvider =
-    StateProvider<Map<int, List<WarehouseStock>>>((ref) => const {});
+    StateProvider<Map<int, ProductStock>>((ref) => const {});
+
+/// Loads the stock of every product on [sale] that has no cache entry yet, so
+/// a resumed sale is gated like a freshly built one (spec 047 FR-010, R4).
+///
+/// One batch `product-lookup` by product id (mbe-api#237). A failed lookup,
+/// or a product the lookup does not return, leaves it uncached, which reads as
+/// "unknown" and never blocks. Never throws.
+///
+/// [refresh] re-fetches those products even when they are cached — the
+/// capture step's "Reintentar" passes the products of its unknown lines.
+Future<void> ensureStockFor(
+  WidgetRef ref,
+  Sale sale, {
+  Set<int> refresh = const {},
+}) async {
+  final cached = ref.read(productStockCacheProvider);
+  final repository = ref.read(salesOrderRepositoryProvider);
+  // Read before the await: the step may be gone by the time it finishes.
+  final notifier = ref.read(productStockCacheProvider.notifier);
+  final missing = {
+    for (final line in sale.lines)
+      if (!cached.containsKey(line.product) || refresh.contains(line.product))
+        line.product,
+  };
+  if (missing.isEmpty) return;
+  final List<ProductLookupResult> results;
+  try {
+    results = await repository.productLookupByIds(
+      products: missing.toList(),
+      customer: sale.customer,
+    );
+  } on Object {
+    // Unknown stock is a warning, not a failure.
+    return;
+  }
+  final loaded = {
+    for (final r in results)
+      if (missing.contains(r.product)) r.product: ProductStock.fromLookup(r),
+  };
+  if (loaded.isEmpty) return;
+  // A product seeded meanwhile (a fresh lookup by `_addLine`) is kept unless
+  // it was asked to be refreshed.
+  notifier.update(
+    (cache) => {
+      ...cache,
+      for (final e in loaded.entries)
+        if (!cache.containsKey(e.key) || refresh.contains(e.key)) e.key: e.value,
+    },
+  );
+}
+
+/// What the product lookup said about a product's stock (spec 047).
+///
+/// [stockable] and [stockRequired] are both needed because that is exactly the
+/// rule the backend applies when it confirms a sale (`stock_verification AND
+/// stockable`): a product kept in inventory but configured to skip the check
+/// can be oversold and so is never "short".
+class ProductStock {
+  const ProductStock({
+    this.stockable = true,
+    this.stockRequired = true,
+    this.warehouses = const <WarehouseStock>[],
+  });
+
+  factory ProductStock.fromLookup(ProductLookupResult result) => ProductStock(
+    stockable: result.stockable,
+    stockRequired: result.stockRequired,
+    warehouses: result.stock,
+  );
+
+  final bool stockable;
+  final bool stockRequired;
+  final List<WarehouseStock> warehouses;
+
+  /// Whether a sale line for this product is checked against stock.
+  bool get checked => stockable && stockRequired;
+}
 
 /// The product table's own tax rate, keyed by product id — the same
 /// lookup-derived, screen-local cache as [productStockCacheProvider], written

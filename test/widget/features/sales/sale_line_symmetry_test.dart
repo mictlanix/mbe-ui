@@ -416,21 +416,71 @@ void main() {
             // the widest of the four states — rather than a blank item.
             productStockCacheProvider.overrideWith(
               (ref) => const {
-                11: [
-                  WarehouseStock(warehouse: 3, onHand: '2', available: '2'),
-                ],
+                11: ProductStock(
+                  warehouses: [
+                    WarehouseStock(warehouse: 3, onHand: '2', available: '2'),
+                  ],
+                ),
               },
             ),
           ],
         );
         expect(tester.takeException(), isNull);
 
-        await tester.tap(find.byType(DropdownButtonFormField<int>));
+        await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
         await tester.pumpAndSettle();
 
         expect(tester.takeException(), isNull);
       },
     );
+  });
+
+  group('the warehouse field keeps the band at every state (spec 047 US4)', () {
+    // Short shows a warning icon and an error border; unknown shows a help
+    // icon. Neither may move the field's height or its text baseline.
+    final states = {
+      'short': const {
+        11: ProductStock(
+          warehouses: [WarehouseStock(warehouse: 3, onHand: '1', available: '1')],
+        ),
+      },
+      'unknown': const <int, ProductStock>{},
+    };
+    for (final entry in states.entries) {
+      testWidgets('${entry.key}: same height and baseline as its neighbours at 1.3x', (
+        tester,
+      ) async {
+        await pumpGoldenScenario(
+          tester,
+          naturallySized(
+            MediaQuery(
+              data: const MediaQueryData(textScaler: TextScaler.linear(1.3)),
+              child: SaleLineRow(line: testLine(quantity: '2'), facilityId: 9),
+            ),
+          ),
+          brightness: Brightness.light,
+          width: 1440,
+          overrides: [
+            warehouseOverride(warehouseRepository),
+            productStockCacheProvider.overrideWith((ref) => entry.value),
+          ],
+        );
+        expect(tester.takeException(), isNull);
+
+        final field = tester.getRect(find.byKey(const Key('sale_line_warehouse_5')));
+        final quantity = tester.getRect(find.byKey(const Key('sale_line_quantity_5')));
+        expect(field.height, closeTo(quantity.height, 0.5));
+        expect(field.top, closeTo(quantity.top, 0.5));
+        final boxes = {
+          for (final value in sharedValues) value: tester.getRect(find.text(value).first),
+        };
+        expect(
+          boxes.values.map(roundedTopHeight).toSet(),
+          hasLength(1),
+          reason: boxes.toString(),
+        );
+      });
+    }
   });
 
   group('SaleLineCard (compact tier)', () {
