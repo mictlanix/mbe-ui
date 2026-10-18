@@ -1,0 +1,17 @@
+{
+  "workflow": "speckit",
+  "specName": "Login & POS Sales Enhancements",
+  "branch": "048-login-pos-enhancements",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-18T19:40:01.069Z"
+    }
+  ],
+  "telemetryInstanceId": "e30d0148-68a5-4ab7-9bf6-e483b99df1ac"
+}
