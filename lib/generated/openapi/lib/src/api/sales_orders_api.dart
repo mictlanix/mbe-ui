@@ -763,8 +763,9 @@ class SalesOrdersApi {
   ///
   ///
   /// Parameters:
-  /// * [pattern]
   /// * [customer]
+  /// * [pattern]
+  /// * [products]
   /// * [warehouse]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
   /// * [headers] - Can be used to add additional headers to the request
@@ -777,8 +778,9 @@ class SalesOrdersApi {
   /// Throws [DioException] if API call or serialization fails
   Future<Response<BuiltList<ProductLookupResponse>>>
   lookupProductsApiV1SalesOrdersProductLookupGet({
-    required String pattern,
     required int customer,
+    String? pattern,
+    BuiltList<int>? products,
     int? warehouse,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,
@@ -801,11 +803,19 @@ class SalesOrdersApi {
     );
 
     final _queryParameters = <String, dynamic>{
-      r'pattern': encodeQueryParameter(
-        _serializers,
-        pattern,
-        const FullType(String),
-      ),
+      if (pattern != null)
+        r'pattern': encodeQueryParameter(
+          _serializers,
+          pattern,
+          const FullType(String),
+        ),
+      if (products != null)
+        r'products': encodeCollectionQueryParameter<int>(
+          _serializers,
+          products,
+          const FullType(BuiltList, [FullType(int)]),
+          format: ListFormat.multi,
+        ),
       r'customer': encodeQueryParameter(
         _serializers,
         customer,
