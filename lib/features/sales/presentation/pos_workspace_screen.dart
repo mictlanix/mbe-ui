@@ -134,6 +134,10 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
   /// re-deriving on every build would fight the cashier's own navigation.
   int? _syncedSaleId;
 
+  /// The sale whose destinations `_syncStepTo` is still waiting on before it
+  /// can decide between Entrega and the read-only detail (spec 048).
+  int? _awaitingDestinationsFor;
+
   /// Whether the `/sales/pos/new` → `/sales/pos/<id>` URL rewrite has already
   /// run for this instance (contracts §1.1).
   bool _rewrittenUrl = false;
@@ -204,10 +208,14 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
     );
     if (settled && isDelivery) {
       final loaded = ref.watch(saleDestinationsProvider(sale.id));
-      if (!loaded.hasValue && !loaded.hasError) return;
+      if (!loaded.hasValue && !loaded.hasError) {
+        _awaitingDestinationsFor = sale.id;
+        return;
+      }
       destinations = loaded.value;
     }
 
+    _awaitingDestinationsFor = null;
     _syncedSaleId = sale.id;
     final target = resumeTargetFor(
       sale,
@@ -336,6 +344,11 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
     }
 
     final step = ref.watch(posStepControllerProvider);
+    // While a settled delivery sale's destinations load, `_syncStepTo` has not
+    // yet chosen between Entrega and the read-only detail: show neither the
+    // default step nor its chrome (spec 048 T021).
+    final resolving = current != null && _awaitingDestinationsFor == current.id;
+    final stepChrome = !step.detail && !resolving;
     // The selector is keyed by the register, not by the sale in hand — so an
     // untouched POS still offers the open sales to resume. Without this,
     // reloading the page would strand every unfinished sale (US3).
@@ -346,7 +359,7 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
     // transition (conservative default, matching `sale_workability.dart`).
     final canReturnToCapture =
         current != null &&
-        !step.detail &&
+        stepChrome &&
         step.current != PosStep.venta &&
         ref
             .read(posStepControllerProvider.notifier)
@@ -392,9 +405,11 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
             Text(
               step.detail
                   ? AppLocalizations.of(context)!.posSaleDetailTitle
+                  : resolving
+                  ? ''
                   : _stepTitle(context, step.current),
             ),
-            if (!step.detail && pointSale != null) ...[
+            if (stepChrome && pointSale != null) ...[
               const SizedBox(width: 12),
               OpenSalesSelector(
                 pointSale: pointSale,
@@ -406,7 +421,7 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
                 onStartNew: _startNewSale,
               ),
             ],
-            if (!step.detail) ...[
+            if (stepChrome) ...[
               const Spacer(),
               _StepIndicator(
                 step: step,
@@ -429,11 +444,13 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
           // Renders nothing when the session is healthy; the blocking banner
           // otherwise. The payment step carries its own copy beside the
           // method tiles it disables.
-          if (!step.detail && step.current != PosStep.cobro)
+          if (stepChrome && step.current != PosStep.cobro)
             const PosSessionBlockedBanner(),
           Expanded(
             child: sale.when(
-              data: (value) => step.detail && value != null
+              data: (value) => resolving
+                  ? const Center(child: CircularProgressIndicator())
+                  : step.detail && value != null
                   ? PosSaleDetailView(sale: value)
                   : _StepHost(step: step.current, sale: value),
               loading: () => const Center(child: CircularProgressIndicator()),

@@ -4,7 +4,7 @@
 
 **Created**: 2026-10-18
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: "Login: ask new users to change password on first login. Enforce strong password. Add a verify password field when a password change is performed. POS Sales: paid sales should show details in read-only mode, currently it's redirecting to the payment step. Show stock from other facilities. File issues for mbe-api if we need API changes."
 

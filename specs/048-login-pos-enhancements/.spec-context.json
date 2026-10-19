@@ -3,7 +3,7 @@
   "specName": "Login & POS Sales Enhancements",
   "branch": "048-login-pos-enhancements",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -446,8 +446,37 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-10-18T23:16:07.771Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-19T01:16:42.977Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-19T01:16:50.274Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-19T01:16:50.274Z"
     }
   ],
   "telemetryInstanceId": "e30d0148-68a5-4ab7-9bf6-e483b99df1ac",
-  "currentTask": "T051"
+  "currentTask": null,
+  "concerns": [
+    {
+      "note": "finished, unverified",
+      "step": "implement"
+    }
+  ]
 }
