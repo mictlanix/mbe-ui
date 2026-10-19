@@ -1,8 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/core/domain/currency.dart';
+import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
+import 'package:mbe_ui/features/sales/domain/entities/destination_line.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_resume_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
 
@@ -14,6 +17,8 @@ Sale _sale({
   required SaleStatus status,
   int? shipTo,
   FulfillmentMode? fulfillmentIntent,
+  String balance = '0',
+  List<SaleLine> lines = const [],
 }) => Sale(
   id: 42,
   facility: 9,
@@ -30,7 +35,8 @@ Sale _sale({
   subtotal: '0',
   taxTotal: '0',
   total: '0',
-  balance: '0',
+  balance: balance,
+  lines: lines,
   date: DateTime(2026, 8, 5),
   dueDate: DateTime(2026, 8, 5),
   priority: Priority.normal,
@@ -190,6 +196,117 @@ void main() {
         reason: 'without the facility address it cannot be known to be a '
             'delivery sale, so Entrega is not asserted',
       );
+    });
+  });
+
+  group('saleIsDelivery (spec 048 R6)', () {
+    test('a recorded intent decides, whatever shipTo says', () {
+      expect(
+        saleIsDelivery(
+          _sale(
+            status: SaleStatus.paid,
+            shipTo: _facilityAddress,
+            fulfillmentIntent: FulfillmentMode.mixed,
+          ),
+          facilityAddressId: _facilityAddress,
+        ),
+        isTrue,
+      );
+      expect(
+        saleIsDelivery(
+          _sale(
+            status: SaleStatus.paid,
+            shipTo: 777,
+            fulfillmentIntent: FulfillmentMode.counterPickup,
+          ),
+          facilityAddressId: _facilityAddress,
+        ),
+        isFalse,
+      );
+    });
+
+    test('without an intent, shipTo against the facility address decides', () {
+      final sale = _sale(status: SaleStatus.paid, shipTo: 777);
+      expect(saleIsDelivery(sale, facilityAddressId: _facilityAddress), isTrue);
+      expect(saleIsDelivery(sale, facilityAddressId: 777), isFalse);
+      expect(saleIsDelivery(sale, facilityAddressId: null), isFalse);
+    });
+  });
+
+  group('opensAsReadOnlyDetail (spec 048 data-model §5)', () {
+    final line = SaleLine(
+      id: 5,
+      product: 11,
+      productCode: 'P-11',
+      productName: 'Widget',
+      quantity: '2',
+      price: '50',
+      discountRate: '0',
+      taxRate: '0',
+      taxIncluded: false,
+      subtotal: '100',
+      taxTotal: '0',
+      total: '100',
+    );
+    Destination destination(String quantity) => Destination(
+      id: 1,
+      fulfillmentType: FulfillmentType.delivery,
+      status: DeliveryOrderStatus.draft,
+      lines: [
+        DestinationLine(
+          id: 1,
+          salesOrderDetail: 5,
+          product: 11,
+          productCode: 'P-11',
+          productName: 'Widget',
+          quantity: quantity,
+        ),
+      ],
+    );
+    final paid = _sale(status: SaleStatus.paid, lines: [line]);
+
+    test('a paid counter sale at zero balance opens as the detail', () {
+      expect(opensAsReadOnlyDetail(paid, isDelivery: false), isTrue);
+    });
+
+    test('a sale that is not paid, or still owes, does not', () {
+      expect(
+        opensAsReadOnlyDetail(
+          _sale(status: SaleStatus.completed, balance: '10', lines: [line]),
+          isDelivery: false,
+        ),
+        isFalse,
+      );
+      expect(
+        opensAsReadOnlyDetail(
+          _sale(status: SaleStatus.paid, balance: '10', lines: [line]),
+          isDelivery: false,
+        ),
+        isFalse,
+      );
+    });
+
+    test('a paid delivery sale needs every line fully distributed', () {
+      expect(
+        opensAsReadOnlyDetail(
+          paid,
+          isDelivery: true,
+          destinations: [destination('2')],
+        ),
+        isTrue,
+      );
+      expect(
+        opensAsReadOnlyDetail(
+          paid,
+          isDelivery: true,
+          destinations: [destination('1')],
+        ),
+        isFalse,
+      );
+    });
+
+    test('unknown destinations never open the detail', () {
+      expect(opensAsReadOnlyDetail(paid, isDelivery: true), isFalse);
     });
   });
 }

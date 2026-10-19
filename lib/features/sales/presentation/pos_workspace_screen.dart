@@ -11,7 +11,9 @@ import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/capture_step.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/delivery_step.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/order_payments_controller.dart';
@@ -22,6 +24,7 @@ import 'package:mbe_ui/features/sales/presentation/pos_sale_completed_dialog.dar
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector.dart';
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_resume_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_sale_detail_view.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
@@ -189,16 +192,37 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
     if (!facilityAddress.hasValue && !facilityAddress.hasError) return;
     if (_syncedSaleId == sale.id) return;
 
+    // spec 048: a paid, settled delivery sale is read-only only once its
+    // distribution is known to be complete, so that read is awaited the same
+    // way (and a failed one resolves to "not complete", i.e. Entrega).
+    List<Destination>? destinations;
+    final settled =
+        sale.status == SaleStatus.paid && isZeroAmount(sale.balanceOrZero);
+    final isDelivery = saleIsDelivery(
+      sale,
+      facilityAddressId: facilityAddress.value,
+    );
+    if (settled && isDelivery) {
+      final loaded = ref.watch(saleDestinationsProvider(sale.id));
+      if (!loaded.hasValue && !loaded.hasError) return;
+      destinations = loaded.value;
+    }
+
     _syncedSaleId = sale.id;
     final target = resumeTargetFor(
       sale,
       facilityAddressId: facilityAddress.value,
     );
+    final detail = opensAsReadOnlyDetail(
+      sale,
+      isDelivery: isDelivery,
+      destinations: destinations,
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       ref
           .read(posStepControllerProvider.notifier)
-          .jumpTo(target.step, mode: target.mode);
+          .jumpTo(target.step, mode: target.mode, detail: detail);
     });
   }
 
@@ -280,8 +304,8 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
   /// every ordinary case, including the whole `/sales/pos/new` path, which
   /// has nothing to be unreachable about (contracts/pos-workspace.md §1.2).
   /// A **finished** sale (paid, fully distributed) is deliberately not one
-  /// of these reasons — it opens read-only via the ordinary step host, same
-  /// as any other non-editable sale (spec 023 FR-006a/FR-019).
+  /// of these reasons — it opens as the read-only sale detail (spec 048
+  /// FR-010, `opensAsReadOnlyDetail`).
   _UnreachableReason? _unreachableReasonFor(AsyncValue<Sale?> sale, Sale? current) {
     if (widget.saleId == null) return null;
     final error = sale.error;
@@ -322,6 +346,7 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
     // transition (conservative default, matching `sale_workability.dart`).
     final canReturnToCapture =
         current != null &&
+        !step.detail &&
         step.current != PosStep.venta &&
         ref
             .read(posStepControllerProvider.notifier)
@@ -364,8 +389,12 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
         // `OpenSalesSelector` already shows the id and the folio.
         title: Row(
           children: [
-            Text(_stepTitle(context, step.current)),
-            if (pointSale != null) ...[
+            Text(
+              step.detail
+                  ? AppLocalizations.of(context)!.posSaleDetailTitle
+                  : _stepTitle(context, step.current),
+            ),
+            if (!step.detail && pointSale != null) ...[
               const SizedBox(width: 12),
               OpenSalesSelector(
                 pointSale: pointSale,
@@ -377,12 +406,14 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
                 onStartNew: _startNewSale,
               ),
             ],
-            const Spacer(),
-            _StepIndicator(
-              step: step,
-              canReturnToVenta: canReturnToCapture,
-              onReturnToVenta: onReturnToVenta,
-            ),
+            if (!step.detail) ...[
+              const Spacer(),
+              _StepIndicator(
+                step: step,
+                canReturnToVenta: canReturnToCapture,
+                onReturnToVenta: onReturnToVenta,
+              ),
+            ],
           ],
         ),
         // Constitution §VI (v1.10.0): a screen's actions live in the body,
@@ -398,10 +429,13 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
           // Renders nothing when the session is healthy; the blocking banner
           // otherwise. The payment step carries its own copy beside the
           // method tiles it disables.
-          if (step.current != PosStep.cobro) const PosSessionBlockedBanner(),
+          if (!step.detail && step.current != PosStep.cobro)
+            const PosSessionBlockedBanner(),
           Expanded(
             child: sale.when(
-              data: (value) => _StepHost(step: step.current, sale: value),
+              data: (value) => step.detail && value != null
+                  ? PosSaleDetailView(sale: value)
+                  : _StepHost(step: step.current, sale: value),
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (error, stackTrace) => Center(
                 child: Padding(

@@ -9,6 +9,7 @@ import 'package:mbe_ui/core/widgets/confirmable_text_field.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/facility_warehouses_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/other_facility_stock.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/stock_gate.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/warehouse_picker_dialog.dart';
@@ -356,10 +357,13 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     final canEdit = enabled;
     return warehouses.when(
       data: (list) {
-        var name = '';
-        for (final w in list) {
-          if (w.warehouseId == line.warehouse) name = w.name;
-        }
+        final name = line.warehouse == null
+            ? ''
+            : lineWarehouseLabel(
+                line.warehouse!,
+                facilityWarehouses: list,
+                stock: ref.watch(productStockCacheProvider)[line.product],
+              );
         var base =
             decoration ?? InputDecoration(labelText: l10n.posLineWarehouseLabel);
         if (isShort) {
@@ -377,6 +381,7 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
               ? () async {
                   final picked = await showWarehousePicker(
                     context,
+                    facilityId: facilityId,
                     warehouses: list,
                     selected: line.warehouse,
                     stock: ref.read(productStockCacheProvider)[line.product],

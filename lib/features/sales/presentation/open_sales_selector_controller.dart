@@ -2,7 +2,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/features/sales/data/delivery_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
-import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/line_distribution.dart';
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -134,34 +133,14 @@ Future<List<OpenSale>> _paidAndUndistributed(Ref ref, List<OpenSale> paid) async
     // A sale with no lines cannot owe a distribution.
     if (sale.lines.isEmpty) return null;
 
-    // `fulfillmentIntent` (mbe-api#171) records the mode directly and is
-    // checked first, exactly as `resumeTargetFor` does — the two must never
-    // disagree about what a delivery sale is. `shipTo` is only the pre-#171
-    // fallback, for a sale old enough to predate the field: a `null` `shipTo`
-    // is no longer proof of "collected here" now that Venta stopped asking
-    // for an address at all (spec 020 FR-056, amended 2026-08-23).
-    final bool isDelivery;
+    // The same check the resume step uses, so the selector and the step it
+    // reopens on cannot disagree. A `null` `shipTo` needs no facility lookup:
+    // nothing was ever named, so it was collected here.
     final recorded = sale.fulfillmentIntent;
-    if (recorded != null) {
-      isDelivery = recorded != FulfillmentMode.counterPickup;
-    } else if (sale.shipTo == null) {
-      // Cheap, and asked before the facility lookup below for the same
-      // reason it always was: nothing was ever named, so it was collected
-      // here.
-      isDelivery = false;
-    } else {
-      // Counter pickup can also be recorded explicitly, as the facility's own
-      // address. Distinguishing that from a real delivery needs the
-      // facility, read through the same helper the resume step uses so the
-      // selector and the step it reopens on cannot disagree.
-      final facilityAddressId = await ref.read(
-        facilityAddressControllerProvider(sale.facility).future,
-      );
-      isDelivery = FulfillmentModeEncoding.impliesDelivery(
-        shipTo: sale.shipTo,
-        facilityAddressId: facilityAddressId,
-      );
-    }
+    final facilityAddressId = recorded == null && sale.shipTo != null
+        ? await ref.read(facilityAddressControllerProvider(sale.facility).future)
+        : null;
+    final isDelivery = saleIsDelivery(sale, facilityAddressId: facilityAddressId);
     if (!isDelivery) return null;
 
     final destinations = await deliveries.listForSale(salesOrder: sale.id);

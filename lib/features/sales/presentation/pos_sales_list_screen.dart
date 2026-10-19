@@ -285,7 +285,10 @@ class PosSalesListScreen extends ConsumerWidget {
                         tooltip: l10n.posSaleViewTicketTooltip,
                         onPressed: () => ref
                             .read(documentActionsProvider)
-                            .preview(context, _ticketRef(l10n, sale)),
+                            .preview(
+                              context,
+                              saleTicketRef(l10n, id: sale.id, serial: sale.serial),
+                            ),
                       ),
                   ],
                 );
@@ -414,12 +417,13 @@ class _PosSalesFiltersPanel extends StatelessWidget {
   }
 }
 
-/// The ticket of [sale], titled by its folio, or by its id padded as mbe-api
+/// The ticket of a sale, titled by its folio, or by its id padded as mbe-api
 /// pads the file name (`ticket-00000007.pdf`) while it has none yet.
-DocumentRef _ticketRef(AppLocalizations l10n, OpenSale sale) => DocumentRef(
-  kind: DocumentKind.saleTicket,
-  recordId: sale.id,
-  title: l10n.documentTicketTitle(
-    sale.serial?.toString() ?? sale.id.toString().padLeft(8, '0'),
-  ),
-);
+DocumentRef saleTicketRef(AppLocalizations l10n, {required int id, int? serial}) =>
+    DocumentRef(
+      kind: DocumentKind.saleTicket,
+      recordId: id,
+      title: l10n.documentTicketTitle(
+        serial?.toString() ?? id.toString().padLeft(8, '0'),
+      ),
+    );

@@ -26,16 +26,25 @@ class PosStepState {
   const PosStepState({
     this.current = PosStep.venta,
     this.mode = FulfillmentMode.counterPickup,
+    this.detail = false,
   });
 
   final PosStep current;
   final FulfillmentMode mode;
 
+  /// spec 048: the workspace shows the read-only sale detail instead of a
+  /// step. Decided once, when a paid sale opens (`opensAsReadOnlyDetail`).
+  final bool detail;
+
   /// FR-005: two steps for counter pickup, three otherwise.
   int get stepCount => mode == FulfillmentMode.counterPickup ? 2 : 3;
 
-  PosStepState copyWith({PosStep? current, FulfillmentMode? mode}) =>
-      PosStepState(current: current ?? this.current, mode: mode ?? this.mode);
+  PosStepState copyWith({PosStep? current, FulfillmentMode? mode, bool? detail}) =>
+      PosStepState(
+        current: current ?? this.current,
+        mode: mode ?? this.mode,
+        detail: detail ?? this.detail,
+      );
 }
 
 /// The step machine (contracts/pos-screen.md §2). Every transition is a
@@ -52,8 +61,12 @@ class PosStepController extends _$PosStepController {
 
   /// Jumps directly to a step — used when resuming a sale
   /// (contracts/pos-screen.md §5), not as part of the ordinary forward flow.
-  void jumpTo(PosStep step, {FulfillmentMode? mode}) {
-    state = state.copyWith(current: step, mode: mode ?? state.mode);
+  void jumpTo(PosStep step, {FulfillmentMode? mode, bool detail = false}) {
+    state = state.copyWith(
+      current: step,
+      mode: mode ?? state.mode,
+      detail: detail,
+    );
   }
 
   /// Venta → Cobro, gated on at least one line (FR-038). Callers check this

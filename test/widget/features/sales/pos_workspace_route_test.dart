@@ -24,13 +24,20 @@ import 'package:mbe_ui/features/catalog/domain/repositories/payment_method_optio
 import 'package:mbe_ui/features/catalog/domain/repositories/point_sale_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
+import 'package:mbe_ui/features/sales/data/delivery_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
+import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
+import 'package:mbe_ui/features/sales/domain/entities/destination_line.dart';
+import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repository.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_totals_bar.dart';
+import 'package:mbe_ui/features/sales/presentation/open_sales_selector.dart';
+import 'package:mbe_ui/features/sales/presentation/pos_resume_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -40,6 +47,9 @@ import 'pos_test_harness.dart';
 class MockCustomerRepository extends Mock implements CustomerRepository {}
 
 class MockCashSessionRepository extends Mock implements CashSessionRepository {}
+
+class MockDeliveryOrderRepository extends Mock
+    implements DeliveryOrderRepository {}
 
 class MockPointSaleRepository extends Mock implements PointSaleRepository {}
 
@@ -739,6 +749,145 @@ void main() {
         find.descendant(of: action, matching: find.byIcon(Icons.arrow_forward)),
         findsOneWidget,
       );
+    });
+  });
+
+  group('a paid sale opens read-only (spec 048 US2, contracts C3)', () {
+    const detail = Key('pos_sale_detail');
+
+    Future<ProviderContainer> pumpSale(
+      WidgetTester tester,
+      Sale sale, {
+      List<Destination> destinations = const [],
+    }) async {
+      when(() => salesOrders.getById(saleId: sale.id))
+          .thenAnswer((_) async => sale);
+      when(() => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100))
+          .thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
+      when(() => payments.listForOrder(saleId: sale.id))
+          .thenAnswer((_) async => const []);
+      final deliveries = MockDeliveryOrderRepository();
+      when(() => deliveries.listForSale(salesOrder: sale.id))
+          .thenAnswer((_) async => destinations);
+      final (_, container) = await pumpPosRouted(
+        tester,
+        initialLocation: '/sales/pos/${sale.id}',
+        overrides: [
+          ...overrides(),
+          facilityAddressControllerProvider.overrideWith((ref, facilityId) async => 500),
+          deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
+        ],
+        surface: const Size(1440, 900),
+      );
+      return container;
+    }
+
+    Destination destinationOf(String quantity) => Destination(
+      id: 1,
+      fulfillmentType: FulfillmentType.delivery,
+      status: DeliveryOrderStatus.draft,
+      lines: [
+        DestinationLine(
+          id: 1,
+          salesOrderDetail: 5,
+          product: 11,
+          productCode: 'P-11',
+          productName: 'Widget',
+          quantity: quantity,
+        ),
+      ],
+    );
+
+    testWidgets('a paid counter sale shows the detail, with no step track, '
+        'selector or edit action', (tester) async {
+      final container = await pumpSale(
+        tester,
+        testSale(id: 50, status: SaleStatus.paid, balance: '0', lines: [testLine()]),
+      );
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+      expect(find.byKey(detail), findsOneWidget);
+      expect(container.read(posStepControllerProvider).detail, isTrue);
+      expect(find.text(l10n.posSaleDetailTitle), findsOneWidget);
+      expect(find.byKey(const Key('pos_workspace_back')), findsOneWidget);
+      expect(find.byKey(const Key('pos_step_indicator')), findsNothing);
+      expect(find.byType(OpenSalesSelector), findsNothing);
+      expect(find.byKey(const Key('pos_session_blocked_banner')), findsNothing);
+      expect(find.byKey(const Key('pos_continue_to_payment')), findsNothing);
+      expect(find.byKey(const Key('pos_product_search_field')), findsNothing);
+    });
+
+    testWidgets('a completed sale with a balance still opens on Cobro', (
+      tester,
+    ) async {
+      final container = await pumpSale(
+        tester,
+        testSale(id: 51, status: SaleStatus.completed, lines: [testLine()]),
+      );
+
+      expect(find.byKey(detail), findsNothing);
+      final step = container.read(posStepControllerProvider);
+      expect(step.current, PosStep.cobro);
+      expect(step.detail, isFalse);
+    });
+
+    testWidgets('a paid delivery sale with a pending line opens on Entrega', (
+      tester,
+    ) async {
+      final container = await pumpSale(
+        tester,
+        testSale(
+          id: 52,
+          status: SaleStatus.paid,
+          balance: '0',
+          fulfillmentIntent: FulfillmentMode.delivery,
+          lines: [testLine()],
+        ),
+        destinations: [destinationOf('1')],
+      );
+
+      expect(find.byKey(detail), findsNothing);
+      final step = container.read(posStepControllerProvider);
+      expect(step.current, PosStep.entrega);
+      expect(step.detail, isFalse);
+    });
+
+    testWidgets('a fully distributed paid delivery sale shows the detail', (
+      tester,
+    ) async {
+      await pumpSale(
+        tester,
+        testSale(
+          id: 53,
+          status: SaleStatus.paid,
+          balance: '0',
+          fulfillmentIntent: FulfillmentMode.delivery,
+          lines: [testLine()],
+        ),
+        destinations: [destinationOf('2')],
+      );
+
+      expect(find.byKey(detail), findsOneWidget);
+    });
+
+    testWidgets('a sale that becomes paid during the session keeps the '
+        'post-payment flow — the decision is latched', (tester) async {
+      final container = await pumpSale(
+        tester,
+        testSale(id: 54, status: SaleStatus.completed, lines: [testLine()]),
+      );
+      expect(container.read(posStepControllerProvider).current, PosStep.cobro);
+
+      when(() => salesOrders.getById(saleId: 54)).thenAnswer(
+        (_) async =>
+            testSale(id: 54, status: SaleStatus.paid, balance: '0', lines: [testLine()]),
+      );
+      await container.read(posSaleControllerProvider.notifier).load(54);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(detail), findsNothing);
+      expect(container.read(posStepControllerProvider).detail, isFalse);
+      expect(container.read(posStepControllerProvider).current, PosStep.cobro);
     });
   });
 }

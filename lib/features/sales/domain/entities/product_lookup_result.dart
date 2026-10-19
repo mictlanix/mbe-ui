@@ -62,6 +62,10 @@ abstract class WarehouseStock with _$WarehouseStock {
   const factory WarehouseStock({
     required int warehouse,
     String? warehouseName,
+    // The warehouse's facility (spec 048 FR-020): lets the pop-up group
+    // other facilities' stock. Null only for a warehouse that doesn't exist.
+    int? facilityId,
+    String? facilityName,
     required String onHand,
     required String available,
   }) = _WarehouseStock;
@@ -70,6 +74,8 @@ abstract class WarehouseStock with _$WarehouseStock {
       WarehouseStock(
         warehouse: r.warehouse,
         warehouseName: r.warehouseName,
+        facilityId: r.facility,
+        facilityName: r.facilityName,
         onHand: r.onHand,
         available: r.available,
       );
