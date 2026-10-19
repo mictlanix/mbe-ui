@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
+import 'package:mbe_ui/features/auth/domain/entities/password_policy.dart';
 
 const _jsonHeaders = {
   Headers.contentTypeHeader: [Headers.jsonContentType],
@@ -289,6 +290,48 @@ void main() {
         );
       },
     );
+  });
+
+  group('AuthRepositoryImpl.passwordPolicy', () {
+    test('200 maps the published policy', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'min_length': 10,
+            'require_upper': true,
+            'require_lower': false,
+            'require_digit': true,
+            'require_symbol': true,
+          }),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final policy = await repository.passwordPolicy();
+
+      expect(
+        policy,
+        const PasswordPolicy(
+          minLength: 10,
+          requireUpper: true,
+          requireLower: false,
+          requireDigit: true,
+          requireSymbol: true,
+        ),
+      );
+    });
+
+    test('5xx maps to AppError.server', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString('boom', 500),
+      );
+
+      await expectLater(
+        repository.passwordPolicy(),
+        throwsA(const AppError.server(statusCode: 500)),
+      );
+    });
   });
 }
 

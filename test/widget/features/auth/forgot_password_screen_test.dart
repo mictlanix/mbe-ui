@@ -7,9 +7,27 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
+import 'package:mbe_ui/features/auth/domain/entities/password_policy.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
 import 'package:mbe_ui/features/auth/presentation/account/forgot_password_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+
+const _serverDefault = PasswordPolicy(
+  minLength: 8,
+  requireUpper: true,
+  requireLower: true,
+  requireDigit: true,
+  requireSymbol: false,
+);
+
+const _policyRejection = AppError.validation([
+  FieldError(
+    loc: ['body', 'new_password'],
+    msg: 'Password does not meet the policy',
+    type: 'password_policy',
+    failedRules: ['min_length', 'require_digit'],
+  ),
+]);
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 
@@ -33,6 +51,7 @@ void main() {
         retry: (_, _) => null,
         overrides: [
           authRepositoryProvider.overrideWithValue(authRepository),
+          passwordPolicyProvider.overrideWith((ref) => _serverDefault),
           tokenStorageProvider.overrideWithValue(tokenStorage),
         ],
         child: MaterialApp(
@@ -58,7 +77,7 @@ void main() {
     await tester.tap(find.widgetWithText(FilledButton, 'Set new password'));
     await tester.pump();
 
-    expect(find.text('Required'), findsNWidgets(2));
+    expect(find.text('Required'), findsNWidgets(3));
     verifyNever(
       () => authRepository.recoverConfirm(
         recoveryToken: any(named: 'recoveryToken'),
@@ -91,7 +110,11 @@ void main() {
     );
     await tester.enterText(
       find.byKey(const Key('new_password_field')),
-      'newpass1',
+      'Newpass12',
+    );
+    await tester.enterText(
+      find.byKey(const Key('new_password_confirm_field')),
+      'Newpass12',
     );
     await tester.tap(find.widgetWithText(FilledButton, 'Set new password'));
     await tester.pump();
@@ -118,7 +141,11 @@ void main() {
     );
     await tester.enterText(
       find.byKey(const Key('new_password_field')),
-      'newpass1',
+      'Newpass12',
+    );
+    await tester.enterText(
+      find.byKey(const Key('new_password_confirm_field')),
+      'Newpass12',
     );
     await tester.tap(find.widgetWithText(FilledButton, 'Set new password'));
     await tester.pump();
@@ -129,5 +156,96 @@ void main() {
       findsOneWidget,
     );
     expect(find.widgetWithText(FilledButton, 'Set new password'), findsNothing);
+  });
+
+  testWidgets('blocks submission when the confirmation differs', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+
+    await tester.enterText(
+      find.byKey(const Key('recovery_token_field')),
+      'valid-token',
+    );
+    await tester.enterText(
+      find.byKey(const Key('new_password_field')),
+      'Newpass12',
+    );
+    await tester.enterText(
+      find.byKey(const Key('new_password_confirm_field')),
+      'Newpass13',
+    );
+    await tester.tap(find.widgetWithText(FilledButton, 'Set new password'));
+    await tester.pump();
+
+    expect(find.text("Passwords don't match"), findsOneWidget);
+    verifyNever(
+      () => authRepository.recoverConfirm(
+        recoveryToken: any(named: 'recoveryToken'),
+        newPassword: any(named: 'newPassword'),
+      ),
+    );
+  });
+
+  testWidgets('blocks a password that misses a rule of the policy', (
+    tester,
+  ) async {
+    await pumpScreen(tester);
+
+    await tester.enterText(
+      find.byKey(const Key('recovery_token_field')),
+      'valid-token',
+    );
+    await tester.enterText(
+      find.byKey(const Key('new_password_field')),
+      'abc12345',
+    );
+    await tester.enterText(
+      find.byKey(const Key('new_password_confirm_field')),
+      'abc12345',
+    );
+    await tester.tap(find.widgetWithText(FilledButton, 'Set new password'));
+    await tester.pump();
+
+    expect(find.text('An uppercase letter'), findsNWidgets(2));
+    verifyNever(
+      () => authRepository.recoverConfirm(
+        recoveryToken: any(named: 'recoveryToken'),
+        newPassword: any(named: 'newPassword'),
+      ),
+    );
+  });
+
+  testWidgets('a 422 password_policy shows one message per failed rule', (
+    tester,
+  ) async {
+    when(
+      () => authRepository.recoverConfirm(
+        recoveryToken: any(named: 'recoveryToken'),
+        newPassword: any(named: 'newPassword'),
+      ),
+    ).thenThrow(_policyRejection);
+    await pumpScreen(tester);
+
+    await tester.enterText(
+      find.byKey(const Key('recovery_token_field')),
+      'valid-token',
+    );
+    await tester.enterText(
+      find.byKey(const Key('new_password_field')),
+      'Newpass12',
+    );
+    await tester.enterText(
+      find.byKey(const Key('new_password_confirm_field')),
+      'Newpass12',
+    );
+    await tester.tap(find.widgetWithText(FilledButton, 'Set new password'));
+    await tester.pump();
+    await tester.pump();
+
+    expect(find.text('Password does not meet the policy'), findsNothing);
+    expect(find.text('At least 8 characters'), findsNWidgets(2));
+    expect(find.text('A number'), findsNWidgets(2));
+    expect(find.text('An uppercase letter'), findsOneWidget);
   });
 }

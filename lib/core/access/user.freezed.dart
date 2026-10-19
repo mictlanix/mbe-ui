@@ -18,7 +18,10 @@ mixin _$User {
  String get userId; String get email; int? get employeeId; bool get administrator; EntityStatus get status; int get sessionVersion; UserSettings? get settings; List<Privilege> get privileges;/// The profile this account was last provisioned from, if any
 /// (024-user-profiles data-model.md §2). Provenance only — never read by
 /// `AccessControlService` or any permission decision.
- int? get profileId; String? get profileName;
+ int? get profileId; String? get profileName;/// Set while the server requires a password change before anything else
+/// (spec 048 US5); every request but `/auth/me` and change-password is
+/// refused until it clears.
+ bool get mustChangePassword;
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -30,20 +33,20 @@ $UserCopyWith<User> get copyWith => _$UserCopyWithImpl<User>(this as User, _$ide
 @override
 bool operator ==(Object other) {
   final _this = this as User;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is User&&(identical(other.userId, _this.userId) || other.userId == _this.userId)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.employeeId, _this.employeeId) || other.employeeId == _this.employeeId)&&(identical(other.administrator, _this.administrator) || other.administrator == _this.administrator)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.sessionVersion, _this.sessionVersion) || other.sessionVersion == _this.sessionVersion)&&(identical(other.settings, _this.settings) || other.settings == _this.settings)&&const DeepCollectionEquality().equals(other.privileges, _this.privileges)&&(identical(other.profileId, _this.profileId) || other.profileId == _this.profileId)&&(identical(other.profileName, _this.profileName) || other.profileName == _this.profileName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is User&&(identical(other.userId, _this.userId) || other.userId == _this.userId)&&(identical(other.email, _this.email) || other.email == _this.email)&&(identical(other.employeeId, _this.employeeId) || other.employeeId == _this.employeeId)&&(identical(other.administrator, _this.administrator) || other.administrator == _this.administrator)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.sessionVersion, _this.sessionVersion) || other.sessionVersion == _this.sessionVersion)&&(identical(other.settings, _this.settings) || other.settings == _this.settings)&&const DeepCollectionEquality().equals(other.privileges, _this.privileges)&&(identical(other.profileId, _this.profileId) || other.profileId == _this.profileId)&&(identical(other.profileName, _this.profileName) || other.profileName == _this.profileName)&&(identical(other.mustChangePassword, _this.mustChangePassword) || other.mustChangePassword == _this.mustChangePassword));
 }
 
 
 @override
 int get hashCode {
   final _this = this as User;
-  return Object.hash(runtimeType,_this.userId,_this.email,_this.employeeId,_this.administrator,_this.status,_this.sessionVersion,_this.settings,const DeepCollectionEquality().hash(_this.privileges),_this.profileId,_this.profileName);
+  return Object.hash(runtimeType,_this.userId,_this.email,_this.employeeId,_this.administrator,_this.status,_this.sessionVersion,_this.settings,const DeepCollectionEquality().hash(_this.privileges),_this.profileId,_this.profileName,_this.mustChangePassword);
 }
 
 @override
 String toString() {
   final _this = this as User;
-  return 'User(userId: ${_this.userId}, email: ${_this.email}, employeeId: ${_this.employeeId}, administrator: ${_this.administrator}, status: ${_this.status}, sessionVersion: ${_this.sessionVersion}, settings: ${_this.settings}, privileges: ${_this.privileges}, profileId: ${_this.profileId}, profileName: ${_this.profileName})';
+  return 'User(userId: ${_this.userId}, email: ${_this.email}, employeeId: ${_this.employeeId}, administrator: ${_this.administrator}, status: ${_this.status}, sessionVersion: ${_this.sessionVersion}, settings: ${_this.settings}, privileges: ${_this.privileges}, profileId: ${_this.profileId}, profileName: ${_this.profileName}, mustChangePassword: ${_this.mustChangePassword})';
 }
 
 
@@ -54,7 +57,7 @@ abstract mixin class $UserCopyWith<$Res>  {
   factory $UserCopyWith(User value, $Res Function(User) _then) = _$UserCopyWithImpl;
 @useResult
 $Res call({
- String userId, String email, int? employeeId, bool administrator, EntityStatus status, int sessionVersion, UserSettings? settings, List<Privilege> privileges, int? profileId, String? profileName
+ String userId, String email, int? employeeId, bool administrator, EntityStatus status, int sessionVersion, UserSettings? settings, List<Privilege> privileges, int? profileId, String? profileName, bool mustChangePassword
 });
 
 
@@ -71,7 +74,7 @@ class _$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? email = null,Object? employeeId = freezed,Object? administrator = null,Object? status = null,Object? sessionVersion = null,Object? settings = freezed,Object? privileges = null,Object? profileId = freezed,Object? profileName = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? email = null,Object? employeeId = freezed,Object? administrator = null,Object? status = null,Object? sessionVersion = null,Object? settings = freezed,Object? privileges = null,Object? profileId = freezed,Object? profileName = freezed,Object? mustChangePassword = null,}) {
   return _then(User(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -83,7 +86,8 @@ as int,settings: freezed == settings ? _self.settings : settings // ignore: cast
 as UserSettings?,privileges: null == privileges ? _self.privileges : privileges // ignore: cast_nullable_to_non_nullable
 as List<Privilege>,profileId: freezed == profileId ? _self.profileId : profileId // ignore: cast_nullable_to_non_nullable
 as int?,profileName: freezed == profileName ? _self.profileName : profileName // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,mustChangePassword: null == mustChangePassword ? _self.mustChangePassword : mustChangePassword // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 /// Create a copy of User
@@ -180,10 +184,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String userId,  String email,  int? employeeId,  bool administrator,  EntityStatus status,  int sessionVersion,  UserSettings? settings,  List<Privilege> privileges,  int? profileId,  String? profileName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String userId,  String email,  int? employeeId,  bool administrator,  EntityStatus status,  int sessionVersion,  UserSettings? settings,  List<Privilege> privileges,  int? profileId,  String? profileName,  bool mustChangePassword)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _User() when $default != null:
-return $default(_that.userId,_that.email,_that.employeeId,_that.administrator,_that.status,_that.sessionVersion,_that.settings,_that.privileges,_that.profileId,_that.profileName);case _:
+return $default(_that.userId,_that.email,_that.employeeId,_that.administrator,_that.status,_that.sessionVersion,_that.settings,_that.privileges,_that.profileId,_that.profileName,_that.mustChangePassword);case _:
   return orElse();
 
 }
@@ -201,10 +205,10 @@ return $default(_that.userId,_that.email,_that.employeeId,_that.administrator,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String userId,  String email,  int? employeeId,  bool administrator,  EntityStatus status,  int sessionVersion,  UserSettings? settings,  List<Privilege> privileges,  int? profileId,  String? profileName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String userId,  String email,  int? employeeId,  bool administrator,  EntityStatus status,  int sessionVersion,  UserSettings? settings,  List<Privilege> privileges,  int? profileId,  String? profileName,  bool mustChangePassword)  $default,) {final _that = this;
 switch (_that) {
 case _User():
-return $default(_that.userId,_that.email,_that.employeeId,_that.administrator,_that.status,_that.sessionVersion,_that.settings,_that.privileges,_that.profileId,_that.profileName);case _:
+return $default(_that.userId,_that.email,_that.employeeId,_that.administrator,_that.status,_that.sessionVersion,_that.settings,_that.privileges,_that.profileId,_that.profileName,_that.mustChangePassword);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -221,10 +225,10 @@ return $default(_that.userId,_that.email,_that.employeeId,_that.administrator,_t
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String userId,  String email,  int? employeeId,  bool administrator,  EntityStatus status,  int sessionVersion,  UserSettings? settings,  List<Privilege> privileges,  int? profileId,  String? profileName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String userId,  String email,  int? employeeId,  bool administrator,  EntityStatus status,  int sessionVersion,  UserSettings? settings,  List<Privilege> privileges,  int? profileId,  String? profileName,  bool mustChangePassword)?  $default,) {final _that = this;
 switch (_that) {
 case _User() when $default != null:
-return $default(_that.userId,_that.email,_that.employeeId,_that.administrator,_that.status,_that.sessionVersion,_that.settings,_that.privileges,_that.profileId,_that.profileName);case _:
+return $default(_that.userId,_that.email,_that.employeeId,_that.administrator,_that.status,_that.sessionVersion,_that.settings,_that.privileges,_that.profileId,_that.profileName,_that.mustChangePassword);case _:
   return null;
 
 }
@@ -236,7 +240,7 @@ return $default(_that.userId,_that.email,_that.employeeId,_that.administrator,_t
 
 
 class _User implements User {
-  const _User({required this.userId, required this.email, this.employeeId, required this.administrator, required this.status, required this.sessionVersion, this.settings, required  List<Privilege> privileges, this.profileId, this.profileName}): _privileges = privileges;
+  const _User({required this.userId, required this.email, this.employeeId, required this.administrator, required this.status, required this.sessionVersion, this.settings, required  List<Privilege> privileges, this.profileId, this.profileName, this.mustChangePassword = false}): _privileges = privileges;
   
 
 @override final  String userId;
@@ -258,6 +262,10 @@ class _User implements User {
 /// `AccessControlService` or any permission decision.
 @override final  int? profileId;
 @override final  String? profileName;
+/// Set while the server requires a password change before anything else
+/// (spec 048 US5); every request but `/auth/me` and change-password is
+/// refused until it clears.
+@override@JsonKey() final  bool mustChangePassword;
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
@@ -269,18 +277,18 @@ _$UserCopyWith<_User> get copyWith => __$UserCopyWithImpl<_User>(this, _$identit
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _User&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.email, email) || other.email == email)&&(identical(other.employeeId, employeeId) || other.employeeId == employeeId)&&(identical(other.administrator, administrator) || other.administrator == administrator)&&(identical(other.status, status) || other.status == status)&&(identical(other.sessionVersion, sessionVersion) || other.sessionVersion == sessionVersion)&&(identical(other.settings, settings) || other.settings == settings)&&const DeepCollectionEquality().equals(other.privileges, _privileges)&&(identical(other.profileId, profileId) || other.profileId == profileId)&&(identical(other.profileName, profileName) || other.profileName == profileName));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _User&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.email, email) || other.email == email)&&(identical(other.employeeId, employeeId) || other.employeeId == employeeId)&&(identical(other.administrator, administrator) || other.administrator == administrator)&&(identical(other.status, status) || other.status == status)&&(identical(other.sessionVersion, sessionVersion) || other.sessionVersion == sessionVersion)&&(identical(other.settings, settings) || other.settings == settings)&&const DeepCollectionEquality().equals(other.privileges, _privileges)&&(identical(other.profileId, profileId) || other.profileId == profileId)&&(identical(other.profileName, profileName) || other.profileName == profileName)&&(identical(other.mustChangePassword, mustChangePassword) || other.mustChangePassword == mustChangePassword));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,userId,email,employeeId,administrator,status,sessionVersion,settings,const DeepCollectionEquality().hash(_privileges),profileId,profileName);
+    return Object.hash(runtimeType,userId,email,employeeId,administrator,status,sessionVersion,settings,const DeepCollectionEquality().hash(_privileges),profileId,profileName,mustChangePassword);
 }
 
 @override
 String toString() {
-    return 'User(userId: $userId, email: $email, employeeId: $employeeId, administrator: $administrator, status: $status, sessionVersion: $sessionVersion, settings: $settings, privileges: $privileges, profileId: $profileId, profileName: $profileName)';
+    return 'User(userId: $userId, email: $email, employeeId: $employeeId, administrator: $administrator, status: $status, sessionVersion: $sessionVersion, settings: $settings, privileges: $privileges, profileId: $profileId, profileName: $profileName, mustChangePassword: $mustChangePassword)';
 }
 
 
@@ -291,7 +299,7 @@ abstract mixin class _$UserCopyWith<$Res> implements $UserCopyWith<$Res> {
   factory _$UserCopyWith(_User value, $Res Function(_User) _then) = __$UserCopyWithImpl;
 @override @useResult
 $Res call({
- String userId, String email, int? employeeId, bool administrator, EntityStatus status, int sessionVersion, UserSettings? settings, List<Privilege> privileges, int? profileId, String? profileName
+ String userId, String email, int? employeeId, bool administrator, EntityStatus status, int sessionVersion, UserSettings? settings, List<Privilege> privileges, int? profileId, String? profileName, bool mustChangePassword
 });
 
 
@@ -308,7 +316,7 @@ class __$UserCopyWithImpl<$Res>
 
 /// Create a copy of User
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? email = null,Object? employeeId = freezed,Object? administrator = null,Object? status = null,Object? sessionVersion = null,Object? settings = freezed,Object? privileges = null,Object? profileId = freezed,Object? profileName = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? email = null,Object? employeeId = freezed,Object? administrator = null,Object? status = null,Object? sessionVersion = null,Object? settings = freezed,Object? privileges = null,Object? profileId = freezed,Object? profileName = freezed,Object? mustChangePassword = null,}) {
   return _then(_User(
 userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
@@ -320,7 +328,8 @@ as int,settings: freezed == settings ? _self.settings : settings // ignore: cast
 as UserSettings?,privileges: null == privileges ? _self._privileges : privileges // ignore: cast_nullable_to_non_nullable
 as List<Privilege>,profileId: freezed == profileId ? _self.profileId : profileId // ignore: cast_nullable_to_non_nullable
 as int?,profileName: freezed == profileName ? _self.profileName : profileName // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,mustChangePassword: null == mustChangePassword ? _self.mustChangePassword : mustChangePassword // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

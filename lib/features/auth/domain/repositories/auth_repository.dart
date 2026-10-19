@@ -1,5 +1,6 @@
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/features/auth/domain/entities/password_policy.dart';
 
 /// Auth-related calls to mbe-api (contracts/mbe-api-auth-users.md
 /// "POST /api/v1/auth/login", "GET /api/v1/auth/me").
@@ -25,4 +26,8 @@ abstract class AuthRepository {
     required String recoveryToken,
     required String newPassword,
   });
+
+  /// `GET /api/v1/auth/password-policy` (public). The deployment's password
+  /// rules; the server enforces them.
+  Future<PasswordPolicy> passwordPolicy();
 }

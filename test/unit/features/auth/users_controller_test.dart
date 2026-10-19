@@ -11,6 +11,7 @@ import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
+import 'package:mbe_ui/features/auth/domain/entities/password_policy.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/user_repository.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/users_controller.dart';
@@ -43,10 +44,12 @@ void main() {
     when(() => tokenStorage.clear()).thenAnswer((_) async {});
   });
 
-  ProviderContainer makeContainer() {
+  ProviderContainer makeContainer({PasswordPolicy? policy}) {
     return ProviderContainer(
       retry: (_, _) => null,
       overrides: [
+        if (policy != null)
+          passwordPolicyProvider.overrideWith((ref) => policy),
         userRepositoryProvider.overrideWithValue(userRepository),
         authRepositoryProvider.overrideWithValue(authRepository),
         tokenStorageProvider.overrideWithValue(tokenStorage),
@@ -478,6 +481,7 @@ void main() {
       final ids = await listIdsAfter((notifier) async {
         notifier.userIdChanged('newbie');
         notifier.passwordChanged('secret1');
+        notifier.passwordConfirmChanged('secret1');
         notifier.emailChanged('newbie@example.com');
         notifier.employeeSelected(7, 'Jane Doe');
         await notifier.save();
@@ -488,6 +492,123 @@ void main() {
         ['jdoe', 'newbie'],
         reason: 'the users list must show a newly created account',
       );
+    });
+
+    test('a create with a differing confirmation is refused', () async {
+      final container = makeContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(userFormControllerProvider.notifier);
+      notifier.userIdChanged('newbie');
+      notifier.passwordChanged('secret1');
+      notifier.passwordConfirmChanged('secret2');
+      notifier.emailChanged('newbie@example.com');
+      notifier.employeeSelected(7, 'Jane Doe');
+      await notifier.save();
+
+      expect(
+        container.read(userFormControllerProvider).error,
+        UserFormErrorCode.passwordMismatch,
+      );
+      verifyNever(
+        () => userRepository.create(
+          userId: any(named: 'userId'),
+          password: any(named: 'password'),
+          email: any(named: 'email'),
+          employeeId: any(named: 'employeeId'),
+          profileId: any(named: 'profileId'),
+        ),
+      );
+    });
+
+    group('password policy', () {
+      const serverDefault = PasswordPolicy(
+        minLength: 8,
+        requireUpper: true,
+        requireLower: true,
+        requireDigit: true,
+        requireSymbol: false,
+      );
+
+      Future<ProviderContainer> filledForm(String password) async {
+        final container = makeContainer(policy: serverDefault);
+        addTearDown(container.dispose);
+        await container.read(passwordPolicyProvider.future);
+        container.read(userFormControllerProvider.notifier)
+          ..userIdChanged('newbie')
+          ..passwordChanged(password)
+          ..passwordConfirmChanged(password)
+          ..emailChanged('newbie@example.com')
+          ..employeeSelected(7, 'Jane Doe');
+        return container;
+      }
+
+      test('a create that misses a rule is refused locally', () async {
+        final container = await filledForm('abc12345');
+        await container.read(userFormControllerProvider.notifier).save();
+
+        final state = container.read(userFormControllerProvider);
+        expect(state.error, UserFormErrorCode.passwordPolicy);
+        expect(state.failedPasswordRules, {PasswordRule.upper});
+        verifyNever(
+          () => userRepository.create(
+            userId: any(named: 'userId'),
+            password: any(named: 'password'),
+            email: any(named: 'email'),
+            employeeId: any(named: 'employeeId'),
+            profileId: any(named: 'profileId'),
+          ),
+        );
+      });
+
+      test('a 422 password_policy keeps the failed rules', () async {
+        when(
+          () => userRepository.create(
+            userId: any(named: 'userId'),
+            password: any(named: 'password'),
+            email: any(named: 'email'),
+            employeeId: any(named: 'employeeId'),
+            profileId: any(named: 'profileId'),
+          ),
+        ).thenThrow(
+          const AppError.validation([
+            FieldError(
+              loc: ['body', 'password'],
+              msg: 'Password does not meet the policy',
+              type: 'password_policy',
+              failedRules: ['min_length', 'bogus_rule'],
+            ),
+          ]),
+        );
+        final container = await filledForm('Abcdefg1');
+        await container.read(userFormControllerProvider.notifier).save();
+
+        final state = container.read(userFormControllerProvider);
+        expect(state.error, UserFormErrorCode.passwordPolicy);
+        expect(state.failedPasswordRules, {PasswordRule.minLength});
+      });
+
+      test('a policy that did not load does not block the client', () async {
+        when(
+          () => userRepository.create(
+            userId: any(named: 'userId'),
+            password: any(named: 'password'),
+            email: any(named: 'email'),
+            employeeId: any(named: 'employeeId'),
+            profileId: any(named: 'profileId'),
+          ),
+        ).thenAnswer((_) async => _testUser);
+        final container = makeContainer();
+        addTearDown(container.dispose);
+        container.read(userFormControllerProvider.notifier)
+          ..userIdChanged('newbie')
+          ..passwordChanged('abc')
+          ..passwordConfirmChanged('abc')
+          ..emailChanged('newbie@example.com')
+          ..employeeSelected(7, 'Jane Doe');
+        await container.read(userFormControllerProvider.notifier).save();
+
+        expect(container.read(userFormControllerProvider).saved, isTrue);
+      });
     });
 
     test('an update invalidates the users list', () async {
@@ -530,6 +651,7 @@ void main() {
       final ids = await listIdsAfter((notifier) async {
         notifier.userIdChanged('newbie');
         notifier.passwordChanged('secret1');
+        notifier.passwordConfirmChanged('secret1');
         notifier.emailChanged('newbie@example.com');
         notifier.employeeSelected(7, 'Jane Doe');
         await notifier.save();
@@ -570,6 +692,7 @@ void main() {
 
         notifier.userIdChanged('jdoe');
         notifier.passwordChanged('secret1');
+        notifier.passwordConfirmChanged('secret1');
         notifier.emailChanged('jdoe@example.com');
         notifier.employeeSelected(7, 'Jane Doe');
         notifier.privilegeChanged(SystemObject.users, 2);
@@ -617,6 +740,7 @@ void main() {
 
         notifier.userIdChanged('jdoe');
         notifier.passwordChanged('secret1');
+        notifier.passwordConfirmChanged('secret1');
         notifier.emailChanged('jdoe@example.com');
         notifier.employeeSelected(7, 'Jane Doe');
         // Hand-ticked despite a profile being chosen — must not reach the
@@ -652,6 +776,7 @@ void main() {
 
       notifier.userIdChanged('jdoe');
       notifier.passwordChanged('secret1');
+      notifier.passwordConfirmChanged('secret1');
       // email left empty
 
       await notifier.save();

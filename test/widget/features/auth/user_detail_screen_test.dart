@@ -14,11 +14,13 @@ import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/data/user_profile_repository_impl.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
+import 'package:mbe_ui/features/auth/domain/entities/password_policy.dart';
 import 'package:mbe_ui/features/auth/domain/entities/user_profile.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/auth_repository.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/user_profile_repository.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/user_repository.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/user_detail_screen.dart';
+import 'package:mbe_ui/features/auth/presentation/admin/users_controller.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
@@ -152,6 +154,7 @@ void main() {
     String? userId,
     bool forceReadOnly = false,
     Size? surfaceSize,
+    PasswordPolicy? policy,
   }) async {
     when(() => authRepository.me()).thenAnswer((_) async => signedInAs);
 
@@ -169,6 +172,8 @@ void main() {
         retry: (_, _) => null,
         overrides: [
           authRepositoryProvider.overrideWithValue(authRepository),
+          if (policy != null)
+            passwordPolicyProvider.overrideWith((ref) => policy),
           tokenStorageProvider.overrideWithValue(tokenStorage),
           userRepositoryProvider.overrideWithValue(userRepository),
           employeeRepositoryProvider.overrideWithValue(employeeRepository),
@@ -374,6 +379,91 @@ void main() {
         expect(field.initialValue, '#7');
       },
     );
+  });
+
+  testWidgets('create mode refuses a save when the confirmation differs', (
+    tester,
+  ) async {
+    await pumpScreen(
+      tester,
+      signedInAs: _adminUser,
+      surfaceSize: const Size(1400, 1600),
+    );
+
+    await tester.enterText(find.byKey(const Key('password_field')), 'secret1');
+    await tester.enterText(
+      find.byKey(const Key('new_password_confirm_field')),
+      'secret2',
+    );
+    await tester.tap(find.byKey(const Key('save_button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text("Passwords don't match"), findsOneWidget);
+    verifyNever(
+      () => userRepository.create(
+        userId: any(named: 'userId'),
+        password: any(named: 'password'),
+        email: any(named: 'email'),
+        employeeId: any(named: 'employeeId'),
+        profileId: any(named: 'profileId'),
+      ),
+    );
+  });
+
+  testWidgets('create mode: a 422 password_policy shows one message per rule', (
+    tester,
+  ) async {
+    when(
+      () => userRepository.create(
+        userId: any(named: 'userId'),
+        password: any(named: 'password'),
+        email: any(named: 'email'),
+        employeeId: any(named: 'employeeId'),
+        profileId: any(named: 'profileId'),
+      ),
+    ).thenThrow(
+      const AppError.validation([
+        FieldError(
+          loc: ['body', 'password'],
+          msg: 'Password does not meet the policy',
+          type: 'password_policy',
+          failedRules: ['min_length', 'require_digit'],
+        ),
+      ]),
+    );
+    await pumpScreen(
+      tester,
+      signedInAs: _adminUser,
+      surfaceSize: const Size(1400, 1600),
+      policy: const PasswordPolicy(
+        minLength: 8,
+        requireUpper: true,
+        requireLower: true,
+        requireDigit: true,
+        requireSymbol: false,
+      ),
+    );
+
+    await tester.enterText(find.byKey(const Key('user_id_field')), 'newbie');
+    await tester.enterText(find.byKey(const Key('password_field')), 'Secret12');
+    await tester.enterText(
+      find.byKey(const Key('new_password_confirm_field')),
+      'Secret12',
+    );
+    await tester.enterText(
+      find.byKey(const Key('email_field')),
+      'newbie@example.com',
+    );
+    ProviderScope.containerOf(
+      tester.element(find.byType(UserDetailScreen)),
+    ).read(userFormControllerProvider.notifier).employeeSelected(7, 'Jane Doe');
+    await tester.tap(find.byKey(const Key('save_button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Password does not meet the policy'), findsNothing);
+    expect(find.text('At least 8 characters'), findsNWidgets(2));
+    expect(find.text('A number'), findsNWidgets(2));
+    expect(find.text('An uppercase letter'), findsOneWidget);
   });
 
   group('024-user-profiles: profile picker (create mode)', () {

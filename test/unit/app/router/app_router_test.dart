@@ -116,6 +116,16 @@ class _FixedAuthNotifier extends AuthNotifier {
   Future<AuthState> build() async => _state;
 }
 
+const _mustChangeUser = User(
+  userId: 'new-user',
+  email: 'new@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [],
+  mustChangePassword: true,
+);
+
 const _mergeUser = User(
   userId: 'merger',
   email: 'merger@example.com',
@@ -273,7 +283,7 @@ void main() {
   /// check where the router landed.
   Future<GoRouterTestHandle> pumpAt(
     WidgetTester tester,
-    User user,
+    User? user,
     String location,
   ) async {
     final productRepository = MockProductRepository();
@@ -568,7 +578,9 @@ void main() {
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         authProvider.overrideWith(
           () => _FixedAuthNotifier(
-            AuthState.authenticated(token: 't', user: user),
+            user == null
+                ? const AuthState.unauthenticated()
+                : AuthState.authenticated(token: 't', user: user),
           ),
         ),
         // Destination screens for the "allowed" cases (/products, /users,
@@ -631,6 +643,36 @@ void main() {
 
     return GoRouterTestHandle(router);
   }
+
+  group('/auth/password-required (spec 048 US5)', () {
+    testWidgets('a flagged user is sent there from /', (tester) async {
+      final handle = await pumpAt(tester, _mustChangeUser, '/');
+      expect(handle.router.state.uri.path, '/auth/password-required');
+    });
+
+    testWidgets('a flagged user is sent there from a typed URL', (
+      tester,
+    ) async {
+      final handle = await pumpAt(tester, _mustChangeUser, '/users');
+      expect(handle.router.state.uri.path, '/auth/password-required');
+    });
+
+    testWidgets('an unflagged user on it goes to /', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/auth/password-required',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('an unauthenticated user on it goes to /auth/login', (
+      tester,
+    ) async {
+      final handle = await pumpAt(tester, null, '/auth/password-required');
+      expect(handle.router.state.uri.path, '/auth/login');
+    });
+  });
 
   group(
     '/products/merge — productsMerge/create gate (specs/008-merge-products)',

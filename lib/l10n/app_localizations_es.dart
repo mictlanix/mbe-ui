@@ -12,9 +12,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get fieldRequired => 'Requerido';
 
   @override
-  String get fieldMinLength6 => 'Debe tener al menos 6 caracteres';
-
-  @override
   String get errorValidationGeneric => 'Corrige los campos marcados.';
 
   @override
@@ -661,9 +658,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get userIdLengthError => '4–20 caracteres';
 
   @override
-  String get passwordLengthError => 'Al menos 6 caracteres';
-
-  @override
   String get privilegesModuleColumn => 'Módulo';
 
   @override
@@ -756,10 +750,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get userEmployeeRequiredError => 'El empleado es obligatorio.';
-
-  @override
-  String get userPasswordLengthError =>
-      'La contraseña debe tener al menos 6 caracteres.';
 
   @override
   String get userLoadFailedError => 'No se pudo cargar el usuario.';
@@ -3888,4 +3878,64 @@ class AppLocalizationsEs extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get confirmPasswordLabel => 'Confirmar contraseña';
+
+  @override
+  String get confirmNewPasswordLabel => 'Confirmar nueva contraseña';
+
+  @override
+  String get passwordMismatchError => 'Las contraseñas no coinciden';
+
+  @override
+  String get posSaleDetailTitle => 'Ver venta';
+
+  @override
+  String get posSaleDetailDateLabel => 'Fecha';
+
+  @override
+  String get posSaleDetailRegisterLabel => 'Caja';
+
+  @override
+  String get posSaleDetailPaymentsForbidden =>
+      'No tienes permiso para ver los pagos de esta venta.';
+
+  @override
+  String get posPaymentDateLabel => 'Fecha de pago';
+
+  @override
+  String get posWarehousePickerOtherFacilities => 'Otras sucursales';
+
+  @override
+  String get posWarehousePickerOtherNone =>
+      'No hay existencia en otras sucursales.';
+
+  @override
+  String passwordRuleMinLength(int count) {
+    return 'Al menos $count caracteres';
+  }
+
+  @override
+  String get passwordRuleUpper => 'Una letra mayúscula';
+
+  @override
+  String get passwordRuleLower => 'Una letra minúscula';
+
+  @override
+  String get passwordRuleDigit => 'Un número';
+
+  @override
+  String get passwordRuleSymbol => 'Un símbolo';
+
+  @override
+  String get passwordRulesUnavailable =>
+      'No se pudieron cargar las reglas de contraseña. El servidor validará tu contraseña.';
+
+  @override
+  String get passwordRequiredTitle => 'Cambia tu contraseña';
+
+  @override
+  String get passwordRequiredExplanation =>
+      'Un administrador definió tu contraseña. Elige una nueva para continuar.';
 }

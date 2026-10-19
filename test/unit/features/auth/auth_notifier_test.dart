@@ -220,4 +220,54 @@ void main() {
       verify(() => tokenStorage.clear()).called(1);
     },
   );
+
+  test('reloadCurrentUser replaces the user with the one from /auth/me', () async {
+    final flagged = testUser.copyWith(mustChangePassword: true);
+    when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');
+    var calls = 0;
+    when(
+      () => authRepository.me(),
+    ).thenAnswer((_) async => calls++ == 0 ? flagged : testUser);
+
+    await container.read(authProvider.future);
+    await container.read(authProvider.notifier).reloadCurrentUser();
+
+    expect(
+      container.read(authProvider).value,
+      const AuthState.authenticated(token: 'token123', user: testUser),
+    );
+  });
+
+  test('reloadCurrentUser signs out on a 401', () async {
+    when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');
+    var calls = 0;
+    when(() => authRepository.me()).thenAnswer((_) async {
+      if (calls++ == 0) return testUser;
+      throw const AppError.auth();
+    });
+
+    await container.read(authProvider.future);
+    await container.read(authProvider.notifier).reloadCurrentUser();
+
+    expect(
+      container.read(authProvider).value,
+      const AuthState.unauthenticated(reason: SignOutReason.sessionInvalid),
+    );
+  });
+
+  test('a password_change_required refusal flags the current user', () async {
+    when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');
+    when(() => authRepository.me()).thenAnswer((_) async => testUser);
+
+    await container.read(authProvider.future);
+    container.read(authInterceptorProvider).onPasswordChangeRequired!();
+
+    expect(
+      container.read(authProvider).value,
+      AuthState.authenticated(
+        token: 'token123',
+        user: testUser.copyWith(mustChangePassword: true),
+      ),
+    );
+  });
 }

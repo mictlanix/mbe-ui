@@ -104,12 +104,6 @@ abstract class AppLocalizations {
   /// **'Required'**
   String get fieldRequired;
 
-  /// Password minimum length validation
-  ///
-  /// In en, this message translates to:
-  /// **'Must be at least 6 characters'**
-  String get fieldMinLength6;
-
   /// Generic ValidationError message shown when no field-level errors are provided
   ///
   /// In en, this message translates to:
@@ -1309,12 +1303,6 @@ abstract class AppLocalizations {
   /// **'4–20 characters'**
   String get userIdLengthError;
 
-  /// No description provided for @passwordLengthError.
-  ///
-  /// In en, this message translates to:
-  /// **'At least 6 characters'**
-  String get passwordLengthError;
-
   /// No description provided for @privilegesModuleColumn.
   ///
   /// In en, this message translates to:
@@ -1482,12 +1470,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Employee is required.'**
   String get userEmployeeRequiredError;
-
-  /// No description provided for @userPasswordLengthError.
-  ///
-  /// In en, this message translates to:
-  /// **'Password must be at least 6 characters.'**
-  String get userPasswordLengthError;
 
   /// No description provided for @userLoadFailedError.
   ///
@@ -6978,6 +6960,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 line with unverified stock} other{{count} lines with unverified stock}}'**
   String posCaptureUnknownStock(int count);
+
+  /// spec 048 FR-001: confirmation field label on the admin create-user form
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get confirmPasswordLabel;
+
+  /// spec 048 FR-001: confirmation field label on the change, recovery and forced-change forms
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get confirmNewPasswordLabel;
+
+  /// spec 048 FR-002: shown on the confirmation field and as a form error when the two entries differ
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords don\'t match'**
+  String get passwordMismatchError;
+
+  /// spec 048 FR-010: AppBar title of the read-only sale detail (constitution VI: a read-only surface labels itself a View)
+  ///
+  /// In en, this message translates to:
+  /// **'View sale'**
+  String get posSaleDetailTitle;
+
+  /// spec 048 FR-011: sale date in the read-only sale detail
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get posSaleDetailDateLabel;
+
+  /// spec 048 FR-011: point of sale in the read-only sale detail
+  ///
+  /// In en, this message translates to:
+  /// **'Register'**
+  String get posSaleDetailRegisterLabel;
+
+  /// spec 048 FR-013: shown instead of the payments list without customer-payments read access
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have permission to see this sale\'s payments.'**
+  String get posSaleDetailPaymentsForbidden;
+
+  /// spec 048 FR-011: date column of an applied payment in the read-only sale detail
+  ///
+  /// In en, this message translates to:
+  /// **'Payment date'**
+  String get posPaymentDateLabel;
+
+  /// spec 048 FR-020: section header in the warehouse pop-up for other facilities' warehouses
+  ///
+  /// In en, this message translates to:
+  /// **'Other facilities'**
+  String get posWarehousePickerOtherFacilities;
+
+  /// spec 048 FR-023: shown when no other facility has the product available
+  ///
+  /// In en, this message translates to:
+  /// **'Not available in other facilities.'**
+  String get posWarehousePickerOtherNone;
+
+  /// spec 048 FR-031: password rule checklist row
+  ///
+  /// In en, this message translates to:
+  /// **'At least {count} characters'**
+  String passwordRuleMinLength(int count);
+
+  /// spec 048 FR-031: password rule checklist row
+  ///
+  /// In en, this message translates to:
+  /// **'An uppercase letter'**
+  String get passwordRuleUpper;
+
+  /// spec 048 FR-031: password rule checklist row
+  ///
+  /// In en, this message translates to:
+  /// **'A lowercase letter'**
+  String get passwordRuleLower;
+
+  /// spec 048 FR-031: password rule checklist row
+  ///
+  /// In en, this message translates to:
+  /// **'A number'**
+  String get passwordRuleDigit;
+
+  /// spec 048 FR-031: password rule checklist row
+  ///
+  /// In en, this message translates to:
+  /// **'A symbol'**
+  String get passwordRuleSymbol;
+
+  /// spec 048 R2: shown in place of the checklist when the policy fails to load
+  ///
+  /// In en, this message translates to:
+  /// **'The password rules couldn\'t be loaded. The server will check your password.'**
+  String get passwordRulesUnavailable;
+
+  /// spec 048 FR-041: title of the forced-change screen
+  ///
+  /// In en, this message translates to:
+  /// **'Change your password'**
+  String get passwordRequiredTitle;
+
+  /// spec 048 FR-040: explanation on the forced-change screen
+  ///
+  /// In en, this message translates to:
+  /// **'An administrator set your password. Choose a new one to continue.'**
+  String get passwordRequiredExplanation;
 }
 
 class _AppLocalizationsDelegate

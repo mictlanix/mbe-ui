@@ -325,6 +325,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ChangePasswordScreen(),
       ),
       GoRoute(
+        path: '/auth/password-required',
+        builder: (context, state) => const ChangePasswordScreen(forced: true),
+      ),
+      GoRoute(
         path: '/auth/account/settings',
         builder: (context, state) => const UserSettingsScreen(),
       ),
@@ -501,6 +505,8 @@ class _AuthRefreshListenable extends ChangeNotifier {
   }
 }
 
+const _passwordRequiredLocation = '/auth/password-required';
+
 String? _redirect(Ref ref, GoRouterState state) {
   final authState = ref.read(authProvider).value;
   // Still loading/erroring: let it settle, refreshListenable will re-run
@@ -510,12 +516,25 @@ String? _redirect(Ref ref, GoRouterState state) {
   final isAuthRoute = state.matchedLocation.startsWith('/auth/');
   // Unlike the rest of /auth/*, this screen requires an active session
   // (FR-009 "a signed-in user"); /auth/recover is for users who can't sign in.
-  final requiresSession = state.matchedLocation == '/auth/account/password';
+  final requiresSession =
+      state.matchedLocation == '/auth/account/password' ||
+      state.matchedLocation == _passwordRequiredLocation;
 
   if (authState is AuthUnauthenticated) {
     if (requiresSession) return '/auth/login';
     return isAuthRoute ? null : '/auth/login';
   }
+
+  // Spec 048 US5: the server refuses everything but this screen's requests
+  // while the flag is set, so nothing else is worth showing.
+  final mustChangePassword =
+      authState is AuthAuthenticated && authState.user.mustChangePassword;
+  if (mustChangePassword) {
+    return state.matchedLocation == _passwordRequiredLocation
+        ? null
+        : _passwordRequiredLocation;
+  }
+  if (state.matchedLocation == _passwordRequiredLocation) return '/';
 
   if (state.matchedLocation == '/auth/login') return '/';
 

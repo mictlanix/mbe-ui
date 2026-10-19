@@ -20,7 +20,9 @@ part 'auth_notifier.g.dart';
 class AuthNotifier extends _$AuthNotifier {
   @override
   FutureOr<AuthState> build() async {
-    ref.read(authInterceptorProvider).onUnauthorized = handleSessionInvalid;
+    final interceptor = ref.read(authInterceptorProvider);
+    interceptor.onUnauthorized = handleSessionInvalid;
+    interceptor.onPasswordChangeRequired = _markPasswordChangeRequired;
 
     final tokenStorage = ref.read(tokenStorageProvider);
     final token = await tokenStorage.read();
@@ -110,6 +112,35 @@ class AuthNotifier extends _$AuthNotifier {
     if (current.user.userId != updated.userId) return;
     state = AsyncData(
       AuthState.authenticated(token: current.token, user: updated),
+    );
+  }
+
+  /// Re-reads the current user from `GET /api/v1/auth/me`, e.g. after the
+  /// forced password change clears `mustChangePassword` (spec 048 US5). A
+  /// `401` signs the user out.
+  Future<void> reloadCurrentUser() async {
+    final current = state.value;
+    if (current is! AuthAuthenticated) return;
+    try {
+      final user = await ref.read(authRepositoryProvider).me();
+      state = AsyncData(
+        AuthState.authenticated(token: current.token, user: user),
+      );
+    } on AuthError {
+      handleSessionInvalid();
+    }
+  }
+
+  void _markPasswordChangeRequired() {
+    final current = state.value;
+    if (current is! AuthAuthenticated || current.user.mustChangePassword) {
+      return;
+    }
+    state = AsyncData(
+      AuthState.authenticated(
+        token: current.token,
+        user: current.user.copyWith(mustChangePassword: true),
+      ),
     );
   }
 }
