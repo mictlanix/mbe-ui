@@ -61,6 +61,70 @@ export MBE_ANDROID_KEY_PASSWORD=...
 Key and keystore files must live **outside** the repository; the preflight
 rejects a path inside it.
 
+### Keeping them in `pass`
+
+With [pass](https://www.passwordstore.org/) the `release.env` above holds no
+secrets, only lookups. One-time setup (needs a GPG key; on macOS install
+`pinentry-mac` so GPG can prompt):
+
+```bash
+gpg --full-generate-key                       # ECC / Curve 25519
+pass init <your-gpg-email>
+
+pass insert mbe/android/keystore-password     # prompts; never in shell history
+pass insert mbe/android/key-password
+echo upload | pass insert -e mbe/android/key-alias
+base64 < ~/.config/mbe/upload-keystore.jks | pass insert -m mbe/android/upload-keystore.jks.b64
+
+echo <KEYID> | pass insert -e mbe/ios/asc-key-id
+pass insert mbe/ios/asc-issuer-id
+pass insert -m mbe/ios/AuthKey_<KEYID>.p8 < ~/.private_keys/AuthKey_<KEYID>.p8
+```
+
+`~/.config/mbe/release.env` (mode 600) then becomes:
+
+```bash
+export MBE_ASC_KEY_ID="$(pass show mbe/ios/asc-key-id)"
+export MBE_ASC_ISSUER_ID="$(pass show mbe/ios/asc-issuer-id)"
+export MBE_ASC_KEY_PATH=~/.private_keys/AuthKey_<KEYID>.p8
+export MBE_ANDROID_KEYSTORE_PATH=~/.config/mbe/upload-keystore.jks
+export MBE_ANDROID_KEYSTORE_PASSWORD="$(pass show mbe/android/keystore-password)"
+export MBE_ANDROID_KEY_ALIAS="$(pass show mbe/android/key-alias)"
+export MBE_ANDROID_KEY_PASSWORD="$(pass show mbe/android/key-password)"
+```
+
+The scripts need the `.jks` and `.p8` as files; `pass` keeps encrypted copies.
+On a new Mac, restore them with
+`pass show mbe/android/upload-keystore.jks.b64 | base64 -d > ~/.config/mbe/upload-keystore.jks`
+and `pass show mbe/ios/AuthKey_<KEYID>.p8 > ~/.private_keys/AuthKey_<KEYID>.p8`
+(mode 600). Back up the GPG private key itself; without it the store cannot
+be decrypted.
+
+## Deploying
+
+From a clean, committed tree:
+
+```bash
+source ~/.config/mbe/release.env              # pass may prompt for the GPG passphrase
+tool/release.sh --list                        # pick a deployment
+
+# iOS: builds and uploads; the build appears in TestFlight after processing
+tool/release.sh ios demo
+
+# Android: signed .aab + .apk; publish the APK for side-loading
+tool/release.sh android demo
+scp build/app/outputs/flutter-apk/app-release.apk <user>@<host>:/var/www/<site>/mbe-demo.apk
+ssh <user>@<host> chmod 644 /var/www/<site>/mbe-demo.apk
+
+# Web: build, then copy (keep the APK the --delete would otherwise remove)
+tool/release.sh web demo
+rsync -av --delete --exclude mbe-demo.apk build/web/ <user>@<host>:/var/www/<site>/
+```
+
+Then check the result: the build in App Store Connect → TestFlight,
+`curl -sI https://<site>/mbe-demo.apk` returns `200`, and the site loads with
+the new build number.
+
 ## One-time setup
 
 **iOS**
