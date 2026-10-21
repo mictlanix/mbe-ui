@@ -318,8 +318,18 @@ Flutter, feature-first. Auth code is under `lib/features/auth/` (shortened to `a
 - [X] T051 Walk quickstart scenarios 1–18 in `flutter run -d chrome` against a dev backend with migration `021` applied, using the `MBE_POS_*` admin account plus a cashier without `customerPayments` read for scenarios 9 and 10. Scenario 10 run as the cashier verifies FR-024, and scenario 18 verifies FR-033. Check 390 px for scenarios 6, 10, 13 and 15
   - **Progress, 2026-10-18** (migration `021` applied; the app was driven on macOS through Flutter Driver):
     - **PASS**: 1–4, 6, 7, 9, 16, 18. The user walked 15 and 17 by hand, and `augusto`, `agonzalez` and `qa048cash` all went through the forced change.
-    - **SKIPPED**: 5 (needs an mbe-api config change) and 13 (can't resize the macOS window).
-    - **PARTIAL**: 8. The dev data has no POS completed-with-balance sale and no paid delivery sale with pending distribution. Both paths are covered by `pos_workspace_route_test`.
+    - **Round 3, 2026-10-21** (the user set the server policy to 10 characters plus upper, lower, digit and **symbol**; cash session 10437 was opened for `qa048cash`):
+      - **5 PASS**: the checklist shows 5 rules, including "Al menos 10 caracteres" and "Un símbolo". `Abc12345` → length and symbol unmet; `Abc1234567!` → all met.
+      - **18 PASS** again: old non-compliant passwords still log in under the stricter policy.
+      - **13 PASS** (short list): the macOS window was resized to 390×844 and the pop-up fits with no overflow. Only one other facility had stock, so long-list scrolling relies on `warehouse_picker_dialog_test`'s 390 px long-list case.
+    - **8 PASS** (round 3, with fixtures built live):
+      - completed sale 344047 with a $16 balance → reopens on Cobro;
+      - paid delivery sale 344048 with no destinations → reopens on Entrega;
+      - fully distributed delivery sale #344021 → "Ver venta" (round 2).
+    - **Problems found that predate this spec** (not in its scope):
+      - The workspace AppBar title row overflows at about 390 px on Cobro and Entrega.
+      - A credit-hold `ErrorBanner` carries over to the next sale.
+      - The POS list's DataTable2 fixed columns overflow when narrow, and the status chip clips to "Pagac".
     - **10–12 and 14 PASS** as the cashier `qa048cash`, which also verifies FR-024. Cash session 10436 was opened on drawer 14 with the user's authorization. Product 292699 → ZITLALTEPEC 1 under "Otras sucursales"; picking it books the line to warehouse 11, labelled "ZITLALTEPEC 1 (Artículos y Materiales) · CASA MAESTRA ZITLALTEPEC"; FLETECA → the empty message; SERVICEMAN1 → local warehouses only; reopening draft 344046 keeps the label and the selection.
   - **Fix from the walk**: a paid delivery sale briefly showed the default Venta step while its destinations loaded. The workspace now shows the loading state during that wait (`_awaitingDestinationsFor`), as this task's text asked. During that wait the step title, selector, step indicator and session banner are hidden too. The widget harness's `pumpAndSettle` can't observe a pending spinner, so this was checked in the running app on sale #344021 (PASS), not by a widget test
 - [X] T052 Set the **Status** of `specs/048-login-pos-enhancements/spec.md` to Implemented, then run `/speckit-companion-mark-complete` to record `completed`, as spec 047 did. Note in the PR description that it fixes mictlanix/mbe-ui#182, so merging closes it
