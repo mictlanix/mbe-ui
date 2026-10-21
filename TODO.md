@@ -63,8 +63,8 @@
 
 ## 2026-09-01
 Login:
-  - Requerir reinicio de password en primer login
-  - Requerir strong password
+  - ~~Requerir reinicio de password en primer login~~
+  - ~~Requerir strong password~~
 
 Clientes:
   - ~~Codigo de capura de cliente opcional y ubicarlo al final del form~~
@@ -119,9 +119,9 @@ Customers
   - ~~Form is incomplete, missing addresses, contacts and taxpayers.~~
 
 Login
-  - Change pwd should ask to confirm the new one
+  - ~~Change pwd should ask to confirm the new one~~
   
 ## 2026-10-18
 
 Pos Sales
-  - Show stock from other facilities
+  - ~~Show stock from other facilities~~
