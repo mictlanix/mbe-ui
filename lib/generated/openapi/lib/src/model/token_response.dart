@@ -13,6 +13,7 @@ part 'token_response.g.dart';
 /// Properties:
 /// * [accessToken]
 /// * [tokenType]
+/// * [mustChangePassword]
 @BuiltValue()
 abstract class TokenResponse
     implements Built<TokenResponse, TokenResponseBuilder> {
@@ -22,13 +23,18 @@ abstract class TokenResponse
   @BuiltValueField(wireName: r'token_type')
   String? get tokenType;
 
+  @BuiltValueField(wireName: r'must_change_password')
+  bool? get mustChangePassword;
+
   TokenResponse._();
 
   factory TokenResponse([void updates(TokenResponseBuilder b)]) =
       _$TokenResponse;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(TokenResponseBuilder b) => b..tokenType = 'bearer';
+  static void _defaults(TokenResponseBuilder b) => b
+    ..tokenType = 'bearer'
+    ..mustChangePassword = false;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<TokenResponse> get serializer =>
@@ -57,6 +63,13 @@ class _$TokenResponseSerializer implements PrimitiveSerializer<TokenResponse> {
       yield serializers.serialize(
         object.tokenType,
         specifiedType: const FullType(String),
+      );
+    }
+    if (object.mustChangePassword != null) {
+      yield r'must_change_password';
+      yield serializers.serialize(
+        object.mustChangePassword,
+        specifiedType: const FullType(bool),
       );
     }
   }
@@ -104,6 +117,16 @@ class _$TokenResponseSerializer implements PrimitiveSerializer<TokenResponse> {
                   as String?;
           if (valueDes == null) continue;
           result.tokenType = valueDes;
+          break;
+        case r'must_change_password':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
+          if (valueDes == null) continue;
+          result.mustChangePassword = valueDes;
           break;
         default:
           unhandled.add(key);

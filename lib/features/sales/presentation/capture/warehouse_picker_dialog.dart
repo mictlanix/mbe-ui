@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/other_facility_stock.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -13,9 +14,12 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// [quantity]; the current one is marked. Returns the picked id, or `null`
 /// when the cashier backed out.
 ///
-/// [productName] only titles the pop-up's subtitle.
+/// [warehouses] are the sale facility's; [facilityId] lets the pop-up list the
+/// other facilities' stock below them (spec 048 FR-020, C4). [productName]
+/// only titles the pop-up's subtitle.
 Future<int?> showWarehousePicker(
   BuildContext context, {
+  required int facilityId,
   required List<Warehouse> warehouses,
   required int? selected,
   required ProductStock? stock,
@@ -25,6 +29,7 @@ Future<int?> showWarehousePicker(
   return showDialog<int>(
     context: context,
     builder: (_) => _WarehousePickerDialog(
+      facilityId: facilityId,
       warehouses: warehouses,
       selected: selected,
       stock: stock,
@@ -36,6 +41,7 @@ Future<int?> showWarehousePicker(
 
 class _WarehousePickerDialog extends ConsumerWidget {
   const _WarehousePickerDialog({
+    required this.facilityId,
     required this.warehouses,
     required this.selected,
     required this.stock,
@@ -43,6 +49,7 @@ class _WarehousePickerDialog extends ConsumerWidget {
     required this.productName,
   });
 
+  final int facilityId;
   final List<Warehouse> warehouses;
   final int? selected;
   final ProductStock? stock;
@@ -61,6 +68,60 @@ class _WarehousePickerDialog extends ConsumerWidget {
     // A product present in the cache but not checked has no stock to run out
     // of (R5): any warehouse is valid, so no row warns.
     final notTracked = stock != null && !stock!.checked;
+    final theme = Theme.of(context);
+
+    final saleIds = {for (final w in warehouses) w.warehouseId};
+    final groups = stock != null && stock!.stockable
+        ? otherFacilityStock(
+            stock!,
+            saleFacilityId: facilityId,
+            saleWarehouseIds: saleIds,
+            currentWarehouse: selected,
+          )
+        : const <OtherFacilityGroup>[];
+    // A line booked outside the sale facility that the stock rows don't
+    // list (uncached or not stock-tracked product) still shows, selected, so
+    // it never reads as empty (FR-026, mbe-ui#182).
+    final currentUnlisted =
+        selected != null &&
+        !saleIds.contains(selected) &&
+        !groups.any((g) => g.warehouses.any((r) => r.warehouse == selected));
+    final showOthers =
+        (stock != null && stock!.stockable) || currentUnlisted;
+
+    // One row per warehouse, local or other: tap pops its id.
+    Widget row({
+      required Key key,
+      required int warehouseId,
+      required String name,
+    }) {
+      final isCurrent = warehouseId == selected;
+      return ListTile(
+        key: key,
+        minTileHeight: 56,
+        selected: isCurrent,
+        // A translucent tint, not a solid primaryContainer: on
+        // the solid fill the red short/no-stock flag was barely
+        // legible. The name keeps the regular text colour (an
+        // amber name on the light theme's cream tint did not
+        // read); the check alone carries `primary`.
+        selectedTileColor: scheme.primary.withValues(alpha: 0.16),
+        selectedColor: scheme.onSurface,
+        leading: SizedBox(
+          width: 24,
+          child: isCurrent ? Icon(Icons.check, color: scheme.primary) : null,
+        ),
+        title: Text(name),
+        subtitle: notTracked
+            ? null
+            : WarehouseStockFlag(
+                stock: stock,
+                warehouseId: warehouseId,
+                quantity: quantity,
+              ),
+        onTap: () => Navigator.of(context).pop(warehouseId),
+      );
+    }
 
     return AlertDialog(
       key: const Key('warehouse_picker_dialog'),
@@ -91,41 +152,59 @@ class _WarehousePickerDialog extends ConsumerWidget {
               ),
             Flexible(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxHeight: 320),
-                child: ListView.builder(
+                constraints: const BoxConstraints(maxHeight: 420),
+                child: ListView(
                   shrinkWrap: true,
-                  itemCount: warehouses.length,
-                  itemBuilder: (context, index) {
-                    final w = warehouses[index];
-                    final isCurrent = w.warehouseId == selected;
-                    return ListTile(
-                      key: Key('warehouse_option_${w.warehouseId}'),
-                      minTileHeight: 56,
-                      selected: isCurrent,
-                      // A translucent tint, not a solid primaryContainer: on
-                      // the solid fill the red short/no-stock flag was barely
-                      // legible. The name keeps the regular text colour (an
-                      // amber name on the light theme's cream tint did not
-                      // read); the check alone carries `primary`.
-                      selectedTileColor: scheme.primary.withValues(alpha: 0.16),
-                      selectedColor: scheme.onSurface,
-                      leading: SizedBox(
-                        width: 24,
-                        child: isCurrent
-                            ? Icon(Icons.check, color: scheme.primary)
-                            : null,
+                  children: [
+                    for (final w in warehouses)
+                      row(
+                        key: Key('warehouse_option_${w.warehouseId}'),
+                        warehouseId: w.warehouseId,
+                        name: w.name,
                       ),
-                      title: Text(w.name),
-                      subtitle: notTracked
-                          ? null
-                          : WarehouseStockFlag(
-                              stock: stock,
-                              warehouseId: w.warehouseId,
-                              quantity: quantity,
+                    if (showOthers)
+                      Column(
+                        key: const Key('warehouse_other_facilities'),
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+                            child: Text(
+                              l10n.posWarehousePickerOtherFacilities,
+                              style: theme.textTheme.titleSmall,
                             ),
-                      onTap: () => Navigator.of(context).pop(w.warehouseId),
-                    );
-                  },
+                          ),
+                          if (currentUnlisted)
+                            row(
+                              key: Key('warehouse_other_$selected'),
+                              warehouseId: selected!,
+                              name: '#$selected',
+                            ),
+                          for (final group in groups) ...[
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                              child: Text(
+                                group.facilityName,
+                                style: theme.textTheme.labelMedium?.copyWith(
+                                  color: scheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                            for (final r in group.warehouses)
+                              row(
+                                key: Key('warehouse_other_${r.warehouse}'),
+                                warehouseId: r.warehouse,
+                                name: r.warehouseName ?? '#${r.warehouse}',
+                              ),
+                          ],
+                          if (!currentUnlisted && groups.isEmpty)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                              child: Text(l10n.posWarehousePickerOtherNone),
+                            ),
+                        ],
+                      ),
+                  ],
                 ),
               ),
             ),

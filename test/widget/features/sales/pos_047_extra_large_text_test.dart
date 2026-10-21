@@ -166,6 +166,7 @@ void main() {
         builder: (context) => TextButton(
           onPressed: () => showWarehousePicker(
             context,
+            facilityId: 9,
             warehouses: [
               warehouse(3, 'Principal'),
               warehouse(4, 'Almacén central de materiales de construcción'),

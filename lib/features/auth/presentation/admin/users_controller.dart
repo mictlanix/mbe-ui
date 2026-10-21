@@ -11,7 +11,9 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
+import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/data/user_profile_repository_impl.dart';
+import 'package:mbe_ui/features/auth/domain/entities/password_policy.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
@@ -70,7 +72,11 @@ abstract final class UserFormErrorCode {
   static const emailRequired = 'emailRequired';
   static const usernameRequired = 'usernameRequired';
   static const employeeRequired = 'employeeRequired';
-  static const passwordLength = 'passwordLength';
+
+  /// The password misses [UserFormState.failedPasswordRules], from the
+  /// policy check here or the server's `422 password_policy`.
+  static const passwordPolicy = 'passwordPolicy';
+  static const passwordMismatch = 'passwordMismatch';
   static const loadFailed = 'loadFailed';
   static const saveFailed = 'saveFailed';
   static const deleteFailed = 'deleteFailed';
@@ -90,6 +96,7 @@ abstract class UserFormState with _$UserFormState {
   const factory UserFormState({
     @Default('') String userId,
     @Default('') String password,
+    @Default('') String confirmPassword,
     @Default('') String email,
     int? employeeId,
 
@@ -115,6 +122,9 @@ abstract class UserFormState with _$UserFormState {
     /// client-side-only errors and for a [ValidationError]'s message
     /// (already raw server text stored directly in `error`).
     String? errorDetail,
+
+    /// The rules behind a [UserFormErrorCode.passwordPolicy] error.
+    @Default(<PasswordRule>{}) Set<PasswordRule> failedPasswordRules,
     String? recoveryToken,
     String? recoveryExpiresAt,
 
@@ -236,8 +246,18 @@ class UserFormController extends _$UserFormController {
 
   void userIdChanged(String v) =>
       state = state.copyWith(userId: v, error: null, errorDetail: null);
-  void passwordChanged(String v) =>
-      state = state.copyWith(password: v, error: null, errorDetail: null);
+  void passwordChanged(String v) => state = state.copyWith(
+    password: v,
+    error: null,
+    errorDetail: null,
+    failedPasswordRules: const {},
+  );
+  void passwordConfirmChanged(String v) => state = state.copyWith(
+    confirmPassword: v,
+    error: null,
+    errorDetail: null,
+    failedPasswordRules: const {},
+  );
   void emailChanged(String v) =>
       state = state.copyWith(email: v, error: null, errorDetail: null);
 
@@ -312,9 +332,21 @@ class UserFormController extends _$UserFormController {
         );
         return;
       }
-      if (state.password.length < 6) {
+      // Without a loaded policy the client doesn't block; the server does.
+      final unmet =
+          ref.read(passwordPolicyProvider).value?.unmet(state.password) ??
+          const <PasswordRule>{};
+      if (unmet.isNotEmpty) {
         state = state.copyWith(
-          error: UserFormErrorCode.passwordLength,
+          error: UserFormErrorCode.passwordPolicy,
+          errorDetail: null,
+          failedPasswordRules: unmet,
+        );
+        return;
+      }
+      if (state.password != state.confirmPassword) {
+        state = state.copyWith(
+          error: UserFormErrorCode.passwordMismatch,
           errorDetail: null,
         );
         return;
@@ -332,6 +364,7 @@ class UserFormController extends _$UserFormController {
       submitting: true,
       error: null,
       errorDetail: null,
+      failedPasswordRules: const {},
       saved: false,
     );
     try {
@@ -371,7 +404,19 @@ class UserFormController extends _$UserFormController {
       _invalidateCaches();
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
-      if (e is ValidationError && e.errors.isNotEmpty) {
+      final rules = e is ValidationError
+          ? e.errors.expand(rulesFromFieldError).toSet()
+          : const <PasswordRule>{};
+      if (rules.isNotEmpty) {
+        // The raw message stays as the fallback when no policy is loaded to
+        // localize the rules against.
+        state = state.copyWith(
+          submitting: false,
+          error: UserFormErrorCode.passwordPolicy,
+          errorDetail: (e as ValidationError).errors.first.msg,
+          failedPasswordRules: rules,
+        );
+      } else if (e is ValidationError && e.errors.isNotEmpty) {
         state = state.copyWith(submitting: false, error: e.errors.first.msg);
       } else {
         state = state.copyWith(

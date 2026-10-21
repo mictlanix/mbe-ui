@@ -12,9 +12,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fieldRequired => 'Required';
 
   @override
-  String get fieldMinLength6 => 'Must be at least 6 characters';
-
-  @override
   String get errorValidationGeneric => 'Please correct the highlighted fields.';
 
   @override
@@ -657,9 +654,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userIdLengthError => '4–20 characters';
 
   @override
-  String get passwordLengthError => 'At least 6 characters';
-
-  @override
   String get privilegesModuleColumn => 'Module';
 
   @override
@@ -749,10 +743,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get userEmployeeRequiredError => 'Employee is required.';
-
-  @override
-  String get userPasswordLengthError =>
-      'Password must be at least 6 characters.';
 
   @override
   String get userLoadFailedError => 'Failed to load user.';
@@ -3841,4 +3831,64 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get confirmPasswordLabel => 'Confirm password';
+
+  @override
+  String get confirmNewPasswordLabel => 'Confirm new password';
+
+  @override
+  String get passwordMismatchError => 'Passwords don\'t match';
+
+  @override
+  String get posSaleDetailTitle => 'View sale';
+
+  @override
+  String get posSaleDetailDateLabel => 'Date';
+
+  @override
+  String get posSaleDetailRegisterLabel => 'Register';
+
+  @override
+  String get posSaleDetailPaymentsForbidden =>
+      'You don\'t have permission to see this sale\'s payments.';
+
+  @override
+  String get posPaymentDateLabel => 'Payment date';
+
+  @override
+  String get posWarehousePickerOtherFacilities => 'Other facilities';
+
+  @override
+  String get posWarehousePickerOtherNone =>
+      'Not available in other facilities.';
+
+  @override
+  String passwordRuleMinLength(int count) {
+    return 'At least $count characters';
+  }
+
+  @override
+  String get passwordRuleUpper => 'An uppercase letter';
+
+  @override
+  String get passwordRuleLower => 'A lowercase letter';
+
+  @override
+  String get passwordRuleDigit => 'A number';
+
+  @override
+  String get passwordRuleSymbol => 'A symbol';
+
+  @override
+  String get passwordRulesUnavailable =>
+      'The password rules couldn\'t be loaded. The server will check your password.';
+
+  @override
+  String get passwordRequiredTitle => 'Change your password';
+
+  @override
+  String get passwordRequiredExplanation =>
+      'An administrator set your password. Choose a new one to continue.';
 }

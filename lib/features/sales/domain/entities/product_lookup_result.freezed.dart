@@ -330,7 +330,7 @@ as List<WarehouseStock>,
 /// @nodoc
 mixin _$WarehouseStock {
 
- int get warehouse; String? get warehouseName; String get onHand; String get available;
+ int get warehouse; String? get warehouseName; int? get facilityId; String? get facilityName; String get onHand; String get available;
 /// Create a copy of WarehouseStock
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -342,20 +342,20 @@ $WarehouseStockCopyWith<WarehouseStock> get copyWith => _$WarehouseStockCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as WarehouseStock;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WarehouseStock&&(identical(other.warehouse, _this.warehouse) || other.warehouse == _this.warehouse)&&(identical(other.warehouseName, _this.warehouseName) || other.warehouseName == _this.warehouseName)&&(identical(other.onHand, _this.onHand) || other.onHand == _this.onHand)&&(identical(other.available, _this.available) || other.available == _this.available));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WarehouseStock&&(identical(other.warehouse, _this.warehouse) || other.warehouse == _this.warehouse)&&(identical(other.warehouseName, _this.warehouseName) || other.warehouseName == _this.warehouseName)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.facilityName, _this.facilityName) || other.facilityName == _this.facilityName)&&(identical(other.onHand, _this.onHand) || other.onHand == _this.onHand)&&(identical(other.available, _this.available) || other.available == _this.available));
 }
 
 
 @override
 int get hashCode {
   final _this = this as WarehouseStock;
-  return Object.hash(runtimeType,_this.warehouse,_this.warehouseName,_this.onHand,_this.available);
+  return Object.hash(runtimeType,_this.warehouse,_this.warehouseName,_this.facilityId,_this.facilityName,_this.onHand,_this.available);
 }
 
 @override
 String toString() {
   final _this = this as WarehouseStock;
-  return 'WarehouseStock(warehouse: ${_this.warehouse}, warehouseName: ${_this.warehouseName}, onHand: ${_this.onHand}, available: ${_this.available})';
+  return 'WarehouseStock(warehouse: ${_this.warehouse}, warehouseName: ${_this.warehouseName}, facilityId: ${_this.facilityId}, facilityName: ${_this.facilityName}, onHand: ${_this.onHand}, available: ${_this.available})';
 }
 
 
@@ -366,7 +366,7 @@ abstract mixin class $WarehouseStockCopyWith<$Res>  {
   factory $WarehouseStockCopyWith(WarehouseStock value, $Res Function(WarehouseStock) _then) = _$WarehouseStockCopyWithImpl;
 @useResult
 $Res call({
- int warehouse, String? warehouseName, String onHand, String available
+ int warehouse, String? warehouseName, int? facilityId, String? facilityName, String onHand, String available
 });
 
 
@@ -383,10 +383,12 @@ class _$WarehouseStockCopyWithImpl<$Res>
 
 /// Create a copy of WarehouseStock
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? warehouse = null,Object? warehouseName = freezed,Object? onHand = null,Object? available = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? warehouse = null,Object? warehouseName = freezed,Object? facilityId = freezed,Object? facilityName = freezed,Object? onHand = null,Object? available = null,}) {
   return _then(WarehouseStock(
 warehouse: null == warehouse ? _self.warehouse : warehouse // ignore: cast_nullable_to_non_nullable
 as int,warehouseName: freezed == warehouseName ? _self.warehouseName : warehouseName // ignore: cast_nullable_to_non_nullable
+as String?,facilityId: freezed == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
+as int?,facilityName: freezed == facilityName ? _self.facilityName : facilityName // ignore: cast_nullable_to_non_nullable
 as String?,onHand: null == onHand ? _self.onHand : onHand // ignore: cast_nullable_to_non_nullable
 as String,available: null == available ? _self.available : available // ignore: cast_nullable_to_non_nullable
 as String,
@@ -474,10 +476,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int warehouse,  String? warehouseName,  String onHand,  String available)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int warehouse,  String? warehouseName,  int? facilityId,  String? facilityName,  String onHand,  String available)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WarehouseStock() when $default != null:
-return $default(_that.warehouse,_that.warehouseName,_that.onHand,_that.available);case _:
+return $default(_that.warehouse,_that.warehouseName,_that.facilityId,_that.facilityName,_that.onHand,_that.available);case _:
   return orElse();
 
 }
@@ -495,10 +497,10 @@ return $default(_that.warehouse,_that.warehouseName,_that.onHand,_that.available
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int warehouse,  String? warehouseName,  String onHand,  String available)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int warehouse,  String? warehouseName,  int? facilityId,  String? facilityName,  String onHand,  String available)  $default,) {final _that = this;
 switch (_that) {
 case _WarehouseStock():
-return $default(_that.warehouse,_that.warehouseName,_that.onHand,_that.available);case _:
+return $default(_that.warehouse,_that.warehouseName,_that.facilityId,_that.facilityName,_that.onHand,_that.available);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -515,10 +517,10 @@ return $default(_that.warehouse,_that.warehouseName,_that.onHand,_that.available
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int warehouse,  String? warehouseName,  String onHand,  String available)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int warehouse,  String? warehouseName,  int? facilityId,  String? facilityName,  String onHand,  String available)?  $default,) {final _that = this;
 switch (_that) {
 case _WarehouseStock() when $default != null:
-return $default(_that.warehouse,_that.warehouseName,_that.onHand,_that.available);case _:
+return $default(_that.warehouse,_that.warehouseName,_that.facilityId,_that.facilityName,_that.onHand,_that.available);case _:
   return null;
 
 }
@@ -530,11 +532,13 @@ return $default(_that.warehouse,_that.warehouseName,_that.onHand,_that.available
 
 
 class _WarehouseStock implements WarehouseStock {
-  const _WarehouseStock({required this.warehouse, this.warehouseName, required this.onHand, required this.available});
+  const _WarehouseStock({required this.warehouse, this.warehouseName, this.facilityId, this.facilityName, required this.onHand, required this.available});
   
 
 @override final  int warehouse;
 @override final  String? warehouseName;
+@override final  int? facilityId;
+@override final  String? facilityName;
 @override final  String onHand;
 @override final  String available;
 
@@ -548,18 +552,18 @@ _$WarehouseStockCopyWith<_WarehouseStock> get copyWith => __$WarehouseStockCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WarehouseStock&&(identical(other.warehouse, warehouse) || other.warehouse == warehouse)&&(identical(other.warehouseName, warehouseName) || other.warehouseName == warehouseName)&&(identical(other.onHand, onHand) || other.onHand == onHand)&&(identical(other.available, available) || other.available == available));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WarehouseStock&&(identical(other.warehouse, warehouse) || other.warehouse == warehouse)&&(identical(other.warehouseName, warehouseName) || other.warehouseName == warehouseName)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.facilityName, facilityName) || other.facilityName == facilityName)&&(identical(other.onHand, onHand) || other.onHand == onHand)&&(identical(other.available, available) || other.available == available));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,warehouse,warehouseName,onHand,available);
+    return Object.hash(runtimeType,warehouse,warehouseName,facilityId,facilityName,onHand,available);
 }
 
 @override
 String toString() {
-    return 'WarehouseStock(warehouse: $warehouse, warehouseName: $warehouseName, onHand: $onHand, available: $available)';
+    return 'WarehouseStock(warehouse: $warehouse, warehouseName: $warehouseName, facilityId: $facilityId, facilityName: $facilityName, onHand: $onHand, available: $available)';
 }
 
 
@@ -570,7 +574,7 @@ abstract mixin class _$WarehouseStockCopyWith<$Res> implements $WarehouseStockCo
   factory _$WarehouseStockCopyWith(_WarehouseStock value, $Res Function(_WarehouseStock) _then) = __$WarehouseStockCopyWithImpl;
 @override @useResult
 $Res call({
- int warehouse, String? warehouseName, String onHand, String available
+ int warehouse, String? warehouseName, int? facilityId, String? facilityName, String onHand, String available
 });
 
 
@@ -587,10 +591,12 @@ class __$WarehouseStockCopyWithImpl<$Res>
 
 /// Create a copy of WarehouseStock
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? warehouse = null,Object? warehouseName = freezed,Object? onHand = null,Object? available = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? warehouse = null,Object? warehouseName = freezed,Object? facilityId = freezed,Object? facilityName = freezed,Object? onHand = null,Object? available = null,}) {
   return _then(_WarehouseStock(
 warehouse: null == warehouse ? _self.warehouse : warehouse // ignore: cast_nullable_to_non_nullable
 as int,warehouseName: freezed == warehouseName ? _self.warehouseName : warehouseName // ignore: cast_nullable_to_non_nullable
+as String?,facilityId: freezed == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
+as int?,facilityName: freezed == facilityName ? _self.facilityName : facilityName // ignore: cast_nullable_to_non_nullable
 as String?,onHand: null == onHand ? _self.onHand : onHand // ignore: cast_nullable_to_non_nullable
 as String,available: null == available ? _self.available : available // ignore: cast_nullable_to_non_nullable
 as String,

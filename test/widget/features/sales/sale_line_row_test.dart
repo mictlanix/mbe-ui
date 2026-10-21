@@ -54,12 +54,13 @@ void main() {
     WidgetTester tester, {
     bool enabled = true,
     String quantity = '2',
+    int? warehouse = 3,
     Map<int, ProductStock> stock = const {},
   }) async {
     await pumpPos(
       tester,
       SaleLineRow(
-        line: testLine(quantity: quantity),
+        line: testLine(quantity: quantity, warehouse: warehouse),
         facilityId: 9,
         enabled: enabled,
       ),
@@ -265,6 +266,37 @@ void main() {
     ) async {
       await pumpRow(tester);
       expect(find.byKey(const Key('sale_line_warehouse_5')), findsOneWidget);
+    });
+
+    testWidgets('a line booked to another facility shows its name (#182)', (
+      tester,
+    ) async {
+      await pumpRow(
+        tester,
+        warehouse: 20,
+        stock: const {
+          11: ProductStock(
+            warehouses: [
+              WarehouseStock(
+                warehouse: 20,
+                warehouseName: 'Bodega Norte',
+                facilityId: 2,
+                facilityName: 'Norte',
+                onHand: '8',
+                available: '8',
+              ),
+            ],
+          ),
+        },
+      );
+      expect(find.text('Bodega Norte · Norte'), findsOneWidget);
+    });
+
+    testWidgets('an uncached other-facility warehouse shows #id (#182)', (
+      tester,
+    ) async {
+      await pumpRow(tester, warehouse: 20);
+      expect(find.text('#20'), findsOneWidget);
     });
 
     testWidgets('a confirmed sale renders every control disabled (FR-041)', (

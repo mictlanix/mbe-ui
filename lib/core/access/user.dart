@@ -28,6 +28,11 @@ abstract class User with _$User {
     /// `AccessControlService` or any permission decision.
     int? profileId,
     String? profileName,
+
+    /// Set while the server requires a password change before anything else
+    /// (spec 048 US5); every request but `/auth/me` and change-password is
+    /// refused until it clears.
+    @Default(false) bool mustChangePassword,
   }) = _User;
 
   factory User.fromResponse(UserResponse response) {
@@ -47,6 +52,7 @@ abstract class User with _$User {
           .toList(),
       profileId: response.profileId,
       profileName: response.profileName,
+      mustChangePassword: response.mustChangePassword ?? false,
     );
   }
 }

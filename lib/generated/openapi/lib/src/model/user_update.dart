@@ -19,6 +19,7 @@ part 'user_update.g.dart';
 /// * [employeeId]
 /// * [administrator]
 /// * [status]
+/// * [mustChangePassword]
 /// * [privileges]
 /// * [settings]
 @BuiltValue()
@@ -35,6 +36,9 @@ abstract class UserUpdate implements Built<UserUpdate, UserUpdateBuilder> {
   @BuiltValueField(wireName: r'status')
   EntityStatus? get status;
   // enum statusEnum {  0,  1,  2,  };
+
+  @BuiltValueField(wireName: r'must_change_password')
+  bool? get mustChangePassword;
 
   @BuiltValueField(wireName: r'privileges')
   BuiltList<PrivilegeUpdate>? get privileges;
@@ -91,6 +95,13 @@ class _$UserUpdateSerializer implements PrimitiveSerializer<UserUpdate> {
       yield serializers.serialize(
         object.status,
         specifiedType: const FullType.nullable(EntityStatus),
+      );
+    }
+    if (object.mustChangePassword != null) {
+      yield r'must_change_password';
+      yield serializers.serialize(
+        object.mustChangePassword,
+        specifiedType: const FullType.nullable(bool),
       );
     }
     if (object.privileges != null) {
@@ -175,6 +186,16 @@ class _$UserUpdateSerializer implements PrimitiveSerializer<UserUpdate> {
                   as EntityStatus?;
           if (valueDes == null) continue;
           result.status = valueDes;
+          break;
+        case r'must_change_password':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
+          if (valueDes == null) continue;
+          result.mustChangePassword = valueDes;
           break;
         case r'privileges':
           final valueDes =

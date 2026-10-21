@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/branding/brand_ink.dart';
-import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/presentation/account/account_controller.dart';
+import 'package:mbe_ui/features/auth/presentation/widgets/new_password_fields.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Two-purpose screen for FR-010:
@@ -27,91 +28,87 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     final formState = ref.watch(recoveryControllerProvider);
     final controller = ref.read(recoveryControllerProvider.notifier);
     final l10n = AppLocalizations.of(context)!;
+    final passwordPolicy = ref.watch(passwordPolicyProvider);
+    final bannerError = passwordFormBannerError(
+      l10n,
+      policy: passwordPolicy.value,
+      error: formState.error,
+      failure: formState.failure,
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.recoverPasswordTitle)),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 400),
-          child: Padding(
+          // Scrolls so the rule checklist never overflows a short viewport;
+          // shrink-wrapped to stay vertically centered otherwise.
+          child: ListView(
+            shrinkWrap: true,
             padding: const EdgeInsets.all(24),
-            child: formState.success
-                ? _SuccessView()
-                : Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const _HelpText(),
-                      const SizedBox(height: 24),
-                      if (formState.error != null) ...[
-                        ErrorBanner(
-                          error: AppError.validation([
-                            FieldError(
-                              loc: const [],
-                              msg: formState.error!,
-                              type: 'error',
-                            ),
-                          ]),
+            children: [
+              formState.success
+                  ? _SuccessView()
+                  : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const _HelpText(),
+                        const SizedBox(height: 24),
+                        if (bannerError != null) ...[
+                          ErrorBanner(error: bannerError),
+                          const SizedBox(height: 16),
+                        ],
+                        Form(
+                          key: _formKey,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              TextFormField(
+                                key: const Key('recovery_token_field'),
+                                decoration: InputDecoration(
+                                  labelText: l10n.recoveryTokenLabel,
+                                ),
+                                textInputAction: TextInputAction.next,
+                                enabled: !formState.submitting,
+                                onChanged: controller.recoveryTokenChanged,
+                                validator: (v) => (v == null || v.isEmpty)
+                                    ? l10n.fieldRequired
+                                    : null,
+                              ),
+                              const SizedBox(height: 12),
+                              NewPasswordFields(
+                                newLabel: l10n.newPasswordLabel,
+                                confirmLabel: l10n.confirmNewPasswordLabel,
+                                policy: passwordPolicy,
+                                enabled: !formState.submitting,
+                                onNewChanged: controller.newPasswordChanged,
+                                onConfirmChanged:
+                                    controller.confirmPasswordChanged,
+                                onSubmitted: () => _submit(controller),
+                              ),
+                              const SizedBox(height: 24),
+                              FilledButton(
+                                onPressed: formState.submitting
+                                    ? null
+                                    : () => _submit(controller),
+                                child: formState.submitting
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : Text(l10n.setNewPasswordButton),
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 16),
                       ],
-                      Form(
-                        key: _formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            TextFormField(
-                              key: const Key('recovery_token_field'),
-                              decoration: InputDecoration(
-                                labelText: l10n.recoveryTokenLabel,
-                              ),
-                              textInputAction: TextInputAction.next,
-                              enabled: !formState.submitting,
-                              onChanged: controller.recoveryTokenChanged,
-                              validator: (v) => (v == null || v.isEmpty)
-                                  ? l10n.fieldRequired
-                                  : null,
-                            ),
-                            const SizedBox(height: 12),
-                            TextFormField(
-                              key: const Key('new_password_field'),
-                              decoration: InputDecoration(
-                                labelText: l10n.newPasswordLabel,
-                              ),
-                              obscureText: true,
-                              textInputAction: TextInputAction.done,
-                              enabled: !formState.submitting,
-                              onChanged: controller.newPasswordChanged,
-                              validator: (v) {
-                                if (v == null || v.isEmpty) {
-                                  return l10n.fieldRequired;
-                                }
-                                if (v.length < 6) return l10n.fieldMinLength6;
-                                return null;
-                              },
-                              onFieldSubmitted: (_) => _submit(controller),
-                            ),
-                            const SizedBox(height: 24),
-                            FilledButton(
-                              onPressed: formState.submitting
-                                  ? null
-                                  : () => _submit(controller),
-                              child: formState.submitting
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : Text(l10n.setNewPasswordButton),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+            ],
           ),
         ),
       ),

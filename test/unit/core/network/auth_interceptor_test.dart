@@ -143,7 +143,98 @@ void main() {
     });
   });
 
+  group('AuthInterceptor password_change_required', () {
+    Future<AppError> forbidden(String detail, void Function() onRequired) {
+      final dio = _dioWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': detail}),
+          403,
+          headers: _jsonHeaders,
+        ),
+        onPasswordChangeRequired: onRequired,
+      );
+      return _errorOf(() => dio.get<Object>('/x'));
+    }
+
+    test('a 403 password_change_required fires the callback and still '
+        'fails the request', () async {
+      var calls = 0;
+
+      final error = await forbidden('password_change_required', () => calls++);
+
+      expect(calls, 1);
+      expect(
+        error,
+        isA<ServerError>()
+            .having((e) => e.statusCode, 'statusCode', 403)
+            .having((e) => e.message, 'message', 'password_change_required'),
+      );
+    });
+
+    test('any other 403 does not fire it', () async {
+      var calls = 0;
+
+      await forbidden('Insufficient privileges', () => calls++);
+
+      expect(calls, 0);
+    });
+  });
+
   group('AuthInterceptor error mapping for ordinary bodies', () {
+    test(
+      'a password_policy 422 keeps the failed rules and not the input',
+      () async {
+        final dio = _dioWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'detail': [
+                {
+                  'type': 'password_policy',
+                  'loc': ['body', 'new_password'],
+                  'msg': 'Password does not meet the policy',
+                  'ctx': {
+                    'failed': ['min_length', 'require_digit'],
+                  },
+                  'input': 'hunter2-rejected',
+                },
+              ],
+            }),
+            422,
+            headers: _jsonHeaders,
+          ),
+        );
+
+        final error = await _errorOf(() => dio.get<Object>('/x'));
+
+        final field = (error as ValidationError).errors.single;
+        expect(field.type, 'password_policy');
+        expect(field.failedRules, ['min_length', 'require_digit']);
+        expect(field.toString(), isNot(contains('hunter2-rejected')));
+      },
+    );
+
+    test('a 422 without ctx has no failed rules', () async {
+      final dio = _dioWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'detail': [
+              {
+                'loc': ['body', 'username'],
+                'msg': 'field required',
+                'type': 'missing',
+              },
+            ],
+          }),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final error = await _errorOf(() => dio.get<Object>('/x'));
+
+      expect((error as ValidationError).errors.single.failedRules, isEmpty);
+    });
+
     test(
       'a JSON body already decoded to a Map behaves exactly as before',
       () async {
@@ -240,9 +331,11 @@ Future<AppError> _errorOf(Future<Object?> Function() request) async {
 Dio _dioWith(
   Future<ResponseBody> Function(RequestOptions options) handler, {
   void Function()? onUnauthorized,
+  void Function()? onPasswordChangeRequired,
 }) {
   final interceptor = AuthInterceptor(_NoTokenStorage())
-    ..onUnauthorized = onUnauthorized;
+    ..onUnauthorized = onUnauthorized
+    ..onPasswordChangeRequired = onPasswordChangeRequired;
   return Dio(BaseOptions(baseUrl: 'http://test'))
     ..httpClientAdapter = _FakeHttpClientAdapter(handler)
     ..interceptors.add(interceptor);

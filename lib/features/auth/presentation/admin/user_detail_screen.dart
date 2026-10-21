@@ -12,7 +12,9 @@ import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
+import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/auth/data/user_profile_repository_impl.dart';
+import 'package:mbe_ui/features/auth/domain/entities/password_policy.dart';
 import 'package:mbe_ui/features/auth/domain/entities/user_profile.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/apply_profile_dialog.dart';
@@ -20,6 +22,7 @@ import 'package:mbe_ui/features/auth/presentation/admin/privileges_grid.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/user_profiles_controller.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/users_controller.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
+import 'package:mbe_ui/features/auth/presentation/widgets/new_password_fields.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -70,6 +73,7 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
     final fieldsEnabled = !formState.submitting && !readOnly;
     final l10n = AppLocalizations.of(context)!;
     final employeeRepo = ref.read(employeeRepositoryProvider);
+    final passwordPolicy = ref.watch(passwordPolicyProvider);
     // Applying a profile is administrator-only server-side, matching the
     // profile catalog itself (024-user-profiles research.md §2) — neither
     // the create-form picker nor the apply action is a per-object
@@ -113,15 +117,15 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
               if (formState.error != null) ...[
                 ErrorBanner(
                   error: AppError.validation([
-                    FieldError(
-                      loc: const [],
-                      msg: _localizeFormError(l10n, formState.error!),
-                      type: 'error',
-                    ),
+                    ..._localizedFormErrors(l10n, formState, passwordPolicy),
                     // The server's own message (e.g. "User not found") can't
                     // be localized client-side, so it's shown as
                     // supplementary detail under the localized heading above.
-                    if (formState.errorDetail != null)
+                    // A policy rejection's detail is its raw message, which
+                    // the per-rule messages replace.
+                    if (formState.errorDetail != null &&
+                        !(formState.error == UserFormErrorCode.passwordPolicy &&
+                            passwordPolicy.hasValue))
                       FieldError(
                         loc: const [],
                         msg: formState.errorDetail!,
@@ -156,15 +160,14 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                   },
                 ),
                 const SizedBox(height: 12),
-                TextFormField(
-                  key: const Key('password_field'),
-                  decoration: InputDecoration(labelText: l10n.passwordLabel),
-                  obscureText: true,
+                NewPasswordFields(
+                  newFieldKey: const Key('password_field'),
+                  newLabel: l10n.passwordLabel,
+                  confirmLabel: l10n.confirmPasswordLabel,
+                  policy: passwordPolicy,
                   enabled: fieldsEnabled,
-                  onChanged: controller.passwordChanged,
-                  validator: (v) => (v ?? '').length < 6
-                      ? l10n.userPasswordLengthError
-                      : null,
+                  onNewChanged: controller.passwordChanged,
+                  onConfirmChanged: controller.passwordConfirmChanged,
                 ),
                 const SizedBox(height: 12),
               ],
@@ -247,9 +250,7 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                 PrivilegesGrid(
                   key: const Key('privileges_grid'),
                   privileges: formState.privileges,
-                  onChanged: fieldsEnabled
-                      ? controller.privilegeChanged
-                      : null,
+                  onChanged: fieldsEnabled ? controller.privilegeChanged : null,
                 ),
               ],
               const SizedBox(height: 24),
@@ -428,6 +429,36 @@ class _RecoveryTokenCard extends StatelessWidget {
   }
 }
 
+/// The localized messages for [UserFormState.error]: one per failed password
+/// rule for a policy rejection, else the single localized error. Without a
+/// loaded policy the rules can't be worded, so only the server's raw detail
+/// (shown by the caller) remains.
+List<FieldError> _localizedFormErrors(
+  AppLocalizations l10n,
+  UserFormState formState,
+  AsyncValue<PasswordPolicy> policy,
+) {
+  if (formState.error != UserFormErrorCode.passwordPolicy) {
+    return [
+      FieldError(
+        loc: const [],
+        msg: _localizeFormError(l10n, formState.error!),
+        type: 'error',
+      ),
+    ];
+  }
+  if (!policy.hasValue) return const [];
+  return [
+    for (final rule in PasswordRule.values)
+      if (formState.failedPasswordRules.contains(rule))
+        FieldError(
+          loc: const [],
+          msg: localizePasswordRule(l10n, rule, policy.requireValue),
+          type: 'error',
+        ),
+  ];
+}
+
 /// Localizes a [UserFormErrorCode] for [UserFormState.error]. Falls back to
 /// the raw value for a [ValidationError]'s server-provided message, which
 /// is stored directly in `error` instead of being one of these codes.
@@ -439,8 +470,8 @@ String _localizeFormError(AppLocalizations l10n, String code) {
       return l10n.userUsernameRequiredError;
     case UserFormErrorCode.employeeRequired:
       return l10n.userEmployeeRequiredError;
-    case UserFormErrorCode.passwordLength:
-      return l10n.userPasswordLengthError;
+    case UserFormErrorCode.passwordMismatch:
+      return l10n.passwordMismatchError;
     case UserFormErrorCode.loadFailed:
       return l10n.userLoadFailedError;
     case UserFormErrorCode.saveFailed:

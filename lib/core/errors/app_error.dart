@@ -40,6 +40,9 @@ abstract class FieldError with _$FieldError {
     required List<String> loc,
     required String msg,
     required String type,
+
+    /// The rule names in `ctx.failed` of a `password_policy` rejection.
+    @Default(<String>[]) List<String> failedRules,
   }) = _FieldError;
 }
 

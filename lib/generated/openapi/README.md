@@ -73,6 +73,7 @@ Class | Method | HTTP request | Description
 [*AuthApi*](doc/AuthApi.md) | [**changePasswordApiV1AuthChangePasswordPost**](doc/AuthApi.md#changepasswordapiv1authchangepasswordpost) | **POST** /api/v1/auth/change-password | Change Password
 [*AuthApi*](doc/AuthApi.md) | [**confirmRecoveryApiV1AuthRecoverPost**](doc/AuthApi.md#confirmrecoveryapiv1authrecoverpost) | **POST** /api/v1/auth/recover | Confirm Recovery
 [*AuthApi*](doc/AuthApi.md) | [**getMeApiV1AuthMeGet**](doc/AuthApi.md#getmeapiv1authmeget) | **GET** /api/v1/auth/me | Get Me
+[*AuthApi*](doc/AuthApi.md) | [**getPasswordPolicyApiV1AuthPasswordPolicyGet**](doc/AuthApi.md#getpasswordpolicyapiv1authpasswordpolicyget) | **GET** /api/v1/auth/password-policy | Get Password Policy
 [*AuthApi*](doc/AuthApi.md) | [**loginApiV1AuthLoginPost**](doc/AuthApi.md#loginapiv1authloginpost) | **POST** /api/v1/auth/login | Login
 [*CashDrawersApi*](doc/CashDrawersApi.md) | [**createCashDrawerApiV1CashDrawersPost**](doc/CashDrawersApi.md#createcashdrawerapiv1cashdrawerspost) | **POST** /api/v1/cash-drawers | Create Cash Drawer
 [*CashDrawersApi*](doc/CashDrawersApi.md) | [**deleteCashDrawerApiV1CashDrawersCashDrawerIdDelete**](doc/CashDrawersApi.md#deletecashdrawerapiv1cashdrawerscashdraweriddelete) | **DELETE** /api/v1/cash-drawers/{cash_drawer_id} | Delete Cash Drawer
@@ -449,6 +450,7 @@ Class | Method | HTTP request | Description
  - [OrderApplicationResponse](doc/OrderApplicationResponse.md)
  - [OrderOrigin](doc/OrderOrigin.md)
  - [OutstandingOrderResponse](doc/OutstandingOrderResponse.md)
+ - [PasswordPolicyResponse](doc/PasswordPolicyResponse.md)
  - [PaymentMethod](doc/PaymentMethod.md)
  - [PaymentMethodOptionCreate](doc/PaymentMethodOptionCreate.md)
  - [PaymentMethodOptionResponse](doc/PaymentMethodOptionResponse.md)

@@ -20,6 +20,10 @@ class AuthInterceptor extends Interceptor {
   /// contexts (e.g. tests) that don't need this side effect.
   void Function()? onUnauthorized;
 
+  /// Set by `AuthNotifier`; invoked on a `403 password_change_required`
+  /// (spec 048 US5) so the app can route to the forced password change.
+  void Function()? onPasswordChangeRequired;
+
   @override
   void onRequest(
     RequestOptions options,
@@ -37,10 +41,16 @@ class AuthInterceptor extends Interceptor {
     final appError = mapDioException(err);
     if (appError is AuthError) {
       onUnauthorized?.call();
+    } else if (appError is ServerError &&
+        appError.statusCode == 403 &&
+        appError.message == _passwordChangeRequired) {
+      onPasswordChangeRequired?.call();
     }
     handler.next(err.copyWith(error: appError));
   }
 }
+
+const _passwordChangeRequired = 'password_change_required';
 
 /// Maps a [DioException] to an [AppError] subtype.
 AppError mapDioException(DioException error) {
@@ -114,10 +124,16 @@ List<FieldError> _fieldErrorsFrom(Object? data) {
     final loc = (entry['loc'] as List? ?? const [])
         .map((segment) => segment.toString())
         .toList();
+    final ctx = entry['ctx'];
+    final failed = ctx is Map ? ctx['failed'] : null;
+    // `entry['input']` (the rejected password) is deliberately never read.
     return FieldError(
       loc: loc,
       msg: entry['msg']?.toString() ?? '',
       type: entry['type']?.toString() ?? '',
+      failedRules: failed is List
+          ? failed.map((rule) => rule.toString()).toList()
+          : const [],
     );
   }).toList();
 }

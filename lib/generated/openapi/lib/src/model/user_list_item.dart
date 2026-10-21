@@ -17,6 +17,7 @@ part 'user_list_item.g.dart';
 /// * [employeeId]
 /// * [administrator]
 /// * [status]
+/// * [mustChangePassword]
 /// * [profileId]
 /// * [profileName]
 @BuiltValue()
@@ -38,6 +39,9 @@ abstract class UserListItem
   EntityStatus get status;
   // enum statusEnum {  0,  1,  2,  };
 
+  @BuiltValueField(wireName: r'must_change_password')
+  bool? get mustChangePassword;
+
   @BuiltValueField(wireName: r'profile_id')
   int? get profileId;
 
@@ -49,7 +53,7 @@ abstract class UserListItem
   factory UserListItem([void updates(UserListItemBuilder b)]) = _$UserListItem;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(UserListItemBuilder b) => b;
+  static void _defaults(UserListItemBuilder b) => b..mustChangePassword = false;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<UserListItem> get serializer => _$UserListItemSerializer();
@@ -92,6 +96,13 @@ class _$UserListItemSerializer implements PrimitiveSerializer<UserListItem> {
       object.status,
       specifiedType: const FullType(EntityStatus),
     );
+    if (object.mustChangePassword != null) {
+      yield r'must_change_password';
+      yield serializers.serialize(
+        object.mustChangePassword,
+        specifiedType: const FullType(bool),
+      );
+    }
     if (object.profileId != null) {
       yield r'profile_id';
       yield serializers.serialize(
@@ -174,6 +185,16 @@ class _$UserListItemSerializer implements PrimitiveSerializer<UserListItem> {
                   )
                   as EntityStatus;
           result.status = valueDes;
+          break;
+        case r'must_change_password':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
+          if (valueDes == null) continue;
+          result.mustChangePassword = valueDes;
           break;
         case r'profile_id':
           final valueDes =

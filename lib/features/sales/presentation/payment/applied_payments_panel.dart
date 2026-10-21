@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
+import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/order_payments_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -15,10 +16,19 @@ import 'package:mbe_ui/core/domain/payment_method.dart';
 /// session state, so a resumed sale shows its full history including
 /// reversals (research.md §11).
 class AppliedPaymentsPanel extends ConsumerWidget {
-  const AppliedPaymentsPanel({super.key, required this.saleId, this.enabled = true});
+  const AppliedPaymentsPanel({
+    super.key,
+    required this.saleId,
+    this.enabled = true,
+    this.showChangeAndDate = false,
+  });
 
   final int saleId;
   final bool enabled;
+
+  /// spec 048 FR-011: the read-only sale detail also shows the change given
+  /// and the date of each payment. `false` keeps the Cobro rail as it was.
+  final bool showChangeAndDate;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -97,6 +107,17 @@ class AppliedPaymentsPanel extends ConsumerWidget {
                           ].join(' · '),
                           style: typeRoles.metricLabel,
                         ),
+                        if (showChangeAndDate) ...[
+                          if (!isZeroAmount(payment.changeAmount))
+                            Text(
+                              '${l10n.posPaymentChangeLabel}: ${fmt.display.currency(payment.changeAmount)}',
+                              style: typeRoles.metricLabel,
+                            ),
+                          Text(
+                            '${l10n.posPaymentDateLabel}: ${fmt.display.dateTime(payment.paymentDate)}',
+                            style: typeRoles.metricLabel,
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -115,7 +136,7 @@ class AppliedPaymentsPanel extends ConsumerWidget {
       loading: () => const LinearProgressIndicator(),
       error: (error, stackTrace) => Padding(
         padding: EdgeInsets.all(spacing.md),
-        child: const Text('No se pudieron cargar los pagos aplicados'),
+        child: Text(l10n.posAppliedPaymentsLoadError),
       ),
     );
   }

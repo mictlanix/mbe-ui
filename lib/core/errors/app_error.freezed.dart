@@ -615,7 +615,8 @@ as String?,
 /// @nodoc
 mixin _$FieldError {
 
- List<String> get loc; String get msg; String get type;
+ List<String> get loc; String get msg; String get type;/// The rule names in `ctx.failed` of a `password_policy` rejection.
+ List<String> get failedRules;
 /// Create a copy of FieldError
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -627,20 +628,20 @@ $FieldErrorCopyWith<FieldError> get copyWith => _$FieldErrorCopyWithImpl<FieldEr
 @override
 bool operator ==(Object other) {
   final _this = this as FieldError;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FieldError&&const DeepCollectionEquality().equals(other.loc, _this.loc)&&(identical(other.msg, _this.msg) || other.msg == _this.msg)&&(identical(other.type, _this.type) || other.type == _this.type));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FieldError&&const DeepCollectionEquality().equals(other.loc, _this.loc)&&(identical(other.msg, _this.msg) || other.msg == _this.msg)&&(identical(other.type, _this.type) || other.type == _this.type)&&const DeepCollectionEquality().equals(other.failedRules, _this.failedRules));
 }
 
 
 @override
 int get hashCode {
   final _this = this as FieldError;
-  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.loc),_this.msg,_this.type);
+  return Object.hash(runtimeType,const DeepCollectionEquality().hash(_this.loc),_this.msg,_this.type,const DeepCollectionEquality().hash(_this.failedRules));
 }
 
 @override
 String toString() {
   final _this = this as FieldError;
-  return 'FieldError(loc: ${_this.loc}, msg: ${_this.msg}, type: ${_this.type})';
+  return 'FieldError(loc: ${_this.loc}, msg: ${_this.msg}, type: ${_this.type}, failedRules: ${_this.failedRules})';
 }
 
 
@@ -651,7 +652,7 @@ abstract mixin class $FieldErrorCopyWith<$Res>  {
   factory $FieldErrorCopyWith(FieldError value, $Res Function(FieldError) _then) = _$FieldErrorCopyWithImpl;
 @useResult
 $Res call({
- List<String> loc, String msg, String type
+ List<String> loc, String msg, String type, List<String> failedRules
 });
 
 
@@ -668,12 +669,13 @@ class _$FieldErrorCopyWithImpl<$Res>
 
 /// Create a copy of FieldError
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? loc = null,Object? msg = null,Object? type = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? loc = null,Object? msg = null,Object? type = null,Object? failedRules = null,}) {
   return _then(FieldError(
 loc: null == loc ? _self.loc : loc // ignore: cast_nullable_to_non_nullable
 as List<String>,msg: null == msg ? _self.msg : msg // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as String,
+as String,failedRules: null == failedRules ? _self.failedRules : failedRules // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 
@@ -758,10 +760,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<String> loc,  String msg,  String type)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<String> loc,  String msg,  String type,  List<String> failedRules)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FieldError() when $default != null:
-return $default(_that.loc,_that.msg,_that.type);case _:
+return $default(_that.loc,_that.msg,_that.type,_that.failedRules);case _:
   return orElse();
 
 }
@@ -779,10 +781,10 @@ return $default(_that.loc,_that.msg,_that.type);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<String> loc,  String msg,  String type)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<String> loc,  String msg,  String type,  List<String> failedRules)  $default,) {final _that = this;
 switch (_that) {
 case _FieldError():
-return $default(_that.loc,_that.msg,_that.type);case _:
+return $default(_that.loc,_that.msg,_that.type,_that.failedRules);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -799,10 +801,10 @@ return $default(_that.loc,_that.msg,_that.type);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<String> loc,  String msg,  String type)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<String> loc,  String msg,  String type,  List<String> failedRules)?  $default,) {final _that = this;
 switch (_that) {
 case _FieldError() when $default != null:
-return $default(_that.loc,_that.msg,_that.type);case _:
+return $default(_that.loc,_that.msg,_that.type,_that.failedRules);case _:
   return null;
 
 }
@@ -814,7 +816,7 @@ return $default(_that.loc,_that.msg,_that.type);case _:
 
 
 class _FieldError implements FieldError {
-  const _FieldError({required  List<String> loc, required this.msg, required this.type}): _loc = loc;
+  const _FieldError({required  List<String> loc, required this.msg, required this.type,  List<String> failedRules = const <String>[]}): _loc = loc,_failedRules = failedRules;
   
 
  final  List<String> _loc;
@@ -826,6 +828,15 @@ class _FieldError implements FieldError {
 
 @override final  String msg;
 @override final  String type;
+/// The rule names in `ctx.failed` of a `password_policy` rejection.
+ final  List<String> _failedRules;
+/// The rule names in `ctx.failed` of a `password_policy` rejection.
+@override@JsonKey() List<String> get failedRules {
+  if (_failedRules is EqualUnmodifiableListView) return _failedRules;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_failedRules);
+}
+
 
 /// Create a copy of FieldError
 /// with the given fields replaced by the non-null parameter values.
@@ -837,18 +848,18 @@ _$FieldErrorCopyWith<_FieldError> get copyWith => __$FieldErrorCopyWithImpl<_Fie
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FieldError&&const DeepCollectionEquality().equals(other.loc, _loc)&&(identical(other.msg, msg) || other.msg == msg)&&(identical(other.type, type) || other.type == type));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FieldError&&const DeepCollectionEquality().equals(other.loc, _loc)&&(identical(other.msg, msg) || other.msg == msg)&&(identical(other.type, type) || other.type == type)&&const DeepCollectionEquality().equals(other.failedRules, _failedRules));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_loc),msg,type);
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_loc),msg,type,const DeepCollectionEquality().hash(_failedRules));
 }
 
 @override
 String toString() {
-    return 'FieldError(loc: $loc, msg: $msg, type: $type)';
+    return 'FieldError(loc: $loc, msg: $msg, type: $type, failedRules: $failedRules)';
 }
 
 
@@ -859,7 +870,7 @@ abstract mixin class _$FieldErrorCopyWith<$Res> implements $FieldErrorCopyWith<$
   factory _$FieldErrorCopyWith(_FieldError value, $Res Function(_FieldError) _then) = __$FieldErrorCopyWithImpl;
 @override @useResult
 $Res call({
- List<String> loc, String msg, String type
+ List<String> loc, String msg, String type, List<String> failedRules
 });
 
 
@@ -876,12 +887,13 @@ class __$FieldErrorCopyWithImpl<$Res>
 
 /// Create a copy of FieldError
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? loc = null,Object? msg = null,Object? type = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? loc = null,Object? msg = null,Object? type = null,Object? failedRules = null,}) {
   return _then(_FieldError(
 loc: null == loc ? _self._loc : loc // ignore: cast_nullable_to_non_nullable
 as List<String>,msg: null == msg ? _self.msg : msg // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
-as String,
+as String,failedRules: null == failedRules ? _self._failedRules : failedRules // ignore: cast_nullable_to_non_nullable
+as List<String>,
   ));
 }
 
