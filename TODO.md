@@ -11,7 +11,7 @@
 - Cuando un cliente tenga credito, que por default la forma de pago sea credito y restringir pago de contado
 - ~~Seccion laterarl asegurar q sea touch friendly~~
 - Prioridad normal por default
-- Tipo de cambio configurable por empresa
+- ~~Tipo de cambio configurable por empresa~~
 - ~~Inicio de caja~~
 
 ## 2026-08-02
