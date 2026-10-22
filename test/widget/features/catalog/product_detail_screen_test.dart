@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
@@ -232,6 +233,7 @@ void main() {
     int? productId,
     List<LabelItem> labels = const [],
     bool forceReadOnly = false,
+    bool multiCurrency = false,
   }) async {
     when(() => authRepository.me()).thenAnswer((_) async => signedInAs);
 
@@ -239,6 +241,7 @@ void main() {
       ProviderScope(
         retry: (_, _) => null,
         overrides: [
+          multiCurrencyEnabledProvider.overrideWithValue(multiCurrency),
           authRepositoryProvider.overrideWithValue(authRepository),
           tokenStorageProvider.overrideWithValue(tokenStorage),
           productRepositoryProvider.overrideWithValue(productRepository),
@@ -351,6 +354,16 @@ void main() {
     expect(find.byKey(const Key('unit_of_measurement_field')), findsOneWidget);
     expect(find.byKey(const Key('bar_code_field')), findsOneWidget);
     expect(find.byKey(const Key('save_button')), findsOneWidget);
+  });
+
+  testWidgets('the currency picker is hidden unless the deployment is '
+      'multi-currency (spec 049 FR-005)', (tester) async {
+    await pumpScreen(tester, signedInAs: _createUser);
+    expect(find.byKey(const Key('currency_field')), findsNothing);
+    expect(find.byKey(const Key('tax_rate_field')), findsOneWidget);
+
+    await pumpScreen(tester, signedInAs: _createUser, multiCurrency: true);
+    expect(find.byKey(const Key('currency_field')), findsOneWidget);
   });
 
   testWidgets(

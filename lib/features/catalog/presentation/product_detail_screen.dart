@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design_theme_extensions.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
@@ -306,27 +307,30 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 onChanged: controller.taxRateChanged,
               ),
             ),
-            FormGridChild(
-              DropdownButtonFormField<Currency>(
-                key: const Key('currency_field'),
-                initialValue: formState.currency,
-                decoration: InputDecoration(labelText: l10n.currencyLabel),
-                items: [
-                  for (final currency in Currency.values)
-                    DropdownMenuItem(
-                      value: currency,
-                      child: Text(_currencyLabel(l10n, currency)),
-                    ),
-                ],
-                onChanged: !fieldsEnabled
-                    ? null
-                    : (currency) {
-                        if (currency != null) {
-                          controller.currencyChanged(currency);
-                        }
-                      },
+            // Spec 049 FR-005: a multi-currency control. Hidden, the form still
+            // carries the product's own currency (MXN for a new product).
+            if (ref.watch(multiCurrencyEnabledProvider))
+              FormGridChild(
+                DropdownButtonFormField<Currency>(
+                  key: const Key('currency_field'),
+                  initialValue: formState.currency,
+                  decoration: InputDecoration(labelText: l10n.currencyLabel),
+                  items: [
+                    for (final currency in Currency.values)
+                      DropdownMenuItem(
+                        value: currency,
+                        child: Text(_currencyLabel(l10n, currency)),
+                      ),
+                  ],
+                  onChanged: !fieldsEnabled
+                      ? null
+                      : (currency) {
+                          if (currency != null) {
+                            controller.currencyChanged(currency);
+                          }
+                        },
+                ),
               ),
-            ),
             FormGridChild(
               span: FormGridSpan.full,
               TextFormField(

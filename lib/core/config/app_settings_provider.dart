@@ -32,3 +32,10 @@ final quantityCommitDebounceProvider = Provider<Duration>(
 final productSearchMultiSelectProvider = Provider<bool>(
   (ref) => ref.watch(appSettingsProvider).productSearchMultiSelect,
 );
+
+/// Whether exchange-rate and currency controls are shown (spec 049 FR-001).
+/// A deployment-level option — never mutable from the UI — read by the
+/// navigation tree, the router and the screens that show a currency.
+final multiCurrencyEnabledProvider = Provider<bool>(
+  (ref) => ref.watch(appSettingsProvider).multiCurrencyEnabled,
+);

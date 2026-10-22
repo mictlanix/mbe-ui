@@ -90,6 +90,8 @@ class DataTableView<T> extends StatefulWidget {
     this.pagination,
     this.onPageChanged,
     this.minWidth,
+    this.shrinkWrap = false,
+    this.margin,
   }) : assert(
          pagination == null || onPageChanged != null,
          'onPageChanged is required when pagination is supplied',
@@ -121,6 +123,18 @@ class DataTableView<T> extends StatefulWidget {
   /// reimplementation of table sizing by the caller). Left `null`, table
   /// width behaves exactly as it does today.
   final double? minWidth;
+
+  /// Unpaginated path only. Sizes the table to its rows so it never scrolls
+  /// vertically, for a table embedded in a scrolling page (an unbounded-
+  /// height host `DataTable2` cannot lay itself out in). The height is
+  /// computed here, from the same row-height and divider values passed to
+  /// `DataTable2`, so no caller supplies or guesses a height.
+  final bool shrinkWrap;
+
+  /// Unpaginated path only. Overrides the surrounding `Card` margin (default:
+  /// the theme's), e.g. `EdgeInsets.zero` to align the table flush with
+  /// sibling content.
+  final EdgeInsetsGeometry? margin;
 
   @override
   State<DataTableView<T>> createState() => _DataTableViewState<T>();
@@ -255,7 +269,9 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
     // otherwise look inconsistent with the rest of the app — matched here
     // explicitly so all catalog/list tables render identically regardless
     // of whether they paginate (constitution §VI: implemented once, shared).
-    return Card(
+    const dividerThickness = 1.0;
+    final card = Card(
+      margin: widget.margin,
       semanticContainer: false,
       child: DataTable2(
         showCheckboxColumn: false,
@@ -264,10 +280,27 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
         columns: _buildColumns(sortable: true),
         headingRowHeight: headingRowHeight,
         dataRowHeight: dataRowHeight,
-        dividerThickness: 1,
+        dividerThickness: dividerThickness,
         minWidth: widget.minWidth,
         rows: [for (final item in rows) _buildRow(item)],
       ),
+    );
+    if (!widget.shrinkWrap) return card;
+
+    final cardTheme = Theme.of(context).cardTheme;
+    final margin =
+        (widget.margin ?? cardTheme.margin ?? const EdgeInsets.all(4)).resolve(
+          Directionality.of(context),
+        );
+    final border = cardTheme.shape?.dimensions.vertical ?? 0;
+    return SizedBox(
+      height:
+          headingRowHeight +
+          rows.length * dataRowHeight +
+          (rows.length + 1) * dividerThickness +
+          margin.vertical +
+          border,
+      child: card,
     );
   }
 }

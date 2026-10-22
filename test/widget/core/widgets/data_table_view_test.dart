@@ -2,6 +2,8 @@ import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mbe_ui/app/theme/app_theme.dart';
+import 'package:mbe_ui/core/branding/brand_config.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 
@@ -164,34 +166,31 @@ void main() {
     },
   );
 
-  testWidgets(
-    'passes minWidth through to the paginated table',
-    (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: DataTableView<int>(
-              columns: columns(),
-              rows: const [1, 2, 3],
-              pagination: const CatalogPage(
-                items: [1, 2, 3],
-                total: 3,
-                pageIndex: 0,
-                pageSize: 20,
-              ),
-              onPageChanged: (_) {},
-              minWidth: 2000,
+  testWidgets('passes minWidth through to the paginated table', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: DataTableView<int>(
+            columns: columns(),
+            rows: const [1, 2, 3],
+            pagination: const CatalogPage(
+              items: [1, 2, 3],
+              total: 3,
+              pageIndex: 0,
+              pageSize: 20,
             ),
+            onPageChanged: (_) {},
+            minWidth: 2000,
           ),
         ),
-      );
+      ),
+    );
 
-      final table = tester.widget<PaginatedDataTable2>(
-        find.byType(PaginatedDataTable2),
-      );
-      expect(table.minWidth, 2000);
-    },
-  );
+    final table = tester.widget<PaginatedDataTable2>(
+      find.byType(PaginatedDataTable2),
+    );
+    expect(table.minWidth, 2000);
+  });
 
   testWidgets(
     'omitting minWidth leaves both tables at their default (null) — no '
@@ -209,4 +208,79 @@ void main() {
       expect(table.minWidth, isNull);
     },
   );
+
+  group('shrinkWrap (spec 049 US5)', () {
+    // The real app theme: a bare ThemeData has no card border and a 4dp
+    // margin, so it would not exercise the border/margin arithmetic.
+    Future<void> pumpShrunk(
+      WidgetTester tester,
+      int rowCount, {
+      EdgeInsetsGeometry? margin = EdgeInsets.zero,
+    }) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.of(const BrandConfig(displayName: 'Test')).light,
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: DataTableView<int>(
+                columns: columns(),
+                rows: [for (var i = 0; i < rowCount; i++) i],
+                shrinkWrap: true,
+                margin: margin,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    for (final (count, margin) in [
+      (1, EdgeInsets.zero),
+      (8, EdgeInsets.zero),
+      (1, null),
+      (8, null),
+    ]) {
+      testWidgets('sizes to $count row(s) with margin $margin: no vertical '
+          'scroll, no blank space', (tester) async {
+        await pumpShrunk(tester, count, margin: margin);
+
+        final vertical = tester
+            .stateList<ScrollableState>(
+              find.descendant(
+                of: find.byType(DataTable2),
+                matching: find.byType(Scrollable),
+              ),
+            )
+            .where((s) => s.position.axis == Axis.vertical);
+        expect(vertical, isNotEmpty);
+        for (final scrollable in vertical) {
+          expect(scrollable.position.maxScrollExtent, 0);
+        }
+        // Heading + rows are fully visible: the last row's bottom is within
+        // the table's own bounds.
+        final table = tester.getRect(find.byType(DataTable2));
+        final lastRow = tester.getRect(find.text('ID-${count - 1}'));
+        expect(lastRow.bottom, lessThanOrEqualTo(table.bottom));
+        // No unneeded blank space: the table is exactly its heading, its
+        // rows and their dividers tall.
+        final widget = tester.widget<DataTable2>(find.byType(DataTable2));
+        expect(
+          table.height,
+          widget.headingRowHeight! +
+              count * widget.dataRowHeight! +
+              (count + 1) * widget.dividerThickness!,
+        );
+      });
+    }
+
+    testWidgets('margin overrides the card margin', (tester) async {
+      await pumpShrunk(tester, 2);
+
+      final card = tester.getRect(find.byType(Card));
+      final table = tester.getRect(find.byType(DataTable2));
+      expect(card.left, table.left);
+      expect(card.right, table.right);
+      expect(card.left, 0);
+    });
+  });
 }

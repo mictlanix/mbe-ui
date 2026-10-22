@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,6 +12,8 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/domain/facility_type.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/address_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
@@ -66,6 +71,13 @@ final _facility = Facility(
   status: EntityStatus.active,
 );
 
+/// A valid 1x1 PNG, so `Image.memory` can decode the staged preview.
+final _tinyPng = base64Decode(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+);
+
+final _facilityWithLogo = _facility.copyWith(logo: 'http://localhost:1/x.png');
+
 AccessControlService _accessFor(User user) =>
     AccessControlService(AuthState.authenticated(token: 't', user: user));
 
@@ -91,11 +103,13 @@ void main() {
     required User signedInAs,
     int? facilityId,
     Locale? locale,
+    Facility? facility,
+    bool forceReadOnly = false,
   }) async {
     if (facilityId != null) {
       when(
         () => facilityRepo.get(facilityId: facilityId),
-      ).thenAnswer((_) async => _facility);
+      ).thenAnswer((_) async => facility ?? _facility);
     }
     container = ProviderContainer(
       retry: (_, _) => null,
@@ -114,7 +128,12 @@ void main() {
           locale: locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: FacilityDetailScreen(facilityId: facilityId)),
+          home: Scaffold(
+            body: FacilityDetailScreen(
+              facilityId: facilityId,
+              forceReadOnly: forceReadOnly,
+            ),
+          ),
         ),
       ),
     );
@@ -255,5 +274,131 @@ void main() {
     // lives in the record action area now, not the AppBar.
     final appBar = tester.widget<AppBar>(find.byType(AppBar));
     expect(appBar.actions, anyOf(isNull, isEmpty));
+  });
+
+  group('logo section (049 US2)', () {
+    setUp(() {
+      when(() => taxpayerRepo.get(any())).thenAnswer(
+        (_) async => const TaxpayerIssuerListItem(rfc: 'AAA010101AAA'),
+      );
+    });
+
+    testWidgets('shows the placeholder and the upload button with no logo', (
+      tester,
+    ) async {
+      await pumpScreen(tester, signedInAs: _user(), locale: const Locale('es'));
+
+      expect(find.byKey(const Key('facility_logo_section')), findsOneWidget);
+      expect(find.byType(ProductPhoto), findsOneWidget);
+      expect(find.text('Subir logotipo'), findsOneWidget);
+      expect(
+        find.byKey(const Key('facility_logo_replace_button')),
+        findsNothing,
+      );
+      expect(find.byKey(const Key('logo_field')), findsNothing);
+    });
+
+    testWidgets('shows the replace button when the facility has a logo', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _user(),
+        facilityId: 1,
+        facility: _facilityWithLogo,
+      );
+
+      expect(
+        find.byKey(const Key('facility_logo_replace_button')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('facility_logo_upload_button')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('an unreachable logo URL renders the placeholder', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _user(),
+        facilityId: 1,
+        facility: _facilityWithLogo,
+      );
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(tester.takeException(), isNull);
+      expect(find.byIcon(Icons.inventory_2_outlined), findsOneWidget);
+    });
+
+    testWidgets('is read-only in view mode', (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _user(),
+        facilityId: 1,
+        forceReadOnly: true,
+      );
+
+      final button = tester.widget<TextButton>(
+        find.byKey(const Key('facility_logo_upload_button')),
+      );
+      expect(button.onPressed, isNull);
+    });
+
+    testWidgets(
+      'a save whose logo upload fails keeps the form open with the error',
+      (tester) async {
+        when(
+          () => facilityRepo.update(
+            facilityId: 1,
+            code: any(named: 'code'),
+            name: any(named: 'name'),
+            type: any(named: 'type'),
+            location: any(named: 'location'),
+            address: any(named: 'address'),
+            taxpayer: any(named: 'taxpayer'),
+            receiptMessage: any(named: 'receiptMessage'),
+            defaultBatch: any(named: 'defaultBatch'),
+            status: any(named: 'status'),
+          ),
+        ).thenAnswer((_) async => _facility);
+        registerFallbackValue(Uint8List(0));
+        when(
+          () => facilityRepo.uploadLogo(
+            facilityId: 1,
+            bytes: any(named: 'bytes'),
+            filename: any(named: 'filename'),
+          ),
+        ).thenThrow(const AppError.server());
+
+        await pumpScreen(
+          tester,
+          signedInAs: _user(),
+          facilityId: 1,
+          locale: const Locale('es'),
+        );
+        container!
+            .read(facilityFormControllerProvider.notifier)
+            .logoPicked(_tinyPng, 'logo.png');
+        await tester.pumpAndSettle();
+
+        final save = find.byKey(const Key('save_button'));
+        await tester.ensureVisible(save);
+        await tester.tap(save);
+        await tester.pump();
+        await tester.pump();
+        await tester.pump();
+
+        // Popping with no router would have thrown; the banner persists.
+        expect(tester.takeException(), isNull);
+        expect(find.byType(FacilityDetailScreen), findsOneWidget);
+        expect(
+          find.textContaining('el logotipo no se pudo subir'),
+          findsOneWidget,
+        );
+      },
+    );
   });
 }

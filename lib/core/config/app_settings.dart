@@ -38,6 +38,7 @@ class AppSettings {
     this.inputDebounce = const Duration(milliseconds: 300),
     this.quantityCommitDebounce = const Duration(milliseconds: 400),
     this.productSearchMultiSelect = true,
+    this.multiCurrencyEnabled = false,
   });
 
   /// mbe-api base URL. Mirrors `dio_client.dart`'s `apiBaseUrl` const.
@@ -91,6 +92,15 @@ class AppSettings {
   /// per-user preference.
   final bool productSearchMultiSelect;
 
+  /// Whether the deployment works in more than one currency
+  /// (`MULTI_CURRENCY_ENABLED`, spec 049 FR-001). Off by default: when off,
+  /// the exchange-rates menu entry and route, and every currency /
+  /// exchange-rate control on sales documents, products and payments, are
+  /// hidden. Display-only — no stored currency is changed. Consumed via
+  /// `multiCurrencyEnabledProvider` — never mutable from the UI and never a
+  /// per-user preference.
+  final bool multiCurrencyEnabled;
+
   /// Whether [customerId] is the generic walk-in customer
   /// ([posDefaultCustomerId]). The one, shared way to answer that question
   /// (spec 036 data-model.md §5) — the Sales Order customer picker and the
@@ -114,6 +124,10 @@ class AppSettings {
     'PRODUCT_SEARCH_MULTI_SELECT',
     defaultValue: 'true',
   );
+  static const _multiCurrencyEnabledEnv = String.fromEnvironment(
+    'MULTI_CURRENCY_ENABLED',
+    defaultValue: 'false',
+  );
 
   /// Build-time source (FR-001). Every field has a documented default
   /// (FR-004) and a malformed value falls back rather than preventing
@@ -128,7 +142,8 @@ class AppSettings {
         'DEFAULT_LOCALE=$_defaultLocaleEnv '
         'INPUT_DEBOUNCE_MS=$_inputDebounceMsEnv '
         'QUANTITY_COMMIT_DEBOUNCE_MS=$_quantityCommitDebounceMsEnv '
-        'PRODUCT_SEARCH_MULTI_SELECT=$_productSearchMultiSelectEnv',
+        'PRODUCT_SEARCH_MULTI_SELECT=$_productSearchMultiSelectEnv '
+        'MULTI_CURRENCY_ENABLED=$_multiCurrencyEnabledEnv',
       );
     }
     return AppSettings(
@@ -141,6 +156,7 @@ class AppSettings {
       inputDebounce: _parseDebounceMs(_inputDebounceMsEnv, 300),
       quantityCommitDebounce: _parseDebounceMs(_quantityCommitDebounceMsEnv, 400),
       productSearchMultiSelect: _parseBool(_productSearchMultiSelectEnv, true),
+      multiCurrencyEnabled: _parseBool(_multiCurrencyEnabledEnv, false),
     );
   }
 

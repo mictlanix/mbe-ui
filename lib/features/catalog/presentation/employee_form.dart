@@ -296,6 +296,15 @@ class EmployeeFormPanelState extends ConsumerState<EmployeeForm> {
           ),
         ),
         FormGridChild(
+          SwitchListTile(
+            key: const Key('sales_person_switch'),
+            title: Text(l10n.salesPersonLabel),
+            value: formState.salesPerson,
+            onChanged: fieldsEnabled ? controller.salesPersonChanged : null,
+            contentPadding: EdgeInsets.zero,
+          ),
+        ),
+        FormGridChild(
           span: FormGridSpan.full,
           TextFormField(
             key: const Key('employee_comment_field'),
@@ -308,25 +317,9 @@ class EmployeeFormPanelState extends ConsumerState<EmployeeForm> {
         ),
         FormGridChild(
           span: FormGridSpan.full,
-          Row(
-            children: [
-              Expanded(
-                child: SwitchListTile(
-                  key: const Key('sales_person_switch'),
-                  title: Text(l10n.salesPersonLabel),
-                  value: formState.salesPerson,
-                  onChanged: fieldsEnabled
-                      ? controller.salesPersonChanged
-                      : null,
-                ),
-              ),
-              Expanded(
-                child: EntityStatusFormField(
-                  value: formState.status,
-                  onChanged: fieldsEnabled ? controller.statusChanged : null,
-                ),
-              ),
-            ],
+          EntityStatusFormField(
+            value: formState.status,
+            onChanged: fieldsEnabled ? controller.statusChanged : null,
           ),
         ),
         FormGridChild(

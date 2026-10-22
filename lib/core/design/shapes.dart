@@ -84,3 +84,19 @@ class Shapes extends ThemeExtension<Shapes> {
     );
   }
 }
+
+/// The theme's own input borders, re-shaped as pills — the mock draws these
+/// fields as a stadium (`border-radius:30` on a 60 px box, i.e. fully
+/// rounded), which is `Shapes.full`'s intent. That token is a `ShapeBorder`
+/// and `InputDecoration` takes an `InputBorder`, so the radius is applied by
+/// `copyWith` on whatever the theme already resolved: every colour and width
+/// still comes from `inputDecorationTheme`, and only the corners change.
+InputBorder? pillInputBorder(InputBorder? source) =>
+    source is OutlineInputBorder
+    ? source.copyWith(borderRadius: BorderRadius.circular(_pillRadius))
+    : source;
+
+/// Larger than any box a pill field is drawn at, so the corners always
+/// resolve to a full stadium rather than to a fixed radius that would read
+/// as "very rounded" at one height and as a pill at another.
+const _pillRadius = 999.0;

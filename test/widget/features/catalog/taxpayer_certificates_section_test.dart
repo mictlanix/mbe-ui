@@ -132,7 +132,50 @@ void main() {
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     expect(find.text(l10n.noCertificatesFound), findsOneWidget);
     expect(find.byKey(const Key('taxpayer_certificates_table')), findsNothing);
+    // No fixed-height box around the empty-state text (spec 049 FR-021).
+    expect(
+      find.ancestor(
+        of: find.text(l10n.noCertificatesFound),
+        matching: find.byWidgetPredicate(
+          (w) => w is SizedBox && w.height != null,
+        ),
+      ),
+      findsNothing,
+    );
   });
+
+  for (final count in [1, 8]) {
+    testWidgets('$count certificate(s): the table has no inner vertical '
+        'scroll (spec 049 FR-020, C5)', (tester) async {
+      await pumpSection(
+        tester,
+        signedInAs: _createUser,
+        certificates: [
+          for (var i = 0; i < count; i++)
+            TaxpayerCertificate(
+              taxpayerCertificateId: '0000100000020334176$i',
+              taxpayer: 'XAXX010101000',
+              validFrom: DateTime(2025, 1, 1),
+              validTo: DateTime(2029, 1, 1),
+              status: EntityStatus.active,
+            ),
+        ],
+      );
+
+      final scrollables = tester
+          .stateList<ScrollableState>(
+            find.descendant(
+              of: find.byKey(const Key('taxpayer_certificates_table')),
+              matching: find.byType(Scrollable),
+            ),
+          )
+          .where((s) => s.position.axis == Axis.vertical);
+      expect(scrollables, isNotEmpty);
+      for (final scrollable in scrollables) {
+        expect(scrollable.position.maxScrollExtent, 0);
+      }
+    });
+  }
 
   testWidgets(
     'a load failure shows the shared failed state, not a raw exception '

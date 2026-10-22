@@ -6,6 +6,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/widgets/compact_field.dart';
@@ -92,6 +93,7 @@ void main() {
       initialLocation: '/sales/orders/42',
       surface: surface ?? const Size(1440, 2400),
       overrides: [
+        multiCurrencyEnabledProvider.overrideWithValue(true),
         authProvider.overrideWith(
           () => _FixedAuthNotifier(
             AuthState.authenticated(token: 't', user: _updaterUser),

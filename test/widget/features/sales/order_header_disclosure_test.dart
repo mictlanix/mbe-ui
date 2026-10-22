@@ -5,6 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
@@ -121,11 +122,17 @@ void main() {
     );
   });
 
-  Future<void> pumpOrder(WidgetTester tester) async {
+  Future<void> pumpOrder(
+    WidgetTester tester, {
+    bool multiCurrency = true,
+    Size? surface,
+  }) async {
     await pumpOrdersRouted(
       tester,
       initialLocation: '/sales/orders/42',
+      surface: surface ?? const Size(1200, 2400),
       overrides: [
+        multiCurrencyEnabledProvider.overrideWithValue(multiCurrency),
         authProvider.overrideWith(
           () => _FixedAuthNotifier(
             AuthState.authenticated(token: 't', user: _updaterUser),
@@ -138,6 +145,38 @@ void main() {
       ],
     );
   }
+
+  testWidgets('the facts share one line and the disclosure toggle is on the '
+      'trailing edge of the card (spec 049 FR-018)', (tester) async {
+    // The test font draws every glyph as a full-width square, so the strip
+    // needs a wider surface than a real font would to fit on one line.
+    await pumpOrder(tester, surface: const Size(2800, 2400));
+
+    Finder inPanel(String text) => find.descendant(
+      of: find.byType(OrderHeaderPanel),
+      matching: find.text(text),
+    );
+    final tops = {
+      for (final label in [
+        l10n.salesOrderReferenceLabel,
+        l10n.salesOrderStatusLabel,
+        l10n.salesOrderDateLabel,
+        l10n.salesOrderDueDateLabel,
+        l10n.salesOrderPromiseDateLabel,
+      ])
+        tester.getTopLeft(inPanel(label)).dy,
+    };
+    expect(tops, hasLength(1), reason: 'the facts on one line');
+
+    final card = tester.getRect(
+      find.descendant(
+        of: find.byType(OrderHeaderPanel),
+        matching: find.byType(Card),
+      ),
+    );
+    final toggle = tester.getRect(find.byKey(_toggle));
+    expect(card.right - toggle.right, lessThanOrEqualTo(32));
+  });
 
   group('the fact strip (US1, FR-002)', () {
     testWidgets('carries reference, status and date as plain '
@@ -270,6 +309,22 @@ void main() {
       expect(find.byKey(_disclosed.first), findsNothing);
       expect(find.text(l10n.salesOrderMoreDetails), findsOneWidget);
     });
+
+    testWidgets(
+      'with the multi-currency option off the disclosed group has neither '
+      'Currency nor Exchange rate (spec 049 FR-005)',
+      (tester) async {
+        await pumpOrder(tester, multiCurrency: false);
+
+        await tester.tap(find.byKey(_toggle));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('sales_order_currency_field')), findsNothing);
+        expect(find.text(l10n.salesOrderCurrencyLabel), findsNothing);
+        expect(find.text(l10n.salesOrderExchangeRateLabel), findsNothing);
+        expect(find.text(l10n.salesOrderPriorityLabel), findsOneWidget);
+      },
+    );
 
     testWidgets(
       'the disclosed fields appear in order: Priority, Currency, Exchange '

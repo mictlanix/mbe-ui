@@ -6,6 +6,7 @@ import 'package:mbe_api_client/mbe_api_client.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/domain/fiscal_certification_provider_label.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
@@ -302,15 +303,30 @@ class _TaxpayerIssuerDetailScreenState
             // belong to, so it never renders on the create form.
             if (_isEdit) ...[
               const SizedBox(height: 24),
-              const Divider(),
-              const SizedBox(height: 16),
-              TaxpayerCertificatesSection(
-                rfc: widget.rfc!,
-                // Agregar follows the SAME read-only flag as every other
-                // body mutation control on this screen — never exposed on a
-                // read-only/View render, even to a create-privileged user
-                // (FR-025, constitution §VI row-click-is-read-only rule).
-                readOnly: readOnly,
+              // Same cap as ResponsiveFormGrid, so the divider and table
+              // share the form's edges above its max width.
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxWidth: LayoutBreakpoints.large,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Divider(),
+                      const SizedBox(height: 16),
+                      TaxpayerCertificatesSection(
+                        rfc: widget.rfc!,
+                        // Agregar follows the SAME read-only flag as every
+                        // other body mutation control on this screen — never
+                        // exposed on a read-only/View render, even to a
+                        // create-privileged user (FR-025, constitution §VI
+                        // row-click-is-read-only rule).
+                        readOnly: readOnly,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ],

@@ -3909,6 +3909,36 @@ abstract class AppLocalizations {
   /// **'Logo'**
   String get facilityLogoLabel;
 
+  /// No description provided for @facilityLogoUploadButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload logo'**
+  String get facilityLogoUploadButton;
+
+  /// No description provided for @facilityLogoReplaceButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace logo'**
+  String get facilityLogoReplaceButton;
+
+  /// No description provided for @facilityLogoInvalidTypeError.
+  ///
+  /// In en, this message translates to:
+  /// **'The logo must be a JPEG or PNG file.'**
+  String get facilityLogoInvalidTypeError;
+
+  /// No description provided for @facilityLogoTooLargeError.
+  ///
+  /// In en, this message translates to:
+  /// **'The logo must be 2 MB or smaller.'**
+  String get facilityLogoTooLargeError;
+
+  /// No description provided for @facilityLogoUploadFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'The facility was saved, but the logo could not be uploaded. Try again.'**
+  String get facilityLogoUploadFailedError;
+
   /// No description provided for @deleteFacilityButton.
   ///
   /// In en, this message translates to:

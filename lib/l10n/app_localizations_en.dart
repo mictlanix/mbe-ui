@@ -2134,6 +2134,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get facilityLogoLabel => 'Logo';
 
   @override
+  String get facilityLogoUploadButton => 'Upload logo';
+
+  @override
+  String get facilityLogoReplaceButton => 'Replace logo';
+
+  @override
+  String get facilityLogoInvalidTypeError =>
+      'The logo must be a JPEG or PNG file.';
+
+  @override
+  String get facilityLogoTooLargeError => 'The logo must be 2 MB or smaller.';
+
+  @override
+  String get facilityLogoUploadFailedError =>
+      'The facility was saved, but the logo could not be uploaded. Try again.';
+
+  @override
   String get deleteFacilityButton => 'Delete facility';
 
   @override

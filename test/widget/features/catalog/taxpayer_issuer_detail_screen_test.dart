@@ -13,6 +13,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/sat_catalog_repository_impl.dart';
@@ -81,7 +82,18 @@ void main() {
     required User signedInAs,
     String? rfc,
     bool forceReadOnly = false,
+    List<TaxpayerCertificate> certificates = const [],
+    Size? size,
   }) async {
+    if (size != null) {
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+    }
+    when(
+      () => certificateRepository.listForIssuer(any()),
+    ).thenAnswer((_) async => certificates);
     if (rfc != null) {
       when(() => repository.getDetail(rfc)).thenAnswer((_) async => _issuer);
     }
@@ -152,6 +164,60 @@ void main() {
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     expect(find.text(l10n.certificatesSectionTitle), findsOneWidget);
   });
+
+  // Spec 049 US5 (FR-020, FR-021, C5): the embedded table lines up with the
+  // form above it and never scrolls on its own.
+  for (final count in [1, 8]) {
+    for (final width in [1024.0, 1600.0]) {
+      testWidgets('the certificates table ($count at ${width.toInt()}px) '
+          'shares the first form field\'s edges and has no inner vertical '
+          'scroll', (tester) async {
+        await pumpScreen(
+          tester,
+          signedInAs: _fullAccessUser,
+          rfc: 'XAXX010101000',
+          size: Size(width, 1400),
+          certificates: [
+            for (var i = 0; i < count; i++)
+              TaxpayerCertificate(
+                taxpayerCertificateId: '0000100000020334176$i',
+                taxpayer: 'XAXX010101000',
+                validFrom: DateTime(2025, 1, 1),
+                validTo: DateTime(2029, 1, 1),
+                status: EntityStatus.active,
+              ),
+          ],
+        );
+
+        final table = tester.getRect(
+          find.byKey(const Key('taxpayer_certificates_table')),
+        );
+        final field = tester.getRect(find.byKey(const Key('rfc_field')));
+        final grid = tester.getRect(
+          find
+              .descendant(
+                of: find.byType(ResponsiveFormGrid),
+                matching: find.byType(Wrap),
+              )
+              .first,
+        );
+        expect(table.left, closeTo(field.left, 1));
+        expect(table.right, closeTo(grid.right, 1));
+
+        final inner = tester.stateList<ScrollableState>(
+          find.descendant(
+            of: find.byKey(const Key('taxpayer_certificates_table')),
+            matching: find.byType(Scrollable),
+          ),
+        );
+        for (final scrollable in inner.where(
+          (s) => s.position.axis == Axis.vertical,
+        )) {
+          expect(scrollable.position.maxScrollExtent, 0);
+        }
+      });
+    }
+  }
 
   testWidgets('a user without update privilege gets no edit toggle', (
     tester,

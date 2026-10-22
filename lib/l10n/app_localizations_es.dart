@@ -2165,6 +2165,24 @@ class AppLocalizationsEs extends AppLocalizations {
   String get facilityLogoLabel => 'Logotipo';
 
   @override
+  String get facilityLogoUploadButton => 'Subir logotipo';
+
+  @override
+  String get facilityLogoReplaceButton => 'Cambiar logotipo';
+
+  @override
+  String get facilityLogoInvalidTypeError =>
+      'El logotipo debe ser un archivo JPEG o PNG.';
+
+  @override
+  String get facilityLogoTooLargeError =>
+      'El logotipo debe ser de 2 MB o menos.';
+
+  @override
+  String get facilityLogoUploadFailedError =>
+      'La instalación se guardó, pero el logotipo no se pudo subir. Intenta de nuevo.';
+
+  @override
   String get deleteFacilityButton => 'Eliminar instalación';
 
   @override

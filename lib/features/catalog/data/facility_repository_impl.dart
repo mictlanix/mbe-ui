@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart'
@@ -37,8 +39,7 @@ final facilityDisplayNameProvider = FutureProvider.family<String?, int>((
 });
 
 class FacilityRepositoryImpl implements FacilityRepository {
-  FacilityRepositoryImpl(Dio dio)
-    : _api = FacilitiesApi(dio, appSerializers);
+  FacilityRepositoryImpl(Dio dio) : _api = FacilitiesApi(dio, appSerializers);
 
   final FacilitiesApi _api;
 
@@ -89,7 +90,6 @@ class FacilityRepositoryImpl implements FacilityRepository {
     required String location,
     required int address,
     required String taxpayer,
-    String? logo,
     String? receiptMessage,
     String? defaultBatch,
     EntityStatus? status,
@@ -104,7 +104,6 @@ class FacilityRepositoryImpl implements FacilityRepository {
             ..location = location
             ..address = address
             ..taxpayer = taxpayer
-            ..logo = logo
             ..receiptMessage = receiptMessage
             ..defaultBatch = defaultBatch
             ..status = status?.toApi();
@@ -127,7 +126,6 @@ class FacilityRepositoryImpl implements FacilityRepository {
     String? location,
     int? address,
     String? taxpayer,
-    String? logo,
     String? receiptMessage,
     String? defaultBatch,
     EntityStatus? status,
@@ -142,12 +140,31 @@ class FacilityRepositoryImpl implements FacilityRepository {
           if (location != null) b.location = location;
           if (address != null) b.address = address;
           if (taxpayer != null) b.taxpayer = taxpayer;
-          if (logo != null) b.logo = logo;
           if (receiptMessage != null) b.receiptMessage = receiptMessage;
           if (defaultBatch != null) b.defaultBatch = defaultBatch;
           if (status != null) b.status = status.toApi();
         }),
       );
+      final facility = response.data;
+      if (facility == null) throw const AppError.server();
+      return Facility.fromResponse(facility);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<Facility> uploadLogo({
+    required int facilityId,
+    required Uint8List bytes,
+    required String filename,
+  }) async {
+    try {
+      final response = await _api
+          .uploadFacilityLogoApiV1FacilitiesFacilityIdLogoPost(
+            facilityId: facilityId,
+            file: MultipartFile.fromBytes(bytes, filename: filename),
+          );
       final facility = response.data;
       if (facility == null) throw const AppError.server();
       return Facility.fromResponse(facility);

@@ -81,46 +81,37 @@ class TaxpayerCertificatesSection extends ConsumerWidget {
           ),
           data: (certificates) => certificates.isEmpty
               ? Text(l10n.noCertificatesFound)
-              // DataTable2 (the unpaginated variant DataTableView renders
-              // without a `pagination` page) needs a bounded height to lay
-              // out its own internal scroll region — unlike the paginated
-              // variant, it cannot shrink-wrap inside this section's
-              // unbounded-height host (the issuer detail's
-              // SingleChildScrollView). Sized to the row count, capped so a
-              // long certificate history scrolls within its own bounded
-              // area instead of growing the section indefinitely.
-              : SizedBox(
-                  height: (56 + 52.0 * certificates.length).clamp(0, 400),
-                  child: DataTableView<TaxpayerCertificate>(
-                    key: const Key('taxpayer_certificates_table'),
-                    columns: [
-                      DataTableColumn.text(
-                        label: l10n.columnCertificateNumber,
-                        text: (c) => c.taxpayerCertificateId,
-                        size: ColumnSize.L,
-                      ),
-                      DataTableColumn.text(
-                        label: l10n.columnValidFrom,
-                        text: (c) => fmt.display.date(c.validFrom),
-                        size: ColumnSize.S,
-                      ),
-                      DataTableColumn.text(
-                        label: l10n.columnValidTo,
-                        text: (c) => fmt.display.date(c.validTo),
-                        size: ColumnSize.S,
-                      ),
-                      DataTableColumn(
-                        label: l10n.columnStatus,
-                        fixedWidth: 130,
-                        cellBuilder: (context, c) =>
-                            EntityStatusCell(status: c.status),
-                      ),
-                    ],
-                    rows: certificates,
-                    // No per-row actions and no row-tap: certificates are
-                    // immutable, so there is nothing to edit/view beyond
-                    // what this row already shows (FR-024).
-                  ),
+              : DataTableView<TaxpayerCertificate>(
+                  key: const Key('taxpayer_certificates_table'),
+                  columns: [
+                    DataTableColumn.text(
+                      label: l10n.columnCertificateNumber,
+                      text: (c) => c.taxpayerCertificateId,
+                      size: ColumnSize.L,
+                    ),
+                    DataTableColumn.text(
+                      label: l10n.columnValidFrom,
+                      text: (c) => fmt.display.date(c.validFrom),
+                      size: ColumnSize.S,
+                    ),
+                    DataTableColumn.text(
+                      label: l10n.columnValidTo,
+                      text: (c) => fmt.display.date(c.validTo),
+                      size: ColumnSize.S,
+                    ),
+                    DataTableColumn(
+                      label: l10n.columnStatus,
+                      fixedWidth: 130,
+                      cellBuilder: (context, c) =>
+                          EntityStatusCell(status: c.status),
+                    ),
+                  ],
+                  rows: certificates,
+                  shrinkWrap: true,
+                  margin: EdgeInsets.zero,
+                  // No per-row actions and no row-tap: certificates are
+                  // immutable, so there is nothing to edit/view beyond
+                  // what this row already shows (FR-024).
                 ),
         ),
       ],

@@ -4,6 +4,7 @@ import 'package:mbe_api_client/mbe_api_client.dart'
 
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/domain/facility_type.dart';
+import 'package:mbe_ui/core/network/photo_url.dart';
 import 'package:mbe_ui/features/catalog/domain/address_formatting.dart';
 
 part 'facility.freezed.dart';
@@ -46,7 +47,7 @@ abstract class Facility with _$Facility {
     addressId: r.address.addressId,
     addressLabel: formatAddress(r.address),
     taxpayerRfc: r.taxpayer,
-    logo: r.logo,
+    logo: resolvePhotoUrl(r.logo),
     receiptMessage: r.receiptMessage,
     defaultBatch: r.defaultBatch,
     status: EntityStatus.fromApi(r.status),

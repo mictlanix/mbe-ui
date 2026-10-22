@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
@@ -156,7 +157,10 @@ class PricingGridScreen extends ConsumerWidget {
                     ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: EdgeInsets.symmetric(
+                horizontal: Theme.of(context).spacing.cardPadding,
+                vertical: 8,
+              ),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -250,7 +254,12 @@ class _ChangeSummaryBar extends ConsumerWidget {
     ].join(' · ');
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      padding: EdgeInsets.fromLTRB(
+        theme.spacing.cardPadding,
+        0,
+        theme.spacing.cardPadding,
+        8,
+      ),
       child: Card(
         key: const Key('pricing_grid_summary_bar'),
         margin: EdgeInsets.zero,
@@ -341,8 +350,9 @@ class _WorklistChips extends ConsumerWidget {
     void goTo(ListQuery updated) =>
         context.go(updated.toUri(_pricingPath).toString());
 
+    final cardPadding = Theme.of(context).spacing.cardPadding;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      padding: EdgeInsets.fromLTRB(cardPadding, 0, cardPadding, 8),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Wrap(
@@ -475,90 +485,83 @@ class _PricingGridState extends ConsumerState<_PricingGrid> {
       ref.read(pricingGridControllerProvider(filter).notifier).openCell(next);
     }
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: KeyedSubtree(
-        key: ValueKey(_resyncNonce),
-        child: DataTableView<PricingGridRow>(
-          key: const Key('pricing_grid_table'),
-          minWidth: 640 + visibleLists.length * kPriceColumnWidth,
-          columns: [
+    return KeyedSubtree(
+      key: ValueKey(_resyncNonce),
+      child: DataTableView<PricingGridRow>(
+        key: const Key('pricing_grid_table'),
+        minWidth: 640 + visibleLists.length * kPriceColumnWidth,
+        columns: [
+          DataTableColumn(
+            label: '',
+            fixedWidth: 96,
+            cellBuilder: (context, row) =>
+                ProductPhoto(photoUrl: row.product.photo, size: 56),
+          ),
+          DataTableColumn(
+            label: l10n.columnCode,
+            fixedWidth: 190,
+            cellBuilder: (context, row) => Text(row.product.code),
+          ),
+          DataTableColumn.text(
+            label: l10n.columnName,
+            text: (row) => row.product.name,
+            size: ColumnSize.L,
+          ),
+          for (final priceList in visibleLists)
             DataTableColumn(
-              label: '',
-              fixedWidth: 96,
-              cellBuilder: (context, row) =>
-                  ProductPhoto(photoUrl: row.product.photo, size: 56),
-            ),
-            DataTableColumn(
-              label: l10n.columnCode,
-              fixedWidth: 190,
-              cellBuilder: (context, row) => Text(row.product.code),
-            ),
-            DataTableColumn.text(
-              label: l10n.columnName,
-              text: (row) => row.product.name,
-              size: ColumnSize.L,
-            ),
-            for (final priceList in visibleLists)
-              DataTableColumn(
-                label: priceList.name,
-                fixedWidth: kPriceColumnWidth,
-                numeric: true,
-                header: _ColumnHeader(
-                  filter: filter,
-                  priceList: priceList,
-                  canUpdate: canUpdate,
-                ),
-                cellBuilder: (context, row) {
-                  final key = PriceCellKey(
-                    productId: row.product.productId,
-                    priceListId: priceList.priceListId,
-                  );
-                  final was = state.baseline[key];
-                  final now = row.prices[priceList.priceListId]?.price;
-                  return PriceCell(
-                    filter: filter,
-                    productId: row.product.productId,
-                    priceListId: priceList.priceListId,
-                    price: row.prices[priceList.priceListId],
-                    rejected: state.rejected[key],
-                    // Same amount, not same string: the server returns
-                    // prices at `Numeric(18,4)` scale, so `120.00` and
-                    // `120.0000` are one price and must not read as a change.
-                    //
-                    // `baseline` holds an entry for every visible cell, with a
-                    // null *value* for one that had no price — so membership
-                    // is what says "this cell was loaded", and the value is
-                    // only the "was X" half of the tooltip.
-                    hasChanged:
-                        state.baseline.containsKey(key) &&
-                        !sameAmount(was, now),
-                    changedFrom: was,
-                    inFlight: state.inFlight.contains(key),
-                    isActive: state.active == key,
-                    canUpdate: canUpdate,
-                    onMove: (move) => onMoveFrom(key, move),
-                  );
-                },
+              label: priceList.name,
+              fixedWidth: kPriceColumnWidth,
+              numeric: true,
+              header: _ColumnHeader(
+                filter: filter,
+                priceList: priceList,
+                canUpdate: canUpdate,
               ),
-          ],
-          rows: rows,
-          pagination: page,
-          onPageChanged: (pageIndex) async {
-            if (!await _confirmDiscard(context, state)) {
-              // Put the table back where our state says it is.
-              if (mounted) setState(() => _resyncNonce++);
-              return;
-            }
-            if (!context.mounted) return;
-            context.go(
-              query
-                  .copyWith(pageIndex: pageIndex)
-                  .toUri(_pricingPath)
-                  .toString(),
-            );
-          },
-        ),
+              cellBuilder: (context, row) {
+                final key = PriceCellKey(
+                  productId: row.product.productId,
+                  priceListId: priceList.priceListId,
+                );
+                final was = state.baseline[key];
+                final now = row.prices[priceList.priceListId]?.price;
+                return PriceCell(
+                  filter: filter,
+                  productId: row.product.productId,
+                  priceListId: priceList.priceListId,
+                  price: row.prices[priceList.priceListId],
+                  rejected: state.rejected[key],
+                  // Same amount, not same string: the server returns
+                  // prices at `Numeric(18,4)` scale, so `120.00` and
+                  // `120.0000` are one price and must not read as a change.
+                  //
+                  // `baseline` holds an entry for every visible cell, with a
+                  // null *value* for one that had no price — so membership
+                  // is what says "this cell was loaded", and the value is
+                  // only the "was X" half of the tooltip.
+                  hasChanged:
+                      state.baseline.containsKey(key) && !sameAmount(was, now),
+                  changedFrom: was,
+                  inFlight: state.inFlight.contains(key),
+                  isActive: state.active == key,
+                  canUpdate: canUpdate,
+                  onMove: (move) => onMoveFrom(key, move),
+                );
+              },
+            ),
+        ],
+        rows: rows,
+        pagination: page,
+        onPageChanged: (pageIndex) async {
+          if (!await _confirmDiscard(context, state)) {
+            // Put the table back where our state says it is.
+            if (mounted) setState(() => _resyncNonce++);
+            return;
+          }
+          if (!context.mounted) return;
+          context.go(
+            query.copyWith(pageIndex: pageIndex).toUri(_pricingPath).toString(),
+          );
+        },
       ),
     );
   }
