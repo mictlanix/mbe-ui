@@ -51,7 +51,8 @@ No backend schema changes. Only client-side value types change.
 idle ──logoPicked(valid)──▶ staged(pendingLogoBytes)
 idle/staged ──logoPicked(invalid)──▶ same + fieldErrors['logo']
 staged ──submit ok──▶ uploading ──ok──▶ saved(logoUrl = response.logo, pending cleared)
-                                 └─fail─▶ saved + error=logoUploadFailed (pending kept for retry)
+                                 └─fail─▶ saved + error=logoUploadFailed (pending kept, facilityId kept;
+                                          screen stays open; next save = update + upload)
 staged ──submit fails──▶ staged + error (no upload attempted)
 ```
 

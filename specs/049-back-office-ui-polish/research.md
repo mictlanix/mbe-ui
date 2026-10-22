@@ -82,7 +82,9 @@ Each entry gives the decision, why, and what else was considered. Line reference
   - It gains `String? logoUrl` (loaded, display only), `Uint8List? pendingLogoBytes` and `String? pendingLogoFilename`.
   - `logoPicked(bytes, filename)` validates the extension (jpg/jpeg/png) and the size (2 MB) the same way `ProductFormController.photoPicked` does, writing `fieldErrors['logo']`.
   - After a successful create or update, if bytes are staged, the controller calls `uploadLogo` with the created or loaded facility id.
-  - When the upload fails, it sets `saved: true` and `error: FacilityFormErrorCode.logoUploadFailed`, the same "saved, but…" pattern products use (FR-011).
+  - When the upload fails, it sets `saved: true` and `error: FacilityFormErrorCode.logoUploadFailed`, keeps the staged bytes, and keeps the created `facilityId`. A retry then becomes update + upload (FR-011).
+  - **No pop on that failure.** The detail screen pops on `saved`, so it must not pop while `saved && error != null`. Otherwise the message flashes for one frame and is lost.
+  - The product screen pops on `saved` the same way, so its "saved, but the photo failed" message probably has the same defect today. That is out of scope here and is reported to the user.
 - **UI.**
   - A facility-local `_LogoSection` replaces the `logo_field` `TextFormField`. It shows an `Image.memory` preview while bytes are staged, otherwise `ProductPhoto(photoUrl: logoUrl)` with its placeholder, and an upload or replace `TextButton` gated on `fieldsEnabled`.
   - Picking uses `FilePicker.platform.pickFiles(type: custom, allowedExtensions: [jpg, jpeg, png], withData: true)`, as `_pickPhoto` does.

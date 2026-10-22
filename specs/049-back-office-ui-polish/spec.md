@@ -65,7 +65,7 @@ On the facility form, an administrator picks a logo image from their device, see
 4. **Given** a new facility, **When** the administrator picks a logo and saves, **Then** the facility is created first and the logo is uploaded to it.
 5. **Given** a facility with a logo, **When** the administrator chooses a different image and saves, **Then** the new image replaces the old one.
 6. **Given** a file that isn't a JPEG or PNG, or one larger than the allowed size, **When** the administrator picks it, **Then** it is rejected with a message and nothing is uploaded.
-7. **Given** the facility saved but the logo upload failed, **When** the error appears, **Then** the facility data is kept and the user is told the logo wasn't saved.
+7. **Given** the facility saved but the logo upload failed, **When** the error appears, **Then** the facility data is kept, the form stays open with a message that the logo wasn't saved, and saving again retries the upload.
 
 ---
 
@@ -183,7 +183,7 @@ On the employee form, the "Vendedor" switch sits in the empty cell next to "Núm
 - **FR-008**: The facility form MUST replace the free-text logo field with an image control: a preview (or an empty placeholder) and an action to choose an image file from the device.
 - **FR-009**: The image control MUST accept only JPEG and PNG files within the same size limit as product photos. It MUST reject anything else with a message, before saving.
 - **FR-010**: A chosen image MUST be previewed before saving. It MUST be uploaded when the form is saved: after creation for a new facility, alongside the update for an existing one.
-- **FR-011**: If the facility saves but the logo upload fails, the facility data MUST be kept and the user MUST be told the logo wasn't saved.
+- **FR-011**: If the facility saves but the logo upload fails, the facility data MUST be kept, the form MUST stay open showing that the logo wasn't saved, and saving again MUST retry the upload against the saved facility.
 - **FR-012**: A facility's existing logo MUST be displayed when its form opens. Choosing a new image MUST replace it on save.
 
 **Search box**
@@ -197,7 +197,7 @@ On the employee form, the "Vendedor" switch sits in the empty cell next to "Núm
 - **FR-016**: The quote header's fact strip MUST use the card's full available width, so that at desktop widths all its facts (including Moneda when shown) sit on one line.
 - **FR-017**: The quote header's disclosure toggle ("Más detalles" / "Menos detalles") MUST sit at the trailing edge of the strip.
 - **FR-018**: The back-office order header MUST follow the same layout: the facts use the full width and the trailing actions sit at the trailing edge.
-- **FR-019**: At compact width and at the largest text size, both headers MUST wrap rather than overflow or clip. The toggle MUST stay fully visible in both its labels.
+- **FR-019**: At compact width and at the largest text size, both headers MUST wrap rather than overflow or clip. The facts wrap onto more lines first. The toggle's own label wraps only when even its reserved share of the row is too narrow. The toggle MUST stay fully visible in both its labels.
 
 **Certificates table**
 

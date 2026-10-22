@@ -29,11 +29,11 @@ Covers FR-008–FR-012 (R4).
 - `logo_field` is **gone**.
 
 **Behavior**:
-- **Display.** The section shows an `Image.memory` preview while bytes are staged. Otherwise it shows `ProductPhoto(photoUrl: logoUrl)`, which renders its placeholder when `null` or unreachable.
+- **Display.** The section shows an `Image.memory` preview while bytes are staged. Otherwise it shows `ProductPhoto(photoUrl: logoUrl)`, which renders its placeholder when the URL is `null` or unreachable, without throwing.
 - **Buttons.** The buttons appear only when the form fields are enabled (create, or edit with update privilege), and are disabled while submitting.
 - **Invalid file.** An invalid pick shows `facilityLogoInvalidTypeError` or `facilityLogoTooLargeError` under the section, and nothing is staged.
 - **Save order.** Create or update runs first, then `uploadLogo` if bytes are staged.
-  - **Upload failed.** The form shows `facilityLogoUploadFailedError`, and the record stays saved.
+  - **Upload failed.** The form stays open, showing `facilityLogoUploadFailedError`, and the record stays saved. Saving again retries as update + upload, even right after a create.
   - **Create failed.** No upload is attempted.
 
 ## C3 — `CatalogSearchBar`
