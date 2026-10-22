@@ -7,8 +7,13 @@ part 'app_error.freezed.dart';
 /// dio responses to these variants.
 @freezed
 sealed class AppError with _$AppError {
-  /// `422` (`HTTPValidationError`) — field-level validation messages.
-  const factory AppError.validation(List<FieldError> errors) = ValidationError;
+  /// `422` (`HTTPValidationError`) — field-level validation messages, or
+  /// [message] when mbe-api refuses with a plain-string `detail` instead
+  /// (a business rule rather than a malformed field, #172).
+  const factory AppError.validation(
+    List<FieldError> errors, [
+    String? message,
+  ]) = ValidationError;
 
   /// `401` from any endpoint, or `400` from `/auth/login`.
   const factory AppError.auth([String? message]) = AuthError;
@@ -49,8 +54,8 @@ abstract class FieldError with _$FieldError {
 extension AppErrorServerMessage on AppError {
   /// The server-provided detail behind this error (e.g. mbe-api's `detail`
   /// string on a `404`/`5xx`), for display alongside a localized generic
-  /// message since it can't be localized client-side. `null` for
-  /// [ValidationError] (its field-level messages are surfaced separately)
+  /// message since it can't be localized client-side. `null` for a
+  /// field-level [ValidationError] (its messages are surfaced separately)
   /// and for errors the server sent without a `detail` string.
   String? get serverMessage => switch (this) {
     AuthError(message: final m) => m,
@@ -58,6 +63,6 @@ extension AppErrorServerMessage on AppError {
     ServerError(message: final m) => m,
     NetworkError(message: final m) => m,
     CreditHoldError(message: final m) => m,
-    ValidationError() => null,
+    ValidationError(message: final m) => m,
   };
 }

@@ -89,7 +89,8 @@ class ErrorBanner extends StatelessWidget {
       ServerError(message: final m) => m,
       NotFoundError(message: final m) => m,
       CreditHoldError(message: final m) => m,
-      AuthError() || NetworkError() || ValidationError() => null,
+      ValidationError(message: final m) => m,
+      AuthError() || NetworkError() => null,
     };
     if (detail == null || detail.isEmpty) return generic;
     return [...generic, detail];

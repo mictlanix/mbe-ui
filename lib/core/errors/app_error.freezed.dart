@@ -15,30 +15,66 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AppError {
 
-
+ String? get message;
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<AppError> get copyWith => _$AppErrorCopyWithImpl<AppError>(this as AppError, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is AppError);
+  final _this = this as AppError;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppError&&(identical(other.message, _this.message) || other.message == _this.message));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode {
+  final _this = this as AppError;
+  return Object.hash(runtimeType,_this.message);
+}
 
 @override
 String toString() {
-    return 'AppError()';
+  final _this = this as AppError;
+  return 'AppError(message: ${_this.message})';
 }
 
 
 }
 
 /// @nodoc
-class $AppErrorCopyWith<$Res>  {
-$AppErrorCopyWith(AppError _, $Res Function(AppError) __);
+abstract mixin class $AppErrorCopyWith<$Res>  {
+  factory $AppErrorCopyWith(AppError value, $Res Function(AppError) _then) = _$AppErrorCopyWithImpl;
+@useResult
+$Res call({
+ String? message
+});
+
+
+
+
+}
+/// @nodoc
+class _$AppErrorCopyWithImpl<$Res>
+    implements $AppErrorCopyWith<$Res> {
+  _$AppErrorCopyWithImpl(this._self, this._then);
+
+  final AppError _self;
+  final $Res Function(AppError) _then;
+
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? message = freezed,}) {
+  return _then(_self.copyWith(
+message: freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
 }
 
 
@@ -132,10 +168,10 @@ return creditHold(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( List<FieldError> errors)?  validation,TResult Function( String? message)?  auth,TResult Function( String? message)?  notFound,TResult Function( int? statusCode,  String? message)?  server,TResult Function( String? message)?  network,TResult Function( String? message)?  creditHold,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( List<FieldError> errors,  String? message)?  validation,TResult Function( String? message)?  auth,TResult Function( String? message)?  notFound,TResult Function( int? statusCode,  String? message)?  server,TResult Function( String? message)?  network,TResult Function( String? message)?  creditHold,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ValidationError() when validation != null:
-return validation(_that.errors);case AuthError() when auth != null:
+return validation(_that.errors,_that.message);case AuthError() when auth != null:
 return auth(_that.message);case NotFoundError() when notFound != null:
 return notFound(_that.message);case ServerError() when server != null:
 return server(_that.statusCode,_that.message);case NetworkError() when network != null:
@@ -158,10 +194,10 @@ return creditHold(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( List<FieldError> errors)  validation,required TResult Function( String? message)  auth,required TResult Function( String? message)  notFound,required TResult Function( int? statusCode,  String? message)  server,required TResult Function( String? message)  network,required TResult Function( String? message)  creditHold,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( List<FieldError> errors,  String? message)  validation,required TResult Function( String? message)  auth,required TResult Function( String? message)  notFound,required TResult Function( int? statusCode,  String? message)  server,required TResult Function( String? message)  network,required TResult Function( String? message)  creditHold,}) {final _that = this;
 switch (_that) {
 case ValidationError():
-return validation(_that.errors);case AuthError():
+return validation(_that.errors,_that.message);case AuthError():
 return auth(_that.message);case NotFoundError():
 return notFound(_that.message);case ServerError():
 return server(_that.statusCode,_that.message);case NetworkError():
@@ -180,10 +216,10 @@ return creditHold(_that.message);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( List<FieldError> errors)?  validation,TResult? Function( String? message)?  auth,TResult? Function( String? message)?  notFound,TResult? Function( int? statusCode,  String? message)?  server,TResult? Function( String? message)?  network,TResult? Function( String? message)?  creditHold,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( List<FieldError> errors,  String? message)?  validation,TResult? Function( String? message)?  auth,TResult? Function( String? message)?  notFound,TResult? Function( int? statusCode,  String? message)?  server,TResult? Function( String? message)?  network,TResult? Function( String? message)?  creditHold,}) {final _that = this;
 switch (_that) {
 case ValidationError() when validation != null:
-return validation(_that.errors);case AuthError() when auth != null:
+return validation(_that.errors,_that.message);case AuthError() when auth != null:
 return auth(_that.message);case NotFoundError() when notFound != null:
 return notFound(_that.message);case ServerError() when server != null:
 return server(_that.statusCode,_that.message);case NetworkError() when network != null:
@@ -200,7 +236,7 @@ return creditHold(_that.message);case _:
 
 
 class ValidationError implements AppError {
-  const ValidationError( List<FieldError> errors): _errors = errors;
+  const ValidationError( List<FieldError> errors, [this.message]): _errors = errors;
   
 
  final  List<FieldError> _errors;
@@ -210,10 +246,11 @@ class ValidationError implements AppError {
   return EqualUnmodifiableListView(_errors);
 }
 
+@override final  String? message;
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $ValidationErrorCopyWith<ValidationError> get copyWith => _$ValidationErrorCopyWithImpl<ValidationError>(this, _$identity);
 
@@ -221,18 +258,18 @@ $ValidationErrorCopyWith<ValidationError> get copyWith => _$ValidationErrorCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is ValidationError&&const DeepCollectionEquality().equals(other.errors, _errors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is ValidationError&&const DeepCollectionEquality().equals(other.errors, _errors)&&(identical(other.message, message) || other.message == message));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_errors));
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_errors),message);
 }
 
 @override
 String toString() {
-    return 'AppError.validation(errors: $errors)';
+    return 'AppError.validation(errors: $errors, message: $message)';
 }
 
 
@@ -241,9 +278,9 @@ String toString() {
 /// @nodoc
 abstract mixin class $ValidationErrorCopyWith<$Res> implements $AppErrorCopyWith<$Res> {
   factory $ValidationErrorCopyWith(ValidationError value, $Res Function(ValidationError) _then) = _$ValidationErrorCopyWithImpl;
-@useResult
+@override @useResult
 $Res call({
- List<FieldError> errors
+ List<FieldError> errors, String? message
 });
 
 
@@ -260,10 +297,11 @@ class _$ValidationErrorCopyWithImpl<$Res>
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? errors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? errors = null,Object? message = freezed,}) {
   return _then(ValidationError(
 null == errors ? _self._errors : errors // ignore: cast_nullable_to_non_nullable
-as List<FieldError>,
+as List<FieldError>,freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -277,11 +315,11 @@ class AuthError implements AppError {
   const AuthError([this.message]);
   
 
- final  String? message;
+@override final  String? message;
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $AuthErrorCopyWith<AuthError> get copyWith => _$AuthErrorCopyWithImpl<AuthError>(this, _$identity);
 
@@ -309,7 +347,7 @@ String toString() {
 /// @nodoc
 abstract mixin class $AuthErrorCopyWith<$Res> implements $AppErrorCopyWith<$Res> {
   factory $AuthErrorCopyWith(AuthError value, $Res Function(AuthError) _then) = _$AuthErrorCopyWithImpl;
-@useResult
+@override @useResult
 $Res call({
  String? message
 });
@@ -328,7 +366,7 @@ class _$AuthErrorCopyWithImpl<$Res>
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
   return _then(AuthError(
 freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
 as String?,
@@ -345,11 +383,11 @@ class NotFoundError implements AppError {
   const NotFoundError([this.message]);
   
 
- final  String? message;
+@override final  String? message;
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $NotFoundErrorCopyWith<NotFoundError> get copyWith => _$NotFoundErrorCopyWithImpl<NotFoundError>(this, _$identity);
 
@@ -377,7 +415,7 @@ String toString() {
 /// @nodoc
 abstract mixin class $NotFoundErrorCopyWith<$Res> implements $AppErrorCopyWith<$Res> {
   factory $NotFoundErrorCopyWith(NotFoundError value, $Res Function(NotFoundError) _then) = _$NotFoundErrorCopyWithImpl;
-@useResult
+@override @useResult
 $Res call({
  String? message
 });
@@ -396,7 +434,7 @@ class _$NotFoundErrorCopyWithImpl<$Res>
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
   return _then(NotFoundError(
 freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
 as String?,
@@ -414,11 +452,11 @@ class ServerError implements AppError {
   
 
  final  int? statusCode;
- final  String? message;
+@override final  String? message;
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $ServerErrorCopyWith<ServerError> get copyWith => _$ServerErrorCopyWithImpl<ServerError>(this, _$identity);
 
@@ -446,7 +484,7 @@ String toString() {
 /// @nodoc
 abstract mixin class $ServerErrorCopyWith<$Res> implements $AppErrorCopyWith<$Res> {
   factory $ServerErrorCopyWith(ServerError value, $Res Function(ServerError) _then) = _$ServerErrorCopyWithImpl;
-@useResult
+@override @useResult
 $Res call({
  int? statusCode, String? message
 });
@@ -465,7 +503,7 @@ class _$ServerErrorCopyWithImpl<$Res>
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? statusCode = freezed,Object? message = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? statusCode = freezed,Object? message = freezed,}) {
   return _then(ServerError(
 statusCode: freezed == statusCode ? _self.statusCode : statusCode // ignore: cast_nullable_to_non_nullable
 as int?,message: freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
@@ -483,11 +521,11 @@ class NetworkError implements AppError {
   const NetworkError([this.message]);
   
 
- final  String? message;
+@override final  String? message;
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $NetworkErrorCopyWith<NetworkError> get copyWith => _$NetworkErrorCopyWithImpl<NetworkError>(this, _$identity);
 
@@ -515,7 +553,7 @@ String toString() {
 /// @nodoc
 abstract mixin class $NetworkErrorCopyWith<$Res> implements $AppErrorCopyWith<$Res> {
   factory $NetworkErrorCopyWith(NetworkError value, $Res Function(NetworkError) _then) = _$NetworkErrorCopyWithImpl;
-@useResult
+@override @useResult
 $Res call({
  String? message
 });
@@ -534,7 +572,7 @@ class _$NetworkErrorCopyWithImpl<$Res>
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
   return _then(NetworkError(
 freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
 as String?,
@@ -551,11 +589,11 @@ class CreditHoldError implements AppError {
   const CreditHoldError([this.message]);
   
 
- final  String? message;
+@override final  String? message;
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
+@override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
 $CreditHoldErrorCopyWith<CreditHoldError> get copyWith => _$CreditHoldErrorCopyWithImpl<CreditHoldError>(this, _$identity);
 
@@ -583,7 +621,7 @@ String toString() {
 /// @nodoc
 abstract mixin class $CreditHoldErrorCopyWith<$Res> implements $AppErrorCopyWith<$Res> {
   factory $CreditHoldErrorCopyWith(CreditHoldError value, $Res Function(CreditHoldError) _then) = _$CreditHoldErrorCopyWithImpl;
-@useResult
+@override @useResult
 $Res call({
  String? message
 });
@@ -602,7 +640,7 @@ class _$CreditHoldErrorCopyWithImpl<$Res>
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
   return _then(CreditHoldError(
 freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
 as String?,
