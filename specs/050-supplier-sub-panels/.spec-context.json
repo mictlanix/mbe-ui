@@ -1,0 +1,24 @@
+{
+  "workflow": "speckit",
+  "specName": "Supplier Sub-Panels",
+  "branch": "050-supplier-sub-panels",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-22T23:15:33.000Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-22T23:18:03.291Z"
+    }
+  ],
+  "telemetryInstanceId": "6d635293-e915-4db5-b075-8fa12da6e910"
+}
