@@ -55,9 +55,10 @@ class PosSaleController extends _$PosSaleController
   /// Resets [pendingWritesProvider] for this scope (spec 031 FR-001, research
   /// R2): whatever was outstanding belonged to the *previous* sale this
   /// controller held, and none of it can still be relevant to the one about
-  /// to replace it.
+  /// to replace it. The same goes for its confirmation error (#191).
   Future<void> load(int saleId) async {
     ref.read(pendingWritesProvider(posWritesScope).notifier).reset();
+    ref.read(saleConfirmErrorProvider.notifier).state = null;
     state = const AsyncLoading();
     state = await AsyncValue.guard(
       () => ref.read(salesOrderRepositoryProvider).getById(saleId: saleId),
@@ -85,10 +86,12 @@ class PosSaleController extends _$PosSaleController
   /// a cashier who finishes a sale and walks away leaves nothing behind. The
   /// next scan opens the next sale.
   ///
-  /// Resets [pendingWritesProvider] for this scope, for the same reason
-  /// [load] does (spec 031 research R2).
+  /// Resets [pendingWritesProvider] for this scope, and clears the
+  /// confirmation error, for the same reason [load] does (spec 031 research
+  /// R2, #191).
   Future<void> startNew() async {
     ref.read(pendingWritesProvider(posWritesScope).notifier).reset();
+    ref.read(saleConfirmErrorProvider.notifier).state = null;
     state = const AsyncValue.data(null);
   }
 }

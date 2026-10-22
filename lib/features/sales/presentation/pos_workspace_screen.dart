@@ -24,6 +24,7 @@ import 'package:mbe_ui/features/sales/presentation/pos_sale_completed_dialog.dar
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector.dart';
 import 'package:mbe_ui/features/sales/presentation/open_sales_selector_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_resume_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_detail_view.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
@@ -158,12 +159,18 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
         if (!mounted) return;
         ref.read(posSaleControllerProvider.notifier).load(saleId);
       });
+    } else {
+      // `/sales/pos/new`: nothing is dispatched. The capture step already
+      // renders a `sale == null` state, and mbe-api is touched only by the
+      // first real action (spec 020's anti-empty-draft rule) — see
+      // `_maybeRewriteUrl` for what happens once that action opens a sale.
+      // Only the previous sale's confirmation error is cleared, since `load`
+      // is not there to do it (#191).
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        ref.read(saleConfirmErrorProvider.notifier).state = null;
+      });
     }
-    // `saleId == null` (`/sales/pos/new`): nothing is dispatched. The
-    // capture step already renders a `sale == null` state, and mbe-api is
-    // touched only by the first real action (spec 020's anti-empty-draft
-    // rule) — see `_maybeRewriteUrl` for what happens once that action opens
-    // a sale.
   }
 
   /// Once a sale exists under a `/new` mount, the URL is rewritten to the

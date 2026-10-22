@@ -40,6 +40,7 @@ import 'package:mbe_ui/features/sales/presentation/open_sales_selector.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_resume_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import 'pos_test_harness.dart';
@@ -221,6 +222,66 @@ void main() {
       expect(router.state.uri.path, '/sales/pos/42');
       verify(() => salesOrders.getById(saleId: 42)).called(1);
       verifyNever(() => anyOpen(salesOrders));
+    });
+  });
+
+  group('a confirmation error belongs to its sale (#191)', () {
+    const carriedOver = AppError.creditHold('Customer is on credit hold');
+
+    testWidgets('mounting /sales/pos/new clears an earlier sale\'s error', (
+      tester,
+    ) async {
+      final (_, container) = await pumpPosRouted(
+        tester,
+        initialLocation: '/sales/pos/new',
+        overrides: [
+          ...overrides(),
+          saleConfirmErrorProvider.overrideWith((ref) => carriedOver),
+        ],
+      );
+
+      expect(container.read(saleConfirmErrorProvider), isNull);
+    });
+
+    testWidgets('mounting /sales/pos/:saleId clears an earlier sale\'s error', (
+      tester,
+    ) async {
+      when(() => salesOrders.getById(saleId: 42))
+          .thenAnswer((_) async => testSale(id: 42));
+
+      final (_, container) = await pumpPosRouted(
+        tester,
+        initialLocation: '/sales/pos/42',
+        overrides: [
+          ...overrides(),
+          saleConfirmErrorProvider.overrideWith((ref) => carriedOver),
+        ],
+      );
+
+      expect(container.read(saleConfirmErrorProvider), isNull);
+    });
+
+    testWidgets('starting a new sale or switching to another clears it', (
+      tester,
+    ) async {
+      when(() => salesOrders.getById(saleId: any(named: 'saleId'))).thenAnswer(
+        (invocation) async =>
+            testSale(id: invocation.namedArguments[#saleId] as int),
+      );
+      final (_, container) = await pumpPosRouted(
+        tester,
+        initialLocation: '/sales/pos/42',
+        overrides: overrides(),
+      );
+      final controller = container.read(posSaleControllerProvider.notifier);
+
+      container.read(saleConfirmErrorProvider.notifier).state = carriedOver;
+      await controller.startNew();
+      expect(container.read(saleConfirmErrorProvider), isNull);
+
+      container.read(saleConfirmErrorProvider.notifier).state = carriedOver;
+      await controller.load(43);
+      expect(container.read(saleConfirmErrorProvider), isNull);
     });
   });
 
