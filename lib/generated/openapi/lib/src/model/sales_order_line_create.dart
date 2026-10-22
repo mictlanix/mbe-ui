@@ -98,7 +98,7 @@ class _$SalesOrderLineCreateSerializer
       yield r'discount_rate';
       yield serializers.serialize(
         object.discountRate,
-        specifiedType: const FullType(DiscountRate),
+        specifiedType: const FullType.nullable(DiscountRate),
       );
     }
     if (object.taxRate != null) {

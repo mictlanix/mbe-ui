@@ -24,6 +24,9 @@ import 'package:mbe_api_client/src/model/amount_max.dart';
 import 'package:mbe_api_client/src/model/amount_min.dart';
 import 'package:mbe_api_client/src/model/application_create.dart';
 import 'package:mbe_api_client/src/model/application_response.dart';
+import 'package:mbe_api_client/src/model/bank_account_create.dart';
+import 'package:mbe_api_client/src/model/bank_account_response.dart';
+import 'package:mbe_api_client/src/model/bank_account_update.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_create.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_response.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_summary.dart';
@@ -49,6 +52,9 @@ import 'package:mbe_api_client/src/model/credit_note_response.dart';
 import 'package:mbe_api_client/src/model/currency_code.dart';
 import 'package:mbe_api_client/src/model/current_session_response.dart';
 import 'package:mbe_api_client/src/model/customer_create.dart';
+import 'package:mbe_api_client/src/model/customer_discount_create.dart';
+import 'package:mbe_api_client/src/model/customer_discount_response.dart';
+import 'package:mbe_api_client/src/model/customer_discount_update.dart';
 import 'package:mbe_api_client/src/model/customer_list_item.dart';
 import 'package:mbe_api_client/src/model/customer_payment_create.dart';
 import 'package:mbe_api_client/src/model/customer_payment_response.dart';
@@ -71,8 +77,8 @@ import 'package:mbe_api_client/src/model/delivery_order_summary.dart';
 import 'package:mbe_api_client/src/model/delivery_order_update.dart';
 import 'package:mbe_api_client/src/model/denomination.dart';
 import 'package:mbe_api_client/src/model/denomination_count.dart';
+import 'package:mbe_api_client/src/model/discount.dart';
 import 'package:mbe_api_client/src/model/discount_rate.dart';
-import 'package:mbe_api_client/src/model/discount_rate1.dart';
 import 'package:mbe_api_client/src/model/document_status.dart';
 import 'package:mbe_api_client/src/model/employee_create.dart';
 import 'package:mbe_api_client/src/model/employee_response.dart';
@@ -109,6 +115,7 @@ import 'package:mbe_api_client/src/model/label_create.dart';
 import 'package:mbe_api_client/src/model/label_response.dart';
 import 'package:mbe_api_client/src/model/label_update.dart';
 import 'package:mbe_api_client/src/model/list_response_address_response.dart';
+import 'package:mbe_api_client/src/model/list_response_bank_account_response.dart';
 import 'package:mbe_api_client/src/model/list_response_cash_drawer_response.dart';
 import 'package:mbe_api_client/src/model/list_response_cash_session_response.dart';
 import 'package:mbe_api_client/src/model/list_response_contact_response.dart';
@@ -188,6 +195,7 @@ import 'package:mbe_api_client/src/model/product_price_response.dart';
 import 'package:mbe_api_client/src/model/product_price_update.dart';
 import 'package:mbe_api_client/src/model/product_response.dart';
 import 'package:mbe_api_client/src/model/product_stock_response.dart';
+import 'package:mbe_api_client/src/model/product_summary.dart';
 import 'package:mbe_api_client/src/model/product_update.dart';
 import 'package:mbe_api_client/src/model/profile_privilege_response.dart';
 import 'package:mbe_api_client/src/model/profile_privilege_update.dart';
@@ -195,6 +203,8 @@ import 'package:mbe_api_client/src/model/proof_of_delivery_response.dart';
 import 'package:mbe_api_client/src/model/quantity.dart';
 import 'package:mbe_api_client/src/model/quantity1.dart';
 import 'package:mbe_api_client/src/model/quantity2.dart';
+import 'package:mbe_api_client/src/model/quote_email_request.dart';
+import 'package:mbe_api_client/src/model/quote_email_response.dart';
 import 'package:mbe_api_client/src/model/rate.dart';
 import 'package:mbe_api_client/src/model/rate1.dart';
 import 'package:mbe_api_client/src/model/reason_request.dart';
@@ -222,7 +232,11 @@ import 'package:mbe_api_client/src/model/session_state.dart';
 import 'package:mbe_api_client/src/model/shortfall_reason.dart';
 import 'package:mbe_api_client/src/model/stop_create.dart';
 import 'package:mbe_api_client/src/model/stop_outcome.dart';
+import 'package:mbe_api_client/src/model/supplier_agreement_create.dart';
+import 'package:mbe_api_client/src/model/supplier_agreement_response.dart';
+import 'package:mbe_api_client/src/model/supplier_agreement_update.dart';
 import 'package:mbe_api_client/src/model/supplier_create.dart';
+import 'package:mbe_api_client/src/model/supplier_detail_response.dart';
 import 'package:mbe_api_client/src/model/supplier_response.dart';
 import 'package:mbe_api_client/src/model/supplier_update.dart';
 import 'package:mbe_api_client/src/model/tax_rate.dart';
@@ -272,6 +286,9 @@ part 'serializers.g.dart';
   AmountMin,
   ApplicationCreate,
   ApplicationResponse,
+  BankAccountCreate,
+  BankAccountResponse,
+  BankAccountUpdate,
   CashDrawerCreate,
   CashDrawerResponse,
   CashDrawerSummary,
@@ -297,6 +314,9 @@ part 'serializers.g.dart';
   CurrencyCode,
   CurrentSessionResponse,
   CustomerCreate,
+  CustomerDiscountCreate,
+  CustomerDiscountResponse,
+  CustomerDiscountUpdate,
   CustomerListItem,
   CustomerPaymentCreate,
   CustomerPaymentResponse,
@@ -319,8 +339,8 @@ part 'serializers.g.dart';
   DeliveryOrderUpdate,
   Denomination,
   DenominationCount,
+  Discount,
   DiscountRate,
-  DiscountRate1,
   DocumentStatus,
   EmployeeCreate,
   EmployeeResponse,
@@ -357,6 +377,7 @@ part 'serializers.g.dart';
   LabelResponse,
   LabelUpdate,
   ListResponseAddressResponse,
+  ListResponseBankAccountResponse,
   ListResponseCashDrawerResponse,
   ListResponseCashSessionResponse,
   ListResponseContactResponse,
@@ -436,6 +457,7 @@ part 'serializers.g.dart';
   ProductPriceUpdate,
   ProductResponse,
   ProductStockResponse,
+  ProductSummary,
   ProductUpdate,
   ProfilePrivilegeResponse,
   ProfilePrivilegeUpdate,
@@ -443,6 +465,8 @@ part 'serializers.g.dart';
   Quantity,
   Quantity1,
   Quantity2,
+  QuoteEmailRequest,
+  QuoteEmailResponse,
   Rate,
   Rate1,
   ReasonRequest,
@@ -470,7 +494,11 @@ part 'serializers.g.dart';
   ShortfallReason,
   StopCreate,
   StopOutcome,
+  SupplierAgreementCreate,
+  SupplierAgreementResponse,
+  SupplierAgreementUpdate,
   SupplierCreate,
+  SupplierDetailResponse,
   SupplierResponse,
   SupplierUpdate,
   TaxRate,
@@ -552,6 +580,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(PointSaleResponse)]),
             () => ListBuilder<PointSaleResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(SupplierAgreementResponse)]),
+            () => ListBuilder<SupplierAgreementResponse>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(UserProfileListItem)]),
@@ -648,6 +680,14 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(PriceListDeletePreviewItem)]),
             () => ListBuilder<PriceListDeletePreviewItem>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(CustomerDiscountResponse)]),
+            () => ListBuilder<CustomerDiscountResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(BankAccountResponse)]),
+            () => ListBuilder<BankAccountResponse>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ProductPriceBulkItem)]),

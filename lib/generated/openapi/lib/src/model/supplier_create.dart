@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/model/credit_limit.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -18,6 +19,9 @@ part 'supplier_create.g.dart';
 /// * [creditLimit]
 /// * [creditDays]
 /// * [comment]
+/// * [addresses]
+/// * [contacts]
+/// * [bankAccounts]
 @BuiltValue()
 abstract class SupplierCreate
     implements Built<SupplierCreate, SupplierCreateBuilder> {
@@ -38,6 +42,15 @@ abstract class SupplierCreate
 
   @BuiltValueField(wireName: r'comment')
   String? get comment;
+
+  @BuiltValueField(wireName: r'addresses')
+  BuiltList<int>? get addresses;
+
+  @BuiltValueField(wireName: r'contacts')
+  BuiltList<int>? get contacts;
+
+  @BuiltValueField(wireName: r'bank_accounts')
+  BuiltList<int>? get bankAccounts;
 
   SupplierCreate._();
 
@@ -101,6 +114,27 @@ class _$SupplierCreateSerializer
       yield serializers.serialize(
         object.comment,
         specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.addresses != null) {
+      yield r'addresses';
+      yield serializers.serialize(
+        object.addresses,
+        specifiedType: const FullType.nullable(BuiltList, [FullType(int)]),
+      );
+    }
+    if (object.contacts != null) {
+      yield r'contacts';
+      yield serializers.serialize(
+        object.contacts,
+        specifiedType: const FullType.nullable(BuiltList, [FullType(int)]),
+      );
+    }
+    if (object.bankAccounts != null) {
+      yield r'bank_accounts';
+      yield serializers.serialize(
+        object.bankAccounts,
+        specifiedType: const FullType.nullable(BuiltList, [FullType(int)]),
       );
     }
   }
@@ -187,6 +221,42 @@ class _$SupplierCreateSerializer
                   as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
+          break;
+        case r'addresses':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(BuiltList, [
+                      FullType(int),
+                    ]),
+                  )
+                  as BuiltList<int>?;
+          if (valueDes == null) continue;
+          result.addresses.replace(valueDes);
+          break;
+        case r'contacts':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(BuiltList, [
+                      FullType(int),
+                    ]),
+                  )
+                  as BuiltList<int>?;
+          if (valueDes == null) continue;
+          result.contacts.replace(valueDes);
+          break;
+        case r'bank_accounts':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(BuiltList, [
+                      FullType(int),
+                    ]),
+                  )
+                  as BuiltList<int>?;
+          if (valueDes == null) continue;
+          result.bankAccounts.replace(valueDes);
           break;
         default:
           unhandled.add(key);

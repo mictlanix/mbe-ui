@@ -8,8 +8,12 @@ import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
+import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/customer_create.dart';
+import 'package:mbe_api_client/src/model/customer_discount_create.dart';
+import 'package:mbe_api_client/src/model/customer_discount_response.dart';
+import 'package:mbe_api_client/src/model/customer_discount_update.dart';
 import 'package:mbe_api_client/src/model/customer_response.dart';
 import 'package:mbe_api_client/src/model/customer_update.dart';
 import 'package:mbe_api_client/src/model/entity_status.dart';
@@ -116,6 +120,114 @@ class CustomersApi {
     );
   }
 
+  /// Create Discount
+  ///
+  ///
+  /// Parameters:
+  /// * [customerId]
+  /// * [customerDiscountCreate]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [CustomerDiscountResponse] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<CustomerDiscountResponse>>
+  createDiscountApiV1CustomersCustomerIdDiscountsPost({
+    required int customerId,
+    required CustomerDiscountCreate customerDiscountCreate,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/customers/{customer_id}/discounts'.replaceAll(
+      '{'
+      r'customer_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        customerId,
+        const FullType(int),
+      ).toString(),
+    );
+    final _options = Options(
+      method: r'POST',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      contentType: 'application/json',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+      const _type = FullType(CustomerDiscountCreate);
+      _bodyData = _serializers.serialize(
+        customerDiscountCreate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _options.compose(_dio.options, _path),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    CustomerDiscountResponse? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(CustomerDiscountResponse),
+                )
+                as CustomerDiscountResponse;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<CustomerDiscountResponse>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
   /// Delete Customer
   ///
   ///
@@ -149,6 +261,77 @@ class CustomersApi {
         const FullType(int),
       ).toString(),
     );
+    final _options = Options(
+      method: r'DELETE',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    return _response;
+  }
+
+  /// Delete Discount
+  ///
+  ///
+  /// Parameters:
+  /// * [customerId]
+  /// * [customerDiscountId]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future]
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<void>>
+  deleteDiscountApiV1CustomersCustomerIdDiscountsCustomerDiscountIdDelete({
+    required int customerId,
+    required int customerDiscountId,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path =
+        r'/api/v1/customers/{customer_id}/discounts/{customer_discount_id}'
+            .replaceAll(
+              '{'
+              r'customer_id'
+              '}',
+              encodeQueryParameter(
+                _serializers,
+                customerId,
+                const FullType(int),
+              ).toString(),
+            )
+            .replaceAll(
+              '{'
+              r'customer_discount_id'
+              '}',
+              encodeQueryParameter(
+                _serializers,
+                customerDiscountId,
+                const FullType(int),
+              ).toString(),
+            );
     final _options = Options(
       method: r'DELETE',
       headers: <String, dynamic>{...?headers},
@@ -382,6 +565,95 @@ class CustomersApi {
     );
   }
 
+  /// List Discounts
+  ///
+  ///
+  /// Parameters:
+  /// * [customerId]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [BuiltList<CustomerDiscountResponse>] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<BuiltList<CustomerDiscountResponse>>>
+  listDiscountsApiV1CustomersCustomerIdDiscountsGet({
+    required int customerId,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/customers/{customer_id}/discounts'.replaceAll(
+      '{'
+      r'customer_id'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        customerId,
+        const FullType(int),
+      ).toString(),
+    );
+    final _options = Options(
+      method: r'GET',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    BuiltList<CustomerDiscountResponse>? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(BuiltList, [
+                    FullType(CustomerDiscountResponse),
+                  ]),
+                )
+                as BuiltList<CustomerDiscountResponse>;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<BuiltList<CustomerDiscountResponse>>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
   /// Update Customer
   ///
   ///
@@ -475,6 +747,128 @@ class CustomersApi {
     }
 
     return Response<CustomerResponse>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// Update Discount
+  ///
+  ///
+  /// Parameters:
+  /// * [customerId]
+  /// * [customerDiscountId]
+  /// * [customerDiscountUpdate]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [CustomerDiscountResponse] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<CustomerDiscountResponse>>
+  updateDiscountApiV1CustomersCustomerIdDiscountsCustomerDiscountIdPut({
+    required int customerId,
+    required int customerDiscountId,
+    required CustomerDiscountUpdate customerDiscountUpdate,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path =
+        r'/api/v1/customers/{customer_id}/discounts/{customer_discount_id}'
+            .replaceAll(
+              '{'
+              r'customer_id'
+              '}',
+              encodeQueryParameter(
+                _serializers,
+                customerId,
+                const FullType(int),
+              ).toString(),
+            )
+            .replaceAll(
+              '{'
+              r'customer_discount_id'
+              '}',
+              encodeQueryParameter(
+                _serializers,
+                customerDiscountId,
+                const FullType(int),
+              ).toString(),
+            );
+    final _options = Options(
+      method: r'PUT',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      contentType: 'application/json',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+      const _type = FullType(CustomerDiscountUpdate);
+      _bodyData = _serializers.serialize(
+        customerDiscountUpdate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _options.compose(_dio.options, _path),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    CustomerDiscountResponse? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(CustomerDiscountResponse),
+                )
+                as CustomerDiscountResponse;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<CustomerDiscountResponse>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

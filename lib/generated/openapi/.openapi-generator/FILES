@@ -14,6 +14,10 @@ doc/AmountMin.md
 doc/ApplicationCreate.md
 doc/ApplicationResponse.md
 doc/AuthApi.md
+doc/BankAccountCreate.md
+doc/BankAccountResponse.md
+doc/BankAccountUpdate.md
+doc/BankAccountsApi.md
 doc/CashDrawerCreate.md
 doc/CashDrawerResponse.md
 doc/CashDrawerSummary.md
@@ -43,6 +47,9 @@ doc/CreditNotesApi.md
 doc/CurrencyCode.md
 doc/CurrentSessionResponse.md
 doc/CustomerCreate.md
+doc/CustomerDiscountCreate.md
+doc/CustomerDiscountResponse.md
+doc/CustomerDiscountUpdate.md
 doc/CustomerListItem.md
 doc/CustomerPaymentCreate.md
 doc/CustomerPaymentResponse.md
@@ -70,8 +77,8 @@ doc/DeliveryOrderUpdate.md
 doc/DeliveryOrdersApi.md
 doc/Denomination.md
 doc/DenominationCount.md
+doc/Discount.md
 doc/DiscountRate.md
-doc/DiscountRate1.md
 doc/DocumentStatus.md
 doc/EmployeeCreate.md
 doc/EmployeeResponse.md
@@ -115,6 +122,7 @@ doc/LabelResponse.md
 doc/LabelUpdate.md
 doc/LabelsApi.md
 doc/ListResponseAddressResponse.md
+doc/ListResponseBankAccountResponse.md
 doc/ListResponseCashDrawerResponse.md
 doc/ListResponseCashSessionResponse.md
 doc/ListResponseContactResponse.md
@@ -198,6 +206,7 @@ doc/ProductPriceUpdate.md
 doc/ProductPricesApi.md
 doc/ProductResponse.md
 doc/ProductStockResponse.md
+doc/ProductSummary.md
 doc/ProductUpdate.md
 doc/ProductsApi.md
 doc/ProfilePrivilegeResponse.md
@@ -206,6 +215,8 @@ doc/ProofOfDeliveryResponse.md
 doc/Quantity.md
 doc/Quantity1.md
 doc/Quantity2.md
+doc/QuoteEmailRequest.md
+doc/QuoteEmailResponse.md
 doc/Rate.md
 doc/Rate1.md
 doc/ReasonRequest.md
@@ -236,7 +247,11 @@ doc/SessionState.md
 doc/ShortfallReason.md
 doc/StopCreate.md
 doc/StopOutcome.md
+doc/SupplierAgreementCreate.md
+doc/SupplierAgreementResponse.md
+doc/SupplierAgreementUpdate.md
 doc/SupplierCreate.md
+doc/SupplierDetailResponse.md
 doc/SupplierResponse.md
 doc/SupplierUpdate.md
 doc/SuppliersApi.md
@@ -285,6 +300,7 @@ lib/mbe_api_client.dart
 lib/src/api.dart
 lib/src/api/addresses_api.dart
 lib/src/api/auth_api.dart
+lib/src/api/bank_accounts_api.dart
 lib/src/api/cash_drawers_api.dart
 lib/src/api/cash_sessions_api.dart
 lib/src/api/contacts_api.dart
@@ -335,6 +351,9 @@ lib/src/model/amount_max.dart
 lib/src/model/amount_min.dart
 lib/src/model/application_create.dart
 lib/src/model/application_response.dart
+lib/src/model/bank_account_create.dart
+lib/src/model/bank_account_response.dart
+lib/src/model/bank_account_update.dart
 lib/src/model/cash_drawer_create.dart
 lib/src/model/cash_drawer_response.dart
 lib/src/model/cash_drawer_summary.dart
@@ -360,6 +379,9 @@ lib/src/model/credit_note_response.dart
 lib/src/model/currency_code.dart
 lib/src/model/current_session_response.dart
 lib/src/model/customer_create.dart
+lib/src/model/customer_discount_create.dart
+lib/src/model/customer_discount_response.dart
+lib/src/model/customer_discount_update.dart
 lib/src/model/customer_list_item.dart
 lib/src/model/customer_payment_create.dart
 lib/src/model/customer_payment_response.dart
@@ -383,8 +405,8 @@ lib/src/model/delivery_order_summary.dart
 lib/src/model/delivery_order_update.dart
 lib/src/model/denomination.dart
 lib/src/model/denomination_count.dart
+lib/src/model/discount.dart
 lib/src/model/discount_rate.dart
-lib/src/model/discount_rate1.dart
 lib/src/model/document_status.dart
 lib/src/model/employee_create.dart
 lib/src/model/employee_response.dart
@@ -421,6 +443,7 @@ lib/src/model/label_create.dart
 lib/src/model/label_response.dart
 lib/src/model/label_update.dart
 lib/src/model/list_response_address_response.dart
+lib/src/model/list_response_bank_account_response.dart
 lib/src/model/list_response_cash_drawer_response.dart
 lib/src/model/list_response_cash_session_response.dart
 lib/src/model/list_response_contact_response.dart
@@ -500,6 +523,7 @@ lib/src/model/product_price_response.dart
 lib/src/model/product_price_update.dart
 lib/src/model/product_response.dart
 lib/src/model/product_stock_response.dart
+lib/src/model/product_summary.dart
 lib/src/model/product_update.dart
 lib/src/model/profile_privilege_response.dart
 lib/src/model/profile_privilege_update.dart
@@ -507,6 +531,8 @@ lib/src/model/proof_of_delivery_response.dart
 lib/src/model/quantity.dart
 lib/src/model/quantity1.dart
 lib/src/model/quantity2.dart
+lib/src/model/quote_email_request.dart
+lib/src/model/quote_email_response.dart
 lib/src/model/rate.dart
 lib/src/model/rate1.dart
 lib/src/model/reason_request.dart
@@ -534,7 +560,11 @@ lib/src/model/session_state.dart
 lib/src/model/shortfall_reason.dart
 lib/src/model/stop_create.dart
 lib/src/model/stop_outcome.dart
+lib/src/model/supplier_agreement_create.dart
+lib/src/model/supplier_agreement_response.dart
+lib/src/model/supplier_agreement_update.dart
 lib/src/model/supplier_create.dart
+lib/src/model/supplier_detail_response.dart
 lib/src/model/supplier_response.dart
 lib/src/model/supplier_update.dart
 lib/src/model/tax_rate.dart

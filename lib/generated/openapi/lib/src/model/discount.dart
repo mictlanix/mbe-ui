@@ -8,45 +8,42 @@ import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:one_of/any_of.dart';
 
-part 'discount_rate1.g.dart';
+part 'discount.g.dart';
 
-/// DiscountRate1
+/// Discount
 @BuiltValue()
-abstract class DiscountRate1
-    implements Built<DiscountRate1, DiscountRate1Builder> {
+abstract class Discount implements Built<Discount, DiscountBuilder> {
   /// Any Of [String], [num]
   AnyOf get anyOf;
 
-  DiscountRate1._();
+  Discount._();
 
-  factory DiscountRate1([void updates(DiscountRate1Builder b)]) =
-      _$DiscountRate1;
+  factory Discount([void updates(DiscountBuilder b)]) = _$Discount;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(DiscountRate1Builder b) => b;
+  static void _defaults(DiscountBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<DiscountRate1> get serializer =>
-      _$DiscountRate1Serializer();
+  static Serializer<Discount> get serializer => _$DiscountSerializer();
 }
 
-class _$DiscountRate1Serializer implements PrimitiveSerializer<DiscountRate1> {
+class _$DiscountSerializer implements PrimitiveSerializer<Discount> {
   @override
-  final Iterable<Type> types = const [DiscountRate1, _$DiscountRate1];
+  final Iterable<Type> types = const [Discount, _$Discount];
 
   @override
-  final String wireName = r'DiscountRate1';
+  final String wireName = r'Discount';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    DiscountRate1 object, {
+    Discount object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {}
 
   @override
   Object serialize(
     Serializers serializers,
-    DiscountRate1 object, {
+    Discount object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     final anyOf = object.anyOf;
@@ -60,12 +57,12 @@ class _$DiscountRate1Serializer implements PrimitiveSerializer<DiscountRate1> {
   }
 
   @override
-  DiscountRate1 deserialize(
+  Discount deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = DiscountRate1Builder();
+    final result = DiscountBuilder();
     Object? anyOfDataSrc;
     final targetType = const FullType(AnyOf, [FullType(num), FullType(String)]);
     anyOfDataSrc = serialized;
