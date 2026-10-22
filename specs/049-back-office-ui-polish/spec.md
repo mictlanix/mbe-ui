@@ -239,7 +239,7 @@ On the employee form, the "Vendedor" switch sits in the empty cell next to "Núm
 
 - The multi-currency option is a build-time deployment setting, consistent with the existing split between deployment settings and per-user preferences. Changing it requires a new build.
 - "Hide the fields" covers display only. The app doesn't convert, clear or rewrite any stored currency or exchange-rate value.
-- Facility logos can't be removed through the app, because the backend has no delete operation for them. A remove action is out of scope until the backend offers one.
+- Facility logos can't be removed through the app, because the backend has no clean way to clear one. A remove action is out of scope until mictlanix/mbe-api#250 ships.
 - The logo size limit and accepted formats match the existing product photo upload.
 - The order header follows the quote header fix because the two share the same layout and defect. Its other content (fields, actions) is unchanged.
 - The alignment fixes for the certificates table and the pricing screen stay local to those screens. Changing the default spacing of every table in the app is out of scope.
