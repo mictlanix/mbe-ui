@@ -82,7 +82,11 @@ class OpenSalesSelector extends ConsumerWidget {
       ],
       builder: (context, controller, child) => ActionChip(
         avatar: const Icon(Icons.receipt_long_outlined, size: 18),
-        label: Text(_chipLabel(l10n, context, sales.length)),
+        label: Text(
+          _chipLabel(l10n, context, sales.length),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         onPressed: () => controller.isOpen ? controller.close() : controller.open(),
       ),
     );

@@ -349,6 +349,7 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
     // default step nor its chrome (spec 048 T021).
     final resolving = current != null && _awaitingDestinationsFor == current.id;
     final stepChrome = !step.detail && !resolving;
+    final compact = LayoutBreakpoints.isCompact(context);
     // The selector is keyed by the register, not by the sale in hand — so an
     // untouched POS still offers the open sales to resume. Without this,
     // reloading the page would strand every unfinished sale (US3).
@@ -400,29 +401,41 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
         // reference, open-count badge, chevron (frame `2a`) — and rendering
         // both put the same number on screen twice, since
         // `OpenSalesSelector` already shows the id and the folio.
+        //
+        // On a phone the step's name is dropped while the step track shows
+        // (it already says "Paso N de M"), and the selector takes whatever
+        // width is left, ellipsizing its label, so the band never overflows
+        // (#190, constitution §VI).
         title: Row(
           children: [
-            Text(
-              step.detail
-                  ? AppLocalizations.of(context)!.posSaleDetailTitle
-                  : resolving
-                  ? ''
-                  : _stepTitle(context, step.current),
-            ),
-            if (stepChrome && pointSale != null) ...[
-              const SizedBox(width: 12),
-              OpenSalesSelector(
-                pointSale: pointSale,
-                // FR-040: the id always, the folio once assigned. Both are
-                // absent until a sale exists.
-                currentId: current?.provisionalReference,
-                currentSerial: current?.serial,
-                onSelected: _selectSale,
-                onStartNew: _startNewSale,
+            if (!(stepChrome && compact))
+              Text(
+                step.detail
+                    ? AppLocalizations.of(context)!.posSaleDetailTitle
+                    : resolving
+                    ? ''
+                    : _stepTitle(context, step.current),
               ),
-            ],
-            if (stepChrome) ...[
+            if (stepChrome && pointSale != null) ...[
+              if (!compact) const SizedBox(width: 12),
+              Expanded(
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: OpenSalesSelector(
+                    pointSale: pointSale,
+                    // FR-040: the id always, the folio once assigned. Both
+                    // are absent until a sale exists.
+                    currentId: current?.provisionalReference,
+                    currentSerial: current?.serial,
+                    onSelected: _selectSale,
+                    onStartNew: _startNewSale,
+                  ),
+                ),
+              ),
+            ] else if (stepChrome)
               const Spacer(),
+            if (stepChrome) ...[
+              const SizedBox(width: 12),
               _StepIndicator(
                 step: step,
                 canReturnToVenta: canReturnToCapture,

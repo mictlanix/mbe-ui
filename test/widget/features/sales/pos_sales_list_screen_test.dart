@@ -21,6 +21,7 @@ import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
+import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
@@ -32,6 +33,7 @@ import 'package:mbe_ui/features/sales/presentation/pos_sales_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import '../../../unit/core/documents/document_fakes.dart';
+import '../../../golden/golden_harness.dart';
 import 'pos_test_harness.dart';
 
 class MockCashSessionRepository extends Mock implements CashSessionRepository {}
@@ -122,6 +124,7 @@ void main() {
     User? user,
     bool sessionOpen = true,
     List<Override> overrides = const [],
+    Size surface = const Size(1200, 2400),
   }) async {
     when(() => cashSessions.getCurrent()).thenAnswer(
       (_) async => CurrentSession(
@@ -142,6 +145,7 @@ void main() {
         customerRepositoryProvider.overrideWithValue(customers),
         ...overrides,
       ],
+      surface: surface,
     );
   }
 
@@ -722,5 +726,37 @@ void main() {
       expect(source.fetched.single.recordId, 7);
       expect(source.fetched.single.title, 'Ticket · Folio #00000007');
     });
+  });
+
+  group('PosSalesListScreen — column fit (#192)', () {
+    // The test font draws every glyph a full em wide, which says nothing
+    // about whether a real label fits.
+    setUpAll(loadGoldenFonts);
+
+    List<OpenSale> everyStatus() => [
+      for (final (i, status) in SaleStatus.values.indexed)
+        testOpenSale(id: i + 1, serial: 10000 + i, status: status),
+    ];
+
+    for (final level in [TextSizeLevel.normal, TextSizeLevel.extraLarge]) {
+      testWidgets('no status chip is clipped at a desktop width '
+          '(${level.name} text)', (tester) async {
+        stubListSales(salesOrders, page: testSalesPage(everyStatus()));
+        await pumpListRouted(tester, textLevel: level);
+
+        for (final status in SaleStatus.values) {
+          final chip = tester.renderObject<RenderBox>(
+            find.byKey(Key('pos_sale_status_chip_${status.name}')),
+          );
+          expect(
+            chip.size.width,
+            greaterThanOrEqualTo(
+              chip.getMaxIntrinsicWidth(double.infinity) - 0.5,
+            ),
+            reason: '${status.name} chip is narrower than its label',
+          );
+        }
+      });
+    }
   });
 }
