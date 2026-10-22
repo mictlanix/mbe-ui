@@ -67,7 +67,7 @@ AppError mapDioException(DioException error) {
     case 404:
       return AppError.notFound(_detailFrom(body));
     case 422:
-      return AppError.validation(_fieldErrorsFrom(body));
+      return AppError.validation(_fieldErrorsFrom(body), _detailFrom(body));
     default:
       return AppError.server(
         statusCode: statusCode,

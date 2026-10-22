@@ -235,6 +235,51 @@ void main() {
       expect((error as ValidationError).errors.single.failedRules, isEmpty);
     });
 
+    test('a string-detail 422 keeps the server explanation (#172)', () async {
+      final dio = _dioWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'Customer has 3 overdue credit order(s)'}),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final error = await _errorOf(() => dio.get<Object>('/x'));
+
+      expect(
+        error,
+        isA<ValidationError>()
+            .having((e) => e.errors, 'errors', isEmpty)
+            .having(
+              (e) => e.serverMessage,
+              'serverMessage',
+              'Customer has 3 overdue credit order(s)',
+            ),
+      );
+    });
+
+    test('a field-list 422 carries no server message', () async {
+      final dio = _dioWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'detail': [
+              {
+                'loc': ['body', 'username'],
+                'msg': 'field required',
+                'type': 'missing',
+              },
+            ],
+          }),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final error = await _errorOf(() => dio.get<Object>('/x'));
+
+      expect(error.serverMessage, isNull);
+    });
+
     test(
       'a JSON body already decoded to a Map behaves exactly as before',
       () async {
