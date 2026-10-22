@@ -175,7 +175,7 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
               if (quantity != null) setQuantity(b.quantity, quantity);
               if (price != null) setPrice1(b.price, price);
               if (discountRate != null) {
-                setDiscountRate1(b.discountRate, discountRate);
+                setDiscountRate(b.discountRate, discountRate);
               }
               if (taxRate != null) setTaxRate1(b.taxRate, taxRate);
             }),

@@ -11,6 +11,7 @@ import 'package:mbe_api_client/src/auth/bearer_auth.dart';
 import 'package:mbe_api_client/src/auth/oauth.dart';
 import 'package:mbe_api_client/src/api/addresses_api.dart';
 import 'package:mbe_api_client/src/api/auth_api.dart';
+import 'package:mbe_api_client/src/api/bank_accounts_api.dart';
 import 'package:mbe_api_client/src/api/cash_drawers_api.dart';
 import 'package:mbe_api_client/src/api/cash_sessions_api.dart';
 import 'package:mbe_api_client/src/api/contacts_api.dart';
@@ -182,6 +183,12 @@ class MbeApiClient {
   /// by doing that all interceptors will not be executed
   AuthApi getAuthApi() {
     return AuthApi(dio, serializers);
+  }
+
+  /// Get BankAccountsApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  BankAccountsApi getBankAccountsApi() {
+    return BankAccountsApi(dio, serializers);
   }
 
   /// Get CashDrawersApi instance, base route and serializer can be overridden by a given but be careful,

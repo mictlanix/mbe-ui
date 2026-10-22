@@ -6,7 +6,7 @@
 import 'package:mbe_api_client/src/model/price1.dart';
 import 'package:mbe_api_client/src/model/tax_rate1.dart';
 import 'package:mbe_api_client/src/model/quantity.dart';
-import 'package:mbe_api_client/src/model/discount_rate1.dart';
+import 'package:mbe_api_client/src/model/discount_rate.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -31,7 +31,7 @@ abstract class SalesOrderLineUpdate
   Price1? get price;
 
   @BuiltValueField(wireName: r'discount_rate')
-  DiscountRate1? get discountRate;
+  DiscountRate? get discountRate;
 
   @BuiltValueField(wireName: r'tax_rate')
   TaxRate1? get taxRate;
@@ -89,7 +89,7 @@ class _$SalesOrderLineUpdateSerializer
       yield r'discount_rate';
       yield serializers.serialize(
         object.discountRate,
-        specifiedType: const FullType.nullable(DiscountRate1),
+        specifiedType: const FullType.nullable(DiscountRate),
       );
     }
     if (object.taxRate != null) {
@@ -164,9 +164,9 @@ class _$SalesOrderLineUpdateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(DiscountRate1),
+                    specifiedType: const FullType.nullable(DiscountRate),
                   )
-                  as DiscountRate1?;
+                  as DiscountRate?;
           if (valueDes == null) continue;
           result.discountRate.replace(valueDes);
           break;

@@ -75,6 +75,11 @@ Class | Method | HTTP request | Description
 [*AuthApi*](doc/AuthApi.md) | [**getMeApiV1AuthMeGet**](doc/AuthApi.md#getmeapiv1authmeget) | **GET** /api/v1/auth/me | Get Me
 [*AuthApi*](doc/AuthApi.md) | [**getPasswordPolicyApiV1AuthPasswordPolicyGet**](doc/AuthApi.md#getpasswordpolicyapiv1authpasswordpolicyget) | **GET** /api/v1/auth/password-policy | Get Password Policy
 [*AuthApi*](doc/AuthApi.md) | [**loginApiV1AuthLoginPost**](doc/AuthApi.md#loginapiv1authloginpost) | **POST** /api/v1/auth/login | Login
+[*BankAccountsApi*](doc/BankAccountsApi.md) | [**createBankAccountApiV1BankAccountsPost**](doc/BankAccountsApi.md#createbankaccountapiv1bankaccountspost) | **POST** /api/v1/bank-accounts | Create Bank Account
+[*BankAccountsApi*](doc/BankAccountsApi.md) | [**deleteBankAccountApiV1BankAccountsBankAccountIdDelete**](doc/BankAccountsApi.md#deletebankaccountapiv1bankaccountsbankaccountiddelete) | **DELETE** /api/v1/bank-accounts/{bank_account_id} | Delete Bank Account
+[*BankAccountsApi*](doc/BankAccountsApi.md) | [**getBankAccountApiV1BankAccountsBankAccountIdGet**](doc/BankAccountsApi.md#getbankaccountapiv1bankaccountsbankaccountidget) | **GET** /api/v1/bank-accounts/{bank_account_id} | Get Bank Account
+[*BankAccountsApi*](doc/BankAccountsApi.md) | [**listBankAccountsApiV1BankAccountsGet**](doc/BankAccountsApi.md#listbankaccountsapiv1bankaccountsget) | **GET** /api/v1/bank-accounts | List Bank Accounts
+[*BankAccountsApi*](doc/BankAccountsApi.md) | [**updateBankAccountApiV1BankAccountsBankAccountIdPut**](doc/BankAccountsApi.md#updatebankaccountapiv1bankaccountsbankaccountidput) | **PUT** /api/v1/bank-accounts/{bank_account_id} | Update Bank Account
 [*CashDrawersApi*](doc/CashDrawersApi.md) | [**createCashDrawerApiV1CashDrawersPost**](doc/CashDrawersApi.md#createcashdrawerapiv1cashdrawerspost) | **POST** /api/v1/cash-drawers | Create Cash Drawer
 [*CashDrawersApi*](doc/CashDrawersApi.md) | [**deleteCashDrawerApiV1CashDrawersCashDrawerIdDelete**](doc/CashDrawersApi.md#deletecashdrawerapiv1cashdrawerscashdraweriddelete) | **DELETE** /api/v1/cash-drawers/{cash_drawer_id} | Delete Cash Drawer
 [*CashDrawersApi*](doc/CashDrawersApi.md) | [**getCashDrawerApiV1CashDrawersCashDrawerIdGet**](doc/CashDrawersApi.md#getcashdrawerapiv1cashdrawerscashdraweridget) | **GET** /api/v1/cash-drawers/{cash_drawer_id} | Get Cash Drawer
@@ -111,10 +116,14 @@ Class | Method | HTTP request | Description
 [*CustomerRefundsApi*](doc/CustomerRefundsApi.md) | [**openCustomerRefundApiV1CustomerRefundsPost**](doc/CustomerRefundsApi.md#opencustomerrefundapiv1customerrefundspost) | **POST** /api/v1/customer-refunds | Open Customer Refund
 [*CustomerRefundsApi*](doc/CustomerRefundsApi.md) | [**updateCustomerRefundLineApiV1CustomerRefundsCustomerRefundIdLinesLineIdPut**](doc/CustomerRefundsApi.md#updatecustomerrefundlineapiv1customerrefundscustomerrefundidlineslineidput) | **PUT** /api/v1/customer-refunds/{customer_refund_id}/lines/{line_id} | Update Customer Refund Line
 [*CustomersApi*](doc/CustomersApi.md) | [**createCustomerApiV1CustomersPost**](doc/CustomersApi.md#createcustomerapiv1customerspost) | **POST** /api/v1/customers | Create Customer
+[*CustomersApi*](doc/CustomersApi.md) | [**createDiscountApiV1CustomersCustomerIdDiscountsPost**](doc/CustomersApi.md#creatediscountapiv1customerscustomeriddiscountspost) | **POST** /api/v1/customers/{customer_id}/discounts | Create Discount
 [*CustomersApi*](doc/CustomersApi.md) | [**deleteCustomerApiV1CustomersCustomerIdDelete**](doc/CustomersApi.md#deletecustomerapiv1customerscustomeriddelete) | **DELETE** /api/v1/customers/{customer_id} | Delete Customer
+[*CustomersApi*](doc/CustomersApi.md) | [**deleteDiscountApiV1CustomersCustomerIdDiscountsCustomerDiscountIdDelete**](doc/CustomersApi.md#deletediscountapiv1customerscustomeriddiscountscustomerdiscountiddelete) | **DELETE** /api/v1/customers/{customer_id}/discounts/{customer_discount_id} | Delete Discount
 [*CustomersApi*](doc/CustomersApi.md) | [**getCustomerApiV1CustomersCustomerIdGet**](doc/CustomersApi.md#getcustomerapiv1customerscustomeridget) | **GET** /api/v1/customers/{customer_id} | Get Customer
 [*CustomersApi*](doc/CustomersApi.md) | [**listCustomersApiV1CustomersGet**](doc/CustomersApi.md#listcustomersapiv1customersget) | **GET** /api/v1/customers | List Customers
+[*CustomersApi*](doc/CustomersApi.md) | [**listDiscountsApiV1CustomersCustomerIdDiscountsGet**](doc/CustomersApi.md#listdiscountsapiv1customerscustomeriddiscountsget) | **GET** /api/v1/customers/{customer_id}/discounts | List Discounts
 [*CustomersApi*](doc/CustomersApi.md) | [**updateCustomerApiV1CustomersCustomerIdPut**](doc/CustomersApi.md#updatecustomerapiv1customerscustomeridput) | **PUT** /api/v1/customers/{customer_id} | Update Customer
+[*CustomersApi*](doc/CustomersApi.md) | [**updateDiscountApiV1CustomersCustomerIdDiscountsCustomerDiscountIdPut**](doc/CustomersApi.md#updatediscountapiv1customerscustomeriddiscountscustomerdiscountidput) | **PUT** /api/v1/customers/{customer_id}/discounts/{customer_discount_id} | Update Discount
 [*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**addStopApiV1DeliveryItinerariesItineraryIdStopsPost**](doc/DeliveryItinerariesApi.md#addstopapiv1deliveryitinerariesitineraryidstopspost) | **POST** /api/v1/delivery-itineraries/{itinerary_id}/stops | Add Stop
 [*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**adjustCommitmentApiV1DeliveryItinerariesItineraryIdStopsStopIdLinesLineIdPut**](doc/DeliveryItinerariesApi.md#adjustcommitmentapiv1deliveryitinerariesitineraryidstopsstopidlineslineidput) | **PUT** /api/v1/delivery-itineraries/{itinerary_id}/stops/{stop_id}/lines/{line_id} | Adjust Commitment
 [*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**cancelItineraryApiV1DeliveryItinerariesItineraryIdCancelPost**](doc/DeliveryItinerariesApi.md#cancelitineraryapiv1deliveryitinerariesitineraryidcancelpost) | **POST** /api/v1/delivery-itineraries/{itinerary_id}/cancel | Cancel Itinerary
@@ -229,8 +238,10 @@ Class | Method | HTTP request | Description
 [*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**convertSalesQuoteApiV1SalesQuotesSalesQuoteIdConvertPost**](doc/SalesQuotesApi.md#convertsalesquoteapiv1salesquotessalesquoteidconvertpost) | **POST** /api/v1/sales-quotes/{sales_quote_id}/convert | Convert Sales Quote
 [*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**createSalesQuoteApiV1SalesQuotesPost**](doc/SalesQuotesApi.md#createsalesquoteapiv1salesquotespost) | **POST** /api/v1/sales-quotes | Create Sales Quote
 [*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**duplicateSalesQuoteApiV1SalesQuotesSalesQuoteIdDuplicatePost**](doc/SalesQuotesApi.md#duplicatesalesquoteapiv1salesquotessalesquoteidduplicatepost) | **POST** /api/v1/sales-quotes/{sales_quote_id}/duplicate | Duplicate Sales Quote
+[*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**emailSalesQuoteApiV1SalesQuotesSalesQuoteIdEmailPost**](doc/SalesQuotesApi.md#emailsalesquoteapiv1salesquotessalesquoteidemailpost) | **POST** /api/v1/sales-quotes/{sales_quote_id}/email | Email Sales Quote
 [*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**getSalesQuoteApiV1SalesQuotesSalesQuoteIdGet**](doc/SalesQuotesApi.md#getsalesquoteapiv1salesquotessalesquoteidget) | **GET** /api/v1/sales-quotes/{sales_quote_id} | Get Sales Quote
 [*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**listSalesQuotesApiV1SalesQuotesGet**](doc/SalesQuotesApi.md#listsalesquotesapiv1salesquotesget) | **GET** /api/v1/sales-quotes | List Sales Quotes
+[*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**printSalesQuoteDocumentApiV1SalesQuotesSalesQuoteIdDocumentGet**](doc/SalesQuotesApi.md#printsalesquotedocumentapiv1salesquotessalesquoteiddocumentget) | **GET** /api/v1/sales-quotes/{sales_quote_id}/document | Print Sales Quote Document
 [*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**removeSalesQuoteLineApiV1SalesQuotesSalesQuoteIdLinesLineIdDelete**](doc/SalesQuotesApi.md#removesalesquotelineapiv1salesquotessalesquoteidlineslineiddelete) | **DELETE** /api/v1/sales-quotes/{sales_quote_id}/lines/{line_id} | Remove Sales Quote Line
 [*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**updateSalesQuoteApiV1SalesQuotesSalesQuoteIdPut**](doc/SalesQuotesApi.md#updatesalesquoteapiv1salesquotessalesquoteidput) | **PUT** /api/v1/sales-quotes/{sales_quote_id} | Update Sales Quote
 [*SalesQuotesApi*](doc/SalesQuotesApi.md) | [**updateSalesQuoteLineApiV1SalesQuotesSalesQuoteIdLinesLineIdPut**](doc/SalesQuotesApi.md#updatesalesquotelineapiv1salesquotessalesquoteidlineslineidput) | **PUT** /api/v1/sales-quotes/{sales_quote_id}/lines/{line_id} | Update Sales Quote Line
@@ -266,10 +277,14 @@ Class | Method | HTTP request | Description
 [*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listTaxRegimesApiV1SatTaxRegimesGet_0**](doc/SatCatalogsApi.md#listtaxregimesapiv1sattaxregimesget_0) | **GET** /api/v1/sat/tax-regimes | List Tax Regimes
 [*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet**](doc/SatCatalogsApi.md#listunitsofmeasurementapiv1satunitsofmeasurementget) | **GET** /api/v1/sat/units-of-measurement | List Units Of Measurement
 [*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet_0**](doc/SatCatalogsApi.md#listunitsofmeasurementapiv1satunitsofmeasurementget_0) | **GET** /api/v1/sat/units-of-measurement | List Units Of Measurement
+[*SuppliersApi*](doc/SuppliersApi.md) | [**createAgreementApiV1SuppliersSupplierIdAgreementsPost**](doc/SuppliersApi.md#createagreementapiv1supplierssupplieridagreementspost) | **POST** /api/v1/suppliers/{supplier_id}/agreements | Create Agreement
 [*SuppliersApi*](doc/SuppliersApi.md) | [**createSupplierApiV1SuppliersPost**](doc/SuppliersApi.md#createsupplierapiv1supplierspost) | **POST** /api/v1/suppliers | Create Supplier
+[*SuppliersApi*](doc/SuppliersApi.md) | [**deleteAgreementApiV1SuppliersSupplierIdAgreementsSupplierAgreementIdDelete**](doc/SuppliersApi.md#deleteagreementapiv1supplierssupplieridagreementssupplieragreementiddelete) | **DELETE** /api/v1/suppliers/{supplier_id}/agreements/{supplier_agreement_id} | Delete Agreement
 [*SuppliersApi*](doc/SuppliersApi.md) | [**deleteSupplierApiV1SuppliersSupplierIdDelete**](doc/SuppliersApi.md#deletesupplierapiv1supplierssupplieriddelete) | **DELETE** /api/v1/suppliers/{supplier_id} | Delete Supplier
 [*SuppliersApi*](doc/SuppliersApi.md) | [**getSupplierApiV1SuppliersSupplierIdGet**](doc/SuppliersApi.md#getsupplierapiv1supplierssupplieridget) | **GET** /api/v1/suppliers/{supplier_id} | Get Supplier
+[*SuppliersApi*](doc/SuppliersApi.md) | [**listAgreementsApiV1SuppliersSupplierIdAgreementsGet**](doc/SuppliersApi.md#listagreementsapiv1supplierssupplieridagreementsget) | **GET** /api/v1/suppliers/{supplier_id}/agreements | List Agreements
 [*SuppliersApi*](doc/SuppliersApi.md) | [**listSuppliersApiV1SuppliersGet**](doc/SuppliersApi.md#listsuppliersapiv1suppliersget) | **GET** /api/v1/suppliers | List Suppliers
+[*SuppliersApi*](doc/SuppliersApi.md) | [**updateAgreementApiV1SuppliersSupplierIdAgreementsSupplierAgreementIdPut**](doc/SuppliersApi.md#updateagreementapiv1supplierssupplieridagreementssupplieragreementidput) | **PUT** /api/v1/suppliers/{supplier_id}/agreements/{supplier_agreement_id} | Update Agreement
 [*SuppliersApi*](doc/SuppliersApi.md) | [**updateSupplierApiV1SuppliersSupplierIdPut**](doc/SuppliersApi.md#updatesupplierapiv1supplierssupplieridput) | **PUT** /api/v1/suppliers/{supplier_id} | Update Supplier
 [*TaxpayerCertificatesApi*](doc/TaxpayerCertificatesApi.md) | [**getTaxpayerCertificateApiV1TaxpayerCertificatesCertificateIdGet**](doc/TaxpayerCertificatesApi.md#gettaxpayercertificateapiv1taxpayercertificatescertificateidget) | **GET** /api/v1/taxpayer-certificates/{certificate_id} | Get Taxpayer Certificate
 [*TaxpayerCertificatesApi*](doc/TaxpayerCertificatesApi.md) | [**listTaxpayerCertificatesApiV1TaxpayerCertificatesGet**](doc/TaxpayerCertificatesApi.md#listtaxpayercertificatesapiv1taxpayercertificatesget) | **GET** /api/v1/taxpayer-certificates | List Taxpayer Certificates
@@ -297,10 +312,13 @@ Class | Method | HTTP request | Description
 [*UsersApi*](doc/UsersApi.md) | [**recoverPasswordApiV1UsersUserIdRecoverPasswordPost**](doc/UsersApi.md#recoverpasswordapiv1usersuseridrecoverpasswordpost) | **POST** /api/v1/users/{user_id}/recover-password | Recover Password
 [*UsersApi*](doc/UsersApi.md) | [**updateUserApiV1UsersUserIdPut**](doc/UsersApi.md#updateuserapiv1usersuseridput) | **PUT** /api/v1/users/{user_id} | Update User
 [*VehicleOperatorsApi*](doc/VehicleOperatorsApi.md) | [**createVehicleOperatorApiV1VehicleOperatorsPost**](doc/VehicleOperatorsApi.md#createvehicleoperatorapiv1vehicleoperatorspost) | **POST** /api/v1/vehicle-operators | Create Vehicle Operator
+[*VehicleOperatorsApi*](doc/VehicleOperatorsApi.md) | [**deleteLicensePhotoApiV1VehicleOperatorsVehicleOperatorIdLicensePhotoDelete**](doc/VehicleOperatorsApi.md#deletelicensephotoapiv1vehicleoperatorsvehicleoperatoridlicensephotodelete) | **DELETE** /api/v1/vehicle-operators/{vehicle_operator_id}/license-photo | Delete License Photo
 [*VehicleOperatorsApi*](doc/VehicleOperatorsApi.md) | [**deleteVehicleOperatorApiV1VehicleOperatorsVehicleOperatorIdDelete**](doc/VehicleOperatorsApi.md#deletevehicleoperatorapiv1vehicleoperatorsvehicleoperatoriddelete) | **DELETE** /api/v1/vehicle-operators/{vehicle_operator_id} | Delete Vehicle Operator
+[*VehicleOperatorsApi*](doc/VehicleOperatorsApi.md) | [**getLicensePhotoApiV1VehicleOperatorsVehicleOperatorIdLicensePhotoGet**](doc/VehicleOperatorsApi.md#getlicensephotoapiv1vehicleoperatorsvehicleoperatoridlicensephotoget) | **GET** /api/v1/vehicle-operators/{vehicle_operator_id}/license-photo | Get License Photo
 [*VehicleOperatorsApi*](doc/VehicleOperatorsApi.md) | [**getVehicleOperatorApiV1VehicleOperatorsVehicleOperatorIdGet**](doc/VehicleOperatorsApi.md#getvehicleoperatorapiv1vehicleoperatorsvehicleoperatoridget) | **GET** /api/v1/vehicle-operators/{vehicle_operator_id} | Get Vehicle Operator
 [*VehicleOperatorsApi*](doc/VehicleOperatorsApi.md) | [**listVehicleOperatorsApiV1VehicleOperatorsGet**](doc/VehicleOperatorsApi.md#listvehicleoperatorsapiv1vehicleoperatorsget) | **GET** /api/v1/vehicle-operators | List Vehicle Operators
 [*VehicleOperatorsApi*](doc/VehicleOperatorsApi.md) | [**updateVehicleOperatorApiV1VehicleOperatorsVehicleOperatorIdPut**](doc/VehicleOperatorsApi.md#updatevehicleoperatorapiv1vehicleoperatorsvehicleoperatoridput) | **PUT** /api/v1/vehicle-operators/{vehicle_operator_id} | Update Vehicle Operator
+[*VehicleOperatorsApi*](doc/VehicleOperatorsApi.md) | [**uploadLicensePhotoApiV1VehicleOperatorsVehicleOperatorIdLicensePhotoPost**](doc/VehicleOperatorsApi.md#uploadlicensephotoapiv1vehicleoperatorsvehicleoperatoridlicensephotopost) | **POST** /api/v1/vehicle-operators/{vehicle_operator_id}/license-photo | Upload License Photo
 [*VehiclesApi*](doc/VehiclesApi.md) | [**createVehicleApiV1VehiclesPost**](doc/VehiclesApi.md#createvehicleapiv1vehiclespost) | **POST** /api/v1/vehicles | Create Vehicle
 [*VehiclesApi*](doc/VehiclesApi.md) | [**deleteVehicleApiV1VehiclesVehicleIdDelete**](doc/VehiclesApi.md#deletevehicleapiv1vehiclesvehicleiddelete) | **DELETE** /api/v1/vehicles/{vehicle_id} | Delete Vehicle
 [*VehiclesApi*](doc/VehiclesApi.md) | [**getVehicleApiV1VehiclesVehicleIdGet**](doc/VehiclesApi.md#getvehicleapiv1vehiclesvehicleidget) | **GET** /api/v1/vehicles/{vehicle_id} | Get Vehicle
@@ -325,6 +343,9 @@ Class | Method | HTTP request | Description
  - [AmountMin](doc/AmountMin.md)
  - [ApplicationCreate](doc/ApplicationCreate.md)
  - [ApplicationResponse](doc/ApplicationResponse.md)
+ - [BankAccountCreate](doc/BankAccountCreate.md)
+ - [BankAccountResponse](doc/BankAccountResponse.md)
+ - [BankAccountUpdate](doc/BankAccountUpdate.md)
  - [CashDrawerCreate](doc/CashDrawerCreate.md)
  - [CashDrawerResponse](doc/CashDrawerResponse.md)
  - [CashDrawerSummary](doc/CashDrawerSummary.md)
@@ -350,6 +371,9 @@ Class | Method | HTTP request | Description
  - [CurrencyCode](doc/CurrencyCode.md)
  - [CurrentSessionResponse](doc/CurrentSessionResponse.md)
  - [CustomerCreate](doc/CustomerCreate.md)
+ - [CustomerDiscountCreate](doc/CustomerDiscountCreate.md)
+ - [CustomerDiscountResponse](doc/CustomerDiscountResponse.md)
+ - [CustomerDiscountUpdate](doc/CustomerDiscountUpdate.md)
  - [CustomerListItem](doc/CustomerListItem.md)
  - [CustomerPaymentCreate](doc/CustomerPaymentCreate.md)
  - [CustomerPaymentResponse](doc/CustomerPaymentResponse.md)
@@ -372,8 +396,8 @@ Class | Method | HTTP request | Description
  - [DeliveryOrderUpdate](doc/DeliveryOrderUpdate.md)
  - [Denomination](doc/Denomination.md)
  - [DenominationCount](doc/DenominationCount.md)
+ - [Discount](doc/Discount.md)
  - [DiscountRate](doc/DiscountRate.md)
- - [DiscountRate1](doc/DiscountRate1.md)
  - [DocumentStatus](doc/DocumentStatus.md)
  - [EmployeeCreate](doc/EmployeeCreate.md)
  - [EmployeeResponse](doc/EmployeeResponse.md)
@@ -410,6 +434,7 @@ Class | Method | HTTP request | Description
  - [LabelResponse](doc/LabelResponse.md)
  - [LabelUpdate](doc/LabelUpdate.md)
  - [ListResponseAddressResponse](doc/ListResponseAddressResponse.md)
+ - [ListResponseBankAccountResponse](doc/ListResponseBankAccountResponse.md)
  - [ListResponseCashDrawerResponse](doc/ListResponseCashDrawerResponse.md)
  - [ListResponseCashSessionResponse](doc/ListResponseCashSessionResponse.md)
  - [ListResponseContactResponse](doc/ListResponseContactResponse.md)
@@ -489,6 +514,7 @@ Class | Method | HTTP request | Description
  - [ProductPriceUpdate](doc/ProductPriceUpdate.md)
  - [ProductResponse](doc/ProductResponse.md)
  - [ProductStockResponse](doc/ProductStockResponse.md)
+ - [ProductSummary](doc/ProductSummary.md)
  - [ProductUpdate](doc/ProductUpdate.md)
  - [ProfilePrivilegeResponse](doc/ProfilePrivilegeResponse.md)
  - [ProfilePrivilegeUpdate](doc/ProfilePrivilegeUpdate.md)
@@ -496,6 +522,8 @@ Class | Method | HTTP request | Description
  - [Quantity](doc/Quantity.md)
  - [Quantity1](doc/Quantity1.md)
  - [Quantity2](doc/Quantity2.md)
+ - [QuoteEmailRequest](doc/QuoteEmailRequest.md)
+ - [QuoteEmailResponse](doc/QuoteEmailResponse.md)
  - [Rate](doc/Rate.md)
  - [Rate1](doc/Rate1.md)
  - [ReasonRequest](doc/ReasonRequest.md)
@@ -523,7 +551,11 @@ Class | Method | HTTP request | Description
  - [ShortfallReason](doc/ShortfallReason.md)
  - [StopCreate](doc/StopCreate.md)
  - [StopOutcome](doc/StopOutcome.md)
+ - [SupplierAgreementCreate](doc/SupplierAgreementCreate.md)
+ - [SupplierAgreementResponse](doc/SupplierAgreementResponse.md)
+ - [SupplierAgreementUpdate](doc/SupplierAgreementUpdate.md)
  - [SupplierCreate](doc/SupplierCreate.md)
+ - [SupplierDetailResponse](doc/SupplierDetailResponse.md)
  - [SupplierResponse](doc/SupplierResponse.md)
  - [SupplierUpdate](doc/SupplierUpdate.md)
  - [TaxRate](doc/TaxRate.md)

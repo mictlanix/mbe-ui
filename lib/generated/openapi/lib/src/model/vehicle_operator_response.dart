@@ -26,6 +26,7 @@ part 'vehicle_operator_response.g.dart';
 /// * [creator]
 /// * [updater]
 /// * [status]
+/// * [hasLicensePhoto]
 /// * [daysUntilExpiry]
 @BuiltValue()
 abstract class VehicleOperatorResponse
@@ -69,6 +70,9 @@ abstract class VehicleOperatorResponse
   EntityStatus get status;
   // enum statusEnum {  0,  1,  2,  };
 
+  @BuiltValueField(wireName: r'has_license_photo')
+  bool? get hasLicensePhoto;
+
   @BuiltValueField(wireName: r'days_until_expiry')
   int? get daysUntilExpiry;
 
@@ -79,8 +83,9 @@ abstract class VehicleOperatorResponse
   ]) = _$VehicleOperatorResponse;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(VehicleOperatorResponseBuilder b) =>
-      b..daysUntilExpiry = 0;
+  static void _defaults(VehicleOperatorResponseBuilder b) => b
+    ..hasLicensePhoto = false
+    ..daysUntilExpiry = 0;
 
   @BuiltValueSerializer(custom: true)
   static Serializer<VehicleOperatorResponse> get serializer =>
@@ -163,6 +168,13 @@ class _$VehicleOperatorResponseSerializer
       object.status,
       specifiedType: const FullType(EntityStatus),
     );
+    if (object.hasLicensePhoto != null) {
+      yield r'has_license_photo';
+      yield serializers.serialize(
+        object.hasLicensePhoto,
+        specifiedType: const FullType(bool),
+      );
+    }
     if (object.daysUntilExpiry != null) {
       yield r'days_until_expiry';
       yield serializers.serialize(
@@ -301,6 +313,16 @@ class _$VehicleOperatorResponseSerializer
                   )
                   as EntityStatus;
           result.status = valueDes;
+          break;
+        case r'has_license_photo':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(bool),
+                  )
+                  as bool?;
+          if (valueDes == null) continue;
+          result.hasLicensePhoto = valueDes;
           break;
         case r'days_until_expiry':
           final valueDes =
