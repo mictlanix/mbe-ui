@@ -227,7 +227,12 @@ class PosSalesListScreen extends ConsumerWidget {
                 ),
                 DataTableColumn(
                   label: l10n.posSalesColumnStatus,
-                  size: ColumnSize.S,
+                  // A status badge is never truncated (constitution §VI);
+                  // a proportional width clipped "Pagada" to "Pagac"
+                  // (#192). Fits the widest label ("En captura") plus the
+                  // table's column spacing, grown with the text size
+                  // setting (spec 027).
+                  fixedWidth: MediaQuery.textScalerOf(context).scale(160),
                   cellBuilder: (context, sale) =>
                       PosSaleStatusChip(status: sale.status),
                 ),

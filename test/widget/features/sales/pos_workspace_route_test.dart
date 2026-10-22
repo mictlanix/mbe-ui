@@ -820,6 +820,7 @@ void main() {
       WidgetTester tester,
       Sale sale, {
       List<Destination> destinations = const [],
+      Size surface = const Size(1440, 900),
     }) async {
       when(() => salesOrders.getById(saleId: sale.id))
           .thenAnswer((_) async => sale);
@@ -838,7 +839,7 @@ void main() {
           facilityAddressControllerProvider.overrideWith((ref, facilityId) async => 500),
           deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
         ],
-        surface: const Size(1440, 900),
+        surface: surface,
       );
       return container;
     }
@@ -911,6 +912,45 @@ void main() {
       final step = container.read(posStepControllerProvider);
       expect(step.current, PosStep.entrega);
       expect(step.detail, isFalse);
+    });
+
+    testWidgets('the header fits at phone width on Cobro (#190)', (
+      tester,
+    ) async {
+      final container = await pumpSale(
+        tester,
+        testSale(
+          id: 337613,
+          serial: 12345,
+          status: SaleStatus.completed,
+          lines: [testLine()],
+        ),
+        surface: phoneSurface,
+      );
+
+      expect(container.read(posStepControllerProvider).current, PosStep.cobro);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('the header fits at phone width on Entrega (#190)', (
+      tester,
+    ) async {
+      final container = await pumpSale(
+        tester,
+        testSale(
+          id: 337613,
+          serial: 12345,
+          status: SaleStatus.paid,
+          balance: '0',
+          fulfillmentIntent: FulfillmentMode.delivery,
+          lines: [testLine()],
+        ),
+        destinations: [destinationOf('1')],
+        surface: phoneSurface,
+      );
+
+      expect(container.read(posStepControllerProvider).current, PosStep.entrega);
+      expect(tester.takeException(), isNull);
     });
 
     testWidgets('a fully distributed paid delivery sale shows the detail', (
