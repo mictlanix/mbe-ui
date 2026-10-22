@@ -331,6 +331,9 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
               span: FormGridSpan.full,
               _LogoSection(
                 formState: formState,
+                // Absent on a read-only record (spec 049 C2); held, not
+                // hidden, while a save is in flight.
+                canEdit: !readOnly,
                 enabled: fieldsEnabled,
                 errorText: _localizeFieldError(
                   l10n,
@@ -380,12 +383,14 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
 class _LogoSection extends StatelessWidget {
   const _LogoSection({
     required this.formState,
+    required this.canEdit,
     required this.enabled,
     required this.errorText,
     required this.onPick,
   });
 
   final FacilityFormState formState;
+  final bool canEdit;
   final bool enabled;
   final String? errorText;
   final VoidCallback onPick;
@@ -419,20 +424,21 @@ class _LogoSection extends StatelessWidget {
               )
             else
               ProductPhoto(photoUrl: formState.logoUrl, size: 96),
-            TextButton.icon(
-              key: Key(
-                hasLogo
-                    ? 'facility_logo_replace_button'
-                    : 'facility_logo_upload_button',
+            if (canEdit)
+              TextButton.icon(
+                key: Key(
+                  hasLogo
+                      ? 'facility_logo_replace_button'
+                      : 'facility_logo_upload_button',
+                ),
+                onPressed: enabled ? onPick : null,
+                icon: const Icon(Icons.upload),
+                label: Text(
+                  hasLogo
+                      ? l10n.facilityLogoReplaceButton
+                      : l10n.facilityLogoUploadButton,
+                ),
               ),
-              onPressed: enabled ? onPick : null,
-              icon: const Icon(Icons.upload),
-              label: Text(
-                hasLogo
-                    ? l10n.facilityLogoReplaceButton
-                    : l10n.facilityLogoUploadButton,
-              ),
-            ),
           ],
         ),
         if (errorText != null)

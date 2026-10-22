@@ -3,7 +3,7 @@
   "specName": "Back-Office UI Polish",
   "branch": "049-back-office-ui-polish",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -357,8 +357,23 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-10-22T16:31:07.689Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-22T22:32:50.464Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-22T22:32:50.464Z"
     }
   ],
   "telemetryInstanceId": "9fb5ef03-f1b1-41c2-aa6e-177cbe9ef670",
-  "currentTask": "T039"
+  "currentTask": "T038"
 }

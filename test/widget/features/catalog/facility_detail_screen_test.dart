@@ -333,7 +333,7 @@ void main() {
       expect(find.byIcon(Icons.inventory_2_outlined), findsOneWidget);
     });
 
-    testWidgets('is read-only in view mode', (tester) async {
+    testWidgets('offers no upload action in view mode', (tester) async {
       await pumpScreen(
         tester,
         signedInAs: _user(),
@@ -341,10 +341,15 @@ void main() {
         forceReadOnly: true,
       );
 
-      final button = tester.widget<TextButton>(
+      expect(find.byKey(const Key('facility_logo_section')), findsOneWidget);
+      expect(
         find.byKey(const Key('facility_logo_upload_button')),
+        findsNothing,
       );
-      expect(button.onPressed, isNull);
+      expect(
+        find.byKey(const Key('facility_logo_replace_button')),
+        findsNothing,
+      );
     });
 
     testWidgets(
