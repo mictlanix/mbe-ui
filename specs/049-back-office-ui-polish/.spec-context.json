@@ -1,0 +1,24 @@
+{
+  "workflow": "speckit",
+  "specName": "Back-Office UI Polish",
+  "branch": "049-back-office-ui-polish",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-22T14:52:13.000Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-22T14:53:35.754Z"
+    }
+  ],
+  "telemetryInstanceId": "9fb5ef03-f1b1-41c2-aa6e-177cbe9ef670"
+}

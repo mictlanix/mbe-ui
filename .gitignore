@@ -150,3 +150,5 @@ app.*.symbols
 AuthKey_*.p8
 key.properties
 /build/ios/ipa/
+# Widget Preview related
+.widget_preview/
