@@ -148,7 +148,7 @@ class SalesQuoteRepositoryImpl implements SalesQuoteRepository {
                 setPriceAdjustment1(b.priceAdjustment, priceAdjustment);
               }
               if (discountRate != null) {
-                setDiscountRate1(b.discountRate, discountRate);
+                setDiscountRate(b.discountRate, discountRate);
               }
             }),
           );

@@ -97,7 +97,7 @@ class SupplierRepositoryImpl implements SupplierRepository {
       );
       final supplier = response.data;
       if (supplier == null) throw const AppError.server();
-      return Supplier.fromResponse(supplier);
+      return Supplier.fromDetailResponse(supplier);
     } on DioException catch (e) {
       throw _toAppError(e);
     }
@@ -126,7 +126,7 @@ class SupplierRepositoryImpl implements SupplierRepository {
       );
       final supplier = response.data;
       if (supplier == null) throw const AppError.server();
-      return Supplier.fromResponse(supplier);
+      return Supplier.fromDetailResponse(supplier);
     } on DioException catch (e) {
       throw _toAppError(e);
     }
@@ -158,7 +158,7 @@ class SupplierRepositoryImpl implements SupplierRepository {
       );
       final supplier = response.data;
       if (supplier == null) throw const AppError.server();
-      return Supplier.fromResponse(supplier);
+      return Supplier.fromDetailResponse(supplier);
     } on DioException catch (e) {
       throw _toAppError(e);
     }

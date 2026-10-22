@@ -4,7 +4,9 @@ import 'package:mbe_api_client/mbe_api_client.dart';
 part 'supplier.freezed.dart';
 
 /// A vendor a product can be sourced from — full detail entity for the
-/// Suppliers catalog (data-model.md §1), mapped from `SupplierResponse`.
+/// Suppliers catalog (data-model.md §1), mapped from `SupplierResponse` (list rows) or `SupplierDetailResponse`
+/// (get/create/update; its addresses/contacts/bank accounts/agreements are
+/// not mapped).
 /// `creditLimit` is kept as `String` end-to-end (research.md §4) — never
 /// parsed to `double`. The lightweight `SupplierListItem` (id/code/name)
 /// remains the product form's picker item type, unaffected by this entity.
@@ -21,6 +23,18 @@ abstract class Supplier with _$Supplier {
   }) = _Supplier;
 
   factory Supplier.fromResponse(SupplierResponse response) {
+    return Supplier(
+      supplierId: response.supplierId,
+      code: response.code,
+      name: response.name,
+      zone: response.zone,
+      creditLimit: response.creditLimit,
+      creditDays: response.creditDays,
+      comment: response.comment,
+    );
+  }
+
+  factory Supplier.fromDetailResponse(SupplierDetailResponse response) {
     return Supplier(
       supplierId: response.supplierId,
       code: response.code,
