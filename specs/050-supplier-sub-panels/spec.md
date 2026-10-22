@@ -21,6 +21,15 @@ Roadmap: mictlanix/mbe-roadmap#14
   - Linking and unlinking needs Suppliers *Update*, and so does adding, changing or removing agreements. Bank accounts have their own privilege (Bank Accounts, 13), the same way addresses (11) and contacts (12) do.
 - **Precedent.** Customers already solved the same problem (spec 046). They moved to a full detail page. Below the customer's own fields, each linked kind gets a section. A section lists the linked records, unlinks with one click, links an existing record through a search picker, and creates a new record inline through a small dialog. This feature follows that pattern so the two screens behave the same.
 
+## Clarifications
+
+### Session 2026-10-22
+
+- Q: Should suppliers open in a full detail page or stay in the side panel? → A: A full detail page at `/suppliers/:id`. Constitution v1.14.0, amended separately on branch `docs/record-surface-criteria`, gives the record-surface rule criteria instead of an entity list. Suppliers meets its first criterion, linked-record sections, so this spec needs no amendment of its own.
+- Q: Where does the user remove an agreement? → A: Inside the agreement's edit dialog, through an `Eliminar` action and a confirmation. An agreement row carries only the Edit icon, so it has no Delete icon (§VI).
+- Q: Where does the user land after saving a supplier? → A: After a create, they stay on the page, which reopens the saved supplier for editing so agreements can be added straight away. After an update, they go back to the list, as customers do.
+- Q: What does a refused supplier save say, given that mbe-api sends one generic conflict for both a duplicate code and a vanished linked record? → A: One message that names both causes ("Ya existe un proveedor con ese código, o uno de los registros vinculados ya no existe."), and the form keeps the user's edits. A refused delete keeps its specific links-or-agreements message.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - See a supplier's addresses, contacts, bank accounts and agreements (Priority: P1)
@@ -73,9 +82,10 @@ The user adds an agreement to a saved supplier with a start date, an end date an
 1. **Given** a saved supplier, **When** the user adds an agreement with a start date, an end date on or after it, and notes, **Then** it appears in the Agreements section and is still there after reopening.
 2. **Given** an agreement, **When** the user changes its dates or notes and confirms, **Then** the section shows the new values.
 3. **Given** the agreement dialog, **When** the end date is before the start date, **Then** the user cannot confirm, and the dialog says why.
-4. **Given** an agreement, **When** the user removes it and confirms the prompt, **Then** it disappears from the section.
+4. **Given** an agreement, **When** the user opens its edit dialog, chooses to remove it, and confirms the prompt, **Then** it disappears from the section.
 5. **Given** a supplier that has not been saved yet, **When** the user looks at the Agreements section, **Then** it explains that agreements can be added once the supplier is saved.
-6. **Given** a user without Update on suppliers, **When** they view the Agreements section, **Then** they see the agreements but no add, edit or remove controls.
+6. **Given** a new supplier, **When** the user saves it for the first time, **Then** the screen stays open on the saved supplier in edit mode, and the user can add an agreement without going back to the list.
+7. **Given** a user without Update on suppliers, **When** they view the Agreements section, **Then** they see the agreements but no add, edit or remove controls.
 
 ---
 
@@ -96,7 +106,7 @@ When the user tries to delete a supplier that still has links or agreements, the
 
 ### Edge Cases
 
-- **A record disappears before save.** A picked address, contact or bank account is deleted by someone else before the supplier is saved. The save is refused. The user sees a message that one of the linked records no longer exists, the form keeps their edits, and nothing is half-saved.
+- **A record disappears before save.** A picked address, contact or bank account is deleted by someone else before the supplier is saved. The save is refused. The user sees the conflict message from FR-011, which also covers a duplicate code. The form keeps their edits, and nothing is half-saved.
 - **The same record on many suppliers.** A shared address or bank account linked to several suppliers shows on each of them. Unlinking it from one supplier leaves the others untouched.
 - **Inline create fails.** The new record is not added to the section, the dialog stays open with the user's input, and it shows the error.
 - **Agreement saved elsewhere while editing.** The supplier is reopened or refreshed after each agreement change, so the section shows what the server holds.
@@ -128,14 +138,15 @@ When the user tries to delete a supplier that still has links or agreements, the
 - **FR-008**: Link and unlink changes MUST stay pending until the supplier is saved, and MUST be discarded on cancel. Saving MUST send the complete set of linked records for every kind, so the saved links always match what the screen showed.
 - **FR-009**: The search picker MUST NOT offer a record that is already linked to the supplier being edited.
 - **FR-010**: Unlinking MUST NOT delete the shared record. Linked records MUST NOT be edited or deleted from the supplier screen.
-- **FR-011**: If a save is refused because a linked record no longer exists, the user MUST see a specific message, and the form MUST keep the user's edits.
+- **FR-011**: If a save is refused as a conflict, the user MUST see one message that names both possible causes: the code is already used by another supplier, or a linked record no longer exists. The form MUST keep the user's edits. The server reports both causes the same way, so the screen MUST NOT claim to know which one happened.
 
 **Agreements**
 
 - **FR-012**: On a saved supplier, a user with Update on suppliers MUST be able to add, edit and remove agreements. Each change MUST take effect when its dialog is confirmed, independently of the supplier's Save.
 - **FR-013**: The agreement dialog MUST require a start date and an end date, allow optional notes of up to 500 characters, and refuse an end date before the start date before anything is sent.
-- **FR-014**: Removing an agreement MUST ask for confirmation.
+- **FR-014**: An agreement row MUST offer only an Edit action. Removing an agreement MUST be done from its edit dialog, and MUST ask for confirmation.
 - **FR-015**: On a supplier that is not yet saved, the Agreements section MUST say that agreements can be added after saving, and MUST show no add control.
+- **FR-015a**: After a supplier is created, the screen MUST stay open on the saved supplier in edit mode, with the Agreements add control available. After a supplier is updated, the screen MUST return to the supplier list.
 - **FR-016**: Agreements MUST be listed by start date, newest first.
 
 **Delete**
@@ -173,10 +184,12 @@ When the user tries to delete a supplier that still has links or agreements, the
 
 ## Assumptions
 
-- **Full detail page.** Suppliers move from the side panel to a full detail page, as customers did in spec 046. Four sections do not fit a side panel. Keeping the two catalogs alike is worth the change in how a supplier opens.
+- **Full detail page.** Suppliers move from the side panel to a full detail page, as customers did in spec 046. Four sections do not fit a side panel. Keeping the two catalogs alike is worth the change in how a supplier opens. Under constitution v1.14.0 §VI, an entity with linked-record sections MUST use a full detail screen, so the move is required rather than a choice. This depends on the v1.14.0 amendment (branch `docs/record-surface-criteria`) merging first.
 - **Agreements save on their own.** Agreements have their own server operations and only exist under a saved supplier, so each dialog confirms on its own. This matches taxpayer certificates. Mixing staged links with immediate agreement changes on one screen is acceptable, because the agreements live in their own section with their own dialogs.
 - **No standalone bank account catalog.** Bank accounts are created inline from the supplier, as customers create addresses and contacts. A standalone Bank accounts screen (list, edit, delete) is out of scope, as are standalone Address and Contact screens, which do not exist today either.
 - **Linked records are not edited from the supplier.** This matches the customer screen. Fixing a typo in a shared address is out of scope until a standalone catalog exists.
+- **No marker for unsaved links.** Linked and unlinked rows look the same before and after saving, as on the customer screen. Leaving with unsaved edits asks first.
+- **Agreements render as a table**, following the taxpayer-certificates precedent. On narrow screens the table drops the notes column, and the notes stay visible in the agreement dialog.
 - **No "in force" status.** Agreements show their dates only. The screen does not mark one as current, expired or upcoming, because nothing in scope asks for it.
 - **Server is ready.** mbe-api #251 and #252 are on the test deployment, and the generated client already has the bank-account, agreement and supplier-detail operations.
 

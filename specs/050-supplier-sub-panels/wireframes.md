@@ -360,6 +360,11 @@ The screens reuse the customer detail from spec 046 wherever they can. Supplier 
 
 ## Open Questions
 
+**Resolved on 2026-10-22** (spec → Clarifications):
+- Q1, Q2, Q4 and Q5 were answered as the wireframe assumed: (a), (a), (a), and the combined save message.
+- Q1 was superseded: constitution v1.14.0 replaces the entity lists with criteria, so the Suppliers move needs no PATCH of its own.
+- Q3 and Q6 were kept at their assumed defaults and recorded under the spec's Assumptions.
+
 1. **The record surface needs a constitution PATCH.**
    - §VI lists Suppliers as a shared side-panel entity. Moving it to a full detail screen is the same per-entity reassignment as Customers in v1.13.3.
    - Options:
