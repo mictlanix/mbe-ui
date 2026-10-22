@@ -37,10 +37,12 @@ const _hasAdminCredentials = _adminUsername != '' && _adminPassword != '';
 const _hasTestCredentials = _testUsername != '' && _testPassword != '';
 
 void main() {
+  late Dio dio;
   late AuthRepositoryImpl repository;
 
   setUp(() {
-    repository = AuthRepositoryImpl(Dio(BaseOptions(baseUrl: apiBaseUrl)));
+    dio = Dio(BaseOptions(baseUrl: apiBaseUrl));
+    repository = AuthRepositoryImpl(dio);
   });
 
   test(
@@ -50,6 +52,7 @@ void main() {
         username: _adminUsername,
         password: _adminPassword,
       );
+      dio.options.headers['Authorization'] = 'Bearer $token';
       expect(token, isNotEmpty);
 
       final user = await repository.me();
@@ -84,6 +87,7 @@ void main() {
         username: _testUsername,
         password: _testPassword,
       );
+      dio.options.headers['Authorization'] = 'Bearer $token';
       final user = await repository.me();
       final access = AccessControlService(
         AuthState.authenticated(token: token, user: user),
@@ -105,6 +109,7 @@ void main() {
         username: _adminUsername,
         password: _adminPassword,
       );
+      dio.options.headers['Authorization'] = 'Bearer $token';
       final user = await repository.me();
       final access = AccessControlService(
         AuthState.authenticated(token: token, user: user),
