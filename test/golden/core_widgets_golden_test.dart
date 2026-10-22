@@ -21,6 +21,7 @@ import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/date_range_filter_chip.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/fact_strip_row.dart';
 import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/core/widgets/number_pad.dart';
@@ -74,6 +75,7 @@ const _coveredFiles = {
   'date_range_filter_chip.dart', // spec 023 T023 — the sales list's date filter
   'entity_status_controls.dart',
   'error_banner.dart',
+  'fact_strip_row.dart', // spec 049 — the quote and order headers' strip
   'label_multi_picker.dart',
   'list_state_views.dart',
   'number_pad.dart',
@@ -316,6 +318,27 @@ void main() {
           child: CatalogSearchBar(
             label: 'Search products',
             onSubmitted: _noopString,
+          ),
+        ),
+      );
+    });
+
+    testWidgets('FactStripRow', (tester) async {
+      await expectGoldenMatrix(
+        tester,
+        'fact_strip_row',
+        (brightness, width) => SizedBox(
+          width: width - 32,
+          child: FactStripRow(
+            facts: const [
+              CompactField(label: 'Reference', child: Text('2225')),
+              CompactField(label: 'Status', child: Text('Confirmed')),
+              CompactField(label: 'Date', child: Text('2026-09-28 14:48')),
+            ],
+            trailing: TextButton(
+              onPressed: () {},
+              child: const Text('More details'),
+            ),
           ),
         ),
       );

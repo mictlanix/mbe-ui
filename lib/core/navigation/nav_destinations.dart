@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/navigation/nav_destination.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -120,6 +121,7 @@ const List<NavItem> kNavigationTree = [
         route: '/exchange-rates',
         branchIndex: NavBranch.exchangeRates,
         gate: PrivilegeGate(SystemObject.exchangeRates, AccessRight.read),
+        requiresMultiCurrency: true,
       ),
       NavDestination(
         id: 'suppliers',
@@ -336,18 +338,38 @@ String _salesQuotesLabel(AppLocalizations l10n) => l10n.salesQuotesMenuTitle;
 /// group left with no visible children is dropped entirely (no empty header).
 final navDestinationsProvider = Provider<List<NavItem>>((ref) {
   final access = ref.watch(accessControlProvider);
-  return _filterTree(kNavigationTree, access);
+  final multiCurrency = ref.watch(multiCurrencyEnabledProvider);
+  return _filterTree(kNavigationTree, access, multiCurrency);
 });
 
-List<NavItem> _filterTree(List<NavItem> tree, AccessControlService access) {
+/// Whether [location] belongs to a destination that exists only when the
+/// deployment is multi-currency (spec 049 FR-004). Derived from
+/// [kNavigationTree] so the menu and the router share one source of truth.
+bool routeRequiresMultiCurrency(String location) {
+  bool matches(NavDestination d) =>
+      d.requiresMultiCurrency &&
+      (location == d.route || location.startsWith('${d.route}/'));
+  return kNavigationTree.any(
+    (item) => switch (item) {
+      NavDestination() => matches(item),
+      NavGroup() => item.children.any(matches),
+    },
+  );
+}
+
+List<NavItem> _filterTree(
+  List<NavItem> tree,
+  AccessControlService access,
+  bool multiCurrency,
+) {
   final result = <NavItem>[];
   for (final item in tree) {
     switch (item) {
       case NavDestination():
-        if (_isVisible(item, access)) result.add(item);
+        if (_isVisible(item, access, multiCurrency)) result.add(item);
       case NavGroup():
         final children = item.children
-            .where((d) => _isVisible(d, access))
+            .where((d) => _isVisible(d, access, multiCurrency))
             .toList();
         if (children.isNotEmpty) {
           result.add(
@@ -359,7 +381,12 @@ List<NavItem> _filterTree(List<NavItem> tree, AccessControlService access) {
   return result;
 }
 
-bool _isVisible(NavDestination d, AccessControlService access) {
+bool _isVisible(
+  NavDestination d,
+  AccessControlService access,
+  bool multiCurrency,
+) {
+  if (d.requiresMultiCurrency && !multiCurrency) return false;
   return switch (d.gate) {
     null => true,
     PrivilegeGate(:final object, :final right) => access.can(object, right),

@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/text_scale.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
@@ -123,6 +124,7 @@ void main() {
         initialLocation: '/sales/orders/42',
         surface: phoneSurface,
         overrides: [
+          multiCurrencyEnabledProvider.overrideWithValue(true),
           _authOverride(),
           salesOrderOverride(salesOrders),
           warehouseOverride(warehouses),
@@ -213,6 +215,7 @@ void main() {
           surface: phoneSurface,
           textLevel: level,
           overrides: [
+            multiCurrencyEnabledProvider.overrideWithValue(true),
             _authOverride(),
             salesOrderOverride(salesOrders),
             warehouseOverride(warehouses),

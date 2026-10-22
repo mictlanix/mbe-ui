@@ -5,6 +5,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/async/critical_action_guard.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
@@ -12,6 +13,7 @@ import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/compact_field.dart';
 import 'package:mbe_ui/core/widgets/confirmable_text_field.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/fact_strip_row.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
@@ -175,72 +177,60 @@ class _QuoteHeaderPanelState extends ConsumerState<QuoteHeaderPanel> {
     final spacing = theme.spacing;
     final fmt = ref.watch(formattersProvider);
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Expanded(
-          child: Wrap(
-            spacing: spacing.lg,
-            runSpacing: spacing.sm,
+    return FactStripRow(
+      facts: [
+        CompactField(
+          label: l10n.salesQuoteReferenceLabel,
+          child: Text(
+            // FR-022: a draft has no folio yet — the provisional
+            // reference stands in for it, exactly as it does on the
+            // order screen.
+            sale.serial?.toString() ?? '#${sale.provisionalReference}',
+            style: theme.typeRoles.recordId,
+          ),
+        ),
+        CompactField(
+          label: l10n.salesQuoteStatusLabel,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              CompactField(
-                label: l10n.salesQuoteReferenceLabel,
-                child: Text(
-                  // FR-022: a draft has no folio yet — the provisional
-                  // reference stands in for it, exactly as it does on the
-                  // order screen.
-                  sale.serial?.toString() ?? '#${sale.provisionalReference}',
-                  style: theme.typeRoles.recordId,
-                ),
-              ),
-              CompactField(
-                label: l10n.salesQuoteStatusLabel,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(_statusLabel(l10n, sale.status)),
-                    if (sale.hasExpired) ...[
-                      SizedBox(width: spacing.xs),
-                      SalesQuoteExpiredMarker(hasExpired: sale.hasExpired),
-                    ],
-                  ],
-                ),
-              ),
-              CompactField(
-                label: l10n.salesQuoteDateLabel,
-                child: Text(fmt.display.dateTime(sale.date)),
-              ),
-              CompactField(
-                label: l10n.salesQuoteExpiryLabel,
-                editable: canEdit,
-                enabled: canEdit,
-                onTap: canEdit ? _pickExpiry : null,
-                child: Text(fmt.display.dateTime(sale.dueDate)),
-              ),
-              CompactField(
-                label: l10n.salesQuoteCurrencyLabel,
-                // A11: no currency selector — read-only always, edit gate
-                // or no edit gate.
-                child: Text(_currencyLabel(l10n, sale.currency)),
-              ),
+              Text(_statusLabel(l10n, sale.status)),
+              if (sale.hasExpired) ...[
+                SizedBox(width: spacing.xs),
+                SalesQuoteExpiredMarker(hasExpired: sale.hasExpired),
+              ],
             ],
           ),
         ),
-        SizedBox(width: spacing.md),
-        // Flexible, not fixed: expanding swaps this label for the longer
-        // "Menos detalles" (mirrors `OrderHeaderPanel`'s own reasoning).
-        Flexible(
-          child: TextButton.icon(
-            key: const Key('sales_quote_more_details_toggle'),
-            onPressed: () => setState(() => _expanded = !_expanded),
-            label: Text(
-              _expanded ? l10n.salesQuoteFewerDetails : l10n.salesQuoteMoreDetails,
-            ),
-            icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
-            iconAlignment: IconAlignment.end,
-          ),
+        CompactField(
+          label: l10n.salesQuoteDateLabel,
+          child: Text(fmt.display.dateTime(sale.date)),
         ),
+        CompactField(
+          label: l10n.salesQuoteExpiryLabel,
+          editable: canEdit,
+          enabled: canEdit,
+          onTap: canEdit ? _pickExpiry : null,
+          child: Text(fmt.display.dateTime(sale.dueDate)),
+        ),
+        // Spec 049 FR-005: a multi-currency control.
+        if (ref.watch(multiCurrencyEnabledProvider))
+          CompactField(
+            label: l10n.salesQuoteCurrencyLabel,
+            // A11: no currency selector — read-only always, edit gate
+            // or no edit gate.
+            child: Text(_currencyLabel(l10n, sale.currency)),
+          ),
       ],
+      trailing: TextButton.icon(
+        key: const Key('sales_quote_more_details_toggle'),
+        onPressed: () => setState(() => _expanded = !_expanded),
+        label: Text(
+          _expanded ? l10n.salesQuoteFewerDetails : l10n.salesQuoteMoreDetails,
+        ),
+        icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
+        iconAlignment: IconAlignment.end,
+      ),
     );
   }
 

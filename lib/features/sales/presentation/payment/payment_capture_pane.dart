@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/number_pad.dart';
@@ -104,7 +105,7 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
       children: [
         PaymentAmountField(
           controller: _amountController,
-          currency: sale.currency,
+          currency: ref.watch(multiCurrencyEnabledProvider) ? sale.currency : null,
           enabled: enabled,
         ),
         SizedBox(height: spacing.sm),

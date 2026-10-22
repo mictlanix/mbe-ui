@@ -7,6 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
@@ -137,13 +138,17 @@ void main() {
     WidgetTester tester, {
     int? quoteId,
     User user = _updaterUser,
+    bool multiCurrency = true,
+    Size? surface,
   }) async {
     final (_, container) = await pumpQuotesRouted(
       tester,
       initialLocation: quoteId == null
           ? '/sales/quotes/new'
           : '/sales/quotes/$quoteId',
+      surface: surface ?? const Size(1200, 2400),
       overrides: [
+        multiCurrencyEnabledProvider.overrideWithValue(multiCurrency),
         _authOverride(user),
         salesOrderOverride(salesOrders),
         salesQuoteOverride(salesQuotes),
@@ -410,6 +415,62 @@ void main() {
       expect(find.text(l10n.salesQuoteCurrencyLabel), findsOneWidget);
     });
 
+    testWidgets('the facts share one line and the disclosure toggle is on '
+        'the trailing edge of the card (spec 049 FR-016/FR-017)', (
+      tester,
+    ) async {
+      // The test font draws every glyph as a full-width square, so the strip
+      // needs a wider surface than a real font would to fit on one line.
+      final quote = testQuote(customer: 7, id: 30);
+      when(
+        () => salesQuotes.getById(quoteId: quote.id),
+      ).thenAnswer((_) async => quote);
+      await pumpQuoteScreen(
+        tester,
+        quoteId: quote.id,
+        surface: const Size(2400, 2400),
+      );
+
+      Finder inPanel(String text) => find.descendant(
+        of: find.byType(QuoteHeaderPanel),
+        matching: find.text(text),
+      );
+      final tops = {
+        for (final label in [
+          l10n.salesQuoteReferenceLabel,
+          l10n.salesQuoteStatusLabel,
+          l10n.salesQuoteDateLabel,
+          l10n.salesQuoteExpiryLabel,
+          l10n.salesQuoteCurrencyLabel,
+        ])
+          tester.getTopLeft(inPanel(label)).dy,
+      };
+      expect(tops, hasLength(1), reason: 'all five facts on one line');
+
+      final card = tester.getRect(
+        find.descendant(
+          of: find.byType(QuoteHeaderPanel),
+          matching: find.byType(Card),
+        ),
+      );
+      final toggle = tester.getRect(
+        find.byKey(const Key('sales_quote_more_details_toggle')),
+      );
+      expect(card.right - toggle.right, lessThanOrEqualTo(32));
+    });
+
+    testWidgets('with the multi-currency option off the strip has no '
+        'currency (spec 049 FR-005)', (tester) async {
+      final quote = testQuote(customer: 7, id: 30);
+      when(
+        () => salesQuotes.getById(quoteId: quote.id),
+      ).thenAnswer((_) async => quote);
+      await pumpQuoteScreen(tester, quoteId: quote.id, multiCurrency: false);
+
+      expect(find.text(l10n.salesQuoteCurrencyLabel), findsNothing);
+      expect(find.text(l10n.salesQuoteReferenceLabel), findsOneWidget);
+    });
+
     testWidgets('the payment-terms control inherited from CustomerBar still '
         'commits', (tester) async {
       final draft = testQuote(customer: 7, id: 30);
@@ -616,6 +677,7 @@ void main() {
         tester,
         initialLocation: '/sales/quotes/30',
         overrides: [
+          multiCurrencyEnabledProvider.overrideWithValue(true),
           _authOverride(),
           salesOrderOverride(salesOrders),
           salesQuoteOverride(salesQuotes),
@@ -774,6 +836,7 @@ void main() {
             tester,
             initialLocation: '/sales/quotes/30',
             overrides: [
+              multiCurrencyEnabledProvider.overrideWithValue(true),
               _authOverride(),
               salesOrderOverride(salesOrders),
               salesQuoteOverride(salesQuotes),
@@ -811,6 +874,7 @@ void main() {
           tester,
           initialLocation: '/sales/quotes/30',
           overrides: [
+            multiCurrencyEnabledProvider.overrideWithValue(true),
             _authOverride(),
             salesOrderOverride(salesOrders),
             salesQuoteOverride(salesQuotes),

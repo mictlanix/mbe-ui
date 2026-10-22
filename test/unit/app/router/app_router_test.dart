@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/app/router/app_router.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
@@ -284,8 +285,9 @@ void main() {
   Future<GoRouterTestHandle> pumpAt(
     WidgetTester tester,
     User? user,
-    String location,
-  ) async {
+    String location, {
+    bool multiCurrency = true,
+  }) async {
     final productRepository = MockProductRepository();
     when(
       () => productRepository.list(
@@ -576,6 +578,7 @@ void main() {
         // which needs a real SharedPreferences instance — every destination
         // screen migrated to the formatting surface now needs this.
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+        multiCurrencyEnabledProvider.overrideWithValue(multiCurrency),
         authProvider.overrideWith(
           () => _FixedAuthNotifier(
             user == null
@@ -1404,6 +1407,46 @@ void main() {
       }
     },
   );
+
+  group('spec 049 FR-004: exchange rates exist only on a multi-currency '
+      'deployment', () {
+    for (final location in [
+      '/exchange-rates',
+      '/exchange-rates/new',
+      '/exchange-rates/7',
+    ]) {
+      testWidgets('with the option off, $location ends at /', (tester) async {
+        final handle = await pumpAt(
+          tester,
+          _catalogsReaderUser,
+          location,
+          multiCurrency: false,
+        );
+        expect(handle.router.state.uri.path, '/');
+      });
+    }
+
+    testWidgets('with the option on, /exchange-rates stays reachable', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _catalogsReaderUser,
+        '/exchange-rates',
+      );
+      expect(handle.router.state.uri.path, '/exchange-rates');
+    });
+
+    testWidgets('the option does not affect other catalogs', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _catalogsReaderUser,
+        '/price-lists',
+        multiCurrency: false,
+      );
+      expect(handle.router.state.uri.path, '/price-lists');
+    });
+  });
 
   group(
     '046-catalog-improvements: Customers has per-record routes again '

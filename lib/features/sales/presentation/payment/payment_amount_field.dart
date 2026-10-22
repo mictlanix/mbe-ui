@@ -26,7 +26,10 @@ class PaymentAmountField extends StatelessWidget {
   });
 
   final TextEditingController controller;
-  final Currency currency;
+
+  /// The currency code shown before the amount. `null` — a single-currency
+  /// deployment (spec 049 FR-005) — shows none.
+  final Currency? currency;
   final bool enabled;
 
   @override
@@ -59,7 +62,9 @@ class PaymentAmountField extends StatelessWidget {
           ),
           decoration: InputDecoration(
             filled: true,
-            prefixText: '${currency.name.toUpperCase()}  ',
+            prefixText: currency == null
+                ? null
+                : '${currency!.name.toUpperCase()}  ',
           ),
         ),
       ],

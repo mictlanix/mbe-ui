@@ -103,14 +103,20 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
     await _search(pattern, autoAddSingleMatch: true);
   }
 
-  Future<void> _search(String pattern, {required bool autoAddSingleMatch}) async {
+  Future<void> _search(
+    String pattern, {
+    required bool autoAddSingleMatch,
+  }) async {
     final requestId = ++_requestId;
     setState(() {
       _searching = true;
       _searchedEmpty = false;
     });
     final results = await ref.read(
-      productLookupControllerProvider(pattern, warehouse: widget.warehouse).future,
+      productLookupControllerProvider(
+        pattern,
+        warehouse: widget.warehouse,
+      ).future,
     );
     if (!mounted || requestId != _requestId) return;
     if (autoAddSingleMatch && results.length == 1) {
@@ -171,7 +177,10 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
     for (final product in selection) {
       try {
         final results = await ref.read(
-          productLookupControllerProvider(product.code, warehouse: widget.warehouse).future,
+          productLookupControllerProvider(
+            product.code,
+            warehouse: widget.warehouse,
+          ).future,
         );
         ProductLookupResult? match;
         for (final r in results) {
@@ -203,7 +212,8 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(l10n.advancedSearchSkipped),
-              for (final product in skipped) Text('${product.code} — ${product.name}'),
+              for (final product in skipped)
+                Text('${product.code} — ${product.name}'),
             ],
           ),
           // Dismissable, not persistent: a longer read window than the
@@ -214,21 +224,6 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
       );
     }
   }
-
-  /// The theme's own input borders, re-shaped as pills — the mock draws this
-  /// field as a stadium (`border-radius:30` on a 60 px box, i.e. fully
-  /// rounded), which is `Shapes.full`'s intent. That token is a `ShapeBorder`
-  /// and `InputDecoration` takes an `InputBorder`, so the radius is applied by
-  /// `copyWith` on whatever the theme already resolved: every colour and width
-  /// still comes from `inputDecorationTheme`, and only the corners change.
-  InputBorder? _pill(InputBorder? source) => source is OutlineInputBorder
-      ? source.copyWith(borderRadius: BorderRadius.circular(_pillRadius))
-      : source;
-
-  /// Larger than any box this field is drawn at, so the corners always
-  /// resolve to a full stadium rather than to a fixed radius that would read
-  /// as "very rounded" at one height and as a pill at another.
-  static const _pillRadius = 999.0;
 
   @override
   Widget build(BuildContext context) {
@@ -243,7 +238,10 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
     // Consumes a confirmed Advanced search selection (spec 038): reset
     // immediately so a rebuild mid-add can never re-enter (research.md R2,
     // R3), then price and add every selected product sequentially.
-    ref.listen<List<ProductListItem>?>(advancedSearchResultProvider, (previous, next) {
+    ref.listen<List<ProductListItem>?>(advancedSearchResultProvider, (
+      previous,
+      next,
+    ) {
       if (next == null) return;
       ref.read(advancedSearchResultProvider.notifier).state = null;
       unawaited(_addAdvancedSelection(next));
@@ -282,12 +280,14 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
                       horizontal: theme.spacing.md + theme.spacing.xxs,
                       vertical: theme.spacing.sm + theme.spacing.xxs,
                     ),
-                    border: _pill(inputTheme.border),
-                    enabledBorder: _pill(inputTheme.enabledBorder),
-                    focusedBorder: _pill(inputTheme.focusedBorder),
-                    disabledBorder: _pill(inputTheme.disabledBorder),
-                    errorBorder: _pill(inputTheme.errorBorder),
-                    focusedErrorBorder: _pill(inputTheme.focusedErrorBorder),
+                    border: pillInputBorder(inputTheme.border),
+                    enabledBorder: pillInputBorder(inputTheme.enabledBorder),
+                    focusedBorder: pillInputBorder(inputTheme.focusedBorder),
+                    disabledBorder: pillInputBorder(inputTheme.disabledBorder),
+                    errorBorder: pillInputBorder(inputTheme.errorBorder),
+                    focusedErrorBorder: pillInputBorder(
+                      inputTheme.focusedErrorBorder,
+                    ),
                     suffixIcon: _searching
                         ? const Padding(
                             padding: EdgeInsets.all(12),
@@ -330,7 +330,9 @@ class _ProductSearchFieldState extends ConsumerState<ProductSearchField> {
         if (_advancedAdding)
           Padding(
             padding: const EdgeInsets.only(top: 4),
-            child: Text(l10n.advancedSearchAdding(_advancedDone, _advancedTotal)),
+            child: Text(
+              l10n.advancedSearchAdding(_advancedDone, _advancedTotal),
+            ),
           ),
         if (_results.isNotEmpty)
           Card(

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -16,6 +18,9 @@ import 'package:mbe_ui/features/catalog/presentation/facility_children_controlle
 part 'facility_form_controller.freezed.dart';
 part 'facility_form_controller.g.dart';
 
+const _maxLogoBytes = 2 * 1024 * 1024;
+const _validLogoExtensions = ['.jpg', '.jpeg', '.png'];
+
 /// Error codes for [FacilityFormState.error]/`fieldErrors`, localized in the
 /// UI layer.
 abstract final class FacilityFormErrorCode {
@@ -29,6 +34,9 @@ abstract final class FacilityFormErrorCode {
   static const createFailed = 'createFailed';
   static const updateFailed = 'updateFailed';
   static const deleteFailed = 'deleteFailed';
+  static const logoInvalidType = 'logoInvalidType';
+  static const logoTooLarge = 'logoTooLarge';
+  static const logoUploadFailed = 'logoUploadFailed';
   static const createPermissionDenied = 'createPermissionDenied';
   static const updatePermissionDenied = 'updatePermissionDenied';
   static const deletePermissionDenied = 'deletePermissionDenied';
@@ -56,7 +64,14 @@ abstract class FacilityFormState with _$FacilityFormState {
     /// shows `taxpayerDisplayText`, which the detail screen prefers over the
     /// bare [taxpayerRfc].
     @Default('') String taxpayerDisplayText,
-    @Default('') String logo,
+
+    /// The stored logo, already resolved for display; shown until a new
+    /// logo is staged.
+    String? logoUrl,
+
+    /// A picked logo awaiting upload, sent after the facility is saved.
+    Uint8List? pendingLogoBytes,
+    String? pendingLogoFilename,
     @Default('') String receiptMessage,
     @Default('') String defaultBatch,
     @Default(EntityStatus.active) EntityStatus status,
@@ -100,14 +115,48 @@ class FacilityFormController extends _$FacilityFormController {
     state.copyWith(taxpayerRfc: rfc, taxpayerDisplayText: rfc),
   );
 
-  void logoChanged(String v) => state = state.copyWith(logo: v);
+  /// Stages a picked logo for upload after save. Rejects a non-JPEG/PNG
+  /// file or one over 2 MB with a `fieldErrors['logo']` code, leaving the
+  /// staged logo untouched.
+  void logoPicked(Uint8List bytes, String filename) {
+    final lower = filename.toLowerCase();
+    if (!_validLogoExtensions.any(lower.endsWith)) {
+      state = state.copyWith(
+        fieldErrors: {
+          ...state.fieldErrors,
+          'logo': FacilityFormErrorCode.logoInvalidType,
+        },
+      );
+      return;
+    }
+    if (bytes.length > _maxLogoBytes) {
+      state = state.copyWith(
+        fieldErrors: {
+          ...state.fieldErrors,
+          'logo': FacilityFormErrorCode.logoTooLarge,
+        },
+      );
+      return;
+    }
+
+    state = state.copyWith(
+      pendingLogoBytes: bytes,
+      pendingLogoFilename: filename,
+      fieldErrors: {...state.fieldErrors}..remove('logo'),
+    );
+  }
+
   void receiptMessageChanged(String v) =>
       state = state.copyWith(receiptMessage: v);
   void defaultBatchChanged(String v) => state = state.copyWith(defaultBatch: v);
   void statusChanged(EntityStatus v) => state = state.copyWith(status: v);
 
-  FacilityFormState _clear(FacilityFormState s) =>
-      s.copyWith(error: null, errorDetail: null, fieldErrors: const {});
+  FacilityFormState _clear(FacilityFormState s) => s.copyWith(
+    saved: false,
+    error: null,
+    errorDetail: null,
+    fieldErrors: const {},
+  );
 
   /// Loads an existing facility for viewing/editing. Resolves the stored
   /// taxpayer RFC to a display name via `TaxpayerIssuersApi.get` (FR-034b)
@@ -151,7 +200,7 @@ class FacilityFormController extends _$FacilityFormController {
         addressDisplayText: facility.addressLabel,
         taxpayerRfc: facility.taxpayerRfc,
         taxpayerDisplayText: taxpayerDisplay,
-        logo: facility.logo ?? '',
+        logoUrl: facility.logo,
         receiptMessage: facility.receiptMessage ?? '',
         defaultBatch: facility.defaultBatch ?? '',
         status: facility.status,
@@ -227,7 +276,6 @@ class FacilityFormController extends _$FacilityFormController {
             location: state.locationId!,
             address: state.addressId!,
             taxpayer: state.taxpayerRfc,
-            logo: state.logo.isEmpty ? null : state.logo,
             receiptMessage: state.receiptMessage.isEmpty
                 ? null
                 : state.receiptMessage,
@@ -238,7 +286,10 @@ class FacilityFormController extends _$FacilityFormController {
           );
       _invalidateCaches();
       _invalidateOwnChildren(created.facilityId);
-      state = state.copyWith(submitting: false, saved: true);
+      // Keep the new id so a retry after a failed logo upload updates this
+      // record instead of creating a duplicate.
+      state = state.copyWith(facilityId: created.facilityId);
+      await _uploadPendingLogo(created.facilityId);
     } on AppError catch (e) {
       _handleSaveError(e, FacilityFormErrorCode.createFailed);
     }
@@ -276,16 +327,50 @@ class FacilityFormController extends _$FacilityFormController {
             location: state.locationId,
             address: state.addressId,
             taxpayer: state.taxpayerRfc,
-            logo: state.logo,
             receiptMessage: state.receiptMessage,
             defaultBatch: state.defaultBatch,
             status: state.status,
           );
       _invalidateCaches();
       _invalidateOwnChildren(facilityId);
-      state = state.copyWith(submitting: false, saved: true);
+      await _uploadPendingLogo(facilityId);
     } on AppError catch (e) {
       _handleSaveError(e, FacilityFormErrorCode.updateFailed);
+    }
+  }
+
+  /// Uploads the staged logo, if any, once the facility record is saved.
+  /// A failed upload leaves the form open (`saved` with an error) and keeps
+  /// the staged bytes, so the next save retries it.
+  Future<void> _uploadPendingLogo(int facilityId) async {
+    final bytes = state.pendingLogoBytes;
+    if (bytes == null) {
+      state = state.copyWith(submitting: false, saved: true);
+      return;
+    }
+    try {
+      final updated = await ref
+          .read(facilityRepositoryProvider)
+          .uploadLogo(
+            facilityId: facilityId,
+            bytes: bytes,
+            filename: state.pendingLogoFilename ?? 'logo.png',
+          );
+      _invalidateCaches();
+      state = state.copyWith(
+        submitting: false,
+        saved: true,
+        logoUrl: updated.logo,
+        pendingLogoBytes: null,
+        pendingLogoFilename: null,
+      );
+    } on AppError catch (e) {
+      state = state.copyWith(
+        submitting: false,
+        saved: true,
+        error: FacilityFormErrorCode.logoUploadFailed,
+        errorDetail: e.serverMessage,
+      );
     }
   }
 

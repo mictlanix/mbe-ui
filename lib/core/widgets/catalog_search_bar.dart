@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:mbe_ui/core/design/design.dart';
+
 /// A search field that applies only on explicit submission — Enter key or
 /// the trailing search button — never on every keystroke (constitution
 /// §VI; FR-010). Deliberately exposes no `onChanged` parameter, so a
@@ -53,11 +55,17 @@ class _CatalogSearchBarState extends State<CatalogSearchBar> {
 
   @override
   Widget build(BuildContext context) {
+    final inputTheme = Theme.of(context).inputDecorationTheme;
     return TextField(
       controller: _controller,
       decoration: InputDecoration(
         labelText: widget.label,
-        prefixIcon: const Icon(Icons.search),
+        border: pillInputBorder(inputTheme.border),
+        enabledBorder: pillInputBorder(inputTheme.enabledBorder),
+        focusedBorder: pillInputBorder(inputTheme.focusedBorder),
+        disabledBorder: pillInputBorder(inputTheme.disabledBorder),
+        errorBorder: pillInputBorder(inputTheme.errorBorder),
+        focusedErrorBorder: pillInputBorder(inputTheme.focusedErrorBorder),
         suffixIcon: IconButton(
           icon: const Icon(Icons.search),
           tooltip: widget.searchTooltip,

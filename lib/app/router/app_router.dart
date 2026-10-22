@@ -14,8 +14,10 @@ import 'package:mbe_ui/features/auth/presentation/admin/user_profiles_list_scree
 import 'package:mbe_ui/features/auth/presentation/admin/users_list_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_screen.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/navigation/nav_destination.dart';
+import 'package:mbe_ui/core/navigation/nav_destinations.dart';
 import 'package:mbe_ui/core/widgets/app_shell.dart';
 import 'package:mbe_ui/features/catalog/presentation/customer_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/customers_list_screen.dart';
@@ -540,6 +542,13 @@ String? _redirect(Ref ref, GoRouterState state) {
 
   final legacyRecordRoute = _legacyRecordRouteRedirect(state.matchedLocation);
   if (legacyRecordRoute != null) return legacyRecordRoute;
+
+  // Spec 049 FR-004: a single-currency deployment has no exchange-rates
+  // screen, however the user got to its address.
+  if (routeRequiresMultiCurrency(state.matchedLocation) &&
+      !ref.read(multiCurrencyEnabledProvider)) {
+    return '/';
+  }
 
   final gate = _routeGate(state.matchedLocation);
   final access = ref.read(accessControlProvider);

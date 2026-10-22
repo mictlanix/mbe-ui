@@ -105,6 +105,53 @@ void main() {
     });
   });
 
+  group('multiCurrencyEnabled (spec 049 FR-001/FR-002)', () {
+    const base = AppSettings(
+      apiBaseUrl: 'https://test.example.com',
+      photosBaseUrl: 'https://test.example.com',
+      posDefaultCustomerId: 1,
+      brand: BrandConfig(displayName: 'X'),
+      defaultLocale: Locale('es', 'MX'),
+      formatting: FormattingSettings(),
+    );
+
+    // A malformed or absent MULTI_CURRENCY_ENABLED resolves through the same
+    // `_parseBool(value, false)` every boolean flag uses, so the default is
+    // what the build produces with no define set.
+    test('is off by default', () {
+      expect(base.multiCurrencyEnabled, isFalse);
+      expect(AppSettings.fromEnvironment().multiCurrencyEnabled, isFalse);
+    });
+
+    test('multiCurrencyEnabledProvider follows the resolved settings', () {
+      final on = ProviderContainer(
+        retry: (_, _) => null,
+        overrides: [
+          appSettingsProvider.overrideWithValue(
+            const AppSettings(
+              apiBaseUrl: 'https://test.example.com',
+              photosBaseUrl: 'https://test.example.com',
+              posDefaultCustomerId: 1,
+              brand: BrandConfig(displayName: 'X'),
+              defaultLocale: Locale('es', 'MX'),
+              formatting: FormattingSettings(),
+              multiCurrencyEnabled: true,
+            ),
+          ),
+        ],
+      );
+      final off = ProviderContainer(
+        retry: (_, _) => null,
+        overrides: [appSettingsProvider.overrideWithValue(base)],
+      );
+      addTearDown(on.dispose);
+      addTearDown(off.dispose);
+
+      expect(on.read(multiCurrencyEnabledProvider), isTrue);
+      expect(off.read(multiCurrencyEnabledProvider), isFalse);
+    });
+  });
+
   // spec 028 T003: FormattingSettings.fromEnvironment falls back per-key on
   // a malformed value rather than throwing, the same rule
   // BrandConfig._parseSeedColor already applies to a bad hex color.

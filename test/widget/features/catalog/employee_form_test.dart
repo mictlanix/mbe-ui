@@ -10,6 +10,7 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/gender.dart';
+import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee.dart';
@@ -226,6 +227,98 @@ void main() {
         expect(find.byKey(const Key('save_button')), findsOneWidget);
       },
     );
+  });
+
+  group('layout (spec 049 C7)', () {
+    void setWidth(WidgetTester tester, double width) {
+      tester.view.physicalSize = Size(width, 1400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+    }
+
+    testWidgets('two columns: the switch sits beside the employee number and '
+        'Estado spans the form', (tester) async {
+      setWidth(tester, 1000);
+      await pumpScreen(tester, signedInAs: _fullAccessUser, employeeId: 1);
+
+      final enroll = tester.getRect(
+        find.byKey(const Key('enroll_number_field')),
+      );
+      final sw = tester.getRect(find.byKey(const Key('sales_person_switch')));
+      final comment = tester.getRect(
+        find.byKey(const Key('employee_comment_field')),
+      );
+      final status = tester.getRect(find.byType(EntityStatusFormField));
+
+      expect(sw.top, closeTo(enroll.top, 1));
+      expect(sw.left, greaterThan(enroll.left));
+      expect(status.width, closeTo(comment.width, 1));
+      expect(status.top, greaterThanOrEqualTo(comment.bottom));
+    });
+
+    testWidgets('one column: switch and Estado stack without overlap', (
+      tester,
+    ) async {
+      setWidth(tester, 400);
+      await pumpScreen(tester, signedInAs: _fullAccessUser, employeeId: 1);
+
+      final enroll = tester.getRect(
+        find.byKey(const Key('enroll_number_field')),
+      );
+      final sw = tester.getRect(find.byKey(const Key('sales_person_switch')));
+      final status = tester.getRect(find.byType(EntityStatusFormField));
+
+      expect(sw.top, greaterThanOrEqualTo(enroll.bottom));
+      expect(status.top, greaterThanOrEqualTo(sw.bottom));
+    });
+
+    testWidgets('toggling the switch and saving submits salesPerson', (
+      tester,
+    ) async {
+      setWidth(tester, 1000);
+      when(
+        () => repository.update(
+          employeeId: any(named: 'employeeId'),
+          firstName: any(named: 'firstName'),
+          lastName: any(named: 'lastName'),
+          nickname: any(named: 'nickname'),
+          gender: any(named: 'gender'),
+          birthday: any(named: 'birthday'),
+          startJobDate: any(named: 'startJobDate'),
+          taxpayerId: any(named: 'taxpayerId'),
+          salesPerson: any(named: 'salesPerson'),
+          status: any(named: 'status'),
+          personalId: any(named: 'personalId'),
+          enrollNumber: any(named: 'enrollNumber'),
+          comment: any(named: 'comment'),
+        ),
+      ).thenAnswer((_) async => _existing);
+      await pumpScreen(tester, signedInAs: _fullAccessUser, employeeId: 1);
+
+      await tester.tap(find.byKey(const Key('sales_person_switch')));
+      await tester.pump();
+      await tester.ensureVisible(find.byKey(const Key('save_button')));
+      await tester.tap(find.byKey(const Key('save_button')));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => repository.update(
+          employeeId: 1,
+          firstName: any(named: 'firstName'),
+          lastName: any(named: 'lastName'),
+          nickname: any(named: 'nickname'),
+          gender: any(named: 'gender'),
+          birthday: any(named: 'birthday'),
+          startJobDate: any(named: 'startJobDate'),
+          taxpayerId: any(named: 'taxpayerId'),
+          salesPerson: false,
+          status: any(named: 'status'),
+          personalId: any(named: 'personalId'),
+          enrollNumber: any(named: 'enrollNumber'),
+          comment: any(named: 'comment'),
+        ),
+      ).called(1);
+    });
   });
 
   group('isDirty (spec 035 FR-032, data-model.md §3)', () {

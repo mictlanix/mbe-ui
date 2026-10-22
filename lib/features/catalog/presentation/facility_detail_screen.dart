@@ -1,3 +1,4 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,6 +12,7 @@ import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/address_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/sat_catalog_repository_impl.dart';
@@ -58,6 +60,21 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
     }
   }
 
+  /// Opens the native file picker restricted to JPEG/PNG and stages the
+  /// result via [FacilityFormController.logoPicked]; type/size validation
+  /// happens in the controller.
+  Future<void> _pickLogo(FacilityFormController controller) async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['jpg', 'jpeg', 'png'],
+      withData: true,
+    );
+    final file = result?.files.singleOrNull;
+    final bytes = file?.bytes;
+    if (file == null || bytes == null) return;
+    controller.logoPicked(bytes, file.name);
+  }
+
   @override
   Widget build(BuildContext context) {
     final formState = ref.watch(facilityFormControllerProvider);
@@ -90,7 +107,9 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
       );
     }
 
-    if (formState.saved || formState.deleted) {
+    // A saved record whose logo upload failed stays open so the error shows
+    // and the next save retries the upload.
+    if ((formState.saved && formState.error == null) || formState.deleted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) context.pop();
       });
@@ -310,12 +329,17 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
             ),
             FormGridChild(
               span: FormGridSpan.full,
-              TextFormField(
-                key: const Key('logo_field'),
-                initialValue: formState.logo,
-                decoration: InputDecoration(labelText: l10n.facilityLogoLabel),
+              _LogoSection(
+                formState: formState,
+                // Absent on a read-only record (spec 049 C2); held, not
+                // hidden, while a save is in flight.
+                canEdit: !readOnly,
                 enabled: fieldsEnabled,
-                onChanged: controller.logoChanged,
+                errorText: _localizeFieldError(
+                  l10n,
+                  formState.fieldErrors['logo'],
+                ),
+                onPick: () => _pickLogo(controller),
               ),
             ),
             FormGridChild(
@@ -333,7 +357,7 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
                     ? () => context.replace('/facilities/${widget.facilityId}')
                     : null,
                 onSave: canSave
-                    ? (_isEdit
+                    ? (_isEdit || formState.facilityId != null
                           ? controller.submitUpdate
                           : controller.submitCreate)
                     : null,
@@ -350,6 +374,81 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The facility logo preview plus its upload / replace action and any logo
+/// field error. A staged (not yet uploaded) logo previews from memory.
+class _LogoSection extends StatelessWidget {
+  const _LogoSection({
+    required this.formState,
+    required this.canEdit,
+    required this.enabled,
+    required this.errorText,
+    required this.onPick,
+  });
+
+  final FacilityFormState formState;
+  final bool canEdit;
+  final bool enabled;
+  final String? errorText;
+  final VoidCallback onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final staged = formState.pendingLogoBytes;
+    final hasLogo = staged != null || formState.logoUrl != null;
+
+    return Column(
+      key: const Key('facility_logo_section'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        Text(l10n.facilityLogoLabel, style: theme.textTheme.labelLarge),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 16,
+          children: [
+            if (staged != null)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: Image.memory(
+                  staged,
+                  width: 96,
+                  height: 96,
+                  fit: BoxFit.contain,
+                ),
+              )
+            else
+              ProductPhoto(photoUrl: formState.logoUrl, size: 96),
+            if (canEdit)
+              TextButton.icon(
+                key: Key(
+                  hasLogo
+                      ? 'facility_logo_replace_button'
+                      : 'facility_logo_upload_button',
+                ),
+                onPressed: enabled ? onPick : null,
+                icon: const Icon(Icons.upload),
+                label: Text(
+                  hasLogo
+                      ? l10n.facilityLogoReplaceButton
+                      : l10n.facilityLogoUploadButton,
+                ),
+              ),
+          ],
+        ),
+        if (errorText != null)
+          Text(
+            errorText!,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.error,
+            ),
+          ),
+      ],
     );
   }
 }
@@ -422,6 +521,8 @@ String _localizeFormError(AppLocalizations l10n, String code) {
       return l10n.facilityUpdateFailedError;
     case FacilityFormErrorCode.deleteFailed:
       return l10n.facilityDeleteFailedError;
+    case FacilityFormErrorCode.logoUploadFailed:
+      return l10n.facilityLogoUploadFailedError;
     case FacilityFormErrorCode.createPermissionDenied:
       return l10n.facilityCreatePermissionDeniedError;
     case FacilityFormErrorCode.updatePermissionDenied:
@@ -448,6 +549,10 @@ String? _localizeFieldError(AppLocalizations l10n, String? code) {
       return l10n.facilityTaxpayerRequiredError;
     case FacilityFormErrorCode.taxpayerInvalid:
       return l10n.facilityTaxpayerInvalidError;
+    case FacilityFormErrorCode.logoInvalidType:
+      return l10n.facilityLogoInvalidTypeError;
+    case FacilityFormErrorCode.logoTooLarge:
+      return l10n.facilityLogoTooLargeError;
     default:
       return code;
   }

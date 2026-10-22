@@ -125,3 +125,7 @@ Login
 
 Pos Sales
   - ~~Show stock from other facilities~~
+
+## 2026-10-22
+General
+  - Text fields max size?

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/domain/facility_type.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/facility.dart';
@@ -25,7 +27,6 @@ abstract class FacilityRepository {
     required String location,
     required int address,
     required String taxpayer,
-    String? logo,
     String? receiptMessage,
     String? defaultBatch,
     EntityStatus? status,
@@ -39,10 +40,17 @@ abstract class FacilityRepository {
     String? location,
     int? address,
     String? taxpayer,
-    String? logo,
     String? receiptMessage,
     String? defaultBatch,
     EntityStatus? status,
+  });
+
+  /// Uploads [bytes] as the facility's logo (multipart); the server
+  /// normalizes it and returns the updated facility.
+  Future<Facility> uploadLogo({
+    required int facilityId,
+    required Uint8List bytes,
+    required String filename,
   });
 
   Future<void> delete({required int facilityId});

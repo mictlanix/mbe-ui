@@ -50,6 +50,7 @@ class NavDestination extends NavItem {
     required this.branchIndex,
     this.selectedIcon,
     this.gate,
+    this.requiresMultiCurrency = false,
   });
 
   /// Stable key (e.g. `home`, `users`, `products`) for widget keys/selection.
@@ -72,6 +73,12 @@ class NavDestination extends NavItem {
 
   /// RBAC gate; `null` means always visible (e.g. Home).
   final NavGate? gate;
+
+  /// Shown, and its route reachable, only while the deployment's
+  /// `MULTI_CURRENCY_ENABLED` option is on (spec 049 FR-003/FR-004). A
+  /// separate flag rather than a [NavGate] case: it narrows the privilege
+  /// check instead of replacing it, so a destination can need both.
+  final bool requiresMultiCurrency;
 }
 
 /// A one-level grouping of destinations under a section label

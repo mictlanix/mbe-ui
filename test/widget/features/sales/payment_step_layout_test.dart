@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/payment_method_option_repository.dart';
@@ -86,16 +87,41 @@ void main() {
     WidgetTester tester, {
     required Size surface,
     String balance = '116.00',
+    bool multiCurrency = false,
   }) => pumpPos(
     tester,
     PaymentStep(sale: testSale(status: SaleStatus.completed, balance: balance), onClose: () {}),
     surface: surface,
     overrides: [
+      multiCurrencyEnabledProvider.overrideWithValue(multiCurrency),
       customerPaymentOverride(paymentRepository),
       openSessionOverride(),
       paymentMethodOptionRepositoryProvider.overrideWithValue(optionRepository),
     ],
   );
+
+  group('the currency prefix (spec 049 FR-005)', () {
+    String? prefix(WidgetTester tester) => tester
+        .widget<TextField>(find.byKey(const Key('payment_amount_field')))
+        .decoration!
+        .prefixText;
+
+    testWidgets('is absent on a single-currency deployment', (tester) async {
+      await pumpStep(tester, surface: const Size(1280, 900));
+      expect(prefix(tester), isNull);
+    });
+
+    testWidgets('names the sale currency on a multi-currency one', (
+      tester,
+    ) async {
+      await pumpStep(
+        tester,
+        surface: const Size(1280, 900),
+        multiCurrency: true,
+      );
+      expect(prefix(tester), 'MXN  ');
+    });
+  });
 
   group('the two-pane shape at the Large tier (US1, SC-001)', () {
     testWidgets(
