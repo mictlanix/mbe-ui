@@ -1274,6 +1274,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supplierDeleteFailedError => 'Failed to delete supplier.';
 
   @override
+  String get supplierSaveConflictError =>
+      'Another supplier already uses that code, or one of the linked records no longer exists. Check the code and the links, then save again.';
+
+  @override
+  String get supplierDeleteConflictError =>
+      'This supplier can\'t be deleted while it has addresses, contacts, bank accounts or agreements. Unlink them and remove the agreements first.';
+
+  @override
   String get supplierCreatePermissionDeniedError =>
       'You no longer have permission to create suppliers.';
 
@@ -3908,4 +3916,109 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get passwordRequiredExplanation =>
       'An administrator set your password. Choose a new one to continue.';
+
+  @override
+  String get supplierAddressesSection => 'Addresses';
+
+  @override
+  String get supplierAddressesEmpty => 'This supplier has no addresses.';
+
+  @override
+  String get supplierContactsSection => 'Contacts';
+
+  @override
+  String get supplierContactsEmpty => 'This supplier has no contacts.';
+
+  @override
+  String get supplierBankAccountsSection => 'Bank accounts';
+
+  @override
+  String get supplierBankAccountsEmpty => 'This supplier has no bank accounts.';
+
+  @override
+  String get supplierAgreementsSection => 'Agreements';
+
+  @override
+  String get supplierAgreementsEmpty => 'This supplier has no agreements.';
+
+  @override
+  String get supplierAgreementsAfterSaveNote =>
+      'You can add agreements after saving the supplier.';
+
+  @override
+  String get supplierAgreementColumnStart => 'Start';
+
+  @override
+  String get supplierAgreementColumnEnd => 'End';
+
+  @override
+  String get supplierAgreementColumnNotes => 'Notes';
+
+  @override
+  String get supplierAddressLinkLabel => 'Link an existing address';
+
+  @override
+  String get supplierContactLinkLabel => 'Link an existing contact';
+
+  @override
+  String get supplierBankAccountLinkLabel => 'Link an existing bank account';
+
+  @override
+  String get newBankAccountDialogTitle => 'New bank account';
+
+  @override
+  String get bankAccountBankNameLabel => 'Bank';
+
+  @override
+  String get bankAccountNumberLabel => 'Account number';
+
+  @override
+  String get bankAccountReferenceLabel => 'Reference';
+
+  @override
+  String get bankAccountRoutingLabel => 'CLABE / routing';
+
+  @override
+  String bankAccountFieldTooLongError(int max) {
+    return 'Must be at most $max characters.';
+  }
+
+  @override
+  String get bankAccountCreateFailedError =>
+      'Could not create the bank account.';
+
+  @override
+  String get addAgreementButton => 'Add agreement';
+
+  @override
+  String get newAgreementDialogTitle => 'New agreement';
+
+  @override
+  String get editAgreementDialogTitle => 'Edit agreement';
+
+  @override
+  String get supplierAgreementEndBeforeStartError =>
+      'The end date cannot be before the start date.';
+
+  @override
+  String agreementCommentTooLongError(int max) {
+    return 'Notes must be at most $max characters.';
+  }
+
+  @override
+  String get deleteAgreementButton => 'Delete';
+
+  @override
+  String get deleteAgreementConfirmTitle => 'Delete agreement?';
+
+  @override
+  String deleteAgreementConfirmMessage(String start, String end) {
+    return 'This will delete the agreement from $start to $end. This cannot be undone.';
+  }
+
+  @override
+  String get agreementSaveFailedError => 'Could not save the agreement.';
+
+  @override
+  String get agreementDeleteFailedError => 'Could not delete the agreement.';
 }

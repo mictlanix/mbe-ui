@@ -14,32 +14,11 @@ import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
-import 'package:mbe_ui/core/widgets/record_sheet.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/supplier.dart';
-import 'package:mbe_ui/features/catalog/presentation/supplier_form.dart';
 import 'package:mbe_ui/features/catalog/presentation/suppliers_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const _suppliersPath = '/suppliers';
-
-void _openSupplierSheet(
-  BuildContext context, {
-  required String title,
-  int? supplierId,
-  bool forceReadOnly = false,
-}) {
-  final formKey = GlobalKey<SupplierFormPanelState>();
-  showRecordSheet(
-    context,
-    title: title,
-    form: (context) => SupplierForm(
-      key: formKey,
-      supplierId: supplierId,
-      forceReadOnly: forceReadOnly,
-    ),
-    isDirty: () => formKey.currentState?.isDirty() ?? false,
-  );
-}
 
 /// Suppliers catalog list screen (FR-001, FR-002, US1). Gated by
 /// `can(SystemObject.suppliers, AccessRight.read)` in the router. Search-only
@@ -88,8 +67,7 @@ class SuppliersListScreen extends ConsumerWidget {
                 key: const Key('new_supplier_button'),
                 icon: Icon(CatalogAction.create.icon),
                 label: Text(l10n.newSupplierTooltip),
-                onPressed: () =>
-                    _openSupplierSheet(context, title: l10n.newSupplierTitle),
+                onPressed: () => context.push('$_suppliersPath/new'),
               ),
           ],
         ),
@@ -100,7 +78,7 @@ class SuppliersListScreen extends ConsumerWidget {
             emptyMessage: l10n.noSuppliersFound,
             createLabel: canCreate ? l10n.newSupplierTooltip : null,
             onCreate: canCreate
-                ? () => _openSupplierSheet(context, title: l10n.newSupplierTitle)
+                ? () => context.push('$_suppliersPath/new')
                 : null,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_suppliersPath),
@@ -141,20 +119,12 @@ class SuppliersListScreen extends ConsumerWidget {
                     .toUri(_suppliersPath)
                     .toString(),
               ),
-              onRowTap: (s) => _openSupplierSheet(
-                context,
-                title: l10n.viewSupplierTitle,
-                supplierId: s.supplierId,
-                forceReadOnly: true,
-              ),
+              onRowTap: (s) =>
+                  context.push('$_suppliersPath/${s.supplierId}?view=true'),
               rowActionsBuilder: (context, s) => buildCatalogRowActions(
                 editTooltip: l10n.editActionTooltip,
                 onEdit: canUpdate
-                    ? () => _openSupplierSheet(
-                        context,
-                        title: l10n.editSupplierTitle,
-                        supplierId: s.supplierId,
-                      )
+                    ? () => context.push('$_suppliersPath/${s.supplierId}')
                     : null,
               ),
             ),

@@ -48,6 +48,10 @@ No backend change and no client regeneration are needed: mbe-api #251 and #252 a
 - Spacing comes only from tokens. Actions the user lacks rights for are hidden, never disabled (§IV).
 - The l10n files are regenerated, not hand-edited.
 - No change to `LinkedRecordsSection`, `DataTableView` or `AppError`.
+- *Added during implementation:* two additive `core/widgets/` changes, both made so that existing code could be reused instead of copied.
+  - `buildCatalogRowActions` gains an optional `editKey`, so agreement rows can be keyed for tests.
+  - The delete-confirmation dialog inside `RecordFormActions` is extracted unchanged into a public `showRecordDeleteConfirmation`, so the agreement dialog's Delete reuses it.
+  - Existing callers are unaffected.
 
 **Scale/Scope**:
 
