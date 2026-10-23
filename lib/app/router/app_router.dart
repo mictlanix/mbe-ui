@@ -587,7 +587,6 @@ String? _redirect(Ref ref, GoRouterState state) {
 /// `/facilities` instead, the closest surviving surface.
 const _convertedEntityListPaths = <String, String>{
   '/labels': '/labels',
-  '/suppliers': '/suppliers',
   '/expenses': '/expenses',
   '/vehicles': '/vehicles',
   '/vehicle-operators': '/vehicle-operators',
