@@ -77,8 +77,8 @@ The screens reuse the customer detail from spec 046 wherever they can. Supplier 
 - **Shell.** The screen mirrors `CustomerDetailScreen`: a `Scaffold` and `AppBar` whose title is "Ver proveedor", "Editar proveedor" or "Nuevo proveedor". The `AppBar` has no actions (§VI), and leaving with unsaved edits asks first (`PopScope`, `confirmDiscardChanges`).
 - **Fields.** The six existing fields sit in a two-column `ResponsiveFormGrid`, as in `supplier_form.dart` today. Notes spans the full width.
 - **Addresses and Contacts** are `LinkedRecordsSection<AddressListItem>` and `LinkedRecordsSection<Contact>`, paired side by side, as on the customer (FR-001, FR-002).
-  - Address row: `labelOf` is the nickname, or the type when there is none. `subtitleOf` is street and number, neighbourhood, city or borough, and postal code.
-  - Contact row: `labelOf` is the name. `subtitleOf` is the job title, phone or mobile, and email.
+  - Address row: `labelOf` is the existing one-line summary (street and number, neighbourhood, city), the same as on the customer form, and there is no subtitle. The drawing's nickname line ("Bodega central") and postal code are not shown; see the spec's Assumptions.
+  - Contact row: `labelOf` is the name. `subtitleOf` joins whichever of job title, phone (mobile first) and email are present.
 - **Bank accounts** is a `LinkedRecordsSection<BankAccount>` at full width (FR-002). It is new to this form. `labelOf` is "bank · account number" and `subtitleOf` is the reference.
 - **Agreements** is a `DataTableView<SupplierAgreement>` child table, following the `TaxpayerCertificatesSection` precedent (FR-002, FR-016). It is sorted by start date, newest first. In view mode, rows have no action icon.
 - **Actions.** `RecordFormActions` shows `Editar` when the user has Suppliers *Update*, and switches to edit in place (§VI). Delete is in the same action area (see Edit).

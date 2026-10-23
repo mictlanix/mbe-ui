@@ -57,8 +57,8 @@ There are three instances, wired as in `customer_form.dart`.
 
 | Section | `sectionId` | `T` | `labelOf` / `subtitleOf` | `searchExisting` when | `onCreateNew` when |
 |---|---|---|---|---|---|
-| Addresses | `addresses` | `AddressListItem` | label / address line (FR-002) | `can(addresses, read)` | `can(addresses, create)` → `showAddressInlineCreateDialog` |
-| Contacts | `contacts` | `Contact` | name / job title · phone · email | `can(contacts, read)` | `can(contacts, create)` → `showContactInlineCreateDialog` |
+| Addresses | `addresses` | `AddressListItem` | `label` (the `formatAddress` summary) / none; `statusOf` marks inactive ones, as on the customer form (FR-002) | `can(addresses, read)` | `can(addresses, create)` → `showAddressInlineCreateDialog` |
+| Contacts | `contacts` | `Contact` | `name` / the non-empty parts of `jobTitle`, `preferredPhone` and `email`, joined with " · " | `can(contacts, read)` | `can(contacts, create)` → `showContactInlineCreateDialog` |
 | Bank accounts | `bank_accounts` | `BankAccount` | `bank · number` / reference | `can(bankAccounts, read)` | `can(bankAccounts, create)` → `showBankAccountInlineCreateDialog` |
 
 `editable` = fields enabled. That means not read-only and the user has Suppliers Update or, in create mode, Create (FR-018 and FR-019).

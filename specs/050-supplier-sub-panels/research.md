@@ -10,7 +10,7 @@ Each entry gives the decision, why it was made, and what was rejected. The paths
 
 - **Decision.** Suppliers move from the side panel to a full detail screen. It is a `SupplierDetailScreen` built on the same pattern as `CustomerDetailScreen` (`lib/features/catalog/presentation/customer_detail_screen.dart`).
 - **Rationale.** Constitution v1.14.0 §VI requires a full detail screen for any entity with linked-record sections, and Suppliers gains four of them (Clarifications Q1).
-- **Dependency.** The v1.14.0 amendment is on branch `docs/record-surface-criteria` and has not merged. Under v1.13.3, the move contradicts §VI's enumerated panel list. That amendment must merge before this feature does.
+- **Dependency (resolved).** Under v1.13.3 the move contradicted §VI's enumerated panel list. The v1.14.0 amendment that replaced the list with criteria merged in #205 on 2026-10-22.
 - **Alternatives considered.** Keeping the 640 px panel was rejected in the spec's clarification.
 
 ## R2. Routes

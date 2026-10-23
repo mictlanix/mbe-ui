@@ -6,7 +6,7 @@ These steps show that the feature works end to end. Implementation details are i
 
 ## Prerequisites
 
-- Constitution **v1.14.0** has merged (branch `docs/record-surface-criteria`, research R1).
+- Constitution **v1.14.0** is on the branch (merged to `main` in #205; research R1).
 - mbe-api has #251 and #252 on the target deployment (the test tenant has both).
 - The live tests need an administrator account, passed with `--dart-define` as `MBE_CATALOG_TEST_USERNAME` and `MBE_CATALOG_TEST_PASSWORD` (see TEST_ACCOUNTS.md). This is the same convention `crud_panel_flow_test.dart` uses.
 - A second account with Suppliers Read only, for the access checks.

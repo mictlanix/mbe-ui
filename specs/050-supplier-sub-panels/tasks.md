@@ -19,7 +19,7 @@ description: "Task list for 050-supplier-sub-panels"
 
 ## Cross-story notes
 
-- **Merge order.** Constitution **v1.14.0** (branch `docs/record-surface-criteria`) must merge before this feature does (plan, Constitution Check VI). Implementation can start without it.
+- **Constitution.** This feature relies on constitution **v1.14.0** §VI, which merged in #205 on 2026-10-22 and is already on this branch.
 - **Shared files.** Several stories edit the same files, so do these sequentially, not in parallel:
   - `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`: every story adds keys. Run `flutter gen-l10n` after each arb task and commit the regenerated `lib/l10n/app_localizations*.dart` files. Never hand-edit those.
   - `lib/features/catalog/presentation/supplier_form.dart` and `supplier_form_controller.dart`: US1, US2, US3, US4.
@@ -35,7 +35,7 @@ description: "Task list for 050-supplier-sub-panels"
 
 **Purpose**: a known-good baseline, so later failures are attributable.
 
-- [ ] T001 Run `flutter analyze` and the supplier and customer test files (`test/**/supplier*_test.dart`, `test/**/customer*_test.dart`, `test/**/linked_records_section_test.dart`) on the clean branch; note any pre-existing failures so they are not blamed on this feature
+- [ ] T001 Run `flutter analyze` and the supplier and customer test files (`test/**/supplier*_test.dart`, `test/**/customer*_test.dart`, `test/**/linked_records_section_test.dart`) on the clean branch; note any pre-existing failures so they are not blamed on this feature. Then check the generated client for drift (plan, Technical Context): regenerate `lib/generated/openapi/` from the dev mbe-api's `/openapi.json` the same way commit `0663918` did, and expect `git status lib/generated` to show no changes. If it does change, stop and review the diff against contracts C8 before continuing.
 
 ---
 
@@ -67,14 +67,14 @@ description: "Task list for 050-supplier-sub-panels"
 
 **Independent test**: open a supplier that has links and agreements on the test tenant: every record appears in its section. A supplier with none shows four empty-state messages. A user without Suppliers Update sees no controls (spec US1).
 
-- [ ] T011 [US1] Add l10n keys to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`, then run `flutter gen-l10n`: `supplierAddressesSection`/`supplierAddressesEmpty`, `supplierContactsSection`/`supplierContactsEmpty`, `supplierBankAccountsSection`/`supplierBankAccountsEmpty`, `supplierAgreementsSection`/`supplierAgreementsEmpty`, and the agreement column labels (start, end, notes). Check that no `bank*` or `agreement*` key exists first.
+- [ ] T011 [US1] Add l10n keys to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`, then run `flutter gen-l10n`: `supplierAddressesSection`/`supplierAddressesEmpty`, `supplierContactsSection`/`supplierContactsEmpty`, `supplierBankAccountsSection`/`supplierBankAccountsEmpty`, `supplierAgreementsSection`/`supplierAgreementsEmpty`, `supplierAgreementsAfterSaveNote`, and the agreement column labels (start, end, notes). Check that no `bank*` or `agreement*` key exists first.
 - [ ] T012 [US1] In `lib/features/catalog/presentation/supplier_form_controller.dart`, add `addresses`, `contacts` and `bankAccounts` to `SupplierFormState` (`@Default([])`) and fill them from the loaded supplier. Regenerate (T010's command).
 - [ ] T013 [US1] Create `lib/features/catalog/presentation/supplier_agreements_controller.dart`: a `@riverpod` family keyed by `int supplierId` that returns the agreements from `SupplierRepository.listAgreements`, sorted by `start` descending (FR-016). Regenerate.
-- [ ] T014 [US1] Create `lib/features/catalog/presentation/supplier_agreements_section.dart` (contracts C5), read-only for now. It watches T013's provider and shows the loading state, `ListFailedView` (retry invalidates the provider), the empty text, or a `DataTableView<SupplierAgreement>` with start, end and notes. Dates use `fmt.display.date`. On `LayoutTier.compact` it leaves out the Notes column (research R12). It takes `supplierId` and `readOnly`.
+- [ ] T014 [US1] Create `lib/features/catalog/presentation/supplier_agreements_section.dart` (contracts C5), read-only for now. It watches T013's provider and shows the loading state, `ListFailedView` (retry invalidates the provider), the empty text, or a `DataTableView<SupplierAgreement>` with start, end and notes. Dates use `fmt.display.date`. On `LayoutTier.compact` it leaves out the Notes column (research R12). It takes `int? supplierId` and `readOnly`. When `supplierId` is null (create mode, which exists from US1 because T017 adds `/suppliers/new`), it does not watch the provider and shows `supplierAgreementsAfterSaveNote` with key `supplier_agreements_after_save_note` instead (FR-015). Add that key in T011.
 - [ ] T015 [US1] In `lib/features/catalog/presentation/supplier_form.dart`, add below the six fields, in this order with `Divider`s between them (contracts C3):
   - Addresses and Contacts, paired, as `LinkedRecordsSection<AddressListItem>` and `LinkedRecordsSection<Contact>` with `sectionId` `addresses` and `contacts`;
   - Bank accounts at full width, as `LinkedRecordsSection<BankAccount>` with `sectionId` `bank_accounts`;
-  - the Agreements section from T014.
+  - the Agreements section from T014, given the form's `supplierId` (null in create mode) and its read-only state.
 
   Use the label and subtitle mapping in contracts C4 and the section keys from C3. Pass no link callbacks yet, so the sections are list-only. Depends on T011, T012 and T014.
 - [ ] T016 [US1] Create `lib/features/catalog/presentation/supplier_detail_screen.dart` (contracts C2), modelled on `customer_detail_screen.dart`:
@@ -86,7 +86,7 @@ description: "Task list for 050-supplier-sub-panels"
 - [ ] T018 [US1] In `lib/features/catalog/presentation/suppliers_list_screen.dart`, replace the three `_openSupplierSheet` call sites with `context.push`: row tap to `/suppliers/<id>?view=true`, the Edit icon to `/suppliers/<id>`, and New to `/suppliers/new`. Delete `_openSupplierSheet` and any import it leaves unused. Keep the existing `canUpdate` and `canCreate` gating. Depends on T016 and T017.
 - [ ] T019 [P] [US1] Extend `test/unit/features/catalog/supplier_form_controller_test.dart`: loading a supplier fills the three lists.
 - [ ] T020 [P] [US1] Create `test/unit/features/catalog/supplier_agreements_controller_test.dart`: agreements come back newest start first; a repository error surfaces.
-- [ ] T021 [P] [US1] Create `test/widget/features/catalog/supplier_agreements_section_test.dart`: the empty state, a populated table, the compact tier drops the Notes column, and no add or edit controls appear when read-only.
+- [ ] T021 [P] [US1] Create `test/widget/features/catalog/supplier_agreements_section_test.dart`: the empty state, a populated table, dates rendered through `fmt.display.date` in the configured format (FR-003; override the format so the assertion cannot pass by accident), the compact tier drops the Notes column, a null `supplierId` shows the after-save note without loading anything, and no add or edit controls appear when read-only.
 - [ ] T022 [P] [US1] Create `test/widget/features/catalog/supplier_detail_screen_test.dart`: the three titles, view mode shows all four sections with no controls (FR-018), and leaving with unsaved edits asks first. Use `customer_detail_screen_test.dart` as the pattern.
 - [ ] T023 [US1] Update `test/widget/features/catalog/suppliers_list_screen_test.dart` so row, Edit and New assert the pushed routes instead of an open sheet. Update `test/widget/features/catalog/supplier_form_test.dart` for the new sections. Depends on T015 and T018.
 
@@ -100,7 +100,7 @@ description: "Task list for 050-supplier-sub-panels"
 
 **Independent test**: edit a supplier, link an address, create and link a contact and a bank account, unlink another address, Save. Reopen: the sections show the new state (spec US2).
 
-- [ ] T024 [US2] Add l10n keys (arb files, then `flutter gen-l10n`): `supplierAddressLinkLabel`, `supplierContactLinkLabel`, `supplierBankAccountLinkLabel`, `newBankAccountDialogTitle`, `bankAccountBankNameLabel`, `bankAccountNumberLabel`, `bankAccountReferenceLabel`, `bankAccountRoutingLabel`, the bank-account field error texts and `bankAccountCreateFailedError`. Reuse `fieldRequired`, `cancelButton`, `saveButton` and `commentLabel`.
+- [ ] T024 [US2] Add l10n keys to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`, then run `flutter gen-l10n`: `supplierAddressLinkLabel`, `supplierContactLinkLabel`, `supplierBankAccountLinkLabel`, `newBankAccountDialogTitle`, `bankAccountBankNameLabel`, `bankAccountNumberLabel`, `bankAccountReferenceLabel`, `bankAccountRoutingLabel`, the bank-account field error texts and `bankAccountCreateFailedError`. Reuse `fieldRequired`, `cancelButton`, `saveButton` and `commentLabel`.
 - [ ] T025 [US2] Create `lib/features/catalog/presentation/bank_account_inline_create_controller.dart` (research R6): a freezed state, an auto-disposed `@riverpod` controller with setters, `submit()` that validates (bank name and account number required; length limits 250, 20, 20, 18 and 500) then calls `BankAccountRepository.create`. A `ValidationError` maps to `fieldErrors` by `loc.last`; any other `AppError` sets `createFailed` and `errorDetail`. Model it on `contact_inline_create_controller.dart`. Regenerate.
 - [ ] T026 [US2] Create `lib/features/catalog/presentation/bank_account_inline_create.dart` (contracts C7): `showBankAccountInlineCreateDialog(context)` returns the created `BankAccount?`. A `Dialog` with `ResponsiveFormGrid`, the five field keys from C7, an `ErrorBanner`, and Cancel and Save buttons with a spinner. Model it on `contact_inline_create.dart`.
 - [ ] T027 [US2] In `supplier_form_controller.dart`, add `addressAdded/addressRemoved`, `contactAdded/contactRemoved` and `bankAccountAdded/bankAccountRemoved`, each de-duplicating by id and clearing errors, as `customer_form_controller.dart:150-178` does. In `submitCreate`, pass an id list only when it is non-empty. In `submitUpdate`, always pass all three (replace-all, FR-008). Depends on T006.
@@ -120,16 +120,17 @@ description: "Task list for 050-supplier-sub-panels"
 
 **Independent test**: on a saved supplier, add an agreement, change its end date, try an end before the start (refused), then remove it. Reopen after each step: the section matches (spec US3).
 
-- [ ] T033 [US3] Add l10n keys (arb files, then `flutter gen-l10n`): `addAgreementButton`, `newAgreementDialogTitle`, `editAgreementDialogTitle`, the start, end and notes field labels, `supplierAgreementEndBeforeStartError`, `deleteAgreementButton`, `deleteAgreementConfirmTitle`, `deleteAgreementConfirmMessage` (with the two dates), `supplierAgreementsAfterSaveNote`, and the agreement save and delete failure texts.
+- [ ] T033 [US3] Add l10n keys to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`, then run `flutter gen-l10n`: `addAgreementButton`, `newAgreementDialogTitle`, `editAgreementDialogTitle`, the start, end and notes field labels, `supplierAgreementEndBeforeStartError`, `deleteAgreementButton`, `deleteAgreementConfirmTitle`, `deleteAgreementConfirmMessage` (with the two dates), and the agreement save and delete failure texts.
 - [ ] T034 [US3] Create `lib/features/catalog/presentation/supplier_agreement_dialog_controller.dart` (research R8): a freezed state with `start`, `end`, `comment`, `submitting`, `done`, `error`, `errorDetail` and `fieldErrors`, and a `canSubmit` rule (both dates set, `end` not before `start`, comment ≤ 500, not submitting). Methods are `submit()` (create or update through `SupplierRepository`), `delete()`, and setters. Each success invalidates `supplierAgreementsControllerProvider(supplierId)`. A `ValidationError` maps to `fieldErrors`. Regenerate.
 - [ ] T035 [US3] Create `lib/features/catalog/presentation/supplier_agreement_dialog.dart` (contracts C6): `showSupplierAgreementDialog(context, {required int supplierId, SupplierAgreement? existing})`. Date fields use the `InkWell` + `InputDecorator` + `showDatePicker` pattern from `vehicle_operator_form.dart:202-229`. Save is disabled until `canSubmit`. `Eliminar` appears in edit mode only and asks through `RecordDeleteConfirmation`. A server error keeps the dialog open with an `ErrorBanner`. Use the keys listed in C6.
-- [ ] T036 [US3] In `supplier_agreements_section.dart`, add the controls (contracts C5): `add_agreement_button` and a per-row `edit_agreement_<id>` icon (`CatalogAction.edit`), both shown only when `!readOnly && can(suppliers, update)`. Both open T035's dialog. When `supplierId` is null, show `supplierAgreementsAfterSaveNote` (key `supplier_agreements_after_save_note`) and no add control (FR-015). Depends on T033 and T035.
-- [ ] T037 [US3] In `supplier_form_controller.dart`, make a successful `submitCreate` store the created id in `state.supplierId`, as `customer_form_controller.dart:317-321` does. In `supplier_form.dart`, add `ValueChanged<int>? onCreated`: after a create, call it when set and otherwise pop; updates and deletes still pop (research R5, FR-015a). Pass the form's `supplierId` and read-only state to the agreements section.
+- [ ] T036 [US3] In `supplier_agreements_section.dart`, add the controls (contracts C5): `add_agreement_button` and a per-row `edit_agreement_<id>` icon (`CatalogAction.edit`), both shown only when `!readOnly && can(suppliers, update)`. Both open T035's dialog. The null-`supplierId` note already exists from T014; make sure the add control stays hidden there (FR-015). Depends on T033 and T035.
+- [ ] T037 [US3] In `supplier_form_controller.dart`, make a successful `submitCreate` store the created id in `state.supplierId`, as `customer_form_controller.dart:317-321` does. In `supplier_form.dart`, add `ValueChanged<int>? onCreated`: after a create, call it when set and otherwise pop; updates and deletes still pop (research R5, FR-015a).
 - [ ] T038 [US3] In `supplier_detail_screen.dart`, pass `onCreated: (id) => context.replace('/suppliers/$id')` so the saved supplier reopens in edit mode. Depends on T037.
 - [ ] T039 [P] [US3] Create `test/unit/features/catalog/supplier_agreement_dialog_controller_test.dart`: `canSubmit` for each case, including equal dates (valid) and end before start (invalid); create, update and delete call the repository with the right values and invalidate the provider; a server error is kept.
-- [ ] T040 [P] [US3] Create `test/widget/features/catalog/supplier_agreement_dialog_test.dart`: add and edit modes, Save disabled for an invalid range with the error under End, Delete only when editing, and the delete confirmation.
+- [ ] T040 [P] [US3] Create `test/widget/features/catalog/supplier_agreement_dialog_test.dart`: add and edit modes, the picked dates shown in the configured format (FR-003), Save disabled for an invalid range with the error under End, Delete only when editing, and the delete confirmation.
 - [ ] T041 [US3] Extend `supplier_agreements_section_test.dart`: add and edit controls appear only with Update and when not read-only; a row has exactly one icon (Edit, no Delete); a null `supplierId` shows the after-save note and no add control. Depends on T036.
 - [ ] T042 [US3] Extend `supplier_form_controller_test.dart` and `supplier_detail_screen_test.dart`: a successful create sets `supplierId` and the screen replaces itself with `/suppliers/<id>` in edit mode; an update returns to the list. Depends on T038.
+- [ ] T043 [US3] Extend `test/widget/features/catalog/supplier_form_test.dart` with the agreements-independence case (FR-012, research R4): in edit mode, change a field and link an address, then add an agreement through the dialog. The agreement appears, while the changed field and the pending link are still on screen and `isDirty()` is still true. Depends on T036.
 
 **Checkpoint**: US1, US2 and US3 work together. All of the sub-panels are usable.
 
@@ -141,10 +142,10 @@ description: "Task list for 050-supplier-sub-panels"
 
 **Independent test**: delete a supplier that still has a link: it is refused with the explanation. Unlink, Save and delete again: it succeeds (spec US4).
 
-- [ ] T043 [US4] Add l10n keys (arb files, then `flutter gen-l10n`): `supplierSaveConflictError` ("Ya existe un proveedor con ese código, o uno de los registros vinculados ya no existe.") and `supplierDeleteConflictError` (the links-or-agreements message, FR-017), each with an English counterpart.
-- [ ] T044 [US4] In `supplier_form_controller.dart`, add `SupplierFormErrorCode.saveConflict` and `deleteConflict`. In `submitCreate` and `submitUpdate`, map a `ServerError` with `statusCode == 409` to `saveConflict`. In `delete`, map it to `deleteConflict` (research R7). Keep every field and list unchanged on a conflict (FR-011). The precedent is `open_session_form_controller.dart:169`.
-- [ ] T045 [US4] In `supplier_form.dart`, localise the two codes and show them in the form's `ErrorBanner` above the action area, with keys `supplier_save_conflict_banner` and `supplier_delete_conflict_banner`. Depends on T043 and T044.
-- [ ] T046 [US4] Extend `supplier_form_controller_test.dart` (a 409 maps to `saveConflict` on create and update, to `deleteConflict` on delete, and leaves the state's fields and lists intact; a non-409 failure keeps the generic code) and `supplier_form_test.dart` (each banner appears and the user's edits stay on screen). Depends on T045.
+- [ ] T044 [US4] Add l10n keys to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`, then run `flutter gen-l10n`: `supplierSaveConflictError` ("Ya existe un proveedor con ese código, o uno de los registros vinculados ya no existe.") and `supplierDeleteConflictError` (the links-or-agreements message, FR-017), each with an English counterpart.
+- [ ] T045 [US4] In `supplier_form_controller.dart`, add `SupplierFormErrorCode.saveConflict` and `deleteConflict`. In `submitCreate` and `submitUpdate`, map a `ServerError` with `statusCode == 409` to `saveConflict`. In `delete`, map it to `deleteConflict` (research R7). Keep every field and list unchanged on a conflict (FR-011). The precedent is `open_session_form_controller.dart:169`.
+- [ ] T046 [US4] In `supplier_form.dart`, localise the two codes and show them in the form's `ErrorBanner` above the action area, with keys `supplier_save_conflict_banner` and `supplier_delete_conflict_banner`. Depends on T044 and T045.
+- [ ] T047 [US4] Extend `supplier_form_controller_test.dart` (a 409 maps to `saveConflict` on create and update, to `deleteConflict` on delete, and leaves the state's fields and lists intact; a non-409 failure keeps the generic code) and `supplier_form_test.dart` (each banner appears and the user's edits stay on screen). Depends on T046.
 
 **Checkpoint**: all four stories are complete.
 
@@ -152,11 +153,11 @@ description: "Task list for 050-supplier-sub-panels"
 
 ## Phase 7: Polish & cross-cutting
 
-- [ ] T047 [P] Create `test/integration/supplier_sub_panels_live_test.dart` (research R13), skipped without credentials, in the style of `crud_panel_flow_test.dart`. Through the repositories it creates a bank account, creates a supplier linked to an address and a contact discovered at runtime plus that account, and reads the detail back. It then adds, updates and deletes an agreement, expects the supplier delete to be refused with 409 while links exist, unlinks everything and deletes. Cleanup goes in `tearDown`.
-- [ ] T048 Run `dart run build_runner build --delete-conflicting-outputs`, `flutter gen-l10n`, `flutter analyze` (clean) and the full unit and widget suites. Identify any failures that predate this work (T001) rather than hiding them.
-- [ ] T049 Run `test/integration/supplier_sub_panels_live_test.dart` (quickstart §1) against the dev tenant with administrator credentials passed through `--dart-define`.
-- [ ] T050 Walk through `specs/050-supplier-sub-panels/quickstart.md` § Manual walkthrough and § Access walkthrough on a web build. Verify the Spanish and English text (FR-020), the compact width, and a spot-check of at least 10 suppliers against the server (SC-001).
-- [ ] T051 Before merging, confirm constitution v1.14.0 is on `main` (the amendment branch `docs/record-surface-criteria`). If it is not, hold this PR. In the PR description, under "Roadmap", write `Closes mictlanix/mbe-roadmap#14`.
+- [ ] T048 [P] Create `test/integration/supplier_sub_panels_live_test.dart` (research R13), skipped without credentials, in the style of `crud_panel_flow_test.dart`. Through the repositories it creates a bank account, creates a supplier linked to an address and a contact discovered at runtime plus that account, and reads the detail back. It then adds, updates and deletes an agreement, expects the supplier delete to be refused with 409 while links exist, unlinks everything and deletes. Cleanup goes in `tearDown`.
+- [ ] T049 Run `dart run build_runner build --delete-conflicting-outputs`, `flutter gen-l10n`, `flutter analyze` (clean) and the full unit and widget suites. Identify any failures that predate this work (T001) rather than hiding them.
+- [ ] T050 Run `test/integration/supplier_sub_panels_live_test.dart` (quickstart §1) against the dev tenant with administrator credentials passed through `--dart-define`.
+- [ ] T051 Walk through `specs/050-supplier-sub-panels/quickstart.md` § Manual walkthrough and § Access walkthrough on a web build. Verify the Spanish and English text (FR-020), the compact width, and a spot-check of at least 10 suppliers against the server (SC-001).
+- [ ] T052 Open the PR into `main` (constitution v1.14.0 is already there, #205). In the PR description, under "Roadmap", write `Closes mictlanix/mbe-roadmap#14`.
 
 ---
 
@@ -167,7 +168,7 @@ description: "Task list for 050-supplier-sub-panels"
 - **US2** depends on US1 (T015 for the sections, T016 for the screen) and on Foundational.
 - **US3** depends on US1 (the agreements section and the detail screen). It is independent of US2 in code, but both edit `supplier_form.dart`, so do them in order.
 - **US4** depends only on Foundational and on the form and its controller as they stand after US1, so it can ship earlier, but it shares `supplier_form.dart` and `supplier_form_controller.dart` with US2 and US3.
-- **Polish** comes last. T047 can be written once US2 and US3 are done.
+- **Polish** comes last. T048 can be written once US2 and US3 are done.
 
 Within a story: l10n keys, then controllers and state, then widgets, then screen wiring, then tests.
 
@@ -189,4 +190,4 @@ T005 BankAccountRepository (after T002)
 1. **MVP (US1).** Phases 1–3 deliver the full page with all four sections, read-only. It is shippable, but of limited use on its own, because nothing in the sections can be changed.
 2. **Main value (US1 + US2).** Adding Phase 4 makes the screen useful to purchasing: links can be managed. This is the point to run the first manual check against the dev tenant.
 3. **Complete (US3, US4).** Phases 5 and 6 add agreement maintenance, the stay-after-create behaviour and the clear conflict messages.
-4. **One PR.** The roadmap item is a single plan issue, so the work ships as one PR with `Closes mictlanix/mbe-roadmap#14`, after constitution v1.14.0 has merged.
+4. **One PR.** The roadmap item is a single plan issue, so the work ships as one PR with `Closes mictlanix/mbe-roadmap#14`.

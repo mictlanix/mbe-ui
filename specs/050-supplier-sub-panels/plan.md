@@ -26,7 +26,7 @@ No backend change and no client regeneration are needed: mbe-api #251 and #252 a
 
 **Language/Version**: Dart `^3.10.3`, Flutter 3.47.7 stable (unchanged)
 
-**Primary Dependencies**: Riverpod 3 (`riverpod_annotation` / riverpod_generator 4), freezed 4, `go_router`, `data_table_2`, and the generated `mbe_api_client`. No new packages, and the OpenAPI client is not regenerated (contracts C8).
+**Primary Dependencies**: Riverpod 3 (`riverpod_annotation` / riverpod_generator 4), freezed 4, `go_router`, `data_table_2`, and the generated `mbe_api_client`. No new packages. The OpenAPI client is not expected to change (contracts C8). Because mbe-api #252–#254 merged the same day as the last regeneration, T001 regenerates it once as a drift check and expects no diff, per the quality gate on endpoint changes.
 
 **Storage**: N/A (online-only, §VII)
 
@@ -44,7 +44,7 @@ No backend change and no client regeneration are needed: mbe-api #251 and #252 a
 - Pickers keep the existing debounced search.
 
 **Constraints**:
-- §VI v1.14.0 requires the full screen. The amendment must merge first (R1).
+- §VI v1.14.0 requires the full screen (R1). The amendment merged in #205 on 2026-10-22.
 - Spacing comes only from tokens. Actions the user lacks rights for are hidden, never disabled (§IV).
 - The l10n files are regenerated, not hand-edited.
 - No change to `LinkedRecordsSection`, `DataTableView` or `AppError`.
@@ -54,14 +54,14 @@ No backend change and no client regeneration are needed: mbe-api #251 and #252 a
 | | Files |
 |---|---|
 | **New (11 source files, plus tests)** | `supplier_detail_screen.dart`, `supplier_agreements_section.dart`, `supplier_agreements_controller.dart`, `supplier_agreement_dialog.dart` + controller, `bank_account_inline_create.dart` + controller, `entities/bank_account.dart`, `entities/supplier_agreement.dart`, `bank_account_repository.dart` + impl |
-| **Edited** | `supplier.dart` (entity), `supplier_repository.dart` + impl, `supplier_form.dart`, `supplier_form_controller.dart`, `suppliers_list_screen.dart`, `app_router.dart` |
+| **Edited (7 source files)** | `supplier.dart` (entity), `supplier_repository.dart` + impl, `supplier_form.dart`, `supplier_form_controller.dart`, `suppliers_list_screen.dart`, `app_router.dart` |
 | **Edited, l10n** | both `.arb` files (about 30 keys) and the regenerated `app_localizations*.dart` |
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-These verdicts are against **v1.14.0**, which is pending merge on `docs/record-surface-criteria`.
+These verdicts are against **v1.14.0**, merged to `main` in #205 on 2026-10-22.
 
 | Principle | Verdict | How |
 |---|---|---|
@@ -70,12 +70,12 @@ These verdicts are against **v1.14.0**, which is pending merge on `docs/record-s
 | **III. Contract-driven API** | Pass | Only generated methods and models are used (C8). There are no hand-written DTOs and no edits to generated files. **No mbe-api change**, so there is no issue to file. Conflicts are read from the status code, because the server's 409 body is generic; that limitation is recorded in R7 and is owned by mbe-api#147 / UI #148. |
 | **IV. Deny-by-default RBAC** | Pass | The rights matrix is in R9. It covers `suppliers` (3) R/C/U/D, read and create on `addresses` (11), `contacts` (12) and `bankAccounts` (13), and agreements under `suppliers` Update, as the server enforces. The route is covered by the existing `PrivilegeGate`. No new `SystemObject`. |
 | **V. Material 3 design system** | Pass | Uses `Dialog`, `DataTableView`, `ListTile`, `CatalogEntityPicker`, `ErrorBanner`, `RecordFormActions`, `RecordDeleteConfirmation` and `CatalogAction.edit`. All strings are in `.arb` files. Dates use `fmt.display.date`. |
-| **VI. Desktop/web-first layout** | **Pass, conditional on v1.14.0** | Suppliers gains linked-record sections, so the record-surface rule requires a full detail screen. Under v1.13.3, Suppliers is listed as a panel entity, so this feature must not merge before the amendment. |
+| **VI. Desktop/web-first layout** | **Pass** | Suppliers gains linked-record sections, so the record-surface rule requires a full detail screen. (Before v1.14.0 this contradicted §VI\'s panel list; #205 resolved it.) |
 | **VI.** Other rules | Pass | Row click opens the read-only view, with an Edit toggle. Delete lives in `RecordFormActions`. The `AppBar` has no actions. Each agreement row has a single Edit icon, with delete inside its dialog (Clarifications Q2). Compact reflows (R12). |
 | **VII. Online-only** | Pass | Nothing is cached. Every view reads from the server. |
 | **Quality gates** | Pass | Unit, widget and live tests are listed in R13. Every FR maps to at least one test (see tasks). |
 
-**Post-design re-check** (after Phase 1): still passing, with the same single condition. The design added no new principle exposure: no core widget changes, no new `AppError` variant, and no codegen.
+**Post-design re-check** (after Phase 1): still passing. The design added no new principle exposure: no core widget changes, no new `AppError` variant, and no codegen.
 
 ## Project Structure
 
@@ -138,4 +138,4 @@ test/
 
 ## Complexity Tracking
 
-There are no violations to justify. The only open condition is the merge order with the v1.14.0 amendment, recorded under Constitution Check and R1.
+There are no violations to justify.

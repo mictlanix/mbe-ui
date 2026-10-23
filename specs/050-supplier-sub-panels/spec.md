@@ -42,7 +42,7 @@ A purchasing user opens a supplier and sees, on one screen, its own fields and f
 
 **Acceptance Scenarios**:
 
-1. **Given** a supplier with 2 linked addresses, 1 contact, 1 bank account and 3 agreements, **When** the user opens it, **Then** each section lists exactly those records, with enough detail to recognise each one at a glance.
+1. **Given** a supplier with 2 linked addresses, 1 contact, 1 bank account and 3 agreements, **When** the user opens it, **Then** each section lists exactly those records, each showing the details FR-002 names for its kind.
 2. **Given** a supplier with no links or agreements, **When** the user opens it, **Then** each section shows an empty-state message instead of a blank area.
 3. **Given** a user who can read suppliers but not change them, **When** they open a supplier, **Then** they see all four sections but no link, unlink, create, add, edit or remove controls.
 4. **Given** a supplier with agreements, **When** the user views the Agreements section, **Then** the agreements are ordered by start date, newest first, and each shows its start date, end date and notes.
@@ -109,7 +109,7 @@ When the user tries to delete a supplier that still has links or agreements, the
 - **A record disappears before save.** A picked address, contact or bank account is deleted by someone else before the supplier is saved. The save is refused. The user sees the conflict message from FR-011, which also covers a duplicate code. The form keeps their edits, and nothing is half-saved.
 - **The same record on many suppliers.** A shared address or bank account linked to several suppliers shows on each of them. Unlinking it from one supplier leaves the others untouched.
 - **Inline create fails.** The new record is not added to the section, the dialog stays open with the user's input, and it shows the error.
-- **Agreement saved elsewhere while editing.** The supplier is reopened or refreshed after each agreement change, so the section shows what the server holds.
+- **Agreement changes while the form has unsaved edits.** After each agreement change, only the Agreements section refreshes from the server. The supplier's unsaved field and link edits are left untouched.
 - **Equal start and end dates.** An agreement whose end date equals its start date is valid: a one-day agreement.
 - **Expired agreements.** Agreements whose end date has passed are still listed, because they are history, not errors.
 - **Many links.** A supplier with many links keeps every section readable, and the page scrolls rather than truncating.
@@ -123,8 +123,8 @@ When the user tries to delete a supplier that still has links or agreements, the
 
 - **FR-001**: The supplier MUST open in a detail screen that shows its own fields and, below them, four sections: Addresses, Contacts, Bank accounts and Agreements. The screen MUST serve viewing, editing and creating, the same way the customer detail does.
 - **FR-002**: Each section MUST list its records with an empty state when there are none.
-  - An address MUST show its nickname or type, then street and number, neighbourhood, city or borough, and postal code.
-  - A contact MUST show its name, then job title, phone or mobile, and email.
+  - An address MUST show the same one-line summary the customer screen shows: street and number (with interior number), neighbourhood, and city (or state when there is no city). An inactive address MUST be marked as such.
+  - A contact MUST show its name, then its job title, phone (mobile first) and email, leaving out whichever are empty.
   - A bank account MUST show its bank name, account number and reference.
   - An agreement MUST show its start date, end date and notes.
 - **FR-003**: Dates MUST use the application's configured date format (spec 028).
@@ -184,9 +184,10 @@ When the user tries to delete a supplier that still has links or agreements, the
 
 ## Assumptions
 
-- **Full detail page.** Suppliers move from the side panel to a full detail page, as customers did in spec 046. Four sections do not fit a side panel. Keeping the two catalogs alike is worth the change in how a supplier opens. Under constitution v1.14.0 §VI, an entity with linked-record sections MUST use a full detail screen, so the move is required rather than a choice. This depends on the v1.14.0 amendment (branch `docs/record-surface-criteria`) merging first.
+- **Full detail page.** Suppliers move from the side panel to a full detail page, as customers did in spec 046. Four sections do not fit a side panel. Keeping the two catalogs alike is worth the change in how a supplier opens. Under constitution v1.14.0 §VI, an entity with linked-record sections MUST use a full detail screen, so the move is required rather than a choice. The v1.14.0 amendment merged in #205 on 2026-10-22.
 - **Agreements save on their own.** Agreements have their own server operations and only exist under a saved supplier, so each dialog confirms on its own. This matches taxpayer certificates. Mixing staged links with immediate agreement changes on one screen is acceptable, because the agreements live in their own section with their own dialogs.
 - **No standalone bank account catalog.** Bank accounts are created inline from the supplier, as customers create addresses and contacts. A standalone Bank accounts screen (list, edit, delete) is out of scope, as are standalone Address and Contact screens, which do not exist today either.
+- **Address rows match the customer screen.** They show the existing one-line address summary, not the nickname or postal code. Adding those would change the shared address projection that customers and facilities also use.
 - **Linked records are not edited from the supplier.** This matches the customer screen. Fixing a typo in a shared address is out of scope until a standalone catalog exists.
 - **No marker for unsaved links.** Linked and unlinked rows look the same before and after saving, as on the customer screen. Leaving with unsaved edits asks first.
 - **Agreements render as a table**, following the taxpayer-certificates precedent. On narrow screens the table drops the notes column, and the notes stay visible in the agreement dialog.
