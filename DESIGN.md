@@ -418,15 +418,32 @@ record's own **surface**, not literally a "detail screen" — a surface is
 either a full detail screen (its own route) or the shared responsive side
 panel opened over the entity's list screen
 (`core/widgets/record_sheet.dart`, `showRecordSheet`). Which surface an
-entity uses is a per-entity choice: a full detail screen for Products,
-Facilities, Taxpayer Issuers, Users, User Profiles, Customers (moved from
-the panel 2026-10-17, specs/046-catalog-improvements: its addresses,
-contacts and taxpayer-recipient sections outgrew a side panel), and any
-other entity with nested child collections; the shared panel for every
-other catalog/list entity — Labels, Suppliers, Employees, Taxpayer
-Recipients, Expenses, Vehicles, Vehicle Operators, Warehouses, Points of
-Sale, Cash Drawers, Price Lists, Exchange Rates, and Payment Method
-Options. Both surfaces render the identical form via the same
+entity uses is a per-entity choice, decided by the form's complexity
+(amended 2026-10-22). An entity gets a full detail screen when **any** of
+the following holds:
+
+- it owns nested child collections or linked-record sections;
+- its form has **more than 15 own fields**;
+- it needs its own per-record URL.
+
+Every other entity uses the shared panel. "Own fields" counts the inputs on
+the record itself: text fields, pickers, toggles and status. It excludes
+linked-record sections, child collections, dividers and the action area.
+
+At the time of writing, these entities use a full detail screen:
+- Products, Facilities, Taxpayer Issuers, Users and User Profiles, for
+  their child collections.
+- Customers, which moved 2026-10-17 in specs/046-catalog-improvements when
+  its addresses, contacts and taxpayer-recipient sections outgrew the panel.
+- Suppliers, which moves with specs/050-supplier-sub-panels for its
+  addresses, contacts, bank accounts and agreements.
+
+The remaining catalogs use the panel, for example Labels, Employees,
+Vehicles and Price Lists. Employees has the largest panel form, at about
+13 own fields.
+
+These lists are illustrations, not the rule: an entity moves when it
+starts to meet a criterion. Both surfaces render the identical form via the same
 `RecordFormActions` (§4.2.2, §4.3) and satisfy §4.2.1's row-click,
 read-only-label, edit-toggle, and delete-placement rules identically. A
 panel surface simply has no `AppBar` of its own, so its read-only-to-edit
@@ -448,6 +465,19 @@ a second, parallel set of panel-specific rules that would drift from the
 screen rules over time. See specs/035-crud-ui-refinements/research.md and
 plan.md for the full before/after and the entity-by-entity conversion
 list.
+
+**Why criteria instead of a list** (2026-10-22): until v1.14.0 the
+constitution enumerated which entities used which surface. The list was
+only meant as examples, but it read as the rule, so every entity that
+outgrew the panel needed a constitution amendment of its own (Customers
+in v1.13.3, then Suppliers). Spec 035 already had a criterion: simple
+records go in the panel, and records owning nested collections or needing
+a deep link get a full screen. That criterion is now the rule. The
+15-field ceiling was set so that no current panel form crosses it. At
+about 13 own fields, Employees is the largest panel form today, while
+Customers moved with about 11, because of its sections. So field count
+was never what decided it. The ceiling exists so that a future
+long-but-flat form does not get crammed into a 640 px panel.
 
 ### 4.3 Shared component library
 
