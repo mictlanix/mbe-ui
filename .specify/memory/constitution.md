@@ -1,7 +1,22 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.13.3
+Version change: 1.0.0 → 1.14.0
 Modified principles:
+  - VI. Desktop/Web-First, Compact-Ready Layout — the record-surface rule
+    now states its criteria instead of enumerating entities [1.14.0, MINOR:
+    the binding rule is materially re-expressed]. An entity uses a full
+    detail screen when it owns nested child collections or linked-record
+    sections, has more than 15 own fields, or needs its own per-record URL.
+    Every other entity uses the shared panel. The entity lists survive as
+    non-normative examples. No entity changes surface: the largest panel
+    form (Employees, about 13 own fields) is under the ceiling, and every
+    full-screen entity already meets a criterion. Requested by the product
+    owner, 2026-10-22, ahead of specs/050-supplier-sub-panels, whose
+    supplier sections will move Suppliers under the first criterion without
+    a further amendment.
+    Templates: plan-template.md, spec-template.md and tasks-template.md
+    need no change (none restate the lists). DESIGN.md §4.2.3 was updated
+    first, per Governance.
   - VI. Desktop/Web-First, Compact-Ready Layout — Customers moves from the
     shared-panel list to the full-detail-screen list [1.13.3, PATCH: a
     per-entity reassignment under the existing "record surface" rule, no
@@ -478,12 +493,21 @@ multi-column forms.
   route) or the shared responsive side panel opened over the entity's
   list screen (`core/widgets/record_sheet.dart`, `showRecordSheet`).
   Which surface an entity uses is a per-entity choice, not a per-screen
-  one: a full detail screen for Products, Facilities, Taxpayer Issuers,
-  Users, User Profiles, Customers, and any other entity with nested child
-  collections; the shared panel for every other catalog/list entity
-  (Labels, Suppliers, Employees, Taxpayer Recipients,
-  Expenses, Vehicles, Vehicle Operators, Warehouses, Points of Sale, Cash
-  Drawers, Price Lists, Exchange Rates, and Payment Method Options). Both
+  one. An entity MUST use a full detail screen when **any** of these
+  holds:
+  - it owns nested child collections or linked-record sections;
+  - its form has **more than 15 own fields**;
+  - it needs its own per-record URL.
+
+  Every other entity MUST use the shared panel. "Own fields" are the
+  inputs on the record itself: text fields, pickers, toggles and status.
+  They exclude linked-record sections, child collections, dividers and the
+  action area. A feature that makes an entity meet or stop meeting a
+  criterion MUST move it to the matching surface in the same change.
+
+  *Examples (non-normative), as of v1.14.0:* full screen for Products,
+  Facilities, Taxpayer Issuers, Users, User Profiles and Customers; panel
+  for Labels, Suppliers, Employees, Vehicles and Price Lists. Both
   surfaces render the identical form and MUST satisfy every rule below
   identically.
 - Clicking anywhere on a row (outside the Edit icon) MUST open that
@@ -605,6 +629,12 @@ the same `RecordFormActions`), so this amendment names the shared
 concept — a record's own **surface** — rather than adding a parallel set
 of panel-specific rules that would drift from the screen rules over
 time.
+The v1.14.0 amendment replaces the enumerated entity lists with the
+criteria behind them (DESIGN.md §4.2.3). The lists were meant as
+examples, but they read as the rule, so every entity that outgrew the
+panel needed an amendment of its own. The 15-field ceiling sits above the
+largest current panel form (Employees, about 13), so the amendment moves
+no entity by itself.
 
 ### VII. Online-Only, Server-Rendered Documents
 
@@ -667,4 +697,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.13.3 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-10-17
+**Version**: 1.14.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-10-22
