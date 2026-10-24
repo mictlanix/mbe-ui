@@ -124,7 +124,8 @@ test/
 | Dependency | State | Blocking? |
 |---|---|---|
 | mbe-api license-photo endpoints (`6a8ce82`, Read/Update guards at `HEAD`) | shipped | — |
-| mbe-api: declare `image/png` on the GET (R1a) | **to file** (draft in research.md R1a) | No. The raw-bytes bypass covers it. When it ships: regenerate, then swap the call. |
+| mbe-api: declare `image/png` on the GET (R1a) | filed: mictlanix/mbe-api#257 (part 2) | No. The raw-bytes bypass covers it. When it ships: regenerate, then swap the call. |
+| mbe-api: create/update write `updater = 0` and always fail with 409 | filed: mictlanix/mbe-api#257 (part 1) | **Yes** for saving any operator, and so for attaching a photo; blocks T021. |
 
 ## Complexity Tracking
 
