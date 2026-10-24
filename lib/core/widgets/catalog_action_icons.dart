@@ -50,6 +50,7 @@ List<Widget> buildCatalogRowActions({
   VoidCallback? onEdit,
   List<CatalogRowAction> extraActions = const [],
   String? moreActionsTooltip,
+  Key? editKey,
 }) {
   assert(
     extraActions.length <= 1 || moreActionsTooltip != null,
@@ -60,6 +61,7 @@ List<Widget> buildCatalogRowActions({
   return [
     if (onEdit != null)
       IconButton(
+        key: editKey,
         icon: Icon(CatalogAction.edit.icon),
         tooltip: editTooltip,
         visualDensity: VisualDensity.compact,

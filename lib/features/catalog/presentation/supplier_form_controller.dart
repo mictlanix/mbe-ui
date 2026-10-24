@@ -6,6 +6,9 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/supplier_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/address_list_item.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/bank_account.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/contact.dart';
 import 'package:mbe_ui/features/catalog/domain/catalog_field_validators.dart';
 import 'package:mbe_ui/features/catalog/presentation/suppliers_list_controller.dart';
 
@@ -23,6 +26,8 @@ abstract final class SupplierFormErrorCode {
   static const createFailed = 'createFailed';
   static const updateFailed = 'updateFailed';
   static const deleteFailed = 'deleteFailed';
+  static const saveConflict = 'saveConflict';
+  static const deleteConflict = 'deleteConflict';
   static const createPermissionDenied = 'createPermissionDenied';
   static const updatePermissionDenied = 'updatePermissionDenied';
   static const deletePermissionDenied = 'deletePermissionDenied';
@@ -40,6 +45,9 @@ abstract class SupplierFormState with _$SupplierFormState {
     @Default('') String creditLimit,
     @Default('') String creditDays,
     @Default('') String comment,
+    @Default(<AddressListItem>[]) List<AddressListItem> addresses,
+    @Default(<Contact>[]) List<Contact> contacts,
+    @Default(<BankAccount>[]) List<BankAccount> bankAccounts,
     @Default(false) bool loading,
     @Default(false) bool submitting,
     @Default(false) bool saved,
@@ -51,10 +59,15 @@ abstract class SupplierFormState with _$SupplierFormState {
 }
 
 /// Manages the create/edit supplier form (FR-010, FR-011).
+///
+/// Keyed by the supplier being edited (`null` for a create) so that each
+/// supplier screen owns its state: a create opened while another supplier's
+/// screen is still closing must not start with that supplier's fields and
+/// links (spec 050).
 @riverpod
 class SupplierFormController extends _$SupplierFormController {
   @override
-  SupplierFormState build() => const SupplierFormState();
+  SupplierFormState build(int? supplierId) => const SupplierFormState();
 
   void codeChanged(String v) => state = state.copyWith(
     code: v,
@@ -88,6 +101,57 @@ class SupplierFormController extends _$SupplierFormController {
 
   void commentChanged(String v) => state = state.copyWith(comment: v);
 
+  void addressAdded(AddressListItem address) {
+    if (state.addresses.any((a) => a.addressId == address.addressId)) return;
+    state = _clear(state.copyWith(addresses: [...state.addresses, address]));
+  }
+
+  void addressRemoved(int addressId) => state = _clear(
+    state.copyWith(
+      addresses: [
+        for (final a in state.addresses)
+          if (a.addressId != addressId) a,
+      ],
+    ),
+  );
+
+  void contactAdded(Contact contact) {
+    if (state.contacts.any((c) => c.contactId == contact.contactId)) return;
+    state = _clear(state.copyWith(contacts: [...state.contacts, contact]));
+  }
+
+  void contactRemoved(int contactId) => state = _clear(
+    state.copyWith(
+      contacts: [
+        for (final c in state.contacts)
+          if (c.contactId != contactId) c,
+      ],
+    ),
+  );
+
+  void bankAccountAdded(BankAccount account) {
+    if (state.bankAccounts.any(
+      (b) => b.bankAccountId == account.bankAccountId,
+    )) {
+      return;
+    }
+    state = _clear(
+      state.copyWith(bankAccounts: [...state.bankAccounts, account]),
+    );
+  }
+
+  void bankAccountRemoved(int bankAccountId) => state = _clear(
+    state.copyWith(
+      bankAccounts: [
+        for (final b in state.bankAccounts)
+          if (b.bankAccountId != bankAccountId) b,
+      ],
+    ),
+  );
+
+  SupplierFormState _clear(SupplierFormState s) =>
+      s.copyWith(error: null, errorDetail: null, fieldErrors: const {});
+
   /// Loads an existing supplier into the form for viewing/editing.
   Future<void> loadForEdit(int supplierId) async {
     state = state.copyWith(loading: true, error: null, errorDetail: null);
@@ -103,6 +167,9 @@ class SupplierFormController extends _$SupplierFormController {
         creditLimit: supplier.creditLimit,
         creditDays: supplier.creditDays.toString(),
         comment: supplier.comment ?? '',
+        addresses: supplier.addresses,
+        contacts: supplier.contacts,
+        bankAccounts: supplier.bankAccounts,
       );
     } on AppError catch (e) {
       state = state.copyWith(
@@ -166,7 +233,7 @@ class SupplierFormController extends _$SupplierFormController {
       fieldErrors: const {},
     );
     try {
-      await ref
+      final created = await ref
           .read(supplierRepositoryProvider)
           .create(
             code: state.code,
@@ -175,14 +242,36 @@ class SupplierFormController extends _$SupplierFormController {
             creditLimit: _orNull(state.creditLimit),
             creditDays: _orNullInt(state.creditDays),
             comment: _orNull(state.comment),
+            addressIds: _orNullList([
+              for (final a in state.addresses) a.addressId,
+            ]),
+            contactIds: _orNullList([
+              for (final c in state.contacts) c.contactId,
+            ]),
+            bankAccountIds: _orNullList([
+              for (final b in state.bankAccounts) b.bankAccountId,
+            ]),
           );
       ref.invalidate(suppliersListControllerProvider);
-      state = state.copyWith(submitting: false, saved: true);
+      // Recording the new id lets the screen reopen the supplier in edit
+      // mode, so agreements can be added straight away (FR-015a).
+      state = state.copyWith(
+        submitting: false,
+        saved: true,
+        supplierId: created.supplierId,
+      );
     } on AppError catch (e) {
       if (e is ValidationError) {
         state = state.copyWith(
           submitting: false,
           fieldErrors: _fieldErrorsFromServer(e),
+        );
+      } else if (e is ServerError && e.statusCode == 409) {
+        // Duplicate code or a vanished linked record; keep the user's edits.
+        state = state.copyWith(
+          submitting: false,
+          error: SupplierFormErrorCode.saveConflict,
+          errorDetail: null,
         );
       } else {
         state = state.copyWith(
@@ -237,6 +326,11 @@ class SupplierFormController extends _$SupplierFormController {
             creditLimit: _orNull(state.creditLimit) ?? '',
             creditDays: _orNullInt(state.creditDays),
             comment: state.comment,
+            addressIds: [for (final a in state.addresses) a.addressId],
+            contactIds: [for (final c in state.contacts) c.contactId],
+            bankAccountIds: [
+              for (final b in state.bankAccounts) b.bankAccountId,
+            ],
           );
       ref.invalidate(suppliersListControllerProvider);
       state = state.copyWith(submitting: false, saved: true);
@@ -245,6 +339,13 @@ class SupplierFormController extends _$SupplierFormController {
         state = state.copyWith(
           submitting: false,
           fieldErrors: _fieldErrorsFromServer(e),
+        );
+      } else if (e is ServerError && e.statusCode == 409) {
+        // Duplicate code or a vanished linked record; keep the user's edits.
+        state = state.copyWith(
+          submitting: false,
+          error: SupplierFormErrorCode.saveConflict,
+          errorDetail: null,
         );
       } else {
         state = state.copyWith(
@@ -279,6 +380,14 @@ class SupplierFormController extends _$SupplierFormController {
       ref.invalidate(suppliersListControllerProvider);
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {
+      if (e is ServerError && e.statusCode == 409) {
+        state = state.copyWith(
+          submitting: false,
+          error: SupplierFormErrorCode.deleteConflict,
+          errorDetail: null,
+        );
+        return;
+      }
       state = state.copyWith(
         submitting: false,
         error: SupplierFormErrorCode.deleteFailed,
@@ -289,6 +398,8 @@ class SupplierFormController extends _$SupplierFormController {
 }
 
 String? _orNull(String value) => value.isEmpty ? null : value;
+
+List<int>? _orNullList(List<int> value) => value.isEmpty ? null : value;
 
 int? _orNullInt(String value) => value.isEmpty ? null : int.tryParse(value);
 

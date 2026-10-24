@@ -27,6 +27,7 @@ import 'package:mbe_ui/features/catalog/presentation/labels_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/merge_products_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_screen.dart';
+import 'package:mbe_ui/features/catalog/presentation/supplier_detail_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/suppliers_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipients_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicle_operators_list_screen.dart';
@@ -395,6 +396,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: '/suppliers/new',
+        builder: (context, state) => const SupplierDetailScreen(),
+      ),
+      GoRoute(
+        path: '/suppliers/:supplierId',
+        builder: (context, state) => SupplierDetailScreen(
+          supplierId: int.parse(state.pathParameters['supplierId']!),
+          forceReadOnly: state.uri.queryParameters['view'] == 'true',
+        ),
+      ),
+      GoRoute(
         path: '/facilities/new',
         builder: (context, state) => const FacilityDetailScreen(),
       ),
@@ -575,7 +587,6 @@ String? _redirect(Ref ref, GoRouterState state) {
 /// `/facilities` instead, the closest surviving surface.
 const _convertedEntityListPaths = <String, String>{
   '/labels': '/labels',
-  '/suppliers': '/suppliers',
   '/expenses': '/expenses',
   '/vehicles': '/vehicles',
   '/vehicle-operators': '/vehicle-operators',

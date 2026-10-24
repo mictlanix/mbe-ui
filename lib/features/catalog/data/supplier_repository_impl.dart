@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/supplier.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/supplier_agreement.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/supplier_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/supplier_repository.dart';
 
@@ -111,6 +112,9 @@ class SupplierRepositoryImpl implements SupplierRepository {
     String? creditLimit,
     int? creditDays,
     String? comment,
+    List<int>? addressIds,
+    List<int>? contactIds,
+    List<int>? bankAccountIds,
   }) async {
     try {
       final response = await _api.createSupplierApiV1SuppliersPost(
@@ -122,6 +126,9 @@ class SupplierRepositoryImpl implements SupplierRepository {
             ..creditDays = creditDays
             ..comment = comment;
           if (creditLimit != null) _setCreditLimit(b.creditLimit, creditLimit);
+          if (addressIds != null) b.addresses.replace(addressIds);
+          if (contactIds != null) b.contacts.replace(contactIds);
+          if (bankAccountIds != null) b.bankAccounts.replace(bankAccountIds);
         }),
       );
       final supplier = response.data;
@@ -141,6 +148,9 @@ class SupplierRepositoryImpl implements SupplierRepository {
     String? creditLimit,
     int? creditDays,
     String? comment,
+    List<int>? addressIds,
+    List<int>? contactIds,
+    List<int>? bankAccountIds,
   }) async {
     try {
       final response = await _api.updateSupplierApiV1SuppliersSupplierIdPut(
@@ -154,6 +164,9 @@ class SupplierRepositoryImpl implements SupplierRepository {
           if (creditLimit != null) {
             _setCreditLimit1(b.creditLimit, creditLimit);
           }
+          if (addressIds != null) b.addresses.replace(addressIds);
+          if (contactIds != null) b.contacts.replace(contactIds);
+          if (bankAccountIds != null) b.bankAccounts.replace(bankAccountIds);
         }),
       );
       final supplier = response.data;
@@ -170,6 +183,93 @@ class SupplierRepositoryImpl implements SupplierRepository {
       await _api.deleteSupplierApiV1SuppliersSupplierIdDelete(
         supplierId: supplierId,
       );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<List<SupplierAgreement>> listAgreements({
+    required int supplierId,
+  }) async {
+    try {
+      final response = await _api
+          .listAgreementsApiV1SuppliersSupplierIdAgreementsGet(
+            supplierId: supplierId,
+          );
+      final agreements = response.data;
+      if (agreements == null) throw const AppError.server();
+      return agreements.map(SupplierAgreement.fromResponse).toList();
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<SupplierAgreement> createAgreement({
+    required int supplierId,
+    required DateTime start,
+    required DateTime end,
+    String? comment,
+  }) async {
+    try {
+      final response = await _api
+          .createAgreementApiV1SuppliersSupplierIdAgreementsPost(
+            supplierId: supplierId,
+            supplierAgreementCreate: SupplierAgreementCreate((b) {
+              b
+                ..start = start.toDate()
+                ..end = end.toDate()
+                ..comment = comment;
+            }),
+          );
+      final agreement = response.data;
+      if (agreement == null) throw const AppError.server();
+      return SupplierAgreement.fromResponse(agreement);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<SupplierAgreement> updateAgreement({
+    required int supplierId,
+    required int agreementId,
+    required DateTime start,
+    required DateTime end,
+    String? comment,
+  }) async {
+    try {
+      final response = await _api
+          .updateAgreementApiV1SuppliersSupplierIdAgreementsSupplierAgreementIdPut(
+            supplierId: supplierId,
+            supplierAgreementId: agreementId,
+            supplierAgreementUpdate: SupplierAgreementUpdate((b) {
+              b
+                ..start = start.toDate()
+                ..end = end.toDate()
+                ..comment = comment;
+            }),
+          );
+      final agreement = response.data;
+      if (agreement == null) throw const AppError.server();
+      return SupplierAgreement.fromResponse(agreement);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<void> deleteAgreement({
+    required int supplierId,
+    required int agreementId,
+  }) async {
+    try {
+      await _api
+          .deleteAgreementApiV1SuppliersSupplierIdAgreementsSupplierAgreementIdDelete(
+            supplierId: supplierId,
+            supplierAgreementId: agreementId,
+          );
     } on DioException catch (e) {
       throw _toAppError(e);
     }

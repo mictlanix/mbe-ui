@@ -67,7 +67,7 @@ void main() {
     repository = MockSupplierRepository();
   });
 
-  Future<void> pumpScreen(
+  Future<GoRouter> pumpScreen(
     WidgetTester tester, {
     required User signedInAs,
     List<Supplier> suppliers = _testSuppliers,
@@ -92,6 +92,14 @@ void main() {
             body: SuppliersListScreen(query: ListQuery.fromUri(state.uri)),
           ),
         ),
+        GoRoute(
+          path: '/suppliers/new',
+          builder: (_, _) => const Scaffold(body: Text('supplier screen')),
+        ),
+        GoRoute(
+          path: '/suppliers/:supplierId',
+          builder: (_, _) => const Scaffold(body: Text('supplier screen')),
+        ),
       ],
     );
 
@@ -114,6 +122,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    return router;
   }
 
   testWidgets('shows code and name for every supplier', (tester) async {
@@ -158,70 +167,36 @@ void main() {
     expect(find.byKey(const Key('new_supplier_button')), findsNothing);
   });
 
-  testWidgets(
-    'a row click opens the record read-only in a panel over the list — no '
-    'navigation, since there is no per-record route anymore (spec 035 US5)',
-    (tester) async {
-      when(
-        () => repository.listDetailed(
-          search: any(named: 'search'),
-          skip: any(named: 'skip'),
-          limit: any(named: 'limit'),
-        ),
-      ).thenAnswer(
-        (_) async =>
-            SupplierPage(items: _testSuppliers, total: _testSuppliers.length),
-      );
-      when(
-        () => repository.get(supplierId: 1),
-      ).thenAnswer((_) async => _testSuppliers.first);
+  testWidgets('a row click pushes the supplier\'s read-only route (spec 050)', (
+    tester,
+  ) async {
+    final router = await pumpScreen(tester, signedInAs: _fullAccessUser);
 
-      final router = GoRouter(
-        initialLocation: '/',
-        routes: [
-          GoRoute(
-            path: '/',
-            builder: (_, state) => Scaffold(
-              body: SuppliersListScreen(query: ListQuery.fromUri(state.uri)),
-            ),
-          ),
-        ],
-      );
+    await tester.tap(find.text('Acme Corp'));
+    await tester.pumpAndSettle();
 
-      SharedPreferences.setMockInitialValues({});
-      final sharedPreferences = await SharedPreferences.getInstance();
+    expect(router.state.uri.toString(), '/suppliers/1?view=true');
+  });
 
-      await tester.pumpWidget(
-        ProviderScope(
-          retry: (_, _) => null,
-          overrides: [
-            sharedPreferencesProvider.overrideWithValue(sharedPreferences),
-            supplierRepositoryProvider.overrideWithValue(repository),
-            accessControlProvider.overrideWithValue(
-              _accessFor(_fullAccessUser),
-            ),
-          ],
-          child: MaterialApp.router(
-            routerConfig: router,
-            localizationsDelegates: AppLocalizations.localizationsDelegates,
-            supportedLocales: AppLocalizations.supportedLocales,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
+  testWidgets('the Edit icon pushes the supplier\'s edit route', (
+    tester,
+  ) async {
+    final router = await pumpScreen(tester, signedInAs: _fullAccessUser);
 
-      await tester.tap(find.text('Acme Corp'));
-      await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.edit_outlined).first);
+    await tester.pumpAndSettle();
 
-      expect(router.state.uri.path, '/');
-      final codeField = tester.widget<TextFormField>(
-        find.byKey(const Key('code_field')),
-      );
-      expect(codeField.initialValue, 'SUP-001');
-      expect(codeField.enabled, isFalse);
-      expect(find.byKey(const Key('edit_supplier_button')), findsOneWidget);
-    },
-  );
+    expect(router.state.uri.toString(), '/suppliers/1');
+  });
+
+  testWidgets('New pushes the create route', (tester) async {
+    final router = await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+    await tester.tap(find.byKey(const Key('new_supplier_button')));
+    await tester.pumpAndSettle();
+
+    expect(router.state.uri.toString(), '/suppliers/new');
+  });
 
   testWidgets('an empty result shows the empty state', (tester) async {
     await pumpScreen(tester, signedInAs: _fullAccessUser, suppliers: const []);

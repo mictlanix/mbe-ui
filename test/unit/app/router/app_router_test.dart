@@ -48,6 +48,7 @@ import 'package:mbe_ui/features/catalog/domain/repositories/vehicle_repository.d
 import 'package:mbe_ui/features/catalog/domain/repositories/vehicle_operator_repository.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/price_list_repository.dart';
 import 'package:mbe_ui/features/pricing/domain/repositories/exchange_rate_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/supplier.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/supplier_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_issuer_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_repository.dart';
@@ -343,6 +344,22 @@ void main() {
         limit: any(named: 'limit'),
       ),
     ).thenAnswer((_) async => const SupplierPage(items: [], total: 0));
+    when(
+      () => supplierRepository.get(supplierId: any(named: 'supplierId')),
+    ).thenAnswer(
+      (_) async => const Supplier(
+        supplierId: 1,
+        code: 'SUP-001',
+        name: 'Aceros del Bajío',
+        creditLimit: '0',
+        creditDays: 0,
+      ),
+    );
+    when(
+      () => supplierRepository.listAgreements(
+        supplierId: any(named: 'supplierId'),
+      ),
+    ).thenAnswer((_) async => const []);
 
     final expenseRepository = MockExpenseRepository();
     when(
@@ -1358,7 +1375,7 @@ void main() {
       // (app_router.dart's `_convertedEntityListPaths` — the two lists MUST
       // stay in lockstep, since a path named here but not yet converted
       // would just pass against the still-live detail route).
-      for (final path in ['/labels', '/suppliers', '/expenses', '/vehicles', '/vehicle-operators', '/price-lists', '/exchange-rates', '/payment-method-options', '/employees', '/taxpayer-recipients']) {
+      for (final path in ['/labels', '/expenses', '/vehicles', '/vehicle-operators', '/price-lists', '/exchange-rates', '/payment-method-options', '/employees', '/taxpayer-recipients']) {
         testWidgets('$path/new redirects to $path', (tester) async {
           final handle = await pumpAt(
             tester,
@@ -1468,6 +1485,31 @@ void main() {
       testWidgets('a user without customers/read hitting /customers/1 is '
           'denied', (tester) async {
         final handle = await pumpAt(tester, _noAccessUser, '/customers/1');
+        expect(handle.router.state.uri.path, '/');
+      });
+    },
+  );
+
+  group(
+    '050-supplier-sub-panels: Suppliers has per-record routes again '
+    '(constitution §VI v1.14.0), gated on suppliers/read',
+    () {
+      for (final location in [
+        '/suppliers/new',
+        '/suppliers/1',
+        '/suppliers/1?view=true',
+      ]) {
+        testWidgets('$location resolves to the supplier detail screen', (
+          tester,
+        ) async {
+          final handle = await pumpAt(tester, _catalogsReaderUser, location);
+          expect(handle.router.state.uri.toString(), location);
+        });
+      }
+
+      testWidgets('a user without suppliers/read hitting /suppliers/1 is '
+          'denied', (tester) async {
+        final handle = await pumpAt(tester, _noAccessUser, '/suppliers/1');
         expect(handle.router.state.uri.path, '/');
       });
     },

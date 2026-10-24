@@ -159,28 +159,38 @@ class RecordFormActions extends StatelessWidget {
       onDelete?.call();
       return;
     }
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(confirmation.title),
-        content: Text(confirmation.message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(confirmation.cancelLabel),
-          ),
-          FilledButton(
-            key: confirmation.confirmKey,
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
-              foregroundColor: Theme.of(ctx).colorScheme.onError,
-            ),
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(confirmation.confirmLabel),
-          ),
-        ],
-      ),
-    );
+    final confirmed = await showRecordDeleteConfirmation(context, confirmation);
     if (confirmed == true) onDelete?.call();
   }
+}
+
+/// Asks the user to confirm a delete with [confirmation]'s wording; resolves
+/// `true` only when they confirm. Shared by [RecordFormActions] and dialogs
+/// that carry their own Delete button.
+Future<bool?> showRecordDeleteConfirmation(
+  BuildContext context,
+  RecordDeleteConfirmation confirmation,
+) {
+  return showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(confirmation.title),
+      content: Text(confirmation.message),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(ctx).pop(false),
+          child: Text(confirmation.cancelLabel),
+        ),
+        FilledButton(
+          key: confirmation.confirmKey,
+          style: FilledButton.styleFrom(
+            backgroundColor: Theme.of(ctx).colorScheme.error,
+            foregroundColor: Theme.of(ctx).colorScheme.onError,
+          ),
+          onPressed: () => Navigator.of(ctx).pop(true),
+          child: Text(confirmation.confirmLabel),
+        ),
+      ],
+    ),
+  );
 }

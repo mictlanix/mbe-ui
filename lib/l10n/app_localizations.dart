@@ -2337,6 +2337,18 @@ abstract class AppLocalizations {
   /// **'Failed to delete supplier.'**
   String get supplierDeleteFailedError;
 
+  /// Banner shown when saving a supplier is refused with a 409 conflict.
+  ///
+  /// In en, this message translates to:
+  /// **'Another supplier already uses that code, or one of the linked records no longer exists. Check the code and the links, then save again.'**
+  String get supplierSaveConflictError;
+
+  /// Banner shown when deleting a supplier is refused with a 409 conflict.
+  ///
+  /// In en, this message translates to:
+  /// **'This supplier can\'t be deleted while it has addresses, contacts, bank accounts or agreements. Unlink them and remove the agreements first.'**
+  String get supplierDeleteConflictError;
+
   /// No description provided for @supplierCreatePermissionDeniedError.
   ///
   /// In en, this message translates to:
@@ -7098,6 +7110,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'An administrator set your password. Choose a new one to continue.'**
   String get passwordRequiredExplanation;
+
+  /// spec 050: supplier form section listing the supplier's addresses
+  ///
+  /// In en, this message translates to:
+  /// **'Addresses'**
+  String get supplierAddressesSection;
+
+  /// spec 050: empty state of the supplier addresses section
+  ///
+  /// In en, this message translates to:
+  /// **'This supplier has no addresses.'**
+  String get supplierAddressesEmpty;
+
+  /// spec 050: supplier form section listing the supplier's contacts
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get supplierContactsSection;
+
+  /// spec 050: empty state of the supplier contacts section
+  ///
+  /// In en, this message translates to:
+  /// **'This supplier has no contacts.'**
+  String get supplierContactsEmpty;
+
+  /// spec 050: supplier form section listing the supplier's bank accounts
+  ///
+  /// In en, this message translates to:
+  /// **'Bank accounts'**
+  String get supplierBankAccountsSection;
+
+  /// spec 050: empty state of the supplier bank accounts section
+  ///
+  /// In en, this message translates to:
+  /// **'This supplier has no bank accounts.'**
+  String get supplierBankAccountsEmpty;
+
+  /// spec 050: supplier form section listing the supplier's dated agreements
+  ///
+  /// In en, this message translates to:
+  /// **'Agreements'**
+  String get supplierAgreementsSection;
+
+  /// spec 050: empty state of the supplier agreements section
+  ///
+  /// In en, this message translates to:
+  /// **'This supplier has no agreements.'**
+  String get supplierAgreementsEmpty;
+
+  /// spec 050 FR-015: shown in place of the agreements table while creating a supplier
+  ///
+  /// In en, this message translates to:
+  /// **'You can add agreements after saving the supplier.'**
+  String get supplierAgreementsAfterSaveNote;
+
+  /// spec 050: agreements table column, the agreement's start date
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get supplierAgreementColumnStart;
+
+  /// spec 050: agreements table column, the agreement's end date
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
+  String get supplierAgreementColumnEnd;
+
+  /// spec 050: agreements table column, the agreement's comment
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get supplierAgreementColumnNotes;
+
+  /// spec 050 FR-005: picker label for linking an address to a supplier
+  ///
+  /// In en, this message translates to:
+  /// **'Link an existing address'**
+  String get supplierAddressLinkLabel;
+
+  /// spec 050 FR-005: picker label for linking a contact to a supplier
+  ///
+  /// In en, this message translates to:
+  /// **'Link an existing contact'**
+  String get supplierContactLinkLabel;
+
+  /// spec 050 FR-005: picker label for linking a bank account to a supplier
+  ///
+  /// In en, this message translates to:
+  /// **'Link an existing bank account'**
+  String get supplierBankAccountLinkLabel;
+
+  /// spec 050 FR-006: title of the inline bank-account create dialog
+  ///
+  /// In en, this message translates to:
+  /// **'New bank account'**
+  String get newBankAccountDialogTitle;
+
+  /// spec 050: bank account bank name field
+  ///
+  /// In en, this message translates to:
+  /// **'Bank'**
+  String get bankAccountBankNameLabel;
+
+  /// spec 050: bank account number field
+  ///
+  /// In en, this message translates to:
+  /// **'Account number'**
+  String get bankAccountNumberLabel;
+
+  /// spec 050: bank account reference field
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get bankAccountReferenceLabel;
+
+  /// spec 050: bank account routing number field
+  ///
+  /// In en, this message translates to:
+  /// **'CLABE / routing'**
+  String get bankAccountRoutingLabel;
+
+  /// spec 050 FR-007: bank account field exceeds its maximum length
+  ///
+  /// In en, this message translates to:
+  /// **'Must be at most {max} characters.'**
+  String bankAccountFieldTooLongError(int max);
+
+  /// spec 050 FR-007: shown when creating a bank account fails
+  ///
+  /// In en, this message translates to:
+  /// **'Could not create the bank account.'**
+  String get bankAccountCreateFailedError;
+
+  /// spec 050 FR-013: opens the new-agreement dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Add agreement'**
+  String get addAgreementButton;
+
+  /// spec 050: title of the agreement dialog in add mode
+  ///
+  /// In en, this message translates to:
+  /// **'New agreement'**
+  String get newAgreementDialogTitle;
+
+  /// spec 050: title of the agreement dialog in edit mode
+  ///
+  /// In en, this message translates to:
+  /// **'Edit agreement'**
+  String get editAgreementDialogTitle;
+
+  /// spec 050 FR-014: shown under the End field when it precedes Start
+  ///
+  /// In en, this message translates to:
+  /// **'The end date cannot be before the start date.'**
+  String get supplierAgreementEndBeforeStartError;
+
+  /// spec 050: agreement notes exceed the maximum length
+  ///
+  /// In en, this message translates to:
+  /// **'Notes must be at most {max} characters.'**
+  String agreementCommentTooLongError(int max);
+
+  /// spec 050 FR-013: removes the agreement being edited
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteAgreementButton;
+
+  /// spec 050: title of the agreement delete confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Delete agreement?'**
+  String get deleteAgreementConfirmTitle;
+
+  /// spec 050: body of the agreement delete confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'This will delete the agreement from {start} to {end}. This cannot be undone.'**
+  String deleteAgreementConfirmMessage(String start, String end);
+
+  /// spec 050: shown when saving an agreement fails
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save the agreement.'**
+  String get agreementSaveFailedError;
+
+  /// spec 050: shown when deleting an agreement fails
+  ///
+  /// In en, this message translates to:
+  /// **'Could not delete the agreement.'**
+  String get agreementDeleteFailedError;
 }
 
 class _AppLocalizationsDelegate

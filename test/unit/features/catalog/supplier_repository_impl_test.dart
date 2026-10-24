@@ -300,6 +300,225 @@ void main() {
       );
     });
   });
+
+  group('SupplierRepositoryImpl relations (spec 050)', () {
+    test('get maps addresses, contacts and bank accounts', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            ..._supplierJson(),
+            'addresses': [_addressJson()],
+            'contacts': [_contactJson()],
+            'bank_accounts': [_bankAccountJson()],
+          }),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final supplier = await repository.get(supplierId: 1);
+
+      expect(supplier.addresses.single.addressId, 10);
+      expect(supplier.contacts.single.contactId, 21);
+      expect(supplier.bankAccounts.single.bankAccountId, 31);
+      expect(supplier.bankAccounts.single.label, 'BBVA · 0123456789');
+    });
+
+    test('list leaves the relation lists empty', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'items': [_supplierJson()],
+            'total': 1,
+          }),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final result = await repository.listDetailed();
+
+      expect(result.items.single.addresses, isEmpty);
+      expect(result.items.single.contacts, isEmpty);
+      expect(result.items.single.bankAccounts, isEmpty);
+    });
+
+    test('create puts the id lists in the request body', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_supplierJson()),
+          201,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.create(
+        code: 'SUP-001',
+        name: 'Acme Corp',
+        addressIds: [10, 11],
+        contactIds: [21],
+        bankAccountIds: [31],
+      );
+
+      final sentBody = _decodeBody(captured!.data);
+      expect(sentBody['addresses'], [10, 11]);
+      expect(sentBody['contacts'], [21]);
+      expect(sentBody['bank_accounts'], [31]);
+    });
+
+    test('create omits the id lists when null', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_supplierJson()),
+          201,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.create(code: 'SUP-001', name: 'Acme Corp');
+
+      final sentBody = _decodeBody(captured!.data);
+      expect(sentBody.containsKey('addresses'), isFalse);
+      expect(sentBody.containsKey('contacts'), isFalse);
+      expect(sentBody.containsKey('bank_accounts'), isFalse);
+    });
+
+    test('update sends [] to clear a relation and omits null ones', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_supplierJson()),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.update(
+        supplierId: 1,
+        addressIds: const [],
+        contactIds: [21],
+      );
+
+      final sentBody = _decodeBody(captured!.data);
+      expect(sentBody['addresses'], isEmpty);
+      expect(sentBody['contacts'], [21]);
+      expect(sentBody.containsKey('bank_accounts'), isFalse);
+    });
+  });
+
+  group('SupplierRepositoryImpl agreements (spec 050)', () {
+    test('listAgreements GETs the supplier agreements and maps them', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode([_agreementJson()]),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final agreements = await repository.listAgreements(supplierId: 1);
+
+      expect(captured!.method, 'GET');
+      expect(captured!.path, '/api/v1/suppliers/1/agreements');
+      expect(agreements.single.supplierAgreementId, 41);
+      expect(agreements.single.supplierId, 1);
+      expect(agreements.single.start, DateTime(2026, 1, 1));
+      expect(agreements.single.end, DateTime(2026, 12, 31));
+      expect(agreements.single.comment, 'Annual');
+    });
+
+    test(
+      'createAgreement POSTs date-only start/end and maps the reply',
+      () async {
+        RequestOptions? captured;
+        final repository = _repositoryWith((options) async {
+          captured = options;
+          return ResponseBody.fromString(
+            jsonEncode(_agreementJson()),
+            201,
+            headers: _jsonHeaders,
+          );
+        });
+
+        final agreement = await repository.createAgreement(
+          supplierId: 1,
+          start: DateTime(2026, 1, 1, 13, 45),
+          end: DateTime(2026, 12, 31),
+          comment: 'Annual',
+        );
+
+        expect(captured!.method, 'POST');
+        expect(captured!.path, '/api/v1/suppliers/1/agreements');
+        final sentBody = _decodeBody(captured!.data);
+        expect(sentBody['start'], '2026-01-01');
+        expect(sentBody['end'], '2026-12-31');
+        expect(sentBody['comment'], 'Annual');
+        expect(agreement.supplierAgreementId, 41);
+      },
+    );
+
+    test('updateAgreement PUTs to the agreement and maps the reply', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_agreementJson()),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final agreement = await repository.updateAgreement(
+        supplierId: 1,
+        agreementId: 41,
+        start: DateTime(2026, 1, 1),
+        end: DateTime(2026, 12, 31),
+        comment: 'Annual',
+      );
+
+      expect(captured!.method, 'PUT');
+      expect(captured!.path, '/api/v1/suppliers/1/agreements/41');
+      final sentBody = _decodeBody(captured!.data);
+      expect(sentBody['start'], '2026-01-01');
+      expect(sentBody['end'], '2026-12-31');
+      expect(agreement.comment, 'Annual');
+    });
+
+    test('deleteAgreement DELETEs the agreement', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString('', 204);
+      });
+
+      await repository.deleteAgreement(supplierId: 1, agreementId: 41);
+
+      expect(captured!.method, 'DELETE');
+      expect(captured!.path, '/api/v1/suppliers/1/agreements/41');
+    });
+
+    test('a DioException maps to AppError', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'Supplier not found'}),
+          404,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.listAgreements(supplierId: 999),
+        throwsA(const AppError.notFound('Supplier not found')),
+      );
+    });
+  });
 }
 
 Map<String, Object?> _supplierJson() => {
@@ -310,6 +529,51 @@ Map<String, Object?> _supplierJson() => {
   'credit_limit': '1000.50',
   'credit_days': 30,
   'comment': null,
+};
+
+Map<String, Object?> _addressJson() => {
+  'address_id': 10,
+  'nickname': 'Matriz',
+  'type': 3,
+  'street': 'Calle 1',
+  'exterior_number': '2',
+  'interior_number': null,
+  'postal_code': '06500',
+  'neighborhood': 'Centro',
+  'locality': null,
+  'borough': 'Cuauhtémoc',
+  'state': 'CDMX',
+  'city': null,
+  'country': 'México',
+  'url_address': null,
+  'comment': null,
+  'status': 0,
+};
+
+Map<String, Object?> _contactJson() => {
+  'contact_id': 21,
+  'name': 'Ana López',
+  'job_title': 'Almacén',
+  'phone': '5555555555',
+  'mobile': '5544332211',
+  'email': 'ana@example.com',
+};
+
+Map<String, Object?> _bankAccountJson() => {
+  'bank_account_id': 31,
+  'bank_name': 'BBVA',
+  'account_number': '0123456789',
+  'reference': null,
+  'routing_number': null,
+  'comment': null,
+};
+
+Map<String, Object?> _agreementJson() => {
+  'supplier_agreement_id': 41,
+  'supplier': 1,
+  'start': '2026-01-01',
+  'end': '2026-12-31',
+  'comment': 'Annual',
 };
 
 Map<String, Object?> _decodeBody(Object? data) => data is String

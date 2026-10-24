@@ -1293,6 +1293,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get supplierDeleteFailedError => 'No se pudo eliminar el proveedor.';
 
   @override
+  String get supplierSaveConflictError =>
+      'Ya existe un proveedor con ese código, o uno de los registros vinculados ya no existe. Revisa el código y los vínculos y vuelve a guardar.';
+
+  @override
+  String get supplierDeleteConflictError =>
+      'No se puede eliminar el proveedor mientras tenga direcciones, contactos, cuentas bancarias o convenios. Desvincúlalos y elimina los convenios primero.';
+
+  @override
   String get supplierCreatePermissionDeniedError =>
       'Ya no tienes permiso para crear proveedores.';
 
@@ -3956,4 +3964,111 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get passwordRequiredExplanation =>
       'Un administrador definió tu contraseña. Elige una nueva para continuar.';
+
+  @override
+  String get supplierAddressesSection => 'Direcciones';
+
+  @override
+  String get supplierAddressesEmpty => 'Este proveedor no tiene direcciones.';
+
+  @override
+  String get supplierContactsSection => 'Contactos';
+
+  @override
+  String get supplierContactsEmpty => 'Este proveedor no tiene contactos.';
+
+  @override
+  String get supplierBankAccountsSection => 'Cuentas bancarias';
+
+  @override
+  String get supplierBankAccountsEmpty =>
+      'Este proveedor no tiene cuentas bancarias.';
+
+  @override
+  String get supplierAgreementsSection => 'Convenios';
+
+  @override
+  String get supplierAgreementsEmpty => 'Este proveedor no tiene convenios.';
+
+  @override
+  String get supplierAgreementsAfterSaveNote =>
+      'Podrás agregar convenios después de guardar el proveedor.';
+
+  @override
+  String get supplierAgreementColumnStart => 'Inicio';
+
+  @override
+  String get supplierAgreementColumnEnd => 'Fin';
+
+  @override
+  String get supplierAgreementColumnNotes => 'Notas';
+
+  @override
+  String get supplierAddressLinkLabel => 'Vincular dirección existente';
+
+  @override
+  String get supplierContactLinkLabel => 'Vincular contacto existente';
+
+  @override
+  String get supplierBankAccountLinkLabel =>
+      'Vincular cuenta bancaria existente';
+
+  @override
+  String get newBankAccountDialogTitle => 'Nueva cuenta bancaria';
+
+  @override
+  String get bankAccountBankNameLabel => 'Banco';
+
+  @override
+  String get bankAccountNumberLabel => 'Número de cuenta';
+
+  @override
+  String get bankAccountReferenceLabel => 'Referencia';
+
+  @override
+  String get bankAccountRoutingLabel => 'CLABE / ruteo';
+
+  @override
+  String bankAccountFieldTooLongError(int max) {
+    return 'Debe tener como máximo $max caracteres.';
+  }
+
+  @override
+  String get bankAccountCreateFailedError =>
+      'No se pudo crear la cuenta bancaria.';
+
+  @override
+  String get addAgreementButton => 'Agregar convenio';
+
+  @override
+  String get newAgreementDialogTitle => 'Nuevo convenio';
+
+  @override
+  String get editAgreementDialogTitle => 'Editar convenio';
+
+  @override
+  String get supplierAgreementEndBeforeStartError =>
+      'La fecha de fin no puede ser anterior a la de inicio.';
+
+  @override
+  String agreementCommentTooLongError(int max) {
+    return 'Las notas deben tener como máximo $max caracteres.';
+  }
+
+  @override
+  String get deleteAgreementButton => 'Eliminar';
+
+  @override
+  String get deleteAgreementConfirmTitle => '¿Eliminar convenio?';
+
+  @override
+  String deleteAgreementConfirmMessage(String start, String end) {
+    return 'Se eliminará el convenio del $start al $end. Esta acción no se puede deshacer.';
+  }
+
+  @override
+  String get agreementSaveFailedError => 'No se pudo guardar el convenio.';
+
+  @override
+  String get agreementDeleteFailedError => 'No se pudo eliminar el convenio.';
 }
