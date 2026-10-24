@@ -1,0 +1,24 @@
+{
+  "workflow": "speckit",
+  "specName": "Vehicle Operator License Photos",
+  "branch": "051-vehicle-operator-license-photos",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-24T05:08:32.000Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-24T05:09:41.292Z"
+    }
+  ],
+  "telemetryInstanceId": "3b42d0ab-76bb-47bf-9fe8-8062be37a8d4"
+}
