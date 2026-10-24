@@ -1,0 +1,24 @@
+{
+  "workflow": "speckit",
+  "specName": "Quotation PDF and Email",
+  "branch": "053-quote-pdf-email",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-24T15:22:24.000Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-24T15:27:47.548Z"
+    }
+  ],
+  "telemetryInstanceId": "068491e9-bf96-4b57-a415-90d65d6f3dec"
+}
