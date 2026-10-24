@@ -702,6 +702,40 @@ void main() {
       },
     );
 
+    testWidgets(
+      'a product added through the capture step carries no discount of its '
+      "own, so the server starts the line at the customer's discount "
+      '(spec 052 FR-013)',
+      (tester) async {
+        stubLookup([_product(product: 1, code: 'CLA', name: 'Clavo estándar')]);
+        stubAddLine();
+        await pumpRoutedField(
+          tester,
+          catalogProducts: [
+            _catalogProduct(productId: 1, code: 'CLA', name: 'Clavo estándar'),
+          ],
+        );
+
+        await openAndTick(tester, 'CLA');
+        await tester.tap(find.byKey(const Key('advanced_search_add_button')));
+        await pumpSettled(tester);
+
+        final sent = verify(
+          () => salesOrders.addLine(
+            saleId: any(named: 'saleId'),
+            product: 1,
+            quantity: any(named: 'quantity'),
+            price: any(named: 'price'),
+            discountRate: captureAny(named: 'discountRate'),
+            taxRate: any(named: 'taxRate'),
+            warehouse: any(named: 'warehouse'),
+            comment: any(named: 'comment'),
+          ),
+        ).captured;
+        expect(sent.single, isNull);
+      },
+    );
+
     testWidgets('Cancel returns to the sale with nothing added', (
       tester,
     ) async {

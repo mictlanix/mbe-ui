@@ -1,5 +1,6 @@
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/customer_discount.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
 
 /// Customer lookup and full CRUD management (data-model.md §4,
@@ -39,6 +40,7 @@ abstract class CustomerRepository {
     String? comment,
     List<int>? addresses,
     List<int>? contacts,
+
     /// RFC keys this customer may invoice under (mbe-api#150) — replace-all,
     /// exactly like [addresses] and [contacts].
     List<String>? taxpayers,
@@ -57,12 +59,41 @@ abstract class CustomerRepository {
     String? comment,
     List<int>? addresses,
     List<int>? contacts,
+
     /// RFC keys this customer may invoice under (mbe-api#150) — replace-all,
     /// exactly like [addresses] and [contacts].
     List<String>? taxpayers,
   });
 
   Future<void> delete({required int customerId});
+
+  /// The customer's product discounts, in the server's order (by product
+  /// code). Throws `NotFoundError` when the customer no longer exists.
+  Future<List<CustomerDiscount>> listDiscounts({required int customerId});
+
+  /// Adds a discount on [productId]. [discount] is a **fraction** string
+  /// (`"0.1"` is 10 %), never a percentage. Throws `ServerError` with status
+  /// 409 when the customer already has one for that product, and
+  /// `ValidationError` on 422 (unknown product, or field errors).
+  Future<CustomerDiscount> createDiscount({
+    required int customerId,
+    required int productId,
+    required String discount,
+  });
+
+  /// Changes only the rate: the product is fixed once the discount exists.
+  /// Throws `NotFoundError` when the discount is gone.
+  Future<CustomerDiscount> updateDiscount({
+    required int customerId,
+    required int customerDiscountId,
+    required String discount,
+  });
+
+  /// Throws `NotFoundError` when the discount is already gone.
+  Future<void> deleteDiscount({
+    required int customerId,
+    required int customerDiscountId,
+  });
 }
 
 class CustomerPage {

@@ -319,7 +319,9 @@ void main() {
           quantity: '3',
           price: any(named: 'price'),
           priceAdjustment: any(named: 'priceAdjustment'),
-          discountRate: any(named: 'discountRate'),
+          // No discount of its own: the server starts the line at the
+          // customer's discount for the product (spec 052 FR-013).
+          discountRate: null,
           comment: any(named: 'comment'),
         ),
       ).called(1);

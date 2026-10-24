@@ -74,6 +74,7 @@ class _CustomerDetailScreenState extends ConsumerState<CustomerDetailScreen> {
             onEditRequested: customerId == null
                 ? null
                 : () => context.replace('/customers/$customerId'),
+            onCreated: (id) => context.replace('/customers/$id'),
           ),
         ),
       ),

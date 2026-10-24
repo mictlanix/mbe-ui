@@ -126,11 +126,11 @@ void main() {
 
   group('CustomerFormController.submitCreate validation (FR-018, FR-019)', () {
     test('name/priceList are required before submit', () async {
-      final notifier = container.read(customerFormControllerProvider.notifier);
+      final notifier = container.read(customerFormControllerProvider(null).notifier);
 
       await notifier.submitCreate();
 
-      final state = container.read(customerFormControllerProvider);
+      final state = container.read(customerFormControllerProvider(null));
       expect(state.fieldErrors['name'], CustomerFormErrorCode.nameRequired);
       expect(
         state.fieldErrors['priceList'],
@@ -151,12 +151,12 @@ void main() {
       'code is not required before submit',
       () async {
         final notifier = container.read(
-          customerFormControllerProvider.notifier,
+          customerFormControllerProvider(null).notifier,
         );
 
         await notifier.submitCreate();
 
-        final state = container.read(customerFormControllerProvider);
+        final state = container.read(customerFormControllerProvider(null));
         expect(state.fieldErrors.containsKey('code'), isFalse);
       },
     );
@@ -182,7 +182,7 @@ void main() {
         );
 
         final notifier = container.read(
-          customerFormControllerProvider.notifier,
+          customerFormControllerProvider(null).notifier,
         );
         notifier
           ..codeChanged('CUST-001')
@@ -192,12 +192,12 @@ void main() {
 
         await notifier.submitCreate();
 
-        expect(container.read(customerFormControllerProvider).saved, isTrue);
+        expect(container.read(customerFormControllerProvider(null)).saved, isTrue);
       },
     );
 
     test('a negative credit limit is rejected before submit', () async {
-      final notifier = container.read(customerFormControllerProvider.notifier);
+      final notifier = container.read(customerFormControllerProvider(null).notifier);
       notifier
         ..codeChanged('CUST-001')
         ..nameChanged('Acme Corp')
@@ -206,7 +206,7 @@ void main() {
 
       await notifier.submitCreate();
 
-      final state = container.read(customerFormControllerProvider);
+      final state = container.read(customerFormControllerProvider(null));
       expect(
         state.fieldErrors['creditLimit'],
         CustomerFormErrorCode.creditLimitInvalid,
@@ -219,7 +219,7 @@ void main() {
       final readOnlyContainer = _containerFor(_readOnlyUser, repository);
       addTearDown(readOnlyContainer.dispose);
       final notifier = readOnlyContainer.read(
-        customerFormControllerProvider.notifier,
+        customerFormControllerProvider(null).notifier,
       );
       notifier
         ..codeChanged('CUST-001')
@@ -228,7 +228,7 @@ void main() {
 
       await notifier.submitCreate();
 
-      final state = readOnlyContainer.read(customerFormControllerProvider);
+      final state = readOnlyContainer.read(customerFormControllerProvider(null));
       expect(state.error, CustomerFormErrorCode.createPermissionDenied);
     });
   });
@@ -242,11 +242,11 @@ void main() {
         ).thenAnswer((_) async => _customer());
 
         final notifier = container.read(
-          customerFormControllerProvider.notifier,
+          customerFormControllerProvider(null).notifier,
         );
         await notifier.loadForEdit(1);
 
-        final state = container.read(customerFormControllerProvider);
+        final state = container.read(customerFormControllerProvider(null));
         expect(state.salespersonId, isNull);
         expect(state.salespersonDisplayText, '');
         expect(state.priceListDisplayText, 'Retail');
@@ -269,13 +269,13 @@ void main() {
         );
 
         final notifier = container.read(
-          customerFormControllerProvider.notifier,
+          customerFormControllerProvider(null).notifier,
         );
         await notifier.loadForEdit(1);
 
         await notifier.delete();
 
-        final state = container.read(customerFormControllerProvider);
+        final state = container.read(customerFormControllerProvider(null));
         expect(state.deleted, isFalse);
         expect(state.error, CustomerFormErrorCode.deleteFailed);
         expect(state.errorDetail, 'Customer has existing sales orders');
@@ -312,10 +312,10 @@ void main() {
       );
 
       await container
-          .read(customerFormControllerProvider.notifier)
+          .read(customerFormControllerProvider(null).notifier)
           .loadForEdit(1);
 
-      final state = container.read(customerFormControllerProvider);
+      final state = container.read(customerFormControllerProvider(null));
       expect(state.addresses, [_address10]);
       expect(state.contacts, [_contact20]);
       expect(state.taxpayers.map((t) => t.taxpayerRecipientId), [
@@ -325,7 +325,7 @@ void main() {
     });
 
     test('add de-duplicates and remove drops only the named record', () {
-      final notifier = container.read(customerFormControllerProvider.notifier);
+      final notifier = container.read(customerFormControllerProvider(null).notifier);
       notifier
         ..addressAdded(_address10)
         ..addressAdded(_address10)
@@ -335,7 +335,7 @@ void main() {
         ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcA))
         ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcA));
 
-      var state = container.read(customerFormControllerProvider);
+      var state = container.read(customerFormControllerProvider(null));
       expect(state.addresses, [_address10, _address11]);
       expect(state.contacts, [_contact20]);
       expect(state.taxpayers, hasLength(1));
@@ -344,7 +344,7 @@ void main() {
         ..addressRemoved(10)
         ..contactRemoved(20)
         ..taxpayerRemoved('AAA010101AAA');
-      state = container.read(customerFormControllerProvider);
+      state = container.read(customerFormControllerProvider(null));
       expect(state.addresses, [_address11]);
       expect(state.contacts, isEmpty);
       expect(state.taxpayers, isEmpty);
@@ -355,13 +355,13 @@ void main() {
       when(
         () => repository.get(customerId: 1),
       ).thenAnswer((_) async => _customer(addresses: [_address10]));
-      final notifier = container.read(customerFormControllerProvider.notifier);
+      final notifier = container.read(customerFormControllerProvider(null).notifier);
       await notifier.loadForEdit(1);
-      final loaded = container.read(customerFormControllerProvider);
+      final loaded = container.read(customerFormControllerProvider(null));
 
       notifier.addressAdded(_address11);
 
-      expect(container.read(customerFormControllerProvider), isNot(loaded));
+      expect(container.read(customerFormControllerProvider(null)), isNot(loaded));
     });
 
     test('saving an unrelated change keeps every RFC of a multi-RFC customer, '
@@ -374,7 +374,7 @@ void main() {
         ),
       );
       stubUpdate();
-      final notifier = container.read(customerFormControllerProvider.notifier);
+      final notifier = container.read(customerFormControllerProvider(null).notifier);
       await notifier.loadForEdit(1);
 
       notifier.zoneChanged('Norte');
@@ -405,7 +405,7 @@ void main() {
         (_) async => _customer(taxpayers: [_rfcA, _rfcB]),
       );
       stubUpdate();
-      final notifier = container.read(customerFormControllerProvider.notifier);
+      final notifier = container.read(customerFormControllerProvider(null).notifier);
       await notifier.loadForEdit(1);
 
       notifier.taxpayerRemoved('AAA010101AAA');
@@ -449,7 +449,7 @@ void main() {
           taxpayers: any(named: 'taxpayers'),
         ),
       ).thenAnswer((_) async => _customer());
-      final notifier = container.read(customerFormControllerProvider.notifier);
+      final notifier = container.read(customerFormControllerProvider(null).notifier);
       notifier
         ..nameChanged('Acme Corp')
         ..priceListSelected(1, 'Retail')
@@ -477,17 +477,17 @@ void main() {
     });
 
     test('the POS single-RFC picker replaces the whole set (research R4)', () {
-      final notifier = container.read(customerFormControllerProvider.notifier);
+      final notifier = container.read(customerFormControllerProvider(null).notifier);
       notifier
         ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcA))
         ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcB))
         ..taxpayerSelected('CCC010101CCC', 'Otra SA');
 
-      final taxpayers = container.read(customerFormControllerProvider).taxpayers;
+      final taxpayers = container.read(customerFormControllerProvider(null)).taxpayers;
       expect(taxpayers.map((t) => t.taxpayerRecipientId), ['CCC010101CCC']);
 
       notifier.taxpayerSelected(null, '');
-      expect(container.read(customerFormControllerProvider).taxpayers, isEmpty);
+      expect(container.read(customerFormControllerProvider(null)).taxpayers, isEmpty);
     });
   });
   group('the walk-in customer (046-catalog-improvements FR-021)', () {
@@ -522,7 +522,7 @@ void main() {
     test(
       'nothing can be linked to it, and its RFCs cannot be removed',
       () async {
-        final notifier = walkIn.read(customerFormControllerProvider.notifier);
+        final notifier = walkIn.read(customerFormControllerProvider(null).notifier);
         await notifier.loadForEdit(1);
         expect(notifier.isGenericCustomer, isTrue);
 
@@ -532,7 +532,7 @@ void main() {
           ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcB))
           ..taxpayerRemoved('AAA010101AAA');
 
-        final state = walkIn.read(customerFormControllerProvider);
+        final state = walkIn.read(customerFormControllerProvider(null));
         expect(state.addresses, [_address10]);
         expect(state.contacts, isEmpty);
         expect(state.taxpayers, hasLength(2));
@@ -540,18 +540,18 @@ void main() {
     );
 
     test('a stray address can still be unlinked', () async {
-      final notifier = walkIn.read(customerFormControllerProvider.notifier);
+      final notifier = walkIn.read(customerFormControllerProvider(null).notifier);
       await notifier.loadForEdit(1);
 
       notifier.addressRemoved(10);
 
-      expect(walkIn.read(customerFormControllerProvider).addresses, isEmpty);
+      expect(walkIn.read(customerFormControllerProvider(null)).addresses, isEmpty);
     });
 
     test(
       'saving always sends the generic RFC alone, correcting any other',
       () async {
-        final notifier = walkIn.read(customerFormControllerProvider.notifier);
+        final notifier = walkIn.read(customerFormControllerProvider(null).notifier);
         await notifier.loadForEdit(1);
 
         await notifier.submitUpdate();
@@ -578,10 +578,28 @@ void main() {
     );
 
     test('any other customer is not affected', () async {
-      final notifier = container.read(customerFormControllerProvider.notifier);
+      final notifier = container.read(customerFormControllerProvider(null).notifier);
       await notifier.loadForEdit(1);
 
       expect(notifier.isGenericCustomer, isFalse);
+    });
+  });
+
+  group('form state is keyed by customer id (mbe-ui#207, spec 052 R8)', () {
+    test('a create and an edit never share state, nor do two edits', () {
+      final create = customerFormControllerProvider(null);
+      final first = customerFormControllerProvider(1);
+      final second = customerFormControllerProvider(2);
+      // Auto-disposed: keep each alive, as a mounted screen does.
+      for (final provider in [create, first, second]) {
+        container.listen(provider, (_, _) {});
+      }
+
+      container.read(first.notifier).nameChanged('Acme');
+
+      expect(container.read(first).name, 'Acme');
+      expect(container.read(create).name, isEmpty);
+      expect(container.read(second).name, isEmpty);
     });
   });
 }

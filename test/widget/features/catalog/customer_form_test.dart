@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/domain/address_type.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
@@ -13,6 +14,7 @@ import 'package:mbe_ui/core/branding/brand_config.dart';
 import 'package:mbe_ui/core/config/app_settings.dart';
 import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/config/formatting_settings.dart';
+import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/address_repository_impl.dart';
@@ -141,6 +143,22 @@ const _existingNoSalesperson = Customer(
 AccessControlService _accessFor(User user) =>
     AccessControlService(AuthState.authenticated(token: 't', user: user));
 
+/// The Discounts section (spec 052) renders through `formattersProvider`, which
+/// needs shared preferences and the app settings.
+Future<SharedPreferences> _prefs() async {
+  SharedPreferences.setMockInitialValues({});
+  return SharedPreferences.getInstance();
+}
+
+AppSettings _testSettings() => AppSettings(
+  apiBaseUrl: 'http://test',
+  photosBaseUrl: 'http://test',
+  posDefaultCustomerId: 1,
+  brand: const BrandConfig(displayName: 'Test'),
+  defaultLocale: const Locale('es', 'MX'),
+  formatting: const FormattingSettings(),
+);
+
 void main() {
   late MockCustomerRepository repository;
   late MockPriceListRepository priceListRepository;
@@ -156,6 +174,9 @@ void main() {
     addressRepository = MockAddressRepository();
     contactRepository = MockContactRepository();
     taxpayerRepository = MockTaxpayerRecipientRepository();
+    when(
+      () => repository.listDiscounts(customerId: any(named: 'customerId')),
+    ).thenAnswer((_) async => const []);
   });
 
   Future<void> pumpScreen(
@@ -178,10 +199,12 @@ void main() {
     await tester.binding.setSurfaceSize(const Size(1024, 2400));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
+    final prefs = await _prefs();
     await tester.pumpWidget(
       ProviderScope(
         retry: (_, _) => null,
         overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
           customerRepositoryProvider.overrideWithValue(repository),
           priceListRepositoryProvider.overrideWithValue(priceListRepository),
           employeeRepositoryProvider.overrideWithValue(employeeRepository),
@@ -431,10 +454,13 @@ void main() {
         () => repository.get(customerId: 1),
       ).thenAnswer((_) async => _existingWithSalesperson);
 
+      final prefs = await _prefs();
       await tester.pumpWidget(
         ProviderScope(
           retry: (_, _) => null,
           overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            appSettingsProvider.overrideWithValue(_testSettings()),
             customerRepositoryProvider.overrideWithValue(repository),
             priceListRepositoryProvider.overrideWithValue(
               priceListRepository,
@@ -598,10 +624,13 @@ void main() {
       when(() => repository.get(customerId: 3)).thenAnswer((_) async => _linked);
       await tester.binding.setSurfaceSize(const Size(1024, 2400));
       addTearDown(() => tester.binding.setSurfaceSize(null));
+      final prefs = await _prefs();
       await tester.pumpWidget(
         ProviderScope(
           retry: (_, _) => null,
           overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            appSettingsProvider.overrideWithValue(_testSettings()),
             customerRepositoryProvider.overrideWithValue(repository),
             priceListRepositoryProvider.overrideWithValue(priceListRepository),
             employeeRepositoryProvider.overrideWithValue(employeeRepository),

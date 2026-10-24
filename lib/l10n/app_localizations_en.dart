@@ -4021,4 +4021,83 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get agreementDeleteFailedError => 'Could not delete the agreement.';
+
+  @override
+  String get customerDiscountsSection => 'Discounts';
+
+  @override
+  String get customerDiscountsEmpty => 'No product discounts.';
+
+  @override
+  String get customerDiscountsAfterSaveNote =>
+      'Discounts can be added once the customer is saved.';
+
+  @override
+  String get customerDiscountColumnCode => 'Code';
+
+  @override
+  String get customerDiscountColumnProduct => 'Product';
+
+  @override
+  String get customerDiscountColumnDiscount => 'Discount';
+
+  @override
+  String get addCustomerDiscountButton => 'Add discount';
+
+  @override
+  String get newCustomerDiscountDialogTitle => 'New discount';
+
+  @override
+  String get customerDiscountProductLabel => 'Product';
+
+  @override
+  String get customerDiscountPercentLabel => 'Discount (%)';
+
+  @override
+  String get customerDiscountPercentRequiredError => 'Enter a percentage.';
+
+  @override
+  String get customerDiscountPercentInvalidError =>
+      'Enter a number, e.g. 12.5.';
+
+  @override
+  String get customerDiscountPercentOutOfRangeError =>
+      'Must be between 0 and 100.';
+
+  @override
+  String get customerDiscountPercentTooPreciseError =>
+      'At most 6 decimal places.';
+
+  @override
+  String get customerDiscountDuplicateError =>
+      'This customer already has a discount on that product.';
+
+  @override
+  String get customerDiscountProductMissingError =>
+      'The product no longer exists.';
+
+  @override
+  String get customerDiscountSaveFailedError =>
+      'The discount could not be saved.';
+
+  @override
+  String get editCustomerDiscountDialogTitle => 'Edit discount';
+
+  @override
+  String get customerDiscountMissingError => 'This discount no longer exists.';
+
+  @override
+  String get customerDiscountDeleteFailedError =>
+      'The discount could not be removed.';
+
+  @override
+  String get deleteCustomerDiscountButton => 'Remove';
+
+  @override
+  String get deleteCustomerDiscountConfirmTitle => 'Remove discount';
+
+  @override
+  String deleteCustomerDiscountConfirmMessage(String code, String name) {
+    return 'Remove the discount on $code — $name? Lines already entered keep their discount.';
+  }
 }
