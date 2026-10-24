@@ -41,7 +41,6 @@ class CustomerDiscountsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final spacing = Theme.of(context).spacing;
     final id = customerId;
     final access = ref.watch(accessControlProvider);
     // Adding needs Update on customers, and Read on products to search them
@@ -62,24 +61,26 @@ class CustomerDiscountsSection extends ConsumerWidget {
         loaded != null &&
         access.can(SystemObject.products, AccessRight.read);
 
+    // Same header as the linked-record sections above it: the title (with
+    // a count once there is something to count) and a "New" text button.
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      spacing: spacing.xs,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Wrap(
-          crossAxisAlignment: WrapCrossAlignment.center,
-          spacing: spacing.md,
-          runSpacing: spacing.xs,
+        Row(
           children: [
-            Text(
-              l10n.customerDiscountsSection,
-              style: Theme.of(context).textTheme.titleSmall,
+            Expanded(
+              child: Text(
+                loaded == null || loaded.isEmpty
+                    ? l10n.customerDiscountsSection
+                    : '${l10n.customerDiscountsSection} (${loaded.length})',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
             ),
             if (id != null && canAdd)
-              FilledButton.icon(
+              TextButton.icon(
                 key: const Key('add_customer_discount_button'),
                 icon: Icon(CatalogAction.create.icon),
-                label: Text(l10n.addCustomerDiscountButton),
+                label: Text(l10n.linkedRecordNewAction),
                 onPressed: () => showCustomerDiscountDialog(
                   context,
                   customerId: id,
@@ -89,10 +90,9 @@ class CustomerDiscountsSection extends ConsumerWidget {
           ],
         ),
         if (id == null)
-          Text(
+          _MutedNote(
             l10n.customerDiscountsAfterSaveNote,
             key: const Key('customer_discounts_after_save_note'),
-            style: Theme.of(context).textTheme.bodySmall,
           )
         else
           _DiscountsList(customerId: id, canEdit: canEdit),
@@ -125,7 +125,7 @@ class _DiscountsList extends ConsumerWidget {
             ref.invalidate(customerDiscountsControllerProvider(customerId)),
       ),
       data: (discounts) => discounts.isEmpty
-          ? Text(l10n.customerDiscountsEmpty)
+          ? _MutedNote(l10n.customerDiscountsEmpty)
           : DataTableView<CustomerDiscount>(
               key: const Key('customer_discounts_table'),
               columns: [
@@ -173,6 +173,28 @@ class _DiscountsList extends ConsumerWidget {
               shrinkWrap: true,
               margin: EdgeInsets.zero,
             ),
+    );
+  }
+}
+
+/// The empty-state line the linked-record sections use: small, muted, with
+/// a little air above and below.
+class _MutedNote extends StatelessWidget {
+  const _MutedNote(this.text, {super.key});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: theme.spacing.xs),
+      child: Text(
+        text,
+        style: theme.textTheme.bodySmall?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
     );
   }
 }

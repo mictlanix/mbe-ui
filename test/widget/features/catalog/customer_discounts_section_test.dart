@@ -350,14 +350,30 @@ void main() {
       expect(find.byKey(addButton), findsNothing);
     });
 
-    testWidgets('wraps below the title on a narrow width without '
-        'overflowing', (tester) async {
-      await pumpSection(tester, size: const Size(220, 800));
+    testWidgets('matches the linked-record sections: a "New" text button '
+        'beside the title, which counts the rows', (tester) async {
+      await pumpSection(tester, discounts: _discounts);
+
+      expect(find.text('Discounts (2)'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(addButton),
+          matching: find.text('New'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester.getTopLeft(find.byKey(addButton)).dy,
+        lessThan(tester.getBottomLeft(find.text('Discounts (2)')).dy),
+        reason: 'on the title row',
+      );
+    });
+
+    testWidgets('fits a phone width without overflowing', (tester) async {
+      await pumpSection(tester, size: const Size(360, 800));
 
       expect(tester.takeException(), isNull);
-      final title = tester.getTopLeft(find.text('Discounts'));
-      final button = tester.getTopLeft(find.byKey(addButton));
-      expect(button.dy, greaterThan(title.dy));
+      expect(find.byKey(addButton), findsOneWidget);
     });
 
     testWidgets('opens the dialog, and a saved discount refreshes the '

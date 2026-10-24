@@ -24,7 +24,7 @@ The customer detail page (spec 046) is unchanged above the new section. The Disc
 │ ──────────────────────────────────────────────────────────────────────────────────── │
 │  Receptores fiscales (…)                                                             │
 │ ──────────────────────────────────────────────────────────────────────────────────── │
-│  Descuentos                                                    [+ Agregar descuento] │
+│  Descuentos (3)                                                              [+ Nuevo] │
 │ ┌──────────┬───────────────────────────────────────────────┬──────────────┬───────┐  │
 │ │ Código   │ Producto                                      │    Descuento │       │  │
 │ ├──────────┼───────────────────────────────────────────────┼──────────────┼───────┤  │
@@ -38,7 +38,7 @@ The customer detail page (spec 046) is unchanged above the new section. The Disc
 ```
 
 - **Placement:** the section sits full width after Taxpayers, separated by a `Divider`, inside the same `ResponsiveFormGrid` (FR-001).
-- **Header:** a `titleSmall` title. `+ Agregar descuento` is a `FilledButton.icon` with the `CatalogAction.create` icon (FR-004).
+- **Header:** matches the linked-record sections: a `titleSmall` title with the row count, and a `+ Nuevo` `TextButton.icon` at the end (FR-004).
 - **Table:** `DataTableView<CustomerDiscount>` with `shrinkWrap`, in server order, which is by code (FR-002). The Discount column is right-aligned and rendered with `fmt.display.percent` (FR-003).
 - **`✎`:** `buildCatalogRowActions` with Edit only. It opens the edit dialog (FR-008). There is no row Delete (§VI, FR-009).
 - **Independent saving:** the customer's `Guardar` doesn't save discounts. Each dialog saves on its own (FR-010).

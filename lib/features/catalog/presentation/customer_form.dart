@@ -465,6 +465,8 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
             readOnly: readOnly,
           ),
         ),
+        // Closes the last section off from the form's own actions.
+        const FormGridChild(span: FormGridSpan.full, Divider()),
         FormGridChild(
           span: FormGridSpan.full,
           RecordFormActions(

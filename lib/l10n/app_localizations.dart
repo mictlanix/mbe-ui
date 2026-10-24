@@ -7339,12 +7339,6 @@ abstract class AppLocalizations {
   /// **'Discount'**
   String get customerDiscountColumnDiscount;
 
-  /// spec 052: button that opens the add-discount dialog in the customer discounts section
-  ///
-  /// In en, this message translates to:
-  /// **'Add discount'**
-  String get addCustomerDiscountButton;
-
   /// spec 052: title of the add-discount dialog
   ///
   /// In en, this message translates to:

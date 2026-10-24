@@ -1323,8 +1323,6 @@
   "@customerDiscountColumnProduct": {"description": "spec 052: customer discounts table, product name column"},
   "customerDiscountColumnDiscount": "Descuento",
   "@customerDiscountColumnDiscount": {"description": "spec 052: customer discounts table, discount percentage column"},
-  "addCustomerDiscountButton": "Agregar descuento",
-  "@addCustomerDiscountButton": {"description": "spec 052: button that opens the add-discount dialog in the customer discounts section"},
   "newCustomerDiscountDialogTitle": "Nuevo descuento",
   "@newCustomerDiscountDialogTitle": {"description": "spec 052: title of the add-discount dialog"},
   "customerDiscountProductLabel": "Producto",

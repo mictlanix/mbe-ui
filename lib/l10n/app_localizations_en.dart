@@ -4042,9 +4042,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customerDiscountColumnDiscount => 'Discount';
 
   @override
-  String get addCustomerDiscountButton => 'Add discount';
-
-  @override
   String get newCustomerDiscountDialogTitle => 'New discount';
 
   @override

@@ -33,7 +33,7 @@ CustomerDiscountsSection({Key? key, required int? customerId, required bool read
 | Empty | `customerDiscountsEmpty` |
 | Rows | `DataTableView<CustomerDiscount>` with columns Code (S), Product (L) and Discount (S). Discount renders as `fmt.display.percent(d.discount)` and is right-aligned |
 
-- **Header:** a `Wrap` of the title and the add button. On narrow widths the button drops below the title instead of overflowing, so there's no compact-only label (wireframes OQ-2).
+- **Header:** the same as the linked-record sections above it: a row with the title, counted as `Descuentos (n)` once the list has rows, and a `TextButton.icon` with the shared `linkedRecordNewAction` label ("Nuevo") at the end. The empty and after-save lines use the same muted small text. (Changed 2026-10-24 after review: the first build used a filled "Agregar descuento" button beside the title, which stood out from the other sections.)
 - **Add button** `add_customer_discount_button`: shown only when the customer is saved, the discounts list has loaded, `!readOnly`, and the user has Customers Update **and** Products Read (R5, R9). While the list is loading or failed it's hidden, so the product exclusion is always complete.
 - **Spacing:** every gap comes from `Theme.of(context).spacing`, not literals (constitution §V). The same applies to the dialog in C4.
 - **Row actions:** `buildCatalogRowActions` with Edit only, key `edit_customer_discount_${id}`. Shown only when `!readOnly` and the user has Customers Update.
@@ -78,7 +78,6 @@ The new keys are listed below, with Spanish first and English second.
 | `customerDiscountsSection` | Descuentos | Discounts |
 | `customerDiscountsEmpty` | Sin descuentos por producto. | No product discounts. |
 | `customerDiscountsAfterSaveNote` | Los descuentos se pueden agregar después de guardar el cliente. | Discounts can be added once the customer is saved. |
-| `addCustomerDiscountButton` | Agregar descuento | Add discount |
 | `customerDiscountColumnCode` | Código | Code |
 | `customerDiscountColumnProduct` | Producto | Product |
 | `customerDiscountColumnDiscount` | Descuento | Discount |
