@@ -98,30 +98,30 @@ class SupplierFormPanelState extends ConsumerState<SupplierForm> {
     if (_isEdit) {
       _loadForEdit();
     } else {
-      _snapshot = ref.read(supplierFormControllerProvider);
+      _snapshot = ref.read(supplierFormControllerProvider(widget.supplierId));
     }
   }
 
   void _loadForEdit() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await ref
-          .read(supplierFormControllerProvider.notifier)
+          .read(supplierFormControllerProvider(widget.supplierId).notifier)
           .loadForEdit(widget.supplierId!);
       if (mounted) {
-        setState(() => _snapshot = ref.read(supplierFormControllerProvider));
+        setState(() => _snapshot = ref.read(supplierFormControllerProvider(widget.supplierId)));
       }
     });
   }
 
   bool isDirty() {
-    final current = ref.read(supplierFormControllerProvider);
+    final current = ref.read(supplierFormControllerProvider(widget.supplierId));
     return _snapshot != null && _snapshot != current;
   }
 
   @override
   Widget build(BuildContext context) {
-    final formState = ref.watch(supplierFormControllerProvider);
-    final controller = ref.read(supplierFormControllerProvider.notifier);
+    final formState = ref.watch(supplierFormControllerProvider(widget.supplierId));
+    final controller = ref.read(supplierFormControllerProvider(widget.supplierId).notifier);
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.suppliers, AccessRight.create);
     final canUpdate = access.can(SystemObject.suppliers, AccessRight.update);

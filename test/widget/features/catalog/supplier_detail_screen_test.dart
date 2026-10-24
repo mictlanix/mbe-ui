@@ -289,4 +289,36 @@ void main() {
 
     expect(find.text('suppliers list'), findsOneWidget);
   });
+
+  testWidgets('a create opened while the previous supplier is still closing '
+      'starts empty, not with that supplier\'s fields and links', (
+    tester,
+  ) async {
+    final router = await pumpAt(tester, '/suppliers/1?view=true');
+    expect(find.byKey(const Key('linked_row_addresses_10')), findsOneWidget);
+
+    // Back, then New before the back transition has finished — the old
+    // screen is still mounted, and still holding the form state.
+    router.pop();
+    await tester.pump();
+    router.push('/suppliers/new');
+    await tester.pumpAndSettle();
+
+    expect(find.text('New supplier'), findsOneWidget);
+    expect(
+      tester
+          .widget<EditableText>(
+            find.descendant(
+              of: find.byKey(const Key('code_field')),
+              matching: find.byType(EditableText),
+            ),
+          )
+          .controller
+          .text,
+      isEmpty,
+    );
+    expect(find.byKey(const Key('linked_row_addresses_10')), findsNothing);
+    expect(find.byKey(const Key('linked_row_contacts_20')), findsNothing);
+    expect(find.byKey(const Key('linked_row_bank_accounts_30')), findsNothing);
+  });
 }

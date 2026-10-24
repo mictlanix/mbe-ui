@@ -59,10 +59,15 @@ abstract class SupplierFormState with _$SupplierFormState {
 }
 
 /// Manages the create/edit supplier form (FR-010, FR-011).
+///
+/// Keyed by the supplier being edited (`null` for a create) so that each
+/// supplier screen owns its state: a create opened while another supplier's
+/// screen is still closing must not start with that supplier's fields and
+/// links (spec 050).
 @riverpod
 class SupplierFormController extends _$SupplierFormController {
   @override
-  SupplierFormState build() => const SupplierFormState();
+  SupplierFormState build(int? supplierId) => const SupplierFormState();
 
   void codeChanged(String v) => state = state.copyWith(
     code: v,
