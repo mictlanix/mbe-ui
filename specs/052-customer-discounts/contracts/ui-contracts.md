@@ -33,7 +33,9 @@ CustomerDiscountsSection({Key? key, required int? customerId, required bool read
 | Empty | `customerDiscountsEmpty` |
 | Rows | `DataTableView<CustomerDiscount>` with columns Code (S), Product (L) and Discount (S). Discount renders as `fmt.display.percent(d.discount)` and is right-aligned |
 
-- **Add button** `add_customer_discount_button`: shown only when the customer is saved, `!readOnly`, the user has Customers Update **and** Products Read (R9).
+- **Header:** a `Wrap` of the title and the add button. On narrow widths the button drops below the title instead of overflowing, so there's no compact-only label (wireframes OQ-2).
+- **Add button** `add_customer_discount_button`: shown only when the customer is saved, the discounts list has loaded, `!readOnly`, and the user has Customers Update **and** Products Read (R5, R9). While the list is loading or failed it's hidden, so the product exclusion is always complete.
+- **Spacing:** every gap comes from `Theme.of(context).spacing`, not literals (constitution §V). The same applies to the dialog in C4.
 - **Row actions:** `buildCatalogRowActions` with Edit only, key `edit_customer_discount_${id}`. Shown only when `!readOnly` and the user has Customers Update.
 - **Compact tier:** drops the Code column and shows the code as a prefix in the Product cell (`code · name`), so the product stays identifiable.
 - **Section keys:** `customer_discounts_section`, `customer_discounts_table`, `customer_discounts_after_save_note`.

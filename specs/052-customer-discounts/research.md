@@ -40,7 +40,7 @@
 **Decision**: The dialog controller validates the percentage text before it enables Save:
 - It must be non-empty and parse with `Decimal.tryParse` after trimming.
 - It must be `>= 0` and `<= 100`.
-- It must have at most 6 decimal places, checked as `parsed.scale <= 6`.
+- It must have at most 6 decimal places, checked as `parsed.scale <= 6`. The scale is measured on the value, not the text, so trailing zeros such as `10.0000000` don't count against the limit.
 
 Each failure has its own localized message under the field. The server's own 422 field errors still map to `fieldErrors['discount']` as a backstop.
 
@@ -56,6 +56,8 @@ Each failure has its own localized message under the field. The server's own 422
 - **Without Products Read:** the add button is hidden, because a discount can't be added without choosing a product.
 
 **Rationale**: The server enforces Products Read on `GET /products` (`require_privilege(PRODUCTS, READ)`). Hiding the add control follows §IV, which hides actions rather than disabling them. The discount list is small and already loaded, so client-side exclusion is enough.
+
+**Loaded list required**: the add button shows only once the discounts list has loaded. While it is loading or has failed, the set of taken products isn't known, so the button is hidden (§IV hides rather than disables). This keeps FR-005 true on every path, and leaves the 409 for genuine races with another user.
 
 **Alternatives considered**: Leaving out the exclusion and relying on the 409. Rejected: FR-005 requires the exclusion, and a 409 should only happen in a race.
 
@@ -102,7 +104,7 @@ Each failure has its own localized message under the field. The server's own 422
 |---|---|
 | See the Discounts section | Customers Read (the route gate already requires it) |
 | Add button, row Edit icon, Delete in the dialog | Customers Update, **and** the page is not in read-only view |
-| Add button (additionally) | Products Read |
+| Add button (additionally) | Products Read, and the discounts list has loaded (R5) |
 
 The section takes the page's `readOnly` flag, as `SupplierAgreementsSection` does. In create mode (`customerId == null`) it shows the after-save note and no controls (FR-007).
 

@@ -71,15 +71,16 @@ The customer detail page (spec 046) is unchanged above the new section. The Disc
 ### State: loading / error
 
 ```
-│  Descuentos                                                    [+ Agregar descuento] │
+│  Descuentos                                                                          │
 │                                   ◌                                                  │  CircularProgressIndicator
 ```
 ```
-│  Descuentos                                                    [+ Agregar descuento] │
+│  Descuentos                                                                          │
 │  ⚠ No se pudieron cargar los registros.                              [Reintentar]    │  ListFailedView
 ```
 
 - The section loads independently of the customer's fields. A failure here doesn't block editing the customer. Retry re-reads only the discounts.
+- The add button is hidden in both states: until the list has loaded, the picker can't know which products to leave out (FR-005).
 
 ### State: create (`/customers/new`, not yet saved)
 
@@ -99,7 +100,8 @@ The customer detail page (spec 046) is unchanged above the new section. The Disc
 ├──────────────────────────────────────┤
 │  … fields, sections, one column …    │
 │ ──────────────────────────────────── │
-│  Descuentos        [+ Agregar]       │
+│  Descuentos                          │
+│  [+ Agregar descuento]               │  header Wrap: button on its own line
 │ ┌──────────────────────┬────────┬──┐ │
 │ │ Producto             │  Desc. │  │ │
 │ ├──────────────────────┼────────┼──┤ │
@@ -111,7 +113,7 @@ The customer detail page (spec 046) is unchanged above the new section. The Disc
 
 - **Columns:** the Code column is dropped and its value is prefixed into the Product cell (`code · name`), so the product stays identifiable without horizontal scroll (§VI).
 - **Truncation:** the name truncates with an ellipsis, and the full name is in the edit dialog.
-- **Add button:** keeps its icon. The label may shorten to `Agregar` if the header row overflows (see OQ-2).
+- **Add button:** keeps its full label. When it doesn't fit beside the title, the header wraps and the button drops onto its own line, as drawn (OQ-2, resolved).
 
 ---
 
@@ -212,6 +214,6 @@ The customer detail page (spec 046) is unchanged above the new section. The Disc
 ## Open Questions
 
 1. **Should the section show a count in its title, like `Descuentos (3)`?** The supplier wireframes show counts on linked sections, but the agreements section has none. Options: no count, or a count. *Assumed: no count, matching agreements.*
-2. **Compact header overflow.** `+ Agregar descuento` beside the title may not fit at 360 px. Options: shorten the label to `Agregar`; icon only, with a tooltip; or wrap the button below the title. *Assumed: shorten to `Agregar` on compact. This needs a new l10n key, not yet in contracts C6.*
+2. **Compact header overflow.** `+ Agregar descuento` beside the title may not fit at 360 px. Options: shorten the label to `Agregar`; icon only, with a tooltip; or wrap the button below the title. *Resolved 2026-10-24: wrap. The header is a `Wrap`, so no compact-only text key is needed (contracts C3).*
 3. **Picker results for a product with many variants.** The option shows name and code. The legacy table also showed model and SKU, which `ProductListItem` may carry, unlike the discount row. Options: code subtitle only, or add model/SKU to the option subtitle. *Assumed: code only. The spec's "no extra product details" assumption covers the row, not the picker.*
 4. **0 % row emphasis.** A 0 % discount is valid (edge case) and reads `0.00 %`, the same as any other row. Options: no emphasis, or a muted style. *Assumed: no emphasis. Nothing in scope asks for it.*
