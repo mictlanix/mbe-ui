@@ -86,19 +86,21 @@ header strip, which does not render until the quote loads.
 │ 1234        Confirmada           │
 │ Fecha              Vigencia      │
 │ 24/10/2026 09:10   31/10/2026 …  │
-│ [▤ Ver cotización]               │
-│ [✉ Enviar por correo]            │
-│ [Más detalles ▾]                 │
-├──────────────────────────────────┤
-│ … lines …                        │
-├──────────────────────────────────┤
-│ Total $12,345.00                 │
+│              [Más detalles ▾] [⋮]│
+├──────────────────────────────────┤      ┌───────────────────────┐
+│ … lines …                        │  ⋮ → │ ▤ Ver cotización      │
+├──────────────────────────────────┤      │ ✉ Enviar por correo   │
+│ Total $12,345.00                 │      └───────────────────────┘
 │ [Cancelar] [Duplicar] [Convertir]│
 └──────────────────────────────────┘
 ```
 
-- The trailing `Wrap` reflows onto its own rows, as `OrderHeaderPanel`'s does. Nothing is
-  dropped. Three stacked buttons is heavy at this width — see Open Question 2.
+- On compact, the two document actions move into an overflow menu (`MenuAnchor` /
+  `PopupMenuButton`) at the end of the trailing slot; "Más detalles" stays a button —
+  FR-015a. The menu holds the same items, gates and disabled states as the buttons (a
+  draft's menu has only "Ver cotización", disabled while a write is in flight).
+- Nothing is dropped. The order screen's "Ver pedido" is untouched (it is one button and
+  still wraps).
 
 ## Dialog: Enviar cotización por correo
 
@@ -133,8 +135,9 @@ selected chips — there is no separate recipient list (Clarifications, FR-008/F
   then fiscal recipients; an address shared by both appears once (edge case: duplicate).
 - "Otro correo" field + "Agregar" (and Enter) — FR-009a. A plain themed `TextField`.
 - "Enviar" disabled with nothing selected — FR-009a.
-- Dialog shell: `AlertDialog` (as `app_side_sheet.dart`'s confirm dialog). No shared
-  form-dialog widget exists — see Open Question 3.
+- Dialog shell: a **new shared responsive dialog** in `lib/core/widgets/` — regular
+  dialog on wide screens, `Dialog.fullscreen` on compact — FR-015b. This is the one new
+  shared component the feature adds; nothing equivalent exists today.
 
 ### State: some selected, one typed
 
@@ -297,29 +300,17 @@ selected chips — there is no separate recipient list (Clarifications, FR-008/F
 
 ## Open Questions
 
-1. **Where does "Enviar por correo" live — header strip or totals bar?** Options: (a) the
-   header strip's trailing slot beside "Ver cotización", grouping the two document
-   actions; (b) the totals bar beside Cancelar / Duplicar / Convertir, the state-changing
-   actions. Wireframe assumed **(a)**: sending changes no quote state, and it keeps the two
-   document actions together as "Ver pedido" is on the order screen.
-2. **Compact header: three stacked buttons?** On a phone the trailing `Wrap` puts "Ver
-   cotización", "Enviar por correo" and "Más detalles" on three rows. Options: (a) let it
-   wrap, as the order screen does; (b) icon-only buttons with tooltips on compact; (c) an
-   overflow menu. Wireframe assumed **(a)** — no new pattern.
-3. **Dialog shell.** No shared form-dialog widget exists in `lib/core/widgets/`. Options:
-   (a) a plain `AlertDialog` at regular width, full-screen `Dialog.fullscreen` on compact,
-   built in the feature; (b) promote a shared responsive dialog to `lib/core/widgets/`.
-   Wireframe assumed **(a)**; (b) only if planning finds a second caller.
-4. **What happens to a typed chip when it is deselected?** Options: (a) it stays as an
-   unselected chip, consistent with every other chip; (b) it disappears, since it was
-   never a known address. Wireframe assumed **(a)**.
-5. **Chip label and order.** Assumed "owner · address", contacts before fiscal
-   recipients, typed addresses appended at the end. For an address shared by a contact and
-   a fiscal recipient, assumed the contact's name wins.
-6. **Can the dialog be dismissed mid-send?** Assumed **no** (FR-011's "closing during the
-   wait does not report a false success" is satisfied by not allowing the close). The
-   alternative — allow close, then show the outcome as a snackbar when it lands — is more
-   complex for little gain.
-7. **Success message with many recipients.** With 10 addresses the snackbar text is long.
-   Assumed it lists them all and wraps; alternative: "Cotización enviada a 10
-   destinatarios".
+All seven resolved 2026-10-24 and recorded in the spec's Clarifications (wireframe review).
+
+1. **Where does "Enviar por correo" live?** → Header strip beside "Ver cotización"
+   (FR-015).
+2. **Compact header: three stacked buttons?** → **Changed from the drawing's first
+   assumption:** an overflow menu holds the two document actions on compact; "Más
+   detalles" stays a button (FR-015a). Compact tier redrawn above.
+3. **Dialog shell.** → **Changed:** a new shared responsive dialog in
+   `lib/core/widgets/`, not one built inside the feature (FR-015b).
+4. **Typed chip deselected?** → Stays as an unselected chip (FR-008).
+5. **Chip label and order.** → "owner · address"; contacts, then fiscal recipients, then
+   typed; the contact's name wins on a shared address (FR-008).
+6. **Dismiss mid-send?** → No (FR-011).
+7. **Success message with many recipients.** → Lists them all, wrapping (FR-012).

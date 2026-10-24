@@ -15,6 +15,16 @@
 - Q: What does the recipient list start with when the email dialog opens? → A: Nothing is selected. The customer's known addresses are shown as wrapping selectable chips — the same style as the "Falta …" filter chips on the Precios screen: tapping a chip selects it (check mark, filled) and tapping again deselects it. The selected chips are the recipients; there is no separate recipient list. A typed address becomes another chip, already selected.
 - Q: Where are "Ver cotización" and "Enviar por correo" offered? → A: On the quote screen only; the quotes list gets no row actions.
 
+### Session 2026-10-24 (wireframe review)
+
+- Q: Where on the quote screen does "Enviar por correo" live? → A: In the header strip beside "Ver cotización", grouping the two document actions (as "Ver pedido" sits on the order screen) — not in the totals bar with the state-changing actions.
+- Q: On a phone, the header would stack "Ver cotización", "Enviar por correo" and "Más detalles" on three rows. How is that avoided? → A: On phone-sized screens the two document actions move into an overflow menu in the header strip; "Más detalles" stays a visible button. Wider screens show both actions as buttons.
+- Q: What presents the email dialog? → A: A shared responsive dialog — a regular dialog on wide screens, full-screen on phones — added to the shared component set rather than built inside this feature, so later form dialogs reuse it.
+- Q: What happens to a typed address when it is deselected? → A: It stays as an unselected chip, like every other chip.
+- Q: How are chips labelled and ordered? → A: "owner · address"; the customer's contacts first, then fiscal recipients, then typed addresses. An address shared by a contact and a fiscal recipient shows the contact's name.
+- Q: Can the dialog be closed while a send is in progress? → A: No — it cannot be dismissed until the server answers.
+- Q: How is success reported for many recipients? → A: The confirmation lists every confirmed address, wrapping as needed.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - View, print or download a quote (Priority: P1)
@@ -60,7 +70,7 @@ A salesperson has confirmed a quote and wants the customer to receive it. From t
 - **Quote changed state meanwhile**: the quote was cancelled by someone else after the dialog opened — the server refuses the send; the dialog explains the quote can no longer be sent and the quote screen refreshes to its current state.
 - **Customer with no known addresses**: no chips are shown at first; typing an address still works.
 - **Mail not configured on the server**: every send fails the same way; the message says sending email is not available and suggests downloading the PDF instead.
-- **Slow mail server**: the send is synchronous; the dialog cannot be submitted twice while waiting, and closing it during the wait does not report a false success.
+- **Slow mail server**: the send is synchronous; the dialog cannot be submitted twice or closed while waiting, so it never reports a false success.
 - **No permission to read quotes**: the user cannot reach the quote screen, so neither action is offered (deny-by-default).
 
 ## Requirements *(mandatory)*
@@ -79,18 +89,20 @@ A salesperson has confirmed a quote and wants the customer to receive it. From t
 
 - **FR-006**: The quote screen MUST offer an "Enviar por correo" action only for a confirmed, not-cancelled quote, to any user who can read quotes.
 - **FR-007**: The email dialog MUST let the user add between 1 and 10 recipients, each either picked from suggestions or typed freely.
-- **FR-008**: The dialog MUST show the email addresses of the quote customer's contacts and fiscal recipients (as the legacy system offered) as wrapping selectable chips, each labelled with its owner's name and address, in the same style as the filter chips on the Precios screen. Tapping a chip toggles it between selected (check mark) and not selected.
+- **FR-008**: The dialog MUST show the email addresses of the quote customer's contacts and fiscal recipients (as the legacy system offered) as wrapping selectable chips, each labelled "owner · address", in the same style as the filter chips on the Precios screen. Contacts come first, then fiscal recipients, then typed addresses; an address shared by a contact and a fiscal recipient appears once, under the contact's name. Tapping a chip toggles it between selected (check mark) and not selected; a deselected typed address stays as an unselected chip.
 - **FR-009**: No chip is selected when the dialog opens. The recipients are exactly the selected chips; nothing is sent to an address the user did not select or type.
 - **FR-009a**: A typed address MUST be added as a new chip, already selected; typing an address that matches an existing chip (any letter case) selects that chip instead of adding another. Send is disabled while no chip is selected.
 - **FR-010**: The dialog MUST reject malformed addresses and duplicates (case-insensitive) before sending, and MUST NOT allow more than 10 recipients.
-- **FR-011**: While a send is in progress, the dialog MUST prevent a second submission and show progress.
-- **FR-012**: On success, the dialog MUST close and a confirmation MUST list every address the server reports as sent to.
+- **FR-011**: While a send is in progress, the dialog MUST prevent a second submission, show progress, and MUST NOT be dismissible until the server answers.
+- **FR-012**: On success, the dialog MUST close and a confirmation MUST list every address the server reports as sent to, wrapping as needed.
 - **FR-013**: On failure, the dialog MUST stay open with the recipients kept, and MUST show a distinct message for each case: quote no longer sendable, invalid recipients (with the server's reason), mail server refused, mail not configured, and connection/other errors.
 - **FR-014**: When the server reports the quote is no longer sendable, the quote screen MUST refresh to the quote's current state after the dialog is closed.
 
 **Placement and access**
 
-- **FR-015**: Both actions MUST be offered on the quote screen only; the quotes list gets no new row actions.
+- **FR-015**: Both actions MUST be offered on the quote screen only, in its header strip beside "Más detalles"; the quotes list gets no new row actions.
+- **FR-015a**: On phone-sized screens, the two actions MUST be offered from an overflow menu in the header strip instead of as buttons; "Más detalles" stays a visible button. Wider screens show them as buttons.
+- **FR-015b**: The email dialog MUST be presented as a regular dialog on wide screens and full-screen on phone-sized screens, through a shared responsive dialog component that other form dialogs can reuse.
 - **FR-016**: Both actions MUST be gated by read access to sales quotes, matching what the server enforces; no new privilege is introduced.
 - **FR-017**: All new text MUST be localized in Spanish and English.
 
