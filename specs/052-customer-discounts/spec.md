@@ -43,7 +43,7 @@ A sales user opens a customer and sees a Discounts section that lists every prod
 
 1. **Given** a customer with discounts on 3 products, **When** the user opens the customer, **Then** the Discounts section lists exactly those 3, ordered by product code, each showing the product code, product name and discount percentage.
 2. **Given** a customer with no discounts, **When** the user opens the customer, **Then** the Discounts section shows an empty-state message instead of a blank area.
-3. **Given** a stored discount of 0.125, **When** it is shown, **Then** it reads 12.5 %, with no rounding that hides precision and no padding zeros.
+3. **Given** a stored discount of 0.125, **When** it is shown in the section, **Then** it reads in the application's percentage format (12.50 % by default), and its edit dialog shows the full stored precision (12.5).
 4. **Given** a user who can read customers but not update them, **When** they open a customer, **Then** they see the Discounts section with every row but no add or edit controls.
 
 ---
@@ -92,7 +92,7 @@ The user corrects the percentage of an existing discount, or removes it when the
 - **Customer has unsaved edits.** Adding, changing or removing a discount refreshes only the Discounts section. The customer's unsaved field and link edits are left untouched and still need the customer's Save.
 - **0 % discount.** A 0 % discount is valid and is listed. It is distinct from having no discount on the product, although both make a new line start at 0.
 - **100 % discount.** Valid. The product is free for that customer.
-- **Decimal separator.** The percentage accepts the decimal separator of the user's language, as the other numeric fields do.
+- **Decimal separator.** The percentage field reads input the same way the sales discount field does, with a period as the decimal separator.
 - **Many discounts.** A customer with many discounts keeps the section readable, and the page scrolls rather than truncating.
 - **Inactive product.** A discount on a product that has since been deactivated is still listed and can be changed or removed.
 - **Narrow screens.** The section stays usable in one column, and every action stays reachable.
@@ -105,12 +105,12 @@ The user corrects the percentage of an existing discount, or removes it when the
 
 - **FR-001**: The customer detail page MUST show a Discounts section below the existing sections, when viewing and when editing a customer.
 - **FR-002**: The section MUST list the customer's discounts in product-code order. Each row MUST show the product code, product name and discount as a percentage. When there are none, the section MUST show an empty-state message.
-- **FR-003**: Percentages MUST show the stored value exactly, with trailing zeros dropped and the decimal separator of the user's language.
+- **FR-003**: The section MUST show percentages in the application's percentage format, the same one every other screen uses (spec 028). The edit dialog MUST show the stored value at full precision, so nothing is lost when the user saves without changing it.
 
 **Adding**
 
 - **FR-004**: On a saved customer, a user with Update on customers MUST be able to add a discount through a dialog that asks for a product and a percentage.
-- **FR-005**: The product MUST be chosen by searching products by code or name. Products that already have a discount for this customer MUST NOT be offered.
+- **FR-005**: The product MUST be chosen by searching active products by code or name. Products that already have a discount for this customer MUST NOT be offered.
 - **FR-006**: The percentage MUST be required, from 0 to 100 inclusive, with at most 6 decimal places. The dialog MUST refuse any other value before anything is sent.
 - **FR-007**: On a customer that is not yet saved, the section MUST NOT show an add control. It MUST say that discounts can be added once the customer is saved.
 - **FR-007a**: After a customer is created, the screen MUST stay open on the saved customer in edit mode, with the Discounts add control available. After a customer is updated, the screen MUST return to the customer list, as today.
