@@ -232,7 +232,12 @@ how one requirement maps onto code that already exists.
 
   which covers FR-006 and FR-016. `SaleStatus.paid` never occurs for quotes (the header
   already maps it to "Confirmada"), and is treated as not sendable so the client never
-  offers what the server would refuse.
+  offers what the server would refuse. `hasExpired` is ignored: the server sends an
+  expired confirmed quote, so the client offers it too (spec edge cases).
+- **Dialog title reference**: `salesQuoteEmailDialogTitle` uses the same reference the
+  header strip shows (`sale.serial`, falling back to `#provisionalReference`), so the user
+  sees one number for the quote on screen. The document title and file name keep the
+  padded id (R2), matching the server's own file name.
 - **Rationale**: the user chose the header strip (wireframe review, OQ1). The totals-bar
   `_secondaryAction` row is left alone.
 

@@ -64,7 +64,7 @@ No mbe-api work or codegen is needed: both endpoints and their client methods al
 - The client address check must match the server's regex exactly (research R8).
 
 **Scale/Scope**:
-- **New source files (5)**:
+- **New source files (4)**:
   - `core/widgets/responsive_dialog.dart`
   - `features/sales/domain/quote_email.dart` (+ `.freezed.dart`)
   - `features/sales/presentation/quotes/quote_email_controller.dart` (+ `.g.dart`)
@@ -76,7 +76,7 @@ No mbe-api work or codegen is needed: both endpoints and their client methods al
   - `sales_quote_repository_impl.dart`
   - `quote_header_panel.dart`
   - the two `.arb` files (about 22 keys)
-- **Tests**: 6 new files and 4 extended (research R13).
+- **Tests**: 7 new files (including the live integration test) and 4 extended (research R13).
 
 ## Constitution Check
 

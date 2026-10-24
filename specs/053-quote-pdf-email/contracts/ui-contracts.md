@@ -46,8 +46,9 @@ Future<T?> showResponsiveDialog<T>(BuildContext context,
   - the close control and the secondary action are disabled;
   - Escape and back do nothing.
 
-  `showResponsiveDialog` sets the barrier to non-dismissible itself; callers flip
-  `dismissible` while busy.
+  A tap on the barrier also does nothing, because `PopScope` blocks the pop it triggers;
+  this is tested, not assumed. `barrierDismissible` only controls barrier taps while the
+  dialog is dismissible. Callers flip `dismissible` while busy.
 - **Styling**: all spacing comes from `Theme.of(context).spacing`, colours from
   `ColorScheme`, and there are no literals (§V/§VI).
 - **Goldens**: four goldens, light/dark × narrow/wide, registered in

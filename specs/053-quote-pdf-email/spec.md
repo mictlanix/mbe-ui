@@ -69,6 +69,7 @@ A salesperson has confirmed a quote and wants the customer to receive it. From t
 - **Malformed address**: the user types something that is not an email address — it is flagged before sending; if the server still rejects an address, the dialog shows the server's reason and keeps the recipients.
 - **Quote changed state meanwhile**: the quote was cancelled by someone else after the dialog opened — the server refuses the send; the dialog explains the quote can no longer be sent and the quote screen refreshes to its current state.
 - **Customer with no known addresses**: no chips are shown at first; typing an address still works.
+- **Confirmed but expired quote**: it can still be emailed (the server checks only that the quote is confirmed); the email action is offered as for any confirmed quote.
 - **Mail not configured on the server**: every send fails the same way; the message says sending email is not available and suggests downloading the PDF instead.
 - **Slow mail server**: the send is synchronous; the dialog cannot be submitted twice or closed while waiting, so it never reports a false success.
 - **No permission to read quotes**: the user cannot reach the quote screen, so neither action is offered (deny-by-default).
@@ -89,7 +90,7 @@ A salesperson has confirmed a quote and wants the customer to receive it. From t
 
 - **FR-006**: The quote screen MUST offer an "Enviar por correo" action only for a confirmed, not-cancelled quote, to any user who can read quotes.
 - **FR-007**: The email dialog MUST let the user add between 1 and 10 recipients, each either picked from suggestions or typed freely.
-- **FR-008**: The dialog MUST show the email addresses of the quote customer's contacts and fiscal recipients (as the legacy system offered) as wrapping selectable chips, each labelled "owner · address", in the same style as the filter chips on the Precios screen. Contacts come first, then fiscal recipients, then typed addresses; an address shared by a contact and a fiscal recipient appears once, under the contact's name. Tapping a chip toggles it between selected (check mark) and not selected; a deselected typed address stays as an unselected chip.
+- **FR-008**: The dialog MUST show the email addresses of the quote customer's contacts and fiscal recipients (as the legacy system offered) as wrapping selectable chips, each labelled "owner · address" (a typed address has no owner and shows the address alone), in the same style as the filter chips on the Precios screen. Contacts come first, then fiscal recipients, then typed addresses; an address shared by a contact and a fiscal recipient appears once, under the contact's name. Tapping a chip toggles it between selected (check mark) and not selected; a deselected typed address stays as an unselected chip.
 - **FR-009**: No chip is selected when the dialog opens. The recipients are exactly the selected chips; nothing is sent to an address the user did not select or type.
 - **FR-009a**: A typed address MUST be added as a new chip, already selected; typing an address that matches an existing chip (any letter case) selects that chip instead of adding another. Send is disabled while no chip is selected.
 - **FR-010**: The dialog MUST reject malformed addresses and duplicates (case-insensitive) before sending, and MUST NOT allow more than 10 recipients.
@@ -127,5 +128,5 @@ A salesperson has confirmed a quote and wants the customer to receive it. From t
 - Mail sending is configured on the deployment where email is tested (otherwise every send fails as "not configured"); confirming this is a precondition for verifying User Story 2, not something mbe-ui controls.
 - The subject, body text, sender and reply-to address are decided by the server; the dialog does not let the user edit them.
 - The history of past sends (recorded server-side) is out of scope; showing it would need a new mbe-api read endpoint.
-- The customer's contacts and fiscal recipients are already readable by a user who can read quotes; if a user cannot read them, the dialog simply shows no suggestions and typing still works.
-- "Confirmed" means the quote's completed state; a cancelled quote is not sendable even if it was confirmed before.
+- The quote's customer, with its contacts and fiscal recipients, is readable by any user who can read quotes (the server allows it). If loading it fails for any reason, the dialog shows no chips and typing still works.
+- "Confirmed" means the quote's completed state; a cancelled quote is not sendable even if it was confirmed before. Expiry does not affect sending.

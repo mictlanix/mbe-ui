@@ -104,7 +104,8 @@ header strip, which does not render until the quote loads.
 
 ## Dialog: Enviar cotización por correo
 
-Opened from "Enviar por correo". A modal over the quote screen. Recipients are the
+Opened from "Enviar por correo". A modal over the quote screen. The "1234" in its title is
+the same reference the header strip shows (the quote's serial). Recipients are the
 selected chips — there is no separate recipient list (Clarifications, FR-008/FR-009).
 
 ### State: suggestions loaded, none selected (initial)
