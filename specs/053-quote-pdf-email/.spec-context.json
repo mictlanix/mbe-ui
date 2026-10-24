@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Quotation PDF and Email",
   "branch": "053-quote-pdf-email",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -32,6 +32,20 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-10-24T16:19:54.223Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-24T16:46:56.217Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-24T16:48:54.414Z"
     }
   ],
   "telemetryInstanceId": "068491e9-bf96-4b57-a415-90d65d6f3dec"
