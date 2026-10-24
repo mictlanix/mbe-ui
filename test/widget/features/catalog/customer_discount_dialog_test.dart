@@ -18,6 +18,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
+import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/features/catalog/presentation/customer_discount_dialog.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -227,6 +228,39 @@ void main() {
     expect(saveEnabled(tester), isTrue);
   });
 
+  testWidgets('a picked product shows like a search row — name, code and '
+      'photo — and can be cleared to search again', (tester) async {
+    await pumpDialog(tester);
+    await pickProduct(tester, 'Clavo para concreto');
+    await typePercent(tester, '10');
+
+    final selected = find.byKey(
+      const Key('customer_discount_selected_product'),
+    );
+    expect(selected, findsOneWidget);
+    expect(
+      find.descendant(of: selected, matching: find.text('Clavo para concreto')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: selected, matching: find.text('CLV-0140')),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(of: selected, matching: find.byType(ProductPhoto)),
+      findsOneWidget,
+    );
+    expect(find.byKey(_productField), findsNothing);
+    expect(saveEnabled(tester), isTrue);
+
+    await tester.tap(find.byKey(const Key('customer_discount_clear_product')));
+    await tester.pumpAndSettle();
+
+    expect(selected, findsNothing);
+    expect(find.byKey(_productField), findsOneWidget);
+    expect(saveEnabled(tester), isFalse, reason: 'no product any more');
+  });
+
   testWidgets('a blank dialog opens without showing an error', (tester) async {
     await pumpDialog(tester);
 
@@ -373,7 +407,22 @@ void main() {
       await pumpDialog(tester, existing: existing);
 
       expect(find.text(l10n.editCustomerDiscountDialogTitle), findsOneWidget);
-      expect(find.text('CLV-0125 — Clavo estándar'), findsOneWidget);
+      final selected = find.byKey(
+        const Key('customer_discount_selected_product'),
+      );
+      expect(
+        find.descendant(of: selected, matching: find.text('Clavo estándar')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: selected, matching: find.text('CLV-0125')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('customer_discount_clear_product')),
+        findsNothing,
+        reason: 'the product of an existing discount cannot change',
+      );
       expect(find.byType(CatalogEntityPicker<ProductListItem>), findsNothing);
       expect(percentText(tester), '12.5');
       expect(saveEnabled(tester), isTrue);

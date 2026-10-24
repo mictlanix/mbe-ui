@@ -4145,4 +4145,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String deleteCustomerDiscountConfirmMessage(String code, String name) {
     return '¿Eliminar el descuento sobre $code — $name? Las partidas ya capturadas conservan su descuento.';
   }
+
+  @override
+  String get customerDiscountChangeProductTooltip => 'Cambiar producto';
 }

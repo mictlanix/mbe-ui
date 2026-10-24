@@ -7434,6 +7434,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove the discount on {code} — {name}? Lines already entered keep their discount.'**
   String deleteCustomerDiscountConfirmMessage(String code, String name);
+
+  /// spec 052: clears the product picked in the add-discount dialog so another can be searched
+  ///
+  /// In en, this message translates to:
+  /// **'Change product'**
+  String get customerDiscountChangeProductTooltip;
 }
 
 class _AppLocalizationsDelegate

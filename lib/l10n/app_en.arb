@@ -2846,5 +2846,7 @@
   "deleteCustomerDiscountConfirmTitle": "Remove discount",
   "@deleteCustomerDiscountConfirmTitle": {"description": "spec 052 FR-009: title of the remove-discount confirmation"},
   "deleteCustomerDiscountConfirmMessage": "Remove the discount on {code} — {name}? Lines already entered keep their discount.",
-  "@deleteCustomerDiscountConfirmMessage": {"description": "spec 052 FR-009: body of the remove-discount confirmation", "placeholders": {"code": {"type": "String"}, "name": {"type": "String"}}}
+  "@deleteCustomerDiscountConfirmMessage": {"description": "spec 052 FR-009: body of the remove-discount confirmation", "placeholders": {"code": {"type": "String"}, "name": {"type": "String"}}},
+  "customerDiscountChangeProductTooltip": "Change product",
+  "@customerDiscountChangeProductTooltip": {"description": "spec 052: clears the product picked in the add-discount dialog so another can be searched"}
 }

@@ -53,7 +53,8 @@ Future<void> showCustomerDiscountDialog(BuildContext context, {
 - **Title:** `newCustomerDiscountDialogTitle` or `editCustomerDiscountDialogTitle`.
 - **Product:**
   - Add mode: `CatalogEntityPicker<ProductListItem>` with key `customer_discount_product_field`. It searches active products and drops `takenProductIds` (R5). The option row shows `name` with a `code` subtitle and a thumbnail.
-  - Edit mode: a read-only `InputDecorator` with the same key that shows `code — name` (FR-008).
+  - Once picked (add mode): the picker is replaced by `_SelectedProduct` (key `customer_discount_selected_product`), laid out like a suggestion row: `ProductPhoto` (40), the name, and the code beneath. A ✕ (`customer_discount_clear_product`, tooltip `customerDiscountChangeProductTooltip`) drops the pick and brings the picker back.
+  - Edit mode: the same `_SelectedProduct` tile, without the ✕, since the product can't change (FR-008). The discount summary carries no photo, so the placeholder shows.
 - **Percentage:** `TextFormField`, key `customer_discount_percent_field`, with a `%` suffix and `TextInputType.numberWithOptions(decimal: true)`. The error text is the localized `percentError` (R4), or the server's `fieldErrors['discount']`.
 - **Error banner:** above the fields when `error != null`. It names the R6 case: `customerDiscountDuplicateError`, `customerDiscountProductMissingError`, `customerDiscountMissingError`, or the generic save or delete message with the server detail.
 - **Actions:**

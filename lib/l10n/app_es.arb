@@ -1354,5 +1354,7 @@
   "deleteCustomerDiscountConfirmTitle": "Eliminar descuento",
   "@deleteCustomerDiscountConfirmTitle": {"description": "spec 052 FR-009: title of the remove-discount confirmation"},
   "deleteCustomerDiscountConfirmMessage": "¿Eliminar el descuento sobre {code} — {name}? Las partidas ya capturadas conservan su descuento.",
-  "@deleteCustomerDiscountConfirmMessage": {"description": "spec 052 FR-009: body of the remove-discount confirmation", "placeholders": {"code": {"type": "String"}, "name": {"type": "String"}}}
+  "@deleteCustomerDiscountConfirmMessage": {"description": "spec 052 FR-009: body of the remove-discount confirmation", "placeholders": {"code": {"type": "String"}, "name": {"type": "String"}}},
+  "customerDiscountChangeProductTooltip": "Cambiar producto",
+  "@customerDiscountChangeProductTooltip": {"description": "spec 052: clears the product picked in the add-discount dialog so another can be searched"}
 }

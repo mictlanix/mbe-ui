@@ -356,10 +356,7 @@ void main() {
 
       expect(find.text('Discounts (2)'), findsOneWidget);
       expect(
-        find.descendant(
-          of: find.byKey(addButton),
-          matching: find.text('New'),
-        ),
+        find.descendant(of: find.byKey(addButton), matching: find.text('New')),
         findsOneWidget,
       );
       expect(
@@ -473,7 +470,20 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Edit discount'), findsOneWidget);
-      expect(find.text('TOR-0310 — Tornillo hexagonal'), findsOneWidget);
+      final selected = find.byKey(
+        const Key('customer_discount_selected_product'),
+      );
+      expect(
+        find.descendant(
+          of: selected,
+          matching: find.text('Tornillo hexagonal'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: selected, matching: find.text('TOR-0310')),
+        findsOneWidget,
+      );
       expect(
         find.byKey(const Key('customer_discount_delete_button')),
         findsOneWidget,
@@ -490,7 +500,17 @@ void main() {
       await tester.tap(find.byKey(const Key('edit_customer_discount_1')));
       await tester.pumpAndSettle();
 
-      expect(find.text('CLV-0125 — Clavo estándar'), findsOneWidget);
+      final selected = find.byKey(
+        const Key('customer_discount_selected_product'),
+      );
+      expect(
+        find.descendant(of: selected, matching: find.text('Clavo estándar')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: selected, matching: find.text('CLV-0125')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('removing a discount refreshes the list', (tester) async {

@@ -4097,4 +4097,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String deleteCustomerDiscountConfirmMessage(String code, String name) {
     return 'Remove the discount on $code — $name? Lines already entered keep their discount.';
   }
+
+  @override
+  String get customerDiscountChangeProductTooltip => 'Change product';
 }

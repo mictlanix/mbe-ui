@@ -108,6 +108,9 @@ class CustomerDiscountDialogController
   void productSelected(ProductListItem product) =>
       state = _clearErrors(state.copyWith(product: product));
 
+  /// Drops the picked product so the user can search for another.
+  void productCleared() => state = _clearErrors(state.copyWith(product: null));
+
   void percentChanged(String value) =>
       state = _clearErrors(state.copyWith(percent: value, percentDirty: true));
 

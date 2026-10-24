@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
@@ -102,33 +103,35 @@ class _CustomerDiscountDialog extends ConsumerWidget {
                 maxColumns: 1,
                 spacing: spacing.md,
                 children: [
-                  FormGridChild(
-                    current == null
-                        ? CatalogEntityPicker<ProductListItem>(
-                            key: const Key('customer_discount_product_field'),
-                            label: l10n.customerDiscountProductLabel,
-                            enabled: fieldsEnabled,
-                            displayStringForOption: (item) => item.name,
-                            optionsBuilder: (query) => _search(
-                              productRepository,
-                              query,
-                              takenProductIds,
-                            ),
-                            onSelected: controller.productSelected,
-                            optionImageUrl: (item) => item.photo,
-                            optionSubtitle: (item) => item.code,
-                          )
-                        // The product is fixed once the discount exists.
-                        : InputDecorator(
-                            key: const Key('customer_discount_product_field'),
-                            decoration: InputDecoration(
-                              labelText: l10n.customerDiscountProductLabel,
-                            ),
-                            child: Text(
-                              '${current.productCode} — ${current.productName}',
-                            ),
-                          ),
-                  ),
+                  FormGridChild(switch ((current, state.product)) {
+                    // The product is fixed once the discount exists. Its
+                    // summary carries no photo, so the placeholder shows.
+                    (final current?, _) => _SelectedProduct(
+                      label: l10n.customerDiscountProductLabel,
+                      name: current.productName,
+                      code: current.productCode,
+                    ),
+                    // Picked: shown like a search row, with a way back.
+                    (null, final product?) => _SelectedProduct(
+                      label: l10n.customerDiscountProductLabel,
+                      name: product.name,
+                      code: product.code,
+                      photoUrl: product.photo,
+                      onClear: fieldsEnabled ? controller.productCleared : null,
+                      clearTooltip: l10n.customerDiscountChangeProductTooltip,
+                    ),
+                    (null, null) => CatalogEntityPicker<ProductListItem>(
+                      key: const Key('customer_discount_product_field'),
+                      label: l10n.customerDiscountProductLabel,
+                      enabled: fieldsEnabled,
+                      displayStringForOption: (item) => item.name,
+                      optionsBuilder: (query) =>
+                          _search(productRepository, query, takenProductIds),
+                      onSelected: controller.productSelected,
+                      optionImageUrl: (item) => item.photo,
+                      optionSubtitle: (item) => item.code,
+                    ),
+                  }),
                   FormGridChild(
                     TextFormField(
                       key: const Key('customer_discount_percent_field'),
@@ -218,6 +221,51 @@ class _CustomerDiscountDialog extends ConsumerWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// The chosen product, laid out like a row of the picker's suggestions:
+/// photo, name, and the code beneath it. [onClear] (add mode only) drops it
+/// so another can be searched.
+class _SelectedProduct extends StatelessWidget {
+  const _SelectedProduct({
+    required this.label,
+    required this.name,
+    required this.code,
+    this.photoUrl,
+    this.onClear,
+    this.clearTooltip,
+  });
+
+  final String label;
+  final String name;
+  final String code;
+  final String? photoUrl;
+  final VoidCallback? onClear;
+  final String? clearTooltip;
+
+  @override
+  Widget build(BuildContext context) {
+    final clear = onClear;
+    return InputDecorator(
+      key: const Key('customer_discount_selected_product'),
+      decoration: InputDecoration(labelText: label),
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        dense: true,
+        leading: ProductPhoto(photoUrl: photoUrl, size: 40),
+        title: Text(name),
+        subtitle: Text(code),
+        trailing: clear == null
+            ? null
+            : IconButton(
+                key: const Key('customer_discount_clear_product'),
+                icon: const Icon(Icons.close),
+                tooltip: clearTooltip,
+                onPressed: clear,
+              ),
       ),
     );
   }
