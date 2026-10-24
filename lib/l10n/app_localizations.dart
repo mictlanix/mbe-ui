@@ -7302,6 +7302,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not delete the agreement.'**
   String get agreementDeleteFailedError;
+
+  /// spec 052: customer form section listing the customer's per-product discounts
+  ///
+  /// In en, this message translates to:
+  /// **'Discounts'**
+  String get customerDiscountsSection;
+
+  /// spec 052: empty state of the customer discounts section
+  ///
+  /// In en, this message translates to:
+  /// **'No product discounts.'**
+  String get customerDiscountsEmpty;
+
+  /// spec 052 FR-007: shown in place of the discounts table while creating a customer
+  ///
+  /// In en, this message translates to:
+  /// **'Discounts can be added once the customer is saved.'**
+  String get customerDiscountsAfterSaveNote;
+
+  /// spec 052: customer discounts table, product code column
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get customerDiscountColumnCode;
+
+  /// spec 052: customer discounts table, product name column
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get customerDiscountColumnProduct;
+
+  /// spec 052: customer discounts table, discount percentage column
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get customerDiscountColumnDiscount;
+
+  /// spec 052: title of the add-discount dialog
+  ///
+  /// In en, this message translates to:
+  /// **'New discount'**
+  String get newCustomerDiscountDialogTitle;
+
+  /// spec 052: label of the product field in the discount dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get customerDiscountProductLabel;
+
+  /// spec 052: label of the percentage field in the discount dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Discount (%)'**
+  String get customerDiscountPercentLabel;
+
+  /// spec 052 FR-006: the discount percentage is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a percentage.'**
+  String get customerDiscountPercentRequiredError;
+
+  /// spec 052 FR-006: the discount percentage is not a number
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number, e.g. 12.5.'**
+  String get customerDiscountPercentInvalidError;
+
+  /// spec 052 FR-006: the discount percentage is below 0 or above 100
+  ///
+  /// In en, this message translates to:
+  /// **'Must be between 0 and 100.'**
+  String get customerDiscountPercentOutOfRangeError;
+
+  /// spec 052 FR-006: the discount percentage has more than 6 decimal places
+  ///
+  /// In en, this message translates to:
+  /// **'At most 6 decimal places.'**
+  String get customerDiscountPercentTooPreciseError;
+
+  /// spec 052 FR-011: a discount for the product already exists (409)
+  ///
+  /// In en, this message translates to:
+  /// **'This customer already has a discount on that product.'**
+  String get customerDiscountDuplicateError;
+
+  /// spec 052 FR-011: the chosen product was deleted before saving (422)
+  ///
+  /// In en, this message translates to:
+  /// **'The product no longer exists.'**
+  String get customerDiscountProductMissingError;
+
+  /// spec 052: generic failure saving a customer discount
+  ///
+  /// In en, this message translates to:
+  /// **'The discount could not be saved.'**
+  String get customerDiscountSaveFailedError;
+
+  /// spec 052: title of the edit-discount dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Edit discount'**
+  String get editCustomerDiscountDialogTitle;
+
+  /// spec 052 FR-011: the discount was removed elsewhere before saving or removing it (404)
+  ///
+  /// In en, this message translates to:
+  /// **'This discount no longer exists.'**
+  String get customerDiscountMissingError;
+
+  /// spec 052: generic failure removing a customer discount
+  ///
+  /// In en, this message translates to:
+  /// **'The discount could not be removed.'**
+  String get customerDiscountDeleteFailedError;
+
+  /// spec 052 FR-009: remove action inside the edit-discount dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get deleteCustomerDiscountButton;
+
+  /// spec 052 FR-009: title of the remove-discount confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Remove discount'**
+  String get deleteCustomerDiscountConfirmTitle;
+
+  /// spec 052 FR-009: body of the remove-discount confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the discount on {code} — {name}? Lines already entered keep their discount.'**
+  String deleteCustomerDiscountConfirmMessage(String code, String name);
+
+  /// spec 052: clears the product picked in the add-discount dialog so another can be searched
+  ///
+  /// In en, this message translates to:
+  /// **'Change product'**
+  String get customerDiscountChangeProductTooltip;
 }
 
 class _AppLocalizationsDelegate

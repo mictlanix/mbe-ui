@@ -78,10 +78,14 @@ abstract class CustomerFormState with _$CustomerFormState {
 }
 
 /// Manages the create/edit customer form (FR-018, FR-019, FR-020).
+///
+/// A family keyed by customer id (`null` for a create), so each customer
+/// screen — and each create — gets its own state. A closing screen and a new
+/// create therefore never share a form (mbe-ui#207, spec 052 R8).
 @riverpod
 class CustomerFormController extends _$CustomerFormController {
   @override
-  CustomerFormState build() => const CustomerFormState();
+  CustomerFormState build(int? customerId) => const CustomerFormState();
 
   void codeChanged(String v) => state = state.copyWith(
     code: v,

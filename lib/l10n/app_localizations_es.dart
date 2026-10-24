@@ -4071,4 +4071,81 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get agreementDeleteFailedError => 'No se pudo eliminar el convenio.';
+
+  @override
+  String get customerDiscountsSection => 'Descuentos';
+
+  @override
+  String get customerDiscountsEmpty => 'Sin descuentos por producto.';
+
+  @override
+  String get customerDiscountsAfterSaveNote =>
+      'Los descuentos se pueden agregar después de guardar el cliente.';
+
+  @override
+  String get customerDiscountColumnCode => 'Código';
+
+  @override
+  String get customerDiscountColumnProduct => 'Producto';
+
+  @override
+  String get customerDiscountColumnDiscount => 'Descuento';
+
+  @override
+  String get newCustomerDiscountDialogTitle => 'Nuevo descuento';
+
+  @override
+  String get customerDiscountProductLabel => 'Producto';
+
+  @override
+  String get customerDiscountPercentLabel => 'Descuento (%)';
+
+  @override
+  String get customerDiscountPercentRequiredError => 'Ingresa un porcentaje.';
+
+  @override
+  String get customerDiscountPercentInvalidError =>
+      'Ingresa un número, p. ej. 12.5.';
+
+  @override
+  String get customerDiscountPercentOutOfRangeError =>
+      'Debe estar entre 0 y 100.';
+
+  @override
+  String get customerDiscountPercentTooPreciseError => 'Máximo 6 decimales.';
+
+  @override
+  String get customerDiscountDuplicateError =>
+      'Este cliente ya tiene un descuento para ese producto.';
+
+  @override
+  String get customerDiscountProductMissingError => 'El producto ya no existe.';
+
+  @override
+  String get customerDiscountSaveFailedError =>
+      'No se pudo guardar el descuento.';
+
+  @override
+  String get editCustomerDiscountDialogTitle => 'Editar descuento';
+
+  @override
+  String get customerDiscountMissingError => 'Este descuento ya no existe.';
+
+  @override
+  String get customerDiscountDeleteFailedError =>
+      'No se pudo eliminar el descuento.';
+
+  @override
+  String get deleteCustomerDiscountButton => 'Eliminar';
+
+  @override
+  String get deleteCustomerDiscountConfirmTitle => 'Eliminar descuento';
+
+  @override
+  String deleteCustomerDiscountConfirmMessage(String code, String name) {
+    return '¿Eliminar el descuento sobre $code — $name? Las partidas ya capturadas conservan su descuento.';
+  }
+
+  @override
+  String get customerDiscountChangeProductTooltip => 'Cambiar producto';
 }

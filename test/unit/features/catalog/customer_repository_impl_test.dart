@@ -334,8 +334,185 @@ void main() {
       },
     );
   });
+
+  group('CustomerRepositoryImpl discounts (spec 052)', () {
+    test('list maps rows to entities in the server\'s order', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode([
+            _discountJson(id: 5, code: 'AAA-1', discount: '0.10000000'),
+            _discountJson(id: 6, code: 'BBB-2', discount: '0.12500000'),
+          ]),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final result = await repository.listDiscounts(customerId: 7);
+
+      expect(captured!.method, 'GET');
+      expect(captured!.path, '/api/v1/customers/7/discounts');
+      expect(result.map((d) => d.productCode), ['AAA-1', 'BBB-2']);
+      expect(result.last.customerDiscountId, 6);
+      expect(result.last.customerId, 7);
+      expect(result.last.productId, 100);
+      expect(result.last.productName, 'Product BBB-2');
+      expect(result.last.discount, '0.12500000');
+    });
+
+    test('create sends product and the String arm of discount', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_discountJson(id: 9, code: 'AAA-1', discount: '0.1')),
+          201,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final created = await repository.createDiscount(
+        customerId: 7,
+        productId: 100,
+        discount: '0.1',
+      );
+
+      expect(captured!.method, 'POST');
+      expect(captured!.path, '/api/v1/customers/7/discounts');
+      expect(_decodeBody(captured!.data), {'product': 100, 'discount': '0.1'});
+      expect(created.customerDiscountId, 9);
+    });
+
+    test('update sends only the discount', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_discountJson(id: 9, code: 'AAA-1', discount: '0.125')),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final updated = await repository.updateDiscount(
+        customerId: 7,
+        customerDiscountId: 9,
+        discount: '0.125',
+      );
+
+      expect(captured!.method, 'PUT');
+      expect(captured!.path, '/api/v1/customers/7/discounts/9');
+      expect(_decodeBody(captured!.data), {'discount': '0.125'});
+      expect(updated.discount, '0.125');
+    });
+
+    test('delete calls the discount path and completes on 204', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString('', 204);
+      });
+
+      await expectLater(
+        repository.deleteDiscount(customerId: 7, customerDiscountId: 9),
+        completes,
+      );
+
+      expect(captured!.method, 'DELETE');
+      expect(captured!.path, '/api/v1/customers/7/discounts/9');
+    });
+
+    test(
+      'a repeat create maps 409 to a ServerError with the message',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'detail': 'Customer already has a discount for this product',
+            }),
+            409,
+            headers: _jsonHeaders,
+          ),
+        );
+
+        await expectLater(
+          () => repository.createDiscount(
+            customerId: 7,
+            productId: 100,
+            discount: '0.1',
+          ),
+          throwsA(
+            const AppError.server(
+              statusCode: 409,
+              message: 'Customer already has a discount for this product',
+            ),
+          ),
+        );
+      },
+    );
+
+    test('an unknown product maps 422 with a plain detail to a '
+        'ValidationError carrying the message', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'Product not found'}),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.createDiscount(
+          customerId: 7,
+          productId: 999,
+          discount: '0.1',
+        ),
+        throwsA(
+          isA<ValidationError>()
+              .having((e) => e.errors, 'errors', isEmpty)
+              .having((e) => e.message, 'message', 'Product not found'),
+        ),
+      );
+    });
+
+    test('update and delete map 404 to NotFoundError', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'Discount not found'}),
+          404,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.updateDiscount(
+          customerId: 7,
+          customerDiscountId: 9,
+          discount: '0.2',
+        ),
+        throwsA(const AppError.notFound('Discount not found')),
+      );
+      await expectLater(
+        () => repository.deleteDiscount(customerId: 7, customerDiscountId: 9),
+        throwsA(const AppError.notFound('Discount not found')),
+      );
+    });
+  });
 }
 
+
+Map<String, Object?> _discountJson({
+  required int id,
+  required String code,
+  required String discount,
+}) => {
+  'customer_discount_id': id,
+  'customer': 7,
+  'product': {'product_id': 100, 'code': code, 'name': 'Product $code'},
+  'discount': discount,
+};
 
 Map<String, Object?> _addressJson() => {
   'address_id': 11,

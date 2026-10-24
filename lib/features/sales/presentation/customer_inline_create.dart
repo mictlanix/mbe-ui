@@ -27,7 +27,7 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// so it is cleared here — whatever the Customers screen last left it holding
 /// is not this cashier's new customer.
 Future<int?> showCustomerInlineCreate(BuildContext context, WidgetRef ref) {
-  ref.invalidate(customerFormControllerProvider);
+  ref.invalidate(customerFormControllerProvider(null));
   if (LayoutBreakpoints.isCompact(context)) {
     return Navigator.of(context).push<int>(
       MaterialPageRoute(
@@ -86,13 +86,13 @@ class _CustomerInlineCreateFormState
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final form = ref.watch(customerFormControllerProvider);
-    final controller = ref.read(customerFormControllerProvider.notifier);
+    final form = ref.watch(customerFormControllerProvider(null));
+    final controller = ref.read(customerFormControllerProvider(null).notifier);
     final priceListRepo = ref.read(priceListRepositoryProvider);
     final taxpayerRepo = ref.read(taxpayerRecipientRepositoryProvider);
     final enabled = !form.submitting;
 
-    ref.listen(customerFormControllerProvider, (previous, next) {
+    ref.listen(customerFormControllerProvider(null), (previous, next) {
       final created = next.customerId;
       if (next.saved && created != null) Navigator.of(context).pop(created);
     });

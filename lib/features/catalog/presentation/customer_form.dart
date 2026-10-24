@@ -21,6 +21,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient_list_
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/address_inline_create.dart';
 import 'package:mbe_ui/features/catalog/presentation/contact_inline_create.dart';
+import 'package:mbe_ui/features/catalog/presentation/customer_discounts_section.dart';
 import 'package:mbe_ui/features/catalog/presentation/customer_form_controller.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_recipient_inline_create.dart';
 import 'package:mbe_ui/features/catalog/presentation/widgets/linked_records_section.dart';
@@ -44,6 +45,7 @@ class CustomerForm extends ConsumerStatefulWidget {
     this.customerId,
     this.forceReadOnly = false,
     this.onEditRequested,
+    this.onCreated,
   });
 
   final int? customerId;
@@ -52,6 +54,11 @@ class CustomerForm extends ConsumerStatefulWidget {
   /// form to editable in place; the detail screen passes a navigation to its
   /// edit route instead, so its AppBar title follows the mode.
   final VoidCallback? onEditRequested;
+
+  /// Called with the new customer's id after a successful create, so the
+  /// detail screen can reopen it in edit mode and discounts can be added at
+  /// once (spec 052 FR-007a). `null` pops, as does every update and delete.
+  final ValueChanged<int>? onCreated;
 
   /// Opens the form read-only regardless of the caller's update privilege —
   /// set for a row-click open (constitution §VI). The in-panel Edit control
@@ -77,6 +84,12 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
     if (oldWidget.forceReadOnly != widget.forceReadOnly) {
       _readOnlyOverride = widget.forceReadOnly;
     }
+    // A create form reopened as the customer it just saved (FR-007a): the
+    // router may keep this State, so load the new record into it.
+    if (oldWidget.customerId != widget.customerId && _isEdit) {
+      _snapshot = null;
+      _loadForEdit();
+    }
   }
 
   /// Snapshot of [CustomerFormState] captured once loading actually
@@ -88,28 +101,40 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
   void initState() {
     super.initState();
     if (_isEdit) {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        await ref
-            .read(customerFormControllerProvider.notifier)
-            .loadForEdit(widget.customerId!);
-        if (mounted) {
-          setState(() => _snapshot = ref.read(customerFormControllerProvider));
-        }
-      });
+      _loadForEdit();
     } else {
-      _snapshot = ref.read(customerFormControllerProvider);
+      _snapshot = ref.read(customerFormControllerProvider(widget.customerId));
     }
   }
 
+  void _loadForEdit() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await ref
+          .read(customerFormControllerProvider(widget.customerId).notifier)
+          .loadForEdit(widget.customerId!);
+      if (mounted) {
+        setState(
+          () => _snapshot = ref.read(
+            customerFormControllerProvider(widget.customerId),
+          ),
+        );
+      }
+    });
+  }
+
   bool isDirty() {
-    final current = ref.read(customerFormControllerProvider);
+    final current = ref.read(customerFormControllerProvider(widget.customerId));
     return _snapshot != null && _snapshot != current;
   }
 
   @override
   Widget build(BuildContext context) {
-    final formState = ref.watch(customerFormControllerProvider);
-    final controller = ref.read(customerFormControllerProvider.notifier);
+    final formState = ref.watch(
+      customerFormControllerProvider(widget.customerId),
+    );
+    final controller = ref.read(
+      customerFormControllerProvider(widget.customerId).notifier,
+    );
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.customers, AccessRight.create);
     final canUpdate = access.can(SystemObject.customers, AccessRight.update);
@@ -133,9 +158,21 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
       );
     }
 
-    if (formState.saved || formState.deleted) {
+    // `_snapshot` is still null while an edit form has not finished loading:
+    // the controller's state may then be the previous form's leftover (the
+    // create form this one replaced, FR-007a), so its `saved` is not ours.
+    if (_snapshot != null && (formState.saved || formState.deleted)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) Navigator.of(context).pop();
+        if (!mounted) return;
+        final createdId = formState.customerId;
+        if (formState.saved &&
+            !_isEdit &&
+            createdId != null &&
+            widget.onCreated != null) {
+          widget.onCreated!(createdId);
+        } else {
+          Navigator.of(context).pop();
+        }
       });
     }
 
@@ -417,6 +454,19 @@ class CustomerFormPanelState extends ConsumerState<CustomerForm> {
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ),
+        // Discounts (spec 052): a child collection with its own endpoint, so
+        // it loads and saves independently of the customer's Save.
+        const FormGridChild(span: FormGridSpan.full, Divider()),
+        FormGridChild(
+          span: FormGridSpan.full,
+          CustomerDiscountsSection(
+            key: const Key('customer_discounts_section'),
+            customerId: widget.customerId,
+            readOnly: readOnly,
+          ),
+        ),
+        // Closes the last section off from the form's own actions.
+        const FormGridChild(span: FormGridSpan.full, Divider()),
         FormGridChild(
           span: FormGridSpan.full,
           RecordFormActions(
