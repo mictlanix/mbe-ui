@@ -3,7 +3,7 @@
   "specName": "Customer Discounts",
   "branch": "052-customer-discounts",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -349,8 +349,23 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-10-24T12:08:49.063Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-24T13:40:03.309Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-24T13:40:03.309Z"
     }
   ],
   "telemetryInstanceId": "81ae04fb-da0a-47a8-acc5-a794162690b7",
-  "currentTask": "T035"
+  "currentTask": "T038"
 }
