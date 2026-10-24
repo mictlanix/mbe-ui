@@ -9,6 +9,7 @@ import 'package:mbe_ui/core/design/design_theme_extensions.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
+import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_discount.dart';
@@ -101,14 +102,28 @@ class CustomerDiscountsSection extends ConsumerWidget {
   }
 }
 
-class _DiscountsList extends ConsumerWidget {
+/// Rows per page. Like the user's permissions grid, the table sits inside
+/// the page's own scroll, so it grows with its rows up to one page and then
+/// pages instead of scrolling inside the page.
+const _pageSize = 10;
+
+class _DiscountsList extends ConsumerStatefulWidget {
   const _DiscountsList({required this.customerId, required this.canEdit});
 
   final int customerId;
   final bool canEdit;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_DiscountsList> createState() => _DiscountsListState();
+}
+
+class _DiscountsListState extends ConsumerState<_DiscountsList> {
+  int _pageIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final customerId = widget.customerId;
+    final canEdit = widget.canEdit;
     final discountsAsync = ref.watch(
       customerDiscountsControllerProvider(customerId),
     );
@@ -124,55 +139,71 @@ class _DiscountsList extends ConsumerWidget {
         onRetry: () =>
             ref.invalidate(customerDiscountsControllerProvider(customerId)),
       ),
-      data: (discounts) => discounts.isEmpty
-          ? _MutedNote(l10n.customerDiscountsEmpty)
-          : DataTableView<CustomerDiscount>(
-              key: const Key('customer_discounts_table'),
-              columns: [
-                // Dropped on the compact tier, where three columns do not
-                // fit: the code moves into the product cell instead.
-                if (!compact)
-                  DataTableColumn.text(
-                    label: l10n.customerDiscountColumnCode,
-                    text: (d) => d.productCode,
-                    size: ColumnSize.S,
-                  ),
+      data: (discounts) {
+        if (discounts.isEmpty) return _MutedNote(l10n.customerDiscountsEmpty);
+        // A removal can empty the last page: fall back to the new last one.
+        final lastPage = (discounts.length - 1) ~/ _pageSize;
+        final pageIndex = _pageIndex > lastPage ? lastPage : _pageIndex;
+        final page = discounts
+            .skip(pageIndex * _pageSize)
+            .take(_pageSize)
+            .toList();
+        return Padding(
+          padding: EdgeInsets.only(top: Theme.of(context).spacing.xs),
+          child: DataTableView<CustomerDiscount>(
+            key: const Key('customer_discounts_table'),
+            columns: [
+              // Dropped on the compact tier, where three columns do not
+              // fit: the code moves into the product cell instead.
+              if (!compact)
                 DataTableColumn.text(
-                  label: l10n.customerDiscountColumnProduct,
-                  text: (d) => compact
-                      ? '${d.productCode} · ${d.productName}'
-                      : d.productName,
-                  size: ColumnSize.L,
-                ),
-                DataTableColumn.text(
-                  label: l10n.customerDiscountColumnDiscount,
-                  text: (d) => fmt.display.percent(d.discount),
+                  label: l10n.customerDiscountColumnCode,
+                  text: (d) => d.productCode,
                   size: ColumnSize.S,
-                  numeric: true,
                 ),
-              ],
-              rows: discounts,
-              // Edit only: removing a discount lives in its dialog, behind a
-              // confirmation (§VI, FR-009).
-              rowActionsBuilder: canEdit
-                  ? (context, d) => buildCatalogRowActions(
-                      editTooltip: l10n.editActionTooltip,
-                      editKey: Key(
-                        'edit_customer_discount_${d.customerDiscountId}',
-                      ),
-                      onEdit: () => showCustomerDiscountDialog(
-                        context,
-                        customerId: customerId,
-                        takenProductIds: {
-                          for (final x in discounts) x.productId,
-                        },
-                        existing: d,
-                      ),
-                    )
-                  : null,
-              shrinkWrap: true,
-              margin: EdgeInsets.zero,
+              DataTableColumn.text(
+                label: l10n.customerDiscountColumnProduct,
+                text: (d) => compact
+                    ? '${d.productCode} · ${d.productName}'
+                    : d.productName,
+                size: ColumnSize.L,
+              ),
+              DataTableColumn.text(
+                label: l10n.customerDiscountColumnDiscount,
+                text: (d) => fmt.display.percent(d.discount),
+                size: ColumnSize.S,
+                numeric: true,
+              ),
+            ],
+            rows: page,
+            pagination: CatalogPage<CustomerDiscount>(
+              items: page,
+              total: discounts.length,
+              pageIndex: pageIndex,
+              pageSize: _pageSize,
             ),
+            onPageChanged: (index) => setState(() => _pageIndex = index),
+            // Edit only: removing a discount lives in its dialog, behind a
+            // confirmation (§VI, FR-009).
+            rowActionsBuilder: canEdit
+                ? (context, d) => buildCatalogRowActions(
+                    editTooltip: l10n.editActionTooltip,
+                    editKey: Key(
+                      'edit_customer_discount_${d.customerDiscountId}',
+                    ),
+                    onEdit: () => showCustomerDiscountDialog(
+                      context,
+                      customerId: customerId,
+                      takenProductIds: {for (final x in discounts) x.productId},
+                      existing: d,
+                    ),
+                  )
+                : null,
+            shrinkWrap: true,
+            margin: EdgeInsets.zero,
+          ),
+        );
+      },
     );
   }
 }

@@ -154,6 +154,9 @@ void main() {
     tester.view.physicalSize = size;
     addTearDown(tester.view.reset);
 
+    // A test may pump twice: start from a fresh ProviderScope each time, so
+    // no list cached by the previous pump is reused.
+    await tester.pumpWidget(const SizedBox());
     await tester.pumpWidget(
       ProviderScope(
         retry: (_, _) => null,
@@ -432,7 +435,10 @@ void main() {
 
       expect(find.byKey(const Key('edit_customer_discount_1')), findsOne);
       expect(find.byKey(const Key('edit_customer_discount_2')), findsOne);
-      expect(find.byType(IconButton), findsNWidgets(2));
+      expect(
+        find.widgetWithIcon(IconButton, Icons.edit_outlined),
+        findsNWidgets(2),
+      );
       expect(find.byIcon(Icons.edit_outlined), findsNWidgets(2));
       expect(find.byIcon(Icons.delete_outline), findsNothing);
     });
@@ -538,6 +544,72 @@ void main() {
       expect(find.text('CLV-0125'), findsNothing);
       expect(find.text('TOR-0310'), findsOneWidget);
       expect(calls, 2);
+    });
+  });
+
+  group('pagination (10 rows, like the permissions grid)', () {
+    List<CustomerDiscount> many(int count) => [
+      for (var i = 1; i <= count; i++)
+        CustomerDiscount(
+          customerDiscountId: i,
+          customerId: 1,
+          productId: 100 + i,
+          productCode: 'P-${i.toString().padLeft(2, '0')}',
+          productName: 'Product $i',
+          discount: '0.10000000',
+        ),
+    ];
+
+    double tableHeight(WidgetTester tester) => tester
+        .getSize(find.byKey(const Key('customer_discounts_table')))
+        .height;
+
+    testWidgets('a short list grows row by row, with no blank rows', (
+      tester,
+    ) async {
+      await pumpSection(tester, discounts: many(2));
+      final two = tableHeight(tester);
+
+      await pumpSection(tester, discounts: many(5));
+      final five = tableHeight(tester);
+
+      expect(five, greaterThan(two));
+      expect(tester.takeException(), isNull);
+      expect(find.text('P-05'), findsOneWidget);
+    });
+
+    testWidgets('past 10 rows it stops growing and pages instead', (
+      tester,
+    ) async {
+      await pumpSection(tester, discounts: many(10));
+      final ten = tableHeight(tester);
+
+      await pumpSection(tester, discounts: many(12));
+
+      expect(tableHeight(tester), ten, reason: 'capped at one page');
+      expect(find.text('P-10'), findsOneWidget);
+      expect(find.text('P-11'), findsNothing);
+      expect(find.text('Discounts (12)'), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.chevron_right));
+      await tester.pumpAndSettle();
+
+      expect(find.text('P-01'), findsNothing);
+      expect(find.text('P-11'), findsOneWidget);
+      expect(find.text('P-12'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('leaves a gap between the header and the table', (
+      tester,
+    ) async {
+      await pumpSection(tester, discounts: many(1));
+
+      final header = tester.getBottomLeft(find.text('Discounts (1)')).dy;
+      final table = tester
+          .getTopLeft(find.byKey(const Key('customer_discounts_table')))
+          .dy;
+      expect(table - header, greaterThan(0));
     });
   });
 }

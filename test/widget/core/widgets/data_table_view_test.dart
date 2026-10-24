@@ -283,4 +283,89 @@ void main() {
       expect(card.left, 0);
     });
   });
+
+  group('shrinkWrap, paginated (spec 052)', () {
+    Future<void> pumpShrunkPage(
+      WidgetTester tester,
+      int pageRows, {
+      EdgeInsetsGeometry? margin = EdgeInsets.zero,
+    }) async {
+      final page = [for (var i = 0; i < pageRows; i++) i];
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.of(const BrandConfig(displayName: 'Test')).light,
+          home: Scaffold(
+            body: SingleChildScrollView(
+              child: DataTableView<int>(
+                columns: columns(),
+                rows: page,
+                pagination: CatalogPage(
+                  items: page,
+                  // A short page is the only page; a full one has more after.
+                  total: pageRows < 10 ? pageRows : 25,
+                  pageIndex: 0,
+                  pageSize: 10,
+                ),
+                onPageChanged: (_) {},
+                shrinkWrap: true,
+                margin: margin,
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    for (final (count, margin) in [
+      (1, EdgeInsets.zero),
+      (10, EdgeInsets.zero),
+      (3, null),
+      (10, null),
+    ]) {
+      testWidgets('sizes to a $count-row page plus the paginator with margin '
+          '$margin: no vertical scroll, no blank space', (tester) async {
+        await pumpShrunkPage(tester, count, margin: margin);
+
+        expect(tester.takeException(), isNull);
+        final vertical = tester
+            .stateList<ScrollableState>(
+              find.descendant(
+                of: find.byType(DataTable2),
+                matching: find.byType(Scrollable),
+              ),
+            )
+            .where((s) => s.position.axis == Axis.vertical);
+        expect(vertical, isNotEmpty);
+        for (final scrollable in vertical) {
+          expect(scrollable.position.maxScrollExtent, 0);
+        }
+        final table = tester.getRect(find.byType(DataTable2));
+        final lastRow = tester.getRect(find.text('ID-${count - 1}'));
+        expect(lastRow.bottom, lessThanOrEqualTo(table.bottom));
+        final widget = tester.widget<DataTable2>(find.byType(DataTable2));
+        expect(
+          table.height,
+          widget.headingRowHeight! +
+              count * widget.dataRowHeight! +
+              (count + 1) * widget.dividerThickness!,
+        );
+        // The paginator sits right under the rows, inside the card.
+        final card = tester.getRect(find.byType(Card));
+        expect(find.byIcon(Icons.chevron_right).evaluate().isNotEmpty, isTrue);
+        expect(
+          tester.getRect(find.byIcon(Icons.chevron_right)).bottom,
+          lessThanOrEqualTo(card.bottom),
+        );
+      });
+    }
+
+    testWidgets('margin overrides the card margin', (tester) async {
+      await pumpShrunkPage(tester, 2);
+
+      final card = tester.getRect(find.byType(Card));
+      final table = tester.getRect(find.byType(DataTable2));
+      expect(card.left, table.left);
+      expect(card.left, 0);
+    });
+  });
 }
