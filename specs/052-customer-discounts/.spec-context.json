@@ -1,0 +1,24 @@
+{
+  "workflow": "speckit",
+  "specName": "Customer Discounts",
+  "branch": "052-customer-discounts",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-24T06:20:29.000Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-24T06:22:37.474Z"
+    }
+  ],
+  "telemetryInstanceId": "81ae04fb-da0a-47a8-acc5-a794162690b7"
+}
