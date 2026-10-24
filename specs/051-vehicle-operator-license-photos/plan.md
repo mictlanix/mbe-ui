@@ -57,7 +57,7 @@ It differs from that flow in four places:
 | **New (1 source file, plus generated code)** | `presentation/license_photo_provider.dart` |
 | **Edited (6 source files)** | `domain/entities/vehicle_operator.dart`, `domain/repositories/vehicle_operator_repository.dart`, `data/vehicle_operator_repository_impl.dart`, `presentation/vehicle_operator_form_controller.dart`, `presentation/vehicle_operator_form.dart`, `core/widgets/product_photo_preview.dart` |
 | **Edited, l10n** | both `.arb` files (about 5 keys), plus the regenerated localizations |
-| **Tests** | the three existing operator test files extended; `product_photo_preview` tests re-run unchanged |
+| **Tests** | the three existing operator test files extended; one new live test, `test/integration/vehicle_operator_license_photo_live_test.dart`; `product_photo_preview` tests re-run unchanged |
 
 ## Constitution Check
 

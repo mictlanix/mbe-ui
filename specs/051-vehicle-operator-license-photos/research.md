@@ -213,4 +213,4 @@ The thumbnail renders one of five states:
   - the control visibility matrix from R5;
   - the dirty flag set by staging or removal;
   - the preview opening.
-- **Live check**: quickstart Q4 (one real upload / GET / DELETE round-trip against the dev tenant), as §III requires for the multipart wrapper. It isn't automated, matching how spec 004's product upload was verified.
+- **Live check**: quickstart Q4 (one real upload / GET / DELETE round-trip against the dev tenant), as §III requires for the multipart wrapper. Automated as `test/integration/vehicle_operator_license_photo_live_test.dart`, which borrows an existing photo-less operator (creating one is rejected with 409 on the dev tenant for any input) and restores it afterwards; it also covers the unauthenticated 401 (Q5).

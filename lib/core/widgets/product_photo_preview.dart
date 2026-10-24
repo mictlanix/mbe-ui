@@ -15,21 +15,49 @@ Future<void> showProductPhotoPreview(
   required String photoUrl,
   required String title,
 }) {
-  return showDialog<void>(
-    context: context,
-    builder: (_) =>
-        _ProductPhotoPreviewDialog(photoUrl: photoUrl, title: title),
+  return showPhotoPreview(
+    context,
+    image: NetworkImage(photoUrl),
+    title: title,
+    placeholder: (side) => Center(
+      child: ProductPhoto(
+        photoUrl: null,
+        size: side.isFinite ? side.clamp(0, 240) : 240,
+      ),
+    ),
   );
 }
 
-class _ProductPhotoPreviewDialog extends StatelessWidget {
-  const _ProductPhotoPreviewDialog({
-    required this.photoUrl,
+/// The same enlarged-photo dialog for any [image] — the vehicle operator's
+/// license photo is held as bytes behind authentication, so it has no URL to
+/// hand to [showProductPhotoPreview] (051 R7). [placeholder] receives the
+/// shortest side available and is shown if the image fails to decode.
+Future<void> showPhotoPreview(
+  BuildContext context, {
+  required ImageProvider image,
+  required String title,
+  required Widget Function(double side) placeholder,
+}) {
+  return showDialog<void>(
+    context: context,
+    builder: (_) => _PhotoPreviewDialog(
+      image: image,
+      title: title,
+      placeholder: placeholder,
+    ),
+  );
+}
+
+class _PhotoPreviewDialog extends StatelessWidget {
+  const _PhotoPreviewDialog({
+    required this.image,
     required this.title,
+    required this.placeholder,
   });
 
-  final String photoUrl;
+  final ImageProvider image;
   final String title;
+  final Widget Function(double side) placeholder;
 
   @override
   Widget build(BuildContext context) {
@@ -78,15 +106,11 @@ class _ProductPhotoPreviewDialog extends StatelessWidget {
                 child: LayoutBuilder(
                   builder: (context, constraints) {
                     final side = constraints.biggest.shortestSide;
-                    return Image.network(
-                      photoUrl,
+                    return Image(
+                      image: image,
                       fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) => Center(
-                        child: ProductPhoto(
-                          photoUrl: null,
-                          size: side.isFinite ? side.clamp(0, 240) : 240,
-                        ),
-                      ),
+                      errorBuilder: (context, error, stackTrace) =>
+                          placeholder(side),
                     );
                   },
                 ),

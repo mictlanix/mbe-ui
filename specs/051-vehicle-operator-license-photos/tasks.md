@@ -36,7 +36,7 @@ description: "Task list for 051-vehicle-operator-license-photos"
 
 **Purpose**: a known-good baseline, so later failures are attributable.
 
-- [ ] T001 Run `flutter analyze` and the vehicle operator and product photo tests (`test/**/vehicle_operator*_test.dart`, `test/**/product_photo*_test.dart`, `test/**/product_form*_test.dart`) on the clean branch. Note any pre-existing failures so they are not blamed on this feature. Then check the generated client for drift: regenerate `lib/generated/openapi/` from the dev mbe-api's `/openapi.json` the same way earlier regenerations were done, and expect `git status lib/generated` to show no changes. If it does change, stop and review the diff against contracts C1–C5 before continuing.
+- [X] T001 Run `flutter analyze` and the vehicle operator and product photo tests (`test/**/vehicle_operator*_test.dart`, `test/**/product_photo*_test.dart`, `test/**/product_form*_test.dart`) on the clean branch. Note any pre-existing failures so they are not blamed on this feature. Then check the generated client for drift: regenerate `lib/generated/openapi/` from the dev mbe-api's `/openapi.json` the same way earlier regenerations were done, and expect `git status lib/generated` to show no changes. If it does change, stop and review the diff against contracts C1–C5 before continuing.
 
 ---
 
@@ -44,24 +44,24 @@ description: "Task list for 051-vehicle-operator-license-photos"
 
 **Purpose**: the data path and shared pieces every story uses.
 
-- [ ] T002 [P] Add `bool hasLicensePhoto` (default `false`) to `VehicleOperator` in `lib/features/catalog/domain/entities/vehicle_operator.dart`, mapped in `fromResponse` from `response.hasLicensePhoto ?? false` (data-model §1). Run build_runner.
-- [ ] T003 [P] Add `getLicensePhoto`, `uploadLicensePhoto` and `removeLicensePhoto` to `lib/features/catalog/domain/repositories/vehicle_operator_repository.dart` with the signatures in data-model §2.
-- [ ] T004 Implement the three methods in `lib/features/catalog/data/vehicle_operator_repository_impl.dart` (depends on T002, T003):
+- [X] T002 [P] Add `bool hasLicensePhoto` (default `false`) to `VehicleOperator` in `lib/features/catalog/domain/entities/vehicle_operator.dart`, mapped in `fromResponse` from `response.hasLicensePhoto ?? false` (data-model §1). Run build_runner.
+- [X] T003 [P] Add `getLicensePhoto`, `uploadLicensePhoto` and `removeLicensePhoto` to `lib/features/catalog/domain/repositories/vehicle_operator_repository.dart` with the signatures in data-model §2.
+- [X] T004 Implement the three methods in `lib/features/catalog/data/vehicle_operator_repository_impl.dart` (depends on T002, T003):
   - Keep the `Dio` passed to the constructor in a `_dio` field.
   - `getLicensePhoto`: `_dio.get<List<int>>('/api/v1/vehicle-operators/$id/license-photo', options: Options(responseType: ResponseType.bytes))`. Return the bytes as a `Uint8List`. Throw `AppError.server()` when the body is null or does not start with the PNG signature `89 50 4E 47 0D 0A 1A 0A` (R1, same idea as `_looksLikePdf` in `lib/core/documents/data/document_source_impl.dart`).
   - `uploadLicensePhoto`: the generated `uploadLicensePhotoApiV1VehicleOperatorsVehicleOperatorIdLicensePhotoPost` with `MultipartFile.fromBytes(bytes, filename: filename)`, mapped through `VehicleOperator.fromResponse` (R2).
   - `removeLicensePhoto`: the generated `deleteLicensePhotoApiV1VehicleOperatorsVehicleOperatorIdLicensePhotoDelete`.
   - Wrap every call in `try … on DioException catch (e) { throw _toAppError(e); }` like the existing methods.
-- [ ] T005 Extend `test/unit/features/catalog/vehicle_operator_repository_impl_test.dart` (R10):
+- [X] T005 Extend `test/unit/features/catalog/vehicle_operator_repository_impl_test.dart` (R10):
   - PNG bytes are returned as-is.
   - A 200 with a non-PNG body (for example HTML) throws a server error.
   - A JSON 404 delivered as bytes becomes a `NotFoundError` carrying its `detail` message.
   - Upload maps the response, and `hasLicensePhoto` is true on the returned entity.
   - Remove calls the DELETE.
   - `fromResponse` maps `hasLicensePhoto` and defaults to false when absent.
-- [ ] T006 [P] Add the l10n keys to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb` (R9): `licensePhotoLabel`, `licensePhotoUnavailable`, `licensePhotoInvalidTypeError`, `licensePhotoTooLargeError`, `licensePhotoSaveFailedError`. The reused `uploadPhotoButton`, `replacePhotoButton` and `removePhotoButton` already exist. Run `flutter gen-l10n`.
-- [ ] T007 Create `lib/features/catalog/presentation/license_photo_provider.dart`: an `@riverpod` auto-dispose `Future<Uint8List>` family keyed by `int vehicleOperatorId`, calling `vehicleOperatorRepositoryProvider.getLicensePhoto` (data-model §3, R3). It must not be keep-alive. Run build_runner. Depends on T003.
-- [ ] T008 [P] In `lib/core/widgets/product_photo_preview.dart`, add `Future<void> showPhotoPreview(BuildContext, {required ImageProvider image, required String title, required Widget Function(double side) placeholder})`. Make the existing dialog body use `Image(image: image)` with `placeholder` as the `errorBuilder` result. Keep `showProductPhotoPreview` with its current signature, delegating to it with `NetworkImage(photoUrl)` and the current `ProductPhoto(photoUrl: null, …)` placeholder (R7). Keep the `photo_preview_dialog`, `photo_preview_close` keys and the dismissal behavior. Product behavior must not change: re-run the product photo preview tests.
+- [X] T006 [P] Add the l10n keys to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb` (R9): `licensePhotoLabel`, `licensePhotoUnavailable`, `licensePhotoInvalidTypeError`, `licensePhotoTooLargeError`, `licensePhotoSaveFailedError`. The reused `uploadPhotoButton`, `replacePhotoButton` and `removePhotoButton` already exist. Run `flutter gen-l10n`.
+- [X] T007 Create `lib/features/catalog/presentation/license_photo_provider.dart`: an `@riverpod` auto-dispose `Future<Uint8List>` family keyed by `int vehicleOperatorId`, calling `vehicleOperatorRepositoryProvider.getLicensePhoto` (data-model §3, R3). It must not be keep-alive. Run build_runner. Depends on T003.
+- [X] T008 [P] In `lib/core/widgets/product_photo_preview.dart`, add `Future<void> showPhotoPreview(BuildContext, {required ImageProvider image, required String title, required Widget Function(double side) placeholder})`. Make the existing dialog body use `Image(image: image)` with `placeholder` as the `errorBuilder` result. Keep `showProductPhotoPreview` with its current signature, delegating to it with `NetworkImage(photoUrl)` and the current `ProductPhoto(photoUrl: null, …)` placeholder (R7). Keep the `photo_preview_dialog`, `photo_preview_close` keys and the dismissal behavior. Product behavior must not change: re-run the product photo preview tests.
 
 **Checkpoint**: `flutter analyze` is clean, and T005 plus the product photo preview tests pass.
 
@@ -73,13 +73,13 @@ description: "Task list for 051-vehicle-operator-license-photos"
 
 **Independent test**: open an operator without a photo, Upload a PNG, Save, reopen: the photo is there (quickstart Q1, Q4, Q7, Q8, Q9).
 
-- [ ] T009 [US1] In `lib/features/catalog/presentation/vehicle_operator_form_controller.dart`, add to `VehicleOperatorFormState` the four fields from data-model §4: `hasLicensePhoto`, `pendingLicensePhotoBytes`, `pendingLicensePhotoFilename`, `licensePhotoMarkedForRemoval`. Add the error codes `licensePhotoInvalidType`, `licensePhotoTooLarge` and `licensePhotoSaveFailed` to `VehicleOperatorFormErrorCode`. Set `hasLicensePhoto` from the entity in `loadForEdit`. Add `licensePhotoPicked(Uint8List bytes, String filename)`: reject by extension (`.jpg/.jpeg/.png`) and by size (more than 2 MiB) into `fieldErrors['licensePhoto']`, leaving the staged and saved photo untouched. Otherwise stage it, clear a pending removal and clear the field error (R6; same checks as `ProductFormController.photoPicked`). Run build_runner.
-- [ ] T010 [US1] In the same controller, add the upload photo step after the fields step in both `submitCreate` and `submitUpdate` (R4, data-model §4 "Save sequence"):
+- [X] T009 [US1] In `lib/features/catalog/presentation/vehicle_operator_form_controller.dart`, add to `VehicleOperatorFormState` the four fields from data-model §4: `hasLicensePhoto`, `pendingLicensePhotoBytes`, `pendingLicensePhotoFilename`, `licensePhotoMarkedForRemoval`. Add the error codes `licensePhotoInvalidType`, `licensePhotoTooLarge` and `licensePhotoSaveFailed` to `VehicleOperatorFormErrorCode`. Set `hasLicensePhoto` from the entity in `loadForEdit`. Add `licensePhotoPicked(Uint8List bytes, String filename)`: reject by extension (`.jpg/.jpeg/.png`) and by size (more than 2 MiB) into `fieldErrors['licensePhoto']`, leaving the staged and saved photo untouched. Otherwise stage it, clear a pending removal and clear the field error (R6; same checks as `ProductFormController.photoPicked`). Run build_runner.
+- [X] T010 [US1] In the same controller, add the upload photo step after the fields step in both `submitCreate` and `submitUpdate` (R4, data-model §4 "Save sequence"):
   - On a create, store the new `vehicleOperatorId` in state as soon as the fields step succeeds.
   - If bytes are staged, call `uploadLicensePhoto`. On success set `hasLicensePhoto: true`, clear the staging, `ref.invalidate(licensePhotoProvider(id))`, then `saved: true`.
   - On failure, **do not set `saved`**. Keep the staging, set `submitting: false`, and set `error: licensePhotoSaveFailed` with `errorDetail`. The list is already invalidated.
   - With nothing staged, behavior is unchanged.
-- [ ] T011 [US1] In `lib/features/catalog/presentation/vehicle_operator_form.dart` add a private `_LicensePhotoSection` (R8, contracts/ui.md), placed after Issuing location and before Status as a full-width `FormGridChild`:
+- [X] T011 [US1] In `lib/features/catalog/presentation/vehicle_operator_form.dart` add a private `_LicensePhotoSection` (R8, contracts/ui.md), placed after Issuing location and before Status as a full-width `FormGridChild`:
   - 168 px thumbnail; actions beside it, or stacked below on compact widths (`LayoutBreakpoints.isCompact`). Spacing comes from tokens.
   - For now it renders the **staged** state (`Image.memory`) and the **none** state (placeholder with `Icons.badge_outlined`).
   - The Upload button (`upload_license_photo_button`) opens `FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['jpg','jpeg','png'], withData: true)` and calls `licensePhotoPicked` (copy the shape of `_pickPhoto` in `product_detail_screen.dart`).
@@ -88,7 +88,7 @@ description: "Task list for 051-vehicle-operator-license-photos"
   - Map the new error codes in `_localizeFormError` and `_localizeFieldError`.
   - Change the Save dispatch from `_isEdit ? submitUpdate : submitCreate` to `formState.vehicleOperatorId != null ? submitUpdate : submitCreate`, so a retry after a failed photo step on a create doesn't create a duplicate (R4).
   - Keys: `license_photo_section`, `upload_license_photo_button`.
-- [ ] T012 [US1] Extend `test/unit/features/catalog/vehicle_operator_form_controller_test.dart`:
+- [X] T012 [US1] Extend `test/unit/features/catalog/vehicle_operator_form_controller_test.dart`:
   - Picking a valid file stages it and clears any field error.
   - A wrong extension is rejected, and an oversized file is rejected; in both cases a previously staged photo is kept.
   - `loadForEdit` sets `hasLicensePhoto`.
@@ -96,7 +96,7 @@ description: "Task list for 051-vehicle-operator-license-photos"
   - Create with a staged photo creates the operator first, then uploads.
   - **Create, then the upload fails**: `saved` stays false, the staging is kept, `vehicleOperatorId` is set, and the error is `licensePhotoSaveFailed` with the server detail.
   - Nothing staged: no upload is attempted.
-- [ ] T013 [US1] Extend `test/widget/features/catalog/vehicle_operator_form_test.dart`:
+- [X] T013 [US1] Extend `test/widget/features/catalog/vehicle_operator_form_test.dart`:
   - The section shows the placeholder and the Upload button for an edit user with update access.
   - After a pick, the preview shows and the form reports dirty (FR-010).
   - The section is hidden in create mode for a user without Update.
@@ -114,12 +114,12 @@ description: "Task list for 051-vehicle-operator-license-photos"
 
 **Independent test**: open an operator that already has a photo: the thumbnail shows, a click enlarges it, and a read-only user sees it without controls (quickstart Q2, Q6, Q10).
 
-- [ ] T014 [US2] In `_LicensePhotoSection` (`lib/features/catalog/presentation/vehicle_operator_form.dart`) add the server-photo states. Watch `licensePhotoProvider(id)` only when `hasLicensePhoto && pendingLicensePhotoBytes == null && !licensePhotoMarkedForRemoval` (data-model §3):
+- [X] T014 [US2] In `_LicensePhotoSection` (`lib/features/catalog/presentation/vehicle_operator_form.dart`) add the server-photo states. Watch `licensePhotoProvider(id)` only when `hasLicensePhoto && pendingLicensePhotoBytes == null && !licensePhotoMarkedForRemoval` (data-model §3):
   - **loading**: a progress indicator the size of the placeholder.
   - **loaded**: `Image.memory(bytes)` with `Key('license_photo_thumbnail')`, a click cursor, and a tap that calls `showPhotoPreview(context, image: MemoryImage(bytes), title: <driver name>, placeholder: …)` from T008.
   - **unavailable** (provider error): the placeholder plus a `licensePhotoUnavailable` caption with `Key('license_photo_unavailable')`, not tappable (FR-014). The rest of the form stays usable.
   - In view mode (read-only) these states render with no controls (FR-013).
-- [ ] T015 [US2] Extend `test/widget/features/catalog/vehicle_operator_form_test.dart`, overriding `licensePhotoProvider` and using a tiny valid PNG fixture:
+- [X] T015 [US2] Extend `test/widget/features/catalog/vehicle_operator_form_test.dart`, overriding `licensePhotoProvider` and using a tiny valid PNG fixture:
   - Loaded: the thumbnail shows, a tap opens `photo_preview_dialog` titled with the driver's name, and the close button dismisses it.
   - Loading and error states render as in contracts/ui.md, and the error case keeps the form fields enabled.
   - An operator without a photo makes **no** provider request.
@@ -135,13 +135,13 @@ description: "Task list for 051-vehicle-operator-license-photos"
 
 **Independent test**: on an operator with a photo, Replace and Save to see the new image; then Remove and Save to see the placeholder (quickstart Q3).
 
-- [ ] T016 [US3] In `vehicle_operator_form_controller.dart` add `licensePhotoRemoveRequested()` and the remove step in the save sequence (data-model §4):
+- [X] T016 [US3] In `vehicle_operator_form_controller.dart` add `licensePhotoRemoveRequested()` and the remove step in the save sequence (data-model §4):
   - With nothing saved or staged it is a no-op.
   - Otherwise it clears any staged bytes and filename, and sets `licensePhotoMarkedForRemoval = hasLicensePhoto`. A staged-only image therefore goes back to "none" without any server call.
   - In the photo step of `submitUpdate`, after the staged-upload branch, add: if no bytes are staged and a removal is pending, call `removeLicensePhoto`, then set `hasLicensePhoto: false`, clear the mark, invalidate the provider and set `saved: true`. A failure follows the same keep-open rule as T010.
   - Check that `licensePhotoPicked` clears the pending removal (T009).
-- [ ] T017 [US3] In `_LicensePhotoSection` add the Replace (`replace_license_photo_button`) and Remove (`remove_license_photo_button`) buttons. They are shown instead of Upload when `pendingLicensePhotoBytes != null || (hasLicensePhoto && !licensePhotoMarkedForRemoval)`, and only when `canEditPhoto`. Replace opens the same picker, and Remove calls `licensePhotoRemoveRequested`. Both are disabled while `submitting`. A pending removal shows the placeholder and the Upload button.
-- [ ] T018 [US3] Extend `test/unit/features/catalog/vehicle_operator_form_controller_test.dart`:
+- [X] T017 [US3] In `_LicensePhotoSection` add the Replace (`replace_license_photo_button`) and Remove (`remove_license_photo_button`) buttons. They are shown instead of Upload when `pendingLicensePhotoBytes != null || (hasLicensePhoto && !licensePhotoMarkedForRemoval)`, and only when `canEditPhoto`. Replace opens the same picker, and Remove calls `licensePhotoRemoveRequested`. Both are disabled while `submitting`. A pending removal shows the placeholder and the Upload button.
+- [X] T018 [US3] Extend `test/unit/features/catalog/vehicle_operator_form_controller_test.dart`:
   - Marking for removal sets the mark and clears any staged bytes.
   - Remove on a form with no photo and nothing staged is a no-op.
   - Remove on a staged-only image clears it without setting the mark.
@@ -149,7 +149,7 @@ description: "Task list for 051-vehicle-operator-license-photos"
   - Save with a pending removal calls `removeLicensePhoto`, clears `hasLicensePhoto` and invalidates the provider.
   - A replace uploads the new image and never calls remove.
   - A failed remove keeps the mark and `saved` stays false.
-- [ ] T019 [US3] Extend `test/widget/features/catalog/vehicle_operator_form_test.dart`:
+- [X] T019 [US3] Extend `test/widget/features/catalog/vehicle_operator_form_test.dart`:
   - With a photo, Replace and Remove show instead of Upload.
   - Tapping Remove shows the placeholder and the form becomes dirty.
   - Picking a new file after Remove stages it and cancels the removal.
@@ -161,8 +161,8 @@ description: "Task list for 051-vehicle-operator-license-photos"
 
 ## Phase 6: Polish & cross-cutting
 
-- [ ] T020 Run `flutter analyze` and the full `flutter test`; fix anything this feature introduced. Check that the product photo preview and product form tests still pass unchanged (R7).
-- [ ] T021 Run the manual quickstart Q1–Q10 against the live dev backend (`specs/051-vehicle-operator-license-photos/quickstart.md`). Q4 is the §III multipart check: if the generated upload wrapper doesn't send a real file part, apply the R2 fallback (`dio.post` + `FormData` + `MultipartFile.fromBytes`, deserialized with `appSerializers`) and record the change in research.md R2. Q5 must confirm the photo is unreachable without a token.
+- [X] T020 Run `flutter analyze` and the full `flutter test`; fix anything this feature introduced. Check that the product photo preview and product form tests still pass unchanged (R7). *(Result: analyze shows only the 8 info-level lints that were there before; 3,302 tests pass. The 8 failures are all in `test/golden/core_widgets_golden_test.dart` (0.05% pixel diffs) and fail identically on a clean checkout, so they are not from this feature.)*
+- [ ] T021 *(Q4, Q5 and the upload, read, replace, remove round trip are now automated in `test/integration/vehicle_operator_license_photo_live_test.dart`, run with `flutter test test/integration/vehicle_operator_license_photo_live_test.dart --dart-define-from-file=.env`. Not yet run successfully: the dev mbe-api's login started returning 500 for every request while this was being implemented, apparently its database. Q1–Q3 and Q6–Q10 are manual UI checks and also still to do.)* Run the manual quickstart Q1–Q10 against the live dev backend (`specs/051-vehicle-operator-license-photos/quickstart.md`). Q4 is the §III multipart check: if the generated upload wrapper doesn't send a real file part, apply the R2 fallback (`dio.post` + `FormData` + `MultipartFile.fromBytes`, deserialized with `appSerializers`) and record the change in research.md R2. Q5 must confirm the photo is unreachable without a token.
 - [ ] T022 Only on the user's go-ahead, file the mbe-api issue drafted in research.md R1a (the GET declared as `application/json` instead of `image/png`), then add a link to it in plan.md's External Dependencies table. This is an outward-facing action and is not part of the build. Skip it if the user declines.
 
 ---

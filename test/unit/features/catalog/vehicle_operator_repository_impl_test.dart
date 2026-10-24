@@ -70,6 +70,26 @@ void main() {
       expect(op.expirationDate, DateTime(2027, 1, 1));
     });
 
+    test('maps has_license_photo, defaulting to false when absent', () async {
+      final withPhoto = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode(_operatorJson(id: 1, driverId: 7, hasLicensePhoto: true)),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
+      final without = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode(_operatorJson(id: 1, driverId: 7)),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      expect((await withPhoto.get(vehicleOperatorId: 1)).hasLicensePhoto, true);
+      expect((await without.get(vehicleOperatorId: 1)).hasLicensePhoto, false);
+    });
+
     test('404 maps to AppError.notFound', () async {
       final repository = _repositoryWith(
         (options) async => ResponseBody.fromString(
@@ -176,12 +196,119 @@ void main() {
       );
     });
   });
+
+  group('VehicleOperatorRepositoryImpl license photo', () {
+    final png = Uint8List.fromList(const [
+      0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x01, //
+    ]);
+
+    test('getLicensePhoto asks for bytes and returns them as sent', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromBytes(
+          png,
+          200,
+          headers: {
+            Headers.contentTypeHeader: ['image/png'],
+          },
+        );
+      });
+
+      final bytes = await repository.getLicensePhoto(vehicleOperatorId: 5);
+
+      expect(bytes, png);
+      expect(captured!.method, 'GET');
+      expect(captured!.path, endsWith('/vehicle-operators/5/license-photo'));
+      expect(captured!.responseType, ResponseType.bytes);
+    });
+
+    test('a 200 that is not a PNG is a server error', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromBytes(
+          Uint8List.fromList(utf8.encode('<html>login</html>')),
+          200,
+          headers: {
+            Headers.contentTypeHeader: ['text/html'],
+          },
+        ),
+      );
+
+      await expectLater(
+        () => repository.getLicensePhoto(vehicleOperatorId: 5),
+        throwsA(const AppError.server()),
+      );
+    });
+
+    test('a JSON 404 arriving as bytes keeps the server message', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromBytes(
+          Uint8List.fromList(
+            utf8.encode(jsonEncode({'detail': 'License photo not found'})),
+          ),
+          404,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.getLicensePhoto(vehicleOperatorId: 5),
+        throwsA(
+          isA<AppError>().having(
+            (e) => e.serverMessage,
+            'serverMessage',
+            'License photo not found',
+          ),
+        ),
+      );
+    });
+
+    test('uploadLicensePhoto posts a multipart file part and maps the '
+        'operator', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_operatorJson(id: 5, driverId: 7, hasLicensePhoto: true)),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final op = await repository.uploadLicensePhoto(
+        vehicleOperatorId: 5,
+        bytes: png,
+        filename: 'license.png',
+      );
+
+      expect(op.hasLicensePhoto, true);
+      expect(captured!.method, 'POST');
+      expect(captured!.path, endsWith('/vehicle-operators/5/license-photo'));
+      final form = captured!.data as FormData;
+      expect(form.files.single.key, 'file');
+      expect(form.files.single.value.filename, 'license.png');
+    });
+
+    test('removeLicensePhoto sends DELETE', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString('', 204);
+      });
+
+      await repository.removeLicensePhoto(vehicleOperatorId: 5);
+
+      expect(captured!.method, 'DELETE');
+      expect(captured!.path, endsWith('/vehicle-operators/5/license-photo'));
+    });
+  });
 }
 
 Map<String, Object?> _operatorJson({
   required int id,
   required int driverId,
   int? daysUntilExpiry,
+  bool? hasLicensePhoto,
 }) => {
   'vehicle_operator_id': id,
   'driver': {
@@ -226,6 +353,7 @@ Map<String, Object?> _operatorJson({
   },
   'status': 0,
   'days_until_expiry': daysUntilExpiry,
+  'has_license_photo': ?hasLicensePhoto,
 };
 
 VehicleOperatorRepositoryImpl _repositoryWith(

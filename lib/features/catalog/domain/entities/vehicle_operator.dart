@@ -25,6 +25,7 @@ abstract class VehicleOperator with _$VehicleOperator {
     required String issuingLocation,
     required EntityStatus status,
     int? daysUntilExpiry,
+    @Default(false) bool hasLicensePhoto,
   }) = _VehicleOperator;
 
   factory VehicleOperator.fromResponse(VehicleOperatorResponse response) {
@@ -39,6 +40,7 @@ abstract class VehicleOperator with _$VehicleOperator {
       issuingLocation: response.issuingLocation,
       status: EntityStatus.fromApi(response.status),
       daysUntilExpiry: response.daysUntilExpiry,
+      hasLicensePhoto: response.hasLicensePhoto ?? false,
     );
   }
 }

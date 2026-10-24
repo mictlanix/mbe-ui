@@ -1506,6 +1506,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String get driverLabel => 'Operador';
 
   @override
+  String get licensePhotoLabel => 'Foto de la licencia';
+
+  @override
+  String get licensePhotoUnavailable => 'Foto no disponible';
+
+  @override
+  String get licensePhotoInvalidTypeError =>
+      'La foto debe ser un archivo JPEG o PNG.';
+
+  @override
+  String get licensePhotoTooLargeError => 'La foto debe ser de 2 MB o menos.';
+
+  @override
+  String get licensePhotoSaveFailedError =>
+      'El operador se guardó, pero no se pudo guardar la foto de la licencia. Presiona Guardar para intentar de nuevo.';
+
+  @override
   String get licenseTypeLabel => 'Tipo de licencia';
 
   @override

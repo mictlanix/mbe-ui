@@ -1487,6 +1487,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get driverLabel => 'Driver';
 
   @override
+  String get licensePhotoLabel => 'License photo';
+
+  @override
+  String get licensePhotoUnavailable => 'Photo unavailable';
+
+  @override
+  String get licensePhotoInvalidTypeError =>
+      'Photo must be a JPEG or PNG file.';
+
+  @override
+  String get licensePhotoTooLargeError => 'Photo must be 2 MB or smaller.';
+
+  @override
+  String get licensePhotoSaveFailedError =>
+      'The operator was saved, but the license photo could not be saved. Press Save to try again.';
+
+  @override
   String get licenseTypeLabel => 'License type';
 
   @override

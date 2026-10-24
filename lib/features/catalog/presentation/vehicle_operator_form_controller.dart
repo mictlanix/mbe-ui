@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -8,6 +10,7 @@ import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/vehicle_operator_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/catalog_field_validators.dart';
+import 'package:mbe_ui/features/catalog/presentation/license_photo_provider.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicle_operators_list_controller.dart';
 
 part 'vehicle_operator_form_controller.freezed.dart';
@@ -30,7 +33,13 @@ abstract final class VehicleOperatorFormErrorCode {
   static const createPermissionDenied = 'createPermissionDenied';
   static const updatePermissionDenied = 'updatePermissionDenied';
   static const deletePermissionDenied = 'deletePermissionDenied';
+  static const licensePhotoInvalidType = 'licensePhotoInvalidType';
+  static const licensePhotoTooLarge = 'licensePhotoTooLarge';
+  static const licensePhotoSaveFailed = 'licensePhotoSaveFailed';
 }
+
+const _maxLicensePhotoBytes = 2 * 1024 * 1024;
+const _validLicensePhotoExtensions = ['.jpg', '.jpeg', '.png'];
 
 /// Create/edit form state for a single vehicle operator. [vehicleOperatorId]
 /// is `null` in create mode.
@@ -46,6 +55,22 @@ abstract class VehicleOperatorFormState with _$VehicleOperatorFormState {
     DateTime? expirationDate,
     @Default('') String issuingLocation,
     @Default(EntityStatus.active) EntityStatus status,
+
+    /// The server holds a license photo for this operator. The photo itself is
+    /// read through `licensePhotoProvider`, not kept here, so a slow or failed
+    /// read is never mistaken for an edit (051 R3).
+    @Default(false) bool hasLicensePhoto,
+
+    /// A picked, validated image that is sent when the form is saved.
+    Uint8List? pendingLicensePhotoBytes,
+
+    /// Original filename of [pendingLicensePhotoBytes], sent as the multipart
+    /// filename.
+    String? pendingLicensePhotoFilename,
+
+    /// The user chose "remove photo" and has not picked a new one since.
+    /// Mutually exclusive with [pendingLicensePhotoBytes].
+    @Default(false) bool licensePhotoMarkedForRemoval,
     @Default(false) bool loading,
     @Default(false) bool submitting,
     @Default(false) bool saved,
@@ -108,6 +133,54 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
 
   void statusChanged(EntityStatus v) => state = state.copyWith(status: v);
 
+  /// Stages [bytes] as the license photo after the same client-side checks as
+  /// the product photo (JPG/PNG, 2 MB — FR-006). A rejected pick leaves any
+  /// staged or saved photo as it was. A valid one supersedes a pending removal
+  /// (FR-009).
+  void licensePhotoPicked(Uint8List bytes, String filename) {
+    final lower = filename.toLowerCase();
+    if (!_validLicensePhotoExtensions.any(lower.endsWith)) {
+      state = state.copyWith(
+        fieldErrors: {
+          ...state.fieldErrors,
+          'licensePhoto': VehicleOperatorFormErrorCode.licensePhotoInvalidType,
+        },
+      );
+      return;
+    }
+    if (bytes.length > _maxLicensePhotoBytes) {
+      state = state.copyWith(
+        fieldErrors: {
+          ...state.fieldErrors,
+          'licensePhoto': VehicleOperatorFormErrorCode.licensePhotoTooLarge,
+        },
+      );
+      return;
+    }
+    final fieldErrors = {...state.fieldErrors}..remove('licensePhoto');
+    state = state.copyWith(
+      pendingLicensePhotoBytes: bytes,
+      pendingLicensePhotoFilename: filename,
+      licensePhotoMarkedForRemoval: false,
+      fieldErrors: fieldErrors,
+    );
+  }
+
+  /// Drops the license photo, applied on save (FR-008). A staged image goes
+  /// straight back to "none"; only a photo the server actually holds is marked
+  /// for deletion, so Save never asks the server to delete one that is not
+  /// there. No-op when there is nothing to remove.
+  void licensePhotoRemoveRequested() {
+    if (!state.hasLicensePhoto && state.pendingLicensePhotoBytes == null) {
+      return;
+    }
+    state = state.copyWith(
+      licensePhotoMarkedForRemoval: state.hasLicensePhoto,
+      pendingLicensePhotoBytes: null,
+      pendingLicensePhotoFilename: null,
+    );
+  }
+
   /// Loads an existing vehicle operator into the form for viewing/editing.
   Future<void> loadForEdit(int vehicleOperatorId) async {
     state = state.copyWith(loading: true, error: null, errorDetail: null);
@@ -125,6 +198,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
         expirationDate: operator.expirationDate,
         issuingLocation: operator.issuingLocation,
         status: operator.status,
+        hasLicensePhoto: operator.hasLicensePhoto,
       );
     } on AppError catch (e) {
       state = state.copyWith(
@@ -174,6 +248,69 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
     ref.invalidate(vehicleOperatorsListControllerProvider);
   }
 
+  /// The photo step of a save, run once the operator's fields are stored
+  /// (051 R4). Finishes the save: success sets `saved`, which closes the panel.
+  ///
+  /// A failure here does **not** set `saved`. The fields are already stored, so
+  /// the panel stays open with the photo change still staged and Save retries
+  /// it (FR-012) — unlike the product form, whose full screen can afford to
+  /// close and drop the staged image.
+  Future<void> _applyLicensePhoto(int vehicleOperatorId) async {
+    final bytes = state.pendingLicensePhotoBytes;
+    if (bytes == null) {
+      if (state.licensePhotoMarkedForRemoval) {
+        await _removeLicensePhoto(vehicleOperatorId);
+      } else {
+        state = state.copyWith(submitting: false, saved: true);
+      }
+      return;
+    }
+    try {
+      await ref
+          .read(vehicleOperatorRepositoryProvider)
+          .uploadLicensePhoto(
+            vehicleOperatorId: vehicleOperatorId,
+            bytes: bytes,
+            filename: state.pendingLicensePhotoFilename!,
+          );
+      ref.invalidate(licensePhotoProvider(vehicleOperatorId));
+      state = state.copyWith(
+        submitting: false,
+        saved: true,
+        hasLicensePhoto: true,
+        pendingLicensePhotoBytes: null,
+        pendingLicensePhotoFilename: null,
+      );
+    } on AppError catch (e) {
+      state = state.copyWith(
+        submitting: false,
+        error: VehicleOperatorFormErrorCode.licensePhotoSaveFailed,
+        errorDetail: e.serverMessage,
+      );
+    }
+  }
+
+  Future<void> _removeLicensePhoto(int vehicleOperatorId) async {
+    try {
+      await ref
+          .read(vehicleOperatorRepositoryProvider)
+          .removeLicensePhoto(vehicleOperatorId: vehicleOperatorId);
+      ref.invalidate(licensePhotoProvider(vehicleOperatorId));
+      state = state.copyWith(
+        submitting: false,
+        saved: true,
+        hasLicensePhoto: false,
+        licensePhotoMarkedForRemoval: false,
+      );
+    } on AppError catch (e) {
+      state = state.copyWith(
+        submitting: false,
+        error: VehicleOperatorFormErrorCode.licensePhotoSaveFailed,
+        errorDetail: e.serverMessage,
+      );
+    }
+  }
+
   /// Creates the vehicle operator (FR-015, FR-016). Re-checks the caller's
   /// `vehicleOperators` create privilege immediately before submitting,
   /// since it may have been revoked since the form was opened.
@@ -205,7 +342,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
       fieldErrors: const {},
     );
     try {
-      await ref
+      final created = await ref
           .read(vehicleOperatorRepositoryProvider)
           .create(
             driverId: state.driverId!,
@@ -217,7 +354,10 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
             status: state.status,
           );
       _invalidateCaches();
-      state = state.copyWith(submitting: false, saved: true);
+      // The operator now exists: a retry after a failed photo step must update
+      // it, not create it again (the form dispatches on this id).
+      state = state.copyWith(vehicleOperatorId: created.vehicleOperatorId);
+      await _applyLicensePhoto(created.vehicleOperatorId);
     } on AppError catch (e) {
       if (e is ValidationError) {
         state = state.copyWith(
@@ -280,7 +420,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
             status: state.status,
           );
       _invalidateCaches();
-      state = state.copyWith(submitting: false, saved: true);
+      await _applyLicensePhoto(vehicleOperatorId);
     } on AppError catch (e) {
       if (e is ValidationError) {
         state = state.copyWith(
