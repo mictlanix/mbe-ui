@@ -39,6 +39,27 @@ import 'package:mbe_api_client/src/model/cash_session_status.dart';
 import 'package:mbe_api_client/src/model/change_password_request.dart';
 import 'package:mbe_api_client/src/model/commission.dart';
 import 'package:mbe_api_client/src/model/commission1.dart';
+import 'package:mbe_api_client/src/model/commission_agent_create.dart';
+import 'package:mbe_api_client/src/model/commission_agent_rate_create.dart';
+import 'package:mbe_api_client/src/model/commission_agent_rate_response.dart';
+import 'package:mbe_api_client/src/model/commission_agent_rate_update.dart';
+import 'package:mbe_api_client/src/model/commission_agent_response.dart';
+import 'package:mbe_api_client/src/model/commission_agent_update.dart';
+import 'package:mbe_api_client/src/model/commission_label_create.dart';
+import 'package:mbe_api_client/src/model/commission_label_response.dart';
+import 'package:mbe_api_client/src/model/commission_label_update.dart';
+import 'package:mbe_api_client/src/model/commission_line_response.dart';
+import 'package:mbe_api_client/src/model/commission_participation_body.dart';
+import 'package:mbe_api_client/src/model/commission_participation_response.dart';
+import 'package:mbe_api_client/src/model/commission_period_detail.dart';
+import 'package:mbe_api_client/src/model/commission_period_response.dart';
+import 'package:mbe_api_client/src/model/commission_period_summary.dart';
+import 'package:mbe_api_client/src/model/commission_product_label_response.dart';
+import 'package:mbe_api_client/src/model/commission_product_label_set.dart';
+import 'package:mbe_api_client/src/model/commission_rate.dart';
+import 'package:mbe_api_client/src/model/commission_rate1.dart';
+import 'package:mbe_api_client/src/model/commission_scheme.dart';
+import 'package:mbe_api_client/src/model/commission_total_response.dart';
 import 'package:mbe_api_client/src/model/commit_line_request.dart';
 import 'package:mbe_api_client/src/model/commit_line_update.dart';
 import 'package:mbe_api_client/src/model/commit_order_request.dart';
@@ -118,6 +139,7 @@ import 'package:mbe_api_client/src/model/list_response_address_response.dart';
 import 'package:mbe_api_client/src/model/list_response_bank_account_response.dart';
 import 'package:mbe_api_client/src/model/list_response_cash_drawer_response.dart';
 import 'package:mbe_api_client/src/model/list_response_cash_session_response.dart';
+import 'package:mbe_api_client/src/model/list_response_commission_product_label_response.dart';
 import 'package:mbe_api_client/src/model/list_response_contact_response.dart';
 import 'package:mbe_api_client/src/model/list_response_credit_note_response.dart';
 import 'package:mbe_api_client/src/model/list_response_customer_list_item.dart';
@@ -156,6 +178,7 @@ import 'package:mbe_api_client/src/model/opening_amount.dart';
 import 'package:mbe_api_client/src/model/order_application_response.dart';
 import 'package:mbe_api_client/src/model/order_origin.dart';
 import 'package:mbe_api_client/src/model/outstanding_order_response.dart';
+import 'package:mbe_api_client/src/model/participation_rate.dart';
 import 'package:mbe_api_client/src/model/password_policy_response.dart';
 import 'package:mbe_api_client/src/model/payment_method.dart';
 import 'package:mbe_api_client/src/model/payment_method_option_create.dart';
@@ -301,6 +324,27 @@ part 'serializers.g.dart';
   ChangePasswordRequest,
   Commission,
   Commission1,
+  CommissionAgentCreate,
+  CommissionAgentRateCreate,
+  CommissionAgentRateResponse,
+  CommissionAgentRateUpdate,
+  CommissionAgentResponse,
+  CommissionAgentUpdate,
+  CommissionLabelCreate,
+  CommissionLabelResponse,
+  CommissionLabelUpdate,
+  CommissionLineResponse,
+  CommissionParticipationBody,
+  CommissionParticipationResponse,
+  CommissionPeriodDetail,
+  CommissionPeriodResponse,
+  CommissionPeriodSummary,
+  CommissionProductLabelResponse,
+  CommissionProductLabelSet,
+  CommissionRate,
+  CommissionRate1,
+  CommissionScheme,
+  CommissionTotalResponse,
   CommitLineRequest,
   CommitLineUpdate,
   CommitOrderRequest,
@@ -380,6 +424,7 @@ part 'serializers.g.dart';
   ListResponseBankAccountResponse,
   ListResponseCashDrawerResponse,
   ListResponseCashSessionResponse,
+  ListResponseCommissionProductLabelResponse,
   ListResponseContactResponse,
   ListResponseCreditNoteResponse,
   ListResponseCustomerListItem,
@@ -418,6 +463,7 @@ part 'serializers.g.dart';
   OrderApplicationResponse,
   OrderOrigin,
   OutstandingOrderResponse,
+  ParticipationRate,
   PasswordPolicyResponse,
   PaymentMethod,
   PaymentMethodOptionCreate,
@@ -538,6 +584,12 @@ part 'serializers.g.dart';
 Serializers serializers =
     (_$serializers.toBuilder()
           ..addBuilderFactory(
+            const FullType(BuiltList, [
+              FullType(CommissionParticipationResponse),
+            ]),
+            () => ListBuilder<CommissionParticipationResponse>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(SalesQuoteSummary)]),
             () => ListBuilder<SalesQuoteSummary>(),
           )
@@ -554,6 +606,14 @@ Serializers serializers =
             () => ListBuilder<TaxpayerIssuerResponse>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(CommissionAgentRateResponse)]),
+            () => ListBuilder<CommissionAgentRateResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(CommissionLabelResponse)]),
+            () => ListBuilder<CommissionLabelResponse>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(DenominationCount)]),
             () => ListBuilder<DenominationCount>(),
           )
@@ -566,12 +626,20 @@ Serializers serializers =
             () => ListBuilder<PendingDeliveryLine>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(CommissionTotalResponse)]),
+            () => ListBuilder<CommissionTotalResponse>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(OrderApplicationResponse)]),
             () => ListBuilder<OrderApplicationResponse>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(WarehouseResponse)]),
             () => ListBuilder<WarehouseResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(CommissionLineResponse)]),
+            () => ListBuilder<CommissionLineResponse>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(CustomerRefundLineResponse)]),
@@ -592,6 +660,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(CustomerRefundSummary)]),
             () => ListBuilder<CustomerRefundSummary>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(CommissionAgentResponse)]),
+            () => ListBuilder<CommissionAgentResponse>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ProductLookupResponse)]),
@@ -636,6 +708,12 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(SalesOrderLineResponse)]),
             () => ListBuilder<SalesOrderLineResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [
+              FullType(CommissionProductLabelResponse),
+            ]),
+            () => ListBuilder<CommissionProductLabelResponse>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltMap, [FullType(String), FullType(String)]),
@@ -748,6 +826,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(AddressResponse)]),
             () => ListBuilder<AddressResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(CommissionPeriodSummary)]),
+            () => ListBuilder<CommissionPeriodSummary>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(CashSessionResponse)]),
