@@ -6,7 +6,9 @@ import 'package:mbe_ui/features/sales/data/delivery_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/line_distribution.dart';
+import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart'
     show DestinationLineRequest;
@@ -120,6 +122,21 @@ class DeliveryController extends _$DeliveryController {
     DateTime? date,
     String? comment,
   }) => _tracked(() async {
+    // mbe-api spec 023 FR-008/FR-018 (mictlanix/mbe-ui#202): a back-office
+    // order confirms only with its own ship-to and a fulfilment intent. The
+    // address just picked for this first destination becomes the order's,
+    // and an order converted from a quote gets the delivery intent it lacks.
+    if (sale.status == SaleStatus.draft &&
+        sale.origin == SaleOrigin.backOffice) {
+      await ref
+          .read(saleEditorProvider)
+          .updateHeader(
+            shipTo: shipTo,
+            fulfillmentIntent: sale.fulfillmentIntent == null
+                ? FulfillmentMode.delivery
+                : null,
+          );
+    }
     // spec 036 FR-008/R1: the first delivery-order create needs the sale
     // confirmed first — a no-op once already confirmed (e.g. a payment
     // already ran it, or an earlier destination already did).

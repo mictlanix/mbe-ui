@@ -137,6 +137,13 @@ void main() {
       () => salesOrders.confirm(saleId: any(named: 'saleId')),
     ).thenAnswer((_) async => confirmed);
     when(
+      () => salesOrders.updateHeader(
+        saleId: 42,
+        shipTo: any(named: 'shipTo'),
+        fulfillmentIntent: any(named: 'fulfillmentIntent'),
+      ),
+    ).thenAnswer((_) async => draft);
+    when(
       () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
     ).thenAnswer((_) async => List.of(stored));
   });
@@ -273,6 +280,49 @@ void main() {
 
     verifyNever(() => salesOrders.confirm(saleId: 99));
     verify(() => salesOrders.confirm(saleId: 42)).called(1);
+  });
+
+  testWidgets('gives the order the destination\'s address before confirming '
+      'it (mbe-ui#202)', (tester) async {
+    stubCreate(() async => _created());
+    await pumpOrder(tester);
+
+    await addDestination(tester);
+
+    verifyInOrder([
+      () => salesOrders.updateHeader(
+        saleId: 42,
+        shipTo: 11,
+        fulfillmentIntent: null,
+      ),
+      () => salesOrders.confirm(saleId: 42),
+    ]);
+  });
+
+  testWidgets('an order converted from a quote, with no intent yet, is also '
+      'marked for delivery before confirming', (tester) async {
+    final converted = testSale(
+      id: 42,
+      customer: 7,
+      lines: [testLine(id: 5, quantity: '10')],
+      origin: SaleOrigin.backOffice,
+    );
+    when(
+      () => salesOrders.getById(saleId: 42),
+    ).thenAnswer((_) async => converted);
+    stubCreate(() async => _created());
+    await pumpOrder(tester);
+
+    await addDestination(tester);
+
+    verifyInOrder([
+      () => salesOrders.updateHeader(
+        saleId: 42,
+        shipTo: 11,
+        fulfillmentIntent: FulfillmentMode.delivery,
+      ),
+      () => salesOrders.confirm(saleId: 42),
+    ]);
   });
 
   testWidgets('an unexpected failure is shown in the sheet, never swallowed',
