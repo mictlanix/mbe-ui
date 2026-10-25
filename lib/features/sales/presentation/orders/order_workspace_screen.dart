@@ -551,10 +551,14 @@ class _StepHost extends ConsumerWidget {
               allowCounterSweep: false,
               // The order is already committed by the time this fires — the
               // first destination create is what did it (spec A2) — so
-              // there is nothing left to write here. Only the "Pedidos"
-              // list needs telling: it has its own read of this order's
-              // folio/status, taken before either existed.
-              onClose: () => ref.invalidate(salesOrdersListControllerProvider),
+              // there is nothing left to write here. The "Pedidos" list is
+              // refreshed — its read of this order's folio/status predates
+              // both — and the user is taken back to it, the same way the
+              // app bar's back button leaves.
+              onClose: () {
+                ref.invalidate(salesOrdersListControllerProvider);
+                context.canPop() ? context.pop() : context.go('/sales/orders');
+              },
               secondaryAction: cancelButton,
             ),
           ),
