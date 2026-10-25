@@ -52,7 +52,7 @@ not a pass.
 | # | Steps | Expected | Covers |
 |---|---|---|---|
 | M1 | Open a confirmed quote, then press **Ver cotización**. | The preview opens with "Cotización · 000000NN". Print opens the browser dialog; download saves `cotizacion-000000NN.pdf`. | US1, FR-001–004, SC-001 |
-| M2 | Open a draft, type into the comment without confirming, then press **Ver cotización**. | The keep/discard prompt appears first. Once resolved, the PDF shows what is on screen. While a line edit is saving, the button is disabled. | FR-005 |
+| M2 | Open a draft, type into the comment without confirming, then press **Ver cotización**. | On a touch device the keep/discard prompt appears first. On desktop, the click that presses the button takes the field's focus, which discards the typed text before the button fires (the app's "blur is a discard" rule), so no prompt is needed. Either way the PDF shows what is on screen and nothing is saved. While a line edit is saving, the button is disabled. | FR-005 |
 | M3 | Open a cancelled quote. | **Ver cotización** is present. **Enviar por correo** is absent. | FR-001, FR-006 |
 | M4 | Confirmed quote, then **Enviar por correo**. | The dialog lists the customer's contact and fiscal emails as chips, none selected; **Enviar** is disabled. | FR-007–009 |
 | M5 | Tap two chips, type a new address, press Enter, then deselect it. | The selected chips show checks. The typed address becomes a selected chip, then stays unselected. The counter tracks the selection. | FR-008, FR-009a |
@@ -63,6 +63,23 @@ not a pass.
 | M10 | Open the dialog, cancel the quote in another tab, then send. | The banner says the quote can no longer be sent. On close, the screen shows "Cancelada" and the email action disappears. | FR-013–014 |
 | M11 | Resize to under 600 px wide. | The header shows **Más detalles** plus ⋮. The menu holds both actions (only Ver cotización on a draft). The email dialog is full screen, with ✕ and **Enviar** in its top bar. | FR-015a, FR-015b |
 | M12 | Log in as a user without sales-quotes Read. | The quote screen is unreachable, so neither action is seen. | FR-016 |
+
+### Automated run (real app, macOS desktop)
+
+`integration_test/quote_pdf_email_quickstart_test.dart` drives M1–M7, M9 and M11, plus a check that the wide header's three controls share one line. It is read-only: it never confirms an edit or changes a quote, and it only attempts a send after probing that the deployment answers 503.
+
+```bash
+caffeinate -dimsu flutter test integration_test/quote_pdf_email_quickstart_test.dart \
+  -d macos --dart-define-from-file=.env.settings --dart-define-from-file=.env
+```
+
+**2026-10-25, local mbe-api (mail not configured): 10/10 passed.** The preview loaded in about 2.3 s (M1, under the 3 s target). M2 took the desktop discard-on-blur path.
+
+Not automated:
+- **M8** needs configured mail and an inbox.
+- **M10** changes data (it cancels a quote). Also, on a deployment without mail, mbe-api answers 503 before it checks the quote's state, so the 409 path can't be seen there.
+- **M12** needs an account without sales-quotes read; none of the `.env` accounts lacks it.
+- **Print and download** open native dialogs. The driver checks that the preview loads with both buttons enabled, and checks the file name through the client.
 
 ## 3. Done when
 
