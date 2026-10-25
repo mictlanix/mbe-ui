@@ -17,10 +17,12 @@ import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
 import 'package:mbe_ui/features/sales/data/delivery_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
+import 'package:mbe_ui/features/sales/domain/entities/destination_line.dart';
 import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_origin.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart';
+import 'package:mbe_ui/features/sales/presentation/orders/order_workspace_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 
 import 'pos_test_harness.dart';
@@ -323,6 +325,53 @@ void main() {
       ),
       () => salesOrders.confirm(saleId: 42),
     ]);
+  });
+
+  testWidgets('"Completar pedido" closes the order and shows the refreshed '
+      'Pedidos list', (tester) async {
+    stubCreate(
+      () async => const Destination(
+        id: 500,
+        fulfillmentType: FulfillmentType.delivery,
+        shipTo: 11,
+        addressSummary: 'Av. Reforma 100',
+        status: DeliveryOrderStatus.draft,
+        lines: [
+          DestinationLine(
+            id: 900,
+            salesOrderDetail: 5,
+            product: 11,
+            productCode: 'P-5',
+            productName: 'Widget 5',
+            quantity: '10',
+          ),
+        ],
+      ),
+    );
+    final (router, _) = await pumpOrdersRouted(
+      tester,
+      initialLocation: '/sales/orders/42',
+      surface: const Size(1400, 2400),
+      overrides: [
+        authProvider.overrideWith(
+          () => _FixedAuthNotifier(
+            AuthState.authenticated(token: 't', user: _updaterUser),
+          ),
+        ),
+        salesOrderOverride(salesOrders),
+        warehouseOverride(warehouses),
+        customerRepositoryProvider.overrideWithValue(customers),
+        customerPaymentOverride(payments),
+        deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
+      ],
+    );
+    await addDestination(tester);
+
+    await tester.tap(find.byKey(const Key('delivery_close_button')));
+    await tester.pumpAndSettle();
+
+    expect(router.state.uri.path, '/sales/orders');
+    expect(find.byType(OrderWorkspaceScreen), findsNothing);
   });
 
   testWidgets('an unexpected failure is shown in the sheet, never swallowed',
