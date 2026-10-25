@@ -22,6 +22,9 @@ void main() {
     'cash_sessions_api.dart': [
       'printCashSessionCutApiV1CashSessionsCashSessionIdTicketGet',
     ],
+    'sales_quotes_api.dart': [
+      'printSalesQuoteDocumentApiV1SalesQuotesSalesQuoteIdDocumentGet',
+    ],
   };
 
   for (final entry in methods.entries) {

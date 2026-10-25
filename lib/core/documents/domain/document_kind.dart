@@ -17,7 +17,11 @@ enum DocumentKind {
   salesOrder(SystemObject.salesOrders),
 
   /// `GET /cash-sessions/{id}/ticket` — the "Corte de Caja" of a closed session.
-  cashCut(SystemObject.pos);
+  cashCut(SystemObject.pos),
+
+  /// `GET /sales-quotes/{id}/document` — the Letter-size quote, in any state
+  /// (mbe-api spec 024).
+  salesQuote(SystemObject.salesQuotes);
 
   const DocumentKind(this.gateObject);
 
@@ -34,6 +38,7 @@ enum DocumentKind {
     DocumentKind.saleTicket => 'ticket-${_pad(recordId, 8)}.pdf',
     DocumentKind.salesOrder => 'pedido-${_pad(recordId, 8)}.pdf',
     DocumentKind.cashCut => 'corte-${_pad(recordId, 6)}.pdf',
+    DocumentKind.salesQuote => 'cotizacion-${_pad(recordId, 8)}.pdf',
   };
 
   static String _pad(int id, int width) => id.toString().padLeft(width, '0');

@@ -3743,6 +3743,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String documentSalesQuoteTitle(String reference) {
+    return 'Quote · $reference';
+  }
+
+  @override
   String get posSalePrintTicketAction => 'Print ticket';
 
   @override
@@ -3756,6 +3761,79 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get salesOrderViewDocumentAction => 'View sales order';
+
+  @override
+  String get salesQuoteViewDocumentAction => 'View quote';
+
+  @override
+  String get salesQuoteEmailAction => 'Send by email';
+
+  @override
+  String get salesQuoteMoreActionsTooltip => 'More actions';
+
+  @override
+  String salesQuoteEmailDialogTitle(String reference) {
+    return 'Send quote $reference';
+  }
+
+  @override
+  String get salesQuoteEmailRecipientsLabel => 'Recipients';
+
+  @override
+  String get salesQuoteEmailOtherAddressLabel => 'Another email address';
+
+  @override
+  String get salesQuoteEmailAddAction => 'Add';
+
+  @override
+  String get salesQuoteEmailSendAction => 'Send';
+
+  @override
+  String get salesQuoteEmailSendingLabel => 'Sending…';
+
+  @override
+  String get salesQuoteEmailLimitHint => 'Up to 10 recipients.';
+
+  @override
+  String salesQuoteEmailCounter(int count) {
+    return '$count of 10 recipients.';
+  }
+
+  @override
+  String get salesQuoteEmailLimitReached =>
+      '10 of 10 recipients. No more can be added.';
+
+  @override
+  String get salesQuoteEmailInvalidAddress =>
+      'That is not a valid email address.';
+
+  @override
+  String get salesQuoteEmailNoKnownAddresses =>
+      'This customer has no email addresses on file.';
+
+  @override
+  String get salesQuoteEmailSuggestionsLoading =>
+      'Loading the customer\'s email addresses…';
+
+  @override
+  String get salesQuoteEmailSuggestionsFailed =>
+      'The customer\'s email addresses could not be loaded.';
+
+  @override
+  String get salesQuoteEmailNotSendable => 'This quote can no longer be sent.';
+
+  @override
+  String get salesQuoteEmailMailRefused =>
+      'The mail server rejected the message. Try again, or download the quote instead.';
+
+  @override
+  String get salesQuoteEmailMailUnavailable =>
+      'Sending email is not available. Download the quote to send it yourself.';
+
+  @override
+  String salesQuoteEmailSentMessage(String recipients) {
+    return 'Quote sent to $recipients';
+  }
 
   @override
   String get customerAddressesSection => 'Addresses';

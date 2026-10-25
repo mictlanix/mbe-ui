@@ -16,13 +16,24 @@ import 'package:mbe_ui/core/design/design.dart';
 /// [_trailingShare] of the row so that, at the compact tier or a large text
 /// scale, a longer label ("Menos detalles") wraps inside its slot instead of
 /// starving the facts or overflowing.
+///
+/// A header whose trailing slot carries actions beside the toggle (the
+/// quote's "Ver cotización" and "Enviar por correo", spec 053) passes a
+/// larger [trailingMaxShare], so they stay on one line and the facts wrap
+/// instead — the facts' `Wrap` is built for that, the actions' is not.
 class FactStripRow extends StatelessWidget {
-  const FactStripRow({super.key, required this.facts, required this.trailing});
+  const FactStripRow({
+    super.key,
+    required this.facts,
+    required this.trailing,
+    this.trailingMaxShare = 0.4,
+  });
 
   final List<Widget> facts;
   final Widget trailing;
 
-  static const _trailingShare = 0.4;
+  /// The most of the row [trailing] may take.
+  final double trailingMaxShare;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +52,7 @@ class FactStripRow extends StatelessWidget {
           SizedBox(width: spacing.md),
           ConstrainedBox(
             constraints: BoxConstraints(
-              maxWidth: constraints.maxWidth * _trailingShare,
+              maxWidth: constraints.maxWidth * trailingMaxShare,
             ),
             child: trailing,
           ),

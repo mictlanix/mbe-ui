@@ -11,7 +11,7 @@ class ResponsiveDialogAction {
       this.busy = false, this.key});
   final String label;
   final VoidCallback? onPressed;   // null → disabled
-  final bool busy;                 // shows a spinner in place of the label
+  final bool busy;                 // shows a spinner before the label and disables the action
   final Key? key;
 }
 
@@ -85,8 +85,8 @@ Future<QuoteEmailOutcome?> showQuoteEmailDialog(BuildContext context, {required 
 class QuoteEmailController extends _$QuoteEmailController {
   QuoteEmailState build(int quoteId);
   void seed({required List<Contact> contacts, required List<TaxpayerRecipient> taxpayers});
-  RecipientToggleResult toggle(String key);          // toggled | limitReached
-  AddTypedResult addTyped(String text);              // added | selectedExisting | invalid | limitReached
+  RecipientToggleResult toggle(String key);          // toggled | limitReached | ignored (sending, unknown key)
+  AddTypedResult addTyped(String text);              // added | selectedExisting | invalid | limitReached | ignored (sending)
   Future<QuoteEmailReceipt?> send();                 // null on failure (state.failure set)
   void clearFailure();
 }

@@ -127,6 +127,7 @@ specs/053-quote-pdf-email/
 lib/core/widgets/responsive_dialog.dart                             # NEW  C1
 lib/core/documents/domain/document_kind.dart                        # EDIT salesQuote + fallback name
 lib/core/documents/data/document_source_impl.dart                   # EDIT SalesQuotesApi + switch arm
+lib/core/widgets/fact_strip_row.dart                                # EDIT optional trailingMaxShare (default 0.4 unchanged); found in implementation — the quote header's three controls did not fit the 40% cap
 
 lib/features/sales/domain/quote_email.dart                          # NEW  QuoteEmailReceipt, isPlausibleEmail
 lib/features/sales/domain/repositories/sales_quote_repository.dart  # EDIT email()

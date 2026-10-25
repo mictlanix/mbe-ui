@@ -63,7 +63,7 @@ Held by `QuoteEmailController`, an autoDispose `Notifier` family keyed by quote 
 
 | Mutator | Rule |
 |---|---|
-| `seed(contacts, taxpayers)` | Adds chips for non-blank emails not already present (by `key`). The first occurrence wins, so a contact's name beats a fiscal recipient's for a shared address. It never removes chips or changes `selected`, so it is idempotent across a reload or retry. |
+| `seed(contacts, taxpayers)` | Adds chips for emails that pass `isPlausibleEmail` and are not already present (by `key`); a stored address the server would refuse is not offered, since selecting it could only fail the whole send. The first occurrence wins, so a contact's name beats a fiscal recipient's for a shared address. It never removes chips or changes `selected`, so it is idempotent across a reload or retry. |
 | `toggle(key)` | Deselects if selected. Otherwise selects only if `!atLimit`, and returns `limitReached` when it cannot. |
 | `addTyped(text)` | Trims the text. If it fails `isPlausibleEmail` → returns `invalid`. If its key matches an existing chip → selects that chip (subject to the limit) → returns `selectedExisting`. If at the limit → returns `limitReached`. Otherwise it appends a `typed` chip, selected → returns `added`. |
 | *(deselect a typed chip)* | The chip stays, unselected (wireframe review, OQ4). |
