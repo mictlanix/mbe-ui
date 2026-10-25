@@ -88,7 +88,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       );
     }
 
-    if (formState.saved || formState.deleted) {
+    // A saved product whose photo upload failed stays open so the error shows
+    // and the next save retries the upload.
+    if ((formState.saved && formState.error == null) || formState.deleted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) context.pop();
       });
@@ -453,7 +455,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                     ? () => context.replace('/products/${widget.productId}')
                     : null,
                 onSave: canSave
-                    ? (_isEdit
+                    ? (_isEdit || formState.productId != null
                           ? controller.submitUpdate
                           : controller.submitCreate)
                     : null,

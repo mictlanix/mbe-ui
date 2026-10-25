@@ -334,6 +334,7 @@ class ProductFormController extends _$ProductFormController {
         fieldErrors: fieldErrors,
         error: null,
         errorDetail: null,
+        saved: false,
       );
       return;
     }
@@ -350,6 +351,7 @@ class ProductFormController extends _$ProductFormController {
 
     state = state.copyWith(
       submitting: true,
+      saved: false,
       error: null,
       errorDetail: null,
       fieldErrors: const {},
@@ -380,6 +382,9 @@ class ProductFormController extends _$ProductFormController {
             labels: state.labelIds,
           );
       ref.invalidate(productsListControllerProvider);
+      // Kept so that, if the photo upload fails, the retry updates this
+      // product instead of creating a duplicate.
+      state = state.copyWith(productId: product.productId);
 
       final pendingBytes = state.pendingPhotoBytes;
       if (pendingBytes != null) {
@@ -440,6 +445,7 @@ class ProductFormController extends _$ProductFormController {
         fieldErrors: fieldErrors,
         error: null,
         errorDetail: null,
+        saved: false,
       );
       return;
     }
@@ -456,6 +462,7 @@ class ProductFormController extends _$ProductFormController {
 
     state = state.copyWith(
       submitting: true,
+      saved: false,
       error: null,
       errorDetail: null,
       fieldErrors: const {},

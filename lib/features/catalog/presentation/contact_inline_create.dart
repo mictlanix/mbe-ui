@@ -50,16 +50,15 @@ class _ContactInlineCreateDialog extends ConsumerWidget {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
+              // Outside the grid: inserting a child there would shift the
+              // fields' positions and drop what the user typed.
+              if (state.error != null) ...[
+                ErrorBanner(error: AppError.server(message: state.errorDetail)),
+                const SizedBox(height: 16),
+              ],
               ResponsiveFormGrid(
                 maxColumns: 2,
                 children: [
-                  if (state.error != null)
-                    FormGridChild(
-                      span: FormGridSpan.full,
-                      ErrorBanner(
-                        error: AppError.server(message: state.errorDetail),
-                      ),
-                    ),
                   FormGridChild(
                     span: FormGridSpan.full,
                     TextFormField(
@@ -67,7 +66,10 @@ class _ContactInlineCreateDialog extends ConsumerWidget {
                       enabled: fieldsEnabled,
                       decoration: InputDecoration(
                         labelText: l10n.contactNameLabel,
-                        errorText: _localizeFieldError(l10n, state.fieldErrors['name']),
+                        errorText: _localizeFieldError(
+                          l10n,
+                          state.fieldErrors['name'],
+                        ),
                       ),
                       onChanged: controller.nameChanged,
                     ),
@@ -106,7 +108,9 @@ class _ContactInlineCreateDialog extends ConsumerWidget {
                     TextFormField(
                       key: const Key('contact_job_title_field'),
                       enabled: fieldsEnabled,
-                      decoration: InputDecoration(labelText: l10n.contactJobTitleLabel),
+                      decoration: InputDecoration(
+                        labelText: l10n.contactJobTitleLabel,
+                      ),
                       onChanged: controller.jobTitleChanged,
                     ),
                   ),
@@ -133,7 +137,9 @@ class _ContactInlineCreateDialog extends ConsumerWidget {
                 spacing: 8,
                 children: [
                   TextButton(
-                    onPressed: fieldsEnabled ? () => Navigator.of(context).pop() : null,
+                    onPressed: fieldsEnabled
+                        ? () => Navigator.of(context).pop()
+                        : null,
                     child: Text(l10n.cancelButton),
                   ),
                   FilledButton(
@@ -158,10 +164,12 @@ class _ContactInlineCreateDialog extends ConsumerWidget {
 
   /// Maps this dialog's own codes to copy; anything else is a server message
   /// already in the user's language, passed through unchanged.
-  String? _localizeFieldError(AppLocalizations l10n, String? code) => switch (code) {
-    null => null,
-    ContactInlineCreateErrorCode.nameRequired => l10n.fieldRequired,
-    ContactInlineCreateErrorCode.contactMethodRequired => l10n.contactMethodRequired,
-    _ => code,
-  };
+  String? _localizeFieldError(AppLocalizations l10n, String? code) =>
+      switch (code) {
+        null => null,
+        ContactInlineCreateErrorCode.nameRequired => l10n.fieldRequired,
+        ContactInlineCreateErrorCode.contactMethodRequired =>
+          l10n.contactMethodRequired,
+        _ => code,
+      };
 }

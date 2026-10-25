@@ -447,6 +447,167 @@ void main() {
       expect(state.error, ProductFormErrorCode.photoUploadFailed);
     });
 
+    test('after a failed photo upload, the next save retries it through an '
+        'update of the created product, not a second create', () async {
+      when(
+        () => repository.create(
+          code: 'SKU-001',
+          name: 'Widget',
+          unitOfMeasurement: 'PCE',
+          brand: any(named: 'brand'),
+          model: any(named: 'model'),
+          barCode: any(named: 'barCode'),
+          location: any(named: 'location'),
+          taxRate: any(named: 'taxRate'),
+          comment: any(named: 'comment'),
+          stockable: any(named: 'stockable'),
+          perishable: any(named: 'perishable'),
+          seriable: any(named: 'seriable'),
+          purchasable: any(named: 'purchasable'),
+          salable: any(named: 'salable'),
+          invoiceable: any(named: 'invoiceable'),
+          currency: any(named: 'currency'),
+        ),
+      ).thenAnswer((_) async => _product());
+      when(
+        () => repository.update(
+          productId: 1,
+          code: any(named: 'code'),
+          name: any(named: 'name'),
+          unitOfMeasurement: any(named: 'unitOfMeasurement'),
+          sku: any(named: 'sku'),
+          brand: any(named: 'brand'),
+          model: any(named: 'model'),
+          barCode: any(named: 'barCode'),
+          location: any(named: 'location'),
+          taxRate: any(named: 'taxRate'),
+          comment: any(named: 'comment'),
+          stockable: any(named: 'stockable'),
+          perishable: any(named: 'perishable'),
+          seriable: any(named: 'seriable'),
+          purchasable: any(named: 'purchasable'),
+          salable: any(named: 'salable'),
+          invoiceable: any(named: 'invoiceable'),
+          supplier: any(named: 'supplier'),
+          key: any(named: 'key'),
+          currency: any(named: 'currency'),
+          labels: any(named: 'labels'),
+        ),
+      ).thenAnswer((_) async => _product());
+      var uploads = 0;
+      when(
+        () => repository.uploadPhoto(
+          productId: 1,
+          bytes: any(named: 'bytes'),
+          filename: any(named: 'filename'),
+        ),
+      ).thenAnswer((_) async {
+        if (uploads++ == 0) throw const AppError.network();
+        return _product();
+      });
+
+      // create (1) + update (4)
+      const createAndUpdateUser = User(
+        userId: 'creator-editor',
+        email: 'creator-editor@example.com',
+        administrator: false,
+        status: EntityStatus.active,
+        sessionVersion: 1,
+        privileges: [
+          Privilege(systemObject: SystemObject.products, rawValue: 5),
+        ],
+      );
+      final container = _containerFor(createAndUpdateUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      controller.codeChanged('SKU-001');
+      controller.nameChanged('Widget');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
+      controller.photoPicked(Uint8List.fromList([1, 2, 3]), 'photo.jpg');
+      await controller.submitCreate();
+
+      var state = container.read(productFormControllerProvider);
+      expect(state.productId, 1);
+      expect(state.pendingPhotoBytes, isNotNull);
+
+      await controller.submitUpdate();
+
+      state = container.read(productFormControllerProvider);
+      expect(state.saved, isTrue);
+      expect(state.error, isNull);
+      expect(state.pendingPhotoBytes, isNull);
+      verify(
+        () => repository.create(
+          code: any(named: 'code'),
+          name: any(named: 'name'),
+          unitOfMeasurement: any(named: 'unitOfMeasurement'),
+          brand: any(named: 'brand'),
+          model: any(named: 'model'),
+          barCode: any(named: 'barCode'),
+          location: any(named: 'location'),
+          taxRate: any(named: 'taxRate'),
+          comment: any(named: 'comment'),
+          stockable: any(named: 'stockable'),
+          perishable: any(named: 'perishable'),
+          seriable: any(named: 'seriable'),
+          purchasable: any(named: 'purchasable'),
+          salable: any(named: 'salable'),
+          invoiceable: any(named: 'invoiceable'),
+          currency: any(named: 'currency'),
+        ),
+      ).called(1);
+    });
+
+    test('a new save attempt clears the previous partial save', () async {
+      when(
+        () => repository.create(
+          code: 'SKU-001',
+          name: 'Widget',
+          unitOfMeasurement: 'PCE',
+          brand: any(named: 'brand'),
+          model: any(named: 'model'),
+          barCode: any(named: 'barCode'),
+          location: any(named: 'location'),
+          taxRate: any(named: 'taxRate'),
+          comment: any(named: 'comment'),
+          stockable: any(named: 'stockable'),
+          perishable: any(named: 'perishable'),
+          seriable: any(named: 'seriable'),
+          purchasable: any(named: 'purchasable'),
+          salable: any(named: 'salable'),
+          invoiceable: any(named: 'invoiceable'),
+          currency: any(named: 'currency'),
+        ),
+      ).thenAnswer((_) async => _product());
+      when(
+        () => repository.uploadPhoto(
+          productId: 1,
+          bytes: any(named: 'bytes'),
+          filename: any(named: 'filename'),
+        ),
+      ).thenThrow(const AppError.network());
+
+      final container = _containerFor(_createUser, repository);
+      addTearDown(container.dispose);
+      final controller = container.read(productFormControllerProvider.notifier);
+
+      controller.codeChanged('SKU-001');
+      controller.nameChanged('Widget');
+      controller.unitSelected(const SatCatalogItem(code: 'PCE'));
+      controller.photoPicked(Uint8List.fromList([1, 2, 3]), 'photo.jpg');
+      await controller.submitCreate();
+
+      // An invalid edit before the retry must not read as a clean save,
+      // which would close the screen.
+      controller.nameChanged('Wi');
+      await controller.submitUpdate();
+
+      final state = container.read(productFormControllerProvider);
+      expect(state.saved, isFalse);
+      expect(state.fieldErrors, isNotEmpty);
+    });
+
     test(
       'without products.create privilege, does not call the repository '
       '(spec.md Edge Cases — privilege revoked while form is open)',
