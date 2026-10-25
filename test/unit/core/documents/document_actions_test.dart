@@ -214,6 +214,19 @@ void main() {
       },
     );
 
+    test('a sales-quotes reader may open the quote, nothing else', () {
+      expect(can(salesQuotesReader, DocumentKind.salesQuote), isTrue);
+      expect(can(salesQuotesReader, DocumentKind.saleTicket), isFalse);
+      expect(can(salesQuotesReader, DocumentKind.salesOrder), isFalse);
+      expect(can(salesQuotesReader, DocumentKind.cashCut), isFalse);
+    });
+
+    test('neither a sales-orders nor a point-of-sale reader may open the '
+        'quote', () {
+      expect(can(salesOrdersReader, DocumentKind.salesQuote), isFalse);
+      expect(can(posReader, DocumentKind.salesQuote), isFalse);
+    });
+
     test('a user with no privileges may open nothing', () {
       for (final kind in DocumentKind.values) {
         expect(can(noPrivileges, kind), isFalse, reason: '$kind');

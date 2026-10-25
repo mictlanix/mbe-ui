@@ -7,16 +7,23 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/documents/domain/document_kind.dart';
+import 'package:mbe_ui/core/documents/domain/document_ref.dart';
+import 'package:mbe_ui/core/documents/presentation/document_actions.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
+import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/compact_field.dart';
 import 'package:mbe_ui/core/widgets/confirmable_text_field.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/fact_strip_row.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/presentation/quotes/quote_editor_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/quotes/quote_email_dialog.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
+import 'package:mbe_ui/features/sales/presentation/unconfirmed_edits_resolver.dart';
 import 'package:mbe_ui/features/sales/presentation/widgets/sales_quote_status_chip.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -93,6 +100,62 @@ class _QuoteHeaderPanelState extends ConsumerState<QuoteHeaderPanel> {
     } on AppError catch (e) {
       if (mounted) setState(() => _error = e);
       return false;
+    }
+  }
+
+  /// Opens the quote document, once nothing this screen is still saving or
+  /// holding unconfirmed can make it differ from what is on screen (spec 053
+  /// FR-005) — `OrderHeaderPanel._viewPedido`'s own rule. The button is
+  /// disabled while a write is in flight, so what is left to settle here is
+  /// typed-but-unconfirmed text, through the prompt the screen already shows
+  /// before it confirms. "Seguir editando" cancels.
+  Future<void> _viewDocument() async {
+    final title = AppLocalizations.of(context)!.documentSalesQuoteTitle(
+      widget.sale.id.toString().padLeft(8, '0'),
+    );
+    final quoteId = widget.sale.id;
+    final proceed = await resolveUnconfirmedEdits(
+      context,
+      ref,
+      ref.read(saleWritesScopeProvider),
+    );
+    if (!proceed || !mounted) return;
+    await ref
+        .read(documentActionsProvider)
+        .preview(
+          context,
+          DocumentRef(
+            kind: DocumentKind.salesQuote,
+            recordId: quoteId,
+            title: title,
+          ),
+        );
+  }
+
+  /// Opens the email dialog and acts on how it ended (spec 053 FR-012,
+  /// FR-014). Everything the screen needs afterwards is captured first, since
+  /// this widget may not outlive the dialog.
+  Future<void> _emailQuote() async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final editor = ref.read(saleEditorProvider);
+    final outcome = await showQuoteEmailDialog(context, quote: widget.sale);
+    switch (outcome) {
+      case QuoteEmailSent(:final receipt):
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              l10n.salesQuoteEmailSentMessage(receipt.recipients.join(', ')),
+            ),
+          ),
+        );
+      // The quote is no longer confirmed: re-read it, so the screen shows what
+      // the server now holds (and the email action goes away). The screen
+      // overrides `saleEditorProvider` with its own controller.
+      case QuoteEmailStaleQuote():
+        if (editor is QuoteEditorController) await editor.refresh();
+      case null:
+        break;
     }
   }
 
@@ -176,8 +239,31 @@ class _QuoteHeaderPanelState extends ConsumerState<QuoteHeaderPanel> {
     final theme = Theme.of(context);
     final spacing = theme.spacing;
     final fmt = ref.watch(formattersProvider);
+    final access = ref.watch(accessControlProvider);
+    final canViewDocument = canOpenDocument(access, DocumentKind.salesQuote);
+    // FR-006: only a confirmed quote is sendable; the server refuses the rest
+    // with a 409, so the client does not offer it. Expiry is no obstacle.
+    final canEmail =
+        access.can(SystemObject.salesQuotes, AccessRight.read) &&
+        sale.status == SaleStatus.completed;
+    final writesPending =
+        ref.watch(pendingWritesProvider(ref.watch(saleWritesScopeProvider))) >
+        0;
+
+    final detailsToggle = TextButton.icon(
+      key: const Key('sales_quote_more_details_toggle'),
+      onPressed: () => setState(() => _expanded = !_expanded),
+      label: Text(
+        _expanded ? l10n.salesQuoteFewerDetails : l10n.salesQuoteMoreDetails,
+      ),
+      icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
+      iconAlignment: IconAlignment.end,
+    );
 
     return FactStripRow(
+      // "Ver cotización", "Enviar por correo" and "Más detalles" must stay
+      // on one line (constitution §VI control band): the facts wrap instead.
+      trailingMaxShare: 0.6,
       facts: [
         CompactField(
           label: l10n.salesQuoteReferenceLabel,
@@ -222,14 +308,79 @@ class _QuoteHeaderPanelState extends ConsumerState<QuoteHeaderPanel> {
             child: Text(_currencyLabel(l10n, sale.currency)),
           ),
       ],
-      trailing: TextButton.icon(
-        key: const Key('sales_quote_more_details_toggle'),
-        onPressed: () => setState(() => _expanded = !_expanded),
-        label: Text(
-          _expanded ? l10n.salesQuoteFewerDetails : l10n.salesQuoteMoreDetails,
-        ),
-        icon: Icon(_expanded ? Icons.expand_less : Icons.expand_more),
-        iconAlignment: IconAlignment.end,
+      trailing: !canViewDocument && !canEmail
+          ? detailsToggle
+          : Wrap(
+              alignment: WrapAlignment.end,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: spacing.sm,
+              runSpacing: spacing.xs,
+              children: LayoutBreakpoints.isCompact(context)
+                  // FR-015a: on a phone the two document actions would stack
+                  // above the lines, so they sit behind one menu instead.
+                  ? [
+                      detailsToggle,
+                      _actionsMenu(
+                        l10n,
+                        canViewDocument: canViewDocument,
+                        canEmail: canEmail,
+                        writesPending: writesPending,
+                      ),
+                    ]
+                  : [
+                      if (canViewDocument)
+                        OutlinedButton.icon(
+                          key: const Key('sales_quote_view_document_button'),
+                          // Held while a write is in flight, so the document
+                          // cannot be fetched a moment before the edit it
+                          // should show has landed.
+                          onPressed: writesPending ? null : _viewDocument,
+                          icon: const Icon(Icons.description_outlined),
+                          label: Text(l10n.salesQuoteViewDocumentAction),
+                        ),
+                      if (canEmail)
+                        OutlinedButton.icon(
+                          key: const Key('sales_quote_email_button'),
+                          onPressed: _emailQuote,
+                          icon: const Icon(Icons.email_outlined),
+                          label: Text(l10n.salesQuoteEmailAction),
+                        ),
+                      detailsToggle,
+                    ],
+            ),
+    );
+  }
+
+  /// The compact tier's overflow menu (spec 053 FR-015a): the same actions,
+  /// gates, disabled state and handlers as the wide tier's buttons.
+  Widget _actionsMenu(
+    AppLocalizations l10n, {
+    required bool canViewDocument,
+    required bool canEmail,
+    required bool writesPending,
+  }) {
+    return MenuAnchor(
+      menuChildren: [
+        if (canViewDocument)
+          MenuItemButton(
+            key: const Key('sales_quote_view_document_menu_item'),
+            leadingIcon: const Icon(Icons.description_outlined, size: 18),
+            onPressed: writesPending ? null : _viewDocument,
+            child: Text(l10n.salesQuoteViewDocumentAction),
+          ),
+        if (canEmail)
+          MenuItemButton(
+            key: const Key('sales_quote_email_menu_item'),
+            leadingIcon: const Icon(Icons.email_outlined, size: 18),
+            onPressed: _emailQuote,
+            child: Text(l10n.salesQuoteEmailAction),
+          ),
+      ],
+      builder: (context, controller, _) => IconButton(
+        key: const Key('sales_quote_more_actions_button'),
+        icon: const Icon(Icons.more_vert),
+        tooltip: l10n.salesQuoteMoreActionsTooltip,
+        onPressed: () => controller.isOpen ? controller.close() : controller.open(),
       ),
     );
   }

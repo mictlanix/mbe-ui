@@ -3789,6 +3789,11 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String documentSalesQuoteTitle(String reference) {
+    return 'Cotización · $reference';
+  }
+
+  @override
   String get posSalePrintTicketAction => 'Imprimir ticket';
 
   @override
@@ -3802,6 +3807,79 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get salesOrderViewDocumentAction => 'Ver pedido';
+
+  @override
+  String get salesQuoteViewDocumentAction => 'Ver cotización';
+
+  @override
+  String get salesQuoteEmailAction => 'Enviar por correo';
+
+  @override
+  String get salesQuoteMoreActionsTooltip => 'Más acciones';
+
+  @override
+  String salesQuoteEmailDialogTitle(String reference) {
+    return 'Enviar cotización $reference';
+  }
+
+  @override
+  String get salesQuoteEmailRecipientsLabel => 'Destinatarios';
+
+  @override
+  String get salesQuoteEmailOtherAddressLabel => 'Otro correo';
+
+  @override
+  String get salesQuoteEmailAddAction => 'Agregar';
+
+  @override
+  String get salesQuoteEmailSendAction => 'Enviar';
+
+  @override
+  String get salesQuoteEmailSendingLabel => 'Enviando…';
+
+  @override
+  String get salesQuoteEmailLimitHint => 'Hasta 10 destinatarios.';
+
+  @override
+  String salesQuoteEmailCounter(int count) {
+    return '$count de 10 destinatarios.';
+  }
+
+  @override
+  String get salesQuoteEmailLimitReached =>
+      '10 de 10 destinatarios. No se pueden agregar más.';
+
+  @override
+  String get salesQuoteEmailInvalidAddress => 'No es un correo válido.';
+
+  @override
+  String get salesQuoteEmailNoKnownAddresses =>
+      'Este cliente no tiene correos registrados.';
+
+  @override
+  String get salesQuoteEmailSuggestionsLoading =>
+      'Cargando correos del cliente…';
+
+  @override
+  String get salesQuoteEmailSuggestionsFailed =>
+      'No se pudieron cargar los correos del cliente.';
+
+  @override
+  String get salesQuoteEmailNotSendable =>
+      'La cotización ya no se puede enviar.';
+
+  @override
+  String get salesQuoteEmailMailRefused =>
+      'El servidor de correo rechazó el envío. Intenta de nuevo o descarga la cotización.';
+
+  @override
+  String get salesQuoteEmailMailUnavailable =>
+      'El envío de correo no está disponible. Descarga la cotización para enviarla.';
+
+  @override
+  String salesQuoteEmailSentMessage(String recipients) {
+    return 'Cotización enviada a $recipients';
+  }
 
   @override
   String get customerAddressesSection => 'Direcciones';

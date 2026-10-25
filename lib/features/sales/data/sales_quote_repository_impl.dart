@@ -1,3 +1,4 @@
+import 'package:built_collection/built_collection.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
@@ -10,6 +11,7 @@ import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/sales/data/wire_value_setters.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sales_quote_summary.dart';
+import 'package:mbe_ui/features/sales/domain/quote_email.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_quote_repository.dart';
 
 final salesQuoteRepositoryProvider = Provider<SalesQuoteRepository>((ref) {
@@ -270,6 +272,29 @@ class SalesQuoteRepositoryImpl implements SalesQuoteRepository {
         total: result.total,
       );
     } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<QuoteEmailReceipt> email({
+    required int quoteId,
+    required List<String> recipients,
+  }) async {
+    try {
+      final response = await _api
+          .emailSalesQuoteApiV1SalesQuotesSalesQuoteIdEmailPost(
+            salesQuoteId: quoteId,
+            quoteEmailRequest: api.QuoteEmailRequest(
+              (b) => b.to = ListBuilder<String>(recipients),
+            ),
+          );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return QuoteEmailReceipt.fromResponse(result);
+    } on DioException catch (e) {
+      // `_toAppError`, not `_toQuoteError`: a 422 here is a bad recipient list,
+      // and `_toQuoteError` would turn its string `detail` into a credit hold.
       throw _toAppError(e);
     }
   }

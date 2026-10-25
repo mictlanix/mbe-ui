@@ -1,6 +1,7 @@
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sales_quote_summary.dart';
+import 'package:mbe_ui/features/sales/domain/quote_email.dart';
 
 /// Quote lifecycle: open, edit its header, capture lines, confirm, cancel,
 /// duplicate, convert, read one back, list the facility's quotes (spec 040,
@@ -94,6 +95,20 @@ abstract class SalesQuoteRepository {
   /// quote is a draft, cancelled, or expired; 422 when the caller has no
   /// point of sale configured (FR-025, FR-028–FR-030).
   Future<Sale> convert({required int quoteId});
+
+  /// `POST /sales-quotes/{id}/email` (mbe-api spec 024) — mbe-api renders the
+  /// quote's PDF itself and sends it to [recipients] (1–10 addresses) in one
+  /// synchronous call; nothing is uploaded from here (spec 053 contracts E2).
+  ///
+  /// Throws an [AppError] through `_toAppError` — never `CreditHoldError`,
+  /// since a 422 here means bad recipients, not a credit refusal:
+  /// `ServerError` for 409 (not confirmed), 502 (the mail server refused) and
+  /// 503 (mail not configured), `ValidationError` for 422, `NetworkError`
+  /// with no response.
+  Future<QuoteEmailReceipt> email({
+    required int quoteId,
+    required List<String> recipients,
+  });
 
   /// `GET /sales-quotes?mine=&customer=&salesperson=&status=&search=&skip=
   /// &limit=` — the quotes list's data source (FR-034–FR-039). Scoped by the

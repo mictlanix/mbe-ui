@@ -6817,6 +6817,12 @@ abstract class AppLocalizations {
   /// **'Cash cut · {reference}'**
   String documentCashCutTitle(String reference);
 
+  /// No description provided for @documentSalesQuoteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quote · {reference}'**
+  String documentSalesQuoteTitle(String reference);
+
   /// spec 044 FR-002: the completed-sale dialog's direct-print button
   ///
   /// In en, this message translates to:
@@ -6846,6 +6852,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View sales order'**
   String get salesOrderViewDocumentAction;
+
+  /// spec 053 FR-001: opens the quote's letter-size document in the document preview, from the quote header
+  ///
+  /// In en, this message translates to:
+  /// **'View quote'**
+  String get salesQuoteViewDocumentAction;
+
+  /// spec 053 FR-006: opens the email dialog from the quote header (confirmed quotes only)
+  ///
+  /// In en, this message translates to:
+  /// **'Send by email'**
+  String get salesQuoteEmailAction;
+
+  /// spec 053 FR-015a: tooltip of the overflow menu that holds the quote's document actions on a phone
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get salesQuoteMoreActionsTooltip;
+
+  /// No description provided for @salesQuoteEmailDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send quote {reference}'**
+  String salesQuoteEmailDialogTitle(String reference);
+
+  /// spec 053: heading above the recipient chips
+  ///
+  /// In en, this message translates to:
+  /// **'Recipients'**
+  String get salesQuoteEmailRecipientsLabel;
+
+  /// spec 053 FR-009a: label of the field for an address that is not among the chips
+  ///
+  /// In en, this message translates to:
+  /// **'Another email address'**
+  String get salesQuoteEmailOtherAddressLabel;
+
+  /// spec 053 FR-009a: adds the typed address as a selected chip
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get salesQuoteEmailAddAction;
+
+  /// spec 053: sends the quote to the selected recipients
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get salesQuoteEmailSendAction;
+
+  /// spec 053 FR-011: the send button's label while the server answers
+  ///
+  /// In en, this message translates to:
+  /// **'Sending…'**
+  String get salesQuoteEmailSendingLabel;
+
+  /// spec 053 FR-010: shown while no recipient is selected
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 10 recipients.'**
+  String get salesQuoteEmailLimitHint;
+
+  /// No description provided for @salesQuoteEmailCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of 10 recipients.'**
+  String salesQuoteEmailCounter(int count);
+
+  /// spec 053 FR-010: shown once ten recipients are selected
+  ///
+  /// In en, this message translates to:
+  /// **'10 of 10 recipients. No more can be added.'**
+  String get salesQuoteEmailLimitReached;
+
+  /// spec 053 FR-010: field error for a typed address that fails the check
+  ///
+  /// In en, this message translates to:
+  /// **'That is not a valid email address.'**
+  String get salesQuoteEmailInvalidAddress;
+
+  /// spec 053 edge case: shown when the customer has no contact or fiscal-recipient emails
+  ///
+  /// In en, this message translates to:
+  /// **'This customer has no email addresses on file.'**
+  String get salesQuoteEmailNoKnownAddresses;
+
+  /// spec 053: shown while the customer's addresses load
+  ///
+  /// In en, this message translates to:
+  /// **'Loading the customer\'s email addresses…'**
+  String get salesQuoteEmailSuggestionsLoading;
+
+  /// spec 053: shown, with a retry, when the customer's addresses fail to load
+  ///
+  /// In en, this message translates to:
+  /// **'The customer\'s email addresses could not be loaded.'**
+  String get salesQuoteEmailSuggestionsFailed;
+
+  /// spec 053 FR-013: the server refused with 409 — the quote is no longer confirmed
+  ///
+  /// In en, this message translates to:
+  /// **'This quote can no longer be sent.'**
+  String get salesQuoteEmailNotSendable;
+
+  /// spec 053 FR-013: the server answered 502 — the mail server refused the send
+  ///
+  /// In en, this message translates to:
+  /// **'The mail server rejected the message. Try again, or download the quote instead.'**
+  String get salesQuoteEmailMailRefused;
+
+  /// spec 053 FR-013: the server answered 503 — mail is not configured
+  ///
+  /// In en, this message translates to:
+  /// **'Sending email is not available. Download the quote to send it yourself.'**
+  String get salesQuoteEmailMailUnavailable;
+
+  /// No description provided for @salesQuoteEmailSentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Quote sent to {recipients}'**
+  String salesQuoteEmailSentMessage(String recipients);
 
   /// spec 046: customer form section listing the addresses linked to the customer
   ///
