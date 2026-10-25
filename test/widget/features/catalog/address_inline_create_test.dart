@@ -5,6 +5,7 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/domain/address_type.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/catalog/data/address_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/address_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/address_repository.dart';
@@ -177,5 +178,35 @@ void main() {
     // Still open — the user can correct and retry without re-entering.
     expect(find.byKey(const Key('create_address_button')), findsOneWidget);
     expect(find.text('Reforma'), findsOneWidget);
+  });
+
+  testWidgets('a create failure keeps the dialog open with its input and an '
+      'ErrorBanner', (tester) async {
+    when(
+      () => repository.create(any()),
+    ).thenThrow(const AppError.server(statusCode: 500, message: 'down'));
+
+    await pumpAndOpen(tester);
+    await fillRequired(tester);
+    await tester.ensureVisible(find.byKey(const Key('create_address_button')));
+    await tester.tap(find.byKey(const Key('create_address_button')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(ErrorBanner), findsOneWidget);
+    expect(find.byKey(const Key('create_address_button')), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('address_street_field')),
+        matching: find.text('Reforma'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('address_country_field')),
+        matching: find.text('México'),
+      ),
+      findsOneWidget,
+    );
   });
 }

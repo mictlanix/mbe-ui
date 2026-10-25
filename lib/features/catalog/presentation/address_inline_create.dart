@@ -50,28 +50,27 @@ class _AddressInlineCreateDialog extends ConsumerWidget {
                 l10n.newAddressDialogTitle,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
+              // Outside the grid: inserting a child there would shift the
+              // fields' positions and drop what the user typed.
+              if (state.error != null)
+                ErrorBanner(
+                  error: AppError.validation([
+                    FieldError(
+                      loc: const [],
+                      msg: _localizeFormError(l10n, state.error!),
+                      type: 'error',
+                    ),
+                    if (state.errorDetail != null)
+                      FieldError(
+                        loc: const [],
+                        msg: state.errorDetail!,
+                        type: 'error',
+                      ),
+                  ]),
+                ),
               ResponsiveFormGrid(
                 maxColumns: 2,
                 children: [
-                  if (state.error != null)
-                    FormGridChild(
-                      span: FormGridSpan.full,
-                      ErrorBanner(
-                        error: AppError.validation([
-                          FieldError(
-                            loc: const [],
-                            msg: _localizeFormError(l10n, state.error!),
-                            type: 'error',
-                          ),
-                          if (state.errorDetail != null)
-                            FieldError(
-                              loc: const [],
-                              msg: state.errorDetail!,
-                              type: 'error',
-                            ),
-                        ]),
-                      ),
-                    ),
                   FormGridChild(
                     TextFormField(
                       key: const Key('address_street_field'),
