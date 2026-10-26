@@ -3981,6 +3981,12 @@ abstract class AppLocalizations {
   /// **'Replace logo'**
   String get facilityLogoReplaceButton;
 
+  /// No description provided for @facilityLogoRemoveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove logo'**
+  String get facilityLogoRemoveButton;
+
   /// No description provided for @facilityLogoInvalidTypeError.
   ///
   /// In en, this message translates to:
@@ -3998,6 +4004,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The facility was saved, but the logo could not be uploaded. Try again.'**
   String get facilityLogoUploadFailedError;
+
+  /// No description provided for @facilityLogoRemoveFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'The facility was saved, but the logo could not be removed. Try again.'**
+  String get facilityLogoRemoveFailedError;
 
   /// No description provided for @deleteFacilityButton.
   ///

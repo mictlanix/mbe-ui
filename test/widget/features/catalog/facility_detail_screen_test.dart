@@ -295,6 +295,10 @@ void main() {
         find.byKey(const Key('facility_logo_replace_button')),
         findsNothing,
       );
+      expect(
+        find.byKey(const Key('facility_logo_remove_button')),
+        findsNothing,
+      );
       expect(find.byKey(const Key('logo_field')), findsNothing);
     });
 
@@ -316,6 +320,32 @@ void main() {
         find.byKey(const Key('facility_logo_upload_button')),
         findsNothing,
       );
+      expect(
+        find.byKey(const Key('facility_logo_remove_button')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('Remove logo stages the removal until Save', (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _user(),
+        facilityId: 1,
+        facility: _facilityWithLogo,
+      );
+
+      await tester.tap(find.byKey(const Key('facility_logo_remove_button')));
+      await tester.pump();
+
+      expect(
+        find.byKey(const Key('facility_logo_remove_button')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('facility_logo_upload_button')),
+        findsOneWidget,
+      );
+      verifyNever(() => facilityRepo.removeLogo(facilityId: 1));
     });
 
     testWidgets('an unreachable logo URL renders the placeholder', (

@@ -23,7 +23,9 @@ mixin _$FacilityFormState {
  String get taxpayerDisplayText;/// The stored logo, already resolved for display; shown until a new
 /// logo is staged.
  String? get logoUrl;/// A picked logo awaiting upload, sent after the facility is saved.
- Uint8List? get pendingLogoBytes; String? get pendingLogoFilename; String get receiptMessage; String get defaultBatch; EntityStatus get status; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
+ Uint8List? get pendingLogoBytes; String? get pendingLogoFilename;/// `true` once the user removes the stored logo; the removal is sent
+/// after the facility is saved, like a staged upload.
+ bool get logoMarkedForRemoval; String get receiptMessage; String get defaultBatch; EntityStatus get status; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
 /// Create a copy of FacilityFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -35,20 +37,20 @@ $FacilityFormStateCopyWith<FacilityFormState> get copyWith => _$FacilityFormStat
 @override
 bool operator ==(Object other) {
   final _this = this as FacilityFormState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FacilityFormState&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.code, _this.code) || other.code == _this.code)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.locationId, _this.locationId) || other.locationId == _this.locationId)&&(identical(other.locationDisplayText, _this.locationDisplayText) || other.locationDisplayText == _this.locationDisplayText)&&(identical(other.addressId, _this.addressId) || other.addressId == _this.addressId)&&(identical(other.addressDisplayText, _this.addressDisplayText) || other.addressDisplayText == _this.addressDisplayText)&&(identical(other.taxpayerRfc, _this.taxpayerRfc) || other.taxpayerRfc == _this.taxpayerRfc)&&(identical(other.taxpayerDisplayText, _this.taxpayerDisplayText) || other.taxpayerDisplayText == _this.taxpayerDisplayText)&&(identical(other.logoUrl, _this.logoUrl) || other.logoUrl == _this.logoUrl)&&const DeepCollectionEquality().equals(other.pendingLogoBytes, _this.pendingLogoBytes)&&(identical(other.pendingLogoFilename, _this.pendingLogoFilename) || other.pendingLogoFilename == _this.pendingLogoFilename)&&(identical(other.receiptMessage, _this.receiptMessage) || other.receiptMessage == _this.receiptMessage)&&(identical(other.defaultBatch, _this.defaultBatch) || other.defaultBatch == _this.defaultBatch)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FacilityFormState&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.code, _this.code) || other.code == _this.code)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.locationId, _this.locationId) || other.locationId == _this.locationId)&&(identical(other.locationDisplayText, _this.locationDisplayText) || other.locationDisplayText == _this.locationDisplayText)&&(identical(other.addressId, _this.addressId) || other.addressId == _this.addressId)&&(identical(other.addressDisplayText, _this.addressDisplayText) || other.addressDisplayText == _this.addressDisplayText)&&(identical(other.taxpayerRfc, _this.taxpayerRfc) || other.taxpayerRfc == _this.taxpayerRfc)&&(identical(other.taxpayerDisplayText, _this.taxpayerDisplayText) || other.taxpayerDisplayText == _this.taxpayerDisplayText)&&(identical(other.logoUrl, _this.logoUrl) || other.logoUrl == _this.logoUrl)&&const DeepCollectionEquality().equals(other.pendingLogoBytes, _this.pendingLogoBytes)&&(identical(other.pendingLogoFilename, _this.pendingLogoFilename) || other.pendingLogoFilename == _this.pendingLogoFilename)&&(identical(other.logoMarkedForRemoval, _this.logoMarkedForRemoval) || other.logoMarkedForRemoval == _this.logoMarkedForRemoval)&&(identical(other.receiptMessage, _this.receiptMessage) || other.receiptMessage == _this.receiptMessage)&&(identical(other.defaultBatch, _this.defaultBatch) || other.defaultBatch == _this.defaultBatch)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as FacilityFormState;
-  return Object.hashAll([runtimeType,_this.facilityId,_this.code,_this.name,_this.type,_this.locationId,_this.locationDisplayText,_this.addressId,_this.addressDisplayText,_this.taxpayerRfc,_this.taxpayerDisplayText,_this.logoUrl,const DeepCollectionEquality().hash(_this.pendingLogoBytes),_this.pendingLogoFilename,_this.receiptMessage,_this.defaultBatch,_this.status,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors)]);
+  return Object.hashAll([runtimeType,_this.facilityId,_this.code,_this.name,_this.type,_this.locationId,_this.locationDisplayText,_this.addressId,_this.addressDisplayText,_this.taxpayerRfc,_this.taxpayerDisplayText,_this.logoUrl,const DeepCollectionEquality().hash(_this.pendingLogoBytes),_this.pendingLogoFilename,_this.logoMarkedForRemoval,_this.receiptMessage,_this.defaultBatch,_this.status,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors)]);
 }
 
 @override
 String toString() {
   final _this = this as FacilityFormState;
-  return 'FacilityFormState(facilityId: ${_this.facilityId}, code: ${_this.code}, name: ${_this.name}, type: ${_this.type}, locationId: ${_this.locationId}, locationDisplayText: ${_this.locationDisplayText}, addressId: ${_this.addressId}, addressDisplayText: ${_this.addressDisplayText}, taxpayerRfc: ${_this.taxpayerRfc}, taxpayerDisplayText: ${_this.taxpayerDisplayText}, logoUrl: ${_this.logoUrl}, pendingLogoBytes: ${_this.pendingLogoBytes}, pendingLogoFilename: ${_this.pendingLogoFilename}, receiptMessage: ${_this.receiptMessage}, defaultBatch: ${_this.defaultBatch}, status: ${_this.status}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
+  return 'FacilityFormState(facilityId: ${_this.facilityId}, code: ${_this.code}, name: ${_this.name}, type: ${_this.type}, locationId: ${_this.locationId}, locationDisplayText: ${_this.locationDisplayText}, addressId: ${_this.addressId}, addressDisplayText: ${_this.addressDisplayText}, taxpayerRfc: ${_this.taxpayerRfc}, taxpayerDisplayText: ${_this.taxpayerDisplayText}, logoUrl: ${_this.logoUrl}, pendingLogoBytes: ${_this.pendingLogoBytes}, pendingLogoFilename: ${_this.pendingLogoFilename}, logoMarkedForRemoval: ${_this.logoMarkedForRemoval}, receiptMessage: ${_this.receiptMessage}, defaultBatch: ${_this.defaultBatch}, status: ${_this.status}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
 }
 
 
@@ -59,7 +61,7 @@ abstract mixin class $FacilityFormStateCopyWith<$Res>  {
   factory $FacilityFormStateCopyWith(FacilityFormState value, $Res Function(FacilityFormState) _then) = _$FacilityFormStateCopyWithImpl;
 @useResult
 $Res call({
- int? facilityId, String code, String name, FacilityType type, String? locationId, String locationDisplayText, int? addressId, String addressDisplayText, String taxpayerRfc, String taxpayerDisplayText, String? logoUrl, Uint8List? pendingLogoBytes, String? pendingLogoFilename, String receiptMessage, String defaultBatch, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? facilityId, String code, String name, FacilityType type, String? locationId, String locationDisplayText, int? addressId, String addressDisplayText, String taxpayerRfc, String taxpayerDisplayText, String? logoUrl, Uint8List? pendingLogoBytes, String? pendingLogoFilename, bool logoMarkedForRemoval, String receiptMessage, String defaultBatch, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
 });
 
 
@@ -76,7 +78,7 @@ class _$FacilityFormStateCopyWithImpl<$Res>
 
 /// Create a copy of FacilityFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? facilityId = freezed,Object? code = null,Object? name = null,Object? type = null,Object? locationId = freezed,Object? locationDisplayText = null,Object? addressId = freezed,Object? addressDisplayText = null,Object? taxpayerRfc = null,Object? taxpayerDisplayText = null,Object? logoUrl = freezed,Object? pendingLogoBytes = freezed,Object? pendingLogoFilename = freezed,Object? receiptMessage = null,Object? defaultBatch = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? facilityId = freezed,Object? code = null,Object? name = null,Object? type = null,Object? locationId = freezed,Object? locationDisplayText = null,Object? addressId = freezed,Object? addressDisplayText = null,Object? taxpayerRfc = null,Object? taxpayerDisplayText = null,Object? logoUrl = freezed,Object? pendingLogoBytes = freezed,Object? pendingLogoFilename = freezed,Object? logoMarkedForRemoval = null,Object? receiptMessage = null,Object? defaultBatch = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
   return _then(FacilityFormState(
 facilityId: freezed == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
 as int?,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
@@ -91,7 +93,8 @@ as String,taxpayerDisplayText: null == taxpayerDisplayText ? _self.taxpayerDispl
 as String,logoUrl: freezed == logoUrl ? _self.logoUrl : logoUrl // ignore: cast_nullable_to_non_nullable
 as String?,pendingLogoBytes: freezed == pendingLogoBytes ? _self.pendingLogoBytes : pendingLogoBytes // ignore: cast_nullable_to_non_nullable
 as Uint8List?,pendingLogoFilename: freezed == pendingLogoFilename ? _self.pendingLogoFilename : pendingLogoFilename // ignore: cast_nullable_to_non_nullable
-as String?,receiptMessage: null == receiptMessage ? _self.receiptMessage : receiptMessage // ignore: cast_nullable_to_non_nullable
+as String?,logoMarkedForRemoval: null == logoMarkedForRemoval ? _self.logoMarkedForRemoval : logoMarkedForRemoval // ignore: cast_nullable_to_non_nullable
+as bool,receiptMessage: null == receiptMessage ? _self.receiptMessage : receiptMessage // ignore: cast_nullable_to_non_nullable
 as String,defaultBatch: null == defaultBatch ? _self.defaultBatch : defaultBatch // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as EntityStatus,loading: null == loading ? _self.loading : loading // ignore: cast_nullable_to_non_nullable
@@ -186,10 +189,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? facilityId,  String code,  String name,  FacilityType type,  String? locationId,  String locationDisplayText,  int? addressId,  String addressDisplayText,  String taxpayerRfc,  String taxpayerDisplayText,  String? logoUrl,  Uint8List? pendingLogoBytes,  String? pendingLogoFilename,  String receiptMessage,  String defaultBatch,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? facilityId,  String code,  String name,  FacilityType type,  String? locationId,  String locationDisplayText,  int? addressId,  String addressDisplayText,  String taxpayerRfc,  String taxpayerDisplayText,  String? logoUrl,  Uint8List? pendingLogoBytes,  String? pendingLogoFilename,  bool logoMarkedForRemoval,  String receiptMessage,  String defaultBatch,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FacilityFormState() when $default != null:
-return $default(_that.facilityId,_that.code,_that.name,_that.type,_that.locationId,_that.locationDisplayText,_that.addressId,_that.addressDisplayText,_that.taxpayerRfc,_that.taxpayerDisplayText,_that.logoUrl,_that.pendingLogoBytes,_that.pendingLogoFilename,_that.receiptMessage,_that.defaultBatch,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.facilityId,_that.code,_that.name,_that.type,_that.locationId,_that.locationDisplayText,_that.addressId,_that.addressDisplayText,_that.taxpayerRfc,_that.taxpayerDisplayText,_that.logoUrl,_that.pendingLogoBytes,_that.pendingLogoFilename,_that.logoMarkedForRemoval,_that.receiptMessage,_that.defaultBatch,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
   return orElse();
 
 }
@@ -207,10 +210,10 @@ return $default(_that.facilityId,_that.code,_that.name,_that.type,_that.location
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? facilityId,  String code,  String name,  FacilityType type,  String? locationId,  String locationDisplayText,  int? addressId,  String addressDisplayText,  String taxpayerRfc,  String taxpayerDisplayText,  String? logoUrl,  Uint8List? pendingLogoBytes,  String? pendingLogoFilename,  String receiptMessage,  String defaultBatch,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? facilityId,  String code,  String name,  FacilityType type,  String? locationId,  String locationDisplayText,  int? addressId,  String addressDisplayText,  String taxpayerRfc,  String taxpayerDisplayText,  String? logoUrl,  Uint8List? pendingLogoBytes,  String? pendingLogoFilename,  bool logoMarkedForRemoval,  String receiptMessage,  String defaultBatch,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
 switch (_that) {
 case _FacilityFormState():
-return $default(_that.facilityId,_that.code,_that.name,_that.type,_that.locationId,_that.locationDisplayText,_that.addressId,_that.addressDisplayText,_that.taxpayerRfc,_that.taxpayerDisplayText,_that.logoUrl,_that.pendingLogoBytes,_that.pendingLogoFilename,_that.receiptMessage,_that.defaultBatch,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.facilityId,_that.code,_that.name,_that.type,_that.locationId,_that.locationDisplayText,_that.addressId,_that.addressDisplayText,_that.taxpayerRfc,_that.taxpayerDisplayText,_that.logoUrl,_that.pendingLogoBytes,_that.pendingLogoFilename,_that.logoMarkedForRemoval,_that.receiptMessage,_that.defaultBatch,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -227,10 +230,10 @@ return $default(_that.facilityId,_that.code,_that.name,_that.type,_that.location
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? facilityId,  String code,  String name,  FacilityType type,  String? locationId,  String locationDisplayText,  int? addressId,  String addressDisplayText,  String taxpayerRfc,  String taxpayerDisplayText,  String? logoUrl,  Uint8List? pendingLogoBytes,  String? pendingLogoFilename,  String receiptMessage,  String defaultBatch,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? facilityId,  String code,  String name,  FacilityType type,  String? locationId,  String locationDisplayText,  int? addressId,  String addressDisplayText,  String taxpayerRfc,  String taxpayerDisplayText,  String? logoUrl,  Uint8List? pendingLogoBytes,  String? pendingLogoFilename,  bool logoMarkedForRemoval,  String receiptMessage,  String defaultBatch,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _FacilityFormState() when $default != null:
-return $default(_that.facilityId,_that.code,_that.name,_that.type,_that.locationId,_that.locationDisplayText,_that.addressId,_that.addressDisplayText,_that.taxpayerRfc,_that.taxpayerDisplayText,_that.logoUrl,_that.pendingLogoBytes,_that.pendingLogoFilename,_that.receiptMessage,_that.defaultBatch,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.facilityId,_that.code,_that.name,_that.type,_that.locationId,_that.locationDisplayText,_that.addressId,_that.addressDisplayText,_that.taxpayerRfc,_that.taxpayerDisplayText,_that.logoUrl,_that.pendingLogoBytes,_that.pendingLogoFilename,_that.logoMarkedForRemoval,_that.receiptMessage,_that.defaultBatch,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
   return null;
 
 }
@@ -242,7 +245,7 @@ return $default(_that.facilityId,_that.code,_that.name,_that.type,_that.location
 
 
 class _FacilityFormState implements FacilityFormState {
-  const _FacilityFormState({this.facilityId, this.code = '', this.name = '', this.type = FacilityType.store, this.locationId, this.locationDisplayText = '', this.addressId, this.addressDisplayText = '', this.taxpayerRfc = '', this.taxpayerDisplayText = '', this.logoUrl, this.pendingLogoBytes, this.pendingLogoFilename, this.receiptMessage = '', this.defaultBatch = '', this.status = EntityStatus.active, this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
+  const _FacilityFormState({this.facilityId, this.code = '', this.name = '', this.type = FacilityType.store, this.locationId, this.locationDisplayText = '', this.addressId, this.addressDisplayText = '', this.taxpayerRfc = '', this.taxpayerDisplayText = '', this.logoUrl, this.pendingLogoBytes, this.pendingLogoFilename, this.logoMarkedForRemoval = false, this.receiptMessage = '', this.defaultBatch = '', this.status = EntityStatus.active, this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
   
 
 @override final  int? facilityId;
@@ -266,6 +269,9 @@ class _FacilityFormState implements FacilityFormState {
 /// A picked logo awaiting upload, sent after the facility is saved.
 @override final  Uint8List? pendingLogoBytes;
 @override final  String? pendingLogoFilename;
+/// `true` once the user removes the stored logo; the removal is sent
+/// after the facility is saved, like a staged upload.
+@override@JsonKey() final  bool logoMarkedForRemoval;
 @override@JsonKey() final  String receiptMessage;
 @override@JsonKey() final  String defaultBatch;
 @override@JsonKey() final  EntityStatus status;
@@ -293,18 +299,18 @@ _$FacilityFormStateCopyWith<_FacilityFormState> get copyWith => __$FacilityFormS
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FacilityFormState&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.code, code) || other.code == code)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.locationId, locationId) || other.locationId == locationId)&&(identical(other.locationDisplayText, locationDisplayText) || other.locationDisplayText == locationDisplayText)&&(identical(other.addressId, addressId) || other.addressId == addressId)&&(identical(other.addressDisplayText, addressDisplayText) || other.addressDisplayText == addressDisplayText)&&(identical(other.taxpayerRfc, taxpayerRfc) || other.taxpayerRfc == taxpayerRfc)&&(identical(other.taxpayerDisplayText, taxpayerDisplayText) || other.taxpayerDisplayText == taxpayerDisplayText)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&const DeepCollectionEquality().equals(other.pendingLogoBytes, pendingLogoBytes)&&(identical(other.pendingLogoFilename, pendingLogoFilename) || other.pendingLogoFilename == pendingLogoFilename)&&(identical(other.receiptMessage, receiptMessage) || other.receiptMessage == receiptMessage)&&(identical(other.defaultBatch, defaultBatch) || other.defaultBatch == defaultBatch)&&(identical(other.status, status) || other.status == status)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FacilityFormState&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.code, code) || other.code == code)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.locationId, locationId) || other.locationId == locationId)&&(identical(other.locationDisplayText, locationDisplayText) || other.locationDisplayText == locationDisplayText)&&(identical(other.addressId, addressId) || other.addressId == addressId)&&(identical(other.addressDisplayText, addressDisplayText) || other.addressDisplayText == addressDisplayText)&&(identical(other.taxpayerRfc, taxpayerRfc) || other.taxpayerRfc == taxpayerRfc)&&(identical(other.taxpayerDisplayText, taxpayerDisplayText) || other.taxpayerDisplayText == taxpayerDisplayText)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&const DeepCollectionEquality().equals(other.pendingLogoBytes, pendingLogoBytes)&&(identical(other.pendingLogoFilename, pendingLogoFilename) || other.pendingLogoFilename == pendingLogoFilename)&&(identical(other.logoMarkedForRemoval, logoMarkedForRemoval) || other.logoMarkedForRemoval == logoMarkedForRemoval)&&(identical(other.receiptMessage, receiptMessage) || other.receiptMessage == receiptMessage)&&(identical(other.defaultBatch, defaultBatch) || other.defaultBatch == defaultBatch)&&(identical(other.status, status) || other.status == status)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hashAll([runtimeType,facilityId,code,name,type,locationId,locationDisplayText,addressId,addressDisplayText,taxpayerRfc,taxpayerDisplayText,logoUrl,const DeepCollectionEquality().hash(pendingLogoBytes),pendingLogoFilename,receiptMessage,defaultBatch,status,loading,submitting,saved,deleted,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors)]);
+    return Object.hashAll([runtimeType,facilityId,code,name,type,locationId,locationDisplayText,addressId,addressDisplayText,taxpayerRfc,taxpayerDisplayText,logoUrl,const DeepCollectionEquality().hash(pendingLogoBytes),pendingLogoFilename,logoMarkedForRemoval,receiptMessage,defaultBatch,status,loading,submitting,saved,deleted,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors)]);
 }
 
 @override
 String toString() {
-    return 'FacilityFormState(facilityId: $facilityId, code: $code, name: $name, type: $type, locationId: $locationId, locationDisplayText: $locationDisplayText, addressId: $addressId, addressDisplayText: $addressDisplayText, taxpayerRfc: $taxpayerRfc, taxpayerDisplayText: $taxpayerDisplayText, logoUrl: $logoUrl, pendingLogoBytes: $pendingLogoBytes, pendingLogoFilename: $pendingLogoFilename, receiptMessage: $receiptMessage, defaultBatch: $defaultBatch, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'FacilityFormState(facilityId: $facilityId, code: $code, name: $name, type: $type, locationId: $locationId, locationDisplayText: $locationDisplayText, addressId: $addressId, addressDisplayText: $addressDisplayText, taxpayerRfc: $taxpayerRfc, taxpayerDisplayText: $taxpayerDisplayText, logoUrl: $logoUrl, pendingLogoBytes: $pendingLogoBytes, pendingLogoFilename: $pendingLogoFilename, logoMarkedForRemoval: $logoMarkedForRemoval, receiptMessage: $receiptMessage, defaultBatch: $defaultBatch, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
 }
 
 
@@ -315,7 +321,7 @@ abstract mixin class _$FacilityFormStateCopyWith<$Res> implements $FacilityFormS
   factory _$FacilityFormStateCopyWith(_FacilityFormState value, $Res Function(_FacilityFormState) _then) = __$FacilityFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- int? facilityId, String code, String name, FacilityType type, String? locationId, String locationDisplayText, int? addressId, String addressDisplayText, String taxpayerRfc, String taxpayerDisplayText, String? logoUrl, Uint8List? pendingLogoBytes, String? pendingLogoFilename, String receiptMessage, String defaultBatch, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? facilityId, String code, String name, FacilityType type, String? locationId, String locationDisplayText, int? addressId, String addressDisplayText, String taxpayerRfc, String taxpayerDisplayText, String? logoUrl, Uint8List? pendingLogoBytes, String? pendingLogoFilename, bool logoMarkedForRemoval, String receiptMessage, String defaultBatch, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
 });
 
 
@@ -332,7 +338,7 @@ class __$FacilityFormStateCopyWithImpl<$Res>
 
 /// Create a copy of FacilityFormState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? facilityId = freezed,Object? code = null,Object? name = null,Object? type = null,Object? locationId = freezed,Object? locationDisplayText = null,Object? addressId = freezed,Object? addressDisplayText = null,Object? taxpayerRfc = null,Object? taxpayerDisplayText = null,Object? logoUrl = freezed,Object? pendingLogoBytes = freezed,Object? pendingLogoFilename = freezed,Object? receiptMessage = null,Object? defaultBatch = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? facilityId = freezed,Object? code = null,Object? name = null,Object? type = null,Object? locationId = freezed,Object? locationDisplayText = null,Object? addressId = freezed,Object? addressDisplayText = null,Object? taxpayerRfc = null,Object? taxpayerDisplayText = null,Object? logoUrl = freezed,Object? pendingLogoBytes = freezed,Object? pendingLogoFilename = freezed,Object? logoMarkedForRemoval = null,Object? receiptMessage = null,Object? defaultBatch = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
   return _then(_FacilityFormState(
 facilityId: freezed == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
 as int?,code: null == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
@@ -347,7 +353,8 @@ as String,taxpayerDisplayText: null == taxpayerDisplayText ? _self.taxpayerDispl
 as String,logoUrl: freezed == logoUrl ? _self.logoUrl : logoUrl // ignore: cast_nullable_to_non_nullable
 as String?,pendingLogoBytes: freezed == pendingLogoBytes ? _self.pendingLogoBytes : pendingLogoBytes // ignore: cast_nullable_to_non_nullable
 as Uint8List?,pendingLogoFilename: freezed == pendingLogoFilename ? _self.pendingLogoFilename : pendingLogoFilename // ignore: cast_nullable_to_non_nullable
-as String?,receiptMessage: null == receiptMessage ? _self.receiptMessage : receiptMessage // ignore: cast_nullable_to_non_nullable
+as String?,logoMarkedForRemoval: null == logoMarkedForRemoval ? _self.logoMarkedForRemoval : logoMarkedForRemoval // ignore: cast_nullable_to_non_nullable
+as bool,receiptMessage: null == receiptMessage ? _self.receiptMessage : receiptMessage // ignore: cast_nullable_to_non_nullable
 as String,defaultBatch: null == defaultBatch ? _self.defaultBatch : defaultBatch // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as EntityStatus,loading: null == loading ? _self.loading : loading // ignore: cast_nullable_to_non_nullable
