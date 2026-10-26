@@ -2174,6 +2174,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get facilityLogoReplaceButton => 'Replace logo';
 
   @override
+  String get facilityLogoRemoveButton => 'Remove logo';
+
+  @override
   String get facilityLogoInvalidTypeError =>
       'The logo must be a JPEG or PNG file.';
 
@@ -2183,6 +2186,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get facilityLogoUploadFailedError =>
       'The facility was saved, but the logo could not be uploaded. Try again.';
+
+  @override
+  String get facilityLogoRemoveFailedError =>
+      'The facility was saved, but the logo could not be removed. Try again.';
 
   @override
   String get deleteFacilityButton => 'Delete facility';

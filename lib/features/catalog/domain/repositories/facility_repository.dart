@@ -53,6 +53,10 @@ abstract class FacilityRepository {
     required String filename,
   });
 
+  /// Clears the facility's logo with an explicit `{"logo": null}` update
+  /// (mbe-api#250) and returns the updated facility.
+  Future<Facility> removeLogo({required int facilityId});
+
   Future<void> delete({required int facilityId});
 }
 

@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart'
@@ -39,8 +40,11 @@ final facilityDisplayNameProvider = FutureProvider.family<String?, int>((
 });
 
 class FacilityRepositoryImpl implements FacilityRepository {
-  FacilityRepositoryImpl(Dio dio) : _api = FacilitiesApi(dio, appSerializers);
+  FacilityRepositoryImpl(Dio dio)
+    : _dio = dio,
+      _api = FacilitiesApi(dio, appSerializers);
 
+  final Dio _dio;
   final FacilitiesApi _api;
 
   @override
@@ -168,6 +172,30 @@ class FacilityRepositoryImpl implements FacilityRepository {
       final facility = response.data;
       if (facility == null) throw const AppError.server();
       return Facility.fromResponse(facility);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  /// A raw PUT rather than the generated update: `FacilityUpdate`'s
+  /// serializer drops null fields, so it can't send the explicit
+  /// `{"logo": null}` that clears the logo.
+  @override
+  Future<Facility> removeLogo({required int facilityId}) async {
+    try {
+      final response = await _dio.put<Object>(
+        '/api/v1/facilities/$facilityId',
+        data: {'logo': null},
+      );
+      final raw = response.data;
+      if (raw == null) throw const AppError.server();
+      return Facility.fromResponse(
+        appSerializers.deserialize(
+              raw,
+              specifiedType: const FullType(FacilityResponse),
+            )
+            as FacilityResponse,
+      );
     } on DioException catch (e) {
       throw _toAppError(e);
     }

@@ -14,6 +14,30 @@ const _jsonHeaders = {
 };
 
 void main() {
+  group('FacilityRepositoryImpl.removeLogo', () {
+    test(
+      'PUTs an explicit {"logo": null} and maps the cleared facility',
+      () async {
+        RequestOptions? captured;
+        final repository = _repositoryWith((options) async {
+          captured = options;
+          return ResponseBody.fromString(
+            jsonEncode(_facilityJson()),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
+
+        final facility = await repository.removeLogo(facilityId: 1);
+
+        expect(captured!.method, 'PUT');
+        expect(captured!.path, endsWith('/facilities/1'));
+        expect(captured!.data, {'logo': null});
+        expect(facility.logo, isNull);
+      },
+    );
+  });
+
   group('FacilityType round-trip', () {
     test('fromApi/toApi map Store(0) and Production Site(1)', () {
       expect(FacilityType.fromValue(0), FacilityType.store);

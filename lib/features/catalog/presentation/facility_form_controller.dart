@@ -37,6 +37,7 @@ abstract final class FacilityFormErrorCode {
   static const logoInvalidType = 'logoInvalidType';
   static const logoTooLarge = 'logoTooLarge';
   static const logoUploadFailed = 'logoUploadFailed';
+  static const logoRemoveFailed = 'logoRemoveFailed';
   static const createPermissionDenied = 'createPermissionDenied';
   static const updatePermissionDenied = 'updatePermissionDenied';
   static const deletePermissionDenied = 'deletePermissionDenied';
@@ -72,6 +73,10 @@ abstract class FacilityFormState with _$FacilityFormState {
     /// A picked logo awaiting upload, sent after the facility is saved.
     Uint8List? pendingLogoBytes,
     String? pendingLogoFilename,
+
+    /// `true` once the user removes the stored logo; the removal is sent
+    /// after the facility is saved, like a staged upload.
+    @Default(false) bool logoMarkedForRemoval,
     @Default('') String receiptMessage,
     @Default('') String defaultBatch,
     @Default(EntityStatus.active) EntityStatus status,
@@ -142,6 +147,18 @@ class FacilityFormController extends _$FacilityFormController {
     state = state.copyWith(
       pendingLogoBytes: bytes,
       pendingLogoFilename: filename,
+      logoMarkedForRemoval: false,
+      fieldErrors: {...state.fieldErrors}..remove('logo'),
+    );
+  }
+
+  /// Drops a staged logo and, if one is stored, marks it for removal on
+  /// save. A new pick supersedes the removal.
+  void logoRemoveRequested() {
+    state = state.copyWith(
+      pendingLogoBytes: null,
+      pendingLogoFilename: null,
+      logoMarkedForRemoval: state.logoUrl != null,
       fieldErrors: {...state.fieldErrors}..remove('logo'),
     );
   }
@@ -289,7 +306,7 @@ class FacilityFormController extends _$FacilityFormController {
       // Keep the new id so a retry after a failed logo upload updates this
       // record instead of creating a duplicate.
       state = state.copyWith(facilityId: created.facilityId);
-      await _uploadPendingLogo(created.facilityId);
+      await _applyPendingLogo(created.facilityId);
     } on AppError catch (e) {
       _handleSaveError(e, FacilityFormErrorCode.createFailed);
     }
@@ -333,16 +350,20 @@ class FacilityFormController extends _$FacilityFormController {
           );
       _invalidateCaches();
       _invalidateOwnChildren(facilityId);
-      await _uploadPendingLogo(facilityId);
+      await _applyPendingLogo(facilityId);
     } on AppError catch (e) {
       _handleSaveError(e, FacilityFormErrorCode.updateFailed);
     }
   }
 
-  /// Uploads the staged logo, if any, once the facility record is saved.
-  /// A failed upload leaves the form open (`saved` with an error) and keeps
-  /// the staged bytes, so the next save retries it.
-  Future<void> _uploadPendingLogo(int facilityId) async {
+  /// Uploads the staged logo, or removes the stored one, once the facility
+  /// record is saved. A failure leaves the form open (`saved` with an
+  /// error) and keeps the staged change, so the next save retries it.
+  Future<void> _applyPendingLogo(int facilityId) async {
+    if (state.logoMarkedForRemoval) {
+      await _removeLogo(facilityId);
+      return;
+    }
     final bytes = state.pendingLogoBytes;
     if (bytes == null) {
       state = state.copyWith(submitting: false, saved: true);
@@ -369,6 +390,28 @@ class FacilityFormController extends _$FacilityFormController {
         submitting: false,
         saved: true,
         error: FacilityFormErrorCode.logoUploadFailed,
+        errorDetail: e.serverMessage,
+      );
+    }
+  }
+
+  Future<void> _removeLogo(int facilityId) async {
+    try {
+      final updated = await ref
+          .read(facilityRepositoryProvider)
+          .removeLogo(facilityId: facilityId);
+      _invalidateCaches();
+      state = state.copyWith(
+        submitting: false,
+        saved: true,
+        logoUrl: updated.logo,
+        logoMarkedForRemoval: false,
+      );
+    } on AppError catch (e) {
+      state = state.copyWith(
+        submitting: false,
+        saved: true,
+        error: FacilityFormErrorCode.logoRemoveFailed,
         errorDetail: e.serverMessage,
       );
     }

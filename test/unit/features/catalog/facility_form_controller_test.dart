@@ -141,6 +141,73 @@ void main() {
     });
   });
 
+  group('logo removal', () {
+    Future<void> loadWithLogo() async {
+      when(
+        () => repo.get(facilityId: 3),
+      ).thenAnswer((_) async => _facility(3, logo: 'stored.png'));
+      await notifier().loadForEdit(3);
+    }
+
+    test('marks a stored logo for removal; a new pick supersedes it', () async {
+      await loadWithLogo();
+
+      notifier().logoRemoveRequested();
+      expect(state().logoMarkedForRemoval, isTrue);
+
+      notifier().logoPicked(_png, 'logo.png');
+      expect(state().logoMarkedForRemoval, isFalse);
+      expect(state().pendingLogoBytes, _png);
+    });
+
+    test('with only a staged logo, drops it without marking a removal', () {
+      notifier().logoPicked(_png, 'logo.png');
+      notifier().logoRemoveRequested();
+
+      expect(state().pendingLogoBytes, isNull);
+      expect(state().logoMarkedForRemoval, isFalse);
+    });
+
+    test('update sends the removal and clears the logo', () async {
+      await loadWithLogo();
+      stubUpdate(3);
+      when(
+        () => repo.removeLogo(facilityId: 3),
+      ).thenAnswer((_) async => _facility(3));
+      notifier().logoRemoveRequested();
+      await notifier().submitUpdate();
+
+      verify(() => repo.removeLogo(facilityId: 3)).called(1);
+      verifyNever(
+        () => repo.uploadLogo(
+          facilityId: any(named: 'facilityId'),
+          bytes: any(named: 'bytes'),
+          filename: any(named: 'filename'),
+        ),
+      );
+      expect(state().saved, isTrue);
+      expect(state().error, isNull);
+      expect(state().logoUrl, isNull);
+      expect(state().logoMarkedForRemoval, isFalse);
+    });
+
+    test('a failed removal keeps saved, the mark and the logo', () async {
+      await loadWithLogo();
+      stubUpdate(3);
+      when(
+        () => repo.removeLogo(facilityId: 3),
+      ).thenThrow(const AppError.server());
+      notifier().logoRemoveRequested();
+      await notifier().submitUpdate();
+
+      expect(state().saved, isTrue);
+      expect(state().error, FacilityFormErrorCode.logoRemoveFailed);
+      expect(state().logoMarkedForRemoval, isTrue);
+      expect(state().logoUrl, 'stored.png');
+      expect(state().submitting, isFalse);
+    });
+  });
+
   group('submit', () {
     test('create with no staged logo sends no upload and saves', () async {
       stubCreate();

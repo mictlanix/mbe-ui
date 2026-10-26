@@ -340,6 +340,7 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
                   formState.fieldErrors['logo'],
                 ),
                 onPick: () => _pickLogo(controller),
+                onRemove: controller.logoRemoveRequested,
               ),
             ),
             FormGridChild(
@@ -378,8 +379,9 @@ class _FacilityDetailScreenState extends ConsumerState<FacilityDetailScreen> {
   }
 }
 
-/// The facility logo preview plus its upload / replace action and any logo
-/// field error. A staged (not yet uploaded) logo previews from memory.
+/// The facility logo preview plus its upload / replace / remove actions and
+/// any logo field error. A staged (not yet uploaded) logo previews from
+/// memory; a logo marked for removal shows the placeholder.
 class _LogoSection extends StatelessWidget {
   const _LogoSection({
     required this.formState,
@@ -387,6 +389,7 @@ class _LogoSection extends StatelessWidget {
     required this.enabled,
     required this.errorText,
     required this.onPick,
+    required this.onRemove,
   });
 
   final FacilityFormState formState;
@@ -394,13 +397,15 @@ class _LogoSection extends StatelessWidget {
   final bool enabled;
   final String? errorText;
   final VoidCallback onPick;
+  final VoidCallback onRemove;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final staged = formState.pendingLogoBytes;
-    final hasLogo = staged != null || formState.logoUrl != null;
+    final storedUrl = formState.logoMarkedForRemoval ? null : formState.logoUrl;
+    final hasLogo = staged != null || storedUrl != null;
 
     return Column(
       key: const Key('facility_logo_section'),
@@ -423,21 +428,34 @@ class _LogoSection extends StatelessWidget {
                 ),
               )
             else
-              ProductPhoto(photoUrl: formState.logoUrl, size: 96),
+              ProductPhoto(photoUrl: storedUrl, size: 96),
             if (canEdit)
-              TextButton.icon(
-                key: Key(
-                  hasLogo
-                      ? 'facility_logo_replace_button'
-                      : 'facility_logo_upload_button',
-                ),
-                onPressed: enabled ? onPick : null,
-                icon: const Icon(Icons.upload),
-                label: Text(
-                  hasLogo
-                      ? l10n.facilityLogoReplaceButton
-                      : l10n.facilityLogoUploadButton,
-                ),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextButton.icon(
+                    key: Key(
+                      hasLogo
+                          ? 'facility_logo_replace_button'
+                          : 'facility_logo_upload_button',
+                    ),
+                    onPressed: enabled ? onPick : null,
+                    icon: const Icon(Icons.upload),
+                    label: Text(
+                      hasLogo
+                          ? l10n.facilityLogoReplaceButton
+                          : l10n.facilityLogoUploadButton,
+                    ),
+                  ),
+                  if (hasLogo)
+                    TextButton.icon(
+                      key: const Key('facility_logo_remove_button'),
+                      onPressed: enabled ? onRemove : null,
+                      icon: const Icon(Icons.delete_outline),
+                      label: Text(l10n.facilityLogoRemoveButton),
+                    ),
+                ],
               ),
           ],
         ),
@@ -523,6 +541,8 @@ String _localizeFormError(AppLocalizations l10n, String code) {
       return l10n.facilityDeleteFailedError;
     case FacilityFormErrorCode.logoUploadFailed:
       return l10n.facilityLogoUploadFailedError;
+    case FacilityFormErrorCode.logoRemoveFailed:
+      return l10n.facilityLogoRemoveFailedError;
     case FacilityFormErrorCode.createPermissionDenied:
       return l10n.facilityCreatePermissionDeniedError;
     case FacilityFormErrorCode.updatePermissionDenied:
