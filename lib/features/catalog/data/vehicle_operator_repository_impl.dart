@@ -20,10 +20,8 @@ final vehicleOperatorRepositoryProvider = Provider<VehicleOperatorRepository>((
 
 class VehicleOperatorRepositoryImpl implements VehicleOperatorRepository {
   VehicleOperatorRepositoryImpl(Dio dio)
-    : _dio = dio,
-      _api = VehicleOperatorsApi(dio, appSerializers);
+    : _api = VehicleOperatorsApi(dio, appSerializers);
 
-  final Dio _dio;
   final VehicleOperatorsApi _api;
 
   @override
@@ -151,21 +149,15 @@ class VehicleOperatorRepositoryImpl implements VehicleOperatorRepository {
     }
   }
 
-  /// Reads the photo as raw bytes through the shared client rather than the
-  /// generated `getLicensePhoto…Get`: mbe-api documents that route as
-  /// `application/json`, so the generated method would hand the PNG to a JSON
-  /// parser and lose it (051 research R1). Remove this once the route declares
-  /// `image/png` and the client is regenerated.
   @override
   Future<Uint8List> getLicensePhoto({required int vehicleOperatorId}) async {
     try {
-      final response = await _dio.get<List<int>>(
-        '/api/v1/vehicle-operators/$vehicleOperatorId/license-photo',
-        options: Options(responseType: ResponseType.bytes),
-      );
-      final data = response.data;
-      if (data == null) throw const AppError.server();
-      final bytes = Uint8List.fromList(data);
+      final response = await _api
+          .getLicensePhotoApiV1VehicleOperatorsVehicleOperatorIdLicensePhotoGet(
+            vehicleOperatorId: vehicleOperatorId,
+          );
+      final bytes = response.data;
+      if (bytes == null) throw const AppError.server();
       // A 200 that is not a PNG (an HTML login page from a proxy, an empty
       // body) must never reach an image decoder.
       if (!_looksLikePng(bytes)) throw const AppError.server();

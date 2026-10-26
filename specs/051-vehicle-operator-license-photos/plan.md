@@ -18,7 +18,7 @@ It follows the product photo flow:
 
 It differs from that flow in four places:
 
-1. **Private fetch (R1).** The photo is read as raw bytes through the shared authenticated dio. It is never loaded from a URL. The generated GET method can't return bytes, because mbe-api documents the route as JSON. An upstream fix is filed separately (R1a).
+1. **Private fetch (R1).** The photo is read as bytes through the generated GET on the shared authenticated dio. It is never loaded from a URL. The first build used a raw-bytes GET because mbe-api documented the route as JSON; that was fixed upstream (R1a, mictlanix/mbe-api#257) and the bypass removed in T023.
 2. **No persistence (R3).** The bytes are held in an auto-disposing provider and are never stored anywhere.
 3. **Panel stays open on photo failure (R4).** If the photo step fails after the fields have saved, the panel stays open with the change still staged. A retry after a create runs an update, so no duplicate operator is created.
 4. **Photo controls need update access (R5).** This holds in create mode too, because mbe-api guards upload and delete with Update.
@@ -102,7 +102,7 @@ lib/
 │   ├── domain/
 │   │   ├── entities/vehicle_operator.dart  # + hasLicensePhoto
 │   │   └── repositories/vehicle_operator_repository.dart  # + get/upload/removeLicensePhoto
-│   ├── data/vehicle_operator_repository_impl.dart          # raw-bytes GET (R1), generated POST/DELETE (R2)
+│   ├── data/vehicle_operator_repository_impl.dart          # generated GET (R1), POST/DELETE (R2)
 │   └── presentation/
 │       ├── license_photo_provider.dart     # NEW: auto-dispose family (R3)
 │       ├── vehicle_operator_form_controller.dart  # staging + save sequence (R4)
@@ -124,11 +124,11 @@ test/
 | Dependency | State | Blocking? |
 |---|---|---|
 | mbe-api license-photo endpoints (`6a8ce82`, Read/Update guards at `HEAD`) | shipped | — |
-| mbe-api: declare `image/png` on the GET (R1a) | filed: mictlanix/mbe-api#257 (part 2) | No. The raw-bytes bypass covers it. When it ships: regenerate, then swap the call. |
-| mbe-api: create/update write `updater = 0` and always fail with 409 | filed: mictlanix/mbe-api#257 (part 1) | **Yes** for saving any operator, and so for attaching a photo; blocks T021. |
+| mbe-api: declare `image/png` on the GET (R1a) | shipped: mictlanix/mbe-api#257 (part 2), 2026-10-25 | No. Client regenerated and the call swapped (T023). |
+| mbe-api: create/update write `updater = 0` and always fail with 409 | shipped: mictlanix/mbe-api#257 (part 1), 2026-10-25 | No longer. |
 
 ## Complexity Tracking
 
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |---|---|---|
-| §III: `getLicensePhoto` uses a raw `dio.get(..., responseType: bytes)` instead of the generated method | mbe-api's OpenAPI declares the GET as `application/json`. The generated method requests JSON and wraps the PNG as a `JsonObject`, so the bytes can't be recovered. | Hand-editing the generated client is forbidden and would be overwritten. Patching mbe-api from here is forbidden. Waiting on the upstream fix blocks a weight-1 issue. The bypass still uses the shared dio, interceptor and `AppError` mapping, and is removed when R1a ships. |
+| *(Resolved in T023 after mictlanix/mbe-api#257.)* §III: `getLicensePhoto` used a raw `dio.get(..., responseType: bytes)` instead of the generated method | mbe-api's OpenAPI declares the GET as `application/json`. The generated method requests JSON and wraps the PNG as a `JsonObject`, so the bytes can't be recovered. | Hand-editing the generated client is forbidden and would be overwritten. Patching mbe-api from here is forbidden. Waiting on the upstream fix blocks a weight-1 issue. The bypass still uses the shared dio, interceptor and `AppError` mapping, and is removed when R1a ships. |
