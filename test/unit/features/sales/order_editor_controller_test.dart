@@ -136,6 +136,49 @@ void main() {
       },
     );
 
+    test('addLine without a discount sends none, so the server starts the '
+        "line at the customer's discount (spec 052 FR-013)", () async {
+      final opened = _sale(id: 100);
+      when(
+        () => repository.open(
+          customer: any(named: 'customer'),
+          salesperson: any(named: 'salesperson'),
+          fulfillmentIntent: any(named: 'fulfillmentIntent'),
+          origin: any(named: 'origin'),
+        ),
+      ).thenAnswer((_) async => opened);
+      when(
+        () => repository.addLine(
+          saleId: 100,
+          product: 11,
+          quantity: any(named: 'quantity'),
+          price: any(named: 'price'),
+          discountRate: any(named: 'discountRate'),
+          taxRate: any(named: 'taxRate'),
+          warehouse: any(named: 'warehouse'),
+          comment: any(named: 'comment'),
+        ),
+      ).thenAnswer((_) async => opened);
+
+      await container
+          .read(orderEditorControllerProvider(null).notifier)
+          .addLine(product: 11, quantity: '1');
+
+      final sent = verify(
+        () => repository.addLine(
+          saleId: 100,
+          product: 11,
+          quantity: any(named: 'quantity'),
+          price: any(named: 'price'),
+          discountRate: captureAny(named: 'discountRate'),
+          taxRate: any(named: 'taxRate'),
+          warehouse: any(named: 'warehouse'),
+          comment: any(named: 'comment'),
+        ),
+      ).captured;
+      expect(sent.single, isNull);
+    });
+
     test('a refused mutation leaves state at its last accepted value and '
         'rethrows (FR-028)', () async {
       when(

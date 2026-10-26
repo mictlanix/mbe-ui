@@ -258,6 +258,14 @@ void main() {
               lines: any(named: 'lines'),
             ),
       ]);
+      // The ship-to copy is for back-office orders only; the register's
+      // sale goes straight to confirm, as before.
+      verifyNever(
+        () => salesOrders.updateHeader(
+          saleId: any(named: 'saleId'),
+          shipTo: any(named: 'shipTo'),
+        ),
+      );
     },
   );
 

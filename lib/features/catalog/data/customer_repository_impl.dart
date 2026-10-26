@@ -10,6 +10,7 @@ import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/customer_discount.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart'
     as domain;
 import 'package:mbe_ui/features/catalog/domain/repositories/customer_repository.dart';
@@ -167,6 +168,85 @@ class CustomerRepositoryImpl implements CustomerRepository {
       throw _toAppError(e);
     }
   }
+
+  @override
+  Future<List<CustomerDiscount>> listDiscounts({
+    required int customerId,
+  }) async {
+    try {
+      final response = await _api
+          .listDiscountsApiV1CustomersCustomerIdDiscountsGet(
+            customerId: customerId,
+          );
+      final discounts = response.data;
+      if (discounts == null) throw const AppError.server();
+      return discounts.map(CustomerDiscount.fromResponse).toList();
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<CustomerDiscount> createDiscount({
+    required int customerId,
+    required int productId,
+    required String discount,
+  }) async {
+    try {
+      final response = await _api
+          .createDiscountApiV1CustomersCustomerIdDiscountsPost(
+            customerId: customerId,
+            customerDiscountCreate: CustomerDiscountCreate((b) {
+              b.product = productId;
+              _setDiscount(b.discount, discount);
+            }),
+          );
+      final created = response.data;
+      if (created == null) throw const AppError.server();
+      return CustomerDiscount.fromResponse(created);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<CustomerDiscount> updateDiscount({
+    required int customerId,
+    required int customerDiscountId,
+    required String discount,
+  }) async {
+    try {
+      final response = await _api
+          .updateDiscountApiV1CustomersCustomerIdDiscountsCustomerDiscountIdPut(
+            customerId: customerId,
+            customerDiscountId: customerDiscountId,
+            customerDiscountUpdate: CustomerDiscountUpdate(
+              (b) => _setDiscount(b.discount, discount),
+            ),
+          );
+      final updated = response.data;
+      if (updated == null) throw const AppError.server();
+      return CustomerDiscount.fromResponse(updated);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<void> deleteDiscount({
+    required int customerId,
+    required int customerDiscountId,
+  }) async {
+    try {
+      await _api
+          .deleteDiscountApiV1CustomersCustomerIdDiscountsCustomerDiscountIdDelete(
+            customerId: customerId,
+            customerDiscountId: customerDiscountId,
+          );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
 }
 
 AppError _toAppError(DioException error) {
@@ -182,5 +262,11 @@ void _setCreditLimit(CreditLimitBuilder builder, String value) {
 }
 
 void _setCreditLimit1(CreditLimit1Builder builder, String value) {
+  builder.anyOf = AnyOf2<String, num>(values: {0: value});
+}
+
+/// `discount` is `anyOf: [string, num]`; always send the String arm, as
+/// [_setCreditLimit] does. Create and update share the one `Discount` wrapper.
+void _setDiscount(DiscountBuilder builder, String value) {
   builder.anyOf = AnyOf2<String, num>(values: {0: value});
 }

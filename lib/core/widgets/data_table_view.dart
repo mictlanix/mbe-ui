@@ -124,21 +124,29 @@ class DataTableView<T> extends StatefulWidget {
   /// width behaves exactly as it does today.
   final double? minWidth;
 
-  /// Unpaginated path only. Sizes the table to its rows so it never scrolls
-  /// vertically, for a table embedded in a scrolling page (an unbounded-
-  /// height host `DataTable2` cannot lay itself out in). The height is
-  /// computed here, from the same row-height and divider values passed to
-  /// `DataTable2`, so no caller supplies or guesses a height.
+  /// Sizes the table to its rows so it never scrolls vertically, for a table
+  /// embedded in a scrolling page (an unbounded-height host `DataTable2`
+  /// cannot lay itself out in). The height is computed here, from the same
+  /// row-height and divider values passed to the table, so no caller
+  /// supplies or guesses a height. Paginated, it fits the current page plus
+  /// the paginator, so a short list grows row by row up to one full page.
   final bool shrinkWrap;
 
-  /// Unpaginated path only. Overrides the surrounding `Card` margin (default:
-  /// the theme's), e.g. `EdgeInsets.zero` to align the table flush with
-  /// sibling content.
+  /// Overrides the surrounding `Card` margin (default: the theme's), e.g.
+  /// `EdgeInsets.zero` to align the table flush with sibling content. On the
+  /// paginated path it applies only together with [shrinkWrap].
   final EdgeInsetsGeometry? margin;
 
   @override
   State<DataTableView<T>> createState() => _DataTableViewState<T>();
 }
+
+/// Row-divider thickness, passed to both table kinds.
+const _dividerThickness = 1.0;
+
+/// `PaginatedDataTable2`'s footer: a fixed 56 in data_table_2
+/// (`_getFooter`), not themable.
+const _paginatorHeight = 56.0;
 
 class _DataTableViewState<T> extends State<DataTableView<T>> {
   int? _sortColumnIndex;
@@ -216,7 +224,7 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
     final pagination = widget.pagination;
     if (pagination != null) {
       _source ??= _CatalogDataTableSource<T>(widget, _buildRow);
-      return PaginatedDataTable2(
+      final table = PaginatedDataTable2(
         // PaginatedDataTable2 only reads `initialFirstRowIndex` once, at
         // first mount — it never re-seeds its internal row cursor from a
         // changed value on rebuild (the same "initialValue only seeds once"
@@ -233,7 +241,7 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
         columns: _buildColumns(sortable: false),
         headingRowHeight: headingRowHeight,
         dataRowHeight: dataRowHeight,
-        dividerThickness: 1,
+        dividerThickness: _dividerThickness,
         minWidth: widget.minWidth,
         source: _source!,
         showCheckboxColumn: false,
@@ -249,6 +257,23 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
         // catalog's table look like it had "extra padding" compared to a
         // longer one that always fills its page.
         renderEmptyRowsInTheEnd: false,
+        // Shrink-wrapped, the Card is ours (below), so [margin] can apply.
+        wrapInCard: !widget.shrinkWrap,
+      );
+      if (!widget.shrinkWrap) return table;
+
+      return SizedBox(
+        height:
+            headingRowHeight +
+            pagination.items.length * dataRowHeight +
+            (pagination.items.length + 1) * _dividerThickness +
+            _paginatorHeight +
+            _cardChrome(context),
+        child: Card(
+          margin: widget.margin,
+          semanticContainer: false,
+          child: table,
+        ),
       );
     }
 
@@ -269,7 +294,7 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
     // otherwise look inconsistent with the rest of the app — matched here
     // explicitly so all catalog/list tables render identically regardless
     // of whether they paginate (constitution §VI: implemented once, shared).
-    const dividerThickness = 1.0;
+    const dividerThickness = _dividerThickness;
     final card = Card(
       margin: widget.margin,
       semanticContainer: false,
@@ -287,21 +312,25 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
     );
     if (!widget.shrinkWrap) return card;
 
-    final cardTheme = Theme.of(context).cardTheme;
-    final margin =
-        (widget.margin ?? cardTheme.margin ?? const EdgeInsets.all(4)).resolve(
-          Directionality.of(context),
-        );
-    final border = cardTheme.shape?.dimensions.vertical ?? 0;
     return SizedBox(
       height:
           headingRowHeight +
           rows.length * dataRowHeight +
           (rows.length + 1) * dividerThickness +
-          margin.vertical +
-          border,
+          _cardChrome(context),
       child: card,
     );
+  }
+
+  /// The vertical space the surrounding `Card` adds: its margin (ours, or
+  /// the theme's) plus its shape's border.
+  double _cardChrome(BuildContext context) {
+    final cardTheme = Theme.of(context).cardTheme;
+    final margin =
+        (widget.margin ?? cardTheme.margin ?? const EdgeInsets.all(4)).resolve(
+          Directionality.of(context),
+        );
+    return margin.vertical + (cardTheme.shape?.dimensions.vertical ?? 0);
   }
 }
 

@@ -91,6 +91,30 @@ Class | Method | HTTP request | Description
 [*CashSessionsApi*](doc/CashSessionsApi.md) | [**listCashSessionsApiV1CashSessionsGet**](doc/CashSessionsApi.md#listcashsessionsapiv1cashsessionsget) | **GET** /api/v1/cash-sessions | List Cash Sessions
 [*CashSessionsApi*](doc/CashSessionsApi.md) | [**openCashSessionApiV1CashSessionsPost**](doc/CashSessionsApi.md#opencashsessionapiv1cashsessionspost) | **POST** /api/v1/cash-sessions | Open Cash Session
 [*CashSessionsApi*](doc/CashSessionsApi.md) | [**printCashSessionCutApiV1CashSessionsCashSessionIdTicketGet**](doc/CashSessionsApi.md#printcashsessioncutapiv1cashsessionscashsessionidticketget) | **GET** /api/v1/cash-sessions/{cash_session_id}/ticket | Print Cash Session Cut
+[*CommissionsApi*](doc/CommissionsApi.md) | [**closeCommissionPeriodApiV1CommissionsPeriodsYearMonthClosePost**](doc/CommissionsApi.md#closecommissionperiodapiv1commissionsperiodsyearmonthclosepost) | **POST** /api/v1/commissions/periods/{year}/{month}/close | Close Commission Period
+[*CommissionsApi*](doc/CommissionsApi.md) | [**createCommissionAgentApiV1CommissionsAgentsPost**](doc/CommissionsApi.md#createcommissionagentapiv1commissionsagentspost) | **POST** /api/v1/commissions/agents | Create Commission Agent
+[*CommissionsApi*](doc/CommissionsApi.md) | [**createCommissionAgentRateApiV1CommissionsAgentRatesPost**](doc/CommissionsApi.md#createcommissionagentrateapiv1commissionsagentratespost) | **POST** /api/v1/commissions/agent-rates | Create Commission Agent Rate
+[*CommissionsApi*](doc/CommissionsApi.md) | [**createCommissionLabelApiV1CommissionsLabelsPost**](doc/CommissionsApi.md#createcommissionlabelapiv1commissionslabelspost) | **POST** /api/v1/commissions/labels | Create Commission Label
+[*CommissionsApi*](doc/CommissionsApi.md) | [**createCommissionParticipationApiV1CommissionsParticipationsPost**](doc/CommissionsApi.md#createcommissionparticipationapiv1commissionsparticipationspost) | **POST** /api/v1/commissions/participations | Create Commission Participation
+[*CommissionsApi*](doc/CommissionsApi.md) | [**deleteCommissionAgentApiV1CommissionsAgentsEmployeeDelete**](doc/CommissionsApi.md#deletecommissionagentapiv1commissionsagentsemployeedelete) | **DELETE** /api/v1/commissions/agents/{employee} | Delete Commission Agent
+[*CommissionsApi*](doc/CommissionsApi.md) | [**deleteCommissionAgentRateApiV1CommissionsAgentRatesCommissionSalespersonIdDelete**](doc/CommissionsApi.md#deletecommissionagentrateapiv1commissionsagentratescommissionsalespersoniddelete) | **DELETE** /api/v1/commissions/agent-rates/{commission_salesperson_id} | Delete Commission Agent Rate
+[*CommissionsApi*](doc/CommissionsApi.md) | [**deleteCommissionLabelApiV1CommissionsLabelsCommissionIdDelete**](doc/CommissionsApi.md#deletecommissionlabelapiv1commissionslabelscommissioniddelete) | **DELETE** /api/v1/commissions/labels/{commission_id} | Delete Commission Label
+[*CommissionsApi*](doc/CommissionsApi.md) | [**deleteCommissionParticipationApiV1CommissionsParticipationsParticipationIdDelete**](doc/CommissionsApi.md#deletecommissionparticipationapiv1commissionsparticipationsparticipationiddelete) | **DELETE** /api/v1/commissions/participations/{participation_id} | Delete Commission Participation
+[*CommissionsApi*](doc/CommissionsApi.md) | [**deleteCommissionProductLabelApiV1CommissionsProductLabelsProductDelete**](doc/CommissionsApi.md#deletecommissionproductlabelapiv1commissionsproductlabelsproductdelete) | **DELETE** /api/v1/commissions/product-labels/{product} | Delete Commission Product Label
+[*CommissionsApi*](doc/CommissionsApi.md) | [**listCommissionAgentRatesApiV1CommissionsAgentRatesGet**](doc/CommissionsApi.md#listcommissionagentratesapiv1commissionsagentratesget) | **GET** /api/v1/commissions/agent-rates | List Commission Agent Rates
+[*CommissionsApi*](doc/CommissionsApi.md) | [**listCommissionAgentsApiV1CommissionsAgentsGet**](doc/CommissionsApi.md#listcommissionagentsapiv1commissionsagentsget) | **GET** /api/v1/commissions/agents | List Commission Agents
+[*CommissionsApi*](doc/CommissionsApi.md) | [**listCommissionLabelsApiV1CommissionsLabelsGet**](doc/CommissionsApi.md#listcommissionlabelsapiv1commissionslabelsget) | **GET** /api/v1/commissions/labels | List Commission Labels
+[*CommissionsApi*](doc/CommissionsApi.md) | [**listCommissionParticipationsApiV1CommissionsParticipationsGet**](doc/CommissionsApi.md#listcommissionparticipationsapiv1commissionsparticipationsget) | **GET** /api/v1/commissions/participations | List Commission Participations
+[*CommissionsApi*](doc/CommissionsApi.md) | [**listCommissionPeriodsApiV1CommissionsPeriodsGet**](doc/CommissionsApi.md#listcommissionperiodsapiv1commissionsperiodsget) | **GET** /api/v1/commissions/periods | List Commission Periods
+[*CommissionsApi*](doc/CommissionsApi.md) | [**listCommissionProductLabelsApiV1CommissionsProductLabelsGet**](doc/CommissionsApi.md#listcommissionproductlabelsapiv1commissionsproductlabelsget) | **GET** /api/v1/commissions/product-labels | List Commission Product Labels
+[*CommissionsApi*](doc/CommissionsApi.md) | [**payCommissionPeriodApiV1CommissionsPeriodsYearMonthPayPost**](doc/CommissionsApi.md#paycommissionperiodapiv1commissionsperiodsyearmonthpaypost) | **POST** /api/v1/commissions/periods/{year}/{month}/pay | Pay Commission Period
+[*CommissionsApi*](doc/CommissionsApi.md) | [**readCommissionPeriodApiV1CommissionsPeriodsYearMonthGet**](doc/CommissionsApi.md#readcommissionperiodapiv1commissionsperiodsyearmonthget) | **GET** /api/v1/commissions/periods/{year}/{month} | Read Commission Period
+[*CommissionsApi*](doc/CommissionsApi.md) | [**reopenCommissionPeriodApiV1CommissionsPeriodsYearMonthReopenPost**](doc/CommissionsApi.md#reopencommissionperiodapiv1commissionsperiodsyearmonthreopenpost) | **POST** /api/v1/commissions/periods/{year}/{month}/reopen | Reopen Commission Period
+[*CommissionsApi*](doc/CommissionsApi.md) | [**setCommissionProductLabelApiV1CommissionsProductLabelsProductPut**](doc/CommissionsApi.md#setcommissionproductlabelapiv1commissionsproductlabelsproductput) | **PUT** /api/v1/commissions/product-labels/{product} | Set Commission Product Label
+[*CommissionsApi*](doc/CommissionsApi.md) | [**updateCommissionAgentApiV1CommissionsAgentsEmployeePut**](doc/CommissionsApi.md#updatecommissionagentapiv1commissionsagentsemployeeput) | **PUT** /api/v1/commissions/agents/{employee} | Update Commission Agent
+[*CommissionsApi*](doc/CommissionsApi.md) | [**updateCommissionAgentRateApiV1CommissionsAgentRatesCommissionSalespersonIdPut**](doc/CommissionsApi.md#updatecommissionagentrateapiv1commissionsagentratescommissionsalespersonidput) | **PUT** /api/v1/commissions/agent-rates/{commission_salesperson_id} | Update Commission Agent Rate
+[*CommissionsApi*](doc/CommissionsApi.md) | [**updateCommissionLabelApiV1CommissionsLabelsCommissionIdPut**](doc/CommissionsApi.md#updatecommissionlabelapiv1commissionslabelscommissionidput) | **PUT** /api/v1/commissions/labels/{commission_id} | Update Commission Label
+[*CommissionsApi*](doc/CommissionsApi.md) | [**updateCommissionParticipationApiV1CommissionsParticipationsParticipationIdPut**](doc/CommissionsApi.md#updatecommissionparticipationapiv1commissionsparticipationsparticipationidput) | **PUT** /api/v1/commissions/participations/{participation_id} | Update Commission Participation
 [*ContactsApi*](doc/ContactsApi.md) | [**createContactApiV1ContactsPost**](doc/ContactsApi.md#createcontactapiv1contactspost) | **POST** /api/v1/contacts | Create Contact
 [*ContactsApi*](doc/ContactsApi.md) | [**deleteContactApiV1ContactsContactIdDelete**](doc/ContactsApi.md#deletecontactapiv1contactscontactiddelete) | **DELETE** /api/v1/contacts/{contact_id} | Delete Contact
 [*ContactsApi*](doc/ContactsApi.md) | [**getContactApiV1ContactsContactIdGet**](doc/ContactsApi.md#getcontactapiv1contactscontactidget) | **GET** /api/v1/contacts/{contact_id} | Get Contact
@@ -135,6 +159,8 @@ Class | Method | HTTP request | Description
 [*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**getItineraryApiV1DeliveryItinerariesItineraryIdGet**](doc/DeliveryItinerariesApi.md#getitineraryapiv1deliveryitinerariesitineraryidget) | **GET** /api/v1/delivery-itineraries/{itinerary_id} | Get Itinerary
 [*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**listItinerariesApiV1DeliveryItinerariesGet**](doc/DeliveryItinerariesApi.md#listitinerariesapiv1deliveryitinerariesget) | **GET** /api/v1/delivery-itineraries | List Itineraries
 [*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**pendingDeliveriesApiV1DeliveryItinerariesDeliveriesGet**](doc/DeliveryItinerariesApi.md#pendingdeliveriesapiv1deliveryitinerariesdeliveriesget) | **GET** /api/v1/delivery-itineraries/deliveries | Pending Deliveries
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**printDeliveryNotesApiV1DeliveryItinerariesItineraryIdDeliveryNotesGet**](doc/DeliveryItinerariesApi.md#printdeliverynotesapiv1deliveryitinerariesitineraryiddeliverynotesget) | **GET** /api/v1/delivery-itineraries/{itinerary_id}/delivery-notes | Print Delivery Notes
+[*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**printItineraryTicketApiV1DeliveryItinerariesItineraryIdTicketGet**](doc/DeliveryItinerariesApi.md#printitineraryticketapiv1deliveryitinerariesitineraryidticketget) | **GET** /api/v1/delivery-itineraries/{itinerary_id}/ticket | Print Itinerary Ticket
 [*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**releaseCommitmentApiV1DeliveryItinerariesItineraryIdStopsStopIdLinesLineIdDelete**](doc/DeliveryItinerariesApi.md#releasecommitmentapiv1deliveryitinerariesitineraryidstopsstopidlineslineiddelete) | **DELETE** /api/v1/delivery-itineraries/{itinerary_id}/stops/{stop_id}/lines/{line_id} | Release Commitment
 [*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**removeStopApiV1DeliveryItinerariesItineraryIdStopsStopIdDelete**](doc/DeliveryItinerariesApi.md#removestopapiv1deliveryitinerariesitineraryidstopsstopiddelete) | **DELETE** /api/v1/delivery-itineraries/{itinerary_id}/stops/{stop_id} | Remove Stop
 [*DeliveryItinerariesApi*](doc/DeliveryItinerariesApi.md) | [**updateItineraryApiV1DeliveryItinerariesItineraryIdPut**](doc/DeliveryItinerariesApi.md#updateitineraryapiv1deliveryitinerariesitineraryidput) | **PUT** /api/v1/delivery-itineraries/{itinerary_id} | Update Itinerary
@@ -152,6 +178,8 @@ Class | Method | HTTP request | Description
 [*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**listDeliveryOrderEventsApiV1DeliveryOrdersDeliveryOrderIdEventsGet**](doc/DeliveryOrdersApi.md#listdeliveryordereventsapiv1deliveryordersdeliveryorderideventsget) | **GET** /api/v1/delivery-orders/{delivery_order_id}/events | List Delivery Order Events
 [*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**listDeliveryOrdersApiV1DeliveryOrdersGet**](doc/DeliveryOrdersApi.md#listdeliveryordersapiv1deliveryordersget) | **GET** /api/v1/delivery-orders | List Delivery Orders
 [*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**markReadyForPickupApiV1DeliveryOrdersDeliveryOrderIdReadyForPickupPost**](doc/DeliveryOrdersApi.md#markreadyforpickupapiv1deliveryordersdeliveryorderidreadyforpickuppost) | **POST** /api/v1/delivery-orders/{delivery_order_id}/ready-for-pickup | Mark Ready For Pickup
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**printDeliveryOrderDocumentApiV1DeliveryOrdersDeliveryOrderIdDocumentGet**](doc/DeliveryOrdersApi.md#printdeliveryorderdocumentapiv1deliveryordersdeliveryorderiddocumentget) | **GET** /api/v1/delivery-orders/{delivery_order_id}/document | Print Delivery Order Document
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**printDeliveryOrderTicketApiV1DeliveryOrdersDeliveryOrderIdTicketGet**](doc/DeliveryOrdersApi.md#printdeliveryorderticketapiv1deliveryordersdeliveryorderidticketget) | **GET** /api/v1/delivery-orders/{delivery_order_id}/ticket | Print Delivery Order Ticket
 [*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**rejectDeliveryOrderApiV1DeliveryOrdersApprovalDeliveryOrderIdRejectPost**](doc/DeliveryOrdersApi.md#rejectdeliveryorderapiv1deliveryordersapprovaldeliveryorderidrejectpost) | **POST** /api/v1/delivery-orders/approval/{delivery_order_id}/reject | Reject Delivery Order
 [*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**requeueDeliveryOrderApiV1DeliveryOrdersDeliveryOrderIdRequeuePost**](doc/DeliveryOrdersApi.md#requeuedeliveryorderapiv1deliveryordersdeliveryorderidrequeuepost) | **POST** /api/v1/delivery-orders/{delivery_order_id}/requeue | Requeue Delivery Order
 [*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**updateDeliveryOrderApiV1DeliveryOrdersDeliveryOrderIdPut**](doc/DeliveryOrdersApi.md#updatedeliveryorderapiv1deliveryordersdeliveryorderidput) | **PUT** /api/v1/delivery-orders/{delivery_order_id} | Update Delivery Order
@@ -358,6 +386,27 @@ Class | Method | HTTP request | Description
  - [ChangePasswordRequest](doc/ChangePasswordRequest.md)
  - [Commission](doc/Commission.md)
  - [Commission1](doc/Commission1.md)
+ - [CommissionAgentCreate](doc/CommissionAgentCreate.md)
+ - [CommissionAgentRateCreate](doc/CommissionAgentRateCreate.md)
+ - [CommissionAgentRateResponse](doc/CommissionAgentRateResponse.md)
+ - [CommissionAgentRateUpdate](doc/CommissionAgentRateUpdate.md)
+ - [CommissionAgentResponse](doc/CommissionAgentResponse.md)
+ - [CommissionAgentUpdate](doc/CommissionAgentUpdate.md)
+ - [CommissionLabelCreate](doc/CommissionLabelCreate.md)
+ - [CommissionLabelResponse](doc/CommissionLabelResponse.md)
+ - [CommissionLabelUpdate](doc/CommissionLabelUpdate.md)
+ - [CommissionLineResponse](doc/CommissionLineResponse.md)
+ - [CommissionParticipationBody](doc/CommissionParticipationBody.md)
+ - [CommissionParticipationResponse](doc/CommissionParticipationResponse.md)
+ - [CommissionPeriodDetail](doc/CommissionPeriodDetail.md)
+ - [CommissionPeriodResponse](doc/CommissionPeriodResponse.md)
+ - [CommissionPeriodSummary](doc/CommissionPeriodSummary.md)
+ - [CommissionProductLabelResponse](doc/CommissionProductLabelResponse.md)
+ - [CommissionProductLabelSet](doc/CommissionProductLabelSet.md)
+ - [CommissionRate](doc/CommissionRate.md)
+ - [CommissionRate1](doc/CommissionRate1.md)
+ - [CommissionScheme](doc/CommissionScheme.md)
+ - [CommissionTotalResponse](doc/CommissionTotalResponse.md)
  - [CommitLineRequest](doc/CommitLineRequest.md)
  - [CommitLineUpdate](doc/CommitLineUpdate.md)
  - [CommitOrderRequest](doc/CommitOrderRequest.md)
@@ -437,6 +486,7 @@ Class | Method | HTTP request | Description
  - [ListResponseBankAccountResponse](doc/ListResponseBankAccountResponse.md)
  - [ListResponseCashDrawerResponse](doc/ListResponseCashDrawerResponse.md)
  - [ListResponseCashSessionResponse](doc/ListResponseCashSessionResponse.md)
+ - [ListResponseCommissionProductLabelResponse](doc/ListResponseCommissionProductLabelResponse.md)
  - [ListResponseContactResponse](doc/ListResponseContactResponse.md)
  - [ListResponseCreditNoteResponse](doc/ListResponseCreditNoteResponse.md)
  - [ListResponseCustomerListItem](doc/ListResponseCustomerListItem.md)
@@ -475,6 +525,7 @@ Class | Method | HTTP request | Description
  - [OrderApplicationResponse](doc/OrderApplicationResponse.md)
  - [OrderOrigin](doc/OrderOrigin.md)
  - [OutstandingOrderResponse](doc/OutstandingOrderResponse.md)
+ - [ParticipationRate](doc/ParticipationRate.md)
  - [PasswordPolicyResponse](doc/PasswordPolicyResponse.md)
  - [PaymentMethod](doc/PaymentMethod.md)
  - [PaymentMethodOptionCreate](doc/PaymentMethodOptionCreate.md)

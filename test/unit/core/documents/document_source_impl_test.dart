@@ -37,11 +37,13 @@ void main() {
       await source.fetch(_ref(DocumentKind.saleTicket, 42));
       await source.fetch(_ref(DocumentKind.salesOrder, 42));
       await source.fetch(_ref(DocumentKind.cashCut, 7));
+      await source.fetch(_ref(DocumentKind.salesQuote, 42));
 
       expect(paths, [
         '/api/v1/sales-orders/42/ticket',
         '/api/v1/sales-orders/42/document',
         '/api/v1/cash-sessions/7/ticket',
+        '/api/v1/sales-quotes/42/document',
       ]);
     });
 
@@ -73,8 +75,23 @@ void main() {
           (await source.fetch(_ref(DocumentKind.cashCut, 7))).filename,
           'corte-000007.pdf',
         );
+        expect(
+          (await source.fetch(_ref(DocumentKind.salesQuote, 123))).filename,
+          'cotizacion-00000123.pdf',
+        );
       },
     );
+
+    test('takes a quote\'s file name from Content-Disposition', () async {
+      final source = _sourceWith(
+        (options) async =>
+            _pdfResponse(_pdf([1]), filename: 'cotizacion-00000123.pdf'),
+      );
+
+      final document = await source.fetch(_ref(DocumentKind.salesQuote, 123));
+
+      expect(document.filename, 'cotizacion-00000123.pdf');
+    });
 
     test('falls back when the header carries no file name', () async {
       final source = _sourceWith(
@@ -112,6 +129,21 @@ void main() {
 
       await expectLater(
         () => source.fetch(_ref(DocumentKind.saleTicket, 42)),
+        throwsA(isA<ServerError>()),
+      );
+    });
+
+    test('a quote body that is not a PDF is a ServerError', () async {
+      final source = _sourceWith(
+        (options) async => ResponseBody.fromBytes(
+          Uint8List.fromList(utf8.encode('<html>login</html>')),
+          200,
+          headers: _pdfHeaders(),
+        ),
+      );
+
+      await expectLater(
+        () => source.fetch(_ref(DocumentKind.salesQuote, 42)),
         throwsA(isA<ServerError>()),
       );
     });

@@ -27,6 +27,7 @@ import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/core/widgets/number_pad.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
+import 'package:mbe_ui/core/widgets/responsive_dialog.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/core/widgets/status_chip.dart';
 import 'package:mbe_ui/core/widgets/user_menu_button.dart';
@@ -81,6 +82,7 @@ const _coveredFiles = {
   'number_pad.dart',
   'product_photo.dart',
   'record_form_actions.dart',
+  'responsive_dialog.dart', // spec 053 — the quote email form's wide dialog / phone full-screen shell
   'responsive_form_grid.dart',
   'status_chip.dart', // added in Phase 5 (T026), golden coverage added here (T029)
   'user_menu_button.dart',
@@ -465,6 +467,56 @@ void main() {
           onDelete: _noop,
         ),
       );
+    });
+
+    testWidgets('ResponsiveDialog (busy primary action)', (tester) async {
+      for (final brightness in Brightness.values) {
+        for (final width in [goldenNarrowWidth, goldenWideWidth]) {
+          await pumpGoldenScenario(
+            tester,
+            Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () => showResponsiveDialog<void>(
+                  context,
+                  builder: (_) => ResponsiveDialog(
+                    title: 'Send quotation',
+                    body: const Text('Recipients: ana@example.com'),
+                    dismissible: false,
+                    primaryAction: const ResponsiveDialogAction(
+                      label: 'Sending…',
+                      busy: true,
+                      onPressed: _noop,
+                    ),
+                    secondaryAction: ResponsiveDialogAction(
+                      label: 'Cancel',
+                      onPressed: _noop,
+                    ),
+                  ),
+                ),
+                child: const Text('Open'),
+              ),
+            ),
+            brightness: brightness,
+            width: width,
+          );
+          tester
+              .widget<ElevatedButton>(find.byType(ElevatedButton))
+              .onPressed!();
+          // The busy spinner never settles, so pump a fixed time instead.
+          await tester.pump();
+          await tester.pump(const Duration(seconds: 1));
+          final widthLabel = width == goldenNarrowWidth ? 'narrow' : 'wide';
+          await expectLater(
+            find.byType(MaterialApp),
+            matchesGoldenFile(
+              'goldens/responsive_dialog_${brightness.name}_$widthLabel.png',
+            ),
+          );
+          // Tear the open dialog down: its spinner would keep the next
+          // iteration's pumpAndSettle from ever settling.
+          await tester.pumpWidget(const SizedBox());
+        }
+      }
     });
 
     testWidgets('ResponsiveFormGrid', (tester) async {

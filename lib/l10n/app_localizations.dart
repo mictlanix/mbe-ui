@@ -6847,6 +6847,12 @@ abstract class AppLocalizations {
   /// **'Cash cut · {reference}'**
   String documentCashCutTitle(String reference);
 
+  /// No description provided for @documentSalesQuoteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quote · {reference}'**
+  String documentSalesQuoteTitle(String reference);
+
   /// spec 044 FR-002: the completed-sale dialog's direct-print button
   ///
   /// In en, this message translates to:
@@ -6876,6 +6882,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View sales order'**
   String get salesOrderViewDocumentAction;
+
+  /// spec 053 FR-001: opens the quote's letter-size document in the document preview, from the quote header
+  ///
+  /// In en, this message translates to:
+  /// **'View quote'**
+  String get salesQuoteViewDocumentAction;
+
+  /// spec 053 FR-006: opens the email dialog from the quote header (confirmed quotes only)
+  ///
+  /// In en, this message translates to:
+  /// **'Send by email'**
+  String get salesQuoteEmailAction;
+
+  /// spec 053 FR-015a: tooltip of the overflow menu that holds the quote's document actions on a phone
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get salesQuoteMoreActionsTooltip;
+
+  /// No description provided for @salesQuoteEmailDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send quote {reference}'**
+  String salesQuoteEmailDialogTitle(String reference);
+
+  /// spec 053: heading above the recipient chips
+  ///
+  /// In en, this message translates to:
+  /// **'Recipients'**
+  String get salesQuoteEmailRecipientsLabel;
+
+  /// spec 053 FR-009a: label of the field for an address that is not among the chips
+  ///
+  /// In en, this message translates to:
+  /// **'Another email address'**
+  String get salesQuoteEmailOtherAddressLabel;
+
+  /// spec 053 FR-009a: adds the typed address as a selected chip
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get salesQuoteEmailAddAction;
+
+  /// spec 053: sends the quote to the selected recipients
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get salesQuoteEmailSendAction;
+
+  /// spec 053 FR-011: the send button's label while the server answers
+  ///
+  /// In en, this message translates to:
+  /// **'Sending…'**
+  String get salesQuoteEmailSendingLabel;
+
+  /// spec 053 FR-010: shown while no recipient is selected
+  ///
+  /// In en, this message translates to:
+  /// **'Up to 10 recipients.'**
+  String get salesQuoteEmailLimitHint;
+
+  /// No description provided for @salesQuoteEmailCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of 10 recipients.'**
+  String salesQuoteEmailCounter(int count);
+
+  /// spec 053 FR-010: shown once ten recipients are selected
+  ///
+  /// In en, this message translates to:
+  /// **'10 of 10 recipients. No more can be added.'**
+  String get salesQuoteEmailLimitReached;
+
+  /// spec 053 FR-010: field error for a typed address that fails the check
+  ///
+  /// In en, this message translates to:
+  /// **'That is not a valid email address.'**
+  String get salesQuoteEmailInvalidAddress;
+
+  /// spec 053 edge case: shown when the customer has no contact or fiscal-recipient emails
+  ///
+  /// In en, this message translates to:
+  /// **'This customer has no email addresses on file.'**
+  String get salesQuoteEmailNoKnownAddresses;
+
+  /// spec 053: shown while the customer's addresses load
+  ///
+  /// In en, this message translates to:
+  /// **'Loading the customer\'s email addresses…'**
+  String get salesQuoteEmailSuggestionsLoading;
+
+  /// spec 053: shown, with a retry, when the customer's addresses fail to load
+  ///
+  /// In en, this message translates to:
+  /// **'The customer\'s email addresses could not be loaded.'**
+  String get salesQuoteEmailSuggestionsFailed;
+
+  /// spec 053 FR-013: the server refused with 409 — the quote is no longer confirmed
+  ///
+  /// In en, this message translates to:
+  /// **'This quote can no longer be sent.'**
+  String get salesQuoteEmailNotSendable;
+
+  /// spec 053 FR-013: the server answered 502 — the mail server refused the send
+  ///
+  /// In en, this message translates to:
+  /// **'The mail server rejected the message. Try again, or download the quote instead.'**
+  String get salesQuoteEmailMailRefused;
+
+  /// spec 053 FR-013: the server answered 503 — mail is not configured
+  ///
+  /// In en, this message translates to:
+  /// **'Sending email is not available. Download the quote to send it yourself.'**
+  String get salesQuoteEmailMailUnavailable;
+
+  /// No description provided for @salesQuoteEmailSentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Quote sent to {recipients}'**
+  String salesQuoteEmailSentMessage(String recipients);
 
   /// spec 046: customer form section listing the addresses linked to the customer
   ///
@@ -7332,6 +7458,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not delete the agreement.'**
   String get agreementDeleteFailedError;
+
+  /// spec 052: customer form section listing the customer's per-product discounts
+  ///
+  /// In en, this message translates to:
+  /// **'Discounts'**
+  String get customerDiscountsSection;
+
+  /// spec 052: empty state of the customer discounts section
+  ///
+  /// In en, this message translates to:
+  /// **'No product discounts.'**
+  String get customerDiscountsEmpty;
+
+  /// spec 052 FR-007: shown in place of the discounts table while creating a customer
+  ///
+  /// In en, this message translates to:
+  /// **'Discounts can be added once the customer is saved.'**
+  String get customerDiscountsAfterSaveNote;
+
+  /// spec 052: customer discounts table, product code column
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get customerDiscountColumnCode;
+
+  /// spec 052: customer discounts table, product name column
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get customerDiscountColumnProduct;
+
+  /// spec 052: customer discounts table, discount percentage column
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get customerDiscountColumnDiscount;
+
+  /// spec 052: title of the add-discount dialog
+  ///
+  /// In en, this message translates to:
+  /// **'New discount'**
+  String get newCustomerDiscountDialogTitle;
+
+  /// spec 052: label of the product field in the discount dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get customerDiscountProductLabel;
+
+  /// spec 052: label of the percentage field in the discount dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Discount (%)'**
+  String get customerDiscountPercentLabel;
+
+  /// spec 052 FR-006: the discount percentage is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a percentage.'**
+  String get customerDiscountPercentRequiredError;
+
+  /// spec 052 FR-006: the discount percentage is not a number
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number, e.g. 12.5.'**
+  String get customerDiscountPercentInvalidError;
+
+  /// spec 052 FR-006: the discount percentage is below 0 or above 100
+  ///
+  /// In en, this message translates to:
+  /// **'Must be between 0 and 100.'**
+  String get customerDiscountPercentOutOfRangeError;
+
+  /// spec 052 FR-006: the discount percentage has more than 6 decimal places
+  ///
+  /// In en, this message translates to:
+  /// **'At most 6 decimal places.'**
+  String get customerDiscountPercentTooPreciseError;
+
+  /// spec 052 FR-011: a discount for the product already exists (409)
+  ///
+  /// In en, this message translates to:
+  /// **'This customer already has a discount on that product.'**
+  String get customerDiscountDuplicateError;
+
+  /// spec 052 FR-011: the chosen product was deleted before saving (422)
+  ///
+  /// In en, this message translates to:
+  /// **'The product no longer exists.'**
+  String get customerDiscountProductMissingError;
+
+  /// spec 052: generic failure saving a customer discount
+  ///
+  /// In en, this message translates to:
+  /// **'The discount could not be saved.'**
+  String get customerDiscountSaveFailedError;
+
+  /// spec 052: title of the edit-discount dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Edit discount'**
+  String get editCustomerDiscountDialogTitle;
+
+  /// spec 052 FR-011: the discount was removed elsewhere before saving or removing it (404)
+  ///
+  /// In en, this message translates to:
+  /// **'This discount no longer exists.'**
+  String get customerDiscountMissingError;
+
+  /// spec 052: generic failure removing a customer discount
+  ///
+  /// In en, this message translates to:
+  /// **'The discount could not be removed.'**
+  String get customerDiscountDeleteFailedError;
+
+  /// spec 052 FR-009: remove action inside the edit-discount dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get deleteCustomerDiscountButton;
+
+  /// spec 052 FR-009: title of the remove-discount confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Remove discount'**
+  String get deleteCustomerDiscountConfirmTitle;
+
+  /// spec 052 FR-009: body of the remove-discount confirmation
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the discount on {code} — {name}? Lines already entered keep their discount.'**
+  String deleteCustomerDiscountConfirmMessage(String code, String name);
+
+  /// spec 052: clears the product picked in the add-discount dialog so another can be searched
+  ///
+  /// In en, this message translates to:
+  /// **'Change product'**
+  String get customerDiscountChangeProductTooltip;
 }
 
 class _AppLocalizationsDelegate

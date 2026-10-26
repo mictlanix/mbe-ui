@@ -106,6 +106,11 @@ final User posReader = _user(const [
   Privilege(systemObject: SystemObject.pos, rawValue: _read),
 ]);
 
+/// Reads sales quotes but neither sales orders nor the point of sale.
+final User salesQuotesReader = _user(const [
+  Privilege(systemObject: SystemObject.salesQuotes, rawValue: _read),
+]);
+
 /// Holds neither privilege.
 final User noPrivileges = _user(const []);
 

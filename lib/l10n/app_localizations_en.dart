@@ -3760,6 +3760,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String documentSalesQuoteTitle(String reference) {
+    return 'Quote · $reference';
+  }
+
+  @override
   String get posSalePrintTicketAction => 'Print ticket';
 
   @override
@@ -3773,6 +3778,79 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get salesOrderViewDocumentAction => 'View sales order';
+
+  @override
+  String get salesQuoteViewDocumentAction => 'View quote';
+
+  @override
+  String get salesQuoteEmailAction => 'Send by email';
+
+  @override
+  String get salesQuoteMoreActionsTooltip => 'More actions';
+
+  @override
+  String salesQuoteEmailDialogTitle(String reference) {
+    return 'Send quote $reference';
+  }
+
+  @override
+  String get salesQuoteEmailRecipientsLabel => 'Recipients';
+
+  @override
+  String get salesQuoteEmailOtherAddressLabel => 'Another email address';
+
+  @override
+  String get salesQuoteEmailAddAction => 'Add';
+
+  @override
+  String get salesQuoteEmailSendAction => 'Send';
+
+  @override
+  String get salesQuoteEmailSendingLabel => 'Sending…';
+
+  @override
+  String get salesQuoteEmailLimitHint => 'Up to 10 recipients.';
+
+  @override
+  String salesQuoteEmailCounter(int count) {
+    return '$count of 10 recipients.';
+  }
+
+  @override
+  String get salesQuoteEmailLimitReached =>
+      '10 of 10 recipients. No more can be added.';
+
+  @override
+  String get salesQuoteEmailInvalidAddress =>
+      'That is not a valid email address.';
+
+  @override
+  String get salesQuoteEmailNoKnownAddresses =>
+      'This customer has no email addresses on file.';
+
+  @override
+  String get salesQuoteEmailSuggestionsLoading =>
+      'Loading the customer\'s email addresses…';
+
+  @override
+  String get salesQuoteEmailSuggestionsFailed =>
+      'The customer\'s email addresses could not be loaded.';
+
+  @override
+  String get salesQuoteEmailNotSendable => 'This quote can no longer be sent.';
+
+  @override
+  String get salesQuoteEmailMailRefused =>
+      'The mail server rejected the message. Try again, or download the quote instead.';
+
+  @override
+  String get salesQuoteEmailMailUnavailable =>
+      'Sending email is not available. Download the quote to send it yourself.';
+
+  @override
+  String salesQuoteEmailSentMessage(String recipients) {
+    return 'Quote sent to $recipients';
+  }
 
   @override
   String get customerAddressesSection => 'Addresses';
@@ -4038,4 +4116,83 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get agreementDeleteFailedError => 'Could not delete the agreement.';
+
+  @override
+  String get customerDiscountsSection => 'Discounts';
+
+  @override
+  String get customerDiscountsEmpty => 'No product discounts.';
+
+  @override
+  String get customerDiscountsAfterSaveNote =>
+      'Discounts can be added once the customer is saved.';
+
+  @override
+  String get customerDiscountColumnCode => 'Code';
+
+  @override
+  String get customerDiscountColumnProduct => 'Product';
+
+  @override
+  String get customerDiscountColumnDiscount => 'Discount';
+
+  @override
+  String get newCustomerDiscountDialogTitle => 'New discount';
+
+  @override
+  String get customerDiscountProductLabel => 'Product';
+
+  @override
+  String get customerDiscountPercentLabel => 'Discount (%)';
+
+  @override
+  String get customerDiscountPercentRequiredError => 'Enter a percentage.';
+
+  @override
+  String get customerDiscountPercentInvalidError =>
+      'Enter a number, e.g. 12.5.';
+
+  @override
+  String get customerDiscountPercentOutOfRangeError =>
+      'Must be between 0 and 100.';
+
+  @override
+  String get customerDiscountPercentTooPreciseError =>
+      'At most 6 decimal places.';
+
+  @override
+  String get customerDiscountDuplicateError =>
+      'This customer already has a discount on that product.';
+
+  @override
+  String get customerDiscountProductMissingError =>
+      'The product no longer exists.';
+
+  @override
+  String get customerDiscountSaveFailedError =>
+      'The discount could not be saved.';
+
+  @override
+  String get editCustomerDiscountDialogTitle => 'Edit discount';
+
+  @override
+  String get customerDiscountMissingError => 'This discount no longer exists.';
+
+  @override
+  String get customerDiscountDeleteFailedError =>
+      'The discount could not be removed.';
+
+  @override
+  String get deleteCustomerDiscountButton => 'Remove';
+
+  @override
+  String get deleteCustomerDiscountConfirmTitle => 'Remove discount';
+
+  @override
+  String deleteCustomerDiscountConfirmMessage(String code, String name) {
+    return 'Remove the discount on $code — $name? Lines already entered keep their discount.';
+  }
+
+  @override
+  String get customerDiscountChangeProductTooltip => 'Change product';
 }
