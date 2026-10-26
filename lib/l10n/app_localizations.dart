@@ -590,6 +590,24 @@ abstract class AppLocalizations {
   /// **'Purchasable'**
   String get productsPurchasableFilter;
 
+  /// No description provided for @productsPerishableFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Perishable'**
+  String get productsPerishableFilter;
+
+  /// No description provided for @productsSeriableFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Seriable'**
+  String get productsSeriableFilter;
+
+  /// No description provided for @productsInvoiceableFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoiceable'**
+  String get productsInvoiceableFilter;
+
   /// No description provided for @productsAttributesFilterLabel.
   ///
   /// In en, this message translates to:

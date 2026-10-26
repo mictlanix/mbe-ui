@@ -270,6 +270,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get productsPurchasableFilter => 'Purchasable';
 
   @override
+  String get productsPerishableFilter => 'Perishable';
+
+  @override
+  String get productsSeriableFilter => 'Seriable';
+
+  @override
+  String get productsInvoiceableFilter => 'Invoiceable';
+
+  @override
   String get productsAttributesFilterLabel => 'Product attributes';
 
   @override

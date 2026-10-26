@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PricingGridFilter {
 
- String get search; int get pageIndex; EntityStatus? get status; bool? get stockable; bool? get salable; bool? get purchasable; int? get supplier; List<int> get labels; int? get missingPriceList;
+ String get search; int get pageIndex; EntityStatus? get status; bool? get stockable; bool? get salable; bool? get purchasable; bool? get perishable; bool? get seriable; bool? get invoiceable; int? get supplier; List<int> get labels; int? get missingPriceList;
 /// Create a copy of PricingGridFilter
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $PricingGridFilterCopyWith<PricingGridFilter> get copyWith => _$PricingGridFilte
 @override
 bool operator ==(Object other) {
   final _this = this as PricingGridFilter;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PricingGridFilter&&(identical(other.search, _this.search) || other.search == _this.search)&&(identical(other.pageIndex, _this.pageIndex) || other.pageIndex == _this.pageIndex)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.stockable, _this.stockable) || other.stockable == _this.stockable)&&(identical(other.salable, _this.salable) || other.salable == _this.salable)&&(identical(other.purchasable, _this.purchasable) || other.purchasable == _this.purchasable)&&(identical(other.supplier, _this.supplier) || other.supplier == _this.supplier)&&const DeepCollectionEquality().equals(other.labels, _this.labels)&&(identical(other.missingPriceList, _this.missingPriceList) || other.missingPriceList == _this.missingPriceList));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PricingGridFilter&&(identical(other.search, _this.search) || other.search == _this.search)&&(identical(other.pageIndex, _this.pageIndex) || other.pageIndex == _this.pageIndex)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.stockable, _this.stockable) || other.stockable == _this.stockable)&&(identical(other.salable, _this.salable) || other.salable == _this.salable)&&(identical(other.purchasable, _this.purchasable) || other.purchasable == _this.purchasable)&&(identical(other.perishable, _this.perishable) || other.perishable == _this.perishable)&&(identical(other.seriable, _this.seriable) || other.seriable == _this.seriable)&&(identical(other.invoiceable, _this.invoiceable) || other.invoiceable == _this.invoiceable)&&(identical(other.supplier, _this.supplier) || other.supplier == _this.supplier)&&const DeepCollectionEquality().equals(other.labels, _this.labels)&&(identical(other.missingPriceList, _this.missingPriceList) || other.missingPriceList == _this.missingPriceList));
 }
 
 
 @override
 int get hashCode {
   final _this = this as PricingGridFilter;
-  return Object.hash(runtimeType,_this.search,_this.pageIndex,_this.status,_this.stockable,_this.salable,_this.purchasable,_this.supplier,const DeepCollectionEquality().hash(_this.labels),_this.missingPriceList);
+  return Object.hash(runtimeType,_this.search,_this.pageIndex,_this.status,_this.stockable,_this.salable,_this.purchasable,_this.perishable,_this.seriable,_this.invoiceable,_this.supplier,const DeepCollectionEquality().hash(_this.labels),_this.missingPriceList);
 }
 
 @override
 String toString() {
   final _this = this as PricingGridFilter;
-  return 'PricingGridFilter(search: ${_this.search}, pageIndex: ${_this.pageIndex}, status: ${_this.status}, stockable: ${_this.stockable}, salable: ${_this.salable}, purchasable: ${_this.purchasable}, supplier: ${_this.supplier}, labels: ${_this.labels}, missingPriceList: ${_this.missingPriceList})';
+  return 'PricingGridFilter(search: ${_this.search}, pageIndex: ${_this.pageIndex}, status: ${_this.status}, stockable: ${_this.stockable}, salable: ${_this.salable}, purchasable: ${_this.purchasable}, perishable: ${_this.perishable}, seriable: ${_this.seriable}, invoiceable: ${_this.invoiceable}, supplier: ${_this.supplier}, labels: ${_this.labels}, missingPriceList: ${_this.missingPriceList})';
 }
 
 
@@ -51,7 +51,7 @@ abstract mixin class $PricingGridFilterCopyWith<$Res>  {
   factory $PricingGridFilterCopyWith(PricingGridFilter value, $Res Function(PricingGridFilter) _then) = _$PricingGridFilterCopyWithImpl;
 @useResult
 $Res call({
- String search, int pageIndex, EntityStatus? status, bool? stockable, bool? salable, bool? purchasable, int? supplier, List<int> labels, int? missingPriceList
+ String search, int pageIndex, EntityStatus? status, bool? stockable, bool? salable, bool? purchasable, bool? perishable, bool? seriable, bool? invoiceable, int? supplier, List<int> labels, int? missingPriceList
 });
 
 
@@ -68,7 +68,7 @@ class _$PricingGridFilterCopyWithImpl<$Res>
 
 /// Create a copy of PricingGridFilter
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? search = null,Object? pageIndex = null,Object? status = freezed,Object? stockable = freezed,Object? salable = freezed,Object? purchasable = freezed,Object? supplier = freezed,Object? labels = null,Object? missingPriceList = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? search = null,Object? pageIndex = null,Object? status = freezed,Object? stockable = freezed,Object? salable = freezed,Object? purchasable = freezed,Object? perishable = freezed,Object? seriable = freezed,Object? invoiceable = freezed,Object? supplier = freezed,Object? labels = null,Object? missingPriceList = freezed,}) {
   return _then(PricingGridFilter(
 search: null == search ? _self.search : search // ignore: cast_nullable_to_non_nullable
 as String,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
@@ -76,6 +76,9 @@ as int,status: freezed == status ? _self.status : status // ignore: cast_nullabl
 as EntityStatus?,stockable: freezed == stockable ? _self.stockable : stockable // ignore: cast_nullable_to_non_nullable
 as bool?,salable: freezed == salable ? _self.salable : salable // ignore: cast_nullable_to_non_nullable
 as bool?,purchasable: freezed == purchasable ? _self.purchasable : purchasable // ignore: cast_nullable_to_non_nullable
+as bool?,perishable: freezed == perishable ? _self.perishable : perishable // ignore: cast_nullable_to_non_nullable
+as bool?,seriable: freezed == seriable ? _self.seriable : seriable // ignore: cast_nullable_to_non_nullable
+as bool?,invoiceable: freezed == invoiceable ? _self.invoiceable : invoiceable // ignore: cast_nullable_to_non_nullable
 as bool?,supplier: freezed == supplier ? _self.supplier : supplier // ignore: cast_nullable_to_non_nullable
 as int?,labels: null == labels ? _self.labels : labels // ignore: cast_nullable_to_non_nullable
 as List<int>,missingPriceList: freezed == missingPriceList ? _self.missingPriceList : missingPriceList // ignore: cast_nullable_to_non_nullable
@@ -164,10 +167,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String search,  int pageIndex,  EntityStatus? status,  bool? stockable,  bool? salable,  bool? purchasable,  int? supplier,  List<int> labels,  int? missingPriceList)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String search,  int pageIndex,  EntityStatus? status,  bool? stockable,  bool? salable,  bool? purchasable,  bool? perishable,  bool? seriable,  bool? invoiceable,  int? supplier,  List<int> labels,  int? missingPriceList)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PricingGridFilter() when $default != null:
-return $default(_that.search,_that.pageIndex,_that.status,_that.stockable,_that.salable,_that.purchasable,_that.supplier,_that.labels,_that.missingPriceList);case _:
+return $default(_that.search,_that.pageIndex,_that.status,_that.stockable,_that.salable,_that.purchasable,_that.perishable,_that.seriable,_that.invoiceable,_that.supplier,_that.labels,_that.missingPriceList);case _:
   return orElse();
 
 }
@@ -185,10 +188,10 @@ return $default(_that.search,_that.pageIndex,_that.status,_that.stockable,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String search,  int pageIndex,  EntityStatus? status,  bool? stockable,  bool? salable,  bool? purchasable,  int? supplier,  List<int> labels,  int? missingPriceList)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String search,  int pageIndex,  EntityStatus? status,  bool? stockable,  bool? salable,  bool? purchasable,  bool? perishable,  bool? seriable,  bool? invoiceable,  int? supplier,  List<int> labels,  int? missingPriceList)  $default,) {final _that = this;
 switch (_that) {
 case _PricingGridFilter():
-return $default(_that.search,_that.pageIndex,_that.status,_that.stockable,_that.salable,_that.purchasable,_that.supplier,_that.labels,_that.missingPriceList);case _:
+return $default(_that.search,_that.pageIndex,_that.status,_that.stockable,_that.salable,_that.purchasable,_that.perishable,_that.seriable,_that.invoiceable,_that.supplier,_that.labels,_that.missingPriceList);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +208,10 @@ return $default(_that.search,_that.pageIndex,_that.status,_that.stockable,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String search,  int pageIndex,  EntityStatus? status,  bool? stockable,  bool? salable,  bool? purchasable,  int? supplier,  List<int> labels,  int? missingPriceList)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String search,  int pageIndex,  EntityStatus? status,  bool? stockable,  bool? salable,  bool? purchasable,  bool? perishable,  bool? seriable,  bool? invoiceable,  int? supplier,  List<int> labels,  int? missingPriceList)?  $default,) {final _that = this;
 switch (_that) {
 case _PricingGridFilter() when $default != null:
-return $default(_that.search,_that.pageIndex,_that.status,_that.stockable,_that.salable,_that.purchasable,_that.supplier,_that.labels,_that.missingPriceList);case _:
+return $default(_that.search,_that.pageIndex,_that.status,_that.stockable,_that.salable,_that.purchasable,_that.perishable,_that.seriable,_that.invoiceable,_that.supplier,_that.labels,_that.missingPriceList);case _:
   return null;
 
 }
@@ -220,7 +223,7 @@ return $default(_that.search,_that.pageIndex,_that.status,_that.stockable,_that.
 
 
 class _PricingGridFilter implements PricingGridFilter {
-  const _PricingGridFilter({this.search = '', this.pageIndex = 0, this.status, this.stockable, this.salable, this.purchasable, this.supplier,  List<int> labels = const <int>[], this.missingPriceList}): _labels = labels;
+  const _PricingGridFilter({this.search = '', this.pageIndex = 0, this.status, this.stockable, this.salable, this.purchasable, this.perishable, this.seriable, this.invoiceable, this.supplier,  List<int> labels = const <int>[], this.missingPriceList}): _labels = labels;
   
 
 @override@JsonKey() final  String search;
@@ -229,6 +232,9 @@ class _PricingGridFilter implements PricingGridFilter {
 @override final  bool? stockable;
 @override final  bool? salable;
 @override final  bool? purchasable;
+@override final  bool? perishable;
+@override final  bool? seriable;
+@override final  bool? invoiceable;
 @override final  int? supplier;
  final  List<int> _labels;
 @override@JsonKey() List<int> get labels {
@@ -249,18 +255,18 @@ _$PricingGridFilterCopyWith<_PricingGridFilter> get copyWith => __$PricingGridFi
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PricingGridFilter&&(identical(other.search, search) || other.search == search)&&(identical(other.pageIndex, pageIndex) || other.pageIndex == pageIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.stockable, stockable) || other.stockable == stockable)&&(identical(other.salable, salable) || other.salable == salable)&&(identical(other.purchasable, purchasable) || other.purchasable == purchasable)&&(identical(other.supplier, supplier) || other.supplier == supplier)&&const DeepCollectionEquality().equals(other.labels, _labels)&&(identical(other.missingPriceList, missingPriceList) || other.missingPriceList == missingPriceList));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PricingGridFilter&&(identical(other.search, search) || other.search == search)&&(identical(other.pageIndex, pageIndex) || other.pageIndex == pageIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.stockable, stockable) || other.stockable == stockable)&&(identical(other.salable, salable) || other.salable == salable)&&(identical(other.purchasable, purchasable) || other.purchasable == purchasable)&&(identical(other.perishable, perishable) || other.perishable == perishable)&&(identical(other.seriable, seriable) || other.seriable == seriable)&&(identical(other.invoiceable, invoiceable) || other.invoiceable == invoiceable)&&(identical(other.supplier, supplier) || other.supplier == supplier)&&const DeepCollectionEquality().equals(other.labels, _labels)&&(identical(other.missingPriceList, missingPriceList) || other.missingPriceList == missingPriceList));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,search,pageIndex,status,stockable,salable,purchasable,supplier,const DeepCollectionEquality().hash(_labels),missingPriceList);
+    return Object.hash(runtimeType,search,pageIndex,status,stockable,salable,purchasable,perishable,seriable,invoiceable,supplier,const DeepCollectionEquality().hash(_labels),missingPriceList);
 }
 
 @override
 String toString() {
-    return 'PricingGridFilter(search: $search, pageIndex: $pageIndex, status: $status, stockable: $stockable, salable: $salable, purchasable: $purchasable, supplier: $supplier, labels: $labels, missingPriceList: $missingPriceList)';
+    return 'PricingGridFilter(search: $search, pageIndex: $pageIndex, status: $status, stockable: $stockable, salable: $salable, purchasable: $purchasable, perishable: $perishable, seriable: $seriable, invoiceable: $invoiceable, supplier: $supplier, labels: $labels, missingPriceList: $missingPriceList)';
 }
 
 
@@ -271,7 +277,7 @@ abstract mixin class _$PricingGridFilterCopyWith<$Res> implements $PricingGridFi
   factory _$PricingGridFilterCopyWith(_PricingGridFilter value, $Res Function(_PricingGridFilter) _then) = __$PricingGridFilterCopyWithImpl;
 @override @useResult
 $Res call({
- String search, int pageIndex, EntityStatus? status, bool? stockable, bool? salable, bool? purchasable, int? supplier, List<int> labels, int? missingPriceList
+ String search, int pageIndex, EntityStatus? status, bool? stockable, bool? salable, bool? purchasable, bool? perishable, bool? seriable, bool? invoiceable, int? supplier, List<int> labels, int? missingPriceList
 });
 
 
@@ -288,7 +294,7 @@ class __$PricingGridFilterCopyWithImpl<$Res>
 
 /// Create a copy of PricingGridFilter
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? search = null,Object? pageIndex = null,Object? status = freezed,Object? stockable = freezed,Object? salable = freezed,Object? purchasable = freezed,Object? supplier = freezed,Object? labels = null,Object? missingPriceList = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? search = null,Object? pageIndex = null,Object? status = freezed,Object? stockable = freezed,Object? salable = freezed,Object? purchasable = freezed,Object? perishable = freezed,Object? seriable = freezed,Object? invoiceable = freezed,Object? supplier = freezed,Object? labels = null,Object? missingPriceList = freezed,}) {
   return _then(_PricingGridFilter(
 search: null == search ? _self.search : search // ignore: cast_nullable_to_non_nullable
 as String,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
@@ -296,6 +302,9 @@ as int,status: freezed == status ? _self.status : status // ignore: cast_nullabl
 as EntityStatus?,stockable: freezed == stockable ? _self.stockable : stockable // ignore: cast_nullable_to_non_nullable
 as bool?,salable: freezed == salable ? _self.salable : salable // ignore: cast_nullable_to_non_nullable
 as bool?,purchasable: freezed == purchasable ? _self.purchasable : purchasable // ignore: cast_nullable_to_non_nullable
+as bool?,perishable: freezed == perishable ? _self.perishable : perishable // ignore: cast_nullable_to_non_nullable
+as bool?,seriable: freezed == seriable ? _self.seriable : seriable // ignore: cast_nullable_to_non_nullable
+as bool?,invoiceable: freezed == invoiceable ? _self.invoiceable : invoiceable // ignore: cast_nullable_to_non_nullable
 as bool?,supplier: freezed == supplier ? _self.supplier : supplier // ignore: cast_nullable_to_non_nullable
 as int?,labels: null == labels ? _self._labels : labels // ignore: cast_nullable_to_non_nullable
 as List<int>,missingPriceList: freezed == missingPriceList ? _self.missingPriceList : missingPriceList // ignore: cast_nullable_to_non_nullable

@@ -107,6 +107,9 @@ final _entities = [
       'stockable': 'stockable',
       'salable': 'salable',
       'purchasable': 'purchasable',
+      'perishable': 'perishable',
+      'seriable': 'seriable',
+      'invoiceable': 'invoiceable',
       'supplier': 'supplier',
       // Repo takes a `List<int> labels`; the client's singular `label` param
       // is itself a `BuiltList<int>` under the hood (plural facet, singular

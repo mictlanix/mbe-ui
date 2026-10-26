@@ -316,7 +316,8 @@ void main() {
       ),
     );
 
-    testWidgets('the panel offers Stockable, Purchasable, Supplier and Label — '
+    testWidgets('the panel offers Stockable, Purchasable, Perishable, Seriable, '
+        'Invoiceable, Supplier and Label — '
         'no Status, no Salable', (tester) async {
       await pumpScreen(
         tester,
@@ -328,6 +329,9 @@ void main() {
 
       expect(find.byKey(const Key('advanced_search_filter_stockable')), findsOneWidget);
       expect(find.byKey(const Key('advanced_search_filter_purchasable')), findsOneWidget);
+      expect(find.byKey(const Key('advanced_search_filter_perishable')), findsOneWidget);
+      expect(find.byKey(const Key('advanced_search_filter_seriable')), findsOneWidget);
+      expect(find.byKey(const Key('advanced_search_filter_invoiceable')), findsOneWidget);
       expect(find.byKey(const Key('advanced_search_filter_supplier')), findsOneWidget);
       expect(find.byKey(const Key('advanced_search_filter_label')), findsOneWidget);
       expect(find.byKey(const Key('products_filter_status')), findsNothing);
@@ -349,6 +353,20 @@ void main() {
 
       expect(filterBadge(tester).isLabelVisible, isTrue);
       expect(filterBadge(tester).label, isA<Text>().having((t) => t.data, 'data', '2'));
+    });
+
+    testWidgets('perishable, seriable and invoiceable each count toward the badge', (
+      tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        query: const ListQuery(
+          facets: {'perishable': ['true'], 'seriable': ['false'], 'invoiceable': ['true']},
+        ),
+      );
+
+      expect(filterBadge(tester).isLabelVisible, isTrue);
+      expect(filterBadge(tester).label, isA<Text>().having((t) => t.data, 'data', '3'));
     });
 
     testWidgets('applying a filter while on page 2 returns the table to page 1 (FR-011)', (

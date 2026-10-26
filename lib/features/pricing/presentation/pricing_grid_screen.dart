@@ -849,6 +849,36 @@ class _PricingGridFiltersPanel extends ConsumerWidget {
                     .copyWith(pageIndex: 0),
               ),
             ),
+            _TriStateFilterChip(
+              chipKey: const Key('pricing_grid_filter_perishable'),
+              label: l10n.productsPerishableFilter,
+              value: filter.perishable,
+              onChanged: (value) => goTo(
+                query
+                    .withFacet('perishable', value?.toString())
+                    .copyWith(pageIndex: 0),
+              ),
+            ),
+            _TriStateFilterChip(
+              chipKey: const Key('pricing_grid_filter_seriable'),
+              label: l10n.productsSeriableFilter,
+              value: filter.seriable,
+              onChanged: (value) => goTo(
+                query
+                    .withFacet('seriable', value?.toString())
+                    .copyWith(pageIndex: 0),
+              ),
+            ),
+            _TriStateFilterChip(
+              chipKey: const Key('pricing_grid_filter_invoiceable'),
+              label: l10n.productsInvoiceableFilter,
+              value: filter.invoiceable,
+              onChanged: (value) => goTo(
+                query
+                    .withFacet('invoiceable', value?.toString())
+                    .copyWith(pageIndex: 0),
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 12),
