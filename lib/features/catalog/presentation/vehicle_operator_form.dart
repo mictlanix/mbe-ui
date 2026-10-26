@@ -1,18 +1,25 @@
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/design/design_theme_extensions.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
+import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/product_photo_preview.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
+import 'package:mbe_ui/features/catalog/presentation/license_photo_provider.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicle_operator_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -116,6 +123,10 @@ class VehicleOperatorFormPanelState extends ConsumerState<VehicleOperatorForm> {
 
     final fieldsEnabled = !formState.submitting && !readOnly;
     final canSave = !readOnly && (_isEdit ? canUpdate : canCreate);
+    // The photo endpoints are guarded by Update, not Create, so a user who can
+    // only create never gets the control: their staged photo would be rejected
+    // after the operator was already created (051 R5).
+    final canEditPhoto = !readOnly && canUpdate;
     final canDelete =
         _isEdit &&
         !readOnly &&
@@ -272,6 +283,21 @@ class VehicleOperatorFormPanelState extends ConsumerState<VehicleOperatorForm> {
             onChanged: controller.issuingLocationChanged,
           ),
         ),
+        if (_isEdit || canEditPhoto)
+          FormGridChild(
+            span: FormGridSpan.full,
+            _LicensePhotoSection(
+              key: const Key('license_photo_section'),
+              formState: formState,
+              canEditPhoto: canEditPhoto,
+              photoError: _localizeFieldError(
+                l10n,
+                formState.fieldErrors['licensePhoto'],
+              ),
+              onPick: () => _pickLicensePhoto(controller),
+              onRemove: controller.licensePhotoRemoveRequested,
+            ),
+          ),
         FormGridChild(
           span: FormGridSpan.full,
           EntityStatusFormField(
@@ -293,8 +319,13 @@ class VehicleOperatorFormPanelState extends ConsumerState<VehicleOperatorForm> {
             onEdit: (canUpdate && widget.vehicleOperatorId != null)
                 ? () => setState(() => _readOnlyOverride = false)
                 : null,
+            // Dispatch on the id the form holds, not on how it was opened: after
+            // a create whose photo step failed the operator exists, and a
+            // second submitCreate would make a duplicate (051 R4).
             onSave: canSave
-                ? (_isEdit ? controller.submitUpdate : controller.submitCreate)
+                ? (formState.vehicleOperatorId != null
+                      ? controller.submitUpdate
+                      : controller.submitCreate)
                 : null,
             onDelete: canDelete ? controller.delete : null,
             deleteConfirmation: RecordDeleteConfirmation(
@@ -308,6 +339,231 @@ class VehicleOperatorFormPanelState extends ConsumerState<VehicleOperatorForm> {
             ),
           ),
         ),
+      ],
+    );
+  }
+
+  /// Opens the native file picker restricted to JPEG/PNG and stages the result
+  /// via [VehicleOperatorFormController.licensePhotoPicked]. Type and size
+  /// validation happens in the controller, not here.
+  Future<void> _pickLicensePhoto(
+    VehicleOperatorFormController controller,
+  ) async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['jpg', 'jpeg', 'png'],
+      withData: true,
+    );
+    final file = result?.files.singleOrNull;
+    final bytes = file?.bytes;
+    if (file == null || bytes == null) return;
+    controller.licensePhotoPicked(bytes, file.name);
+  }
+}
+
+/// The license photo: its thumbnail, the pick control and any photo error.
+/// Laid out like the product form's photo section — controls beside the
+/// thumbnail, stacked below it on compact widths.
+class _LicensePhotoSection extends ConsumerWidget {
+  const _LicensePhotoSection({
+    super.key,
+    required this.formState,
+    required this.canEditPhoto,
+    required this.photoError,
+    required this.onPick,
+    required this.onRemove,
+  });
+
+  static const _thumbnailSize = 168.0;
+
+  final VehicleOperatorFormState formState;
+  final bool canEditPhoto;
+  final String? photoError;
+  final VoidCallback onPick;
+  final VoidCallback onRemove;
+
+  Widget _thumbnail(BuildContext context, WidgetRef ref) {
+    final staged = formState.pendingLicensePhotoBytes;
+    if (staged != null) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(4),
+        child: Image.memory(
+          staged,
+          width: _thumbnailSize,
+          height: _thumbnailSize,
+          fit: BoxFit.contain,
+          // A file that is not really an image must not paint Flutter's debug
+          // error text in the thumbnail; the server still answers on save.
+          errorBuilder: (context, error, stackTrace) => _placeholder(context),
+        ),
+      );
+    }
+    final id = formState.vehicleOperatorId;
+    if (id == null ||
+        !formState.hasLicensePhoto ||
+        formState.licensePhotoMarkedForRemoval) {
+      return _placeholder(context);
+    }
+    // Fetched on its own, through the authenticated client, only when the
+    // server says a photo exists — so an operator without one costs no request
+    // and a failed read leaves the rest of the form usable (FR-014).
+    return ref
+        .watch(licensePhotoProvider(id))
+        .when(
+          loading: () => SizedBox(
+            width: _thumbnailSize,
+            height: _thumbnailSize,
+            child: const Center(child: CircularProgressIndicator()),
+          ),
+          error: (error, stackTrace) => _unavailable(context),
+          data: (bytes) => _loadedPhoto(context, bytes),
+        );
+  }
+
+  Widget _loadedPhoto(BuildContext context, Uint8List bytes) {
+    final l10n = AppLocalizations.of(context)!;
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        key: const Key('license_photo_thumbnail'),
+        behavior: HitTestBehavior.opaque,
+        onTap: () => showPhotoPreview(
+          context,
+          image: MemoryImage(bytes),
+          title: formState.driverDisplayText.isEmpty
+              ? l10n.licensePhotoLabel
+              : formState.driverDisplayText,
+          placeholder: (side) => Center(
+            child: _placeholder(
+              context,
+              size: side.isFinite ? side.clamp(0, 240) : 240,
+            ),
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: Image.memory(
+            bytes,
+            width: _thumbnailSize,
+            height: _thumbnailSize,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) => _unavailable(context),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _unavailable(BuildContext context) => _placeholder(
+    context,
+    caption: AppLocalizations.of(context)!.licensePhotoUnavailable,
+  );
+
+  Widget _placeholder(
+    BuildContext context, {
+    double size = _thumbnailSize,
+    String? caption,
+  }) {
+    final theme = Theme.of(context);
+    final color = theme.colorScheme.onSurfaceVariant;
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.badge_outlined, size: size / 2, color: color),
+          if (caption != null)
+            Text(
+              caption,
+              key: const Key('license_photo_unavailable'),
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(color: color),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget? _actions(AppLocalizations l10n, {required bool horizontal}) {
+    if (!canEditPhoto) return null;
+    // What the user will have once saved: a staged image, or the stored photo
+    // unless they marked it for removal.
+    final hasPhoto =
+        formState.pendingLicensePhotoBytes != null ||
+        (formState.hasLicensePhoto && !formState.licensePhotoMarkedForRemoval);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: horizontal
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
+      children: hasPhoto
+          ? [
+              TextButton.icon(
+                key: const Key('replace_license_photo_button'),
+                onPressed: formState.submitting ? null : onPick,
+                icon: const Icon(Icons.upload),
+                label: Text(l10n.replacePhotoButton),
+              ),
+              TextButton.icon(
+                key: const Key('remove_license_photo_button'),
+                onPressed: formState.submitting ? null : onRemove,
+                icon: const Icon(Icons.delete_outline),
+                label: Text(l10n.removePhotoButton),
+              ),
+            ]
+          : [
+              TextButton.icon(
+                key: const Key('upload_license_photo_button'),
+                onPressed: formState.submitting ? null : onPick,
+                icon: const Icon(Icons.upload),
+                label: Text(l10n.uploadPhotoButton),
+              ),
+            ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final compact = LayoutBreakpoints.isCompact(context);
+    final actions = _actions(l10n, horizontal: !compact);
+    final thumbnail = Padding(
+      padding: EdgeInsets.all(theme.spacing.xs),
+      child: _thumbnail(context, ref),
+    );
+
+    final Widget media;
+    if (actions == null) {
+      media = thumbnail;
+    } else if (compact) {
+      media = Column(
+        mainAxisSize: MainAxisSize.min,
+        spacing: 8,
+        children: [thumbnail, actions],
+      );
+    } else {
+      media = Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        spacing: 16,
+        children: [thumbnail, actions],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 4,
+      children: [
+        Text(l10n.licensePhotoLabel, style: theme.textTheme.labelLarge),
+        media,
+        if (photoError case final error?)
+          Text(error, style: TextStyle(color: theme.colorScheme.error)),
       ],
     );
   }
@@ -329,6 +585,8 @@ String _localizeFormError(AppLocalizations l10n, String code) {
       return l10n.vehicleOperatorUpdatePermissionDeniedError;
     case VehicleOperatorFormErrorCode.deletePermissionDenied:
       return l10n.vehicleOperatorDeletePermissionDeniedError;
+    case VehicleOperatorFormErrorCode.licensePhotoSaveFailed:
+      return l10n.licensePhotoSaveFailedError;
     default:
       return code;
   }
@@ -351,6 +609,10 @@ String? _localizeFieldError(AppLocalizations l10n, String? code) {
       return l10n.vehicleOperatorExpirationBeforeIssueError;
     case VehicleOperatorFormErrorCode.issuingLocationRequired:
       return l10n.vehicleOperatorIssuingLocationRequiredError;
+    case VehicleOperatorFormErrorCode.licensePhotoInvalidType:
+      return l10n.licensePhotoInvalidTypeError;
+    case VehicleOperatorFormErrorCode.licensePhotoTooLarge:
+      return l10n.licensePhotoTooLargeError;
     default:
       return code;
   }

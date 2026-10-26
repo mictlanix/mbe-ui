@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
@@ -146,6 +148,66 @@ class VehicleOperatorRepositoryImpl implements VehicleOperatorRepository {
       throw _toAppError(e);
     }
   }
+
+  @override
+  Future<Uint8List> getLicensePhoto({required int vehicleOperatorId}) async {
+    try {
+      final response = await _api
+          .getLicensePhotoApiV1VehicleOperatorsVehicleOperatorIdLicensePhotoGet(
+            vehicleOperatorId: vehicleOperatorId,
+          );
+      final bytes = response.data;
+      if (bytes == null) throw const AppError.server();
+      // A 200 that is not a PNG (an HTML login page from a proxy, an empty
+      // body) must never reach an image decoder.
+      if (!_looksLikePng(bytes)) throw const AppError.server();
+      return bytes;
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<VehicleOperator> uploadLicensePhoto({
+    required int vehicleOperatorId,
+    required Uint8List bytes,
+    required String filename,
+  }) async {
+    try {
+      final response = await _api
+          .uploadLicensePhotoApiV1VehicleOperatorsVehicleOperatorIdLicensePhotoPost(
+            vehicleOperatorId: vehicleOperatorId,
+            file: MultipartFile.fromBytes(bytes, filename: filename),
+          );
+      final operator = response.data;
+      if (operator == null) throw const AppError.server();
+      return VehicleOperator.fromResponse(operator);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<void> removeLicensePhoto({required int vehicleOperatorId}) async {
+    try {
+      await _api
+          .deleteLicensePhotoApiV1VehicleOperatorsVehicleOperatorIdLicensePhotoDelete(
+            vehicleOperatorId: vehicleOperatorId,
+          );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+}
+
+/// The eight-byte signature every PNG starts with.
+bool _looksLikePng(Uint8List bytes) {
+  const signature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+  if (bytes.length < signature.length) return false;
+  for (var i = 0; i < signature.length; i++) {
+    if (bytes[i] != signature[i]) return false;
+  }
+  return true;
 }
 
 AppError _toAppError(DioException error) {

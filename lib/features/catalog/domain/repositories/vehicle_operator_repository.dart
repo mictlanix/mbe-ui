@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/vehicle_operator.dart';
 
@@ -39,6 +41,19 @@ abstract class VehicleOperatorRepository {
   });
 
   Future<void> delete({required int vehicleOperatorId});
+
+  /// The stored license photo as PNG bytes. The photo is personal data and has
+  /// no public URL, so it is only ever read through the authenticated client
+  /// (051 R1).
+  Future<Uint8List> getLicensePhoto({required int vehicleOperatorId});
+
+  Future<VehicleOperator> uploadLicensePhoto({
+    required int vehicleOperatorId,
+    required Uint8List bytes,
+    required String filename,
+  });
+
+  Future<void> removeLicensePhoto({required int vehicleOperatorId});
 }
 
 class VehicleOperatorListResult {

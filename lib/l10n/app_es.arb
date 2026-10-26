@@ -475,6 +475,11 @@
   "vehicleTonsCapacityInvalidError": "Ingresa un número entero no negativo válido.",
 
   "driverLabel": "Operador",
+  "licensePhotoLabel": "Foto de la licencia",
+  "licensePhotoUnavailable": "Foto no disponible",
+  "licensePhotoInvalidTypeError": "La foto debe ser un archivo JPEG o PNG.",
+  "licensePhotoTooLargeError": "La foto debe ser de 2 MB o menos.",
+  "licensePhotoSaveFailedError": "El operador se guardó, pero no se pudo guardar la foto de la licencia. Presiona Guardar para intentar de nuevo.",
   "licenseTypeLabel": "Tipo de licencia",
   "driverLicenseNumberLabel": "Número de licencia",
   "issueDateLabel": "Fecha de expedición",

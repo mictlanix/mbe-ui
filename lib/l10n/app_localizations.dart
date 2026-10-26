@@ -2739,6 +2739,36 @@ abstract class AppLocalizations {
   /// **'Driver'**
   String get driverLabel;
 
+  /// No description provided for @licensePhotoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'License photo'**
+  String get licensePhotoLabel;
+
+  /// No description provided for @licensePhotoUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo unavailable'**
+  String get licensePhotoUnavailable;
+
+  /// No description provided for @licensePhotoInvalidTypeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo must be a JPEG or PNG file.'**
+  String get licensePhotoInvalidTypeError;
+
+  /// No description provided for @licensePhotoTooLargeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo must be 2 MB or smaller.'**
+  String get licensePhotoTooLargeError;
+
+  /// No description provided for @licensePhotoSaveFailedError.
+  ///
+  /// In en, this message translates to:
+  /// **'The operator was saved, but the license photo could not be saved. Press Save to try again.'**
+  String get licensePhotoSaveFailedError;
+
   /// No description provided for @licenseTypeLabel.
   ///
   /// In en, this message translates to:
