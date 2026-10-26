@@ -230,6 +230,15 @@
   "productsPurchasableFilter": "Purchasable",
   "@productsPurchasableFilter": {},
 
+  "productsPerishableFilter": "Perishable",
+  "@productsPerishableFilter": {},
+
+  "productsSeriableFilter": "Seriable",
+  "@productsSeriableFilter": {},
+
+  "productsInvoiceableFilter": "Invoiceable",
+  "@productsInvoiceableFilter": {},
+
   "productsAttributesFilterLabel": "Product attributes",
   "@productsAttributesFilterLabel": {},
 

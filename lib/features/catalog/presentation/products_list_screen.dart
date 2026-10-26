@@ -270,14 +270,10 @@ class _ProductFiltersPanel extends ConsumerWidget {
     final allLabels = ref.watch(allLabelsProvider).value ?? <LabelItem>[];
     // `null` while loading/errored => every chip stays enabled (fail open,
     // spec 009 FR-010) rather than blocking the user on a facet failure.
-    final labelCounts = ref
-        .watch(productLabelFacetsProvider(filter))
-        .value;
+    final labelCounts = ref.watch(productLabelFacetsProvider(filter)).value;
     final supplierRepo = ref.read(supplierRepositoryProvider);
     final supplierDisplayText = filter.supplier != null
-        ? ref
-                  .watch(supplierDisplayNameProvider(filter.supplier!))
-                  .value ??
+        ? ref.watch(supplierDisplayNameProvider(filter.supplier!)).value ??
               '${filter.supplier}'
         : '';
 
@@ -336,6 +332,36 @@ class _ProductFiltersPanel extends ConsumerWidget {
               onChanged: (value) => goTo(
                 query
                     .withFacet('purchasable', value?.toString())
+                    .copyWith(pageIndex: 0),
+              ),
+            ),
+            _TriStateFilterChip(
+              chipKey: const Key('products_filter_perishable'),
+              label: l10n.productsPerishableFilter,
+              value: filter.perishable,
+              onChanged: (value) => goTo(
+                query
+                    .withFacet('perishable', value?.toString())
+                    .copyWith(pageIndex: 0),
+              ),
+            ),
+            _TriStateFilterChip(
+              chipKey: const Key('products_filter_seriable'),
+              label: l10n.productsSeriableFilter,
+              value: filter.seriable,
+              onChanged: (value) => goTo(
+                query
+                    .withFacet('seriable', value?.toString())
+                    .copyWith(pageIndex: 0),
+              ),
+            ),
+            _TriStateFilterChip(
+              chipKey: const Key('products_filter_invoiceable'),
+              label: l10n.productsInvoiceableFilter,
+              value: filter.invoiceable,
+              onChanged: (value) => goTo(
+                query
+                    .withFacet('invoiceable', value?.toString())
                     .copyWith(pageIndex: 0),
               ),
             ),
@@ -433,7 +459,12 @@ class _TriStateFilterChip extends StatelessWidget {
 /// Sizes of the thumbnail column, derived from the shared table row height so
 /// the photo always fits inside the row with a symmetric inset above and below
 /// (046-catalog-improvements FR-018) instead of being clipped by it.
-({double size, double verticalInset, double horizontalInset, double columnWidth})
+({
+  double size,
+  double verticalInset,
+  double horizontalInset,
+  double columnWidth,
+})
 _photoMetrics(BuildContext context) {
   final rowHeight = Theme.of(context).density.tableDataRowHeight ?? 44;
   final size = rowHeight - 2 * _photoInset;

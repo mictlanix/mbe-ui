@@ -46,6 +46,9 @@ void main() {
             'stockable': ['true'],
             'salable': ['true'],
             'purchasable': ['true'],
+            'perishable': ['true'],
+            'seriable': ['false'],
+            'invoiceable': ['true'],
             'label': ['3', '7'],
           },
         ),
@@ -57,6 +60,9 @@ void main() {
       expect(filter.stockable, isTrue);
       expect(filter.salable, isTrue);
       expect(filter.purchasable, isTrue);
+      expect(filter.perishable, isTrue);
+      expect(filter.seriable, isFalse);
+      expect(filter.invoiceable, isTrue);
       expect(filter.labels, [3, 7]);
     });
 
@@ -72,6 +78,9 @@ void main() {
       expect(filter.stockable, isNull);
       expect(filter.salable, isNull);
       expect(filter.purchasable, isNull);
+      expect(filter.perishable, isNull);
+      expect(filter.seriable, isNull);
+      expect(filter.invoiceable, isNull);
       expect(filter.labels, isEmpty);
     });
 
@@ -125,9 +134,12 @@ void main() {
         stockable: true,
         salable: false,
         purchasable: true,
+        perishable: true,
+        seriable: false,
+        invoiceable: true,
         labels: [3],
       );
-      expect(filter.activeFilterCount, 5);
+      expect(filter.activeFilterCount, 8);
     });
 
     test('counts each selected label individually (FR-009)', () {

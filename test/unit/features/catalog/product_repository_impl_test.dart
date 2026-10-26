@@ -133,6 +133,28 @@ void main() {
 
       expect(captured!.queryParameters.containsKey('label'), isFalse);
     });
+
+    test('forwards the perishable, seriable and invoiceable filters', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode({'items': [], 'total': 0}),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.list(
+        perishable: true,
+        seriable: false,
+        invoiceable: true,
+      );
+
+      expect(captured!.queryParameters['perishable'], true);
+      expect(captured!.queryParameters['seriable'], false);
+      expect(captured!.queryParameters['invoiceable'], true);
+    });
   });
 
   group('ProductRepositoryImpl.create', () {
@@ -767,28 +789,25 @@ void main() {
       expect(facets[1].missingCount, 37);
     });
 
-    test(
-      'a price list id of 0 survives the mapping — `Costo` sits at id 0 in '
-      'the deployment, so anything treating the id as falsy silently drops '
-      'its chip (FR-019a)',
-      () async {
-        final repository = _repositoryWith(
-          (options) async => ResponseBody.fromString(
-            jsonEncode([
-              {'price_list': 0, 'missing_count': 5},
-            ]),
-            200,
-            headers: _jsonHeaders,
-          ),
-        );
+    test('a price list id of 0 survives the mapping — `Costo` sits at id 0 in '
+        'the deployment, so anything treating the id as falsy silently drops '
+        'its chip (FR-019a)', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode([
+            {'price_list': 0, 'missing_count': 5},
+          ]),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
 
-        final facets = await repository.productMissingPriceFacets();
+      final facets = await repository.productMissingPriceFacets();
 
-        expect(facets, hasLength(1));
-        expect(facets.single.priceListId, 0);
-        expect(facets.single.missingCount, 5);
-      },
-    );
+      expect(facets, hasLength(1));
+      expect(facets.single.priceListId, 0);
+      expect(facets.single.missingCount, 5);
+    });
 
     test(
       'a missing_count of 0 is kept, not dropped — a fully priced list still '
