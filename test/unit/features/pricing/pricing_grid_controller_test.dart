@@ -73,6 +73,9 @@ void main() {
               'stockable': ['true'],
               'salable': ['true'],
               'purchasable': ['false'],
+              'perishable': ['true'],
+              'seriable': ['false'],
+              'invoiceable': ['true'],
               'supplier': ['12'],
               'label': ['3', '7'],
             },
@@ -85,6 +88,9 @@ void main() {
         expect(filter.stockable, isTrue);
         expect(filter.salable, isTrue);
         expect(filter.purchasable, isFalse);
+        expect(filter.perishable, isTrue);
+        expect(filter.seriable, isFalse);
+        expect(filter.invoiceable, isTrue);
         expect(filter.supplier, 12);
         expect(filter.labels, [3, 7]);
       },
@@ -102,6 +108,9 @@ void main() {
       expect(filter.stockable, isNull);
       expect(filter.salable, isNull);
       expect(filter.purchasable, isNull);
+      expect(filter.perishable, isNull);
+      expect(filter.seriable, isNull);
+      expect(filter.invoiceable, isNull);
       expect(filter.supplier, isNull);
       expect(filter.labels, isEmpty);
       expect(filter.missingPriceList, isNull);

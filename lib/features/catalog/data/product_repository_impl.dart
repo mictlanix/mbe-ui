@@ -332,6 +332,9 @@ class ProductRepositoryImpl implements ProductRepository {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    bool? perishable,
+    bool? seriable,
+    bool? invoiceable,
     int? supplier,
     List<int> labels = const [],
   }) async {
@@ -343,6 +346,9 @@ class ProductRepositoryImpl implements ProductRepository {
             stockable: stockable,
             salable: salable,
             purchasable: purchasable,
+            perishable: perishable,
+            seriable: seriable,
+            invoiceable: invoiceable,
             supplier: supplier,
             label: labels.isEmpty ? null : BuiltList<int>(labels),
           );

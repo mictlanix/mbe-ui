@@ -227,6 +227,9 @@ class _AdvancedSearchScreenState extends ConsumerState<AdvancedSearchScreen> {
   int _panelFilterCount(ProductFilter filter) =>
       (filter.stockable != null ? 1 : 0) +
       (filter.purchasable != null ? 1 : 0) +
+      (filter.perishable != null ? 1 : 0) +
+      (filter.seriable != null ? 1 : 0) +
+      (filter.invoiceable != null ? 1 : 0) +
       (filter.supplier != null ? 1 : 0) +
       filter.labels.length;
 }
@@ -310,7 +313,8 @@ class _BottomActionBar extends StatelessWidget {
   }
 }
 
-/// The screen's own facet filters (Stockable, Purchasable, Supplier, Label)
+/// The screen's own facet filters (Stockable, Purchasable, Perishable,
+/// Seriable, Invoiceable, Supplier, Label)
 /// — deliberately **not** `ProductsListScreen`'s `_ProductFiltersPanel`: this
 /// screen shows neither a Status control nor a Salable control, since both
 /// are forced (FR-008). A [ConsumerWidget] so the controls stay reactive as
@@ -361,6 +365,30 @@ class _AdvancedSearchFiltersPanel extends ConsumerWidget {
               value: filter.purchasable,
               onChanged: (value) => onChanged(
                 query.withFacet('purchasable', value?.toString()).copyWith(pageIndex: 0),
+              ),
+            ),
+            _TriStateFilterChip(
+              chipKey: const Key('advanced_search_filter_perishable'),
+              label: l10n.productsPerishableFilter,
+              value: filter.perishable,
+              onChanged: (value) => onChanged(
+                query.withFacet('perishable', value?.toString()).copyWith(pageIndex: 0),
+              ),
+            ),
+            _TriStateFilterChip(
+              chipKey: const Key('advanced_search_filter_seriable'),
+              label: l10n.productsSeriableFilter,
+              value: filter.seriable,
+              onChanged: (value) => onChanged(
+                query.withFacet('seriable', value?.toString()).copyWith(pageIndex: 0),
+              ),
+            ),
+            _TriStateFilterChip(
+              chipKey: const Key('advanced_search_filter_invoiceable'),
+              label: l10n.productsInvoiceableFilter,
+              value: filter.invoiceable,
+              onChanged: (value) => onChanged(
+                query.withFacet('invoiceable', value?.toString()).copyWith(pageIndex: 0),
               ),
             ),
           ],
