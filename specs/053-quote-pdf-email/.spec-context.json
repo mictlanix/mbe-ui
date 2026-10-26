@@ -3,7 +3,7 @@
   "specName": "Quotation PDF and Email",
   "branch": "053-quote-pdf-email",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -293,8 +293,40 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-10-24T19:52:07.973Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-26T09:33:05.568Z"
     }
   ],
   "telemetryInstanceId": "068491e9-bf96-4b57-a415-90d65d6f3dec",
-  "currentTask": "T031"
+  "currentTask": null,
+  "concerns": [
+    {
+      "note": "finished, unverified",
+      "step": "implement"
+    },
+    {
+      "note": "superseded: \"finished, unverified\" was recorded at mark-complete before the three verifications were written; all quickstart checks M1–M12 and print/download passed",
+      "kind": "note"
+    }
+  ],
+  "verified": [
+    {
+      "what": "quickstart M1–M7, M9, M11 (integration_test/quote_pdf_email_quickstart_test.dart, macOS, local mbe-api)",
+      "result": "pass 10/10, 2026-10-25"
+    },
+    {
+      "what": "quickstart M8, M10, M12 (integration_test/quote_pdf_email_live_test.dart, macOS, local mbe-api with Gmail SMTP)",
+      "result": "pass 3/3, 2026-10-26; M8 7.1 s dialog→snackbar",
+      "command": "flutter test integration_test/quote_pdf_email_live_test.dart -d macos --dart-define-from-file=.env.settings --dart-define-from-file=.env --dart-define=MBE_QUOTE_EMAIL_TO=…"
+    },
+    {
+      "what": "print and download from the preview (manual, macOS)",
+      "result": "pass 2026-10-26: one letter-size sheet; saved as cotizacion-00030366.pdf"
+    }
+  ]
 }
