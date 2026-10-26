@@ -43,7 +43,7 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// - M10 needs a quote cancelled mid-flow (a data change), and on a
 ///   deployment without mail mbe-api answers 503 before it checks the
 ///   quote's state. It has its own opt-in driver:
-///   `integration_test/quote_email_cancelled_mid_flow_test.dart`.
+///   `integration_test/quote_pdf_email_live_test.dart`.
 /// - M12 needs an account without sales-quotes read.
 /// - Print and download open native dialogs; the preview is checked up to
 ///   the enabled buttons, and the file name is checked through the client.
