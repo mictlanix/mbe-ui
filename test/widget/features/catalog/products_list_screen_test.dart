@@ -119,6 +119,7 @@ void main() {
     // exercising the facet-driven enable/disable pass an explicit list.
     List<ProductLabelFacet>? labelFacets,
     ListQuery query = const ListQuery(),
+
     /// Pins the app's locale, for a test asserting a string is *localized*
     /// rather than hardcoded English.
     Locale? locale,
@@ -419,6 +420,15 @@ void main() {
       expect(find.byKey(const Key('products_filter_salable')), findsOneWidget);
       expect(
         find.byKey(const Key('products_filter_purchasable')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('products_filter_perishable')),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('products_filter_seriable')), findsOneWidget);
+      expect(
+        find.byKey(const Key('products_filter_invoiceable')),
         findsOneWidget,
       );
     },
@@ -959,7 +969,10 @@ void main() {
     (tester) async {
       await pumpScreen(tester, signedInAs: _readOnlyUser, products: const []);
 
-      expect(find.byKey(const Key('list_state_filtered_empty')), findsOneWidget);
+      expect(
+        find.byKey(const Key('list_state_filtered_empty')),
+        findsOneWidget,
+      );
       expect(find.text('No products found.'), findsNothing);
     },
   );
@@ -1521,7 +1534,11 @@ void main() {
     testWidgets('the heading is localized, not a hardcoded English string', (
       tester,
     ) async {
-      await pumpScreen(tester, signedInAs: _fullAccessUser, locale: const Locale('es'));
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        locale: const Locale('es'),
+      );
       await openFilterSheet(tester);
 
       final es = await AppLocalizations.delegate.load(const Locale('es'));
@@ -1544,7 +1561,9 @@ void main() {
         // Anchored on keys, not on heading text: "Status" is also a column
         // header in the table behind the sheet, so the text finder is
         // ambiguous while the drawer is open.
-        final status = topOf(find.byKey(const Key('products_filter_status_all')));
+        final status = topOf(
+          find.byKey(const Key('products_filter_status_all')),
+        );
         final attributes = topOf(
           find.byKey(const Key('products_filter_stockable')),
         );

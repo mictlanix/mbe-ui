@@ -32,6 +32,9 @@ abstract class ProductFilter with _$ProductFilter {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    bool? perishable,
+    bool? seriable,
+    bool? invoiceable,
     int? supplier,
     @Default(<int>[]) List<int> labels,
     @Default(0) int pageIndex,
@@ -45,6 +48,9 @@ abstract class ProductFilter with _$ProductFilter {
       stockable: _parseTriState(query.facet('stockable')),
       salable: _parseTriState(query.facet('salable')),
       purchasable: _parseTriState(query.facet('purchasable')),
+      perishable: _parseTriState(query.facet('perishable')),
+      seriable: _parseTriState(query.facet('seriable')),
+      invoiceable: _parseTriState(query.facet('invoiceable')),
       supplier: supplierRaw != null ? int.tryParse(supplierRaw) : null,
       labels: query
           .facetValues('label')
@@ -70,6 +76,9 @@ extension ProductFilterBadge on ProductFilter {
     if (stockable != null) count++;
     if (salable != null) count++;
     if (purchasable != null) count++;
+    if (perishable != null) count++;
+    if (seriable != null) count++;
+    if (invoiceable != null) count++;
     if (supplier != null) count++;
     count += labels.length;
     return count;
@@ -103,6 +112,9 @@ class ProductsListController extends _$ProductsListController {
           stockable: filter.stockable,
           salable: filter.salable,
           purchasable: filter.purchasable,
+          perishable: filter.perishable,
+          seriable: filter.seriable,
+          invoiceable: filter.invoiceable,
           supplier: filter.supplier,
           labels: filter.labels,
           skip: filter.pageIndex * _pageSize,
@@ -139,6 +151,9 @@ Future<Map<int, int>> productLabelFacets(Ref ref, ProductFilter filter) async {
         stockable: filter.stockable,
         salable: filter.salable,
         purchasable: filter.purchasable,
+        perishable: filter.perishable,
+        seriable: filter.seriable,
+        invoiceable: filter.invoiceable,
         labels: filter.labels,
       );
   return {for (final f in facets) f.labelId: f.count};

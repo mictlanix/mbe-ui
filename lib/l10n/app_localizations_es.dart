@@ -270,6 +270,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get productsPurchasableFilter => 'Comprable';
 
   @override
+  String get productsPerishableFilter => 'Perecedero';
+
+  @override
+  String get productsSeriableFilter => 'Con número de serie';
+
+  @override
+  String get productsInvoiceableFilter => 'Facturable';
+
+  @override
   String get productsAttributesFilterLabel => 'Atributos del producto';
 
   @override

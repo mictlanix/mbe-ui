@@ -38,6 +38,9 @@ abstract class ProductRepository {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    bool? perishable,
+    bool? seriable,
+    bool? invoiceable,
     int? supplier,
     List<int> labels = const [],
     int? missingPriceList,
@@ -207,6 +210,9 @@ abstract class ProductRepository {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    bool? perishable,
+    bool? seriable,
+    bool? invoiceable,
     List<int> labels = const [],
   });
 
@@ -229,6 +235,9 @@ abstract class ProductRepository {
     bool? stockable,
     bool? salable,
     bool? purchasable,
+    bool? perishable,
+    bool? seriable,
+    bool? invoiceable,
     int? supplier,
     List<int> labels = const [],
   });
