@@ -3,7 +3,7 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/price.dart';
+import 'package:mbe_api_client/src/model/price1.dart';
 import 'package:mbe_api_client/src/model/low_profit.dart';
 import 'package:mbe_api_client/src/model/high_profit.dart';
 import 'package:built_value/built_value.dart';
@@ -29,7 +29,7 @@ abstract class ProductPriceCreate
   int get priceList;
 
   @BuiltValueField(wireName: r'price')
-  Price get price;
+  Price1 get price;
 
   @Deprecated('lowProfit has been deprecated')
   @BuiltValueField(wireName: r'low_profit')
@@ -78,7 +78,7 @@ class _$ProductPriceCreateSerializer
     yield r'price';
     yield serializers.serialize(
       object.price,
-      specifiedType: const FullType(Price),
+      specifiedType: const FullType(Price1),
     );
     if (object.lowProfit != null) {
       yield r'low_profit';
@@ -137,9 +137,9 @@ class _$ProductPriceCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(Price),
+                    specifiedType: const FullType(Price1),
                   )
-                  as Price;
+                  as Price1;
           result.price.replace(valueDes);
           break;
         case r'low_profit':

@@ -64,7 +64,7 @@ abstract class FiscalDocumentSummary
 
   @BuiltValueField(wireName: r'status')
   FiscalDocumentSummaryStatusEnum get status;
-  // enum statusEnum {  draft,  issued,  cancelled,  };
+  // enum statusEnum {  draft,  sealed,  issued,  cancelled,  };
 
   @BuiltValueField(wireName: r'total')
   String? get total;
@@ -361,6 +361,9 @@ class FiscalDocumentSummaryStatusEnum extends EnumClass {
   @BuiltValueEnumConst(wireName: r'draft')
   static const FiscalDocumentSummaryStatusEnum draft =
       _$fiscalDocumentSummaryStatusEnum_draft;
+  @BuiltValueEnumConst(wireName: r'sealed')
+  static const FiscalDocumentSummaryStatusEnum sealed_ =
+      _$fiscalDocumentSummaryStatusEnum_sealed_;
   @BuiltValueEnumConst(wireName: r'issued')
   static const FiscalDocumentSummaryStatusEnum issued =
       _$fiscalDocumentSummaryStatusEnum_issued;

@@ -23,6 +23,8 @@ part 'fiscal_document_line.g.dart';
 /// * [taxRate]
 /// * [taxIncluded]
 /// * [comment]
+/// * [product]
+/// * [orderDetail]
 @BuiltValue()
 abstract class FiscalDocumentLine
     implements Built<FiscalDocumentLine, FiscalDocumentLineBuilder> {
@@ -61,6 +63,12 @@ abstract class FiscalDocumentLine
 
   @BuiltValueField(wireName: r'comment')
   String? get comment;
+
+  @BuiltValueField(wireName: r'product')
+  int? get product;
+
+  @BuiltValueField(wireName: r'order_detail')
+  int? get orderDetail;
 
   FiscalDocumentLine._();
 
@@ -158,6 +166,20 @@ class _$FiscalDocumentLineSerializer
             object.comment,
             specifiedType: const FullType.nullable(String),
           );
+    if (object.product != null) {
+      yield r'product';
+      yield serializers.serialize(
+        object.product,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
+    if (object.orderDetail != null) {
+      yield r'order_detail';
+      yield serializers.serialize(
+        object.orderDetail,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
   }
 
   @override
@@ -294,6 +316,26 @@ class _$FiscalDocumentLineSerializer
                   as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
+          break;
+        case r'product':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.product = valueDes;
+          break;
+        case r'order_detail':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.orderDetail = valueDes;
           break;
         default:
           unhandled.add(key);

@@ -3,7 +3,7 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/price1.dart';
+import 'package:mbe_api_client/src/model/price2.dart';
 import 'package:mbe_api_client/src/model/quantity.dart';
 import 'package:mbe_api_client/src/model/price_adjustment.dart';
 import 'package:mbe_api_client/src/model/discount_rate.dart';
@@ -31,7 +31,7 @@ abstract class SalesQuoteLineCreate
   Quantity? get quantity;
 
   @BuiltValueField(wireName: r'price')
-  Price1? get price;
+  Price2? get price;
 
   @BuiltValueField(wireName: r'price_adjustment')
   PriceAdjustment? get priceAdjustment;
@@ -87,7 +87,7 @@ class _$SalesQuoteLineCreateSerializer
       yield r'price';
       yield serializers.serialize(
         object.price,
-        specifiedType: const FullType.nullable(Price1),
+        specifiedType: const FullType.nullable(Price2),
       );
     }
     if (object.priceAdjustment != null) {
@@ -158,9 +158,9 @@ class _$SalesQuoteLineCreateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(Price1),
+                    specifiedType: const FullType.nullable(Price2),
                   )
-                  as Price1?;
+                  as Price2?;
           if (valueDes == null) continue;
           result.price.replace(valueDes);
           break;

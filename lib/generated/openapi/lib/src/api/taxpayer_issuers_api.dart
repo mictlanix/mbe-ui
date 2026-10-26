@@ -8,9 +8,13 @@ import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
+import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_taxpayer_issuer_response.dart';
+import 'package:mbe_api_client/src/model/taxpayer_batch_create.dart';
+import 'package:mbe_api_client/src/model/taxpayer_batch_response.dart';
+import 'package:mbe_api_client/src/model/taxpayer_batch_update.dart';
 import 'package:mbe_api_client/src/model/taxpayer_issuer_create.dart';
 import 'package:mbe_api_client/src/model/taxpayer_issuer_response.dart';
 import 'package:mbe_api_client/src/model/taxpayer_issuer_update.dart';
@@ -21,6 +25,114 @@ class TaxpayerIssuersApi {
   final Serializers _serializers;
 
   const TaxpayerIssuersApi(this._dio, this._serializers);
+
+  /// Create Taxpayer Batch
+  ///
+  ///
+  /// Parameters:
+  /// * [rfc]
+  /// * [taxpayerBatchCreate]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [TaxpayerBatchResponse] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<TaxpayerBatchResponse>>
+  createTaxpayerBatchApiV1TaxpayerIssuersRfcBatchesPost({
+    required String rfc,
+    required TaxpayerBatchCreate taxpayerBatchCreate,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/taxpayer-issuers/{rfc}/batches'.replaceAll(
+      '{'
+      r'rfc'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        rfc,
+        const FullType(String),
+      ).toString(),
+    );
+    final _options = Options(
+      method: r'POST',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      contentType: 'application/json',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+      const _type = FullType(TaxpayerBatchCreate);
+      _bodyData = _serializers.serialize(
+        taxpayerBatchCreate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _options.compose(_dio.options, _path),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    TaxpayerBatchResponse? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(TaxpayerBatchResponse),
+                )
+                as TaxpayerBatchResponse;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<TaxpayerBatchResponse>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
 
   /// Create Taxpayer Issuer
   ///
@@ -117,6 +229,76 @@ class TaxpayerIssuersApi {
       statusMessage: _response.statusMessage,
       extra: _response.extra,
     );
+  }
+
+  /// Delete Taxpayer Batch
+  ///
+  ///
+  /// Parameters:
+  /// * [rfc]
+  /// * [taxpayerBatchId]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future]
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<void>>
+  deleteTaxpayerBatchApiV1TaxpayerIssuersRfcBatchesTaxpayerBatchIdDelete({
+    required String rfc,
+    required int taxpayerBatchId,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/taxpayer-issuers/{rfc}/batches/{taxpayer_batch_id}'
+        .replaceAll(
+          '{'
+          r'rfc'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            rfc,
+            const FullType(String),
+          ).toString(),
+        )
+        .replaceAll(
+          '{'
+          r'taxpayer_batch_id'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            taxpayerBatchId,
+            const FullType(int),
+          ).toString(),
+        );
+    final _options = Options(
+      method: r'DELETE',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    return _response;
   }
 
   /// Delete Taxpayer Issuer
@@ -262,6 +444,95 @@ class TaxpayerIssuersApi {
     );
   }
 
+  /// List Taxpayer Batches
+  /// The issuer&#39;s series, by series. &#x60;in_use&#x60; says whether any of its documents carries it.
+  ///
+  /// Parameters:
+  /// * [rfc]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [BuiltList<TaxpayerBatchResponse>] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<BuiltList<TaxpayerBatchResponse>>>
+  listTaxpayerBatchesApiV1TaxpayerIssuersRfcBatchesGet({
+    required String rfc,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/taxpayer-issuers/{rfc}/batches'.replaceAll(
+      '{'
+      r'rfc'
+      '}',
+      encodeQueryParameter(
+        _serializers,
+        rfc,
+        const FullType(String),
+      ).toString(),
+    );
+    final _options = Options(
+      method: r'GET',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    BuiltList<TaxpayerBatchResponse>? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(BuiltList, [
+                    FullType(TaxpayerBatchResponse),
+                  ]),
+                )
+                as BuiltList<TaxpayerBatchResponse>;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<BuiltList<TaxpayerBatchResponse>>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
   /// List Taxpayer Issuers
   ///
   ///
@@ -353,6 +624,127 @@ class TaxpayerIssuersApi {
     }
 
     return Response<ListResponseTaxpayerIssuerResponse>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// Update Taxpayer Batch
+  /// A series in use keeps its series text and type; its template can still change.
+  ///
+  /// Parameters:
+  /// * [rfc]
+  /// * [taxpayerBatchId]
+  /// * [taxpayerBatchUpdate]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [TaxpayerBatchResponse] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<TaxpayerBatchResponse>>
+  updateTaxpayerBatchApiV1TaxpayerIssuersRfcBatchesTaxpayerBatchIdPut({
+    required String rfc,
+    required int taxpayerBatchId,
+    required TaxpayerBatchUpdate taxpayerBatchUpdate,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/taxpayer-issuers/{rfc}/batches/{taxpayer_batch_id}'
+        .replaceAll(
+          '{'
+          r'rfc'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            rfc,
+            const FullType(String),
+          ).toString(),
+        )
+        .replaceAll(
+          '{'
+          r'taxpayer_batch_id'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            taxpayerBatchId,
+            const FullType(int),
+          ).toString(),
+        );
+    final _options = Options(
+      method: r'PUT',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      contentType: 'application/json',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+      const _type = FullType(TaxpayerBatchUpdate);
+      _bodyData = _serializers.serialize(
+        taxpayerBatchUpdate,
+        specifiedType: _type,
+      );
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _options.compose(_dio.options, _path),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    TaxpayerBatchResponse? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(TaxpayerBatchResponse),
+                )
+                as TaxpayerBatchResponse;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<TaxpayerBatchResponse>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

@@ -3,7 +3,10 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/date.dart';
 import 'package:built_collection/built_collection.dart';
+import 'package:mbe_api_client/src/model/paid_invoice_response.dart';
+import 'package:mbe_api_client/src/model/fiscal_document_relation_response.dart';
 import 'package:mbe_api_client/src/model/fiscal_document_line.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -41,7 +44,15 @@ part 'fiscal_document_response.g.dart';
 /// * [stamped] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [cancellationDate] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [cancellationReason]
+/// * [customer]
+/// * [facility]
+/// * [paymentDate]
+/// * [paymentAmount]
+/// * [paymentReference]
+/// * [customerPayment]
 /// * [lines]
+/// * [relations]
+/// * [paidInvoices]
 @BuiltValue()
 abstract class FiscalDocumentResponse
     implements Built<FiscalDocumentResponse, FiscalDocumentResponseBuilder> {
@@ -81,7 +92,7 @@ abstract class FiscalDocumentResponse
 
   @BuiltValueField(wireName: r'status')
   FiscalDocumentResponseStatusEnum get status;
-  // enum statusEnum {  draft,  issued,  cancelled,  };
+  // enum statusEnum {  draft,  sealed,  issued,  cancelled,  };
 
   @BuiltValueField(wireName: r'total')
   String? get total;
@@ -133,8 +144,32 @@ abstract class FiscalDocumentResponse
   @BuiltValueField(wireName: r'cancellation_reason')
   String? get cancellationReason;
 
+  @BuiltValueField(wireName: r'customer')
+  int? get customer;
+
+  @BuiltValueField(wireName: r'facility')
+  int? get facility;
+
+  @BuiltValueField(wireName: r'payment_date')
+  Date? get paymentDate;
+
+  @BuiltValueField(wireName: r'payment_amount')
+  String? get paymentAmount;
+
+  @BuiltValueField(wireName: r'payment_reference')
+  String? get paymentReference;
+
+  @BuiltValueField(wireName: r'customer_payment')
+  int? get customerPayment;
+
   @BuiltValueField(wireName: r'lines')
   BuiltList<FiscalDocumentLine> get lines;
+
+  @BuiltValueField(wireName: r'relations')
+  BuiltList<FiscalDocumentRelationResponse>? get relations;
+
+  @BuiltValueField(wireName: r'paid_invoices')
+  BuiltList<PaidInvoiceResponse>? get paidInvoices;
 
   FiscalDocumentResponse._();
 
@@ -143,7 +178,9 @@ abstract class FiscalDocumentResponse
   ]) = _$FiscalDocumentResponse;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(FiscalDocumentResponseBuilder b) => b;
+  static void _defaults(FiscalDocumentResponseBuilder b) => b
+    ..relations = ListBuilder()
+    ..paidInvoices = ListBuilder();
 
   @BuiltValueSerializer(custom: true)
   static Serializer<FiscalDocumentResponse> get serializer =>
@@ -342,11 +379,71 @@ class _$FiscalDocumentResponseSerializer
             object.cancellationReason,
             specifiedType: const FullType.nullable(String),
           );
+    if (object.customer != null) {
+      yield r'customer';
+      yield serializers.serialize(
+        object.customer,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
+    if (object.facility != null) {
+      yield r'facility';
+      yield serializers.serialize(
+        object.facility,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
+    if (object.paymentDate != null) {
+      yield r'payment_date';
+      yield serializers.serialize(
+        object.paymentDate,
+        specifiedType: const FullType.nullable(Date),
+      );
+    }
+    if (object.paymentAmount != null) {
+      yield r'payment_amount';
+      yield serializers.serialize(
+        object.paymentAmount,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.paymentReference != null) {
+      yield r'payment_reference';
+      yield serializers.serialize(
+        object.paymentReference,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.customerPayment != null) {
+      yield r'customer_payment';
+      yield serializers.serialize(
+        object.customerPayment,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
     yield r'lines';
     yield serializers.serialize(
       object.lines,
       specifiedType: const FullType(BuiltList, [FullType(FiscalDocumentLine)]),
     );
+    if (object.relations != null) {
+      yield r'relations';
+      yield serializers.serialize(
+        object.relations,
+        specifiedType: const FullType(BuiltList, [
+          FullType(FiscalDocumentRelationResponse),
+        ]),
+      );
+    }
+    if (object.paidInvoices != null) {
+      yield r'paid_invoices';
+      yield serializers.serialize(
+        object.paidInvoices,
+        specifiedType: const FullType(BuiltList, [
+          FullType(PaidInvoiceResponse),
+        ]),
+      );
+    }
   }
 
   @override
@@ -631,6 +728,66 @@ class _$FiscalDocumentResponseSerializer
           if (valueDes == null) continue;
           result.cancellationReason = valueDes;
           break;
+        case r'customer':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.customer = valueDes;
+          break;
+        case r'facility':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.facility = valueDes;
+          break;
+        case r'payment_date':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(Date),
+                  )
+                  as Date?;
+          if (valueDes == null) continue;
+          result.paymentDate = valueDes;
+          break;
+        case r'payment_amount':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.paymentAmount = valueDes;
+          break;
+        case r'payment_reference':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.paymentReference = valueDes;
+          break;
+        case r'customer_payment':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.customerPayment = valueDes;
+          break;
         case r'lines':
           final valueDes =
               serializers.deserialize(
@@ -641,6 +798,30 @@ class _$FiscalDocumentResponseSerializer
                   )
                   as BuiltList<FiscalDocumentLine>;
           result.lines.replace(valueDes);
+          break;
+        case r'relations':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(BuiltList, [
+                      FullType(FiscalDocumentRelationResponse),
+                    ]),
+                  )
+                  as BuiltList<FiscalDocumentRelationResponse>?;
+          if (valueDes == null) continue;
+          result.relations.replace(valueDes);
+          break;
+        case r'paid_invoices':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(BuiltList, [
+                      FullType(PaidInvoiceResponse),
+                    ]),
+                  )
+                  as BuiltList<PaidInvoiceResponse>?;
+          if (valueDes == null) continue;
+          result.paidInvoices.replace(valueDes);
           break;
         default:
           unhandled.add(key);
@@ -675,6 +856,9 @@ class FiscalDocumentResponseStatusEnum extends EnumClass {
   @BuiltValueEnumConst(wireName: r'draft')
   static const FiscalDocumentResponseStatusEnum draft =
       _$fiscalDocumentResponseStatusEnum_draft;
+  @BuiltValueEnumConst(wireName: r'sealed')
+  static const FiscalDocumentResponseStatusEnum sealed_ =
+      _$fiscalDocumentResponseStatusEnum_sealed_;
   @BuiltValueEnumConst(wireName: r'issued')
   static const FiscalDocumentResponseStatusEnum issued =
       _$fiscalDocumentResponseStatusEnum_issued;

@@ -205,11 +205,70 @@ Class | Method | HTTP request | Description
 [*FacilitiesApi*](doc/FacilitiesApi.md) | [**listFacilitiesApiV1FacilitiesGet**](doc/FacilitiesApi.md#listfacilitiesapiv1facilitiesget) | **GET** /api/v1/facilities | List Facilities
 [*FacilitiesApi*](doc/FacilitiesApi.md) | [**updateFacilityApiV1FacilitiesFacilityIdPut**](doc/FacilitiesApi.md#updatefacilityapiv1facilitiesfacilityidput) | **PUT** /api/v1/facilities/{facility_id} | Update Facility
 [*FacilitiesApi*](doc/FacilitiesApi.md) | [**uploadFacilityLogoApiV1FacilitiesFacilityIdLogoPost**](doc/FacilitiesApi.md#uploadfacilitylogoapiv1facilitiesfacilityidlogopost) | **POST** /api/v1/facilities/{facility_id}/logo | Upload Facility Logo
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**addInvoiceLineApiV1FiscalDocumentsFiscalDocumentIdLinesPost**](doc/FiscalDocumentsApi.md#addinvoicelineapiv1fiscaldocumentsfiscaldocumentidlinespost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/lines | Add Invoice Line
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**addInvoiceRelationApiV1FiscalDocumentsFiscalDocumentIdRelationsPost**](doc/FiscalDocumentsApi.md#addinvoicerelationapiv1fiscaldocumentsfiscaldocumentidrelationspost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/relations | Add Invoice Relation
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**addPaidInvoiceApiV1FiscalDocumentsFiscalDocumentIdPaidInvoicesPost**](doc/FiscalDocumentsApi.md#addpaidinvoiceapiv1fiscaldocumentsfiscaldocumentidpaidinvoicespost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/paid-invoices | Add Paid Invoice
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**addSalesOrderApiV1FiscalDocumentsFiscalDocumentIdSalesOrdersPost**](doc/FiscalDocumentsApi.md#addsalesorderapiv1fiscaldocumentsfiscaldocumentidsalesorderspost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/sales-orders | Add Sales Order
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**confirmInvoiceApiV1FiscalDocumentsFiscalDocumentIdConfirmPost**](doc/FiscalDocumentsApi.md#confirminvoiceapiv1fiscaldocumentsfiscaldocumentidconfirmpost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/confirm | Confirm Invoice
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**copyInvoiceLineApiV1FiscalDocumentsFiscalDocumentIdInvoiceLinesPost**](doc/FiscalDocumentsApi.md#copyinvoicelineapiv1fiscaldocumentsfiscaldocumentidinvoicelinespost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/invoice-lines | Copy Invoice Line
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**createCreditNoteApiV1FiscalDocumentsCreditNotesPost**](doc/FiscalDocumentsApi.md#createcreditnoteapiv1fiscaldocumentscreditnotespost) | **POST** /api/v1/fiscal-documents/credit-notes | Create Credit Note
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**createInvoiceApiV1FiscalDocumentsPost**](doc/FiscalDocumentsApi.md#createinvoiceapiv1fiscaldocumentspost) | **POST** /api/v1/fiscal-documents | Create Invoice
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**createPaymentReceiptApiV1FiscalDocumentsPaymentReceiptsPost**](doc/FiscalDocumentsApi.md#createpaymentreceiptapiv1fiscaldocumentspaymentreceiptspost) | **POST** /api/v1/fiscal-documents/payment-receipts | Create Payment Receipt
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**downloadFiscalDocumentXmlApiV1FiscalDocumentsFiscalDocumentIdXmlGet**](doc/FiscalDocumentsApi.md#downloadfiscaldocumentxmlapiv1fiscaldocumentsfiscaldocumentidxmlget) | **GET** /api/v1/fiscal-documents/{fiscal_document_id}/xml | Download Fiscal Document Xml
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**emailFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdEmailPost**](doc/FiscalDocumentsApi.md#emailfiscaldocumentapiv1fiscaldocumentsfiscaldocumentidemailpost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/email | Email Fiscal Document
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**getFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdGet**](doc/FiscalDocumentsApi.md#getfiscaldocumentapiv1fiscaldocumentsfiscaldocumentidget) | **GET** /api/v1/fiscal-documents/{fiscal_document_id} | Get Fiscal Document
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**listFiscalDocumentsApiV1FiscalDocumentsGet**](doc/FiscalDocumentsApi.md#listfiscaldocumentsapiv1fiscaldocumentsget) | **GET** /api/v1/fiscal-documents | List Fiscal Documents
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**printFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdPdfGet**](doc/FiscalDocumentsApi.md#printfiscaldocumentapiv1fiscaldocumentsfiscaldocumentidpdfget) | **GET** /api/v1/fiscal-documents/{fiscal_document_id}/pdf | Print Fiscal Document
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**removeInvoiceLineApiV1FiscalDocumentsFiscalDocumentIdLinesLineIdDelete**](doc/FiscalDocumentsApi.md#removeinvoicelineapiv1fiscaldocumentsfiscaldocumentidlineslineiddelete) | **DELETE** /api/v1/fiscal-documents/{fiscal_document_id}/lines/{line_id} | Remove Invoice Line
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**removeInvoiceRelationApiV1FiscalDocumentsFiscalDocumentIdRelationsRelationIdDelete**](doc/FiscalDocumentsApi.md#removeinvoicerelationapiv1fiscaldocumentsfiscaldocumentidrelationsrelationiddelete) | **DELETE** /api/v1/fiscal-documents/{fiscal_document_id}/relations/{relation_id} | Remove Invoice Relation
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**removePaidInvoiceApiV1FiscalDocumentsFiscalDocumentIdPaidInvoicesRelationIdDelete**](doc/FiscalDocumentsApi.md#removepaidinvoiceapiv1fiscaldocumentsfiscaldocumentidpaidinvoicesrelationiddelete) | **DELETE** /api/v1/fiscal-documents/{fiscal_document_id}/paid-invoices/{relation_id} | Remove Paid Invoice
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**reopenInvoiceApiV1FiscalDocumentsFiscalDocumentIdReopenPost**](doc/FiscalDocumentsApi.md#reopeninvoiceapiv1fiscaldocumentsfiscaldocumentidreopenpost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/reopen | Reopen Invoice
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**updateInvoiceApiV1FiscalDocumentsFiscalDocumentIdPut**](doc/FiscalDocumentsApi.md#updateinvoiceapiv1fiscaldocumentsfiscaldocumentidput) | **PUT** /api/v1/fiscal-documents/{fiscal_document_id} | Update Invoice
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**updateInvoiceLineApiV1FiscalDocumentsFiscalDocumentIdLinesLineIdPut**](doc/FiscalDocumentsApi.md#updateinvoicelineapiv1fiscaldocumentsfiscaldocumentidlineslineidput) | **PUT** /api/v1/fiscal-documents/{fiscal_document_id}/lines/{line_id} | Update Invoice Line
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**updatePaidInvoiceApiV1FiscalDocumentsFiscalDocumentIdPaidInvoicesRelationIdPut**](doc/FiscalDocumentsApi.md#updatepaidinvoiceapiv1fiscaldocumentsfiscaldocumentidpaidinvoicesrelationidput) | **PUT** /api/v1/fiscal-documents/{fiscal_document_id}/paid-invoices/{relation_id} | Update Paid Invoice
 [*HealthApi*](doc/HealthApi.md) | [**healthCheckApiV1HealthGet**](doc/HealthApi.md#healthcheckapiv1healthget) | **GET** /api/v1/health | Health Check
+[*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**cancelInventoryCountApiV1InventoryCountsCountIdCancelPost**](doc/InventoryCountsApi.md#cancelinventorycountapiv1inventorycountscountidcancelpost) | **POST** /api/v1/inventory-counts/{count_id}/cancel | Cancel Inventory Count
+[*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**confirmInventoryCountApiV1InventoryCountsCountIdConfirmPost**](doc/InventoryCountsApi.md#confirminventorycountapiv1inventorycountscountidconfirmpost) | **POST** /api/v1/inventory-counts/{count_id}/confirm | Confirm Inventory Count
+[*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**createInventoryCountApiV1InventoryCountsPost**](doc/InventoryCountsApi.md#createinventorycountapiv1inventorycountspost) | **POST** /api/v1/inventory-counts | Create Inventory Count
+[*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**getInventoryCountApiV1InventoryCountsCountIdGet**](doc/InventoryCountsApi.md#getinventorycountapiv1inventorycountscountidget) | **GET** /api/v1/inventory-counts/{count_id} | Get Inventory Count
+[*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**listInventoryCountsApiV1InventoryCountsGet**](doc/InventoryCountsApi.md#listinventorycountsapiv1inventorycountsget) | **GET** /api/v1/inventory-counts | List Inventory Counts
+[*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**removeInventoryCountLineApiV1InventoryCountsCountIdLinesLineIdDelete**](doc/InventoryCountsApi.md#removeinventorycountlineapiv1inventorycountscountidlineslineiddelete) | **DELETE** /api/v1/inventory-counts/{count_id}/lines/{line_id} | Remove Inventory Count Line
+[*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**setInventoryCountLinesApiV1InventoryCountsCountIdLinesPut**](doc/InventoryCountsApi.md#setinventorycountlinesapiv1inventorycountscountidlinesput) | **PUT** /api/v1/inventory-counts/{count_id}/lines | Set Inventory Count Lines
+[*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**updateInventoryCountApiV1InventoryCountsCountIdPut**](doc/InventoryCountsApi.md#updateinventorycountapiv1inventorycountscountidput) | **PUT** /api/v1/inventory-counts/{count_id} | Update Inventory Count
+[*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**updateInventoryCountLineApiV1InventoryCountsCountIdLinesLineIdPut**](doc/InventoryCountsApi.md#updateinventorycountlineapiv1inventorycountscountidlineslineidput) | **PUT** /api/v1/inventory-counts/{count_id}/lines/{line_id} | Update Inventory Count Line
+[*InventoryIssuesApi*](doc/InventoryIssuesApi.md) | [**addInventoryIssueLineApiV1InventoryIssuesIssueIdLinesPost**](doc/InventoryIssuesApi.md#addinventoryissuelineapiv1inventoryissuesissueidlinespost) | **POST** /api/v1/inventory-issues/{issue_id}/lines | Add Inventory Issue Line
+[*InventoryIssuesApi*](doc/InventoryIssuesApi.md) | [**cancelInventoryIssueApiV1InventoryIssuesIssueIdCancelPost**](doc/InventoryIssuesApi.md#cancelinventoryissueapiv1inventoryissuesissueidcancelpost) | **POST** /api/v1/inventory-issues/{issue_id}/cancel | Cancel Inventory Issue
+[*InventoryIssuesApi*](doc/InventoryIssuesApi.md) | [**confirmInventoryIssueApiV1InventoryIssuesIssueIdConfirmPost**](doc/InventoryIssuesApi.md#confirminventoryissueapiv1inventoryissuesissueidconfirmpost) | **POST** /api/v1/inventory-issues/{issue_id}/confirm | Confirm Inventory Issue
+[*InventoryIssuesApi*](doc/InventoryIssuesApi.md) | [**createInventoryIssueApiV1InventoryIssuesPost**](doc/InventoryIssuesApi.md#createinventoryissueapiv1inventoryissuespost) | **POST** /api/v1/inventory-issues | Create Inventory Issue
+[*InventoryIssuesApi*](doc/InventoryIssuesApi.md) | [**getInventoryIssueApiV1InventoryIssuesIssueIdGet**](doc/InventoryIssuesApi.md#getinventoryissueapiv1inventoryissuesissueidget) | **GET** /api/v1/inventory-issues/{issue_id} | Get Inventory Issue
+[*InventoryIssuesApi*](doc/InventoryIssuesApi.md) | [**listInventoryIssuesApiV1InventoryIssuesGet**](doc/InventoryIssuesApi.md#listinventoryissuesapiv1inventoryissuesget) | **GET** /api/v1/inventory-issues | List Inventory Issues
+[*InventoryIssuesApi*](doc/InventoryIssuesApi.md) | [**removeInventoryIssueLineApiV1InventoryIssuesIssueIdLinesLineIdDelete**](doc/InventoryIssuesApi.md#removeinventoryissuelineapiv1inventoryissuesissueidlineslineiddelete) | **DELETE** /api/v1/inventory-issues/{issue_id}/lines/{line_id} | Remove Inventory Issue Line
+[*InventoryIssuesApi*](doc/InventoryIssuesApi.md) | [**updateInventoryIssueApiV1InventoryIssuesIssueIdPut**](doc/InventoryIssuesApi.md#updateinventoryissueapiv1inventoryissuesissueidput) | **PUT** /api/v1/inventory-issues/{issue_id} | Update Inventory Issue
+[*InventoryIssuesApi*](doc/InventoryIssuesApi.md) | [**updateInventoryIssueLineApiV1InventoryIssuesIssueIdLinesLineIdPut**](doc/InventoryIssuesApi.md#updateinventoryissuelineapiv1inventoryissuesissueidlineslineidput) | **PUT** /api/v1/inventory-issues/{issue_id}/lines/{line_id} | Update Inventory Issue Line
+[*InventoryReceiptsApi*](doc/InventoryReceiptsApi.md) | [**addInventoryReceiptLineApiV1InventoryReceiptsReceiptIdLinesPost**](doc/InventoryReceiptsApi.md#addinventoryreceiptlineapiv1inventoryreceiptsreceiptidlinespost) | **POST** /api/v1/inventory-receipts/{receipt_id}/lines | Add Inventory Receipt Line
+[*InventoryReceiptsApi*](doc/InventoryReceiptsApi.md) | [**cancelInventoryReceiptApiV1InventoryReceiptsReceiptIdCancelPost**](doc/InventoryReceiptsApi.md#cancelinventoryreceiptapiv1inventoryreceiptsreceiptidcancelpost) | **POST** /api/v1/inventory-receipts/{receipt_id}/cancel | Cancel Inventory Receipt
+[*InventoryReceiptsApi*](doc/InventoryReceiptsApi.md) | [**complementaryInventoryReceiptApiV1InventoryReceiptsReceiptIdComplementaryPost**](doc/InventoryReceiptsApi.md#complementaryinventoryreceiptapiv1inventoryreceiptsreceiptidcomplementarypost) | **POST** /api/v1/inventory-receipts/{receipt_id}/complementary | Complementary Inventory Receipt
+[*InventoryReceiptsApi*](doc/InventoryReceiptsApi.md) | [**confirmInventoryReceiptApiV1InventoryReceiptsReceiptIdConfirmPost**](doc/InventoryReceiptsApi.md#confirminventoryreceiptapiv1inventoryreceiptsreceiptidconfirmpost) | **POST** /api/v1/inventory-receipts/{receipt_id}/confirm | Confirm Inventory Receipt
+[*InventoryReceiptsApi*](doc/InventoryReceiptsApi.md) | [**createInventoryReceiptApiV1InventoryReceiptsPost**](doc/InventoryReceiptsApi.md#createinventoryreceiptapiv1inventoryreceiptspost) | **POST** /api/v1/inventory-receipts | Create Inventory Receipt
+[*InventoryReceiptsApi*](doc/InventoryReceiptsApi.md) | [**getInventoryReceiptApiV1InventoryReceiptsReceiptIdGet**](doc/InventoryReceiptsApi.md#getinventoryreceiptapiv1inventoryreceiptsreceiptidget) | **GET** /api/v1/inventory-receipts/{receipt_id} | Get Inventory Receipt
+[*InventoryReceiptsApi*](doc/InventoryReceiptsApi.md) | [**listInventoryReceiptsApiV1InventoryReceiptsGet**](doc/InventoryReceiptsApi.md#listinventoryreceiptsapiv1inventoryreceiptsget) | **GET** /api/v1/inventory-receipts | List Inventory Receipts
+[*InventoryReceiptsApi*](doc/InventoryReceiptsApi.md) | [**removeInventoryReceiptLineApiV1InventoryReceiptsReceiptIdLinesLineIdDelete**](doc/InventoryReceiptsApi.md#removeinventoryreceiptlineapiv1inventoryreceiptsreceiptidlineslineiddelete) | **DELETE** /api/v1/inventory-receipts/{receipt_id}/lines/{line_id} | Remove Inventory Receipt Line
+[*InventoryReceiptsApi*](doc/InventoryReceiptsApi.md) | [**updateInventoryReceiptApiV1InventoryReceiptsReceiptIdPut**](doc/InventoryReceiptsApi.md#updateinventoryreceiptapiv1inventoryreceiptsreceiptidput) | **PUT** /api/v1/inventory-receipts/{receipt_id} | Update Inventory Receipt
+[*InventoryReceiptsApi*](doc/InventoryReceiptsApi.md) | [**updateInventoryReceiptLineApiV1InventoryReceiptsReceiptIdLinesLineIdPut**](doc/InventoryReceiptsApi.md#updateinventoryreceiptlineapiv1inventoryreceiptsreceiptidlineslineidput) | **PUT** /api/v1/inventory-receipts/{receipt_id}/lines/{line_id} | Update Inventory Receipt Line
+[*InventoryTransfersApi*](doc/InventoryTransfersApi.md) | [**addInventoryTransferLineApiV1InventoryTransfersInventoryTransferIdLinesPost**](doc/InventoryTransfersApi.md#addinventorytransferlineapiv1inventorytransfersinventorytransferidlinespost) | **POST** /api/v1/inventory-transfers/{inventory_transfer_id}/lines | Add Inventory Transfer Line
+[*InventoryTransfersApi*](doc/InventoryTransfersApi.md) | [**addInventoryTransferSalesOrderItemsApiV1InventoryTransfersInventoryTransferIdSalesOrderItemsPost**](doc/InventoryTransfersApi.md#addinventorytransfersalesorderitemsapiv1inventorytransfersinventorytransferidsalesorderitemspost) | **POST** /api/v1/inventory-transfers/{inventory_transfer_id}/sales-order-items | Add Inventory Transfer Sales Order Items
+[*InventoryTransfersApi*](doc/InventoryTransfersApi.md) | [**cancelInventoryTransferApiV1InventoryTransfersInventoryTransferIdCancelPost**](doc/InventoryTransfersApi.md#cancelinventorytransferapiv1inventorytransfersinventorytransferidcancelpost) | **POST** /api/v1/inventory-transfers/{inventory_transfer_id}/cancel | Cancel Inventory Transfer
+[*InventoryTransfersApi*](doc/InventoryTransfersApi.md) | [**closeInventoryTransferApiV1InventoryTransfersInventoryTransferIdClosePost**](doc/InventoryTransfersApi.md#closeinventorytransferapiv1inventorytransfersinventorytransferidclosepost) | **POST** /api/v1/inventory-transfers/{inventory_transfer_id}/close | Close Inventory Transfer
+[*InventoryTransfersApi*](doc/InventoryTransfersApi.md) | [**createInventoryTransferApiV1InventoryTransfersPost**](doc/InventoryTransfersApi.md#createinventorytransferapiv1inventorytransferspost) | **POST** /api/v1/inventory-transfers | Create Inventory Transfer
+[*InventoryTransfersApi*](doc/InventoryTransfersApi.md) | [**dispatchInventoryTransferApiV1InventoryTransfersInventoryTransferIdDispatchPost**](doc/InventoryTransfersApi.md#dispatchinventorytransferapiv1inventorytransfersinventorytransferiddispatchpost) | **POST** /api/v1/inventory-transfers/{inventory_transfer_id}/dispatch | Dispatch Inventory Transfer
+[*InventoryTransfersApi*](doc/InventoryTransfersApi.md) | [**getInventoryInTransitApiV1InventoryTransfersInTransitGet**](doc/InventoryTransfersApi.md#getinventoryintransitapiv1inventorytransfersintransitget) | **GET** /api/v1/inventory-transfers/in-transit | Get Inventory In Transit
+[*InventoryTransfersApi*](doc/InventoryTransfersApi.md) | [**getInventoryTransferApiV1InventoryTransfersInventoryTransferIdGet**](doc/InventoryTransfersApi.md#getinventorytransferapiv1inventorytransfersinventorytransferidget) | **GET** /api/v1/inventory-transfers/{inventory_transfer_id} | Get Inventory Transfer
+[*InventoryTransfersApi*](doc/InventoryTransfersApi.md) | [**listInventoryTransfersApiV1InventoryTransfersGet**](doc/InventoryTransfersApi.md#listinventorytransfersapiv1inventorytransfersget) | **GET** /api/v1/inventory-transfers | List Inventory Transfers
+[*InventoryTransfersApi*](doc/InventoryTransfersApi.md) | [**receiveInventoryTransferApiV1InventoryTransfersInventoryTransferIdReceivePost**](doc/InventoryTransfersApi.md#receiveinventorytransferapiv1inventorytransfersinventorytransferidreceivepost) | **POST** /api/v1/inventory-transfers/{inventory_transfer_id}/receive | Receive Inventory Transfer
+[*InventoryTransfersApi*](doc/InventoryTransfersApi.md) | [**removeInventoryTransferLineApiV1InventoryTransfersInventoryTransferIdLinesLineIdDelete**](doc/InventoryTransfersApi.md#removeinventorytransferlineapiv1inventorytransfersinventorytransferidlineslineiddelete) | **DELETE** /api/v1/inventory-transfers/{inventory_transfer_id}/lines/{line_id} | Remove Inventory Transfer Line
+[*InventoryTransfersApi*](doc/InventoryTransfersApi.md) | [**updateInventoryTransferApiV1InventoryTransfersInventoryTransferIdPut**](doc/InventoryTransfersApi.md#updateinventorytransferapiv1inventorytransfersinventorytransferidput) | **PUT** /api/v1/inventory-transfers/{inventory_transfer_id} | Update Inventory Transfer
+[*InventoryTransfersApi*](doc/InventoryTransfersApi.md) | [**updateInventoryTransferLineApiV1InventoryTransfersInventoryTransferIdLinesLineIdPut**](doc/InventoryTransfersApi.md#updateinventorytransferlineapiv1inventorytransfersinventorytransferidlineslineidput) | **PUT** /api/v1/inventory-transfers/{inventory_transfer_id}/lines/{line_id} | Update Inventory Transfer Line
+[*KardexApi*](doc/KardexApi.md) | [**readKardexApiV1KardexGet**](doc/KardexApi.md#readkardexapiv1kardexget) | **GET** /api/v1/kardex | Read Kardex
 [*LabelsApi*](doc/LabelsApi.md) | [**createLabelApiV1LabelsPost**](doc/LabelsApi.md#createlabelapiv1labelspost) | **POST** /api/v1/labels | Create Label
 [*LabelsApi*](doc/LabelsApi.md) | [**deleteLabelApiV1LabelsLabelIdDelete**](doc/LabelsApi.md#deletelabelapiv1labelslabeliddelete) | **DELETE** /api/v1/labels/{label_id} | Delete Label
 [*LabelsApi*](doc/LabelsApi.md) | [**getLabelApiV1LabelsLabelIdGet**](doc/LabelsApi.md#getlabelapiv1labelslabelidget) | **GET** /api/v1/labels/{label_id} | Get Label
@@ -305,6 +364,8 @@ Class | Method | HTTP request | Description
 [*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listTaxRegimesApiV1SatTaxRegimesGet_0**](doc/SatCatalogsApi.md#listtaxregimesapiv1sattaxregimesget_0) | **GET** /api/v1/sat/tax-regimes | List Tax Regimes
 [*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet**](doc/SatCatalogsApi.md#listunitsofmeasurementapiv1satunitsofmeasurementget) | **GET** /api/v1/sat/units-of-measurement | List Units Of Measurement
 [*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet_0**](doc/SatCatalogsApi.md#listunitsofmeasurementapiv1satunitsofmeasurementget_0) | **GET** /api/v1/sat/units-of-measurement | List Units Of Measurement
+[*StockApi*](doc/StockApi.md) | [**getProductStockApiV1StockProductsProductGet**](doc/StockApi.md#getproductstockapiv1stockproductsproductget) | **GET** /api/v1/stock/products/{product} | Get Product Stock
+[*StockApi*](doc/StockApi.md) | [**listStockApiV1StockGet**](doc/StockApi.md#liststockapiv1stockget) | **GET** /api/v1/stock | List Stock
 [*SuppliersApi*](doc/SuppliersApi.md) | [**createAgreementApiV1SuppliersSupplierIdAgreementsPost**](doc/SuppliersApi.md#createagreementapiv1supplierssupplieridagreementspost) | **POST** /api/v1/suppliers/{supplier_id}/agreements | Create Agreement
 [*SuppliersApi*](doc/SuppliersApi.md) | [**createSupplierApiV1SuppliersPost**](doc/SuppliersApi.md#createsupplierapiv1supplierspost) | **POST** /api/v1/suppliers | Create Supplier
 [*SuppliersApi*](doc/SuppliersApi.md) | [**deleteAgreementApiV1SuppliersSupplierIdAgreementsSupplierAgreementIdDelete**](doc/SuppliersApi.md#deleteagreementapiv1supplierssupplieridagreementssupplieragreementiddelete) | **DELETE** /api/v1/suppliers/{supplier_id}/agreements/{supplier_agreement_id} | Delete Agreement
@@ -317,10 +378,14 @@ Class | Method | HTTP request | Description
 [*TaxpayerCertificatesApi*](doc/TaxpayerCertificatesApi.md) | [**getTaxpayerCertificateApiV1TaxpayerCertificatesCertificateIdGet**](doc/TaxpayerCertificatesApi.md#gettaxpayercertificateapiv1taxpayercertificatescertificateidget) | **GET** /api/v1/taxpayer-certificates/{certificate_id} | Get Taxpayer Certificate
 [*TaxpayerCertificatesApi*](doc/TaxpayerCertificatesApi.md) | [**listTaxpayerCertificatesApiV1TaxpayerCertificatesGet**](doc/TaxpayerCertificatesApi.md#listtaxpayercertificatesapiv1taxpayercertificatesget) | **GET** /api/v1/taxpayer-certificates | List Taxpayer Certificates
 [*TaxpayerCertificatesApi*](doc/TaxpayerCertificatesApi.md) | [**uploadTaxpayerCertificateApiV1TaxpayerCertificatesPost**](doc/TaxpayerCertificatesApi.md#uploadtaxpayercertificateapiv1taxpayercertificatespost) | **POST** /api/v1/taxpayer-certificates | Upload Taxpayer Certificate
+[*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**createTaxpayerBatchApiV1TaxpayerIssuersRfcBatchesPost**](doc/TaxpayerIssuersApi.md#createtaxpayerbatchapiv1taxpayerissuersrfcbatchespost) | **POST** /api/v1/taxpayer-issuers/{rfc}/batches | Create Taxpayer Batch
 [*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**createTaxpayerIssuerApiV1TaxpayerIssuersPost**](doc/TaxpayerIssuersApi.md#createtaxpayerissuerapiv1taxpayerissuerspost) | **POST** /api/v1/taxpayer-issuers | Create Taxpayer Issuer
+[*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**deleteTaxpayerBatchApiV1TaxpayerIssuersRfcBatchesTaxpayerBatchIdDelete**](doc/TaxpayerIssuersApi.md#deletetaxpayerbatchapiv1taxpayerissuersrfcbatchestaxpayerbatchiddelete) | **DELETE** /api/v1/taxpayer-issuers/{rfc}/batches/{taxpayer_batch_id} | Delete Taxpayer Batch
 [*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**deleteTaxpayerIssuerApiV1TaxpayerIssuersRfcDelete**](doc/TaxpayerIssuersApi.md#deletetaxpayerissuerapiv1taxpayerissuersrfcdelete) | **DELETE** /api/v1/taxpayer-issuers/{rfc} | Delete Taxpayer Issuer
 [*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**getTaxpayerIssuerApiV1TaxpayerIssuersRfcGet**](doc/TaxpayerIssuersApi.md#gettaxpayerissuerapiv1taxpayerissuersrfcget) | **GET** /api/v1/taxpayer-issuers/{rfc} | Get Taxpayer Issuer
+[*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**listTaxpayerBatchesApiV1TaxpayerIssuersRfcBatchesGet**](doc/TaxpayerIssuersApi.md#listtaxpayerbatchesapiv1taxpayerissuersrfcbatchesget) | **GET** /api/v1/taxpayer-issuers/{rfc}/batches | List Taxpayer Batches
 [*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**listTaxpayerIssuersApiV1TaxpayerIssuersGet**](doc/TaxpayerIssuersApi.md#listtaxpayerissuersapiv1taxpayerissuersget) | **GET** /api/v1/taxpayer-issuers | List Taxpayer Issuers
+[*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**updateTaxpayerBatchApiV1TaxpayerIssuersRfcBatchesTaxpayerBatchIdPut**](doc/TaxpayerIssuersApi.md#updatetaxpayerbatchapiv1taxpayerissuersrfcbatchestaxpayerbatchidput) | **PUT** /api/v1/taxpayer-issuers/{rfc}/batches/{taxpayer_batch_id} | Update Taxpayer Batch
 [*TaxpayerIssuersApi*](doc/TaxpayerIssuersApi.md) | [**updateTaxpayerIssuerApiV1TaxpayerIssuersRfcPut**](doc/TaxpayerIssuersApi.md#updatetaxpayerissuerapiv1taxpayerissuersrfcput) | **PUT** /api/v1/taxpayer-issuers/{rfc} | Update Taxpayer Issuer
 [*TaxpayerRecipientsApi*](doc/TaxpayerRecipientsApi.md) | [**createTaxpayerRecipientApiV1TaxpayerRecipientsPost**](doc/TaxpayerRecipientsApi.md#createtaxpayerrecipientapiv1taxpayerrecipientspost) | **POST** /api/v1/taxpayer-recipients | Create Taxpayer Recipient
 [*TaxpayerRecipientsApi*](doc/TaxpayerRecipientsApi.md) | [**deleteTaxpayerRecipientApiV1TaxpayerRecipientsRfcDelete**](doc/TaxpayerRecipientsApi.md#deletetaxpayerrecipientapiv1taxpayerrecipientsrfcdelete) | **DELETE** /api/v1/taxpayer-recipients/{rfc} | Delete Taxpayer Recipient
@@ -366,6 +431,8 @@ Class | Method | HTTP request | Description
  - [AddressType](doc/AddressType.md)
  - [AddressUpdate](doc/AddressUpdate.md)
  - [Amount](doc/Amount.md)
+ - [Amount1](doc/Amount1.md)
+ - [Amount2](doc/Amount2.md)
  - [AmountChange](doc/AmountChange.md)
  - [AmountMax](doc/AmountMax.md)
  - [AmountMin](doc/AmountMin.md)
@@ -374,6 +441,8 @@ Class | Method | HTTP request | Description
  - [BankAccountCreate](doc/BankAccountCreate.md)
  - [BankAccountResponse](doc/BankAccountResponse.md)
  - [BankAccountUpdate](doc/BankAccountUpdate.md)
+ - [BatchAccount](doc/BatchAccount.md)
+ - [BatchTemplate](doc/BatchTemplate.md)
  - [CashDrawerCreate](doc/CashDrawerCreate.md)
  - [CashDrawerResponse](doc/CashDrawerResponse.md)
  - [CashDrawerSummary](doc/CashDrawerSummary.md)
@@ -414,8 +483,16 @@ Class | Method | HTTP request | Description
  - [ContactCreate](doc/ContactCreate.md)
  - [ContactResponse](doc/ContactResponse.md)
  - [ContactUpdate](doc/ContactUpdate.md)
+ - [CorrectedByOtherCount](doc/CorrectedByOtherCount.md)
+ - [CountConfirm](doc/CountConfirm.md)
+ - [CountCreate](doc/CountCreate.md)
+ - [CountLineSet](doc/CountLineSet.md)
+ - [CountLineUpdate](doc/CountLineUpdate.md)
+ - [CountLinesSet](doc/CountLinesSet.md)
+ - [CountUpdate](doc/CountUpdate.md)
  - [CreditLimit](doc/CreditLimit.md)
  - [CreditLimit1](doc/CreditLimit1.md)
+ - [CreditNoteCreate](doc/CreditNoteCreate.md)
  - [CreditNoteResponse](doc/CreditNoteResponse.md)
  - [CurrencyCode](doc/CurrencyCode.md)
  - [CurrentSessionResponse](doc/CurrentSessionResponse.md)
@@ -446,6 +523,7 @@ Class | Method | HTTP request | Description
  - [Denomination](doc/Denomination.md)
  - [DenominationCount](doc/DenominationCount.md)
  - [Discount](doc/Discount.md)
+ - [Discount1](doc/Discount1.md)
  - [DiscountRate](doc/DiscountRate.md)
  - [DocumentStatus](doc/DocumentStatus.md)
  - [EmployeeCreate](doc/EmployeeCreate.md)
@@ -465,13 +543,43 @@ Class | Method | HTTP request | Description
  - [FacilityUpdate](doc/FacilityUpdate.md)
  - [FiscalCertificationProvider](doc/FiscalCertificationProvider.md)
  - [FiscalDocumentLine](doc/FiscalDocumentLine.md)
+ - [FiscalDocumentRelationResponse](doc/FiscalDocumentRelationResponse.md)
  - [FiscalDocumentResponse](doc/FiscalDocumentResponse.md)
  - [FiscalDocumentSummary](doc/FiscalDocumentSummary.md)
+ - [FiscalDocumentType](doc/FiscalDocumentType.md)
+ - [FiscalEmailRequest](doc/FiscalEmailRequest.md)
+ - [FiscalEmailResponse](doc/FiscalEmailResponse.md)
  - [FulfillmentType](doc/FulfillmentType.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [HighProfit](doc/HighProfit.md)
  - [HighProfitMargin](doc/HighProfitMargin.md)
  - [HighProfitMargin1](doc/HighProfitMargin1.md)
+ - [InTransitLine](doc/InTransitLine.md)
+ - [InTransitProduct](doc/InTransitProduct.md)
+ - [InTransitResponse](doc/InTransitResponse.md)
+ - [InTransitStock](doc/InTransitStock.md)
+ - [InventoryCountConfirmResponse](doc/InventoryCountConfirmResponse.md)
+ - [InventoryCountLineResponse](doc/InventoryCountLineResponse.md)
+ - [InventoryCountResponse](doc/InventoryCountResponse.md)
+ - [InventoryCountSummary](doc/InventoryCountSummary.md)
+ - [InventoryIssueLineResponse](doc/InventoryIssueLineResponse.md)
+ - [InventoryIssueResponse](doc/InventoryIssueResponse.md)
+ - [InventoryIssueSummary](doc/InventoryIssueSummary.md)
+ - [InventoryReceiptLineResponse](doc/InventoryReceiptLineResponse.md)
+ - [InventoryReceiptResponse](doc/InventoryReceiptResponse.md)
+ - [InventoryReceiptSummary](doc/InventoryReceiptSummary.md)
+ - [InventoryTransferLineResponse](doc/InventoryTransferLineResponse.md)
+ - [InventoryTransferResponse](doc/InventoryTransferResponse.md)
+ - [InventoryTransferSummary](doc/InventoryTransferSummary.md)
+ - [InvoiceCreate](doc/InvoiceCreate.md)
+ - [InvoiceLineAdd](doc/InvoiceLineAdd.md)
+ - [InvoiceLineCopy](doc/InvoiceLineCopy.md)
+ - [InvoiceLineUpdate](doc/InvoiceLineUpdate.md)
+ - [InvoiceRelationAdd](doc/InvoiceRelationAdd.md)
+ - [InvoiceSalesOrderAdd](doc/InvoiceSalesOrderAdd.md)
+ - [InvoiceUpdate](doc/InvoiceUpdate.md)
+ - [IssueCreate](doc/IssueCreate.md)
+ - [IssueUpdate](doc/IssueUpdate.md)
  - [ItineraryCreate](doc/ItineraryCreate.md)
  - [ItineraryLineResponse](doc/ItineraryLineResponse.md)
  - [ItineraryResponse](doc/ItineraryResponse.md)
@@ -479,9 +587,14 @@ Class | Method | HTTP request | Description
  - [ItineraryStopResponse](doc/ItineraryStopResponse.md)
  - [ItinerarySummary](doc/ItinerarySummary.md)
  - [ItineraryUpdate](doc/ItineraryUpdate.md)
+ - [Kardex](doc/Kardex.md)
+ - [KardexDocument](doc/KardexDocument.md)
+ - [KardexRow](doc/KardexRow.md)
  - [LabelCreate](doc/LabelCreate.md)
  - [LabelResponse](doc/LabelResponse.md)
  - [LabelUpdate](doc/LabelUpdate.md)
+ - [LineAdd](doc/LineAdd.md)
+ - [LineUpdate](doc/LineUpdate.md)
  - [ListResponseAddressResponse](doc/ListResponseAddressResponse.md)
  - [ListResponseBankAccountResponse](doc/ListResponseBankAccountResponse.md)
  - [ListResponseCashDrawerResponse](doc/ListResponseCashDrawerResponse.md)
@@ -498,6 +611,10 @@ Class | Method | HTTP request | Description
  - [ListResponseExpenseResponse](doc/ListResponseExpenseResponse.md)
  - [ListResponseFacilityResponse](doc/ListResponseFacilityResponse.md)
  - [ListResponseFiscalDocumentSummary](doc/ListResponseFiscalDocumentSummary.md)
+ - [ListResponseInventoryCountSummary](doc/ListResponseInventoryCountSummary.md)
+ - [ListResponseInventoryIssueSummary](doc/ListResponseInventoryIssueSummary.md)
+ - [ListResponseInventoryReceiptSummary](doc/ListResponseInventoryReceiptSummary.md)
+ - [ListResponseInventoryTransferSummary](doc/ListResponseInventoryTransferSummary.md)
  - [ListResponseItinerarySummary](doc/ListResponseItinerarySummary.md)
  - [ListResponseLabelResponse](doc/ListResponseLabelResponse.md)
  - [ListResponseOutstandingOrderResponse](doc/ListResponseOutstandingOrderResponse.md)
@@ -509,6 +626,7 @@ Class | Method | HTTP request | Description
  - [ListResponseSalesOrderSummary](doc/ListResponseSalesOrderSummary.md)
  - [ListResponseSalesQuoteSummary](doc/ListResponseSalesQuoteSummary.md)
  - [ListResponseSatCatalogResponse](doc/ListResponseSatCatalogResponse.md)
+ - [ListResponseStockRow](doc/ListResponseStockRow.md)
  - [ListResponseSupplierResponse](doc/ListResponseSupplierResponse.md)
  - [ListResponseTaxpayerCertificateResponse](doc/ListResponseTaxpayerCertificateResponse.md)
  - [ListResponseTaxpayerIssuerResponse](doc/ListResponseTaxpayerIssuerResponse.md)
@@ -521,16 +639,22 @@ Class | Method | HTTP request | Description
  - [LowProfitMargin](doc/LowProfitMargin.md)
  - [LowProfitMargin1](doc/LowProfitMargin1.md)
  - [MethodTotal](doc/MethodTotal.md)
+ - [NegativeAvailable](doc/NegativeAvailable.md)
  - [OpeningAmount](doc/OpeningAmount.md)
  - [OrderApplicationResponse](doc/OrderApplicationResponse.md)
  - [OrderOrigin](doc/OrderOrigin.md)
  - [OutstandingOrderResponse](doc/OutstandingOrderResponse.md)
+ - [PaidInvoiceAdd](doc/PaidInvoiceAdd.md)
+ - [PaidInvoiceResponse](doc/PaidInvoiceResponse.md)
+ - [PaidInvoiceUpdate](doc/PaidInvoiceUpdate.md)
  - [ParticipationRate](doc/ParticipationRate.md)
  - [PasswordPolicyResponse](doc/PasswordPolicyResponse.md)
+ - [PaymentAmount](doc/PaymentAmount.md)
  - [PaymentMethod](doc/PaymentMethod.md)
  - [PaymentMethodOptionCreate](doc/PaymentMethodOptionCreate.md)
  - [PaymentMethodOptionResponse](doc/PaymentMethodOptionResponse.md)
  - [PaymentMethodOptionUpdate](doc/PaymentMethodOptionUpdate.md)
+ - [PaymentReceiptCreate](doc/PaymentReceiptCreate.md)
  - [PaymentTerms](doc/PaymentTerms.md)
  - [PaymentType](doc/PaymentType.md)
  - [PendingDeliveriesResponse](doc/PendingDeliveriesResponse.md)
@@ -541,6 +665,7 @@ Class | Method | HTTP request | Description
  - [PointSaleUpdate](doc/PointSaleUpdate.md)
  - [Price](doc/Price.md)
  - [Price1](doc/Price1.md)
+ - [Price2](doc/Price2.md)
  - [PriceAdjustment](doc/PriceAdjustment.md)
  - [PriceAdjustment1](doc/PriceAdjustment1.md)
  - [PriceListCreate](doc/PriceListCreate.md)
@@ -564,6 +689,7 @@ Class | Method | HTTP request | Description
  - [ProductPriceResponse](doc/ProductPriceResponse.md)
  - [ProductPriceUpdate](doc/ProductPriceUpdate.md)
  - [ProductResponse](doc/ProductResponse.md)
+ - [ProductStock](doc/ProductStock.md)
  - [ProductStockResponse](doc/ProductStockResponse.md)
  - [ProductSummary](doc/ProductSummary.md)
  - [ProductUpdate](doc/ProductUpdate.md)
@@ -573,16 +699,22 @@ Class | Method | HTTP request | Description
  - [Quantity](doc/Quantity.md)
  - [Quantity1](doc/Quantity1.md)
  - [Quantity2](doc/Quantity2.md)
+ - [Quantity3](doc/Quantity3.md)
+ - [Quantity4](doc/Quantity4.md)
+ - [Quantity5](doc/Quantity5.md)
  - [QuoteEmailRequest](doc/QuoteEmailRequest.md)
  - [QuoteEmailResponse](doc/QuoteEmailResponse.md)
  - [Rate](doc/Rate.md)
  - [Rate1](doc/Rate1.md)
  - [ReasonRequest](doc/ReasonRequest.md)
+ - [ReceiptCreate](doc/ReceiptCreate.md)
+ - [ReceiptUpdate](doc/ReceiptUpdate.md)
  - [RecoverPasswordAdminResponse](doc/RecoverPasswordAdminResponse.md)
  - [RefundPayout](doc/RefundPayout.md)
  - [RejectionRequest](doc/RejectionRequest.md)
  - [ReversalRequest](doc/ReversalRequest.md)
  - [SalesOrderCreate](doc/SalesOrderCreate.md)
+ - [SalesOrderItemsAdd](doc/SalesOrderItemsAdd.md)
  - [SalesOrderLineCreate](doc/SalesOrderLineCreate.md)
  - [SalesOrderLineResponse](doc/SalesOrderLineResponse.md)
  - [SalesOrderLineUpdate](doc/SalesOrderLineUpdate.md)
@@ -600,6 +732,7 @@ Class | Method | HTTP request | Description
  - [SatUnitOfMeasurementResponse](doc/SatUnitOfMeasurementResponse.md)
  - [SessionState](doc/SessionState.md)
  - [ShortfallReason](doc/ShortfallReason.md)
+ - [StockRow](doc/StockRow.md)
  - [StopCreate](doc/StopCreate.md)
  - [StopOutcome](doc/StopOutcome.md)
  - [SupplierAgreementCreate](doc/SupplierAgreementCreate.md)
@@ -611,6 +744,9 @@ Class | Method | HTTP request | Description
  - [SupplierUpdate](doc/SupplierUpdate.md)
  - [TaxRate](doc/TaxRate.md)
  - [TaxRate1](doc/TaxRate1.md)
+ - [TaxpayerBatchCreate](doc/TaxpayerBatchCreate.md)
+ - [TaxpayerBatchResponse](doc/TaxpayerBatchResponse.md)
+ - [TaxpayerBatchUpdate](doc/TaxpayerBatchUpdate.md)
  - [TaxpayerCertificateResponse](doc/TaxpayerCertificateResponse.md)
  - [TaxpayerIssuerCreate](doc/TaxpayerIssuerCreate.md)
  - [TaxpayerIssuerResponse](doc/TaxpayerIssuerResponse.md)
@@ -619,6 +755,11 @@ Class | Method | HTTP request | Description
  - [TaxpayerRecipientResponse](doc/TaxpayerRecipientResponse.md)
  - [TaxpayerRecipientUpdate](doc/TaxpayerRecipientUpdate.md)
  - [TokenResponse](doc/TokenResponse.md)
+ - [TransferCreate](doc/TransferCreate.md)
+ - [TransferReceive](doc/TransferReceive.md)
+ - [TransferReceiveLine](doc/TransferReceiveLine.md)
+ - [TransferStatus](doc/TransferStatus.md)
+ - [TransferUpdate](doc/TransferUpdate.md)
  - [UserCreate](doc/UserCreate.md)
  - [UserListItem](doc/UserListItem.md)
  - [UserListResponse](doc/UserListResponse.md)

@@ -3,8 +3,8 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/price1.dart';
 import 'package:mbe_api_client/src/model/low_profit.dart';
+import 'package:mbe_api_client/src/model/price2.dart';
 import 'package:mbe_api_client/src/model/high_profit.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -21,7 +21,7 @@ part 'product_price_update.g.dart';
 abstract class ProductPriceUpdate
     implements Built<ProductPriceUpdate, ProductPriceUpdateBuilder> {
   @BuiltValueField(wireName: r'price')
-  Price1? get price;
+  Price2? get price;
 
   @Deprecated('lowProfit has been deprecated')
   @BuiltValueField(wireName: r'low_profit')
@@ -61,7 +61,7 @@ class _$ProductPriceUpdateSerializer
       yield r'price';
       yield serializers.serialize(
         object.price,
-        specifiedType: const FullType.nullable(Price1),
+        specifiedType: const FullType.nullable(Price2),
       );
     }
     if (object.lowProfit != null) {
@@ -109,9 +109,9 @@ class _$ProductPriceUpdateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(Price1),
+                    specifiedType: const FullType.nullable(Price2),
                   )
-                  as Price1?;
+                  as Price2?;
           if (valueDes == null) continue;
           result.price.replace(valueDes);
           break;
