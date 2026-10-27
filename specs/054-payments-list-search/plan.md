@@ -165,7 +165,7 @@ Where the code differs from the design documents above. The behaviour in the spe
 
 ## Follow-ups (not in this delivery)
 
-- **mbe-api#270 ships:** regenerate the client, map `customerDisplayName` and prefer it over the provider (R2, C6).
-- **mbe-api#271** (filed 2026-10-27): enforce facility access on `GET /customer-payments/{id}`, `/{id}/applications` and the `facility` parameter of the list (R4). Once it ships, the client guards stay as defence in depth.
+- ~~**mbe-api#270 ships:** regenerate the client, map `customerDisplayName` and prefer it over the provider (R2, C6).~~ Done in spec 055 (mbe-api PR #274; mbe-ui#223).
+- ~~**mbe-api#271** (filed 2026-10-27): enforce facility access on `GET /customer-payments/{id}`, `/{id}/applications` and the `facility` parameter of the list (R4).~~ Shipped in mbe-api PR #273 (404 by id, 403 on the list). The client guards stay as defence in depth; spec 055 covers the 403 state and the live checks (mbe-ui#224).
 - **Possible mbe-api enhancement:** carry `origin` on `ApplicationResponse`, removing the per-order fetch (R8).
 - **#26 and #27:** add their actions (reverse, move, verify, reject) to `PaymentDetailScreen`.

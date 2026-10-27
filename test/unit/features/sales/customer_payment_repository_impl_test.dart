@@ -15,6 +15,7 @@ const _jsonHeaders = {
 Map<String, dynamic> _paymentJson({int id = 1, int? verifier}) => {
   'customer_payment_id': id,
   'customer': 77,
+  'customer_display_name': 'Ana López',
   'amount': '100.00',
   'currency': 0,
   'method': 1,
@@ -88,6 +89,34 @@ void main() {
         expect('${q['date_to']}', startsWith('2026-10-27T23:59:59'));
       },
     );
+
+    test('forwards a customer-name search and carries the name back '
+        '(spec 055 FR-007, FR-009)', () async {
+      late Map<String, dynamic> q;
+      final repository = _repositoryWith((options) async {
+        q = options.queryParameters;
+        return _page([_paymentJson()]);
+      });
+
+      final page = await repository.list(facilityId: 3, search: 'lópez');
+
+      expect(q['search'], 'lópez');
+      expect(page.items.single.customerName, 'Ana López');
+    });
+
+    test('a null or blank search sends none (spec 055 FR-010)', () async {
+      final seen = <Map<String, dynamic>>[];
+      final repository = _repositoryWith((options) async {
+        seen.add(Map.of(options.queryParameters));
+        return _page(const []);
+      });
+
+      await repository.list(facilityId: 3);
+      await repository.list(facilityId: 3, search: '   ');
+
+      expect(seen[0].containsKey('search'), isFalse);
+      expect(seen[1].containsKey('search'), isFalse);
+    });
 
     test('verified is tri-state: true, false and null (any)', () async {
       final seen = <Map<String, dynamic>>[];

@@ -21,6 +21,12 @@ enum PaymentType {
 
   final int code;
 
+  /// Whether mbe-api renders a ticket for this type (spec 055 R5): only a
+  /// credit payment and a payment in advance have one. A counter sale's
+  /// proof is its order's ticket, and the server answers 409 for the rest,
+  /// so the client never asks.
+  bool get hasTicket => this == creditPayment || this == paymentInAdvance;
+
   /// A code outside the six this client knows is a contract break, not a
   /// value to render blank: it surfaces as [AppError.server] so the screen
   /// shows its error state (spec 054 data-model.md §1).

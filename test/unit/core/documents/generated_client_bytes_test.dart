@@ -25,6 +25,9 @@ void main() {
     'sales_quotes_api.dart': [
       'printSalesQuoteDocumentApiV1SalesQuotesSalesQuoteIdDocumentGet',
     ],
+    'customer_payments_api.dart': [
+      'printCustomerPaymentTicketApiV1CustomerPaymentsCustomerPaymentIdTicketGet',
+    ],
   };
 
   for (final entry in methods.entries) {

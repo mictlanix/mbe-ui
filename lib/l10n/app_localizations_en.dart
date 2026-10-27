@@ -4375,4 +4375,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentsColumnFacility => 'Facility';
+
+  @override
+  String get paymentsSearchCustomerHint => 'Search customer…';
+
+  @override
+  String get paymentsListForbidden =>
+      'You aren\'t allowed to see these payments.';
+
+  @override
+  String get paymentViewTicketTooltip => 'View ticket';
+
+  @override
+  String get paymentViewTicketAction => 'View ticket';
+
+  @override
+  String documentPaymentTicketTitle(int id) {
+    return 'Payment ticket · #$id';
+  }
 }

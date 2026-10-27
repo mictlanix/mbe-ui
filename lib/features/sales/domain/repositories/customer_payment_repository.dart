@@ -61,7 +61,9 @@ abstract class CustomerPaymentRepository {
   /// `facility` it is sent (mbe-api#271), so the client is the only thing
   /// keeping a user inside their own facility. [verified] is tri-state — `null`
   /// lists both, `true` only verified, `false` only unverified.
-  /// [dateFrom]/[dateTo] are inclusive wall-clock days.
+  /// [dateFrom]/[dateTo] are inclusive wall-clock days. [search] matches part
+  /// of the customer's name, ignoring case, and combines with every other
+  /// filter (mbe-api#270); blank is no search.
   Future<CustomerPaymentListResult> list({
     required int facilityId,
     int? customerId,
@@ -70,6 +72,7 @@ abstract class CustomerPaymentRepository {
     DateTime? dateTo,
     int? methodCode,
     bool? verified,
+    String? search,
     int skip = 0,
     int limit = 20,
   });

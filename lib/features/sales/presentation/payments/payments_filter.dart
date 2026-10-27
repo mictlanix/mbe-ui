@@ -36,6 +36,11 @@ abstract class PaymentsFilter with _$PaymentsFilter {
     /// A fragment of the payment's reference — all-facilities mode only,
     /// where it is the search box. Carried in `ListQuery.search`.
     String? reference,
+
+    /// A fragment of the customer's name — facility mode only, where it is the
+    /// search box (spec 055 R3). Carried in `ListQuery.search`, like
+    /// [reference]: each scope reads the one the other ignores.
+    String? customerSearch,
     @Default(0) int pageIndex,
   }) = _PaymentsFilter;
 
@@ -43,7 +48,8 @@ abstract class PaymentsFilter with _$PaymentsFilter {
   /// `scope=all` the user can't use is read as the facility scope, so a
   /// hand-typed address can never widen what they see (FR-002, SC-004); and
   /// in the all-facilities scope the facility-only facets are ignored, since
-  /// that endpoint has no such filters (FR-012).
+  /// that endpoint has no such filters (FR-012). The one `search` box means a
+  /// customer name in the facility scope and a reference in the other.
   factory PaymentsFilter.fromQuery(
     ListQuery query, {
     bool canSearchAllFacilities = false,
@@ -79,12 +85,14 @@ abstract class PaymentsFilter with _$PaymentsFilter {
           ? null
           : _parseIntFacet(query.facet('cash-session')),
       reference: allFacilities && reference.isNotEmpty ? reference : null,
+      customerSearch: !allFacilities && reference.isNotEmpty ? reference : null,
       pageIndex: query.pageIndex,
     );
   }
 
   /// How many facets the drawer badge counts. A date range is one facet, and
-  /// the reference is not one — it has its own visible search box.
+  /// the reference and the customer-name search are not — each is the visible
+  /// search box.
   int get activeFilterCount =>
       (customerId != null ? 1 : 0) +
       (dateFrom != null ? 1 : 0) +
@@ -96,13 +104,15 @@ abstract class PaymentsFilter with _$PaymentsFilter {
 
   /// Whether anything narrows the list at all, the search box included — what
   /// decides between the empty state and the "nothing matches" one.
-  bool get isNarrowed => hasActiveFilters || reference != null;
+  bool get isNarrowed =>
+      hasActiveFilters || reference != null || customerSearch != null;
 }
 
 /// [query] re-pointed at [scope] (FR-012): keeps the customer and date range,
 /// which both modes support, and drops everything else — the facility-only
-/// facets, the reference search and the page — so a hidden filter never keeps
-/// narrowing a list that no longer shows it.
+/// facets, the search text (a customer name in one scope, a reference in the
+/// other) and the page — so a hidden filter never keeps narrowing a list that
+/// no longer shows it.
 ListQuery paymentsQueryForScope(ListQuery query, PaymentsScope scope) =>
     const ListQuery()
         .withFacet('scope', scope == PaymentsScope.allFacilities ? 'all' : null)

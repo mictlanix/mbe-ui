@@ -18,7 +18,8 @@ final documentSourceProvider = Provider<DocumentSource>((ref) {
 
 /// `DocumentSource` backed by the three generated print methods mbe-api#231
 /// added (spec 044 contracts/consumed-endpoints.md), plus the quote document
-/// mbe-api spec 024 added (spec 053 contracts/consumed-endpoints.md E1).
+/// mbe-api spec 024 added (spec 053 contracts/consumed-endpoints.md E1), plus
+/// the payment ticket mbe-api#272 added (spec 055 research R4).
 ///
 /// A PDF has no DTO, so there is no mapping: the bytes are returned exactly as
 /// the server sent them (FR-020). The generated methods already ask dio for
@@ -28,11 +29,13 @@ class DocumentSourceImpl implements DocumentSource {
   DocumentSourceImpl(Dio dio)
     : _salesOrders = api.SalesOrdersApi(dio, appSerializers),
       _cashSessions = api.CashSessionsApi(dio, appSerializers),
-      _salesQuotes = api.SalesQuotesApi(dio, appSerializers);
+      _salesQuotes = api.SalesQuotesApi(dio, appSerializers),
+      _customerPayments = api.CustomerPaymentsApi(dio, appSerializers);
 
   final api.SalesOrdersApi _salesOrders;
   final api.CashSessionsApi _cashSessions;
   final api.SalesQuotesApi _salesQuotes;
+  final api.CustomerPaymentsApi _customerPayments;
 
   @override
   Future<RenderedDocument> fetch(DocumentRef ref) async {
@@ -57,6 +60,11 @@ class DocumentSourceImpl implements DocumentSource {
           _salesQuotes
               .printSalesQuoteDocumentApiV1SalesQuotesSalesQuoteIdDocumentGet(
                 salesQuoteId: ref.recordId,
+              ),
+        DocumentKind.customerPaymentTicket =>
+          _customerPayments
+              .printCustomerPaymentTicketApiV1CustomerPaymentsCustomerPaymentIdTicketGet(
+                customerPaymentId: ref.recordId,
               ),
       };
 

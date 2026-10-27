@@ -20,6 +20,11 @@ abstract class CustomerPayment with _$CustomerPayment {
   const factory CustomerPayment({
     required int customerPaymentId,
     required int customerId,
+
+    /// The customer's name as the server joins it onto the payment, so no
+    /// per-customer lookup is needed (spec 055 R2). `null` only when the
+    /// customer row is missing; a blank name is treated the same way.
+    String? customerName,
     required String amount,
     required Currency currency,
     required int methodCode,
@@ -40,6 +45,7 @@ abstract class CustomerPayment with _$CustomerPayment {
       CustomerPayment(
         customerPaymentId: r.customerPaymentId,
         customerId: r.customer,
+        customerName: _nonBlank(r.customerDisplayName),
         amount: r.amount,
         currency: currencyFromApi(r.currency),
         methodCode: paymentMethodCodeFromApi(r.method),
@@ -56,6 +62,9 @@ abstract class CustomerPayment with _$CustomerPayment {
   /// A payment is verified once someone has signed off on it.
   bool get isVerified => verifierId != null;
 }
+
+String? _nonBlank(String? value) =>
+    value == null || value.trim().isEmpty ? null : value;
 
 /// One application of a payment to a sales order, mapped from
 /// `ApplicationResponse` (spec 054 data-model.md §2). A reversed application

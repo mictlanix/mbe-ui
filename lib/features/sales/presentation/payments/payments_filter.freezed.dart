@@ -21,7 +21,10 @@ mixin _$PaymentsFilter {
 /// only unverified.
  bool? get verified; int? get cashSessionId;/// A fragment of the payment's reference — all-facilities mode only,
 /// where it is the search box. Carried in `ListQuery.search`.
- String? get reference; int get pageIndex;
+ String? get reference;/// A fragment of the customer's name — facility mode only, where it is the
+/// search box (spec 055 R3). Carried in `ListQuery.search`, like
+/// [reference]: each scope reads the one the other ignores.
+ String? get customerSearch; int get pageIndex;
 /// Create a copy of PaymentsFilter
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -33,20 +36,20 @@ $PaymentsFilterCopyWith<PaymentsFilter> get copyWith => _$PaymentsFilterCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as PaymentsFilter;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentsFilter&&(identical(other.scope, _this.scope) || other.scope == _this.scope)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.dateFrom, _this.dateFrom) || other.dateFrom == _this.dateFrom)&&(identical(other.dateTo, _this.dateTo) || other.dateTo == _this.dateTo)&&(identical(other.methodCode, _this.methodCode) || other.methodCode == _this.methodCode)&&(identical(other.verified, _this.verified) || other.verified == _this.verified)&&(identical(other.cashSessionId, _this.cashSessionId) || other.cashSessionId == _this.cashSessionId)&&(identical(other.reference, _this.reference) || other.reference == _this.reference)&&(identical(other.pageIndex, _this.pageIndex) || other.pageIndex == _this.pageIndex));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentsFilter&&(identical(other.scope, _this.scope) || other.scope == _this.scope)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.dateFrom, _this.dateFrom) || other.dateFrom == _this.dateFrom)&&(identical(other.dateTo, _this.dateTo) || other.dateTo == _this.dateTo)&&(identical(other.methodCode, _this.methodCode) || other.methodCode == _this.methodCode)&&(identical(other.verified, _this.verified) || other.verified == _this.verified)&&(identical(other.cashSessionId, _this.cashSessionId) || other.cashSessionId == _this.cashSessionId)&&(identical(other.reference, _this.reference) || other.reference == _this.reference)&&(identical(other.customerSearch, _this.customerSearch) || other.customerSearch == _this.customerSearch)&&(identical(other.pageIndex, _this.pageIndex) || other.pageIndex == _this.pageIndex));
 }
 
 
 @override
 int get hashCode {
   final _this = this as PaymentsFilter;
-  return Object.hash(runtimeType,_this.scope,_this.customerId,_this.dateFrom,_this.dateTo,_this.methodCode,_this.verified,_this.cashSessionId,_this.reference,_this.pageIndex);
+  return Object.hash(runtimeType,_this.scope,_this.customerId,_this.dateFrom,_this.dateTo,_this.methodCode,_this.verified,_this.cashSessionId,_this.reference,_this.customerSearch,_this.pageIndex);
 }
 
 @override
 String toString() {
   final _this = this as PaymentsFilter;
-  return 'PaymentsFilter(scope: ${_this.scope}, customerId: ${_this.customerId}, dateFrom: ${_this.dateFrom}, dateTo: ${_this.dateTo}, methodCode: ${_this.methodCode}, verified: ${_this.verified}, cashSessionId: ${_this.cashSessionId}, reference: ${_this.reference}, pageIndex: ${_this.pageIndex})';
+  return 'PaymentsFilter(scope: ${_this.scope}, customerId: ${_this.customerId}, dateFrom: ${_this.dateFrom}, dateTo: ${_this.dateTo}, methodCode: ${_this.methodCode}, verified: ${_this.verified}, cashSessionId: ${_this.cashSessionId}, reference: ${_this.reference}, customerSearch: ${_this.customerSearch}, pageIndex: ${_this.pageIndex})';
 }
 
 
@@ -57,7 +60,7 @@ abstract mixin class $PaymentsFilterCopyWith<$Res>  {
   factory $PaymentsFilterCopyWith(PaymentsFilter value, $Res Function(PaymentsFilter) _then) = _$PaymentsFilterCopyWithImpl;
 @useResult
 $Res call({
- PaymentsScope scope, int? customerId, DateTime? dateFrom, DateTime? dateTo, int? methodCode, bool? verified, int? cashSessionId, String? reference, int pageIndex
+ PaymentsScope scope, int? customerId, DateTime? dateFrom, DateTime? dateTo, int? methodCode, bool? verified, int? cashSessionId, String? reference, String? customerSearch, int pageIndex
 });
 
 
@@ -74,7 +77,7 @@ class _$PaymentsFilterCopyWithImpl<$Res>
 
 /// Create a copy of PaymentsFilter
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? scope = null,Object? customerId = freezed,Object? dateFrom = freezed,Object? dateTo = freezed,Object? methodCode = freezed,Object? verified = freezed,Object? cashSessionId = freezed,Object? reference = freezed,Object? pageIndex = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? scope = null,Object? customerId = freezed,Object? dateFrom = freezed,Object? dateTo = freezed,Object? methodCode = freezed,Object? verified = freezed,Object? cashSessionId = freezed,Object? reference = freezed,Object? customerSearch = freezed,Object? pageIndex = null,}) {
   return _then(PaymentsFilter(
 scope: null == scope ? _self.scope : scope // ignore: cast_nullable_to_non_nullable
 as PaymentsScope,customerId: freezed == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
@@ -84,6 +87,7 @@ as DateTime?,methodCode: freezed == methodCode ? _self.methodCode : methodCode /
 as int?,verified: freezed == verified ? _self.verified : verified // ignore: cast_nullable_to_non_nullable
 as bool?,cashSessionId: freezed == cashSessionId ? _self.cashSessionId : cashSessionId // ignore: cast_nullable_to_non_nullable
 as int?,reference: freezed == reference ? _self.reference : reference // ignore: cast_nullable_to_non_nullable
+as String?,customerSearch: freezed == customerSearch ? _self.customerSearch : customerSearch // ignore: cast_nullable_to_non_nullable
 as String?,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
 as int,
   ));
@@ -170,10 +174,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PaymentsScope scope,  int? customerId,  DateTime? dateFrom,  DateTime? dateTo,  int? methodCode,  bool? verified,  int? cashSessionId,  String? reference,  int pageIndex)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( PaymentsScope scope,  int? customerId,  DateTime? dateFrom,  DateTime? dateTo,  int? methodCode,  bool? verified,  int? cashSessionId,  String? reference,  String? customerSearch,  int pageIndex)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PaymentsFilter() when $default != null:
-return $default(_that.scope,_that.customerId,_that.dateFrom,_that.dateTo,_that.methodCode,_that.verified,_that.cashSessionId,_that.reference,_that.pageIndex);case _:
+return $default(_that.scope,_that.customerId,_that.dateFrom,_that.dateTo,_that.methodCode,_that.verified,_that.cashSessionId,_that.reference,_that.customerSearch,_that.pageIndex);case _:
   return orElse();
 
 }
@@ -191,10 +195,10 @@ return $default(_that.scope,_that.customerId,_that.dateFrom,_that.dateTo,_that.m
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PaymentsScope scope,  int? customerId,  DateTime? dateFrom,  DateTime? dateTo,  int? methodCode,  bool? verified,  int? cashSessionId,  String? reference,  int pageIndex)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( PaymentsScope scope,  int? customerId,  DateTime? dateFrom,  DateTime? dateTo,  int? methodCode,  bool? verified,  int? cashSessionId,  String? reference,  String? customerSearch,  int pageIndex)  $default,) {final _that = this;
 switch (_that) {
 case _PaymentsFilter():
-return $default(_that.scope,_that.customerId,_that.dateFrom,_that.dateTo,_that.methodCode,_that.verified,_that.cashSessionId,_that.reference,_that.pageIndex);case _:
+return $default(_that.scope,_that.customerId,_that.dateFrom,_that.dateTo,_that.methodCode,_that.verified,_that.cashSessionId,_that.reference,_that.customerSearch,_that.pageIndex);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -211,10 +215,10 @@ return $default(_that.scope,_that.customerId,_that.dateFrom,_that.dateTo,_that.m
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PaymentsScope scope,  int? customerId,  DateTime? dateFrom,  DateTime? dateTo,  int? methodCode,  bool? verified,  int? cashSessionId,  String? reference,  int pageIndex)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( PaymentsScope scope,  int? customerId,  DateTime? dateFrom,  DateTime? dateTo,  int? methodCode,  bool? verified,  int? cashSessionId,  String? reference,  String? customerSearch,  int pageIndex)?  $default,) {final _that = this;
 switch (_that) {
 case _PaymentsFilter() when $default != null:
-return $default(_that.scope,_that.customerId,_that.dateFrom,_that.dateTo,_that.methodCode,_that.verified,_that.cashSessionId,_that.reference,_that.pageIndex);case _:
+return $default(_that.scope,_that.customerId,_that.dateFrom,_that.dateTo,_that.methodCode,_that.verified,_that.cashSessionId,_that.reference,_that.customerSearch,_that.pageIndex);case _:
   return null;
 
 }
@@ -226,7 +230,7 @@ return $default(_that.scope,_that.customerId,_that.dateFrom,_that.dateTo,_that.m
 
 
 class _PaymentsFilter extends PaymentsFilter {
-  const _PaymentsFilter({this.scope = PaymentsScope.facility, this.customerId, this.dateFrom, this.dateTo, this.methodCode, this.verified, this.cashSessionId, this.reference, this.pageIndex = 0}): super._();
+  const _PaymentsFilter({this.scope = PaymentsScope.facility, this.customerId, this.dateFrom, this.dateTo, this.methodCode, this.verified, this.cashSessionId, this.reference, this.customerSearch, this.pageIndex = 0}): super._();
   
 
 @override@JsonKey() final  PaymentsScope scope;
@@ -243,6 +247,10 @@ class _PaymentsFilter extends PaymentsFilter {
 /// A fragment of the payment's reference — all-facilities mode only,
 /// where it is the search box. Carried in `ListQuery.search`.
 @override final  String? reference;
+/// A fragment of the customer's name — facility mode only, where it is the
+/// search box (spec 055 R3). Carried in `ListQuery.search`, like
+/// [reference]: each scope reads the one the other ignores.
+@override final  String? customerSearch;
 @override@JsonKey() final  int pageIndex;
 
 /// Create a copy of PaymentsFilter
@@ -255,18 +263,18 @@ _$PaymentsFilterCopyWith<_PaymentsFilter> get copyWith => __$PaymentsFilterCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PaymentsFilter&&(identical(other.scope, scope) || other.scope == scope)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.dateFrom, dateFrom) || other.dateFrom == dateFrom)&&(identical(other.dateTo, dateTo) || other.dateTo == dateTo)&&(identical(other.methodCode, methodCode) || other.methodCode == methodCode)&&(identical(other.verified, verified) || other.verified == verified)&&(identical(other.cashSessionId, cashSessionId) || other.cashSessionId == cashSessionId)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.pageIndex, pageIndex) || other.pageIndex == pageIndex));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PaymentsFilter&&(identical(other.scope, scope) || other.scope == scope)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.dateFrom, dateFrom) || other.dateFrom == dateFrom)&&(identical(other.dateTo, dateTo) || other.dateTo == dateTo)&&(identical(other.methodCode, methodCode) || other.methodCode == methodCode)&&(identical(other.verified, verified) || other.verified == verified)&&(identical(other.cashSessionId, cashSessionId) || other.cashSessionId == cashSessionId)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.customerSearch, customerSearch) || other.customerSearch == customerSearch)&&(identical(other.pageIndex, pageIndex) || other.pageIndex == pageIndex));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,scope,customerId,dateFrom,dateTo,methodCode,verified,cashSessionId,reference,pageIndex);
+    return Object.hash(runtimeType,scope,customerId,dateFrom,dateTo,methodCode,verified,cashSessionId,reference,customerSearch,pageIndex);
 }
 
 @override
 String toString() {
-    return 'PaymentsFilter(scope: $scope, customerId: $customerId, dateFrom: $dateFrom, dateTo: $dateTo, methodCode: $methodCode, verified: $verified, cashSessionId: $cashSessionId, reference: $reference, pageIndex: $pageIndex)';
+    return 'PaymentsFilter(scope: $scope, customerId: $customerId, dateFrom: $dateFrom, dateTo: $dateTo, methodCode: $methodCode, verified: $verified, cashSessionId: $cashSessionId, reference: $reference, customerSearch: $customerSearch, pageIndex: $pageIndex)';
 }
 
 
@@ -277,7 +285,7 @@ abstract mixin class _$PaymentsFilterCopyWith<$Res> implements $PaymentsFilterCo
   factory _$PaymentsFilterCopyWith(_PaymentsFilter value, $Res Function(_PaymentsFilter) _then) = __$PaymentsFilterCopyWithImpl;
 @override @useResult
 $Res call({
- PaymentsScope scope, int? customerId, DateTime? dateFrom, DateTime? dateTo, int? methodCode, bool? verified, int? cashSessionId, String? reference, int pageIndex
+ PaymentsScope scope, int? customerId, DateTime? dateFrom, DateTime? dateTo, int? methodCode, bool? verified, int? cashSessionId, String? reference, String? customerSearch, int pageIndex
 });
 
 
@@ -294,7 +302,7 @@ class __$PaymentsFilterCopyWithImpl<$Res>
 
 /// Create a copy of PaymentsFilter
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? scope = null,Object? customerId = freezed,Object? dateFrom = freezed,Object? dateTo = freezed,Object? methodCode = freezed,Object? verified = freezed,Object? cashSessionId = freezed,Object? reference = freezed,Object? pageIndex = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? scope = null,Object? customerId = freezed,Object? dateFrom = freezed,Object? dateTo = freezed,Object? methodCode = freezed,Object? verified = freezed,Object? cashSessionId = freezed,Object? reference = freezed,Object? customerSearch = freezed,Object? pageIndex = null,}) {
   return _then(_PaymentsFilter(
 scope: null == scope ? _self.scope : scope // ignore: cast_nullable_to_non_nullable
 as PaymentsScope,customerId: freezed == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
@@ -304,6 +312,7 @@ as DateTime?,methodCode: freezed == methodCode ? _self.methodCode : methodCode /
 as int?,verified: freezed == verified ? _self.verified : verified // ignore: cast_nullable_to_non_nullable
 as bool?,cashSessionId: freezed == cashSessionId ? _self.cashSessionId : cashSessionId // ignore: cast_nullable_to_non_nullable
 as int?,reference: freezed == reference ? _self.reference : reference // ignore: cast_nullable_to_non_nullable
+as String?,customerSearch: freezed == customerSearch ? _self.customerSearch : customerSearch // ignore: cast_nullable_to_non_nullable
 as String?,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
 as int,
   ));

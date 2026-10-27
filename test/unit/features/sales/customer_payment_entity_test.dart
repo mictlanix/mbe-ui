@@ -14,9 +14,11 @@ api.CustomerPaymentResponse _payment({
   int currency = 0,
   int method = 3,
   int paymentType = 2,
+  String? customerDisplayName,
 }) => appSerializers.deserializeWith(api.CustomerPaymentResponse.serializer, {
   'customer_payment_id': 18342,
   'customer': 77,
+  'customer_display_name': customerDisplayName,
   'amount': '1250.00',
   'currency': currency,
   'method': method,
@@ -43,6 +45,25 @@ api.ApplicationResponse _application({bool cancelled = false}) =>
     })!;
 
 void main() {
+  group('CustomerPayment.customerName (spec 055 R2)', () {
+    test('carries the name the server joined onto the payment', () {
+      final p = CustomerPayment.fromResponse(
+        _payment(customerDisplayName: 'Ana López'),
+      );
+      expect(p.customerName, 'Ana López');
+    });
+
+    test('a missing or blank name is null, so the lookup fallback applies', () {
+      expect(CustomerPayment.fromResponse(_payment()).customerName, isNull);
+      expect(
+        CustomerPayment.fromResponse(
+          _payment(customerDisplayName: '   '),
+        ).customerName,
+        isNull,
+      );
+    });
+  });
+
   group('CustomerPayment.fromResponse', () {
     test('carries every field', () {
       final p = CustomerPayment.fromResponse(_payment(verifier: 9));

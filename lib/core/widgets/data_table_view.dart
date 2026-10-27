@@ -144,6 +144,19 @@ class DataTableView<T> extends StatefulWidget {
 /// Row-divider thickness, passed to both table kinds.
 const _dividerThickness = 1.0;
 
+/// Space between columns, passed to both table kinds. data_table_2's default
+/// is 56, which left list rows wrapping amounts and dates onto a second line
+/// while columns sat far apart; 24 matches the table's own side margin.
+const _columnSpacing = 24.0;
+
+/// data_table_2's default outer margin, kept as is. Only needed here to size
+/// the row-actions column, which is always the last one.
+const _horizontalMargin = 24.0;
+
+/// One row-action icon: an `IconButton` at `VisualDensity.compact`
+/// (`buildCatalogRowActions`), 48 less 2 × 4.
+const _rowActionWidth = 40.0;
+
 /// `PaginatedDataTable2`'s footer: a fixed 56 in data_table_2
 /// (`_getFooter`), not themable.
 const _paginatorHeight = 56.0;
@@ -183,8 +196,22 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
                 },
         ),
       if (widget.rowActionsBuilder != null)
-        const DataColumn2(label: Text(''), fixedWidth: 150),
+        DataColumn2(label: const Text(''), fixedWidth: _actionsColumnWidth()),
     ];
+  }
+
+  /// The row-actions column, sized to the most icons any shown row has
+  /// (constitution §VI caps that at two) rather than a fixed 150, which left
+  /// a one-icon column mostly empty and took width from the data columns. At
+  /// least one icon wide, so the column doesn't shift as pages change.
+  double _actionsColumnWidth() {
+    final builder = widget.rowActionsBuilder!;
+    var most = 1;
+    for (final item in widget.rows) {
+      final count = builder(context, item).length;
+      if (count > most) most = count;
+    }
+    return most * _rowActionWidth + _columnSpacing / 2 + _horizontalMargin;
   }
 
   DataRow _buildRow(T item) {
@@ -242,6 +269,8 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
         headingRowHeight: headingRowHeight,
         dataRowHeight: dataRowHeight,
         dividerThickness: _dividerThickness,
+        columnSpacing: _columnSpacing,
+        horizontalMargin: _horizontalMargin,
         minWidth: widget.minWidth,
         source: _source!,
         showCheckboxColumn: false,
@@ -306,6 +335,8 @@ class _DataTableViewState<T> extends State<DataTableView<T>> {
         headingRowHeight: headingRowHeight,
         dataRowHeight: dataRowHeight,
         dividerThickness: dividerThickness,
+        columnSpacing: _columnSpacing,
+        horizontalMargin: _horizontalMargin,
         minWidth: widget.minWidth,
         rows: [for (final item in rows) _buildRow(item)],
       ),

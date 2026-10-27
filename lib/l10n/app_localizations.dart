@@ -7944,6 +7944,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Facility'**
   String get paymentsColumnFacility;
+
+  /// spec 055 FR-009: customer-name search box, facility scope
+  ///
+  /// In en, this message translates to:
+  /// **'Search customer…'**
+  String get paymentsSearchCustomerHint;
+
+  /// spec 055 FR-016: the server refused the payments list (403); no retry
+  ///
+  /// In en, this message translates to:
+  /// **'You aren\'t allowed to see these payments.'**
+  String get paymentsListForbidden;
+
+  /// spec 055 FR-002: ticket icon on a payments list row
+  ///
+  /// In en, this message translates to:
+  /// **'View ticket'**
+  String get paymentViewTicketTooltip;
+
+  /// spec 055 FR-001: ticket button on the payment view
+  ///
+  /// In en, this message translates to:
+  /// **'View ticket'**
+  String get paymentViewTicketAction;
+
+  /// spec 055: title of the payment ticket preview
+  ///
+  /// In en, this message translates to:
+  /// **'Payment ticket · #{id}'**
+  String documentPaymentTicketTitle(int id);
 }
 
 class _AppLocalizationsDelegate

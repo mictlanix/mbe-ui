@@ -15,7 +15,10 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CustomerPayment {
 
- int get customerPaymentId; int get customerId; String get amount; Currency get currency; int get methodCode; int? get paymentOptionId; String? get reference; DateTime get date; int get facilityId; int? get cashSessionId; PaymentType get type; int? get verifierId;/// The server's derived figure: the amount less its non-reversed
+ int get customerPaymentId; int get customerId;/// The customer's name as the server joins it onto the payment, so no
+/// per-customer lookup is needed (spec 055 R2). `null` only when the
+/// customer row is missing; a blank name is treated the same way.
+ String? get customerName; String get amount; Currency get currency; int get methodCode; int? get paymentOptionId; String? get reference; DateTime get date; int get facilityId; int? get cashSessionId; PaymentType get type; int? get verifierId;/// The server's derived figure: the amount less its non-reversed
 /// applications. Never recomputed client-side.
  String get unapplied;
 /// Create a copy of CustomerPayment
@@ -29,20 +32,20 @@ $CustomerPaymentCopyWith<CustomerPayment> get copyWith => _$CustomerPaymentCopyW
 @override
 bool operator ==(Object other) {
   final _this = this as CustomerPayment;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CustomerPayment&&(identical(other.customerPaymentId, _this.customerPaymentId) || other.customerPaymentId == _this.customerPaymentId)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.amount, _this.amount) || other.amount == _this.amount)&&(identical(other.currency, _this.currency) || other.currency == _this.currency)&&(identical(other.methodCode, _this.methodCode) || other.methodCode == _this.methodCode)&&(identical(other.paymentOptionId, _this.paymentOptionId) || other.paymentOptionId == _this.paymentOptionId)&&(identical(other.reference, _this.reference) || other.reference == _this.reference)&&(identical(other.date, _this.date) || other.date == _this.date)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.cashSessionId, _this.cashSessionId) || other.cashSessionId == _this.cashSessionId)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.verifierId, _this.verifierId) || other.verifierId == _this.verifierId)&&(identical(other.unapplied, _this.unapplied) || other.unapplied == _this.unapplied));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CustomerPayment&&(identical(other.customerPaymentId, _this.customerPaymentId) || other.customerPaymentId == _this.customerPaymentId)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.customerName, _this.customerName) || other.customerName == _this.customerName)&&(identical(other.amount, _this.amount) || other.amount == _this.amount)&&(identical(other.currency, _this.currency) || other.currency == _this.currency)&&(identical(other.methodCode, _this.methodCode) || other.methodCode == _this.methodCode)&&(identical(other.paymentOptionId, _this.paymentOptionId) || other.paymentOptionId == _this.paymentOptionId)&&(identical(other.reference, _this.reference) || other.reference == _this.reference)&&(identical(other.date, _this.date) || other.date == _this.date)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.cashSessionId, _this.cashSessionId) || other.cashSessionId == _this.cashSessionId)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.verifierId, _this.verifierId) || other.verifierId == _this.verifierId)&&(identical(other.unapplied, _this.unapplied) || other.unapplied == _this.unapplied));
 }
 
 
 @override
 int get hashCode {
   final _this = this as CustomerPayment;
-  return Object.hash(runtimeType,_this.customerPaymentId,_this.customerId,_this.amount,_this.currency,_this.methodCode,_this.paymentOptionId,_this.reference,_this.date,_this.facilityId,_this.cashSessionId,_this.type,_this.verifierId,_this.unapplied);
+  return Object.hash(runtimeType,_this.customerPaymentId,_this.customerId,_this.customerName,_this.amount,_this.currency,_this.methodCode,_this.paymentOptionId,_this.reference,_this.date,_this.facilityId,_this.cashSessionId,_this.type,_this.verifierId,_this.unapplied);
 }
 
 @override
 String toString() {
   final _this = this as CustomerPayment;
-  return 'CustomerPayment(customerPaymentId: ${_this.customerPaymentId}, customerId: ${_this.customerId}, amount: ${_this.amount}, currency: ${_this.currency}, methodCode: ${_this.methodCode}, paymentOptionId: ${_this.paymentOptionId}, reference: ${_this.reference}, date: ${_this.date}, facilityId: ${_this.facilityId}, cashSessionId: ${_this.cashSessionId}, type: ${_this.type}, verifierId: ${_this.verifierId}, unapplied: ${_this.unapplied})';
+  return 'CustomerPayment(customerPaymentId: ${_this.customerPaymentId}, customerId: ${_this.customerId}, customerName: ${_this.customerName}, amount: ${_this.amount}, currency: ${_this.currency}, methodCode: ${_this.methodCode}, paymentOptionId: ${_this.paymentOptionId}, reference: ${_this.reference}, date: ${_this.date}, facilityId: ${_this.facilityId}, cashSessionId: ${_this.cashSessionId}, type: ${_this.type}, verifierId: ${_this.verifierId}, unapplied: ${_this.unapplied})';
 }
 
 
@@ -53,7 +56,7 @@ abstract mixin class $CustomerPaymentCopyWith<$Res>  {
   factory $CustomerPaymentCopyWith(CustomerPayment value, $Res Function(CustomerPayment) _then) = _$CustomerPaymentCopyWithImpl;
 @useResult
 $Res call({
- int customerPaymentId, int customerId, String amount, Currency currency, int methodCode, int? paymentOptionId, String? reference, DateTime date, int facilityId, int? cashSessionId, PaymentType type, int? verifierId, String unapplied
+ int customerPaymentId, int customerId, String? customerName, String amount, Currency currency, int methodCode, int? paymentOptionId, String? reference, DateTime date, int facilityId, int? cashSessionId, PaymentType type, int? verifierId, String unapplied
 });
 
 
@@ -70,11 +73,12 @@ class _$CustomerPaymentCopyWithImpl<$Res>
 
 /// Create a copy of CustomerPayment
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? customerPaymentId = null,Object? customerId = null,Object? amount = null,Object? currency = null,Object? methodCode = null,Object? paymentOptionId = freezed,Object? reference = freezed,Object? date = null,Object? facilityId = null,Object? cashSessionId = freezed,Object? type = null,Object? verifierId = freezed,Object? unapplied = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? customerPaymentId = null,Object? customerId = null,Object? customerName = freezed,Object? amount = null,Object? currency = null,Object? methodCode = null,Object? paymentOptionId = freezed,Object? reference = freezed,Object? date = null,Object? facilityId = null,Object? cashSessionId = freezed,Object? type = null,Object? verifierId = freezed,Object? unapplied = null,}) {
   return _then(CustomerPayment(
 customerPaymentId: null == customerPaymentId ? _self.customerPaymentId : customerPaymentId // ignore: cast_nullable_to_non_nullable
 as int,customerId: null == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
-as int,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as int,customerName: freezed == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
+as String?,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
 as String,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
 as Currency,methodCode: null == methodCode ? _self.methodCode : methodCode // ignore: cast_nullable_to_non_nullable
 as int,paymentOptionId: freezed == paymentOptionId ? _self.paymentOptionId : paymentOptionId // ignore: cast_nullable_to_non_nullable
@@ -170,10 +174,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int customerPaymentId,  int customerId,  String amount,  Currency currency,  int methodCode,  int? paymentOptionId,  String? reference,  DateTime date,  int facilityId,  int? cashSessionId,  PaymentType type,  int? verifierId,  String unapplied)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int customerPaymentId,  int customerId,  String? customerName,  String amount,  Currency currency,  int methodCode,  int? paymentOptionId,  String? reference,  DateTime date,  int facilityId,  int? cashSessionId,  PaymentType type,  int? verifierId,  String unapplied)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CustomerPayment() when $default != null:
-return $default(_that.customerPaymentId,_that.customerId,_that.amount,_that.currency,_that.methodCode,_that.paymentOptionId,_that.reference,_that.date,_that.facilityId,_that.cashSessionId,_that.type,_that.verifierId,_that.unapplied);case _:
+return $default(_that.customerPaymentId,_that.customerId,_that.customerName,_that.amount,_that.currency,_that.methodCode,_that.paymentOptionId,_that.reference,_that.date,_that.facilityId,_that.cashSessionId,_that.type,_that.verifierId,_that.unapplied);case _:
   return orElse();
 
 }
@@ -191,10 +195,10 @@ return $default(_that.customerPaymentId,_that.customerId,_that.amount,_that.curr
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int customerPaymentId,  int customerId,  String amount,  Currency currency,  int methodCode,  int? paymentOptionId,  String? reference,  DateTime date,  int facilityId,  int? cashSessionId,  PaymentType type,  int? verifierId,  String unapplied)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int customerPaymentId,  int customerId,  String? customerName,  String amount,  Currency currency,  int methodCode,  int? paymentOptionId,  String? reference,  DateTime date,  int facilityId,  int? cashSessionId,  PaymentType type,  int? verifierId,  String unapplied)  $default,) {final _that = this;
 switch (_that) {
 case _CustomerPayment():
-return $default(_that.customerPaymentId,_that.customerId,_that.amount,_that.currency,_that.methodCode,_that.paymentOptionId,_that.reference,_that.date,_that.facilityId,_that.cashSessionId,_that.type,_that.verifierId,_that.unapplied);case _:
+return $default(_that.customerPaymentId,_that.customerId,_that.customerName,_that.amount,_that.currency,_that.methodCode,_that.paymentOptionId,_that.reference,_that.date,_that.facilityId,_that.cashSessionId,_that.type,_that.verifierId,_that.unapplied);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -211,10 +215,10 @@ return $default(_that.customerPaymentId,_that.customerId,_that.amount,_that.curr
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int customerPaymentId,  int customerId,  String amount,  Currency currency,  int methodCode,  int? paymentOptionId,  String? reference,  DateTime date,  int facilityId,  int? cashSessionId,  PaymentType type,  int? verifierId,  String unapplied)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int customerPaymentId,  int customerId,  String? customerName,  String amount,  Currency currency,  int methodCode,  int? paymentOptionId,  String? reference,  DateTime date,  int facilityId,  int? cashSessionId,  PaymentType type,  int? verifierId,  String unapplied)?  $default,) {final _that = this;
 switch (_that) {
 case _CustomerPayment() when $default != null:
-return $default(_that.customerPaymentId,_that.customerId,_that.amount,_that.currency,_that.methodCode,_that.paymentOptionId,_that.reference,_that.date,_that.facilityId,_that.cashSessionId,_that.type,_that.verifierId,_that.unapplied);case _:
+return $default(_that.customerPaymentId,_that.customerId,_that.customerName,_that.amount,_that.currency,_that.methodCode,_that.paymentOptionId,_that.reference,_that.date,_that.facilityId,_that.cashSessionId,_that.type,_that.verifierId,_that.unapplied);case _:
   return null;
 
 }
@@ -226,11 +230,15 @@ return $default(_that.customerPaymentId,_that.customerId,_that.amount,_that.curr
 
 
 class _CustomerPayment extends CustomerPayment {
-  const _CustomerPayment({required this.customerPaymentId, required this.customerId, required this.amount, required this.currency, required this.methodCode, this.paymentOptionId, this.reference, required this.date, required this.facilityId, this.cashSessionId, required this.type, this.verifierId, required this.unapplied}): super._();
+  const _CustomerPayment({required this.customerPaymentId, required this.customerId, this.customerName, required this.amount, required this.currency, required this.methodCode, this.paymentOptionId, this.reference, required this.date, required this.facilityId, this.cashSessionId, required this.type, this.verifierId, required this.unapplied}): super._();
   
 
 @override final  int customerPaymentId;
 @override final  int customerId;
+/// The customer's name as the server joins it onto the payment, so no
+/// per-customer lookup is needed (spec 055 R2). `null` only when the
+/// customer row is missing; a blank name is treated the same way.
+@override final  String? customerName;
 @override final  String amount;
 @override final  Currency currency;
 @override final  int methodCode;
@@ -255,18 +263,18 @@ _$CustomerPaymentCopyWith<_CustomerPayment> get copyWith => __$CustomerPaymentCo
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CustomerPayment&&(identical(other.customerPaymentId, customerPaymentId) || other.customerPaymentId == customerPaymentId)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.methodCode, methodCode) || other.methodCode == methodCode)&&(identical(other.paymentOptionId, paymentOptionId) || other.paymentOptionId == paymentOptionId)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.date, date) || other.date == date)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.cashSessionId, cashSessionId) || other.cashSessionId == cashSessionId)&&(identical(other.type, type) || other.type == type)&&(identical(other.verifierId, verifierId) || other.verifierId == verifierId)&&(identical(other.unapplied, unapplied) || other.unapplied == unapplied));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CustomerPayment&&(identical(other.customerPaymentId, customerPaymentId) || other.customerPaymentId == customerPaymentId)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.customerName, customerName) || other.customerName == customerName)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.methodCode, methodCode) || other.methodCode == methodCode)&&(identical(other.paymentOptionId, paymentOptionId) || other.paymentOptionId == paymentOptionId)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.date, date) || other.date == date)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.cashSessionId, cashSessionId) || other.cashSessionId == cashSessionId)&&(identical(other.type, type) || other.type == type)&&(identical(other.verifierId, verifierId) || other.verifierId == verifierId)&&(identical(other.unapplied, unapplied) || other.unapplied == unapplied));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,customerPaymentId,customerId,amount,currency,methodCode,paymentOptionId,reference,date,facilityId,cashSessionId,type,verifierId,unapplied);
+    return Object.hash(runtimeType,customerPaymentId,customerId,customerName,amount,currency,methodCode,paymentOptionId,reference,date,facilityId,cashSessionId,type,verifierId,unapplied);
 }
 
 @override
 String toString() {
-    return 'CustomerPayment(customerPaymentId: $customerPaymentId, customerId: $customerId, amount: $amount, currency: $currency, methodCode: $methodCode, paymentOptionId: $paymentOptionId, reference: $reference, date: $date, facilityId: $facilityId, cashSessionId: $cashSessionId, type: $type, verifierId: $verifierId, unapplied: $unapplied)';
+    return 'CustomerPayment(customerPaymentId: $customerPaymentId, customerId: $customerId, customerName: $customerName, amount: $amount, currency: $currency, methodCode: $methodCode, paymentOptionId: $paymentOptionId, reference: $reference, date: $date, facilityId: $facilityId, cashSessionId: $cashSessionId, type: $type, verifierId: $verifierId, unapplied: $unapplied)';
 }
 
 
@@ -277,7 +285,7 @@ abstract mixin class _$CustomerPaymentCopyWith<$Res> implements $CustomerPayment
   factory _$CustomerPaymentCopyWith(_CustomerPayment value, $Res Function(_CustomerPayment) _then) = __$CustomerPaymentCopyWithImpl;
 @override @useResult
 $Res call({
- int customerPaymentId, int customerId, String amount, Currency currency, int methodCode, int? paymentOptionId, String? reference, DateTime date, int facilityId, int? cashSessionId, PaymentType type, int? verifierId, String unapplied
+ int customerPaymentId, int customerId, String? customerName, String amount, Currency currency, int methodCode, int? paymentOptionId, String? reference, DateTime date, int facilityId, int? cashSessionId, PaymentType type, int? verifierId, String unapplied
 });
 
 
@@ -294,11 +302,12 @@ class __$CustomerPaymentCopyWithImpl<$Res>
 
 /// Create a copy of CustomerPayment
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? customerPaymentId = null,Object? customerId = null,Object? amount = null,Object? currency = null,Object? methodCode = null,Object? paymentOptionId = freezed,Object? reference = freezed,Object? date = null,Object? facilityId = null,Object? cashSessionId = freezed,Object? type = null,Object? verifierId = freezed,Object? unapplied = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? customerPaymentId = null,Object? customerId = null,Object? customerName = freezed,Object? amount = null,Object? currency = null,Object? methodCode = null,Object? paymentOptionId = freezed,Object? reference = freezed,Object? date = null,Object? facilityId = null,Object? cashSessionId = freezed,Object? type = null,Object? verifierId = freezed,Object? unapplied = null,}) {
   return _then(_CustomerPayment(
 customerPaymentId: null == customerPaymentId ? _self.customerPaymentId : customerPaymentId // ignore: cast_nullable_to_non_nullable
 as int,customerId: null == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
-as int,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as int,customerName: freezed == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
+as String?,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
 as String,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
 as Currency,methodCode: null == methodCode ? _self.methodCode : methodCode // ignore: cast_nullable_to_non_nullable
 as int,paymentOptionId: freezed == paymentOptionId ? _self.paymentOptionId : paymentOptionId // ignore: cast_nullable_to_non_nullable

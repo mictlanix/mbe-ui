@@ -7,6 +7,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/documents/presentation/document_actions.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
@@ -205,7 +206,10 @@ class _PaymentBody extends ConsumerWidget {
               FormGridChild(
                 _Labeled(
                   label: l10n.paymentsColumnCustomer,
-                  child: PaymentCustomerName(customerId: payment.customerId),
+                  child: PaymentCustomerName(
+                    customerId: payment.customerId,
+                    name: payment.customerName,
+                  ),
                 ),
               ),
               FormGridChild(
@@ -274,6 +278,25 @@ class _PaymentBody extends ConsumerWidget {
                       : _EmployeeName(employeeId: payment.verifierId!),
                 ),
               ),
+              // spec 055 FR-001: the ticket of a credit payment or advance.
+              // At the end of the grid, like the cash cut on its session, and
+              // absent — not disabled — for any other type or without
+              // Customer Payments read.
+              if (canShowPaymentTicket(access, payment))
+                FormGridChild(
+                  span: FormGridSpan.full,
+                  Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: OutlinedButton.icon(
+                      key: const Key('payment_view_ticket_button'),
+                      onPressed: () => ref
+                          .read(documentActionsProvider)
+                          .preview(context, paymentTicketRef(l10n, payment)),
+                      icon: const Icon(Icons.receipt_long_outlined),
+                      label: Text(l10n.paymentViewTicketAction),
+                    ),
+                  ),
+                ),
             ],
           ),
           _ApplicationsSection(

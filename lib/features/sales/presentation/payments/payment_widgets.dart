@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/access/access_control.dart';
+import 'package:mbe_ui/core/documents/domain/document_kind.dart';
+import 'package:mbe_ui/core/documents/domain/document_ref.dart';
+import 'package:mbe_ui/core/documents/presentation/document_access.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
@@ -18,6 +22,25 @@ String paymentAmountLabel(
   String amount,
   Currency currency,
 ) => '${fmt.display.currency(amount)} ${currencyCodeLabel(currency)}';
+
+/// Whether "Ver ticket" is offered for [payment] (spec 055 FR-001, FR-002,
+/// FR-005): only the types the server renders a ticket for, and only to a user
+/// who can read Customer Payments. One rule for the list row and the payment
+/// view, so the two never disagree.
+bool canShowPaymentTicket(
+  AccessControlService access,
+  CustomerPayment payment,
+) =>
+    payment.type.hasTicket &&
+    canOpenDocument(access, DocumentKind.customerPaymentTicket);
+
+/// The ticket of [payment], titled by its number (spec 055 R4).
+DocumentRef paymentTicketRef(AppLocalizations l10n, CustomerPayment payment) =>
+    DocumentRef(
+      kind: DocumentKind.customerPaymentTicket,
+      recordId: payment.customerPaymentId,
+      title: l10n.documentPaymentTicketTitle(payment.customerPaymentId),
+    );
 
 /// Verified / unverified chip (FR-017). The colour mapping stays here, in the
 /// caller's file, per `StatusChip`'s own convention.
@@ -40,6 +63,37 @@ class PaymentVerifiedChip extends StatelessWidget {
   }
 }
 
+/// The verified state as an icon, for the list column (spec 055): a filled
+/// badge in the primary colour when verified, a greyed outline circle when
+/// not. Unlike [PaymentVerifiedChip] it fits any column width, whatever the
+/// label's length or language. The label is still there for a pointer
+/// (tooltip) and a screen reader (semantics).
+class PaymentVerifiedIcon extends StatelessWidget {
+  const PaymentVerifiedIcon({super.key, required this.verified});
+
+  final bool verified;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
+    final label = verified ? l10n.paymentVerified : l10n.paymentUnverified;
+    return Tooltip(
+      message: label,
+      child: Icon(
+        verified ? Icons.verified : Icons.circle_outlined,
+        key: Key(
+          verified ? 'payment_icon_verified' : 'payment_icon_unverified',
+        ),
+        color: verified
+            ? scheme.primary
+            : scheme.onSurfaceVariant.withValues(alpha: 0.5),
+        semanticLabel: label,
+      ),
+    );
+  }
+}
+
 /// "Revertida" chip on a reversed application (FR-014).
 class PaymentReversedChip extends StatelessWidget {
   const PaymentReversedChip({super.key});
@@ -56,24 +110,36 @@ class PaymentReversedChip extends StatelessWidget {
   }
 }
 
-/// A customer's name for [customerId], resolved once per distinct id by
-/// `customerDisplayNameProvider` (research R2). While it loads the cell shows
-/// "…"; if the lookup fails — a deleted customer, or a user without Customers
-/// read — it falls back to the number, so one failed name never blanks a row
-/// (FR-018).
+/// A customer's name for a payment: the [name] the server sent with it when
+/// there is one (spec 055 R2, mbe-api#270), so a page of rows makes no
+/// per-customer request at all.
+///
+/// Only a payment that arrives with no name — its customer row is missing —
+/// falls back to `customerDisplayNameProvider`, resolved once per distinct id
+/// (spec 054 research R2). While that loads the cell shows "…"; if the lookup
+/// fails it falls back to the number, so one failed name never blanks a row
+/// (spec 054 FR-018).
 class PaymentCustomerName extends ConsumerWidget {
-  const PaymentCustomerName({super.key, required this.customerId});
+  const PaymentCustomerName({super.key, required this.customerId, this.name});
 
   final int customerId;
+  final String? name;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final name = ref.watch(customerDisplayNameProvider(customerId));
-    final text = name.when(
-      data: (value) => value ?? '#$customerId',
-      loading: () => '…',
-      error: (_, _) => '#$customerId',
-    );
+    final projected = name;
+    final String text;
+    if (projected != null) {
+      text = projected;
+    } else {
+      text = ref
+          .watch(customerDisplayNameProvider(customerId))
+          .when(
+            data: (value) => value ?? '#$customerId',
+            loading: () => '…',
+            error: (_, _) => '#$customerId',
+          );
+    }
     return Tooltip(
       message: text,
       child: Text(text, overflow: TextOverflow.ellipsis, maxLines: 1),

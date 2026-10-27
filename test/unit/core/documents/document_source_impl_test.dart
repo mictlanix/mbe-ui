@@ -38,12 +38,14 @@ void main() {
       await source.fetch(_ref(DocumentKind.salesOrder, 42));
       await source.fetch(_ref(DocumentKind.cashCut, 7));
       await source.fetch(_ref(DocumentKind.salesQuote, 42));
+      await source.fetch(_ref(DocumentKind.customerPaymentTicket, 18342));
 
       expect(paths, [
         '/api/v1/sales-orders/42/ticket',
         '/api/v1/sales-orders/42/document',
         '/api/v1/cash-sessions/7/ticket',
         '/api/v1/sales-quotes/42/document',
+        '/api/v1/customer-payments/18342/ticket',
       ]);
     });
 
@@ -101,6 +103,18 @@ void main() {
       final document = await source.fetch(_ref(DocumentKind.cashCut, 7));
 
       expect(document.filename, 'corte-000007.pdf');
+    });
+
+    test('falls back to the payment ticket name when none is sent', () async {
+      final source = _sourceWith(
+        (options) async => _pdfResponse(_pdf([1]), disposition: 'inline'),
+      );
+
+      final document = await source.fetch(
+        _ref(DocumentKind.customerPaymentTicket, 18342),
+      );
+
+      expect(document.filename, 'pago-00018342.pdf');
     });
 
     test('never lets a server-supplied name carry a path', () async {
@@ -213,6 +227,50 @@ void main() {
                 'Cash session is not closed',
               ),
         ),
+      );
+    });
+
+    test('404 for another facility\'s payment ticket', () async {
+      final source = _sourceWith(
+        (options) async => _jsonError(404, 'Payment not found'),
+      );
+
+      await expectLater(
+        () => source.fetch(_ref(DocumentKind.customerPaymentTicket, 18342)),
+        throwsA(
+          isA<NotFoundError>().having(
+            (e) => e.message,
+            'message',
+            'Payment not found',
+          ),
+        ),
+      );
+    });
+
+    test('409 for a payment type that has no ticket names the type', () async {
+      const detail =
+          'A IMMEDIATE payment has no ticket; only CREDIT_PAYMENT and '
+          'PAYMENT_IN_ADVANCE do';
+      final source = _sourceWith((options) async => _jsonError(409, detail));
+
+      await expectLater(
+        () => source.fetch(_ref(DocumentKind.customerPaymentTicket, 18342)),
+        throwsA(
+          isA<ServerError>()
+              .having((e) => e.statusCode, 'statusCode', 409)
+              .having((e) => e.message, 'message', detail),
+        ),
+      );
+    });
+
+    test('a payment ticket body that is not a PDF is a ServerError', () async {
+      final source = _sourceWith(
+        (options) async => _pdfResponse(Uint8List.fromList([0x3C, 0x68])),
+      );
+
+      await expectLater(
+        () => source.fetch(_ref(DocumentKind.customerPaymentTicket, 18342)),
+        throwsA(isA<ServerError>()),
       );
     });
 

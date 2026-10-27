@@ -7,11 +7,14 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/documents/presentation/document_actions.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/navigation/list_search_submit.dart';
+import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
@@ -41,11 +44,10 @@ const paymentsPath = '/sales/payments';
 /// row opens the payment's own screen, and nothing here creates, verifies or
 /// reverses a payment (FR-003). Gated by Customer Payments (8) read.
 ///
-/// The facility scope has no search box: `GET /customer-payments` has no
-/// free-text search, so the shared filter row omits the control (constitution
-/// §VI) rather than reserving space for one that does not exist. A Payments
-/// Editor reader can switch to the all-facilities scope (US3), whose endpoint
-/// does search by reference — the box appears only there.
+/// Both scopes have a search box: the facility scope searches by customer name
+/// (`GET /customer-payments?search=`, spec 055), and a Payments Editor reader
+/// can switch to the all-facilities scope (spec 054 US3), whose endpoint
+/// searches by reference.
 class PaymentsListScreen extends ConsumerWidget {
   const PaymentsListScreen({super.key, required this.query});
 
@@ -54,9 +56,11 @@ class PaymentsListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final canSearchAll = ref
-        .watch(accessControlProvider)
-        .can(SystemObject.paymentsEditor, AccessRight.read);
+    final access = ref.watch(accessControlProvider);
+    final canSearchAll = access.can(
+      SystemObject.paymentsEditor,
+      AccessRight.read,
+    );
     final filter = PaymentsFilter.fromQuery(
       query,
       canSearchAllFacilities: canSearchAll,
@@ -77,24 +81,37 @@ class PaymentsListScreen extends ConsumerWidget {
       spacing: spacing.fieldGapVertical,
       children: [
         CatalogFilterBar(
-          // Only the all-facilities endpoint can search (by reference).
-          search: allFacilities
-              ? CatalogSearchBar(
-                  key: const Key('payments_search_field'),
-                  label: l10n.paymentsSearchReferenceHint,
-                  searchTooltip: l10n.searchButtonTooltip,
-                  initialValue: filter.reference ?? '',
-                  onSubmitted: (value) => submitCatalogSearch(
-                    context: context,
-                    query: query,
-                    path: paymentsPath,
-                    submitted: value,
-                    current: filter.reference ?? '',
-                    refresh: () =>
-                        ref.invalidate(paymentsListControllerProvider(filter)),
-                  ),
-                )
-              : null,
+          // The facility scope searches by customer name and the
+          // all-facilities scope by reference (spec 055 FR-009, FR-011). The
+          // box is the same widget in both, so it is re-created when the
+          // scope changes: its text comes from the address, which a switch
+          // clears (FR-012).
+          search: KeyedSubtree(
+            key: ValueKey(filter.scope),
+            child: CatalogSearchBar(
+              key: const Key('payments_search_field'),
+              label: allFacilities
+                  ? l10n.paymentsSearchReferenceHint
+                  : l10n.paymentsSearchCustomerHint,
+              searchTooltip: l10n.searchButtonTooltip,
+              initialValue:
+                  (allFacilities ? filter.reference : filter.customerSearch) ??
+                  '',
+              onSubmitted: (value) => submitCatalogSearch(
+                context: context,
+                query: query,
+                path: paymentsPath,
+                submitted: value,
+                current:
+                    (allFacilities
+                        ? filter.reference
+                        : filter.customerSearch) ??
+                    '',
+                refresh: () =>
+                    ref.invalidate(paymentsListControllerProvider(filter)),
+              ),
+            ),
+          ),
           // The scope switch exists only for a Payments Editor reader —
           // absent, not disabled, for everyone else (FR-002).
           actions: [
@@ -147,100 +164,161 @@ class PaymentsListScreen extends ConsumerWidget {
           ],
         ),
         Expanded(
-          child: CatalogListStateView<CustomerPayment>(
-            state: pageAsync,
-            // The filter's own reading, not `query.isFiltered`: a stray
-            // `search` in the address is ignored in the facility scope, so it
-            // must not turn the empty state into a "filtered" one with
-            // nothing to clear.
-            isFiltered: filter.isNarrowed,
-            emptyMessage: l10n.paymentsListEmpty,
-            clearFiltersLabel: l10n.clearFiltersButton,
-            onClearFilters: () => context.go(clearedPath),
-            retryLabel: l10n.retryButton,
-            onRetry: () =>
-                ref.invalidate(paymentsListControllerProvider(filter)),
-            onData: (page) => DataTableView<CustomerPayment>(
-              key: const Key('payments_table'),
-              columns: [
-                DataTableColumn(
-                  label: l10n.paymentsColumnFolio,
-                  fixedWidth: 90,
-                  cellBuilder: (context, p) => Text('${p.customerPaymentId}'),
-                ),
-                DataTableColumn(
-                  label: l10n.paymentsColumnDate,
-                  size: ColumnSize.M,
-                  cellBuilder: (context, p) =>
-                      Text(fmt.display.dateTime(p.date)),
-                ),
-                if (allFacilities)
-                  DataTableColumn(
-                    label: l10n.paymentsColumnFacility,
-                    size: ColumnSize.M,
-                    cellBuilder: (context, p) =>
-                        _FacilityNameCell(facilityId: p.facilityId),
+          // A refusal is not a failure (spec 055 FR-016): the user isn't
+          // allowed these payments, and asking again won't change that.
+          child: _isForbidden(pageAsync)
+              ? const _ListForbidden()
+              : CatalogListStateView<CustomerPayment>(
+                  state: pageAsync,
+                  // The filter's own reading, not `query.isFiltered`: it knows which
+                  // scope the address's `search` belongs to, and that nothing but
+                  // the facets and that search narrows the list.
+                  isFiltered: filter.isNarrowed,
+                  emptyMessage: l10n.paymentsListEmpty,
+                  clearFiltersLabel: l10n.clearFiltersButton,
+                  onClearFilters: () => context.go(clearedPath),
+                  retryLabel: l10n.retryButton,
+                  onRetry: () =>
+                      ref.invalidate(paymentsListControllerProvider(filter)),
+                  onData: (page) => DataTableView<CustomerPayment>(
+                    key: const Key('payments_table'),
+                    columns: [
+                      DataTableColumn(
+                        label: l10n.paymentsColumnFolio,
+                        fixedWidth: 90,
+                        cellBuilder: (context, p) =>
+                            Text('${p.customerPaymentId}'),
+                      ),
+                      DataTableColumn(
+                        label: l10n.paymentsColumnDate,
+                        size: ColumnSize.L,
+                        cellBuilder: (context, p) =>
+                            Text(fmt.display.dateTime(p.date)),
+                      ),
+                      if (allFacilities)
+                        DataTableColumn(
+                          label: l10n.paymentsColumnFacility,
+                          size: ColumnSize.M,
+                          cellBuilder: (context, p) =>
+                              _FacilityNameCell(facilityId: p.facilityId),
+                        ),
+                      DataTableColumn(
+                        label: l10n.paymentsColumnCustomer,
+                        size: ColumnSize.L,
+                        cellBuilder: (context, p) => PaymentCustomerName(
+                          customerId: p.customerId,
+                          name: p.customerName,
+                        ),
+                      ),
+                      DataTableColumn(
+                        label: l10n.paymentsColumnAmount,
+                        numeric: true,
+                        size: ColumnSize.M,
+                        cellBuilder: (context, p) =>
+                            Text(paymentAmountLabel(fmt, p.amount, p.currency)),
+                      ),
+                      DataTableColumn(
+                        label: l10n.paymentsColumnMethod,
+                        size: ColumnSize.L,
+                        cellBuilder: (context, p) =>
+                            PaymentMethodText(payment: p),
+                      ),
+                      DataTableColumn.text(
+                        label: l10n.paymentsColumnReference,
+                        size: ColumnSize.M,
+                        text: (p) => p.reference ?? emptyValuePlaceholder,
+                      ),
+                      DataTableColumn(
+                        label: l10n.paymentsColumnType,
+                        size: ColumnSize.M,
+                        cellBuilder: (context, p) =>
+                            Text(paymentTypeLabel(l10n, p.type)),
+                      ),
+                      DataTableColumn(
+                        label: l10n.paymentsColumnUnapplied,
+                        numeric: true,
+                        size: ColumnSize.M,
+                        cellBuilder: (context, p) => Text(
+                          paymentAmountLabel(fmt, p.unapplied, p.currency),
+                        ),
+                      ),
+                      DataTableColumn(
+                        label: l10n.paymentsColumnVerified,
+                        // An icon, not a chip (spec 055): only the header
+                        // needs the room.
+                        fixedWidth: 110,
+                        cellBuilder: (context, p) =>
+                            PaymentVerifiedIcon(verified: p.isVerified),
+                      ),
+                    ],
+                    rows: page.items,
+                    pagination: page,
+                    onPageChanged: (pageIndex) => context.go(
+                      query
+                          .copyWith(pageIndex: pageIndex)
+                          .toUri(paymentsPath)
+                          .toString(),
+                    ),
+                    // A payment is read-only here (spec 054 FR-003), so a row has no
+                    // Edit: the row tap opens the payment, and the only icon is the
+                    // ticket of a credit payment or advance (spec 055 FR-002).
+                    rowActionsBuilder: (context, p) => buildCatalogRowActions(
+                      editTooltip: l10n.editActionTooltip,
+                      extraActions: [
+                        if (canShowPaymentTicket(access, p))
+                          CatalogRowAction(
+                            key: Key(
+                              'payment_view_ticket_${p.customerPaymentId}',
+                            ),
+                            icon: Icons.receipt_long_outlined,
+                            tooltip: l10n.paymentViewTicketTooltip,
+                            onPressed: () => ref
+                                .read(documentActionsProvider)
+                                .preview(context, paymentTicketRef(l10n, p)),
+                          ),
+                      ],
+                    ),
+                    onRowTap: (p) =>
+                        context.push('$paymentsPath/${p.customerPaymentId}'),
                   ),
-                DataTableColumn(
-                  label: l10n.paymentsColumnCustomer,
-                  size: ColumnSize.L,
-                  cellBuilder: (context, p) =>
-                      PaymentCustomerName(customerId: p.customerId),
                 ),
-                DataTableColumn(
-                  label: l10n.paymentsColumnAmount,
-                  numeric: true,
-                  size: ColumnSize.M,
-                  cellBuilder: (context, p) =>
-                      Text(paymentAmountLabel(fmt, p.amount, p.currency)),
-                ),
-                DataTableColumn(
-                  label: l10n.paymentsColumnMethod,
-                  size: ColumnSize.L,
-                  cellBuilder: (context, p) => PaymentMethodText(payment: p),
-                ),
-                DataTableColumn.text(
-                  label: l10n.paymentsColumnReference,
-                  size: ColumnSize.M,
-                  text: (p) => p.reference ?? emptyValuePlaceholder,
-                ),
-                DataTableColumn(
-                  label: l10n.paymentsColumnType,
-                  size: ColumnSize.M,
-                  cellBuilder: (context, p) =>
-                      Text(paymentTypeLabel(l10n, p.type)),
-                ),
-                DataTableColumn(
-                  label: l10n.paymentsColumnUnapplied,
-                  numeric: true,
-                  size: ColumnSize.M,
-                  cellBuilder: (context, p) =>
-                      Text(paymentAmountLabel(fmt, p.unapplied, p.currency)),
-                ),
-                DataTableColumn(
-                  label: l10n.paymentsColumnVerified,
-                  fixedWidth: 140,
-                  cellBuilder: (context, p) =>
-                      PaymentVerifiedChip(verified: p.isVerified),
-                ),
-              ],
-              rows: page.items,
-              pagination: page,
-              onPageChanged: (pageIndex) => context.go(
-                query
-                    .copyWith(pageIndex: pageIndex)
-                    .toUri(paymentsPath)
-                    .toString(),
-              ),
-              // No row action icons: a payment is read-only here (FR-003),
-              // so the row itself is the only affordance — the same posture
-              // as the cash-sessions list.
-              onRowTap: (p) =>
-                  context.push('$paymentsPath/${p.customerPaymentId}'),
-            ),
-          ),
         ),
       ],
+    );
+  }
+}
+
+/// Whether the server refused the list outright (403): mbe-api now checks the
+/// facility of a list request itself (mbe-api#273). The client never asks for
+/// another facility without Payments Editor read, so this is rare — an access
+/// change in mid-session — but a retry button on it would be wrong.
+bool _isForbidden(AsyncValue<Object?> page) {
+  final error = page.error;
+  return error != null &&
+      switch (toAppError(error)) {
+        ServerError(statusCode: 403) => true,
+        _ => false,
+      };
+}
+
+/// The list's "not allowed" state: a message and nothing to retry.
+class _ListForbidden extends StatelessWidget {
+  const _ListForbidden();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final spacing = Theme.of(context).spacing;
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(spacing.screenMargin),
+        child: Text(
+          l10n.paymentsListForbidden,
+          key: const Key('payments_list_forbidden'),
+          style: Theme.of(context).textTheme.bodyLarge,
+          textAlign: TextAlign.center,
+        ),
+      ),
     );
   }
 }

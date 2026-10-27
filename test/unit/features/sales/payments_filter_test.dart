@@ -315,4 +315,77 @@ void main() {
       );
     });
   });
+  group('customer-name search (spec 055 R3, FR-009, FR-012, FR-013)', () {
+    test(
+      'the search text is the customer search in the facility scope only',
+      () {
+        final facility = PaymentsFilter.fromQuery(
+          const ListQuery(search: 'ana'),
+        );
+        expect(facility.customerSearch, 'ana');
+        expect(facility.reference, isNull);
+
+        final all = PaymentsFilter.fromQuery(
+          const ListQuery(search: 'REF').withFacet('scope', 'all'),
+          canSearchAllFacilities: true,
+        );
+        expect(all.reference, 'REF');
+        expect(all.customerSearch, isNull);
+      },
+    );
+
+    test('a user who cannot search all reads a typed scope=all as a customer '
+        'search in their own facility', () {
+      final filter = PaymentsFilter.fromQuery(
+        const ListQuery(search: 'REF').withFacet('scope', 'all'),
+      );
+      expect(filter.scope, PaymentsScope.facility);
+      expect(filter.customerSearch, 'REF');
+      expect(filter.reference, isNull);
+    });
+
+    test('it is trimmed, and blank is no search', () {
+      expect(
+        PaymentsFilter.fromQuery(
+          const ListQuery(search: '  ana  '),
+        ).customerSearch,
+        'ana',
+      );
+      expect(
+        PaymentsFilter.fromQuery(const ListQuery(search: '   ')).customerSearch,
+        isNull,
+      );
+    });
+
+    test('it narrows the list but is not a drawer facet', () {
+      const filter = PaymentsFilter(customerSearch: 'ana');
+      expect(filter.isNarrowed, isTrue);
+      expect(filter.hasActiveFilters, isFalse);
+      expect(filter.activeFilterCount, 0);
+    });
+
+    test('switching scope drops the search text in both directions', () {
+      final loaded = const ListQuery(
+        search: 'ana',
+        pageIndex: 2,
+      ).withFacet('customer', '12');
+      expect(
+        paymentsQueryForScope(loaded, PaymentsScope.allFacilities).search,
+        isEmpty,
+      );
+      expect(
+        paymentsQueryForScope(
+          loaded.withFacet('scope', 'all'),
+          PaymentsScope.facility,
+        ).search,
+        isEmpty,
+      );
+    });
+
+    test('the search text survives a round trip through the address', () {
+      final query = const ListQuery(search: 'ana lópez');
+      final restored = ListQuery.fromUri(query.toUri('/sales/payments'));
+      expect(PaymentsFilter.fromQuery(restored).customerSearch, 'ana lópez');
+    });
+  });
 }

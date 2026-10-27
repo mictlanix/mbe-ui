@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
@@ -11,6 +12,10 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
+import 'package:mbe_ui/core/documents/data/document_source_impl.dart';
+import 'package:mbe_ui/core/documents/data/printing_document_output.dart';
+import 'package:mbe_ui/core/documents/domain/document_kind.dart';
+import 'package:mbe_ui/core/documents/presentation/document_preview_dialog.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
@@ -36,6 +41,8 @@ import 'package:mbe_ui/features/sales/domain/repositories/customer_payment_repos
 import 'package:mbe_ui/features/sales/presentation/payments/payments_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
+import '../../../unit/core/documents/document_fakes.dart';
+
 class MockCustomerPaymentRepository extends Mock
     implements CustomerPaymentRepository {}
 
@@ -58,6 +65,7 @@ class _FixedAuthNotifier extends AuthNotifier {
 User paymentsUser({
   bool pos = false,
   bool editor = false,
+  bool customerPaymentsRead = true,
   int? facilityId = 9,
 }) => User(
   userId: 'cashier-1',
@@ -67,7 +75,8 @@ User paymentsUser({
   sessionVersion: 1,
   settings: facilityId == null ? null : UserSettings(facilityId: facilityId),
   privileges: [
-    const Privilege(systemObject: SystemObject.customerPayments, rawValue: 2),
+    if (customerPaymentsRead)
+      const Privilege(systemObject: SystemObject.customerPayments, rawValue: 2),
     if (pos) const Privilege(systemObject: SystemObject.pos, rawValue: 2),
     if (editor)
       const Privilege(systemObject: SystemObject.paymentsEditor, rawValue: 2),
@@ -77,6 +86,7 @@ User paymentsUser({
 CustomerPayment testPayment({
   int id = 501,
   int customerId = 7,
+  String? customerName,
   String amount = '1250.00',
   Currency currency = Currency.mxn,
   int methodCode = 1,
@@ -88,6 +98,7 @@ CustomerPayment testPayment({
 }) => CustomerPayment(
   customerPaymentId: id,
   customerId: customerId,
+  customerName: customerName,
   amount: amount,
   currency: currency,
   methodCode: methodCode,
@@ -133,6 +144,7 @@ void stubPayments(
         dateTo: any(named: 'dateTo'),
         methodCode: any(named: 'methodCode'),
         verified: any(named: 'verified'),
+        search: any(named: 'search'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
@@ -189,6 +201,7 @@ Future<(GoRouter, ProviderContainer)> pumpPayments(
   PaymentsMocks mocks, {
   User? user,
   String initialLocation = '/sales/payments',
+  List<Override> extraOverrides = const [],
 }) async {
   tester.view.physicalSize = const Size(1400, 1000);
   tester.view.devicePixelRatio = 1;
@@ -212,6 +225,7 @@ Future<(GoRouter, ProviderContainer)> pumpPayments(
       facilityDisplayNameProvider.overrideWith(
         (ref, id) async => 'Sucursal $id',
       ),
+      ...extraOverrides,
     ],
   );
   addTearDown(container.dispose);
@@ -320,18 +334,20 @@ void main() {
       expect(find.text('REF-99'), findsOneWidget);
       expect(find.text(l10n.paymentTypeCreditPayment), findsOneWidget);
       expect(find.text(r'$250.00 MXN'), findsOneWidget);
-      expect(find.byKey(const Key('payment_chip_verified')), findsOneWidget);
+      expect(find.byKey(const Key('payment_icon_verified')), findsOneWidget);
     });
 
-    testWidgets('an unverified payment shows the unverified chip', (
+    testWidgets('an unverified payment shows the greyed unverified icon', (
       tester,
     ) async {
       stubPayments(mocks.payments, [testPayment(verifierId: null)]);
 
       await pumpPayments(tester, mocks);
 
-      expect(find.byKey(const Key('payment_chip_unverified')), findsOneWidget);
-      expect(find.byKey(const Key('payment_chip_verified')), findsNothing);
+      expect(find.byKey(const Key('payment_icon_unverified')), findsOneWidget);
+      expect(find.byKey(const Key('payment_icon_verified')), findsNothing);
+      // The label is still there for a pointer and a screen reader.
+      expect(find.byTooltip(l10n.paymentUnverified), findsOneWidget);
     });
 
     testWidgets('a payment with no reference shows the empty placeholder', (
@@ -460,6 +476,7 @@ void main() {
           dateTo: any(named: 'dateTo'),
           methodCode: any(named: 'methodCode'),
           verified: any(named: 'verified'),
+          search: any(named: 'search'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
@@ -489,6 +506,7 @@ void main() {
           dateTo: null,
           methodCode: null,
           verified: false,
+          search: null,
           skip: 0,
           limit: 20,
         ),
@@ -510,14 +528,18 @@ void main() {
       expect(find.text('payment-501'), findsOneWidget);
     });
 
-    testWidgets('has no search box and no row action icons', (tester) async {
+    testWidgets('has a customer search box and no Edit, delete or overflow '
+        'icons', (tester) async {
       stubPayments(mocks.payments, [testPayment()]);
 
       await pumpPayments(tester, mocks);
 
-      expect(find.byType(CatalogSearchBar), findsNothing);
-      expect(find.byType(TextField), findsNothing);
+      // spec 055 FR-009: the facility scope searches by customer name.
+      expect(find.byType(CatalogSearchBar), findsOneWidget);
+      expect(find.text(l10n.paymentsSearchCustomerHint), findsOneWidget);
       expect(find.byKey(const Key('payments_filter_button')), findsOneWidget);
+      // An immediate payment has no ticket, so its row has no icon at all.
+      expect(find.byIcon(Icons.receipt_long_outlined), findsNothing);
       expect(find.byIcon(Icons.edit_outlined), findsNothing);
       expect(find.byIcon(Icons.delete_outline), findsNothing);
       expect(find.byIcon(Icons.more_vert), findsNothing);
@@ -545,6 +567,7 @@ void main() {
           dateTo: null,
           methodCode: null,
           verified: null,
+          search: null,
           skip: 0,
           limit: 20,
         ),
@@ -570,7 +593,9 @@ void main() {
     });
 
     testWidgets('a user without it opening ?scope=all sees the own-facility '
-        'list, with no switch and no search box', (tester) async {
+        'list with no switch, and the search text is a customer search', (
+      tester,
+    ) async {
       stubPayments(mocks.payments, [testPayment()]);
 
       await pumpPayments(
@@ -580,7 +605,8 @@ void main() {
       );
 
       expect(find.byKey(const Key('payments_scope_switch')), findsNothing);
-      expect(find.byKey(const Key('payments_search_field')), findsNothing);
+      expect(find.byKey(const Key('payments_search_field')), findsOneWidget);
+      expect(find.text(l10n.paymentsSearchCustomerHint), findsOneWidget);
       expect(find.text('501'), findsOneWidget);
       expect(find.text(l10n.paymentsColumnFacility), findsNothing);
       verify(
@@ -592,6 +618,7 @@ void main() {
           dateTo: null,
           methodCode: null,
           verified: null,
+          search: 'REF',
           skip: 0,
           limit: 20,
         ),
@@ -608,11 +635,12 @@ void main() {
       );
     });
 
-    testWidgets('the facility scope has no search box and no Sucursal column '
-        'for an editor either', (tester) async {
+    testWidgets('the facility scope has the customer search box and no '
+        'Sucursal column for an editor either', (tester) async {
       stubPayments(mocks.payments, [testPayment()]);
       await pumpPayments(tester, mocks, user: paymentsUser(editor: true));
-      expect(find.byKey(const Key('payments_search_field')), findsNothing);
+      expect(find.byKey(const Key('payments_search_field')), findsOneWidget);
+      expect(find.text(l10n.paymentsSearchCustomerHint), findsOneWidget);
       expect(find.text(l10n.paymentsColumnFacility), findsNothing);
     });
 
@@ -799,6 +827,324 @@ void main() {
 
       expect(router.state.uri.queryParameters, {'scope': 'all'});
       expect(find.byKey(const Key('payments_search_field')), findsOneWidget);
+    });
+  });
+  group('ticket (spec 055 FR-002, FR-003, FR-005)', () {
+    late FakeDocumentSource source;
+    late FakeDocumentOutput output;
+
+    setUp(() {
+      source = FakeDocumentSource();
+      output = FakeDocumentOutput();
+    });
+
+    List<Override> documents() => [
+      documentSourceProvider.overrideWithValue(source),
+      documentOutputProvider.overrideWithValue(output),
+    ];
+
+    List<CustomerPayment> onePerType() => [
+      testPayment(id: 501, type: PaymentType.immediate),
+      testPayment(id: 502, type: PaymentType.creditPayment),
+      testPayment(id: 503, type: PaymentType.paymentInAdvance),
+      testPayment(id: 504, type: PaymentType.creditNote),
+      testPayment(id: 505, type: PaymentType.expense),
+      testPayment(id: 506, type: PaymentType.na),
+    ];
+
+    testWidgets('only a credit payment and an advance offer the ticket', (
+      tester,
+    ) async {
+      stubPayments(mocks.payments, onePerType());
+      await pumpPayments(tester, mocks, extraOverrides: documents());
+
+      expect(find.byKey(const Key('payment_view_ticket_502')), findsOneWidget);
+      expect(find.byKey(const Key('payment_view_ticket_503')), findsOneWidget);
+      for (final id in [501, 504, 505, 506]) {
+        expect(find.byKey(Key('payment_view_ticket_$id')), findsNothing);
+      }
+    });
+
+    testWidgets('a user without Customer Payments read is not offered it', (
+      tester,
+    ) async {
+      stubPayments(mocks.payments, onePerType());
+      await pumpPayments(
+        tester,
+        mocks,
+        user: paymentsUser(customerPaymentsRead: false),
+        extraOverrides: documents(),
+      );
+
+      expect(find.byKey(const Key('payment_view_ticket_502')), findsNothing);
+    });
+
+    testWidgets('the icon opens the ticket preview and does not open the '
+        'payment', (tester) async {
+      stubPayments(mocks.payments, onePerType());
+      final (router, _) = await pumpPayments(
+        tester,
+        mocks,
+        extraOverrides: documents(),
+      );
+
+      await tester.tap(find.byKey(const Key('payment_view_ticket_502')));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DocumentPreviewDialog), findsOneWidget);
+      expect(source.fetched, hasLength(1));
+      expect(source.fetched.single.kind, DocumentKind.customerPaymentTicket);
+      expect(source.fetched.single.recordId, 502);
+      expect(source.fetched.single.title, 'Ticket de pago · #502');
+      expect(router.state.uri.path, '/sales/payments');
+    });
+
+    testWidgets('the row itself still opens the payment', (tester) async {
+      stubPayments(mocks.payments, onePerType());
+      await pumpPayments(tester, mocks, extraOverrides: documents());
+
+      await tester.tap(find.text('502'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('payment-502'), findsOneWidget);
+      expect(source.fetched, isEmpty);
+    });
+
+    testWidgets('the all-facilities scope offers it too', (tester) async {
+      stubSearch(mocks.payments, onePerType());
+      await pumpPayments(
+        tester,
+        mocks,
+        user: paymentsUser(editor: true),
+        initialLocation: '/sales/payments?scope=all',
+        extraOverrides: documents(),
+      );
+
+      expect(find.byKey(const Key('payment_view_ticket_502')), findsOneWidget);
+      expect(find.byKey(const Key('payment_view_ticket_501')), findsNothing);
+    });
+  });
+  group('customer name and search (spec 055 US2)', () {
+    Finder searchTextField() => find.descendant(
+      of: find.byKey(const Key('payments_search_field')),
+      matching: find.byType(TextField),
+    );
+
+    testWidgets('a name that arrives with the payment is shown at once, with '
+        'no customer lookup (FR-007)', (tester) async {
+      stubPayments(mocks.payments, [
+        testPayment(id: 601, customerId: 7, customerName: 'Ana López'),
+        testPayment(id: 602, customerId: 8, customerName: 'Luis Reyes'),
+      ]);
+
+      await pumpPayments(tester, mocks);
+
+      expect(find.text('Ana López'), findsOneWidget);
+      expect(find.text('Luis Reyes'), findsOneWidget);
+      expect(find.text('…'), findsNothing);
+      verifyNever(
+        () => mocks.customers.get(customerId: any(named: 'customerId')),
+      );
+    });
+
+    testWidgets('a payment with no name falls back to the lookup (FR-008)', (
+      tester,
+    ) async {
+      stubPayments(mocks.payments, [
+        testPayment(id: 601, customerId: 7, customerName: 'Ana López'),
+        testPayment(id: 602, customerId: 7),
+      ]);
+
+      await pumpPayments(tester, mocks);
+
+      expect(find.text('Ana López'), findsOneWidget);
+      expect(find.text('Aceros del Bajío'), findsOneWidget);
+      verify(() => mocks.customers.get(customerId: 7)).called(1);
+    });
+
+    testWidgets('submitting text writes `search`, returns to page 1 and '
+        'queries the facility by customer name (FR-009, FR-013)', (
+      tester,
+    ) async {
+      stubPayments(mocks.payments, _fullPage(), total: 100);
+
+      final (router, _) = await pumpPayments(
+        tester,
+        mocks,
+        initialLocation: '/sales/payments?page=3&customer=7',
+      );
+
+      await tester.enterText(searchTextField(), 'lópez');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.queryParameters['search'], 'lópez');
+      expect(router.state.uri.queryParameters['customer'], '7');
+      expect(router.state.uri.queryParameters.containsKey('page'), isFalse);
+      verify(
+        () => mocks.payments.list(
+          facilityId: 9,
+          customerId: 7,
+          cashSessionId: null,
+          dateFrom: null,
+          dateTo: null,
+          methodCode: null,
+          verified: null,
+          search: 'lópez',
+          skip: 0,
+          limit: 20,
+        ),
+      ).called(greaterThan(0));
+      verifyNever(
+        () => mocks.payments.searchAcrossFacilities(
+          customerId: any(named: 'customerId'),
+          reference: any(named: 'reference'),
+          dateFrom: any(named: 'dateFrom'),
+          dateTo: any(named: 'dateTo'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      );
+    });
+
+    testWidgets('the box shows the search text from the address', (
+      tester,
+    ) async {
+      stubPayments(mocks.payments, [testPayment()]);
+
+      await pumpPayments(
+        tester,
+        mocks,
+        initialLocation: '/sales/payments?search=ana',
+      );
+
+      expect(
+        tester.widget<TextField>(searchTextField()).controller?.text,
+        'ana',
+      );
+    });
+
+    testWidgets('a search with no results shows the filtered-empty view, and '
+        'clearing removes the text', (tester) async {
+      stubPayments(mocks.payments, const []);
+
+      final (router, _) = await pumpPayments(
+        tester,
+        mocks,
+        initialLocation: '/sales/payments?search=zzz',
+      );
+      expect(find.text(l10n.paymentsListEmpty), findsNothing);
+      expect(find.text(l10n.clearFiltersButton), findsOneWidget);
+
+      await tester.tap(find.text(l10n.clearFiltersButton));
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.queryParameters, isEmpty);
+      expect(
+        tester.widget<TextField>(searchTextField()).controller?.text,
+        isEmpty,
+      );
+    });
+
+    testWidgets('the hint names what each scope searches (FR-011)', (
+      tester,
+    ) async {
+      stubPayments(mocks.payments, [testPayment()]);
+      stubSearch(mocks.payments, [testPayment()]);
+
+      await pumpPayments(tester, mocks, user: paymentsUser(editor: true));
+      expect(find.text(l10n.paymentsSearchCustomerHint), findsOneWidget);
+      expect(find.text(l10n.paymentsSearchReferenceHint), findsNothing);
+
+      await tester.tap(find.text(l10n.paymentsScopeAll));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.paymentsSearchReferenceHint), findsOneWidget);
+      expect(find.text(l10n.paymentsSearchCustomerHint), findsNothing);
+    });
+
+    testWidgets('switching scope clears the search text, in both directions '
+        '(FR-012)', (tester) async {
+      stubPayments(mocks.payments, [testPayment()]);
+      stubSearch(mocks.payments, [testPayment()]);
+
+      final (router, _) = await pumpPayments(
+        tester,
+        mocks,
+        user: paymentsUser(editor: true),
+        initialLocation: '/sales/payments?search=ana',
+      );
+      expect(
+        tester.widget<TextField>(searchTextField()).controller?.text,
+        'ana',
+      );
+
+      await tester.tap(find.text(l10n.paymentsScopeAll));
+      await tester.pumpAndSettle();
+      expect(router.state.uri.queryParameters, {'scope': 'all'});
+      expect(
+        tester.widget<TextField>(searchTextField()).controller?.text,
+        isEmpty,
+      );
+
+      await tester.enterText(searchTextField(), 'REF-1');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      expect(router.state.uri.queryParameters['search'], 'REF-1');
+
+      await tester.tap(find.text(l10n.paymentsScopeFacility));
+      await tester.pumpAndSettle();
+      expect(router.state.uri.queryParameters, isEmpty);
+      expect(
+        tester.widget<TextField>(searchTextField()).controller?.text,
+        isEmpty,
+      );
+    });
+  });
+  group('a refused list (spec 055 FR-016)', () {
+    void stubFailure(AppError error) => when(
+      () => mocks.payments.list(
+        facilityId: any(named: 'facilityId'),
+        customerId: any(named: 'customerId'),
+        cashSessionId: any(named: 'cashSessionId'),
+        dateFrom: any(named: 'dateFrom'),
+        dateTo: any(named: 'dateTo'),
+        methodCode: any(named: 'methodCode'),
+        verified: any(named: 'verified'),
+        search: any(named: 'search'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenThrow(error);
+
+    testWidgets('a 403 says the user isn\'t allowed, with nothing to retry', (
+      tester,
+    ) async {
+      stubFailure(
+        const AppError.server(
+          statusCode: 403,
+          message: 'Another facility\'s payments require PaymentsEditor read',
+        ),
+      );
+
+      await pumpPayments(tester, mocks);
+
+      expect(find.byKey(const Key('payments_list_forbidden')), findsOneWidget);
+      expect(find.text(l10n.paymentsListForbidden), findsOneWidget);
+      expect(find.byKey(const Key('list_state_retry_button')), findsNothing);
+      expect(find.byKey(const Key('list_state_failed')), findsNothing);
+      // The filter row stays, so the user can change what they asked for.
+      expect(find.byKey(const Key('payments_filter_button')), findsOneWidget);
+    });
+
+    testWidgets('any other failure still offers a retry', (tester) async {
+      stubFailure(const AppError.server(statusCode: 500));
+
+      await pumpPayments(tester, mocks);
+
+      expect(find.byKey(const Key('list_state_failed')), findsOneWidget);
+      expect(find.byKey(const Key('list_state_retry_button')), findsOneWidget);
+      expect(find.byKey(const Key('payments_list_forbidden')), findsNothing);
     });
   });
 }

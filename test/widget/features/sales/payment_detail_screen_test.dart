@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
@@ -9,6 +10,10 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
+import 'package:mbe_ui/core/documents/data/document_source_impl.dart';
+import 'package:mbe_ui/core/documents/data/printing_document_output.dart';
+import 'package:mbe_ui/core/documents/domain/document_kind.dart';
+import 'package:mbe_ui/core/documents/presentation/document_preview_dialog.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
@@ -21,10 +26,12 @@ import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_im
 import 'package:mbe_ui/features/catalog/domain/entities/payment_method_option.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
+import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_link_providers.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
+import '../../../unit/core/documents/document_fakes.dart';
 import 'payments_list_screen_test.dart';
 
 class _FixedAuthNotifier extends AuthNotifier {
@@ -37,6 +44,7 @@ class _FixedAuthNotifier extends AuthNotifier {
 User _user({
   bool pos = false,
   bool editor = false,
+  bool customerPaymentsRead = true,
   int? facilityId = 9,
 }) => User(
   userId: 'u1',
@@ -46,7 +54,8 @@ User _user({
   sessionVersion: 1,
   settings: facilityId == null ? null : UserSettings(facilityId: facilityId),
   privileges: [
-    const Privilege(systemObject: SystemObject.customerPayments, rawValue: 2),
+    if (customerPaymentsRead)
+      const Privilege(systemObject: SystemObject.customerPayments, rawValue: 2),
     if (pos) const Privilege(systemObject: SystemObject.pos, rawValue: 2),
     if (editor)
       const Privilege(systemObject: SystemObject.paymentsEditor, rawValue: 2),
@@ -101,6 +110,7 @@ void main() {
     String location = '/sales/payments/501',
     int? paymentId = 501,
     Map<int, String?> orderTargets = const {},
+    List<Override> extraOverrides = const [],
   }) async {
     tester.view.physicalSize = const Size(1400, 1400);
     tester.view.devicePixelRatio = 1;
@@ -128,6 +138,7 @@ void main() {
         orderLinkTargetProvider.overrideWith(
           (ref, saleId) async => orderTargets[saleId],
         ),
+        ...extraOverrides,
       ],
     );
     addTearDown(container.dispose);
@@ -214,6 +225,32 @@ void main() {
       await pumpDetail(tester);
 
       expect(find.byKey(const Key('payment_chip_unverified')), findsOneWidget);
+    });
+  });
+
+  group('customer name (spec 055 FR-007)', () {
+    testWidgets('shows the name that came with the payment, with no lookup', (
+      tester,
+    ) async {
+      stubGet(testPayment(customerName: 'Ana López'));
+
+      await pumpDetail(tester);
+
+      expect(find.text('Ana López'), findsOneWidget);
+      verifyNever(
+        () => mocks.customers.get(customerId: any(named: 'customerId')),
+      );
+    });
+
+    testWidgets('looks the customer up when the payment has no name', (
+      tester,
+    ) async {
+      stubGet(testPayment());
+
+      await pumpDetail(tester);
+
+      expect(find.text('Aceros del Bajío'), findsOneWidget);
+      verify(() => mocks.customers.get(customerId: 7)).called(1);
     });
   });
 
@@ -411,6 +448,10 @@ void main() {
 
       expect(find.byKey(const Key('payment_not_found')), findsOneWidget);
       expect(find.text(l10n.paymentBackToList), findsOneWidget);
+      // spec 055 FR-015: a refusal is not a failure, so there is nothing to
+      // retry.
+      expect(find.byKey(const Key('list_state_retry_button')), findsNothing);
+      expect(find.text(l10n.paymentNotFound(501)), findsOneWidget);
     });
 
     testWidgets('"Volver a Pagos" returns to the list', (tester) async {
@@ -602,6 +643,97 @@ void main() {
             .dx,
         left,
       );
+    });
+  });
+  group('ticket (spec 055 FR-001, FR-003, FR-005, FR-006)', () {
+    late FakeDocumentSource source;
+    late FakeDocumentOutput output;
+
+    setUp(() {
+      source = FakeDocumentSource();
+      output = FakeDocumentOutput();
+    });
+
+    List<Override> documents() => [
+      documentSourceProvider.overrideWithValue(source),
+      documentOutputProvider.overrideWithValue(output),
+    ];
+
+    const button = Key('payment_view_ticket_button');
+
+    testWidgets('a credit payment and an advance offer it', (tester) async {
+      for (final type in [
+        PaymentType.creditPayment,
+        PaymentType.paymentInAdvance,
+      ]) {
+        stubGet(testPayment(type: type));
+        await pumpDetail(tester, extraOverrides: documents());
+        expect(find.byKey(button), findsOneWidget, reason: type.name);
+      }
+    });
+
+    testWidgets('every other type has no ticket button', (tester) async {
+      for (final type in [
+        PaymentType.na,
+        PaymentType.immediate,
+        PaymentType.creditNote,
+        PaymentType.expense,
+      ]) {
+        stubGet(testPayment(type: type));
+        await pumpDetail(tester, extraOverrides: documents());
+        expect(find.byKey(button), findsNothing, reason: type.name);
+      }
+    });
+
+    testWidgets('it is absent without Customer Payments read', (tester) async {
+      stubGet(testPayment(type: PaymentType.creditPayment));
+
+      await pumpDetail(
+        tester,
+        user: _user(customerPaymentsRead: false, editor: true),
+        extraOverrides: documents(),
+      );
+
+      expect(find.byKey(button), findsNothing);
+    });
+
+    testWidgets('pressing it opens the preview for that payment', (
+      tester,
+    ) async {
+      stubGet(testPayment(type: PaymentType.creditPayment));
+      await pumpDetail(tester, extraOverrides: documents());
+
+      await tester.ensureVisible(find.byKey(button));
+      await tester.tap(find.byKey(button));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DocumentPreviewDialog), findsOneWidget);
+      expect(source.fetched, hasLength(1));
+      expect(source.fetched.single.kind, DocumentKind.customerPaymentTicket);
+      expect(source.fetched.single.recordId, 501);
+      expect(source.fetched.single.title, 'Ticket de pago · #501');
+    });
+
+    testWidgets('a refusal shows the server\'s message and prints nothing', (
+      tester,
+    ) async {
+      source.handler = (_) => Future.error(
+        const AppError.server(
+          statusCode: 409,
+          message: 'A IMMEDIATE payment has no ticket',
+        ),
+      );
+      stubGet(testPayment(type: PaymentType.creditPayment));
+      await pumpDetail(tester, extraOverrides: documents());
+
+      await tester.ensureVisible(find.byKey(button));
+      await tester.tap(find.byKey(button));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DocumentPreviewDialog), findsOneWidget);
+      expect(find.text('A IMMEDIATE payment has no ticket'), findsOneWidget);
+      expect(output.printed, isEmpty);
+      expect(output.rastered, isEmpty);
     });
   });
 }

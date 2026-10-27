@@ -130,6 +130,7 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
     DateTime? dateTo,
     int? methodCode,
     bool? verified,
+    String? search,
     int skip = 0,
     int limit = 20,
   }) async {
@@ -143,6 +144,7 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
             dateTo: dateTo == null ? null : wireDateEnd(dateTo),
             method: methodCode,
             verified: verified,
+            search: search == null || search.trim().isEmpty ? null : search,
             skip: skip,
             limit: limit,
           );
