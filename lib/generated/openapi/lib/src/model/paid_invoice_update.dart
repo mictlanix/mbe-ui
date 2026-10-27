@@ -3,7 +3,7 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/amount2.dart';
+import 'package:mbe_api_client/src/model/amount4.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -17,7 +17,7 @@ part 'paid_invoice_update.g.dart';
 abstract class PaidInvoiceUpdate
     implements Built<PaidInvoiceUpdate, PaidInvoiceUpdateBuilder> {
   @BuiltValueField(wireName: r'amount')
-  Amount2 get amount;
+  Amount4 get amount;
 
   PaidInvoiceUpdate._();
 
@@ -48,7 +48,7 @@ class _$PaidInvoiceUpdateSerializer
     yield r'amount';
     yield serializers.serialize(
       object.amount,
-      specifiedType: const FullType(Amount2),
+      specifiedType: const FullType(Amount4),
     );
   }
 
@@ -81,9 +81,9 @@ class _$PaidInvoiceUpdateSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(Amount2),
+                    specifiedType: const FullType(Amount4),
                   )
-                  as Amount2;
+                  as Amount4;
           result.amount.replace(valueDes);
           break;
         default:

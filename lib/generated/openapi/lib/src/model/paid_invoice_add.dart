@@ -3,7 +3,7 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:mbe_api_client/src/model/amount1.dart';
+import 'package:mbe_api_client/src/model/amount3.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -21,7 +21,7 @@ abstract class PaidInvoiceAdd
   int get invoice;
 
   @BuiltValueField(wireName: r'amount')
-  Amount1? get amount;
+  Amount3? get amount;
 
   PaidInvoiceAdd._();
 
@@ -58,7 +58,7 @@ class _$PaidInvoiceAddSerializer
       yield r'amount';
       yield serializers.serialize(
         object.amount,
-        specifiedType: const FullType.nullable(Amount1),
+        specifiedType: const FullType.nullable(Amount3),
       );
     }
   }
@@ -98,9 +98,9 @@ class _$PaidInvoiceAddSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType.nullable(Amount1),
+                    specifiedType: const FullType.nullable(Amount3),
                   )
-                  as Amount1?;
+                  as Amount3?;
           if (valueDes == null) continue;
           result.amount.replace(valueDes);
           break;

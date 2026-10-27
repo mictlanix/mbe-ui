@@ -194,6 +194,17 @@ Class | Method | HTTP request | Description
 [*ExchangeRatesApi*](doc/ExchangeRatesApi.md) | [**getExchangeRateApiV1ExchangeRatesExchangeRateIdGet**](doc/ExchangeRatesApi.md#getexchangerateapiv1exchangeratesexchangerateidget) | **GET** /api/v1/exchange-rates/{exchange_rate_id} | Get Exchange Rate
 [*ExchangeRatesApi*](doc/ExchangeRatesApi.md) | [**listExchangeRatesApiV1ExchangeRatesGet**](doc/ExchangeRatesApi.md#listexchangeratesapiv1exchangeratesget) | **GET** /api/v1/exchange-rates | List Exchange Rates
 [*ExchangeRatesApi*](doc/ExchangeRatesApi.md) | [**updateExchangeRateApiV1ExchangeRatesExchangeRateIdPut**](doc/ExchangeRatesApi.md#updateexchangerateapiv1exchangeratesexchangerateidput) | **PUT** /api/v1/exchange-rates/{exchange_rate_id} | Update Exchange Rate
+[*ExpenseVouchersApi*](doc/ExpenseVouchersApi.md) | [**addExpenseVoucherLineApiV1ExpenseVouchersVoucherIdLinesPost**](doc/ExpenseVouchersApi.md#addexpensevoucherlineapiv1expensevouchersvoucheridlinespost) | **POST** /api/v1/expense-vouchers/{voucher_id}/lines | Add Expense Voucher Line
+[*ExpenseVouchersApi*](doc/ExpenseVouchersApi.md) | [**cancelExpenseVoucherApiV1ExpenseVouchersVoucherIdCancelPost**](doc/ExpenseVouchersApi.md#cancelexpensevoucherapiv1expensevouchersvoucheridcancelpost) | **POST** /api/v1/expense-vouchers/{voucher_id}/cancel | Cancel Expense Voucher
+[*ExpenseVouchersApi*](doc/ExpenseVouchersApi.md) | [**confirmExpenseVoucherApiV1ExpenseVouchersVoucherIdConfirmPost**](doc/ExpenseVouchersApi.md#confirmexpensevoucherapiv1expensevouchersvoucheridconfirmpost) | **POST** /api/v1/expense-vouchers/{voucher_id}/confirm | Confirm Expense Voucher
+[*ExpenseVouchersApi*](doc/ExpenseVouchersApi.md) | [**createExpenseVoucherApiV1ExpenseVouchersPost**](doc/ExpenseVouchersApi.md#createexpensevoucherapiv1expensevoucherspost) | **POST** /api/v1/expense-vouchers | Create Expense Voucher
+[*ExpenseVouchersApi*](doc/ExpenseVouchersApi.md) | [**getExpenseVoucherApiV1ExpenseVouchersVoucherIdGet**](doc/ExpenseVouchersApi.md#getexpensevoucherapiv1expensevouchersvoucheridget) | **GET** /api/v1/expense-vouchers/{voucher_id} | Get Expense Voucher
+[*ExpenseVouchersApi*](doc/ExpenseVouchersApi.md) | [**listExpenseVouchersApiV1ExpenseVouchersGet**](doc/ExpenseVouchersApi.md#listexpensevouchersapiv1expensevouchersget) | **GET** /api/v1/expense-vouchers | List Expense Vouchers
+[*ExpenseVouchersApi*](doc/ExpenseVouchersApi.md) | [**printExpenseVoucherApiV1ExpenseVouchersVoucherIdTicketGet**](doc/ExpenseVouchersApi.md#printexpensevoucherapiv1expensevouchersvoucheridticketget) | **GET** /api/v1/expense-vouchers/{voucher_id}/ticket | Print Expense Voucher
+[*ExpenseVouchersApi*](doc/ExpenseVouchersApi.md) | [**removeExpenseVoucherLineApiV1ExpenseVouchersVoucherIdLinesLineIdDelete**](doc/ExpenseVouchersApi.md#removeexpensevoucherlineapiv1expensevouchersvoucheridlineslineiddelete) | **DELETE** /api/v1/expense-vouchers/{voucher_id}/lines/{line_id} | Remove Expense Voucher Line
+[*ExpenseVouchersApi*](doc/ExpenseVouchersApi.md) | [**updateExpenseVoucherApiV1ExpenseVouchersVoucherIdPut**](doc/ExpenseVouchersApi.md#updateexpensevoucherapiv1expensevouchersvoucheridput) | **PUT** /api/v1/expense-vouchers/{voucher_id} | Update Expense Voucher
+[*ExpenseVouchersApi*](doc/ExpenseVouchersApi.md) | [**updateExpenseVoucherLineApiV1ExpenseVouchersVoucherIdLinesLineIdPut**](doc/ExpenseVouchersApi.md#updateexpensevoucherlineapiv1expensevouchersvoucheridlineslineidput) | **PUT** /api/v1/expense-vouchers/{voucher_id}/lines/{line_id} | Update Expense Voucher Line
+[*ExpenseVouchersApi*](doc/ExpenseVouchersApi.md) | [**voidExpenseVoucherApiV1ExpenseVouchersVoucherIdVoidPost**](doc/ExpenseVouchersApi.md#voidexpensevoucherapiv1expensevouchersvoucheridvoidpost) | **POST** /api/v1/expense-vouchers/{voucher_id}/void | Void Expense Voucher
 [*ExpensesApi*](doc/ExpensesApi.md) | [**createExpenseApiV1ExpensesPost**](doc/ExpensesApi.md#createexpenseapiv1expensespost) | **POST** /api/v1/expenses | Create Expense
 [*ExpensesApi*](doc/ExpensesApi.md) | [**deleteExpenseApiV1ExpensesExpenseIdDelete**](doc/ExpensesApi.md#deleteexpenseapiv1expensesexpenseiddelete) | **DELETE** /api/v1/expenses/{expense_id} | Delete Expense
 [*ExpensesApi*](doc/ExpensesApi.md) | [**getExpenseApiV1ExpensesExpenseIdGet**](doc/ExpensesApi.md#getexpenseapiv1expensesexpenseidget) | **GET** /api/v1/expenses/{expense_id} | Get Expense
@@ -306,6 +317,36 @@ Class | Method | HTTP request | Description
 [*ProductsApi*](doc/ProductsApi.md) | [**previewProductMergeApiV1ProductsMergePreviewGet**](doc/ProductsApi.md#previewproductmergeapiv1productsmergepreviewget) | **GET** /api/v1/products/merge/preview | Preview Product Merge
 [*ProductsApi*](doc/ProductsApi.md) | [**updateProductApiV1ProductsProductIdPut**](doc/ProductsApi.md#updateproductapiv1productsproductidput) | **PUT** /api/v1/products/{product_id} | Update Product
 [*ProductsApi*](doc/ProductsApi.md) | [**uploadProductImageApiV1ProductsProductIdImagePost**](doc/ProductsApi.md#uploadproductimageapiv1productsproductidimagepost) | **POST** /api/v1/products/{product_id}/image | Upload Product Image
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**addPurchaseOrderLineApiV1PurchaseOrdersOrderIdLinesPost**](doc/PurchaseOrdersApi.md#addpurchaseorderlineapiv1purchaseordersorderidlinespost) | **POST** /api/v1/purchase-orders/{order_id}/lines | Add Purchase Order Line
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**addPurchaseRequestLinesApiV1PurchaseOrdersOrderIdRequestLinesPost**](doc/PurchaseOrdersApi.md#addpurchaserequestlinesapiv1purchaseordersorderidrequestlinespost) | **POST** /api/v1/purchase-orders/{order_id}/request-lines | Add Purchase Request Lines
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**cancelPurchaseOrderApiV1PurchaseOrdersOrderIdCancelPost**](doc/PurchaseOrdersApi.md#cancelpurchaseorderapiv1purchaseordersorderidcancelpost) | **POST** /api/v1/purchase-orders/{order_id}/cancel | Cancel Purchase Order
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**confirmPurchaseOrderApiV1PurchaseOrdersOrderIdConfirmPost**](doc/PurchaseOrdersApi.md#confirmpurchaseorderapiv1purchaseordersorderidconfirmpost) | **POST** /api/v1/purchase-orders/{order_id}/confirm | Confirm Purchase Order
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**createPurchaseOrderApiV1PurchaseOrdersPost**](doc/PurchaseOrdersApi.md#createpurchaseorderapiv1purchaseorderspost) | **POST** /api/v1/purchase-orders | Create Purchase Order
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**createPurchaseOrderFromGroupApiV1PurchaseOrdersToPurchasePost**](doc/PurchaseOrdersApi.md#createpurchaseorderfromgroupapiv1purchaseorderstopurchasepost) | **POST** /api/v1/purchase-orders/to-purchase | Create Purchase Order From Group
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**emailPurchaseOrderApiV1PurchaseOrdersOrderIdEmailPost**](doc/PurchaseOrdersApi.md#emailpurchaseorderapiv1purchaseordersorderidemailpost) | **POST** /api/v1/purchase-orders/{order_id}/email | Email Purchase Order
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**getPurchaseOrderApiV1PurchaseOrdersOrderIdGet**](doc/PurchaseOrdersApi.md#getpurchaseorderapiv1purchaseordersorderidget) | **GET** /api/v1/purchase-orders/{order_id} | Get Purchase Order
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**getPurchaseOrderPaymentsApiV1PurchaseOrdersOrderIdPaymentsGet**](doc/PurchaseOrdersApi.md#getpurchaseorderpaymentsapiv1purchaseordersorderidpaymentsget) | **GET** /api/v1/purchase-orders/{order_id}/payments | Get Purchase Order Payments
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**listCostChangesApiV1PurchaseOrdersCostChangesGet**](doc/PurchaseOrdersApi.md#listcostchangesapiv1purchaseorderscostchangesget) | **GET** /api/v1/purchase-orders/cost-changes | List Cost Changes
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**listPurchaseOrdersApiV1PurchaseOrdersGet**](doc/PurchaseOrdersApi.md#listpurchaseordersapiv1purchaseordersget) | **GET** /api/v1/purchase-orders | List Purchase Orders
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**printPurchaseOrderDocumentApiV1PurchaseOrdersOrderIdDocumentGet**](doc/PurchaseOrdersApi.md#printpurchaseorderdocumentapiv1purchaseordersorderiddocumentget) | **GET** /api/v1/purchase-orders/{order_id}/document | Print Purchase Order Document
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**removePurchaseOrderLineApiV1PurchaseOrdersOrderIdLinesLineIdDelete**](doc/PurchaseOrdersApi.md#removepurchaseorderlineapiv1purchaseordersorderidlineslineiddelete) | **DELETE** /api/v1/purchase-orders/{order_id}/lines/{line_id} | Remove Purchase Order Line
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**toPurchaseBySupplierApiV1PurchaseOrdersToPurchaseGet**](doc/PurchaseOrdersApi.md#topurchasebysupplierapiv1purchaseorderstopurchaseget) | **GET** /api/v1/purchase-orders/to-purchase | To Purchase By Supplier
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**updatePurchaseOrderApiV1PurchaseOrdersOrderIdPut**](doc/PurchaseOrdersApi.md#updatepurchaseorderapiv1purchaseordersorderidput) | **PUT** /api/v1/purchase-orders/{order_id} | Update Purchase Order
+[*PurchaseOrdersApi*](doc/PurchaseOrdersApi.md) | [**updatePurchaseOrderLineApiV1PurchaseOrdersOrderIdLinesLineIdPut**](doc/PurchaseOrdersApi.md#updatepurchaseorderlineapiv1purchaseordersorderidlineslineidput) | **PUT** /api/v1/purchase-orders/{order_id}/lines/{line_id} | Update Purchase Order Line
+[*PurchaseRequestsApi*](doc/PurchaseRequestsApi.md) | [**addPurchaseRequestLineApiV1PurchaseRequestsRequestIdLinesPost**](doc/PurchaseRequestsApi.md#addpurchaserequestlineapiv1purchaserequestsrequestidlinespost) | **POST** /api/v1/purchase-requests/{request_id}/lines | Add Purchase Request Line
+[*PurchaseRequestsApi*](doc/PurchaseRequestsApi.md) | [**approvePurchaseRequestApiV1PurchaseRequestsRequestIdApprovePost**](doc/PurchaseRequestsApi.md#approvepurchaserequestapiv1purchaserequestsrequestidapprovepost) | **POST** /api/v1/purchase-requests/{request_id}/approve | Approve Purchase Request
+[*PurchaseRequestsApi*](doc/PurchaseRequestsApi.md) | [**approvePurchaseRequestsApiV1PurchaseRequestsApprovePost**](doc/PurchaseRequestsApi.md#approvepurchaserequestsapiv1purchaserequestsapprovepost) | **POST** /api/v1/purchase-requests/approve | Approve Purchase Requests
+[*PurchaseRequestsApi*](doc/PurchaseRequestsApi.md) | [**cancelPurchaseRequestApiV1PurchaseRequestsRequestIdCancelPost**](doc/PurchaseRequestsApi.md#cancelpurchaserequestapiv1purchaserequestsrequestidcancelpost) | **POST** /api/v1/purchase-requests/{request_id}/cancel | Cancel Purchase Request
+[*PurchaseRequestsApi*](doc/PurchaseRequestsApi.md) | [**createPurchaseRequestApiV1PurchaseRequestsPost**](doc/PurchaseRequestsApi.md#createpurchaserequestapiv1purchaserequestspost) | **POST** /api/v1/purchase-requests | Create Purchase Request
+[*PurchaseRequestsApi*](doc/PurchaseRequestsApi.md) | [**getPurchaseRequestApiV1PurchaseRequestsRequestIdGet**](doc/PurchaseRequestsApi.md#getpurchaserequestapiv1purchaserequestsrequestidget) | **GET** /api/v1/purchase-requests/{request_id} | Get Purchase Request
+[*PurchaseRequestsApi*](doc/PurchaseRequestsApi.md) | [**listPurchaseRequestsApiV1PurchaseRequestsGet**](doc/PurchaseRequestsApi.md#listpurchaserequestsapiv1purchaserequestsget) | **GET** /api/v1/purchase-requests | List Purchase Requests
+[*PurchaseRequestsApi*](doc/PurchaseRequestsApi.md) | [**markPurchaseRequestLineApiV1PurchaseRequestsRequestIdLinesLineIdToPurchasePut**](doc/PurchaseRequestsApi.md#markpurchaserequestlineapiv1purchaserequestsrequestidlineslineidtopurchaseput) | **PUT** /api/v1/purchase-requests/{request_id}/lines/{line_id}/to-purchase | Mark Purchase Request Line
+[*PurchaseRequestsApi*](doc/PurchaseRequestsApi.md) | [**purchaseRequestApprovalQueueApiV1PurchaseRequestsApprovalQueueGet**](doc/PurchaseRequestsApi.md#purchaserequestapprovalqueueapiv1purchaserequestsapprovalqueueget) | **GET** /api/v1/purchase-requests/approval-queue | Purchase Request Approval Queue
+[*PurchaseRequestsApi*](doc/PurchaseRequestsApi.md) | [**rejectPurchaseRequestApiV1PurchaseRequestsRequestIdRejectPost**](doc/PurchaseRequestsApi.md#rejectpurchaserequestapiv1purchaserequestsrequestidrejectpost) | **POST** /api/v1/purchase-requests/{request_id}/reject | Reject Purchase Request
+[*PurchaseRequestsApi*](doc/PurchaseRequestsApi.md) | [**removePurchaseRequestLineApiV1PurchaseRequestsRequestIdLinesLineIdDelete**](doc/PurchaseRequestsApi.md#removepurchaserequestlineapiv1purchaserequestsrequestidlineslineiddelete) | **DELETE** /api/v1/purchase-requests/{request_id}/lines/{line_id} | Remove Purchase Request Line
+[*PurchaseRequestsApi*](doc/PurchaseRequestsApi.md) | [**submitPurchaseRequestApiV1PurchaseRequestsRequestIdSubmitPost**](doc/PurchaseRequestsApi.md#submitpurchaserequestapiv1purchaserequestsrequestidsubmitpost) | **POST** /api/v1/purchase-requests/{request_id}/submit | Submit Purchase Request
+[*PurchaseRequestsApi*](doc/PurchaseRequestsApi.md) | [**updatePurchaseRequestApiV1PurchaseRequestsRequestIdPut**](doc/PurchaseRequestsApi.md#updatepurchaserequestapiv1purchaserequestsrequestidput) | **PUT** /api/v1/purchase-requests/{request_id} | Update Purchase Request
+[*PurchaseRequestsApi*](doc/PurchaseRequestsApi.md) | [**updatePurchaseRequestLineApiV1PurchaseRequestsRequestIdLinesLineIdPut**](doc/PurchaseRequestsApi.md#updatepurchaserequestlineapiv1purchaserequestsrequestidlineslineidput) | **PUT** /api/v1/purchase-requests/{request_id}/lines/{line_id} | Update Purchase Request Line
 [*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**addSalesOrderLineApiV1SalesOrdersSalesOrderIdLinesPost**](doc/SalesOrdersApi.md#addsalesorderlineapiv1salesorderssalesorderidlinespost) | **POST** /api/v1/sales-orders/{sales_order_id}/lines | Add Sales Order Line
 [*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**cancelSalesOrderApiV1SalesOrdersSalesOrderIdCancelPost**](doc/SalesOrdersApi.md#cancelsalesorderapiv1salesorderssalesorderidcancelpost) | **POST** /api/v1/sales-orders/{sales_order_id}/cancel | Cancel Sales Order
 [*SalesOrdersApi*](doc/SalesOrdersApi.md) | [**confirmSalesOrderApiV1SalesOrdersSalesOrderIdConfirmPost**](doc/SalesOrdersApi.md#confirmsalesorderapiv1salesorderssalesorderidconfirmpost) | **POST** /api/v1/sales-orders/{sales_order_id}/confirm | Confirm Sales Order
@@ -366,6 +407,13 @@ Class | Method | HTTP request | Description
 [*SatCatalogsApi*](doc/SatCatalogsApi.md) | [**listUnitsOfMeasurementApiV1SatUnitsOfMeasurementGet_0**](doc/SatCatalogsApi.md#listunitsofmeasurementapiv1satunitsofmeasurementget_0) | **GET** /api/v1/sat/units-of-measurement | List Units Of Measurement
 [*StockApi*](doc/StockApi.md) | [**getProductStockApiV1StockProductsProductGet**](doc/StockApi.md#getproductstockapiv1stockproductsproductget) | **GET** /api/v1/stock/products/{product} | Get Product Stock
 [*StockApi*](doc/StockApi.md) | [**listStockApiV1StockGet**](doc/StockApi.md#liststockapiv1stockget) | **GET** /api/v1/stock | List Stock
+[*SupplierPaymentsApi*](doc/SupplierPaymentsApi.md) | [**applySupplierPaymentApiV1SupplierPaymentsPaymentIdApplicationsPost**](doc/SupplierPaymentsApi.md#applysupplierpaymentapiv1supplierpaymentspaymentidapplicationspost) | **POST** /api/v1/supplier-payments/{payment_id}/applications | Apply Supplier Payment
+[*SupplierPaymentsApi*](doc/SupplierPaymentsApi.md) | [**cancelSupplierPaymentApiV1SupplierPaymentsPaymentIdCancelPost**](doc/SupplierPaymentsApi.md#cancelsupplierpaymentapiv1supplierpaymentspaymentidcancelpost) | **POST** /api/v1/supplier-payments/{payment_id}/cancel | Cancel Supplier Payment
+[*SupplierPaymentsApi*](doc/SupplierPaymentsApi.md) | [**createSupplierPaymentApiV1SupplierPaymentsPost**](doc/SupplierPaymentsApi.md#createsupplierpaymentapiv1supplierpaymentspost) | **POST** /api/v1/supplier-payments | Create Supplier Payment
+[*SupplierPaymentsApi*](doc/SupplierPaymentsApi.md) | [**getSupplierBalanceApiV1SupplierPaymentsSuppliersSupplierIdBalanceGet**](doc/SupplierPaymentsApi.md#getsupplierbalanceapiv1supplierpaymentssupplierssupplieridbalanceget) | **GET** /api/v1/supplier-payments/suppliers/{supplier_id}/balance | Get Supplier Balance
+[*SupplierPaymentsApi*](doc/SupplierPaymentsApi.md) | [**getSupplierPaymentApiV1SupplierPaymentsPaymentIdGet**](doc/SupplierPaymentsApi.md#getsupplierpaymentapiv1supplierpaymentspaymentidget) | **GET** /api/v1/supplier-payments/{payment_id} | Get Supplier Payment
+[*SupplierPaymentsApi*](doc/SupplierPaymentsApi.md) | [**listSupplierPaymentsApiV1SupplierPaymentsGet**](doc/SupplierPaymentsApi.md#listsupplierpaymentsapiv1supplierpaymentsget) | **GET** /api/v1/supplier-payments | List Supplier Payments
+[*SupplierPaymentsApi*](doc/SupplierPaymentsApi.md) | [**reverseSupplierPaymentApplicationApiV1SupplierPaymentsPaymentIdApplicationsApplicationIdReversePost**](doc/SupplierPaymentsApi.md#reversesupplierpaymentapplicationapiv1supplierpaymentspaymentidapplicationsapplicationidreversepost) | **POST** /api/v1/supplier-payments/{payment_id}/applications/{application_id}/reverse | Reverse Supplier Payment Application
 [*SuppliersApi*](doc/SuppliersApi.md) | [**createAgreementApiV1SuppliersSupplierIdAgreementsPost**](doc/SuppliersApi.md#createagreementapiv1supplierssupplieridagreementspost) | **POST** /api/v1/suppliers/{supplier_id}/agreements | Create Agreement
 [*SuppliersApi*](doc/SuppliersApi.md) | [**createSupplierApiV1SuppliersPost**](doc/SuppliersApi.md#createsupplierapiv1supplierspost) | **POST** /api/v1/suppliers | Create Supplier
 [*SuppliersApi*](doc/SuppliersApi.md) | [**deleteAgreementApiV1SuppliersSupplierIdAgreementsSupplierAgreementIdDelete**](doc/SuppliersApi.md#deleteagreementapiv1supplierssupplieridagreementssupplieragreementiddelete) | **DELETE** /api/v1/suppliers/{supplier_id}/agreements/{supplier_agreement_id} | Delete Agreement
@@ -426,6 +474,7 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [AddRequestLines](doc/AddRequestLines.md)
  - [AddressCreate](doc/AddressCreate.md)
  - [AddressResponse](doc/AddressResponse.md)
  - [AddressType](doc/AddressType.md)
@@ -433,16 +482,24 @@ Class | Method | HTTP request | Description
  - [Amount](doc/Amount.md)
  - [Amount1](doc/Amount1.md)
  - [Amount2](doc/Amount2.md)
+ - [Amount3](doc/Amount3.md)
+ - [Amount4](doc/Amount4.md)
  - [AmountChange](doc/AmountChange.md)
  - [AmountMax](doc/AmountMax.md)
  - [AmountMin](doc/AmountMin.md)
+ - [Application](doc/Application.md)
  - [ApplicationCreate](doc/ApplicationCreate.md)
+ - [ApplicationItem](doc/ApplicationItem.md)
  - [ApplicationResponse](doc/ApplicationResponse.md)
+ - [ApplicationsCreate](doc/ApplicationsCreate.md)
  - [BankAccountCreate](doc/BankAccountCreate.md)
  - [BankAccountResponse](doc/BankAccountResponse.md)
  - [BankAccountUpdate](doc/BankAccountUpdate.md)
  - [BatchAccount](doc/BatchAccount.md)
  - [BatchTemplate](doc/BatchTemplate.md)
+ - [BulkApprove](doc/BulkApprove.md)
+ - [BulkApproveResponse](doc/BulkApproveResponse.md)
+ - [BulkApproveResult](doc/BulkApproveResult.md)
  - [CashDrawerCreate](doc/CashDrawerCreate.md)
  - [CashDrawerResponse](doc/CashDrawerResponse.md)
  - [CashDrawerSummary](doc/CashDrawerSummary.md)
@@ -484,6 +541,7 @@ Class | Method | HTTP request | Description
  - [ContactResponse](doc/ContactResponse.md)
  - [ContactUpdate](doc/ContactUpdate.md)
  - [CorrectedByOtherCount](doc/CorrectedByOtherCount.md)
+ - [CostChange](doc/CostChange.md)
  - [CountConfirm](doc/CountConfirm.md)
  - [CountCreate](doc/CountCreate.md)
  - [CountLineSet](doc/CountLineSet.md)
@@ -536,6 +594,13 @@ Class | Method | HTTP request | Description
  - [ExpenseCreate](doc/ExpenseCreate.md)
  - [ExpenseResponse](doc/ExpenseResponse.md)
  - [ExpenseUpdate](doc/ExpenseUpdate.md)
+ - [ExpenseVoucherCreate](doc/ExpenseVoucherCreate.md)
+ - [ExpenseVoucherLine](doc/ExpenseVoucherLine.md)
+ - [ExpenseVoucherLineCreate](doc/ExpenseVoucherLineCreate.md)
+ - [ExpenseVoucherLineUpdate](doc/ExpenseVoucherLineUpdate.md)
+ - [ExpenseVoucherResponse](doc/ExpenseVoucherResponse.md)
+ - [ExpenseVoucherSummary](doc/ExpenseVoucherSummary.md)
+ - [ExpenseVoucherUpdate](doc/ExpenseVoucherUpdate.md)
  - [FacilityCreate](doc/FacilityCreate.md)
  - [FacilityResponse](doc/FacilityResponse.md)
  - [FacilitySummary](doc/FacilitySummary.md)
@@ -550,6 +615,7 @@ Class | Method | HTTP request | Description
  - [FiscalEmailRequest](doc/FiscalEmailRequest.md)
  - [FiscalEmailResponse](doc/FiscalEmailResponse.md)
  - [FulfillmentType](doc/FulfillmentType.md)
+ - [GeneratedReceipt](doc/GeneratedReceipt.md)
  - [HTTPValidationError](doc/HTTPValidationError.md)
  - [HighProfit](doc/HighProfit.md)
  - [HighProfitMargin](doc/HighProfitMargin.md)
@@ -601,6 +667,7 @@ Class | Method | HTTP request | Description
  - [ListResponseCashSessionResponse](doc/ListResponseCashSessionResponse.md)
  - [ListResponseCommissionProductLabelResponse](doc/ListResponseCommissionProductLabelResponse.md)
  - [ListResponseContactResponse](doc/ListResponseContactResponse.md)
+ - [ListResponseCostChange](doc/ListResponseCostChange.md)
  - [ListResponseCreditNoteResponse](doc/ListResponseCreditNoteResponse.md)
  - [ListResponseCustomerListItem](doc/ListResponseCustomerListItem.md)
  - [ListResponseCustomerPaymentResponse](doc/ListResponseCustomerPaymentResponse.md)
@@ -609,6 +676,7 @@ Class | Method | HTTP request | Description
  - [ListResponseEmployeeResponse](doc/ListResponseEmployeeResponse.md)
  - [ListResponseExchangeRateResponse](doc/ListResponseExchangeRateResponse.md)
  - [ListResponseExpenseResponse](doc/ListResponseExpenseResponse.md)
+ - [ListResponseExpenseVoucherSummary](doc/ListResponseExpenseVoucherSummary.md)
  - [ListResponseFacilityResponse](doc/ListResponseFacilityResponse.md)
  - [ListResponseFiscalDocumentSummary](doc/ListResponseFiscalDocumentSummary.md)
  - [ListResponseInventoryCountSummary](doc/ListResponseInventoryCountSummary.md)
@@ -623,10 +691,13 @@ Class | Method | HTTP request | Description
  - [ListResponsePriceListResponse](doc/ListResponsePriceListResponse.md)
  - [ListResponseProductListItem](doc/ListResponseProductListItem.md)
  - [ListResponseProductPriceResponse](doc/ListResponseProductPriceResponse.md)
+ - [ListResponsePurchaseOrderSummary](doc/ListResponsePurchaseOrderSummary.md)
+ - [ListResponsePurchaseRequestSummary](doc/ListResponsePurchaseRequestSummary.md)
  - [ListResponseSalesOrderSummary](doc/ListResponseSalesOrderSummary.md)
  - [ListResponseSalesQuoteSummary](doc/ListResponseSalesQuoteSummary.md)
  - [ListResponseSatCatalogResponse](doc/ListResponseSatCatalogResponse.md)
  - [ListResponseStockRow](doc/ListResponseStockRow.md)
+ - [ListResponseSupplierPaymentSummary](doc/ListResponseSupplierPaymentSummary.md)
  - [ListResponseSupplierResponse](doc/ListResponseSupplierResponse.md)
  - [ListResponseTaxpayerCertificateResponse](doc/ListResponseTaxpayerCertificateResponse.md)
  - [ListResponseTaxpayerIssuerResponse](doc/ListResponseTaxpayerIssuerResponse.md)
@@ -642,6 +713,8 @@ Class | Method | HTTP request | Description
  - [NegativeAvailable](doc/NegativeAvailable.md)
  - [OpeningAmount](doc/OpeningAmount.md)
  - [OrderApplicationResponse](doc/OrderApplicationResponse.md)
+ - [OrderLineAdd](doc/OrderLineAdd.md)
+ - [OrderLineUpdate](doc/OrderLineUpdate.md)
  - [OrderOrigin](doc/OrderOrigin.md)
  - [OutstandingOrderResponse](doc/OutstandingOrderResponse.md)
  - [PaidInvoiceAdd](doc/PaidInvoiceAdd.md)
@@ -655,6 +728,7 @@ Class | Method | HTTP request | Description
  - [PaymentMethodOptionResponse](doc/PaymentMethodOptionResponse.md)
  - [PaymentMethodOptionUpdate](doc/PaymentMethodOptionUpdate.md)
  - [PaymentReceiptCreate](doc/PaymentReceiptCreate.md)
+ - [PaymentStatus](doc/PaymentStatus.md)
  - [PaymentTerms](doc/PaymentTerms.md)
  - [PaymentType](doc/PaymentType.md)
  - [PendingDeliveriesResponse](doc/PendingDeliveriesResponse.md)
@@ -696,12 +770,26 @@ Class | Method | HTTP request | Description
  - [ProfilePrivilegeResponse](doc/ProfilePrivilegeResponse.md)
  - [ProfilePrivilegeUpdate](doc/ProfilePrivilegeUpdate.md)
  - [ProofOfDeliveryResponse](doc/ProofOfDeliveryResponse.md)
+ - [PurchaseOrderApplication](doc/PurchaseOrderApplication.md)
+ - [PurchaseOrderBalance](doc/PurchaseOrderBalance.md)
+ - [PurchaseOrderCreate](doc/PurchaseOrderCreate.md)
+ - [PurchaseOrderEmailRequest](doc/PurchaseOrderEmailRequest.md)
+ - [PurchaseOrderLine](doc/PurchaseOrderLine.md)
+ - [PurchaseOrderResponse](doc/PurchaseOrderResponse.md)
+ - [PurchaseOrderSummary](doc/PurchaseOrderSummary.md)
+ - [PurchaseOrderUpdate](doc/PurchaseOrderUpdate.md)
+ - [PurchaseRequestCreate](doc/PurchaseRequestCreate.md)
+ - [PurchaseRequestLine](doc/PurchaseRequestLine.md)
+ - [PurchaseRequestResponse](doc/PurchaseRequestResponse.md)
+ - [PurchaseRequestSummary](doc/PurchaseRequestSummary.md)
+ - [PurchaseRequestUpdate](doc/PurchaseRequestUpdate.md)
  - [Quantity](doc/Quantity.md)
  - [Quantity1](doc/Quantity1.md)
  - [Quantity2](doc/Quantity2.md)
  - [Quantity3](doc/Quantity3.md)
  - [Quantity4](doc/Quantity4.md)
  - [Quantity5](doc/Quantity5.md)
+ - [Quantity6](doc/Quantity6.md)
  - [QuoteEmailRequest](doc/QuoteEmailRequest.md)
  - [QuoteEmailResponse](doc/QuoteEmailResponse.md)
  - [Rate](doc/Rate.md)
@@ -711,7 +799,11 @@ Class | Method | HTTP request | Description
  - [ReceiptUpdate](doc/ReceiptUpdate.md)
  - [RecoverPasswordAdminResponse](doc/RecoverPasswordAdminResponse.md)
  - [RefundPayout](doc/RefundPayout.md)
+ - [RejectRequest](doc/RejectRequest.md)
  - [RejectionRequest](doc/RejectionRequest.md)
+ - [RequestLineAdd](doc/RequestLineAdd.md)
+ - [RequestLineUpdate](doc/RequestLineUpdate.md)
+ - [RequestStatus](doc/RequestStatus.md)
  - [ReversalRequest](doc/ReversalRequest.md)
  - [SalesOrderCreate](doc/SalesOrderCreate.md)
  - [SalesOrderItemsAdd](doc/SalesOrderItemsAdd.md)
@@ -732,18 +824,26 @@ Class | Method | HTTP request | Description
  - [SatUnitOfMeasurementResponse](doc/SatUnitOfMeasurementResponse.md)
  - [SessionState](doc/SessionState.md)
  - [ShortfallReason](doc/ShortfallReason.md)
+ - [SkippedLine](doc/SkippedLine.md)
  - [StockRow](doc/StockRow.md)
  - [StopCreate](doc/StopCreate.md)
  - [StopOutcome](doc/StopOutcome.md)
  - [SupplierAgreementCreate](doc/SupplierAgreementCreate.md)
  - [SupplierAgreementResponse](doc/SupplierAgreementResponse.md)
  - [SupplierAgreementUpdate](doc/SupplierAgreementUpdate.md)
+ - [SupplierBalance](doc/SupplierBalance.md)
+ - [SupplierBalanceOrder](doc/SupplierBalanceOrder.md)
+ - [SupplierBalancePayment](doc/SupplierBalancePayment.md)
  - [SupplierCreate](doc/SupplierCreate.md)
  - [SupplierDetailResponse](doc/SupplierDetailResponse.md)
+ - [SupplierPaymentCreate](doc/SupplierPaymentCreate.md)
+ - [SupplierPaymentResponse](doc/SupplierPaymentResponse.md)
+ - [SupplierPaymentSummary](doc/SupplierPaymentSummary.md)
  - [SupplierResponse](doc/SupplierResponse.md)
  - [SupplierUpdate](doc/SupplierUpdate.md)
  - [TaxRate](doc/TaxRate.md)
  - [TaxRate1](doc/TaxRate1.md)
+ - [TaxRate2](doc/TaxRate2.md)
  - [TaxpayerBatchCreate](doc/TaxpayerBatchCreate.md)
  - [TaxpayerBatchResponse](doc/TaxpayerBatchResponse.md)
  - [TaxpayerBatchUpdate](doc/TaxpayerBatchUpdate.md)
@@ -754,6 +854,11 @@ Class | Method | HTTP request | Description
  - [TaxpayerRecipientCreate](doc/TaxpayerRecipientCreate.md)
  - [TaxpayerRecipientResponse](doc/TaxpayerRecipientResponse.md)
  - [TaxpayerRecipientUpdate](doc/TaxpayerRecipientUpdate.md)
+ - [ToPurchaseCreate](doc/ToPurchaseCreate.md)
+ - [ToPurchaseGroup](doc/ToPurchaseGroup.md)
+ - [ToPurchaseLine](doc/ToPurchaseLine.md)
+ - [ToPurchaseResponse](doc/ToPurchaseResponse.md)
+ - [ToPurchaseSet](doc/ToPurchaseSet.md)
  - [TokenResponse](doc/TokenResponse.md)
  - [TransferCreate](doc/TransferCreate.md)
  - [TransferReceive](doc/TransferReceive.md)
