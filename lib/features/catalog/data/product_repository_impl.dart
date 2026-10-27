@@ -302,6 +302,7 @@ class ProductRepositoryImpl implements ProductRepository {
     bool? perishable,
     bool? seriable,
     bool? invoiceable,
+    int? supplier,
     List<int> labels = const [],
   }) async {
     try {
@@ -315,6 +316,7 @@ class ProductRepositoryImpl implements ProductRepository {
             perishable: perishable,
             seriable: seriable,
             invoiceable: invoiceable,
+            supplier: supplier,
             label: labels.isEmpty ? null : BuiltList<int>(labels),
           );
       final result = response.data;
