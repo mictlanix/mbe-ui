@@ -213,6 +213,7 @@ abstract class ProductRepository {
     bool? perishable,
     bool? seriable,
     bool? invoiceable,
+    int? supplier,
     List<int> labels = const [],
   });
 

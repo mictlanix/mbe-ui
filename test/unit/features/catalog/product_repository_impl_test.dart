@@ -713,6 +713,7 @@ void main() {
         search: 'drill',
         status: EntityStatus.active,
         stockable: true,
+        supplier: 9,
         labels: [1, 2],
       );
 
@@ -720,6 +721,7 @@ void main() {
       expect(captured!.queryParameters['search'], 'drill');
       expect(captured!.queryParameters['status'], 0);
       expect(captured!.queryParameters['stockable'], true);
+      expect(captured!.queryParameters['supplier'], 9);
       final label = captured!.queryParameters['label'] as ListParam;
       expect(label.value, [1, 2]);
       expect(label.format, ListFormat.multi);
@@ -737,6 +739,7 @@ void main() {
       await repository.productLabelFacets();
 
       expect(captured!.queryParameters.containsKey('label'), isFalse);
+      expect(captured!.queryParameters.containsKey('supplier'), isFalse);
     });
 
     test('5xx maps to AppError.server', () async {

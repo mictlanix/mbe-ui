@@ -154,6 +154,7 @@ Future<Map<int, int>> productLabelFacets(Ref ref, ProductFilter filter) async {
         perishable: filter.perishable,
         seriable: filter.seriable,
         invoiceable: filter.invoiceable,
+        supplier: filter.supplier,
         labels: filter.labels,
       );
   return {for (final f in facets) f.labelId: f.count};
