@@ -37,7 +37,7 @@ Expected: everything passes, and the live test reports the payment id it discove
 | 6 | Admin | Switch to **Todas las sucursales** and search part of a transfer reference | Results from any facility, with a Sucursal column. Only the Cliente and Fecha facets remain | Story 3, FR-010–012 |
 | 7 | Admin | Press Back from a payment opened in step 6 | Returns to the "Todas" mode, the same search and the same page | R5 |
 | 8 | Non-editor | Open Pagos | No mode switch and no search box. `?scope=all` typed in the URL is ignored | FR-002, SC-004 |
-| 9 | Non-editor | Open `/sales/payments/<id of another facility's payment>` | "El pago N no existe." | R4, SC-004 |
-| 10 | User without POS read | Open the filter drawer | No "Corte de caja" facet. On a payment, Corte de caja is plain text | R7, FR-015 |
+| 9 | Non-editor | Open `/sales/payments/<id of another facility's payment>` | "El pago N no existe." | FR-013b, R4, SC-004 |
+| 10 | User without POS read | Open the filter drawer | No "Sesión de caja" facet. On a payment, Sesión de caja is plain text | R7, FR-015 |
 | 11 | Any | Look for verify, reverse or edit actions | None anywhere | FR-003, SC-006 |
 | 12 | Any | Phone width | The filter row wraps and the tables scroll horizontally. Nothing overflows | FR-019 |

@@ -57,14 +57,15 @@ A supervisor or accountant sees a payment in the list and needs the full picture
 
 **Acceptance Scenarios**:
 
-1. **Given** the payments list, **When** the user opens a payment, **Then** a payment screen opens. Its header shows Importe, Aplicado and Sin aplicar, and below it the screen shows: customer, amount and currency, method and payment option, reference, date, facility, cash session, payment type, unapplied amount, and verified state with the verifier.
+1. **Given** the payments list, **When** the user opens a payment, **Then** a payment view opens. Its header shows Importe, Aplicado and Sin aplicar, and below it the screen shows: customer, amount and currency, method and payment option, reference, date, facility, cash session, payment type, unapplied amount, and verified state with the verifier.
 2. **Given** a payment with applications, **When** its screen is open, **Then** every application is listed with its order, applied amount, change returned, who applied it and when. Reversed applications are listed too, clearly marked as reversed, and don't count toward the applied total.
 3. **Given** a payment with no applications, **When** its screen is open, **Then** the applications section says that the payment has not been applied to any order.
 4. **Given** an application to an order the user can read, **When** they choose that order, **Then** the order opens on its own screen: the counter-sale screen for a POS sale, or the Pedidos order screen for a back-office order.
 5. **Given** a payment taken during a cash session the user can read, **When** they choose the session, **Then** the cash-session screen opens.
-6. **Given** the user can't read the linked order or cash session, **When** the payment screen is open, **Then** the number is shown as plain text, not as a link.
-7. **Given** a payment's own link is shared or reloaded, **When** an authorized user opens it, **Then** the same payment screen loads directly. If the payment does not exist, a not-found state is shown.
-8. **Given** the payment screen, **When** the user looks for actions, **Then** there are no verify, reject, reverse or edit actions. Those are delivered by #26 and #27.
+6. **Given** the user can't read the linked order or cash session, **When** the payment view is open, **Then** the number is shown as plain text, not as a link.
+7. **Given** a payment's own link is shared or reloaded, **When** an authorized user opens it, **Then** the same payment view loads directly. If the payment does not exist, a not-found state is shown.
+8. **Given** the payment view, **When** the user looks for actions, **Then** there are no verify, reject, reverse or edit actions. Those are delivered by #26 and #27.
+9. **Given** a user who can't search across facilities, **When** they open the link of a payment from another facility, **Then** they see the not-found state, the same as for a payment that doesn't exist.
 
 ---
 
@@ -83,7 +84,7 @@ A user who can read the Payments Editor, typically head-office accounting, has a
 3. **Given** the "all facilities" mode, **When** the user also sets a customer or a date range, **Then** the results narrow accordingly.
 4. **Given** the "all facilities" mode, **When** the user looks at the filters, **Then** only the filters that mode supports (reference, customer, date range) are offered. Method, verified state and cash session are not shown.
 5. **Given** a user who cannot read the Payments Editor, **When** they open Pagos, **Then** there is no mode switch, no reference search and no way to see another facility's payments.
-6. **Given** a result in "all facilities" mode, **When** the user opens it, **Then** the same payment screen as in Story 2 opens.
+6. **Given** a result in "all facilities" mode, **When** the user opens it, **Then** the same payment view as in Story 2 opens.
 
 ---
 
@@ -98,7 +99,8 @@ A user who can read the Payments Editor, typically head-office accounting, has a
 - **Facility scope.** The server accepts any facility in the facility-scoped list request, whoever asks (it does not check access). So the facility-scoped mode MUST always use the user's own facility and MUST NOT offer a facility picker. Seeing other facilities happens only through the Payments Editor–gated mode.
 - **Invalid date range.** An end date before the start date can't be applied. The picker prevents it rather than showing an empty list.
 - **A payment changes elsewhere while it's open.** For example, it gets verified or reversed through another session. The screen shows what it loaded, and reopening or refreshing shows the current state. It does not update live.
-- **Server or network errors.** The list and the payment screen show the app's standard error state with a retry. The filters the user set are kept.
+- **Server or network errors.** The list and the payment view show the app's standard error state with a retry. The filters the user set are kept.
+- **User with no facility.** A user whose account has no facility gets the empty list in the facility-scoped mode, with no request made, because there's no facility to scope to.
 - **Very old data.** Payments migrated from the legacy system have no cash session and possibly no reference. Those fields show as empty ("—"), not as errors.
 
 ## Requirements *(mandatory)*
@@ -116,7 +118,7 @@ A user who can read the Payments Editor, typically head-office accounting, has a
 - **FR-004**: The default mode MUST list the payments of the user's own facility, newest first, with pagination. It MUST NOT be limited to the user's cash session or to the user.
 - **FR-005**: Each row MUST show: payment number, date, customer, amount with currency, method (with payment option when present), reference, payment type, unapplied amount and verified state.
 - **FR-006**: The user MUST be able to filter by customer, date range, payment method, verified state and cash session. Any combination of these can be active at once.
-- **FR-006a**: The cash-session filter MUST be a searchable picker over the user's facility's cash sessions. Each option is labelled "#id · cashier · date", and typing a session number finds that session.
+- **FR-006a**: The cash-session filter MUST be a searchable picker over the user's facility's cash sessions. Each option is labelled "#id · cashier · date", and typing a session number finds that session. The filter is offered only to users who can read cash sessions; for anyone else it is absent, not disabled.
 - **FR-007**: The verified filter MUST be tri-state: any, verified or unverified. "Any" is the default.
 - **FR-008**: Filters MUST use the app's shared filter drawer and badged filter button. This mode has no free-text search, so no search box is shown in it.
 - **FR-009**: The facility-scoped mode MUST NOT offer a way to choose another facility.
@@ -127,19 +129,20 @@ A user who can read the Payments Editor, typically head-office accounting, has a
 - **FR-011**: Cross-facility rows MUST also show each payment's facility.
 - **FR-012**: Each mode MUST offer only the filters it supports. When the user switches modes, filters the new mode doesn't support MUST be cleared, not silently kept hidden.
 
-**Payment screen (Story 2)**
+**Payment view (Story 2)**
 
 - **FR-013**: Every payment MUST have its own screen, reachable from both modes and by a direct link. It MUST show all of the payment's recorded fields, its unapplied amount and its verifier.
-- **FR-013a**: The payment screen's header MUST show three amounts in the payment's currency: Importe (the payment amount), Aplicado (the sum of its non-reversed applications) and Sin aplicar (the server's unapplied amount).
-- **FR-014**: The payment screen MUST list every application of the payment, reversed ones included. Each shows the order, applied amount, change returned, applier and date, and reversed applications are visibly marked.
-- **FR-015**: An order or cash-session number on the payment screen MUST link to that record's screen only if the user can read it. Orders open in the screen that matches their origin: counter sale or Pedidos.
+- **FR-013a**: The payment view's header MUST show three amounts in the payment's currency: Importe (the payment amount), Aplicado (the sum of its non-reversed applications) and Sin aplicar (the server's unapplied amount).
+- **FR-013b**: A user who can't search across facilities MUST NOT be able to see a payment from another facility, even by opening its link directly. The payment view shows the same not-found state as for a payment that doesn't exist, and its applications are never requested.
+- **FR-014**: The payment view MUST list every application of the payment, reversed ones included. Each shows the order, applied amount, change returned, applier and date, and reversed applications are visibly marked.
+- **FR-015**: An order or cash-session number on the payment view MUST link to that record's screen only if the user can read it. Orders open in the screen that matches their origin: counter sale or Pedidos.
 
 **Presentation**
 
 - **FR-016**: Amounts MUST be formatted in the payment's own currency. Dates MUST follow the app's configured date format and the facility's wall-clock time.
 - **FR-017**: Payment methods, payment types and verified state MUST be shown as labels in the app's language, never as raw codes. Payment types use the legacy system's words in sentence case: N/A (NA), Contado (Immediate), Pago de crédito (Credit payment), Pago anticipado (Payment in advance), Nota de crédito (Credit note), Gasto (Expense).
-- **FR-018**: The customer MUST be shown by name. Until the server provides names on payment rows (mbe-api#270), the client MUST look up each distinct customer on a page once and fall back to the customer number if the lookup fails. Once the server provides the name, the client MUST use it and stop the extra lookups.
-- **FR-019**: Like every other list screen, the list and the payment screen MUST have loading, empty and error-with-retry states, and they MUST work on both desktop and phone layouts.
+- **FR-018**: The customer MUST be shown by name. Until the server provides names on payment rows (mbe-api#270), the client MUST look up each distinct customer on a page once and fall back to the customer number if the lookup fails. When the server starts providing the name on payment rows (mbe-api#270), a follow-up change makes the client prefer it and drop the extra lookups. That follow-up is not part of this delivery.
+- **FR-019**: Like every other list screen, the list and the payment view MUST have loading, empty and error-with-retry states, and they MUST work on both desktop and phone layouts.
 
 ### Key Entities
 
@@ -153,7 +156,7 @@ A user who can read the Payments Editor, typically head-office accounting, has a
 
 - **SC-001**: A user can find a specific payment from a known customer and day in under 30 seconds from opening Pagos.
 - **SC-002**: A user with Payments Editor access can find a payment by a fragment of its transfer reference, without knowing its facility, in under 30 seconds.
-- **SC-003**: For any payment, the payment screen shows the same applied orders and unapplied amount as the server's records. Reversed applications appear but are excluded from the Aplicado total in 100% of cases checked. Where all applications share the payment's currency, Importe − Aplicado equals Sin aplicar.
+- **SC-003**: For any payment, the payment view shows the same applied orders and unapplied amount as the server's records. Reversed applications appear but are excluded from the Aplicado total in 100% of cases checked. Where all applications share the payment's currency, Importe − Aplicado equals Sin aplicar.
 - **SC-004**: Users without Payments Editor access can see no payment from another facility in 100% of attempts, including direct links and changed filters.
 - **SC-005**: A page of results is shown with customer names (not numbers) for every customer that still exists.
 - **SC-006**: No screen delivered by this feature can change a payment. The only effect of using it is reading.
@@ -165,7 +168,7 @@ A user who can read the Payments Editor, typically head-office accounting, has a
 - The date filter is by payment date, inclusive on both ends, using the same date-range picker and wall-clock handling as the other back-office lists (spec 043).
 - The customer filter uses the app's existing customer picker. The cash-session filter is a searchable picker over the facility's cash sessions. Each option shows "#id · cashier · date", and the user finds a session by typing its number (FR-006a).
 - In cross-facility mode, the verified state, method and unapplied amount are still shown on each row, even though they can't be filtered there.
-- The payment screen does not need printing. Printing payment tickets for credit payments, advances and credit notes is part of #28 or later document work.
+- The payment view does not need printing. Printing payment tickets for credit payments, advances and credit notes is part of #28 or later document work.
 - A facility-scoped list request without a facility uses the caller's facility on the server. The client still sends nothing other than the user's own facility (see Edge Cases: facility scope).
-- Opening a payment from a cash-session screen, an order screen or the customer record is useful but out of scope here. Those screens can link to the payment screen later.
+- Opening a payment from a cash-session screen, an order screen or the customer record is useful but out of scope here. Those screens can link to the payment view later.
 - Out of scope: verify/reject (mictlanix/mbe-roadmap#27), reversing or moving applications (#26), credit notes (#28), refunds (#29), recording or applying a payment outside the POS, the received-payments report (#99), and export.

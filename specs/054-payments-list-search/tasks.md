@@ -49,7 +49,7 @@ description: "Task list for 054-payments-list-search"
 
 **Purpose**: the enums, helpers, entities and repository methods that all three stories use.
 
-- [ ] T002 [P] Create the `PaymentType` enum in `lib/features/sales/domain/payment_type.dart` with the six codes in data-model.md §3 (na 0, immediate 1, creditPayment 2, paymentInAdvance 3, creditNote 4, expense 5), a `fromApi(api.PaymentType)` mapper that throws `AppError.server()` for an unrecognised value, and `paymentTypeLabel(AppLocalizations, PaymentType)`, in the style of `lib/core/domain/payment_method.dart`. Labels come from the l10n keys added in T005.
+- [ ] T002 Create the `PaymentType` enum in `lib/features/sales/domain/payment_type.dart` with the six codes in data-model.md §3 (na 0, immediate 1, creditPayment 2, paymentInAdvance 3, creditNote 4, expense 5), a `fromApi(api.PaymentType)` mapper that throws `AppError.server()` for an unrecognised value, and `paymentTypeLabel(AppLocalizations, PaymentType)`, in the style of `lib/core/domain/payment_method.dart`. Labels come from the l10n keys added in T005, so do T005 first: this task can't compile before it.
 - [ ] T003 [P] Promote the private `_methodCodeFromApi` in `lib/features/sales/domain/entities/sale_payment.dart` (line ~70) to a top-level `paymentMethodCodeFromApi(api.PaymentMethod)` in `lib/core/domain/payment_method.dart`, and make `sale_payment.dart` call it. Behaviour is unchanged (R10).
 - [ ] T004 [P] Add `String currencyCodeLabel(Currency)` to `lib/core/domain/currency.dart`, returning `MXN`, `USD` or `EUR` (R9). Do **not** touch the two private `_currencyLabel` copies in `order_header_panel.dart` and `quote_header_panel.dart`.
 - [ ] T005 Add the foundational l10n keys to `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb` (contracts C5): `navPayments`, the six `paymentType*` keys (Spanish: N/A, Contado, Pago de crédito, Pago anticipado, Nota de crédito, Gasto), `paymentVerified`, `paymentUnverified` and `paymentApplicationReversed`. Run `flutter gen-l10n`.
@@ -84,14 +84,14 @@ description: "Task list for 054-payments-list-search"
   - **Verificado:** `StatusChip`, with its colour mapping in this file.
   - **Row tap:** `context.push('/sales/payments/<id>')`; no row actions.
 
-  The filter drawer is `showCatalogFilterSheet` over a `CurrentListQueryBuilder`, with Cliente (`CatalogEntityPicker<CustomerListItem>`), Fecha (`DateRangeFilterChip`), Forma de pago, Verificado (three `ChoiceChip`s, Todos by default) and Corte de caja (`CatalogEntityPicker<CashSession>` using T015, **only** when `can(pos, read)`). Every facet change resets to page 0, and "Limpiar todo" clears every facet. Depends on T013–T018.
+  The filter drawer is `showCatalogFilterSheet` over a `CurrentListQueryBuilder`, with Cliente (`CatalogEntityPicker<CustomerListItem>`), Fecha (`DateRangeFilterChip`), Forma de pago, Verificado (three `ChoiceChip`s, Todos by default) and Sesión de caja (`CatalogEntityPicker<CashSession>` using T015, **only** when `can(pos, read)`). Every facet change resets to page 0, and "Limpiar todo" clears every facet. The filtered and empty states key off `filter.activeFilterCount > 0`, not `query.isFiltered`, so a stray `search` in the URL doesn't count as a filter in facility mode. Depends on T013–T018.
 - [ ] T020 [US1] Wire the route and navigation (contracts C1): append `NavBranch.salesPayments` in `lib/core/widgets/app_navigation.dart` (never renumber the others), add the `/sales/payments` shell branch to `lib/app/router/app_router.dart`, map the `/sales/payments` prefix to `PrivilegeGate(SystemObject.customerPayments, AccessRight.read)` in `_routeGate`, and add the "Pagos" entry right after cash-sessions in `lib/core/navigation/nav_destinations.dart` with the same gate and `Icons.payments_outlined`. Depends on T019.
 - [ ] T021 [P] [US1] Unit tests in `test/unit/features/sales/payments_filter_test.dart`: each facet parses and round-trips; `verified` true, false and absent; an inverted date range is dropped; `activeFilterCount`; no default dates.
 - [ ] T022 [P] [US1] Unit tests in `test/unit/features/sales/payments_list_controller_test.dart` (ProviderContainer with overrides, modelled on `cash_sessions_list_controller_test.dart`): the repository is always called with the user's facility whatever the URL says; filters are forwarded; a user with no facility gets an empty page and **no** repository call.
 - [ ] T023 [P] [US1] Unit tests in `test/unit/features/sales/payment_link_providers_test.dart` and `test/unit/features/catalog/customer_display_name_provider_test.dart`: the name providers return null on error; the picker helper does `get` for digits and accepts only the user's facility (a foreign-facility or 404 session gives no options), does `list(facilityId:)` otherwise; `cashSessionLabelProvider` formats `#id · cashier · date`. Extend `test/unit/features/sales/cash_session_repository_impl_test.dart` for the new `facilityId` and `cashDrawerFacilityId`.
 - [ ] T024 [US1] Widget tests in `test/widget/features/sales/payments_list_screen_test.dart` (modelled on `sales_orders_list_screen_test.dart`): populated rows with every column; the customer placeholder then name, and the `#<id>` fallback; foreign-currency amount shows its code; empty with and without filters (and the clear button); error with retry and the filters kept; row tap navigates to the detail route; no search box and no row actions.
-- [ ] T025 [US1] Widget tests in `test/widget/features/sales/payments_filters_test.dart`: each facet writes the URL and resets the page; the verified chips are tri-state with "Todos" selected by default; the Corte de caja facet is absent without POS read and present with it; the badge counts active filters; "Limpiar todo" clears them.
-- [ ] T026 [P] [US1] Router and navigation tests: extend the existing router and nav tests so that a user without Customer Payments read has no "Pagos" entry and `/sales/payments` redirects them (FR-001, Story 1 scenario 10), and a user with it has both.
+- [ ] T025 [US1] Widget tests in `test/widget/features/sales/payments_filters_test.dart`: each facet writes the URL and resets the page; the verified chips are tri-state with "Todos" selected by default; the Sesión de caja facet is absent without POS read and present with it; the badge counts active filters; "Limpiar todo" clears them.
+- [ ] T026 [P] [US1] Router and navigation tests: extend `test/unit/app/router/app_router_test.dart` and `test/unit/core/navigation/nav_destinations_test.dart` so that a user without Customer Payments read has no "Pagos" entry and `/sales/payments` redirects them (FR-001, Story 1 scenario 10), and a user with it has both.
 
 **Checkpoint**: Pagos works for the facility, end to end. This is the MVP.
 
@@ -110,7 +110,7 @@ description: "Task list for 054-payments-list-search"
 
   Depends on T008. Run build_runner.
 - [ ] T029 [US2] Add the detail keys to both `.arb` files (contracts C5): `paymentViewTitle`, `paymentHeaderTitle`, the three `paymentSummary*`, the `paymentField*` labels, `paymentApplications*` (title, empty, six columns), `paymentNotFound` and `paymentBackToList`. Run `flutter gen-l10n`.
-- [ ] T030 [US2] Create `PaymentDetailScreen` in `lib/features/sales/presentation/payments/payment_detail_screen.dart` per contracts C3: AppBar "Ver pago" with Back and no actions; loading, error-with-retry and not-found (with "Volver a Pagos"); the header with the verified `StatusChip` and the Importe · Aplicado · Sin aplicar line (Aplicado shows a progress indicator while loading and "—" if the applications failed); the `ResponsiveFormGrid` of fields (Cliente, Fecha, Forma de pago, Opción de pago, Referencia, Tipo, Sucursal, Corte de caja, Verificado por), with "—" for empty values and the raw number for an unresolved name (`employeeDisplayNameProvider`, `facilityDisplayNameProvider`, T013, T014); Corte de caja links only with `can(pos, read)`; and the Aplicaciones section as an unpaginated `DataTableView<PaymentApplication>`: Pedido link from T027 or plain `#id`, reversed rows muted with the "Revertida" chip, an empty message, an inline error with retry, and no `onRowTap`. Depends on T027–T029.
+- [ ] T030 [US2] Create `PaymentDetailScreen` in `lib/features/sales/presentation/payments/payment_detail_screen.dart` per contracts C3: AppBar "Ver pago" with Back and no actions; loading, error-with-retry and not-found (with "Volver a Pagos"); the header with the verified `StatusChip` and the Importe · Aplicado · Sin aplicar line (Aplicado shows a progress indicator while loading and "—" if the applications failed); the `ResponsiveFormGrid` of fields (Cliente, Fecha, Forma de pago, Opción de pago, Referencia, Tipo, Sucursal, Sesión de caja, Verificado por), with "—" for empty values and the raw number for an unresolved name (`employeeDisplayNameProvider`, `facilityDisplayNameProvider`, T013, T014); Sesión de caja links only with `can(pos, read)`; and the Aplicaciones section as an unpaginated `DataTableView<PaymentApplication>`: Pedido link from T027 or plain `#id`, reversed rows muted with the "Revertida" chip, an empty message, an inline error with retry, and no `onRowTap`. Depends on T027–T029.
 - [ ] T031 [US2] Add the top-level `/sales/payments/:paymentId` route to `lib/app/router/app_router.dart`, covered by the existing `/sales/payments` gate. A non-numeric id renders the not-found state, not an exception. Depends on T030.
 - [ ] T032 [P] [US2] Unit tests in `test/unit/features/sales/payment_detail_controller_test.dart`: the guard throws not-found for another facility's payment without Payments Editor and **never calls** `listApplications`; a Payments Editor can open it; `applied` excludes reversed applications and sums in decimal (for example 0.1 + 0.2 = 0.3); a failing applications call leaves the payment loaded.
 - [ ] T033 [P] [US2] Unit tests in `test/unit/features/sales/payment_link_providers_test.dart` (extend T023's file): a POS-origin order resolves to `/sales/pos/:id`, a back-office one to `/sales/orders/:id`, no Sales Orders read gives `null` without a fetch, and a fetch error gives `null`.
@@ -141,7 +141,9 @@ description: "Task list for 054-payments-list-search"
 ## Phase 6: Polish & cross-cutting
 
 - [ ] T042 Write the live repository test `test/integration/payments_list_live_test.dart` per research R13 (copy the setup of `pos_sales_list_flow_test.dart`: raw `Dio`, `AuthRepositoryImpl.login`, `--dart-define=MBE_POS_USERNAME/PASSWORD`, skipped when empty). Discover a payment at runtime through `list`, re-read it with `get` and `listApplications`, and, when its applications share the payment's currency, assert `unapplied == amount − Σ non-reversed applications` (SC-003). Also assert that `searchAcrossFacilities` with the admin account finds it by a fragment of its reference, when it has one. Run it against the dev tenant.
-- [ ] T043 [P] Compact-tier check (FR-019): in the list and detail widget tests, add a phone-width case (see how other screens' tests set the surface size) that pumps each screen and asserts no overflow exception, and that the filter row wraps and the tables scroll horizontally with every column kept.
+- [ ] T043 [P] Layout checks at both tiers (FR-019, constitution §VI). In the list and detail widget tests, copy the surface-size setup from `test/widget/features/sales/cash_sessions_screen_test.dart`:
+  - **Expanded width (1280 px):** both tables fit with no horizontal scroll in both modes; only the text columns (Cliente, Referencia, Sucursal) are ellipsized, and amounts and status chips are shown in full.
+  - **Phone width:** each screen pumps with no overflow exception, the filter row wraps, and the tables scroll horizontally with every column kept.
 - [ ] T044 [P] Run `flutter analyze`, `test/unit/core/formatting_guard_test.dart` and the full test suite, then `dart format` on **only** the changed files (`git diff --name-only` filtered to `.dart`). Fix anything this feature caused. In the sales tests, check that T003's helper move changed nothing.
 - [ ] T045 Walk through the quickstart on the dev tenant, all 12 steps (as admin, as a non-editor and as a user without POS read; see `test/integration/TEST_ACCOUNTS.md`), and note the result of each step. Steps 8–10 need the non-admin accounts.
 - [ ] T046 Check whether mbe-api#270 (customer name on payment rows) and #271 (facility checks) have shipped (`gh issue view 270 --repo mictlanix/mbe-api`, same for 271). Don't change code for them here, because the fields don't exist yet. Record each status in the PR description, with the follow-ups from plan.md ("Follow-ups").
@@ -154,12 +156,12 @@ description: "Task list for 054-payments-list-search"
 - **Phase 1** → **Phase 2** → **Phase 3 (US1)** → **Phase 4 (US2)** → **Phase 5 (US3)** → **Phase 6**.
 - **US2 depends on US1** for the shared providers file (T015), the `/sales/payments` gate (T020) and the list that opens it. **US3 depends on US1** for the filter, controller and screen it extends.
 - US2 and US3 don't depend on each other, so they can be done in either order or by two people, apart from the shared `.arb` files and `app_router.dart` (see cross-story notes).
-- Within Phase 2: T002–T004 first (parallel), then T005, T006, T007, T008; T009 and T010 follow their code.
+- Within Phase 2: T005 first (T003 and T004 can run alongside it), then T002, then T006, T007, T008; T009 and T010 follow their code.
 - Within US1: T011 → T012 → T015; T013 and T014 are independent; T017 → T018 → T019 → T020.
 
 ## Parallel opportunities
 
-- **Phase 2:** T002, T003 and T004 together; T009 once T006 is done.
+- **Phase 2:** T003, T004 and T005 together; T009 once T006 is done.
 - **US1:** T013 and T014 together; T021, T022, T023 and T026 together once their code exists.
 - **US2:** T032 and T033 together once T027 and T028 exist.
 - **US3:** T039 and T040 together.
@@ -188,11 +190,12 @@ description: "Task list for 054-payments-list-search"
 | FR-010, FR-011 reference search, Sucursal column | T035, T036, T038, T040, T041 |
 | FR-012 modes clear unsupported facets | T035, T039, T041 |
 | FR-013, FR-013a payment screen and summary | T028, T030, T034 |
+| FR-013b other facility's payment by link | T028, T032, T034 |
 | FR-014 applications, reversed marked | T028, T030, T032, T034 |
 | FR-015 links by rights and origin | T027, T030, T033, T034 |
 | FR-016 amounts and dates in the payment's own currency | T004, T019, T030, T044 |
 | FR-017 labels | T002, T005, T009 |
-| FR-018 customer names with fallback | T013, T019, T023, T024 |
+| FR-018 customer names with fallback | T013, T019, T023, T024 (preferring the server's name is the #270 follow-up, T046) |
 | FR-019 states and compact layout | T019, T030, T043 |
 | SC-001, SC-002 time to find | T045 |
 | SC-003 totals match the server | T032, T042 |

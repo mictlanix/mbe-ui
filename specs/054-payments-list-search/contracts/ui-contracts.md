@@ -54,7 +54,7 @@ The page is the standard list layout: `CatalogFilterBar`, then `Expanded(Catalog
 | Fecha | `DateRangeFilterChip` | always |
 | Forma de pago | single-select menu over `PaymentMethod` (all values) with a "Todas" option | facility mode |
 | Verificado | 3 `ChoiceChip`s: Todos, Verificados, Sin verificar | facility mode |
-| Corte de caja | `CatalogEntityPicker<CashSession>` (R7) | facility mode **and** `can(pos, read)` |
+| Sesión de caja | `CatalogEntityPicker<CashSession>` (R7) | facility mode **and** `can(pos, read)` |
 
 Every facet change calls `context.go(query.withFacet(...).copyWith(pageIndex: 0).toUri(...))`. "Limpiar todo" keeps `scope` and clears everything else.
 
@@ -72,9 +72,9 @@ Every facet change calls `context.go(query.withFacet(...).copyWith(pageIndex: 0)
    - Importe `<amount> <CODE>` · Aplicado `<applied>` · Sin aplicar `<unapplied>` (FR-013a).
    - Aplicado shows a small progress indicator until the applications load. If they fail, it shows "—".
 3. **`ResponsiveFormGrid(maxColumns: 2)`** of label/value pairs:
-   - Cliente, Fecha, Forma de pago, Opción de pago, Referencia, Tipo, Sucursal, Corte de caja, Verificado por.
+   - Cliente, Fecha, Forma de pago, Opción de pago, Referencia, Tipo, Sucursal, Sesión de caja, Verificado por.
    - Empty values show "—".
-   - Corte de caja links to `/sales/cash-sessions/:id` only with `can(pos, read)`; otherwise it's plain text.
+   - Sesión de caja links to `/sales/cash-sessions/:id` only with `can(pos, read)`; otherwise it's plain text.
 4. **Aplicaciones section:**
    - The title, then an unpaginated `DataTableView<PaymentApplication>`.
    - **Columns:** Pedido (a link via `orderLinkTargetProvider`, otherwise plain `#id`), Aplicado, Cambio, Aplicó, Fecha and Estado (a "Revertida" `StatusChip` or "—").
@@ -117,7 +117,7 @@ New keys, with Spanish shown and English in `app_en.arb`:
 - **Filters:**
   - `paymentsFilterCustomer`, `paymentsFilterDate`, `paymentsFilterMethod`, `paymentsFilterMethodAll` "Todas"
   - `paymentsFilterVerified`, `paymentsVerifiedAny` "Todos", `paymentsVerifiedYes` "Verificados", `paymentsVerifiedNo` "Sin verificar"
-  - `paymentsFilterCashSession` "Corte de caja"
+  - `paymentsFilterCashSession` "Sesión de caja"
 - **Status chips:**
   - `paymentVerified` "Verificado"
   - `paymentUnverified` "Sin verificar"
@@ -131,7 +131,7 @@ New keys, with Spanish shown and English in `app_en.arb`:
 - **Detail fields:**
   - `paymentFieldPaymentOption` "Opción de pago"
   - `paymentFieldFacility` "Sucursal"
-  - `paymentFieldCashSession` "Corte de caja"
+  - `paymentFieldCashSession` "Sesión de caja"
   - `paymentFieldVerifier` "Verificado por"
 - **Applications:**
   - `paymentApplicationsTitle` "Aplicaciones"

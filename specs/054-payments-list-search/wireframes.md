@@ -82,7 +82,7 @@ Referencia · Tipo · Sin aplicar · Verificado.
 │ Verificado                                 │
 │ ( Todos ) ( Verificados ) ( Sin verificar )│
 │                                            │
-│ Corte de caja                              │
+│ Sesión de caja                             │
 │ [ #812 · J. Pérez · 27/10/2026        ▾ ]  │
 │                                            │
 │ [ Limpiar todo ]               [ Aplicar ] │
@@ -94,7 +94,7 @@ Referencia · Tipo · Sin aplicar · Verificado.
 - **Fecha:** `DateRangeFilterChip`, using wall-clock dates per spec 043. It prevents an end date before the start (Edge Cases).
 - **Forma de pago:** single-select menu over the payment-method enum (FR-006).
 - **Verificado:** three `ChoiceChip`s; "Todos" is selected by default. This is the tri-state rule (FR-007).
-- **Corte de caja:** `CatalogEntityPicker<CashSession>` over the facility's sessions. See Open Question 4.
+- **Sesión de caja:** `CatalogEntityPicker<CashSession>` over the facility's sessions. See Open Question 4.
 - There is **no facility facet**, by design (FR-009).
 
 ### State: populated, "Todas las sucursales" mode
@@ -211,7 +211,7 @@ other gated route.
 │  Cliente            FERRETERÍA LÓPEZ           Fecha            27/10/2026 10:14       │
 │  Forma de pago      Transferencia              Opción de pago   —                      │
 │  Referencia         SPEI 98123                 Tipo             Pago de crédito        │
-│  Sucursal           Matriz                     Corte de caja    #812 ↗                 │
+│  Sucursal           Matriz                     Sesión de caja   #812 ↗                 │
 │  Verificado por     —                                                                  │
 │                                                                                        │
 │  Aplicaciones                                                                          │
@@ -229,9 +229,9 @@ other gated route.
 - **AppBar:** title "Ver pago", Back only, with **no** action icons (FR-003; constitution §VI says a read-only surface is labelled "View").
 - **Header:** the payment number, the verified `StatusChip`, and a summary line: Importe · Aplicado · Sin aplicar. *Aplicado* is the sum of the non-reversed applications (SC-003).
 - **Fields:** `ResponsiveFormGrid` with `maxColumns: 2` and label/value pairs, the same pattern as `CashSessionDetailScreen` (FR-013).
-  - Opción de pago, Referencia, Corte de caja and Verificado por show "—" when empty (Edge Cases, very old data).
+  - Opción de pago, Referencia, Sesión de caja and Verificado por show "—" when empty (Edge Cases, very old data).
   - Verifier names that can't be resolved fall back to the employee number.
-- **Corte de caja #812 ↗:** a link to `/sales/cash-sessions/812`, shown only when the user can read Cash Sessions. Otherwise it's plain text (FR-015).
+- **Sesión de caja #812 ↗:** a link to `/sales/cash-sessions/812`, shown only when the user can read Cash Sessions. Otherwise it's plain text (FR-015).
 - **Aplicaciones:** an unpaginated `DataTableView`. A payment has few applications, a provably bounded set (constitution §VI exception).
   - *Pedido* is a link cell. It opens `/sales/pos/:id` or `/sales/orders/:id` according to the order's origin, and only if the user can read that origin. Otherwise it's plain text (FR-015).
   - *Estado* shows a `StatusChip` "Revertida" on reversed rows, which are rendered muted (FR-014).
