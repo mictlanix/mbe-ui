@@ -105,6 +105,69 @@ void main() {
       expect(captured['status'], 'open');
     });
 
+    test(
+      'forwards facilityId as the facility query param (spec 054)',
+      () async {
+        final captured = <String, dynamic>{};
+        final repository = _repositoryWith((options) async {
+          captured.addAll(options.queryParameters);
+          return ResponseBody.fromString(
+            jsonEncode({'items': [], 'total': 0}),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
+
+        await repository.list(facilityId: 9, limit: 20);
+
+        expect(captured['facility'], 9);
+      },
+    );
+
+    test(
+      'omits the facility query param when no facilityId is given',
+      () async {
+        final captured = <String, dynamic>{};
+        final repository = _repositoryWith((options) async {
+          captured.addAll(options.queryParameters);
+          return ResponseBody.fromString(
+            jsonEncode({'items': [], 'total': 0}),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
+
+        await repository.list();
+
+        expect(captured.containsKey('facility'), isFalse);
+      },
+    );
+
+    test('maps cashDrawerFacilityId from the embedded cash_drawer.facility '
+        '(spec 054 R7)', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'items': [
+              _cashSessionJson(
+                id: 1,
+                drawerName: 'Caja 1',
+                cashierFirst: 'Ana',
+                cashierLast: 'López',
+              ),
+            ],
+            'total': 1,
+          }),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final result = await repository.list();
+
+      expect(result.items.single.cashDrawerFacilityId, 1);
+    });
+
     test('maps items and total, each item flattening its drawer/cashier '
         'names', () async {
       final repository = _repositoryWith(

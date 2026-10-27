@@ -16,6 +16,10 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// that calls [onClear] — clearing returns to today, never to an unbounded
 /// range, since an unfiltered sales query has been measured at 19k+ rows for
 /// a single register.
+///
+/// A screen whose list has no default range (spec 054 Pagos) passes `null`
+/// for [from] and [to]: the chip then reads "any date", unselected and with no
+/// dismiss control, since there is nothing to clear.
 class DateRangeFilterChip extends ConsumerWidget {
   const DateRangeFilterChip({
     super.key,
@@ -27,8 +31,8 @@ class DateRangeFilterChip extends ConsumerWidget {
     this.firstDate,
   });
 
-  final DateTime from;
-  final DateTime to;
+  final DateTime? from;
+  final DateTime? to;
   final bool isToday;
 
   /// Called with the picker's chosen range when the cashier picks one.
@@ -48,23 +52,27 @@ class DateRangeFilterChip extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final fmt = ref.watch(formattersProvider);
-    final label = isToday
+    final isAny = from == null || to == null;
+    final label = isAny
+        ? l10n.dateRangeFilterAny
+        : isToday
         ? l10n.dateRangeFilterToday
         : l10n.dateRangeFilterRange(
             fmt.display.date(from),
             fmt.display.date(to),
           );
+    final isDefault = isAny || isToday;
 
     return FilterChip(
       key: const Key('date_range_filter_chip'),
       avatar: const Icon(Icons.calendar_month_outlined, size: 18),
       label: Text(label),
       tooltip: l10n.dateRangeFilterLabel,
-      selected: !isToday,
+      selected: !isDefault,
       showCheckmark: false,
       onSelected: (_) => _pick(context),
-      deleteIcon: isToday ? null : const Icon(Icons.close, size: 18),
-      onDeleted: isToday
+      deleteIcon: isDefault ? null : const Icon(Icons.close, size: 18),
+      onDeleted: isDefault
           ? null
           : () {
               onClear();
@@ -81,10 +89,12 @@ class DateRangeFilterChip extends ConsumerWidget {
       context: context,
       firstDate: effectiveFirstDate,
       lastDate: effectiveLastDate,
-      initialDateRange: DateTimeRange(
-        start: _clamp(from, effectiveFirstDate, effectiveLastDate),
-        end: _clamp(to, effectiveFirstDate, effectiveLastDate),
-      ),
+      initialDateRange: from == null || to == null
+          ? null
+          : DateTimeRange(
+              start: _clamp(from!, effectiveFirstDate, effectiveLastDate),
+              end: _clamp(to!, effectiveFirstDate, effectiveLastDate),
+            ),
     );
     if (range != null) onChanged(range);
   }

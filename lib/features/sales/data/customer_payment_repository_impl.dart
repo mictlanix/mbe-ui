@@ -8,8 +8,11 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
+import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
+import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart'
+    show wireDate, wireDateEnd;
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/customer_payment_repository.dart';
 
@@ -119,6 +122,104 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
   }
 
   @override
+  Future<CustomerPaymentListResult> list({
+    required int facilityId,
+    int? customerId,
+    int? cashSessionId,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    int? methodCode,
+    bool? verified,
+    int skip = 0,
+    int limit = 20,
+  }) async {
+    try {
+      final response = await _payments
+          .listCustomerPaymentsApiV1CustomerPaymentsGet(
+            customer: customerId,
+            cashSession: cashSessionId,
+            facility: facilityId,
+            dateFrom: dateFrom == null ? null : wireDate(dateFrom),
+            dateTo: dateTo == null ? null : wireDateEnd(dateTo),
+            method: methodCode,
+            verified: verified,
+            skip: skip,
+            limit: limit,
+          );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return CustomerPaymentListResult(
+        items: result.items.map(CustomerPayment.fromResponse).toList(),
+        total: result.total,
+      );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<CustomerPaymentListResult> searchAcrossFacilities({
+    int? customerId,
+    String? reference,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    int skip = 0,
+    int limit = 20,
+  }) async {
+    try {
+      final response = await _payments
+          .searchPaymentsAcrossFacilitiesApiV1CustomerPaymentsSearchGet(
+            customer: customerId,
+            reference: reference,
+            dateFrom: dateFrom == null ? null : wireDate(dateFrom),
+            dateTo: dateTo == null ? null : wireDateEnd(dateTo),
+            skip: skip,
+            limit: limit,
+          );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return CustomerPaymentListResult(
+        items: result.items.map(CustomerPayment.fromResponse).toList(),
+        total: result.total,
+      );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<CustomerPayment> get({required int customerPaymentId}) async {
+    try {
+      final response = await _payments
+          .getCustomerPaymentApiV1CustomerPaymentsCustomerPaymentIdGet(
+            customerPaymentId: customerPaymentId,
+          );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return CustomerPayment.fromResponse(result);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<List<PaymentApplication>> listApplications({
+    required int customerPaymentId,
+  }) async {
+    try {
+      final response = await _payments
+          .listPaymentApplicationsApiV1CustomerPaymentsCustomerPaymentIdApplicationsGet(
+            customerPaymentId: customerPaymentId,
+          );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return result.map(PaymentApplication.fromResponse).toList();
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
   Future<String> outstandingBalanceFor({required int customerId}) async {
     try {
       const pageSize = 100;
@@ -166,6 +267,6 @@ void _setAmountChange(api.AmountChangeBuilder builder, String value) {
 
 /// The generated `api.PaymentMethod`'s members are named after their wire
 /// numbers (`number1`, `number28`, ...) — the inverse of
-/// `sale_payment.dart`'s `_methodCodeFromApi`.
+/// `paymentMethodCodeFromApi` in `core/domain/payment_method.dart`.
 api.PaymentMethod _methodToApi(int code) =>
     api.PaymentMethod.valueOf('number$code');

@@ -23,3 +23,13 @@ enum Currency {
     return null;
   }
 }
+
+/// [currency]'s ISO code (`MXN`, `USD`, `EUR`), for showing an amount in its
+/// own currency next to the figure (spec 054 research R9). The configured
+/// display formatter carries a single symbol, so it can't tell a dollar
+/// payment from a peso one.
+String currencyCodeLabel(Currency currency) => switch (currency) {
+  Currency.mxn => 'MXN',
+  Currency.usd => 'USD',
+  Currency.eur => 'EUR',
+};

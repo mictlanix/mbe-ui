@@ -40,7 +40,7 @@ abstract class SalePayment with _$SalePayment {
   }) = _SalePayment;
 
   factory SalePayment.fromResponse(api.OrderApplicationResponse r) {
-    final code = _methodCodeFromApi(r.method);
+    final code = paymentMethodCodeFromApi(r.method);
     return SalePayment(
       id: r.salesOrderPaymentId,
       customerPayment: r.customerPayment,
@@ -61,11 +61,3 @@ abstract class SalePayment with _$SalePayment {
   /// only, it gates nothing.
   bool get isPendingValidation => verifier == null;
 }
-
-/// The generated `api.PaymentMethod` is an `EnumClass` whose members are
-/// named `number0`/`number1`/`number28`/... after their wire numbers, with
-/// no schema-level names to preserve — the same generator gap `PaymentTerms`
-/// and `CurrencyCode` hit (see `sale.dart`). The suffix *is* the SAT code,
-/// so it is parsed back out rather than switched over 15 members by hand.
-int _methodCodeFromApi(api.PaymentMethod value) =>
-    int.tryParse(value.name.replaceFirst('number', '')) ?? 0;

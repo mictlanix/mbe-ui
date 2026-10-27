@@ -1,4 +1,5 @@
 import 'package:mbe_ui/core/domain/currency.dart';
+import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
 
 /// Taking money and applying it to a sale (contracts/mbe-api-pos.md §1, §3).
@@ -53,4 +54,54 @@ abstract class CustomerPaymentRepository {
   /// until every outstanding order is counted, so the figure is the whole
   /// balance rather than the first page of it.
   Future<String> outstandingBalanceFor({required int customerId});
+
+  /// `GET /customer-payments` — the **facility-scoped** list (spec 054 FR-004,
+  /// R4), newest first. [facilityId] is required so no caller can lean on the
+  /// server's implicit default or forget the scope: mbe-api honours any
+  /// `facility` it is sent (mbe-api#271), so the client is the only thing
+  /// keeping a user inside their own facility. [verified] is tri-state — `null`
+  /// lists both, `true` only verified, `false` only unverified.
+  /// [dateFrom]/[dateTo] are inclusive wall-clock days.
+  Future<CustomerPaymentListResult> list({
+    required int facilityId,
+    int? customerId,
+    int? cashSessionId,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    int? methodCode,
+    bool? verified,
+    int skip = 0,
+    int limit = 20,
+  });
+
+  /// `GET /customer-payments/search` — crosses facilities, so mbe-api gates it
+  /// behind Payments Editor read. [reference] matches as a case-insensitive
+  /// substring.
+  Future<CustomerPaymentListResult> searchAcrossFacilities({
+    int? customerId,
+    String? reference,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    int skip = 0,
+    int limit = 20,
+  });
+
+  /// `GET /customer-payments/{id}`. A missing payment is
+  /// [AppError.notFound]. mbe-api does not check the caller's facility here
+  /// (mbe-api#271), so the screen applies its own guard (spec 054 R4).
+  Future<CustomerPayment> get({required int customerPaymentId});
+
+  /// `GET /customer-payments/{id}/applications` — every application,
+  /// reversed ones included, in the server's order.
+  Future<List<PaymentApplication>> listApplications({
+    required int customerPaymentId,
+  });
+}
+
+/// One page of [CustomerPayment]s and the total across all pages — the same
+/// shape as `CashSessionListResult`.
+class CustomerPaymentListResult {
+  const CustomerPaymentListResult({required this.items, required this.total});
+  final List<CustomerPayment> items;
+  final int total;
 }

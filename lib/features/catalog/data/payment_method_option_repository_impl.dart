@@ -16,6 +16,24 @@ final paymentMethodOptionRepositoryProvider =
       return PaymentMethodOptionRepositoryImpl(ref.watch(dioProvider));
     });
 
+/// Resolves a payment option id to its name — the facility's own wording for
+/// a card scheme or fee, shown beside a payment's method (spec 054 research
+/// R3). `null` on any failure, including an option that has since been
+/// removed, so the caller falls back to the number.
+final paymentMethodOptionNameProvider = FutureProvider.family<String?, int>((
+  ref,
+  paymentMethodOptionId,
+) async {
+  try {
+    final option = await ref
+        .watch(paymentMethodOptionRepositoryProvider)
+        .get(paymentMethodOptionId: paymentMethodOptionId);
+    return option.name;
+  } catch (_) {
+    return null;
+  }
+});
+
 /// `PaymentMethodOptionRepository` backed by the generated `mbe_api_client`
 /// `PaymentMethodOptionsApi` (contracts/mbe-api-catalogs.md §1). The
 /// generated `list` exposes no `search` param — passed through anyway so the

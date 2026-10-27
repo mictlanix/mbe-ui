@@ -13,10 +13,14 @@ abstract class CashSessionRepository {
   /// [dateFrom]/[dateTo] are accepted because mbe-api#142 exposes them, but
   /// nothing in this feature's UI wires them — no user story or requirement
   /// asks for a date-range filter (research.md §17).
+  ///
+  /// [facilityId] narrows to one facility's sessions (the server filters
+  /// through the drawer). Omitted, the server applies no facility filter.
   Future<CashSessionListResult> list({
     int? cashDrawerId,
     int? cashierId,
     CashSessionStatus? status,
+    int? facilityId,
     DateTime? dateFrom,
     DateTime? dateTo,
     int skip = 0,
