@@ -333,14 +333,18 @@ class _QuoteHeaderPanelState extends ConsumerState<QuoteHeaderPanel> {
                     ]
                   : [
                       if (canViewDocument)
-                        OutlinedButton.icon(
-                          key: const Key('sales_quote_view_document_button'),
-                          // Held while a write is in flight, so the document
-                          // cannot be fetched a moment before the edit it
-                          // should show has landed.
-                          onPressed: writesPending ? null : _viewDocument,
-                          icon: const Icon(Icons.description_outlined),
-                          label: Text(l10n.salesQuoteViewDocumentAction),
+                        // Not a click outside the text fields, as in
+                        // `OrderHeaderPanel`'s Ver pedido (FR-009).
+                        TextFieldTapRegion(
+                          child: OutlinedButton.icon(
+                            key: const Key('sales_quote_view_document_button'),
+                            // Held while a write is in flight, so the document
+                            // cannot be fetched a moment before the edit it
+                            // should show has landed.
+                            onPressed: writesPending ? null : _viewDocument,
+                            icon: const Icon(Icons.description_outlined),
+                            label: Text(l10n.salesQuoteViewDocumentAction),
+                          ),
                         ),
                       if (canEmail)
                         OutlinedButton.icon(

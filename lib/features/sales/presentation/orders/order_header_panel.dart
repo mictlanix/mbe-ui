@@ -518,14 +518,19 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
               spacing: spacing.sm,
               runSpacing: spacing.xs,
               children: [
-                OutlinedButton.icon(
-                  key: const Key('sales_order_view_pedido_button'),
-                  // Held while a write is in flight, so the document
-                  // cannot be fetched a moment before the edit it should
-                  // show has landed.
-                  onPressed: writesPending ? null : _viewPedido,
-                  icon: const Icon(Icons.description_outlined),
-                  label: Text(l10n.salesOrderViewDocumentAction),
+                // A click here must not count as a click outside the comment field: on
+                // desktop and web that takes the field's focus, and losing focus
+                // discards its typed text before this can ask about it (FR-009).
+                TextFieldTapRegion(
+                  child: OutlinedButton.icon(
+                    key: const Key('sales_order_view_pedido_button'),
+                    // Held while a write is in flight, so the document
+                    // cannot be fetched a moment before the edit it should
+                    // show has landed.
+                    onPressed: writesPending ? null : _viewPedido,
+                    icon: const Icon(Icons.description_outlined),
+                    label: Text(l10n.salesOrderViewDocumentAction),
+                  ),
                 ),
                 detailsToggle,
               ],

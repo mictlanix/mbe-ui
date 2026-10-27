@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -337,6 +339,36 @@ void main() {
 
       expect(find.byType(DocumentPreviewDialog), findsNothing);
       expect(source.fetched, isEmpty);
+    });
+
+    // The cases above register the edit directly. This one types it, then
+    // clicks the button with a mouse on desktop, where a click outside a
+    // text field takes its focus away, and losing focus discards the typed
+    // text. The click must not count as outside, or the text is gone before
+    // the button can ask about it.
+    testWidgets('typed into the comment and clicked with a mouse on '
+        'desktop, still asks first', (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      addTearDown(() => debugDefaultTargetPlatformOverride = null);
+      stubOrder(SaleStatus.draft);
+      await pumpOrder(tester);
+      await tester.tap(find.text(l10n.salesOrderMoreDetails));
+      await tester.pumpAndSettle();
+      final comment = find.descendant(
+        of: find.byKey(const Key('sales_order_comment_field')),
+        matching: find.byType(EditableText),
+      );
+      await tester.tap(comment, kind: PointerDeviceKind.mouse);
+      await tester.enterText(comment, 'Entregar por la tarde');
+      await tester.pump();
+
+      await tester.tap(button, kind: PointerDeviceKind.mouse);
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.posUnconfirmedChangesTitle), findsOneWidget);
+      expect(find.byType(DocumentPreviewDialog), findsNothing);
+      expect(source.fetched, isEmpty);
+      debugDefaultTargetPlatformOverride = null;
     });
   });
 }

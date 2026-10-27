@@ -15,45 +15,57 @@ seed contract, not a description of one particular database.
 
 ## Accounts
 
+`python3 tool/seed_test_accounts.py` creates or repairs every non-administrator
+account below and writes its credentials to `.env`. **Run it after every
+database reset.** The table in that script is the source of truth; this file
+explains why each account is shaped the way it is.
+
 | `.env` pair | Username | Administrator | Required privileges |
 |---|---|---|---|
 | `MBE_ADMIN_*` | `admin` | **yes** | none needed — `require_admin` and `AccessControlService.isAdministrator` short-circuit every check |
-| `MBE_TEST_*` | `agonzalez` | no | **none at all** — every privilege denied (`0`) |
-| `MBE_READONLY_*` | `augusto` | no | `products` (0) = **2** (read)<br>`users` (92) = **2** (read) |
+| `MBE_TEST_*` | `qanoaccess` | no | **none at all** — every privilege denied (`0`); no facility |
+| `MBE_READONLY_*` | `qareadonly` | no | `products` (0) = **2** (read)<br>`users` (92) = **2** (read); no facility |
+| `MBE_NOQUOTES_*` | `qa053noquotes` | no | read (2) on `products` (0) and `salesOrders` (7) only — **no** `salesQuotes` (30) (spec 053) |
+| `MBE_QA054_*` | `qa054payments` | no | facility set (the admin's); read (2) on `customerPayments` (8), `customers` (2), `employees` (6), `salesOrders` (7), `facilities` (29), `paymentMethodOptions` (84). **No** `paymentsEditor` (100) and **no** `pos` (44) |
+| `MBE_QA033_*` | `qa033pricingro` | no | facility set (the admin's); read (2) only on `pricing` (106), `products` (0), `labels` (1), `suppliers` (3), `priceLists` (5). **No** update anywhere and **no** `salesOrders` — the read-only pricing grid (spec 033 US5) and the no-Sales-Orders user of the spec 044 walkthrough |
 | `MBE_CREATE_TEST_*` | `admin` | yes | needs `products` create + read + update + delete |
 | `MBE_CATALOG_TEST_*` | `admin` | yes | needs create + delete on `customers` (2), `priceLists` (5), `employees` (6), `taxpayerRecipients` (54) |
 | `MBE_CASH_SESSION_*` | `admin` | yes | needs `pos` (44) read + create, `cashSessionClose` (111) update, and at least one visible cash drawer |
 | `MBE_POS_*` | `admin` | yes | needs an **already open cash session** on its point of sale |
-| `MBE_QA054_*` | `qa054payments` | no | facility set (51 on the dev tenant); read (2) on `customerPayments` (8), `customers` (2), `employees` (6), `salesOrders` (7), `facilities` (29), `paymentMethodOptions` (84). **No** `paymentsEditor` (100) and **no** `pos` (44) |
-| `MBE_QA033_*` | `qa033pricingro` | no | facility set (51 on the dev tenant); read (2) only on `pricing` (106), `products` (0), `labels` (1), `suppliers` (3), `priceLists` (5). **No** update anywhere — the read-only pricing grid (spec 033 US5) |
 
-The last four currently point at `admin`, which satisfies them by
-short-circuiting rather than by holding the listed privileges. Only
-`agonzalez`, `augusto`, `qa054payments` and `qa033pricingro` must be non-administrators — every assertion they
-back is a *negative* one (`expect(..., isFalse)`), and an administrator would
-pass every check and make those tests vacuous.
+The last four point at `admin`, which satisfies them by short-circuiting rather
+than by holding the listed privileges. Every `qa…` account must be a
+non-administrator: the assertions they back are *negative* ones
+(`expect(..., isFalse)`), and an administrator would pass every check and make
+those tests vacuous. The script refuses to touch an account that is an
+administrator, and sets each one's privileges to exactly the listed set, so a
+grant added by hand is undone on the next run.
 
 ### Why these exact privileges
 
-Each row is forced by an assertion, not chosen for tidiness. `agonzalez` is
+Each row is forced by an assertion, not chosen for tidiness. `qanoaccess` is
 the **negative control**: its whole purpose is to hold nothing, so that every
 "this user is denied" assertion has an account that genuinely is.
 
-- **`agonzalez` must have no `products` privilege** —
+- **`qanoaccess` must have no `products` privilege** —
   `product_catalog_flow_test.dart` scenario 4 asserts `can(products, read)` is
   false, covering FR-012/SC-004. US3 scenario 3 and US4 scenario 4 then assert
   `update` and `delete` are denied.
-- **`agonzalez` must have no `users` privilege** — `auth_flow_test.dart`
+- **`qanoaccess` must have no `users` privilege** — `auth_flow_test.dart`
   scenario 6 asserts `can(users, read)` is false, covering FR-007 (a module
   with no privilege row is fully inaccessible).
-- **`augusto` must have `users.read` but not update/delete** —
+- **`qareadonly` must have `users.read` but not update/delete** —
   `catalog_consistency_flow_test.dart` US2 scenario 1 asserts exactly that
   triple, standing in for a row whose Edit/Delete actions are omitted.
-- **`augusto` must have `products.read`** — `product_photo_flow_test.dart`
+- **`qareadonly` must have `products.read`** — `product_photo_flow_test.dart`
   reads a photo as this account to show that viewing needs no write privilege.
 
-Granting `agonzalez` anything makes those assertions vacuous rather than
+Granting `qanoaccess` anything makes those assertions vacuous rather than
 failing loudly, so err toward denying it.
+
+These two replaced `agonzalez` and `augusto` on 2026-10-27. Those had drifted
+to read on 106 system objects, which silently turned every negative assertion
+above into a pass, and were deleted from the dev tenant.
 
 ### A note on the photo tests
 
@@ -74,89 +86,22 @@ point the photo scenarios at it instead.
 ## Recreating them
 
 Requires mbe-api reachable and the `MBE_ADMIN_*` account intact (only an
-administrator may create users). Run from the repository root:
+administrator may create users), with the admin's facility set. From the
+repository root:
 
 ```bash
-set -a && . ./.env && set +a
-B=${MBE_API_BASE_URL:-http://127.0.0.1:8000}
-
-T=$(curl -s -X POST "$B/api/v1/auth/login" \
-      -H 'Content-Type: application/x-www-form-urlencoded' \
-      -d "username=$MBE_ADMIN_USERNAME&password=$MBE_ADMIN_PASSWORD" \
-    | python3 -c 'import sys,json;print(json.load(sys.stdin)["access_token"])')
-
-# `employee_id` is required and NOT NULL since mbe-api migration 012 (#127).
-# Employee 1 ("Administrador del Sistema") is a system record, not a real
-# person, and is not unique-constrained — both accounts may share it.
-create() {  # create <username> <password> <email>
-  curl -s -o /dev/null -w "create $1 -> %{http_code}\n" \
-    -X POST "$B/api/v1/users" -H "Authorization: Bearer $T" \
-    -H 'Content-Type: application/json' \
-    -d "{\"user_id\":\"$1\",\"password\":\"$2\",\"email\":\"$3\",\"employee_id\":1,\"administrator\":false,\"status\":0}"
-}
-
-# New users are created with one denied (`privileges: 0`) row per SystemObject,
-# so PUT only needs to name what is granted.
-grant() {  # grant <username> <json privileges array>
-  curl -s -o /dev/null -w "grant $1 -> %{http_code}\n" \
-    -X PUT "$B/api/v1/users/$1" -H "Authorization: Bearer $T" \
-    -H 'Content-Type: application/json' -d "{\"privileges\":$2}"
-}
-
-create "$MBE_TEST_USERNAME"     "$MBE_TEST_PASSWORD"     "agonzalez@mictlanix.test"
-create "$MBE_READONLY_USERNAME" "$MBE_READONLY_PASSWORD" "augusto@mictlanix.test"
-
-# agonzalez needs no `grant` at all — creation already denies everything, and
-# that is exactly its role. It is listed here only to make the intent explicit.
-grant "$MBE_READONLY_USERNAME" '[{"system_object":0,"privileges":2},{"system_object":92,"privileges":2}]'
+python3 tool/seed_test_accounts.py
 ```
 
-`user_id` must be 4–20 alphanumeric characters (mbe-api `UserCreate`), so both
-names are used verbatim from `.env`.
+For each account it creates the user if missing, otherwise resets its password
+to the one in `.env` when that no longer logs in (through the admin
+password-recovery endpoints). It then sets privileges, facility, active status
+and `must_change_password = false`, logs in as the account, and checks that
+the server reports exactly the expected privileges. It is idempotent. A
+missing password is generated and written to `.env`; credentials are never
+printed.
 
-## Verifying
-
-This prints the effective privileges the tests actually assert on:
-
-```bash
-set -a && . ./.env && set +a
-B=${MBE_API_BASE_URL:-http://127.0.0.1:8000}
-
-for pair in "$MBE_TEST_USERNAME:$MBE_TEST_PASSWORD" \
-            "$MBE_READONLY_USERNAME:$MBE_READONLY_PASSWORD"; do
-  u=${pair%%:*}; p=${pair#*:}
-  t=$(curl -s -X POST "$B/api/v1/auth/login" \
-        -H 'Content-Type: application/x-www-form-urlencoded' \
-        -d "username=$u&password=$p" \
-      | python3 -c 'import sys,json;print(json.load(sys.stdin).get("access_token",""))')
-  [ -z "$t" ] && { echo "$u: LOGIN FAILED"; continue; }
-  echo "$u:"
-  curl -s -H "Authorization: Bearer $t" "$B/api/v1/auth/me" | python3 -c '
-import sys, json
-d = json.load(sys.stdin)
-pr = {p["system_object"]: p for p in d.get("privileges", [])}
-def f(o, k): return bool(pr.get(o) and pr[o][k])
-print("  administrator =", d["administrator"])
-print("  products: read=%s update=%s create=%s delete=%s" % (
-    f(0,"allow_read"), f(0,"allow_update"), f(0,"allow_create"), f(0,"allow_delete")))
-print("  users:    read=%s update=%s delete=%s" % (
-    f(92,"allow_read"), f(92,"allow_update"), f(92,"allow_delete")))
-'
-done
-```
-
-Expected:
-
-```
-agonzalez:
-  administrator = False
-  products: read=False update=False create=False delete=False
-  users:    read=False update=False delete=False
-augusto:
-  administrator = False
-  products: read=True update=False create=False delete=False
-  users:    read=True update=False delete=False
-```
+`user_id` must be 4–20 alphanumeric characters (mbe-api `UserCreate`).
 
 ## Non-account prerequisites
 
