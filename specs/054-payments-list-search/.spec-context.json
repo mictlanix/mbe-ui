@@ -3,7 +3,7 @@
   "specName": "Payments List and Search",
   "branch": "054-payments-list-search",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -439,5 +439,40 @@
     }
   ],
   "telemetryInstanceId": "318a02ba-3d16-4cce-bab5-9531366ef941",
-  "currentTask": "T047"
+  "currentTask": null,
+  "concerns": [
+    {
+      "note": "finished, unverified",
+      "step": "implement"
+    },
+    {
+      "note": "The \"finished, unverified\" entry predates the verifications recorded right after completion (analyze, suite, live test, T045 walkthrough); it is superseded, not open.",
+      "step": "implement"
+    }
+  ],
+  "verified": [
+    {
+      "what": "unit, widget and golden suite (2026-10-27, pre-PR)",
+      "result": "3688 pass, 6 fail — pre-existing core_widgets_golden_test diffs, identical without this branch",
+      "command": "flutter test test/unit test/widget test/golden"
+    },
+    {
+      "what": "quickstart walkthrough T045 (macOS app, live tenant)",
+      "result": "17/18 pass; step 5b not runnable — no payment applied to a back-office order (mbe-ui#225)",
+      "command": "flutter test integration_test/payments_quickstart_test.dart -d macos"
+    },
+    {
+      "what": "live repository test",
+      "result": "pass against 127.0.0.1:8000",
+      "command": "flutter test test/integration/payments_list_live_test.dart"
+    },
+    {
+      "what": "flutter analyze on merged main",
+      "command": "flutter analyze",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 5.1,
+      "result": "Analyzing mbe-ui...                                              · No issues found! (ran in 3.8s)"
+    }
+  ]
 }

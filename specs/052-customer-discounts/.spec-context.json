@@ -3,7 +3,7 @@
   "specName": "Customer Discounts",
   "branch": "052-customer-discounts",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -367,5 +367,20 @@
     }
   ],
   "telemetryInstanceId": "81ae04fb-da0a-47a8-acc5-a794162690b7",
-  "currentTask": "T038"
+  "currentTask": null,
+  "verified": [
+    {
+      "what": "quickstart walkthrough T035 (macOS app, live tenant, 2026-10-24)",
+      "result": "18 steps pass incl. SC-001 spot-check, SC-002 7.5 s, races, phone width, English, #207, read-only account; long-list paging and Update-without-Products-Read covered by widget tests only",
+      "command": "flutter test integration_test/customer_discounts_quickstart_test.dart -d macos"
+    },
+    {
+      "what": "§3 sales picks up the discount (manual, dev API, 2026-10-24)",
+      "result": "new line started at 0.10 and kept it after the discount changed"
+    },
+    {
+      "what": "merged",
+      "result": "PR #210 merged 2026-10-24; closed mictlanix/mbe-roadmap#16 and mbe-ui#207"
+    }
+  ]
 }
