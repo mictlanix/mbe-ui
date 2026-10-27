@@ -4,7 +4,7 @@
 
 **Input**: Feature specification from `/specs/056-credit-notes/spec.md`
 
-Roadmap: Closes mictlanix/mbe-roadmap#28 · Upstream: mbe-api#277, #278, plus one unfiled request (research R4)
+Roadmap: Closes mictlanix/mbe-roadmap#28 · Upstream: mbe-api#277, #278, #280
 
 ## Summary
 
@@ -64,7 +64,7 @@ These verdicts are against **v1.14.0**.
 |---|---|---|
 | **I. Feature-first layering** | Pass | Everything is in `features/sales/{domain,data,presentation}`. Presentation reaches the new repository only through `creditNoteRepositoryProvider`. |
 | **II. Riverpod** | Pass | `customerCreditProvider` and the list controller are providers. The URL is the list's state. Ticket-dialog state is local to the dialog. `customerCreditProvider` is a plain `FutureProvider.family`, not an `AsyncNotifier`, because it has no mutation method. This follows spec 054's recorded deviation for `paymentDetailProvider` and `paymentApplicationsProvider`. |
-| **III. Contract-driven API** | **Pass once one issue is filed** | Only generated operations, mapped to a freezed `CreditNote`. Server defects are filed (mbe-api#277, #278), not patched. The `customer_payment` filter request is written (research R4, and `issue-customer-payment-filter.md` in the session scratchpad), but **not filed**: the session's permission check blocked `gh issue create` twice. §III requires it to be filed before implementing. The client works without it, through a marked interim scan. |
+| **III. Contract-driven API** | Pass | Only generated operations, mapped to a freezed `CreditNote`. Server defects are filed (mbe-api#277, #278), not patched. The `customer_payment` filter request is filed as mbe-api#280. The client works without it, through a marked interim scan. |
 | **IV. Deny-by-default RBAC** | Pass | The route and nav are gated by `creditPayments` (83) read. The Cobro tiles need `creditPayments` read and `customerPayments` (8) create, plus read for the ticket lookup. The row tap needs `customerPayments` read. Anything a user can't use is hidden (R7). The route documents its object (C1). |
 | **V. Material 3 / one formatting surface** | Pass | `fmt.display.*` only. Shared components only: `CatalogFilterBar`, `showCatalogFilterSheet`, `CatalogEntityPicker`, `CatalogListStateView`, `DataTableView`, `ErrorBanner`. |
 | **VI. List screen rules** | Pass | Filter row, list, pagination. The search slot is omitted because the endpoint has none, and the facets are in the drawer. Amounts and origin are never truncated; only the customer name is. **No row Edit icon:** a credit note is never edited, following the Pagos and cash-sessions precedent. **Record surface:** the backing payment's existing full detail screen. No new surface is needed. |
@@ -143,7 +143,7 @@ There are no violations to justify.
 |---|---|---|
 | mbe-api#277 (+ addendum) | Legacy notes report 0 remaining, and the cashed-out note 158 reports 1,025.00 | Show the server's figures. Live redemption is tested only with notes issued through mbe-api. |
 | mbe-api#278 | `open_only` gives short or empty pages and a wrong total | Never send it. Filter locally (R2, R8), with a `// simplified` marker to remove when it ships. |
-| `customer_payment` filter (**unfiled**, R4) | A ticket lookup scans walk-in pages | Scan newest first and stop at the first match, with a `// simplified` marker. |
+| mbe-api#280 (`customer_payment` filter, R4) | A ticket lookup scans walk-in pages | Scan newest first and stop at the first match, with a `// simplified` marker. |
 
 ## Deviations found during implementation
 
@@ -160,5 +160,5 @@ Where the code differs from the design documents above. The behaviour in the spe
 ## Follow-ups (not in this delivery)
 
 - **mbe-api#277 / #278** ship: re-check T030 — pass `open_only` and page on the server, and drop the full read in `credit_notes_list_controller.dart`.
-- **File the `customer_payment` filter request** (research R4); when it ships, replace the scan in `CreditNoteRepositoryImpl.findByPayment`.
+- **mbe-api#280** ships: replace the scan in `CreditNoteRepositoryImpl.findByPayment` with the `customer_payment` filter.
 - **Origin cell cost:** each row resolves its order through `orderLinkTargetProvider` (up to 20 order reads a page for a user who can read orders). Fine at today's volumes; lazy resolution on tap is the fallback if it is slow.

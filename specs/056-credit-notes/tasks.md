@@ -29,7 +29,7 @@ description: "Task list for 056-credit-notes"
 - **Amounts and dates** go through `formattersProvider` (constitution §V). No `NumberFormat`, no `toStringAsFixed`. Amount arithmetic goes only through `features/sales/domain/money.dart`.
 - **Spacing tokens, not literals** (`Theme.of(context).spacing`). No automated guard catches a literal, so check it in review.
 - **The app never computes a remaining balance (FR-015) and never sends `open_only`** (mbe-api#278). Don't "simplify" the list or the credit read into a server-side filter, even though it looks cheaper.
-- **Interim code carries a marker.** Two places are deliberately inefficient until mbe-api ships a change. Each gets a comment `// simplified: <ceiling>, <what to do when it binds>`: the walk-in ticket scan (T004, needs the unfiled `customer_payment` filter) and the open-only full read (T023, needs mbe-api#278).
+- **Interim code carries a marker.** Two places are deliberately inefficient until mbe-api ships a change. Each gets a comment `// simplified: <ceiling>, <what to do when it binds>`: the walk-in ticket scan (T004, needs the `customer_payment` filter, mbe-api#280) and the open-only full read (T023, needs mbe-api#278).
 - **Mirror, don't copy blindly.** Closest precedents:
   - Controller side effects: `PaymentController.tender` (`payment_controller.dart:143-236`).
   - Dialog: `payment_reference_dialog.dart`.
@@ -183,7 +183,7 @@ description: "Task list for 056-credit-notes"
   - SC-001: the number of actions from opening Cobro to the credit being applied, which must be at most two.
   - SC-002: the time to redeem a walk-in ticket by scan or typed number, which must be under 30 seconds.
   SC-004 (no over-spend when two registers spend the same note) can't be staged by hand. It is verified by T014's failure-path test, plus the server's bound on every application. Record that in the verifications rather than claiming a live check.
-- [x] T030 Confirm the two `// simplified:` markers (T004, T023) are present and name the upstream issue they wait on. Re-check whether mbe-api#277 and #278 have shipped, and the unfiled `customer_payment` filter: if one has, remove the matching workaround and its marker in the same change.
+- [x] T030 Confirm the two `// simplified:` markers (T004, T023) are present and name the upstream issue they wait on. Re-check whether mbe-api#277 and #278 have shipped, and mbe-api#280 (the `customer_payment` filter): if one has, remove the matching workaround and its marker in the same change.
 
 ---
 

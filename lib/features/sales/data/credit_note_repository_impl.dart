@@ -77,8 +77,8 @@ class CreditNoteRepositoryImpl implements CreditNoteRepository {
     required int customerId,
   }) async {
     // simplified: worst case reads every page of the customer's notes (512 for
-    // the walk-in customer on the dev tenant); switch to a `customer_payment`
-    // filter when mbe-api ships one.
+    // the walk-in customer on the dev tenant); switch to the `customer_payment`
+    // filter when mbe-api#280 ships.
     var skip = 0;
     while (true) {
       final page = await list(
