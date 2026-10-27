@@ -388,6 +388,42 @@ void main() {
         expect(second, {1: 5, 2: 3});
       });
 
+      test('forwards the selected supplier (#219)', () async {
+        when(
+          () => repository.productLabelFacets(
+            search: any(named: 'search'),
+            status: any(named: 'status'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            perishable: any(named: 'perishable'),
+            seriable: any(named: 'seriable'),
+            invoiceable: any(named: 'invoiceable'),
+            supplier: any(named: 'supplier'),
+            labels: any(named: 'labels'),
+          ),
+        ).thenAnswer((_) async => const []);
+
+        await container.read(
+          productLabelFacetsProvider(const ProductFilter(supplier: 9)).future,
+        );
+
+        verify(
+          () => repository.productLabelFacets(
+            search: any(named: 'search'),
+            status: any(named: 'status'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            perishable: any(named: 'perishable'),
+            seriable: any(named: 'seriable'),
+            invoiceable: any(named: 'invoiceable'),
+            supplier: 9,
+            labels: any(named: 'labels'),
+          ),
+        ).called(1);
+      });
+
       test(
         'an empty facet response yields an empty map (nothing available)',
         () async {
