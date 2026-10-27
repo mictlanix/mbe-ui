@@ -23,7 +23,8 @@ final salesOrderRepositoryProvider = Provider<SalesOrderRepository>((ref) {
 /// `SalesOrderRepository` backed by the generated `mbe_api_client`
 /// `SalesOrdersApi` (contracts/mbe-api-pos.md §1).
 class SalesOrderRepositoryImpl implements SalesOrderRepository {
-  SalesOrderRepositoryImpl(Dio dio) : _api = api.SalesOrdersApi(dio, appSerializers);
+  SalesOrderRepositoryImpl(Dio dio)
+    : _api = api.SalesOrdersApi(dio, appSerializers);
 
   final api.SalesOrdersApi _api;
 
@@ -83,32 +84,35 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
     String? recipient,
   }) async {
     try {
-      final response = await _api.updateSalesOrderApiV1SalesOrdersSalesOrderIdPut(
-        salesOrderId: saleId,
-        salesOrderUpdate: api.SalesOrderUpdate((b) {
-          b
-            ..customer = customer
-            ..paymentTerms = paymentTerms?.toApi()
-            ..currency = currency == null ? null : currencyToApi(currency)
-            ..shipTo = shipTo
-            ..contact = contact
-            ..customerName = customerName
-            ..fulfillmentIntent = fulfillmentIntent?.toApi()
-            // Through [wireDate]: `showDatePicker` hands back a local
-            // midnight, which `Iso8601DateTimeSerializer` refuses outright
-            // (`ArgumentError`), so picking a promise date failed as an
-            // unreachable-server error for a request that never left the
-            // client (mictlanix/mbe-ui#176). The delivery-order repository
-            // already routes its own picked date this way.
-            ..promiseDate = promiseDate == null ? null : wireDate(promiseDate)
-            ..salesperson = salesperson
-            // Deliberately no `dueDate` here: it is derived server-side and
-            // `SalesOrderUpdate` has no such field to set.
-            ..priority = priority?.toApi()
-            ..comment = comment
-            ..recipient = recipient;
-        }),
-      );
+      final response = await _api
+          .updateSalesOrderApiV1SalesOrdersSalesOrderIdPut(
+            salesOrderId: saleId,
+            salesOrderUpdate: api.SalesOrderUpdate((b) {
+              b
+                ..customer = customer
+                ..paymentTerms = paymentTerms?.toApi()
+                ..currency = currency == null ? null : currencyToApi(currency)
+                ..shipTo = shipTo
+                ..contact = contact
+                ..customerName = customerName
+                ..fulfillmentIntent = fulfillmentIntent?.toApi()
+                // Through [wireDate]: `showDatePicker` hands back a local
+                // midnight, which `Iso8601DateTimeSerializer` refuses outright
+                // (`ArgumentError`), so picking a promise date failed as an
+                // unreachable-server error for a request that never left the
+                // client (mictlanix/mbe-ui#176). The delivery-order repository
+                // already routes its own picked date this way.
+                ..promiseDate = promiseDate == null
+                    ? null
+                    : wireDate(promiseDate)
+                ..salesperson = salesperson
+                // Deliberately no `dueDate` here: it is derived server-side and
+                // `SalesOrderUpdate` has no such field to set.
+                ..priority = priority?.toApi()
+                ..comment = comment
+                ..recipient = recipient;
+            }),
+          );
       final result = response.data;
       if (result == null) throw const AppError.server();
       return Sale.fromResponse(result);
@@ -129,21 +133,22 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
     String? comment,
   }) async {
     try {
-      final response = await _api.addSalesOrderLineApiV1SalesOrdersSalesOrderIdLinesPost(
-        salesOrderId: saleId,
-        salesOrderLineCreate: api.SalesOrderLineCreate((b) {
-          b
-            ..product = product
-            ..warehouse = warehouse
-            ..comment = comment;
-          if (quantity != null) setQuantity(b.quantity, quantity);
-          if (price != null) setPrice1(b.price, price);
-          if (discountRate != null) {
-            setDiscountRate(b.discountRate, discountRate);
-          }
-          if (taxRate != null) setTaxRate1(b.taxRate, taxRate);
-        }),
-      );
+      final response = await _api
+          .addSalesOrderLineApiV1SalesOrdersSalesOrderIdLinesPost(
+            salesOrderId: saleId,
+            salesOrderLineCreate: api.SalesOrderLineCreate((b) {
+              b
+                ..product = product
+                ..warehouse = warehouse
+                ..comment = comment;
+              if (quantity != null) setQuantity(b.quantity, quantity);
+              if (price != null) setPrice2(b.price, price);
+              if (discountRate != null) {
+                setDiscountRate(b.discountRate, discountRate);
+              }
+              if (taxRate != null) setTaxRate2(b.taxRate, taxRate);
+            }),
+          );
       final result = response.data;
       if (result == null) throw const AppError.server();
       return Sale.fromResponse(result);
@@ -173,11 +178,11 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
                 ..warehouse = warehouse
                 ..comment = comment;
               if (quantity != null) setQuantity(b.quantity, quantity);
-              if (price != null) setPrice1(b.price, price);
+              if (price != null) setPrice2(b.price, price);
               if (discountRate != null) {
                 setDiscountRate(b.discountRate, discountRate);
               }
-              if (taxRate != null) setTaxRate1(b.taxRate, taxRate);
+              if (taxRate != null) setTaxRate2(b.taxRate, taxRate);
             }),
           );
       final result = response.data;
@@ -384,7 +389,8 @@ class SalesOrderRepositoryImpl implements SalesOrderRepository {
 ///
 /// Extracted from `open_sales_selector_controller.dart`'s `_startOfToday`,
 /// which defers to this for the same reasoning (spec 023 research R3, R6).
-DateTime wireDate(DateTime local) => DateTime(local.year, local.month, local.day);
+DateTime wireDate(DateTime local) =>
+    DateTime(local.year, local.month, local.day);
 
 /// The last instant of [local]'s date — the `date_to` counterpart to
 /// [wireDate], which is only ever right for `date_from`.

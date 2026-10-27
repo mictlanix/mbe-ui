@@ -21,7 +21,8 @@ final salesQuoteRepositoryProvider = Provider<SalesQuoteRepository>((ref) {
 /// `SalesQuoteRepository` backed by the generated `mbe_api_client`
 /// `SalesQuotesApi` (spec 040, contracts/sales-quote-repository.md §1).
 class SalesQuoteRepositoryImpl implements SalesQuoteRepository {
-  SalesQuoteRepositoryImpl(Dio dio) : _api = api.SalesQuotesApi(dio, appSerializers);
+  SalesQuoteRepositoryImpl(Dio dio)
+    : _api = api.SalesQuotesApi(dio, appSerializers);
 
   final api.SalesQuotesApi _api;
 
@@ -70,20 +71,21 @@ class SalesQuoteRepositoryImpl implements SalesQuoteRepository {
     String? comment,
   }) async {
     try {
-      final response = await _api.updateSalesQuoteApiV1SalesQuotesSalesQuoteIdPut(
-        salesQuoteId: quoteId,
-        salesQuoteUpdate: api.SalesQuoteUpdate((b) {
-          b
-            ..customer = customer
-            ..salesperson = salesperson
-            ..paymentTerms = paymentTerms?.toApi()
-            ..currency = currency == null ? null : currencyToApi(currency)
-            ..dueDate = dueDate
-            ..contact = contact
-            ..shipTo = shipTo
-            ..comment = comment;
-        }),
-      );
+      final response = await _api
+          .updateSalesQuoteApiV1SalesQuotesSalesQuoteIdPut(
+            salesQuoteId: quoteId,
+            salesQuoteUpdate: api.SalesQuoteUpdate((b) {
+              b
+                ..customer = customer
+                ..salesperson = salesperson
+                ..paymentTerms = paymentTerms?.toApi()
+                ..currency = currency == null ? null : currencyToApi(currency)
+                ..dueDate = dueDate
+                ..contact = contact
+                ..shipTo = shipTo
+                ..comment = comment;
+            }),
+          );
       final result = response.data;
       if (result == null) throw const AppError.server();
       return Sale.fromQuoteResponse(result);
@@ -103,22 +105,23 @@ class SalesQuoteRepositoryImpl implements SalesQuoteRepository {
     String? comment,
   }) async {
     try {
-      final response = await _api.addSalesQuoteLineApiV1SalesQuotesSalesQuoteIdLinesPost(
-        salesQuoteId: quoteId,
-        salesQuoteLineCreate: api.SalesQuoteLineCreate((b) {
-          b
-            ..product = product
-            ..comment = comment;
-          if (quantity != null) setQuantity(b.quantity, quantity);
-          if (price != null) setPrice1(b.price, price);
-          if (priceAdjustment != null) {
-            setPriceAdjustment(b.priceAdjustment, priceAdjustment);
-          }
-          if (discountRate != null) {
-            setDiscountRate(b.discountRate, discountRate);
-          }
-        }),
-      );
+      final response = await _api
+          .addSalesQuoteLineApiV1SalesQuotesSalesQuoteIdLinesPost(
+            salesQuoteId: quoteId,
+            salesQuoteLineCreate: api.SalesQuoteLineCreate((b) {
+              b
+                ..product = product
+                ..comment = comment;
+              if (quantity != null) setQuantity(b.quantity, quantity);
+              if (price != null) setPrice2(b.price, price);
+              if (priceAdjustment != null) {
+                setPriceAdjustment(b.priceAdjustment, priceAdjustment);
+              }
+              if (discountRate != null) {
+                setDiscountRate(b.discountRate, discountRate);
+              }
+            }),
+          );
       final result = response.data;
       if (result == null) throw const AppError.server();
       return Sale.fromQuoteResponse(result);
@@ -145,7 +148,7 @@ class SalesQuoteRepositoryImpl implements SalesQuoteRepository {
             salesQuoteLineUpdate: api.SalesQuoteLineUpdate((b) {
               b.comment = comment;
               if (quantity != null) setQuantity(b.quantity, quantity);
-              if (price != null) setPrice1(b.price, price);
+              if (price != null) setPrice2(b.price, price);
               if (priceAdjustment != null) {
                 setPriceAdjustment1(b.priceAdjustment, priceAdjustment);
               }
