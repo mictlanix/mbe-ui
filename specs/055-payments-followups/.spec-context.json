@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Payments Follow-ups",
   "branch": "055-payments-followups",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -32,6 +32,20 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-10-27T17:54:06.933Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-27T17:56:50.391Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-27T17:58:11.330Z"
     }
   ],
   "telemetryInstanceId": "e226d84f-085d-4e06-91ed-b8c95854d944"
