@@ -64,7 +64,7 @@ A supervisor or cashier opens "Notas de crédito" to answer "does this customer 
 
 - **Credit already on this sale.** A note already applied to the sale is left out of the balance offered in Story 1, and Story 2 refuses it. Legacy refused a second application of the same note to the same order.
 - **Sale cancelled or already fully paid.** Credit is not offered, and a note can't be redeemed against it.
-- **Note cashed out at a register.** A note marked with the cash session it was paid out in is not spendable. Legacy left these out of the spendable pool. The server is asked to confirm this rule in mbe-api#277.
+- **Note cashed out at a register.** An older legacy version could pay a note out in cash, and such a note is not spendable. The app doesn't detect this itself. The marker legacy used (a cash session on the note) is also written by mbe-api on every note it issues, so a client-side rule would hide every new note. The server's remaining figure must report 0 for a cashed-out note (mbe-api#277).
 - **Two registers spend the same note at once.** The server bounds every application by the note's remaining amount, so the second application fails. The app shows that failure and re-reads the sale's balance and the customer's credit. It never shows a balance it didn't read back.
 - **Spending several notes partly fails.** If the first notes apply and a later one is refused, the applied ones stay applied. They're ordinary payments the cashier can see on the sale. The app reports how much was applied and re-reads the remaining credit.
 - **A sale's customer changes after credit was applied.** Applied credit stays on the sale. Undoing it belongs to the payments editor (roadmap#26), not this feature.
@@ -75,12 +75,12 @@ A supervisor or cashier opens "Notas de crédito" to answer "does this customer 
 
 ### Functional Requirements
 
-- **FR-001**: When a POS sale for a named customer reaches the payment step, the app MUST show that customer's spendable credit-note balance. It MUST leave out notes with nothing remaining, notes cashed out at a register, and notes already applied to this sale. When that balance is zero, it MUST NOT show the credit-note option.
+- **FR-001**: When a POS sale for a named customer reaches the payment step, the app MUST show that customer's spendable credit-note balance. It MUST leave out notes the server reports nothing remaining on and notes already applied to this sale. When that balance is zero, it MUST NOT show the credit-note option.
 - **FR-002**: Spending a named customer's credit MUST apply their spendable notes oldest first. The total MUST NOT exceed, in this order of precedence, the amount the cashier entered (when they entered one), the sale's balance, and the spendable credit. Each note MUST contribute no more than its own remaining amount.
 - **FR-003**: A credit-note application MUST NOT produce change.
 - **FR-004**: The general-public customer's notes MUST NOT appear as a customer credit balance.
 - **FR-005**: On a POS sale under the general-public customer, the cashier MUST be able to redeem a single credit note by the number printed under its ticket barcode, typed or scanned. The app MUST show the note's remaining amount before applying it.
-- **FR-006**: Redeeming by number MUST refuse, with a message naming the reason, when the number matches no credit note, when the note has nothing remaining, when it was cashed out at a register, or when it is already applied to this sale.
+- **FR-006**: Redeeming by number MUST refuse, with a message naming the reason, when the number matches no credit note, when the server reports nothing remaining on the note, or when it is already applied to this sale.
 - **FR-006a**: Redeeming by number MUST refuse a note issued to a different customer than the sale's, saying who the note belongs to. mbe-api refuses any application across customers, so a named customer's note is spent through FR-001 on their own sale, and a walk-in note only on a walk-in sale.
 - **FR-007**: The app MUST NOT offer or perform credit-note redemption on a sale that is cancelled or has no balance left.
 - **FR-008**: After every redemption attempt, whether it succeeded, partly succeeded or failed, the app MUST re-read the sale's balance, its applied payments, and the customer's remaining credit from the server before showing them.
@@ -113,8 +113,8 @@ A supervisor or cashier opens "Notas de crédito" to answer "does this customer 
 - **Redemption is POS-only.** The scoping decision placed redemption in "the existing order payment dialogs". The back-office Pedidos workspace takes no payment (spec 029 kept it to capture and confirm), so the POS payment step is the only such dialog. Adding a payment step to Pedidos would be its own feature.
 - **Walk-in notes pay walk-in sales only.** Legacy let a ticket be redeemed on any order. mbe-api refuses applications across customers, and this spec follows the server rather than asking for a carve-out.
 - **Ticket number = backing payment id.** That is what legacy's credit-note ticket prints under its barcode and what legacy's redeem-by-number looks up.
-- **Remaining figures depend on mbe-api#277 and #278.** Until they ship, legacy notes show 0.00 remaining and can't be spent. On the dev tenant, live testing is limited to the one note that does report a balance (note 158, customer 9284, 1,025.00) and to notes the API issues itself.
-- **The cashed-out rule follows legacy.** Notes carrying a cash session are not spendable. mbe-api#277 asks the server to confirm. If the server drops the rule, the app follows the server.
+- **Remaining figures depend on mbe-api#277 and #278.** Until they ship, legacy notes show 0.00 remaining and can't be spent. The one note that reports a balance today (note 158, 1,025.00) was in fact paid out in cash, so it is not a valid redemption fixture. Until #277 ships, live redemption can only be tested against a note issued through mbe-api's refund endpoint.
+- **The server owns the cashed-out rule.** The app spends exactly what the server reports as remaining (FR-015). mbe-api#277 asks the server to report 0 for notes legacy paid out in cash.
 - **No credit-note tickets are printed.** Printing is out of scope, so a walk-in redemption relies on tickets legacy already printed or notes issued by a future refunds screen.
 
 ### Out of scope
