@@ -70,8 +70,9 @@ class ExpenseFormPanelState extends ConsumerState<ExpenseForm> {
         await ref
             .read(expenseFormControllerProvider.notifier)
             .loadForEdit(widget.expenseId!);
-        if (mounted)
+        if (mounted) {
           setState(() => _snapshot = ref.read(expenseFormControllerProvider));
+        }
       });
     } else {
       // Create mode never loads — the pristine baseline is available

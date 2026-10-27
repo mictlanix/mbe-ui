@@ -104,8 +104,9 @@ Locale? _decodeLocale(String code) {
   final parts = code.split('_');
   final language = parts.isNotEmpty ? parts.first : '';
   if (language.isEmpty) return null;
-  if (parts.length > 1 && parts[1].isNotEmpty)
+  if (parts.length > 1 && parts[1].isNotEmpty) {
     return Locale(language, parts[1]);
+  }
   return Locale(language);
 }
 

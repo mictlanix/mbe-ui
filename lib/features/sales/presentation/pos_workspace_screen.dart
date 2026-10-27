@@ -336,8 +336,9 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
       return _UnreachableReason.unknown;
     }
     if (current != null) {
-      if (current.status == SaleStatus.cancelled)
+      if (current.status == SaleStatus.cancelled) {
         return _UnreachableReason.cancelled;
+      }
       final myRegister = ref.read(registerPointSaleProvider);
       if (myRegister != null && current.pointSale != myRegister) {
         return _UnreachableReason.otherRegister;

@@ -277,8 +277,9 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                         onChanged: !widget.canEditPriority
                             ? null
                             : (priority) {
-                                if (priority != null)
+                                if (priority != null) {
                                   _update(priority: priority);
+                                }
                               },
                       ),
                     ),
@@ -319,8 +320,9 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                           onChanged: !canEdit
                               ? null
                               : (currency) {
-                                  if (currency != null)
+                                  if (currency != null) {
                                     _update(currency: currency);
+                                  }
                                 },
                         ),
                       ),

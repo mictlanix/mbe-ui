@@ -75,8 +75,9 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
             applicationCreate: api.ApplicationCreate((b) {
               b.salesOrder = salesOrder;
               _setAmount(b.amount, amount);
-              if (amountChange != null)
+              if (amountChange != null) {
                 _setAmountChange(b.amountChange, amountChange);
+              }
             }),
           );
     } on DioException catch (e) {

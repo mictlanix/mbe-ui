@@ -111,8 +111,9 @@ class OpenSalesSelector extends ConsumerWidget {
     // Nothing started yet: the chip is purely the way in to the open sales,
     // so it says how many there are.
     if (reference.isEmpty) return openCount == 0 ? l10n.posNoOpenSales : count;
-    if (openCount == 0 || LayoutBreakpoints.isCompact(context))
+    if (openCount == 0 || LayoutBreakpoints.isCompact(context)) {
       return reference;
+    }
     return '$reference · $count';
   }
 }

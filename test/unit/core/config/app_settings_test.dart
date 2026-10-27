@@ -220,8 +220,9 @@ void main() {
   group('AppSettings debounce-setting fallback rules (spec 036 FR-030)', () {
     Duration parseDebounceMs(String value, int fallbackMs) {
       final parsed = int.tryParse(value);
-      if (parsed == null || parsed < 0)
+      if (parsed == null || parsed < 0) {
         return Duration(milliseconds: fallbackMs);
+      }
       return Duration(milliseconds: parsed);
     }
 
