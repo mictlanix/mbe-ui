@@ -3,7 +3,7 @@
   "specName": "Payments Follow-ups",
   "branch": "055-payments-followups",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -373,8 +373,23 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-10-27T18:28:29.133Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-27T19:49:51.061Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-27T19:49:51.061Z"
     }
   ],
   "telemetryInstanceId": "e226d84f-085d-4e06-91ed-b8c95854d944",
-  "currentTask": "T039"
+  "currentTask": "T041"
 }

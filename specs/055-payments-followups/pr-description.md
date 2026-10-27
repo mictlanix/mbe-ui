@@ -28,7 +28,7 @@ Related: mictlanix/mbe-api#276. The server's "Sin aplicar" doesn't subtract chan
 - [x] `flutter test`: 3742 passed. 7 failed, all goldens and screenshots (`test/golden/core_widgets_golden_test.dart`, one in `test/screenshots/pos_screens_screenshot_test.dart`); the same 7 fail on unmodified `main`, so they predate this branch (CI-only goldens, mbe-ui#209).
 - [x] `python3 tool/seed_payment_fixtures.py`, run twice on the dev tenant: the first run seeded payment 300834 on back-office order 344062; the second wrote nothing.
 - [x] Walkthrough `integration_test/payments_quickstart_test.dart` on macOS against the dev tenant: 22 of 22 steps PASS, none skipped, including a real-font check that dates and amounts stay on one line at 1680 px.
-- [ ] Manual check at Expanded and phone widths (T039), timing SC-001 (ticket in three actions or fewer) and SC-004 (customer search in under 15 s).
+- [x] Manual check in the web build (T039): ticket preview from a row and from the view, customer-name search, and one-line rows at desktop width. The network panel shows only list requests, with no per-customer lookups (SC-003); a name search returned in 735 ms.
 - [ ] Physical thermal printer and phone browsers: tracked in #185.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)

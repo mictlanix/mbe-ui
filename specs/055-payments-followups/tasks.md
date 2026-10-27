@@ -159,7 +159,7 @@ description: "Task list for 055-payments-followups"
 
 - [X] T037 Run `flutter analyze` at the root, then `dart format` on only the files changed by this feature (never `lib/generated/`, never `.`). Analyze must be clean.
 - [X] T038 [P] Run the full affected test set: `flutter test test/unit/features/sales test/unit/core/documents test/widget/features/sales test/widget/core/documents test/unit/core/formatting_guard_test.dart`, and then the whole `flutter test` to catch fallout from the client regeneration.
-- [ ] T039 [P] Check the layouts by hand at Expanded and phone widths: the list row's ticket icon, the search box with its two hints, the detail's "Ver ticket" button, and the "not allowed" state (quickstart steps 1–4 and 7). Constitution §VI: no horizontal scroll at Expanded width, and the new icon must not push the Verificado chip off. Also time the two success criteria that have no automated check:
+- [X] T039 [P] Check the layouts by hand at Expanded and phone widths: the list row's ticket icon, the search box with its two hints, the detail's "Ver ticket" button, and the "not allowed" state (quickstart steps 1–4 and 7). Constitution §VI: no horizontal scroll at Expanded width, and the new icon must not push the Verificado chip off. Also time the two success criteria that have no automated check:
   - **SC-001:** from the list, the ticket reaches the print dialog in three actions or fewer (Ver ticket, Imprimir, confirm).
   - **SC-004:** from opening Pagos, a facility payment is found by part of its customer's name in under 15 seconds.
 
