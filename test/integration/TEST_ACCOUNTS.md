@@ -25,10 +25,11 @@ seed contract, not a description of one particular database.
 | `MBE_CASH_SESSION_*` | `admin` | yes | needs `pos` (44) read + create, `cashSessionClose` (111) update, and at least one visible cash drawer |
 | `MBE_POS_*` | `admin` | yes | needs an **already open cash session** on its point of sale |
 | `MBE_QA054_*` | `qa054payments` | no | facility set (51 on the dev tenant); read (2) on `customerPayments` (8), `customers` (2), `employees` (6), `salesOrders` (7), `facilities` (29), `paymentMethodOptions` (84). **No** `paymentsEditor` (100) and **no** `pos` (44) |
+| `MBE_QA033_*` | `qa033pricingro` | no | facility set (51 on the dev tenant); read (2) only on `pricing` (106), `products` (0), `labels` (1), `suppliers` (3), `priceLists` (5). **No** update anywhere — the read-only pricing grid (spec 033 US5) |
 
 The last four currently point at `admin`, which satisfies them by
 short-circuiting rather than by holding the listed privileges. Only
-`agonzalez`, `augusto` and `qa054payments` must be non-administrators — every assertion they
+`agonzalez`, `augusto`, `qa054payments` and `qa033pricingro` must be non-administrators — every assertion they
 back is a *negative* one (`expect(..., isFalse)`), and an administrator would
 pass every check and make those tests vacuous.
 

@@ -3,7 +3,7 @@
   "specName": "Bulk Pricing Grid",
   "branch": "033-bulk-pricing-grid",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -481,7 +481,32 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-08-30T02:18:02.039Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-27T16:17:17.700Z"
     }
   ],
-  "currentTask": "T058"
+  "currentTask": null,
+  "telemetryInstanceId": "39179325-1d8f-4081-85fd-aae3bc4a3581",
+  "verified": [
+    {
+      "what": "quickstart walkthrough T058/T059 (macOS app, live tenant, 2026-10-27)",
+      "result": "21/21 checks pass: steps 1–16, plus 17–18 inverted to verify the shipped column menu and worklist chips; read-only as qa033pricingro; tenant restored (one cancelled draft order per run left: 344063–344065)",
+      "command": "flutter test integration_test/pricing_grid_quickstart_test.dart -d macos"
+    },
+    {
+      "what": "merged",
+      "result": "PR #168 merged 2026-08-30"
+    }
+  ],
+  "concerns": [
+    {
+      "note": "quickstart step 11 says a 0/0 list stores band [0,1]; the server now stores the list margins ([0,0]), per research R6 Landed — the quickstart wording is stale, the behaviour is intended",
+      "step": "implement"
+    }
+  ]
 }
