@@ -168,7 +168,7 @@ A user who can read the Payments Editor, typically head-office accounting, has a
 - The date filter is by payment date, inclusive on both ends, using the same date-range picker and wall-clock handling as the other back-office lists (spec 043).
 - The customer filter uses the app's existing customer picker. The cash-session filter is a searchable picker over the facility's cash sessions. Each option shows "#id · cashier · date", and the user finds a session by typing its number (FR-006a).
 - In cross-facility mode, the verified state, method and unapplied amount are still shown on each row, even though they can't be filtered there.
-- The payment view does not need printing. Printing payment tickets for credit payments, advances and credit notes is part of #28 or later document work.
+- The payment view does not need printing. Whether payments get a ticket, and for which types, is an open question in mictlanix/mbe-roadmap#155; there is no endpoint for one yet (mbe-api#272).
 - A facility-scoped list request without a facility uses the caller's facility on the server. The client still sends nothing other than the user's own facility (see Edge Cases: facility scope).
 - Opening a payment from a cash-session screen, an order screen or the customer record is useful but out of scope here. Those screens can link to the payment view later.
 - Out of scope: verify/reject (mictlanix/mbe-roadmap#27), reversing or moving applications (#26), credit notes (#28), refunds (#29), recording or applying a payment outside the POS, the received-payments report (#99), and export.

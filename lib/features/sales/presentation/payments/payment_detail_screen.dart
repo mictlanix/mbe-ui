@@ -200,6 +200,7 @@ class _PaymentBody extends ConsumerWidget {
           ResponsiveFormGrid(
             maxColumns: 2,
             spacing: spacing.fieldGapHorizontal,
+            alignment: AlignmentDirectional.centerStart,
             children: [
               FormGridChild(
                 _Labeled(
@@ -384,6 +385,7 @@ class _ApplicationsSection extends ConsumerWidget {
             return DataTableView<PaymentApplication>(
               key: const Key('payment_applications_table'),
               shrinkWrap: true,
+              margin: EdgeInsets.zero,
               rows: items,
               columns: [
                 DataTableColumn(

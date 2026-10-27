@@ -580,5 +580,28 @@ void main() {
         );
       });
     }
+
+    // Wider than the field grid's max content width, where a centred grid
+    // or a card margin would push the bands off the header's left edge.
+    testWidgets('header, fields and applications share one left edge', (
+      tester,
+    ) async {
+      stubGet(testPayment());
+      stubApps([app(1, '1000.00')]);
+      await pumpDetail(tester);
+      tester.view.physicalSize = const Size(2000, 1000);
+      await tester.pumpAndSettle();
+
+      final left = tester
+          .getTopLeft(find.byKey(const Key('payment_summary_amount')))
+          .dx;
+      expect(tester.getTopLeft(find.text('Aceros del Bajío')).dx, left);
+      expect(
+        tester
+            .getTopLeft(find.byKey(const Key('payment_applications_table')))
+            .dx,
+        left,
+      );
+    });
   });
 }
