@@ -3,7 +3,7 @@
   "specName": "Document Printing",
   "branch": "044-document-printing",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -369,8 +369,45 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-09-30T15:51:08.186Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-27T17:37:10.727Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-27T17:37:10.728Z"
     }
   ],
   "telemetryInstanceId": "b555946d-0055-4a80-95dc-bf5c239ab553",
-  "currentTask": "T044"
+  "currentTask": null,
+  "verified": [
+    {
+      "what": "in-app quickstart walkthrough T044 (macOS app, live tenant, 2026-10-27)",
+      "result": "all in-app checks pass after the M5 fix: M2, M3 buttons, M4 (2.4 s, SC-002), M5, M6 reprint (6.4 s, SC-007), M8, H2 full-screen",
+      "command": "flutter test integration_test/document_printing_quickstart_test.dart -d macos"
+    },
+    {
+      "what": "live document flow test, first live run",
+      "result": "3 pass, 1 skipped (no open cash session for the 409 check)",
+      "command": "flutter test test/integration/document_printing_flow_test.dart"
+    },
+    {
+      "what": "M5 / FR-009 bug fixed and merged",
+      "result": "PR #228 merged 2026-10-27: TextFieldTapRegion on Ver pedido, quote document button and register Continue; regression widget test"
+    }
+  ],
+  "concerns": [
+    {
+      "note": "Not verified, tracked in #185: M1 (browser print preview), M3 pinch/trackpad, M7 (API down + retry), M9 (network origins), H1 (80 mm thermal printer), H2 (phone browser), multi-page pedido (no such order on the tenant), close-then-Ver corte (no open session). The quote compact-tier overflow menu still has the FR-009 click-blur defect.",
+      "step": "implement"
+    }
+  ]
 }
