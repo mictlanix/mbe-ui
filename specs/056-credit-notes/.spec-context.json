@@ -1,0 +1,97 @@
+{
+  "workflow": "companion",
+  "specName": "Credit Notes",
+  "branch": "056-credit-notes",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-27T20:07:55.897Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-27T20:09:50.871Z"
+    }
+  ],
+  "last_action": "living specs evaluated — skipped (not configured)",
+  "telemetryInstanceId": "863dc38a-73fa-46f1-9c3d-30bf0604a675",
+  "coverage": {
+    "FR-001": {
+      "title": "POS payment step shows named customer spendable credit-note balance; hidden when zero"
+    },
+    "FR-002": {
+      "title": "Spend credit oldest note first, capped by entered amount, sale balance, spendable credit"
+    },
+    "FR-003": {
+      "title": "Credit-note application never produces change"
+    },
+    "FR-004": {
+      "title": "General-public customer notes never shown as a customer credit balance"
+    },
+    "FR-005": {
+      "title": "Redeem one note by ticket number on a walk-in POS sale, showing remaining first"
+    },
+    "FR-006": {
+      "title": "Redeem-by-number refuses unknown, used-up, cashed-out, or already-applied notes"
+    },
+    "FR-006a": {
+      "title": "Redeem-by-number refuses a note issued to a different customer than the sale"
+    },
+    "FR-007": {
+      "title": "No redemption on cancelled sales or sales with no balance"
+    },
+    "FR-008": {
+      "title": "Re-read sale balance, applications and credit after every redemption attempt"
+    },
+    "FR-009": {
+      "title": "Redemption appears among applied payments as a credit-note payment"
+    },
+    "FR-010": {
+      "title": "Notas de credito list: customer, date, issued, remaining, refund and source order, newest first"
+    },
+    "FR-011": {
+      "title": "List filters by customer and only-with-balance toggle"
+    },
+    "FR-012": {
+      "title": "Row opens backing payment on payment detail screen"
+    },
+    "FR-013": {
+      "title": "List hidden without credit-payments read; direct link shows no-access"
+    },
+    "FR-014": {
+      "title": "Redemption needs credit-payments read and customer-payments create"
+    },
+    "FR-015": {
+      "title": "Show server issued/remaining figures; never compute own remaining"
+    }
+  },
+  "size": "normal",
+  "classification": {
+    "projectedFiles": 14,
+    "projectedTasks": 30,
+    "scopeSignal": "none",
+    "verdict": "normal"
+  },
+  "expectations": [
+    "issuing credit notes (refunds, roadmap#29)",
+    "reversing applications (payments editor, roadmap#26)",
+    "CFDI credit notes (roadmap#56)",
+    "printing credit-note tickets",
+    "payment step in back-office Pedidos"
+  ],
+  "context": [
+    "area: lib/features/sales/presentation/payment (POS Cobro step)",
+    "area: lib/features/sales/presentation/payments (payment list/detail, spec 054/055)",
+    "constraint: mbe-api assert_same_customer on applications",
+    "constraint: Pedidos workspace takes no payment (spec 029)",
+    "upstream: mbe-api#277, #278"
+  ],
+  "intent": "Spend credit notes in the POS payment step and list them read-only"
+}
