@@ -191,7 +191,7 @@ class PaymentsListScreen extends ConsumerWidget {
                       ),
                       DataTableColumn(
                         label: l10n.paymentsColumnDate,
-                        size: ColumnSize.M,
+                        size: ColumnSize.L,
                         cellBuilder: (context, p) =>
                             Text(fmt.display.dateTime(p.date)),
                       ),
