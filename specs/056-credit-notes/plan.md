@@ -1,8 +1,8 @@
 # Implementation Plan: Credit Notes
 
-**Branch**: `056-credit-notes` | **Date**: 2026-10-27 | **Spec**: [credit-notes.spec.md](./credit-notes.spec.md)
+**Branch**: `056-credit-notes` | **Date**: 2026-10-27 | **Spec**: [spec.md](./spec.md)
 
-**Input**: Feature specification from `/specs/056-credit-notes/credit-notes.spec.md`
+**Input**: Feature specification from `/specs/056-credit-notes/spec.md`
 
 Roadmap: Closes mictlanix/mbe-roadmap#28 · Upstream: mbe-api#277, #278, plus one unfiled request (research R4)
 
@@ -79,7 +79,7 @@ These verdicts are against **v1.14.0**.
 
 ```text
 specs/056-credit-notes/
-├── credit-notes.spec.md   # /speckit-specify (2026-10-27)
+├── spec.md                # /speckit-specify (2026-10-27)
 ├── plan.md                # This file
 ├── research.md            # Phase 0 (R1–R11)
 ├── data-model.md          # Phase 1

@@ -2,7 +2,7 @@
 
 **Purpose**: Validate Companion specification completeness before planning
 **Created**: 2026-10-27
-**Feature**: [credit-notes.spec.md](../credit-notes.spec.md)
+**Feature**: [spec.md](../spec.md)
 
 ## Content Quality
 

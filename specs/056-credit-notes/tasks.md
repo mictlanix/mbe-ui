@@ -6,11 +6,11 @@ description: "Task list for 056-credit-notes"
 
 **Input**: Design documents from `specs/056-credit-notes/`
 
-**Prerequisites**: plan.md, credit-notes.spec.md, research.md (R1–R11), data-model.md, contracts/ui-contracts.md (C1–C6), quickstart.md
+**Prerequisites**: plan.md, spec.md, research.md (R1–R11), data-model.md, contracts/ui-contracts.md (C1–C6), quickstart.md
 
 **Tests**: The spec doesn't ask for a test suite as such, but the constitution's quality gates and research R11 require tests. Test tasks sit inside each story, after the code they cover.
 
-**Organization**: Grouped by user story (US1–US3, credit-notes.spec.md). US1 and US2 both edit the payment step; US3 is independent of them.
+**Organization**: Grouped by user story (US1–US3, spec.md). US1 and US2 both edit the payment step; US3 is independent of them.
 
 ## Format: `[ID] [P?] [Story] Description`
 
