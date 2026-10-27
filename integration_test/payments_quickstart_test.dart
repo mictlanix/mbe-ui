@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -437,6 +438,50 @@ void main() {
         }
       },
     );
+
+    // ---- 1b (spec 055 T039) ----
+    // Checked here rather than in a widget test: only the live app renders
+    // with the real fonts, and widget tests' placeholder font is far wider.
+    // Measured at the reviewer's desktop window (1680 wide); the narrower
+    // walkthrough window is only reported, not asserted.
+    List<String> wrapped() {
+      final amount = RegExp(r'^\$[\d,]+\.\d{2} [A-Z]{3}$');
+      final date = RegExp(r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$');
+      final cut = <String>{};
+      for (final element
+          in find
+              .descendant(
+                of: byKey('payments_table'),
+                matching: find.byType(Text),
+              )
+              .evaluate()) {
+        final text = (element.widget as Text).data ?? '';
+        if (!amount.hasMatch(text) && !date.hasMatch(text)) continue;
+        final paragraph = element.renderObject;
+        if (paragraph is! RenderParagraph) continue;
+        final needed = paragraph.getMaxIntrinsicWidth(double.infinity);
+        if (paragraph.size.width + 0.5 < needed) {
+          cut.add(
+            '"$text" ${paragraph.size.width.toStringAsFixed(1)} of '
+            '${needed.toStringAsFixed(1)}',
+          );
+        }
+      }
+      return cut.toList();
+    }
+
+    await step('1b desktop width: amounts and dates fit on one line', () async {
+      await go('/sales/payments');
+      final expected = (await payments.list(facilityId: facilityId)).items;
+      await expectRows(expected, 'page 1');
+      note('at ${_wide.width.toInt()} wide, wrapped: ${wrapped().take(4)}');
+      tester.view.physicalSize = const Size(1680, 1000);
+      await pumpFor(const Duration(milliseconds: 800));
+      final cut = wrapped();
+      tester.view.physicalSize = _wide;
+      await pumpFor(const Duration(milliseconds: 500));
+      expect(cut, isEmpty, reason: cut.join('; '));
+    });
 
     // ---- 2 ----
     final first = scanned.first;

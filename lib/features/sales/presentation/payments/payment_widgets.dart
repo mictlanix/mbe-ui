@@ -63,6 +63,37 @@ class PaymentVerifiedChip extends StatelessWidget {
   }
 }
 
+/// The verified state as an icon, for the list column (spec 055): a filled
+/// badge in the primary colour when verified, a greyed outline circle when
+/// not. Unlike [PaymentVerifiedChip] it fits any column width, whatever the
+/// label's length or language. The label is still there for a pointer
+/// (tooltip) and a screen reader (semantics).
+class PaymentVerifiedIcon extends StatelessWidget {
+  const PaymentVerifiedIcon({super.key, required this.verified});
+
+  final bool verified;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final scheme = Theme.of(context).colorScheme;
+    final label = verified ? l10n.paymentVerified : l10n.paymentUnverified;
+    return Tooltip(
+      message: label,
+      child: Icon(
+        verified ? Icons.verified : Icons.circle_outlined,
+        key: Key(
+          verified ? 'payment_icon_verified' : 'payment_icon_unverified',
+        ),
+        color: verified
+            ? scheme.primary
+            : scheme.onSurfaceVariant.withValues(alpha: 0.5),
+        semanticLabel: label,
+      ),
+    );
+  }
+}
+
 /// "Revertida" chip on a reversed application (FR-014).
 class PaymentReversedChip extends StatelessWidget {
   const PaymentReversedChip({super.key});

@@ -334,18 +334,20 @@ void main() {
       expect(find.text('REF-99'), findsOneWidget);
       expect(find.text(l10n.paymentTypeCreditPayment), findsOneWidget);
       expect(find.text(r'$250.00 MXN'), findsOneWidget);
-      expect(find.byKey(const Key('payment_chip_verified')), findsOneWidget);
+      expect(find.byKey(const Key('payment_icon_verified')), findsOneWidget);
     });
 
-    testWidgets('an unverified payment shows the unverified chip', (
+    testWidgets('an unverified payment shows the greyed unverified icon', (
       tester,
     ) async {
       stubPayments(mocks.payments, [testPayment(verifierId: null)]);
 
       await pumpPayments(tester, mocks);
 
-      expect(find.byKey(const Key('payment_chip_unverified')), findsOneWidget);
-      expect(find.byKey(const Key('payment_chip_verified')), findsNothing);
+      expect(find.byKey(const Key('payment_icon_unverified')), findsOneWidget);
+      expect(find.byKey(const Key('payment_icon_verified')), findsNothing);
+      // The label is still there for a pointer and a screen reader.
+      expect(find.byTooltip(l10n.paymentUnverified), findsOneWidget);
     });
 
     testWidgets('a payment with no reference shows the empty placeholder', (

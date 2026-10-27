@@ -185,7 +185,7 @@ class PaymentsListScreen extends ConsumerWidget {
                     columns: [
                       DataTableColumn(
                         label: l10n.paymentsColumnFolio,
-                        size: ColumnSize.S,
+                        fixedWidth: 90,
                         cellBuilder: (context, p) =>
                             Text('${p.customerPaymentId}'),
                       ),
@@ -244,9 +244,11 @@ class PaymentsListScreen extends ConsumerWidget {
                       ),
                       DataTableColumn(
                         label: l10n.paymentsColumnVerified,
-                        fixedWidth: 140,
+                        // An icon, not a chip (spec 055): only the header
+                        // needs the room.
+                        fixedWidth: 110,
                         cellBuilder: (context, p) =>
-                            PaymentVerifiedChip(verified: p.isVerified),
+                            PaymentVerifiedIcon(verified: p.isVerified),
                       ),
                     ],
                     rows: page.items,
