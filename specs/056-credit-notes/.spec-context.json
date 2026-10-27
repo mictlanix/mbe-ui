@@ -2,8 +2,8 @@
   "workflow": "companion",
   "specName": "Credit Notes",
   "branch": "056-credit-notes",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -67,6 +67,260 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-10-27T20:23:58.589Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-27T21:06:35.166Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:06:59.447Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:09:43.745Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:09:43.828Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:09:43.910Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:09:43.996Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:09:44.080Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:09:44.167Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:09:44.252Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:11:44.751Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:11:44.833Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:11:44.916Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:11:44.998Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:11:45.086Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:12:30.411Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:13:16.474Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:15:44.090Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:17:19.408Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:17:19.491Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:19:35.876Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:19:35.962Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:19:36.046Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:26:28.000Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:26:28.084Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:26:28.166Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:26:28.248Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:26:28.332Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:28:22.213Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:30:21.349Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:34:33.971Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:34:34.057Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T21:34:34.078Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
@@ -142,5 +396,253 @@
     "constraint: Pedidos workspace takes no payment (spec 029)",
     "upstream: mbe-api#277, #278"
   ],
-  "intent": "Spend credit notes in the POS payment step and list them read-only"
+  "intent": "Spend credit notes in the POS payment step and list them read-only",
+  "currentTask": "T030",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "Baseline: analyze clean, 206 touched tests pass"
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "CreditNote freezed entity",
+      "files": [
+        "lib/features/sales/domain/entities/credit_note.dart"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "28 l10n keys (en/es) + gen-l10n",
+      "files": [
+        "lib/l10n/app_en.arb",
+        "lib/l10n/app_es.arb"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "CreditNoteRepository, impl, provider; open_only never turned on; simplified marker on findByPayment",
+      "files": [
+        "lib/features/sales/domain/repositories/credit_note_repository.dart",
+        "lib/features/sales/data/credit_note_repository_impl.dart"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "SalePayment.type; 3 test fixtures updated",
+      "files": [
+        "lib/features/sales/domain/entities/sale_payment.dart"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "applyPayment doc comment",
+      "files": [
+        "lib/features/sales/domain/repositories/customer_payment_repository.dart"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Repository tests (9 cases)",
+      "files": [
+        "test/unit/features/sales/credit_note_repository_impl_test.dart"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Entity tests",
+      "files": [
+        "test/unit/features/sales/credit_note_entity_test.dart"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "customerCreditProvider + creditTenderAllowed gate",
+      "files": [
+        "lib/features/sales/presentation/payment/customer_credit_controller.dart"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "tenderCreditNotes, PaymentIssue.creditPartlyApplied, draft.creditApplied",
+      "files": [
+        "lib/features/sales/presentation/payment/payment_controller.dart"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Credit tile + subtitle override in method grid",
+      "files": [
+        "lib/features/sales/presentation/payment/payment_method_grid.dart"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Step shows issue line above server banner; partial-failure message",
+      "files": [
+        "lib/features/sales/presentation/payment/payment_step.dart"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "Applied row leads with Nota de crédito + Nº ticket",
+      "files": [
+        "lib/features/sales/presentation/payment/applied_payments_panel.dart"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "9 tenderCreditNotes controller tests",
+      "files": [
+        "test/unit/features/sales/payment_controller_test.dart"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "10 customerCredit provider tests",
+      "files": [
+        "test/unit/features/sales/customer_credit_controller_test.dart"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Grid tile, step partial-failure, applied row, extra-large-text widget tests; harness helpers",
+      "files": [
+        "test/widget/features/sales/payment_method_grid_test.dart",
+        "test/widget/features/sales/payment_step_gate_test.dart",
+        "test/widget/features/sales/pos_047_extra_large_text_test.dart",
+        "test/widget/features/sales/pos_test_harness.dart"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "CreditNoteRefusal, CreditNoteLookup, lookupCreditNoteTicket",
+      "files": [
+        "lib/features/sales/presentation/payment/payment_controller.dart"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "10 lookup tests",
+      "files": [
+        "test/unit/features/sales/payment_controller_test.dart"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "Ticket dialog on ResponsiveDialog",
+      "files": [
+        "lib/features/sales/presentation/payment/credit_note_ticket_dialog.dart"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Walk-in redeem tile in grid",
+      "files": [
+        "lib/features/sales/presentation/payment/payment_method_grid.dart"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "16 dialog tests + 9 redeem-tile grid tests",
+      "files": [
+        "test/widget/features/sales/credit_note_ticket_dialog_test.dart",
+        "test/widget/features/sales/payment_method_grid_test.dart"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "CreditNotesFilter",
+      "files": [
+        "lib/features/sales/presentation/credit_notes/credit_notes_filter.dart"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "List controller: server paging, local open-only read with simplified marker",
+      "files": [
+        "lib/features/sales/presentation/credit_notes/credit_notes_list_controller.dart"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "Notas de crédito screen",
+      "files": [
+        "lib/features/sales/presentation/credit_notes/credit_notes_list_screen.dart"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Route, shell branch 23, nav entry, route gate",
+      "files": [
+        "lib/app/router/app_router.dart",
+        "lib/core/navigation/nav_destinations.dart"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "Filter, controller, screen, router and nav tests",
+      "files": [
+        "test/unit/features/sales/credit_notes_filter_test.dart",
+        "test/unit/features/sales/credit_notes_list_controller_test.dart",
+        "test/widget/features/sales/credit_notes_list_screen_test.dart",
+        "test/unit/app/router/app_router_test.dart",
+        "test/unit/core/navigation/nav_destinations_test.dart"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "Live test: paging, listForCustomer, findByPayment, SC-005 on consistent notes; redemption not live-tested (unsafe fixture)",
+      "files": [
+        "test/integration/credit_notes_live_test.dart"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "analyze clean, 31 changed files formatted, 3822 unit+widget tests pass, goldens = same 6 known failures, live test 5/5"
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "Walkthrough automated (integration_test/credit_notes_quickstart_test.dart): steps 1-4,10 pass live; 5-9 recorded as not live-verifiable",
+      "files": [
+        "integration_test/credit_notes_quickstart_test.dart"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Both simplified markers present; mbe-api#277/#278 still open, customer_payment filter unfiled; no workaround removed"
+    }
+  },
+  "verified": [
+    {
+      "what": "quickstart steps 1-4 and 10 in the real macOS app against live mbe-api",
+      "result": "pass (5/5)",
+      "command": "flutter test integration_test/credit_notes_quickstart_test.dart -d macos --dart-define-from-file=.env"
+    },
+    {
+      "what": "live repository test (paging, listForCustomer, findByPayment, SC-005 on notes whose issued equals the payment)",
+      "result": "pass (5/5); legacy note 462 (issued 1545 vs payment 3510) reported, not checked",
+      "command": "flutter test test/integration/credit_notes_live_test.dart -j 1 --dart-define-from-file=.env"
+    },
+    {
+      "what": "quickstart steps 5-9 (spending in Cobro, walk-in ticket)",
+      "result": "not run live: no spendable note exists on the dev tenant until mbe-api#277 ships, and the walkthrough creates no data; covered by controller and widget tests (payment_controller_test, payment_method_grid_test, credit_note_ticket_dialog_test, payment_step_gate_test)"
+    },
+    {
+      "what": "SC-001 at most two actions to spend a customer credit",
+      "result": "one tap by construction (amount field pre-filled with the balance); asserted in payment_method_grid_test, not timed live"
+    },
+    {
+      "what": "SC-002 walk-in redemption under 30 s",
+      "result": "not timed live (no fixture); flow is scan+Enter+confirm, asserted in payment_method_grid_test redeem flow"
+    },
+    {
+      "what": "SC-004 no over-spend with two registers",
+      "result": "verified by the failure-path controller test plus the server bound on every application; not staged live"
+    },
+    {
+      "what": "unit+widget suites",
+      "result": "3822 pass; goldens show the same 6 pre-existing failures",
+      "command": "flutter test test/unit test/widget"
+    }
+  ]
 }

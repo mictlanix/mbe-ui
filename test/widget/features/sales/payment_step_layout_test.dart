@@ -9,6 +9,7 @@ import 'package:mbe_ui/features/catalog/domain/repositories/payment_method_optio
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_step.dart';
+import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 
 import 'pos_test_harness.dart';
 import 'session_override.dart';
@@ -45,6 +46,7 @@ void main() {
                 currency: Currency.mxn,
                 changeAmount: '0',
                 cancelled: false,
+                type: PaymentType.immediate,
                 paymentDate: DateTime(2026, 8, 15),
               ),
             ]

@@ -5,6 +5,7 @@ import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
+import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/order_payments_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -63,6 +64,7 @@ class AppliedPaymentsPanel extends ConsumerWidget {
           separatorBuilder: (context, index) => SizedBox(height: spacing.xs),
           itemBuilder: (context, index) {
             final payment = list[index];
+            final isCreditNote = payment.type == PaymentType.creditNote;
             return Container(
               key: Key('applied_payment_${payment.id}'),
               padding: EdgeInsets.all(spacing.sm),
@@ -81,7 +83,11 @@ class AppliedPaymentsPanel extends ConsumerWidget {
                   CircleAvatar(
                     backgroundColor: theme.elevations.engaged.surfaceColor,
                     foregroundColor: theme.colorScheme.onSurfaceVariant,
-                    child: Icon(paymentMethodIcon(payment.methodCode)),
+                    child: Icon(
+                      isCreditNote
+                          ? Icons.receipt_long_outlined
+                          : paymentMethodIcon(payment.methodCode),
+                    ),
                   ),
                   SizedBox(width: spacing.sm),
                   Expanded(
@@ -98,7 +104,16 @@ class AppliedPaymentsPanel extends ConsumerWidget {
                         ),
                         Text(
                           [
-                            paymentMethodLabel(l10n, payment.methodCode),
+                            // spec 056 FR-009: a redemption's method reads
+                            // "N/A", so it leads with its type and ticket
+                            // number, the number printed on the paper note.
+                            if (isCreditNote) ...[
+                              paymentTypeLabel(l10n, payment.type),
+                              l10n.appliedPaymentCreditNoteNumber(
+                                payment.customerPayment,
+                              ),
+                            ] else
+                              paymentMethodLabel(l10n, payment.methodCode),
                             if (payment.reference != null)
                               l10n.posPaymentReferenceValue(payment.reference!),
                             if (payment.isPendingValidation)

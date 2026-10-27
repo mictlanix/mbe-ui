@@ -6,12 +6,20 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
+import 'package:mbe_ui/features/sales/data/credit_note_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/entities/credit_note.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
+import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
+import 'package:mbe_ui/features/sales/domain/money.dart';
+import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repository.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/credit_note_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/customer_payment_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
@@ -21,6 +29,8 @@ class MockCustomerPaymentRepository extends Mock
     implements CustomerPaymentRepository {}
 
 class MockCashSessionRepository extends Mock implements CashSessionRepository {}
+
+class MockCreditNoteRepository extends Mock implements CreditNoteRepository {}
 
 class MockSalesOrderRepository extends Mock implements SalesOrderRepository {}
 
@@ -63,12 +73,14 @@ void main() {
   late MockCustomerPaymentRepository payments;
   late MockSalesOrderRepository salesOrders;
   late MockCashSessionRepository cashSessions;
+  late MockCreditNoteRepository creditNotes;
   late ProviderContainer container;
 
   setUp(() {
     payments = MockCustomerPaymentRepository();
     salesOrders = MockSalesOrderRepository();
     cashSessions = MockCashSessionRepository();
+    creditNotes = MockCreditNoteRepository();
     when(
       () => cashSessions.getCurrent(),
     ).thenAnswer((_) async => const CurrentSession(state: SessionState.open));
@@ -101,6 +113,7 @@ void main() {
         customerPaymentRepositoryProvider.overrideWithValue(payments),
         salesOrderRepositoryProvider.overrideWithValue(salesOrders),
         cashSessionRepositoryProvider.overrideWithValue(cashSessions),
+        creditNoteRepositoryProvider.overrideWithValue(creditNotes),
         posSaleControllerProvider.overrideWith(() => _FixedPosSale(sale)),
       ],
     );
@@ -495,5 +508,469 @@ void main() {
         expect(container.read(paymentControllerProvider).lastChange, isNull);
       },
     );
+  });
+
+  group('tenderCreditNotes (spec 056)', () {
+    CreditNote note(int id, String remaining) => CreditNote(
+      id: id,
+      customerId: 7,
+      salesOrderId: 300 + id,
+      customerRefundId: 400 + id,
+      customerPaymentId: 500 + id,
+      issued: remaining,
+      remaining: remaining,
+    );
+
+    /// The sale at [balance], seeded and kept alive, with the notifier ready.
+    Future<(PaymentController, Sale)> arrange({
+      String balance = '1000.00',
+    }) async {
+      final sale = _sale(status: SaleStatus.completed, balance: balance);
+      container = containerFor(sale);
+      await container.read(posSaleControllerProvider.future);
+      when(() => salesOrders.getById(saleId: 42)).thenAnswer((_) async => sale);
+      // The draft is `autoDispose`; a live listener stands in for the mounted
+      // payment step.
+      container.listen(paymentControllerProvider, (_, _) {});
+      return (container.read(paymentControllerProvider.notifier), sale);
+    }
+
+    /// The (payment id, amount) of every application, in call order.
+    List<(int, String)> applications() {
+      final flat = verify(
+        () => payments.applyPayment(
+          customerPaymentId: captureAny(named: 'customerPaymentId'),
+          salesOrder: any(named: 'salesOrder'),
+          amount: captureAny(named: 'amount'),
+          amountChange: any(named: 'amountChange'),
+        ),
+      ).captured;
+      return [
+        for (var i = 0; i < flat.length; i += 2)
+          (flat[i] as int, flat[i + 1] as String),
+      ];
+    }
+
+    void expectAmount((int, String) applied, int payment, String amount) {
+      expect(applied.$1, payment);
+      expect(
+        compareAmounts(applied.$2, amount),
+        0,
+        reason: '${applied.$2} is not $amount',
+      );
+    }
+
+    test(
+      'applies the notes oldest first, each for its own remaining',
+      () async {
+        final (notifier, sale) = await arrange();
+        notifier.setAmount('1000.00');
+
+        final result = await notifier.tenderCreditNotes(sale, [
+          note(1, '300.00'),
+          note(2, '700.00'),
+        ], enteredAmount: '1000.00');
+
+        expect(result, TenderResult.applied);
+        final done = applications();
+        expect(done, hasLength(2));
+        expectAmount(done[0], 501, '300');
+        expectAmount(done[1], 502, '700');
+      },
+    );
+
+    test(
+      'stops at the sale balance and leaves the last note part-spent',
+      () async {
+        final (notifier, sale) = await arrange();
+
+        await notifier.tenderCreditNotes(sale, [
+          note(1, '800.00'),
+          note(2, '700.00'),
+        ], enteredAmount: '1000.00');
+
+        final done = applications();
+        expect(done, hasLength(2));
+        expectAmount(done[0], 501, '800');
+        expectAmount(done[1], 502, '200');
+      },
+    );
+
+    test('an entered amount below the balance caps the total', () async {
+      final (notifier, sale) = await arrange();
+
+      await notifier.tenderCreditNotes(sale, [
+        note(1, '300.00'),
+        note(2, '700.00'),
+      ], enteredAmount: '400.00');
+
+      final done = applications();
+      expect(done, hasLength(2));
+      expectAmount(done[0], 501, '300');
+      expectAmount(done[1], 502, '100');
+    });
+
+    test('with no entered amount the sale balance is the cap', () async {
+      final (notifier, sale) = await arrange(balance: '250.00');
+
+      await notifier.tenderCreditNotes(sale, [note(1, '300.00')]);
+
+      final done = applications();
+      expect(done, hasLength(1));
+      expectAmount(done[0], 501, '250');
+    });
+
+    test('never creates a payment and never sends change (FR-003)', () async {
+      final (notifier, sale) = await arrange();
+
+      await notifier.tenderCreditNotes(sale, [
+        note(1, '300.00'),
+      ], enteredAmount: '1000.00');
+
+      verifyNever(
+        () => payments.createPayment(
+          customer: any(named: 'customer'),
+          amount: any(named: 'amount'),
+          method: any(named: 'method'),
+          currency: any(named: 'currency'),
+          paymentCharge: any(named: 'paymentCharge'),
+          reference: any(named: 'reference'),
+        ),
+      );
+      verifyNever(
+        () => payments.applyPayment(
+          customerPaymentId: any(named: 'customerPaymentId'),
+          salesOrder: any(named: 'salesOrder'),
+          amount: any(named: 'amount'),
+          amountChange: any(named: 'amountChange', that: isNotNull),
+        ),
+      );
+    });
+
+    test('a successful spend re-reads the sale and resets the draft', () async {
+      final (notifier, sale) = await arrange();
+      notifier.setAmount('1000.00');
+
+      await notifier.tenderCreditNotes(sale, [
+        note(1, '300.00'),
+      ], enteredAmount: '1000.00');
+
+      verify(() => salesOrders.getById(saleId: 42)).called(1);
+      final draft = container.read(paymentControllerProvider);
+      expect(draft.submitting, isFalse);
+      expect(draft.error, isNull);
+      expect(draft.issue, isNull);
+    });
+
+    test('a later note failing keeps the earlier one applied and says how much '
+        '(FR-008)', () async {
+      final (notifier, sale) = await arrange();
+      var calls = 0;
+      when(
+        () => payments.applyPayment(
+          customerPaymentId: any(named: 'customerPaymentId'),
+          salesOrder: any(named: 'salesOrder'),
+          amount: any(named: 'amount'),
+          amountChange: any(named: 'amountChange'),
+        ),
+      ).thenAnswer((_) async {
+        if (++calls == 2) throw const AppError.server();
+      });
+
+      final result = await notifier.tenderCreditNotes(sale, [
+        note(1, '300.00'),
+        note(2, '700.00'),
+      ], enteredAmount: '1000.00');
+
+      expect(result, TenderResult.failed);
+      final draft = container.read(paymentControllerProvider);
+      expect(draft.issue, PaymentIssue.creditPartlyApplied);
+      expect(compareAmounts(draft.creditApplied!, '300'), 0);
+      expect(draft.error, const AppError.server());
+      expect(draft.submitting, isFalse);
+      // The sale is re-read even though the spend failed.
+      verify(() => salesOrders.getById(saleId: 42)).called(1);
+    });
+
+    test(
+      'the first note failing reports the error and no partial amount',
+      () async {
+        final (notifier, sale) = await arrange();
+        when(
+          () => payments.applyPayment(
+            customerPaymentId: any(named: 'customerPaymentId'),
+            salesOrder: any(named: 'salesOrder'),
+            amount: any(named: 'amount'),
+            amountChange: any(named: 'amountChange'),
+          ),
+        ).thenThrow(const AppError.server());
+
+        final result = await notifier.tenderCreditNotes(sale, [
+          note(1, '300.00'),
+        ], enteredAmount: '1000.00');
+
+        expect(result, TenderResult.failed);
+        final draft = container.read(paymentControllerProvider);
+        expect(draft.error, const AppError.server());
+        expect(draft.issue, isNull);
+        expect(draft.creditApplied, isNull);
+      },
+    );
+
+    test('a tap while a spend is in flight is ignored', () async {
+      final (notifier, sale) = await arrange();
+      final gate = Completer<void>();
+      when(
+        () => payments.applyPayment(
+          customerPaymentId: any(named: 'customerPaymentId'),
+          salesOrder: any(named: 'salesOrder'),
+          amount: any(named: 'amount'),
+          amountChange: any(named: 'amountChange'),
+        ),
+      ).thenAnswer((_) => gate.future);
+
+      final first = notifier.tenderCreditNotes(sale, [note(1, '300.00')]);
+      await pumpEventQueue();
+      final second = await notifier.tenderCreditNotes(sale, [
+        note(1, '300.00'),
+      ]);
+      gate.complete();
+
+      expect(second, TenderResult.ignored);
+      expect(await first, TenderResult.applied);
+      verify(
+        () => payments.applyPayment(
+          customerPaymentId: any(named: 'customerPaymentId'),
+          salesOrder: any(named: 'salesOrder'),
+          amount: any(named: 'amount'),
+          amountChange: any(named: 'amountChange'),
+        ),
+      ).called(1);
+    });
+
+    test('no credit to spend is refused with no API call', () async {
+      final (notifier, sale) = await arrange();
+
+      final result = await notifier.tenderCreditNotes(sale, const []);
+
+      expect(result, TenderResult.refused);
+      expect(
+        container.read(paymentControllerProvider).issue,
+        PaymentIssue.amountRequired,
+      );
+      verifyNever(
+        () => payments.applyPayment(
+          customerPaymentId: any(named: 'customerPaymentId'),
+          salesOrder: any(named: 'salesOrder'),
+          amount: any(named: 'amount'),
+          amountChange: any(named: 'amountChange'),
+        ),
+      );
+    });
+  });
+
+  group('lookupCreditNoteTicket (spec 056 FR-006, FR-006a)', () {
+    CustomerPayment payment({
+      int id = 500,
+      int customer = 7,
+      PaymentType type = PaymentType.creditNote,
+      String? customerName = 'MARTHA VARELA ORTIZ',
+    }) => CustomerPayment(
+      customerPaymentId: id,
+      customerId: customer,
+      customerName: customerName,
+      amount: '27.00',
+      currency: Currency.mxn,
+      methodCode: 0,
+      date: DateTime(2026, 9, 29),
+      facilityId: 9,
+      type: type,
+      unapplied: '3.00',
+    );
+
+    CreditNote note({String remaining = '3.00'}) => CreditNote(
+      id: 990,
+      customerId: 7,
+      salesOrderId: 343533,
+      customerRefundId: 9605,
+      customerPaymentId: 500,
+      issued: '27.00',
+      remaining: remaining,
+    );
+
+    SalePayment onSale(int customerPayment, {bool cancelled = false}) =>
+        SalePayment(
+          id: 1,
+          customerPayment: customerPayment,
+          amount: '10.00',
+          methodCode: 0,
+          currency: Currency.mxn,
+          changeAmount: '0',
+          cancelled: cancelled,
+          type: PaymentType.creditNote,
+          paymentDate: DateTime(2026, 9, 1),
+        );
+
+    Future<(PaymentController, Sale)> arrange() async {
+      final sale = _sale(status: SaleStatus.completed, balance: '500.00');
+      container = containerFor(sale);
+      await container.read(posSaleControllerProvider.future);
+      container.listen(paymentControllerProvider, (_, _) {});
+      when(
+        () => payments.listForOrder(saleId: 42),
+      ).thenAnswer((_) async => const []);
+      when(
+        () => payments.get(customerPaymentId: 500),
+      ).thenAnswer((_) async => payment());
+      when(
+        () => creditNotes.findByPayment(customerPaymentId: 500, customerId: 7),
+      ).thenAnswer((_) async => note());
+      return (container.read(paymentControllerProvider.notifier), sale);
+    }
+
+    test('a spendable note comes back with no refusal', () async {
+      final (notifier, sale) = await arrange();
+
+      final found = await notifier.lookupCreditNoteTicket(sale, 500);
+
+      expect(found.refusal, isNull);
+      expect(found.note?.id, 990);
+    });
+
+    test('an unknown payment is notFound', () async {
+      final (notifier, sale) = await arrange();
+      when(
+        () => payments.get(customerPaymentId: 500),
+      ).thenThrow(const AppError.notFound());
+
+      final found = await notifier.lookupCreditNoteTicket(sale, 500);
+
+      expect(found.refusal, CreditNoteRefusal.notFound);
+      expect(found.note, isNull);
+    });
+
+    test('a payment of another type is notFound', () async {
+      final (notifier, sale) = await arrange();
+      when(
+        () => payments.get(customerPaymentId: 500),
+      ).thenAnswer((_) async => payment(type: PaymentType.immediate));
+
+      final found = await notifier.lookupCreditNoteTicket(sale, 500);
+
+      expect(found.refusal, CreditNoteRefusal.notFound);
+      verifyNever(
+        () => creditNotes.findByPayment(
+          customerPaymentId: any(named: 'customerPaymentId'),
+          customerId: any(named: 'customerId'),
+        ),
+      );
+    });
+
+    test('a payment with no credit note behind it is notFound', () async {
+      final (notifier, sale) = await arrange();
+      when(
+        () => creditNotes.findByPayment(customerPaymentId: 500, customerId: 7),
+      ).thenAnswer((_) async => null);
+
+      final found = await notifier.lookupCreditNoteTicket(sale, 500);
+
+      expect(found.refusal, CreditNoteRefusal.notFound);
+    });
+
+    test('a note for another customer is otherCustomer, with the owner\'s '
+        'name', () async {
+      final (notifier, sale) = await arrange();
+      when(
+        () => payments.get(customerPaymentId: 500),
+      ).thenAnswer((_) async => payment(customer: 9999));
+
+      final found = await notifier.lookupCreditNoteTicket(sale, 500);
+
+      expect(found.refusal, CreditNoteRefusal.otherCustomer);
+      expect(found.ownerName, 'MARTHA VARELA ORTIZ');
+    });
+
+    test('the owner\'s name falls back to the customer lookup', () async {
+      final sale = _sale(status: SaleStatus.completed, balance: '500.00');
+      container = ProviderContainer(
+        retry: (_, _) => null,
+        overrides: [
+          customerPaymentRepositoryProvider.overrideWithValue(payments),
+          salesOrderRepositoryProvider.overrideWithValue(salesOrders),
+          cashSessionRepositoryProvider.overrideWithValue(cashSessions),
+          creditNoteRepositoryProvider.overrideWithValue(creditNotes),
+          posSaleControllerProvider.overrideWith(() => _FixedPosSale(sale)),
+          customerDisplayNameProvider.overrideWith(
+            (ref, id) async => 'Name for $id',
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      container.listen(posSaleControllerProvider, (_, _) {});
+      container.listen(paymentControllerProvider, (_, _) {});
+      await container.read(posSaleControllerProvider.future);
+      when(
+        () => payments.listForOrder(saleId: 42),
+      ).thenAnswer((_) async => const []);
+      when(
+        () => payments.get(customerPaymentId: 500),
+      ).thenAnswer((_) async => payment(customer: 9999, customerName: null));
+
+      final found = await container
+          .read(paymentControllerProvider.notifier)
+          .lookupCreditNoteTicket(sale, 500);
+
+      expect(found.refusal, CreditNoteRefusal.otherCustomer);
+      expect(found.ownerName, 'Name for 9999');
+    });
+
+    test('a note already on the sale is alreadyOnSale', () async {
+      final (notifier, sale) = await arrange();
+      when(
+        () => payments.listForOrder(saleId: 42),
+      ).thenAnswer((_) async => [onSale(500)]);
+
+      final found = await notifier.lookupCreditNoteTicket(sale, 500);
+
+      expect(found.refusal, CreditNoteRefusal.alreadyOnSale);
+    });
+
+    test(
+      'a reversed application does not count as already on the sale',
+      () async {
+        final (notifier, sale) = await arrange();
+        when(
+          () => payments.listForOrder(saleId: 42),
+        ).thenAnswer((_) async => [onSale(500, cancelled: true)]);
+
+        final found = await notifier.lookupCreditNoteTicket(sale, 500);
+
+        expect(found.refusal, isNull);
+        expect(found.note?.id, 990);
+      },
+    );
+
+    test('a note with nothing remaining is usedUp', () async {
+      final (notifier, sale) = await arrange();
+      when(
+        () => creditNotes.findByPayment(customerPaymentId: 500, customerId: 7),
+      ).thenAnswer((_) async => note(remaining: '0.000000'));
+
+      final found = await notifier.lookupCreditNoteTicket(sale, 500);
+
+      expect(found.refusal, CreditNoteRefusal.usedUp);
+    });
+
+    test('any other failure is an AppError, not a refusal', () async {
+      final (notifier, sale) = await arrange();
+      when(
+        () => payments.get(customerPaymentId: 500),
+      ).thenThrow(const AppError.network());
+
+      await expectLater(
+        () => notifier.lookupCreditNoteTicket(sale, 500),
+        throwsA(const AppError.network()),
+      );
+    });
   });
 }

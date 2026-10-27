@@ -24,6 +24,7 @@ import 'package:mbe_ui/features/sales/presentation/capture/sale_line_row.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_totals_bar.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sale_detail_view.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 
 import 'pos_test_harness.dart';
 
@@ -72,6 +73,7 @@ void main() {
           currency: Currency.mxn,
           changeAmount: '84.00',
           cancelled: false,
+          type: PaymentType.immediate,
           paymentDate: DateTime(2026, 8, 5, 14, 30),
         ),
       ],

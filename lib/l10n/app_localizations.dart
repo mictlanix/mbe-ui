@@ -7974,6 +7974,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payment ticket · #{id}'**
   String documentPaymentTicketTitle(int id);
+
+  /// spec 056: Sales navigation entry and list title for credit notes
+  ///
+  /// In en, this message translates to:
+  /// **'Credit notes'**
+  String get creditNotesMenuTitle;
+
+  /// spec 056 FR-010: credit note date column
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get creditNotesColumnDate;
+
+  /// spec 056 FR-010: credit note customer column
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get creditNotesColumnCustomer;
+
+  /// spec 056 FR-010: the refund and order a credit note came from
+  ///
+  /// In en, this message translates to:
+  /// **'Origin'**
+  String get creditNotesColumnOrigin;
+
+  /// spec 056 FR-010: amount issued column
+  ///
+  /// In en, this message translates to:
+  /// **'Issued'**
+  String get creditNotesColumnIssued;
+
+  /// spec 056 FR-010: amount remaining column
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get creditNotesColumnRemaining;
+
+  /// spec 056 FR-010: origin cell of a credit note row
+  ///
+  /// In en, this message translates to:
+  /// **'Refund #{refund} · Order #{order}'**
+  String creditNotesOrigin(int refund, int order);
+
+  /// spec 056 FR-011: switch limiting the list to notes with something left
+  ///
+  /// In en, this message translates to:
+  /// **'Only with balance'**
+  String get creditNotesOpenOnlyFilter;
+
+  /// spec 056 FR-011: customer filter in the credit notes drawer
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get creditNotesCustomerFilter;
+
+  /// spec 056: empty state of the credit notes list
+  ///
+  /// In en, this message translates to:
+  /// **'There are no credit notes.'**
+  String get creditNotesEmpty;
+
+  /// spec 056 FR-013: shown when the server answers 403 to the list
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have access to credit notes.'**
+  String get creditNotesForbidden;
+
+  /// spec 056 FR-001: payment step tile spending the customer's credit notes
+  ///
+  /// In en, this message translates to:
+  /// **'Credit note'**
+  String get paymentCreditNoteTile;
+
+  /// spec 056 FR-001: second line of the credit tile
+  ///
+  /// In en, this message translates to:
+  /// **'Balance {amount}'**
+  String paymentCreditNoteBalance(String amount);
+
+  /// spec 056 FR-005: walk-in tile opening the ticket dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Redeem credit note'**
+  String get paymentCreditNoteRedeemTile;
+
+  /// spec 056 FR-005: second line of the redeem tile
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the ticket'**
+  String get paymentCreditNoteRedeemHint;
+
+  /// spec 056: some notes were applied before one failed
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} of credit was applied; the rest could not be applied.'**
+  String paymentCreditPartlyApplied(String amount);
+
+  /// spec 056 FR-009: ticket number on an applied credit-note row
+  ///
+  /// In en, this message translates to:
+  /// **'No. {number}'**
+  String appliedPaymentCreditNoteNumber(int number);
+
+  /// spec 056: ticket dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Redeem credit note'**
+  String get creditNoteTicketTitle;
+
+  /// spec 056: ticket number field
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket number'**
+  String get creditNoteTicketInput;
+
+  /// spec 056: help under the ticket number field
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the ticket\'s barcode or type the number.'**
+  String get creditNoteTicketHelp;
+
+  /// spec 056: shown while the ticket lookup runs
+  ///
+  /// In en, this message translates to:
+  /// **'Searching…'**
+  String get creditNoteTicketSearching;
+
+  /// spec 056: confirm button of the ticket dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get creditNoteTicketConfirm;
+
+  /// spec 056: heading of the found-note card
+  ///
+  /// In en, this message translates to:
+  /// **'Credit note No. {number} · {date}'**
+  String creditNoteTicketHeading(int number, String date);
+
+  /// spec 056 FR-005: the found note's remaining amount
+  ///
+  /// In en, this message translates to:
+  /// **'Available balance {amount}'**
+  String creditNoteTicketAvailable(String amount);
+
+  /// spec 056: the capped amount that confirming applies
+  ///
+  /// In en, this message translates to:
+  /// **'Will apply {amount}'**
+  String creditNoteTicketWillApply(String amount);
+
+  /// spec 056 FR-006: unknown number, not a credit note, or another store's
+  ///
+  /// In en, this message translates to:
+  /// **'No credit note has that number at this store.'**
+  String get creditNoteNotFound;
+
+  /// spec 056 FR-006: nothing remaining
+  ///
+  /// In en, this message translates to:
+  /// **'This credit note has been fully used.'**
+  String get creditNoteUsedUp;
+
+  /// spec 056 FR-006: already among the sale's applications
+  ///
+  /// In en, this message translates to:
+  /// **'This credit note is already applied to this sale.'**
+  String get creditNoteAlreadyOnSale;
+
+  /// spec 056 FR-006a: note issued to another customer
+  ///
+  /// In en, this message translates to:
+  /// **'This credit note belongs to {name}. Make the sale out to them to use it.'**
+  String creditNoteOtherCustomer(String name);
 }
 
 class _AppLocalizationsDelegate

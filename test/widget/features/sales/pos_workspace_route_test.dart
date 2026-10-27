@@ -42,6 +42,7 @@ import 'package:mbe_ui/features/sales/presentation/pos_sale_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 
 import 'pos_test_harness.dart';
 
@@ -802,6 +803,7 @@ void main() {
               currency: Currency.mxn,
               changeAmount: '0',
               cancelled: false,
+              type: PaymentType.immediate,
               paymentDate: DateTime(2026, 8, 20),
             ),
           ],
@@ -829,6 +831,7 @@ void main() {
               currency: Currency.mxn,
               changeAmount: '0',
               cancelled: true,
+              type: PaymentType.immediate,
               paymentDate: DateTime(2026, 8, 20),
             ),
           ],

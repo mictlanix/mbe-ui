@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/payment_method_option_repository.dart';
 import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
+import 'package:mbe_ui/features/sales/domain/entities/credit_note.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
+import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_step.dart';
 
 import 'pos_test_harness.dart';
@@ -271,6 +277,130 @@ void main() {
           limit: 100,
         ),
       ).called(1);
+    });
+  });
+
+  group('spending credit notes (spec 056)', () {
+    late MockCreditNoteRepository creditRepository;
+    late MockSalesOrderRepository salesOrders;
+
+    CreditNote note(int id, String remaining) => CreditNote(
+      id: id,
+      customerId: 7,
+      salesOrderId: 300 + id,
+      customerRefundId: 400 + id,
+      customerPaymentId: 500 + id,
+      issued: remaining,
+      remaining: remaining,
+      date: DateTime(2026, 9, id),
+    );
+
+    setUp(() {
+      creditRepository = MockCreditNoteRepository();
+      salesOrders = MockSalesOrderRepository();
+    });
+
+    Future<void> pumpCreditStep(WidgetTester tester) async {
+      final sale = testSale(status: SaleStatus.completed, balance: '1000.00');
+      when(
+        () => creditRepository.listForCustomer(any()),
+      ).thenAnswer((_) async => [note(1, '300.00'), note(2, '700.00')]);
+      when(() => salesOrders.getById(saleId: 42)).thenAnswer((_) async => sale);
+      await pumpPos(
+        tester,
+        PaymentStep(sale: sale, onClose: () {}),
+        overrides: [
+          customerPaymentOverride(paymentRepository),
+          openSessionOverride(),
+          paymentMethodOptionRepositoryProvider.overrideWithValue(
+            optionRepository,
+          ),
+          fixedPosSale(sale),
+          salesOrderOverride(salesOrders),
+          creditNoteOverride(creditRepository),
+          creditAccessOverride(),
+        ],
+      );
+    }
+
+    testWidgets('an applied credit note reads "Nota de crédito · Nº {ticket}" '
+        '(FR-009)', (tester) async {
+      when(
+        () => paymentRepository.listForOrder(saleId: any(named: 'saleId')),
+      ).thenAnswer(
+        (_) async => [
+          SalePayment(
+            id: 1,
+            customerPayment: 501,
+            amount: '300.00',
+            methodCode: 0,
+            currency: Currency.mxn,
+            changeAmount: '0',
+            cancelled: false,
+            type: PaymentType.creditNote,
+            paymentDate: DateTime(2026, 9, 1),
+          ),
+        ],
+      );
+      await pumpCreditStep(tester);
+
+      expect(find.textContaining('Nota de crédito · Nº 501'), findsOneWidget);
+    });
+
+    testWidgets('a partly applied spend shows what was applied above the '
+        'server\'s reason', (tester) async {
+      var calls = 0;
+      when(
+        () => paymentRepository.applyPayment(
+          customerPaymentId: any(named: 'customerPaymentId'),
+          salesOrder: any(named: 'salesOrder'),
+          amount: any(named: 'amount'),
+          amountChange: any(named: 'amountChange'),
+        ),
+      ).thenAnswer((_) async {
+        if (++calls == 2) throw const AppError.server();
+      });
+      await pumpCreditStep(tester);
+
+      await tester.tap(find.byKey(const Key('payment_credit_note_tile')));
+      await tester.pumpAndSettle();
+
+      final issue = find.byKey(const Key('payment_issue_message'));
+      final banner = find.byType(ErrorBanner);
+      expect(issue, findsOneWidget);
+      expect(banner, findsOneWidget);
+      expect(
+        tester.widget<Text>(issue).data,
+        contains('\$300.00'),
+        reason: 'the message names the credit that did go through',
+      );
+      expect(
+        tester.getTopLeft(issue).dy,
+        lessThan(tester.getTopLeft(banner).dy),
+        reason: 'the issue line sits above the banner',
+      );
+    });
+
+    testWidgets('a server error alone still shows only the banner', (
+      tester,
+    ) async {
+      when(
+        () => paymentRepository.createPayment(
+          customer: any(named: 'customer'),
+          amount: any(named: 'amount'),
+          method: any(named: 'method'),
+          currency: any(named: 'currency'),
+          paymentCharge: any(named: 'paymentCharge'),
+          reference: any(named: 'reference'),
+        ),
+      ).thenThrow(const AppError.server());
+      await pumpCreditStep(tester);
+
+      await tester.tap(find.byKey(const Key('payment_method_1')));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ErrorBanner), findsOneWidget);
+      expect(find.byKey(const Key('payment_issue_message')), findsNothing);
     });
   });
 }

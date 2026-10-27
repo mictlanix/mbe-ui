@@ -4,6 +4,7 @@ import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 
 part 'sale_payment.freezed.dart';
 
@@ -35,6 +36,11 @@ abstract class SalePayment with _$SalePayment {
     int? verifier,
     required String changeAmount,
     required bool cancelled,
+
+    /// The payment's type. A credit-note redemption is an application of a
+    /// payment of type `creditNote`, and the applied-payments panel labels it
+    /// as such (spec 056 FR-009) because its method reads "N/A".
+    required PaymentType type,
     required DateTime paymentDate,
     DateTime? date,
   }) = _SalePayment;
@@ -52,6 +58,7 @@ abstract class SalePayment with _$SalePayment {
       verifier: r.verifier,
       changeAmount: r.amountChange,
       cancelled: r.cancelled,
+      type: PaymentType.fromApi(r.paymentType),
       paymentDate: r.paymentDate,
       date: r.date,
     );

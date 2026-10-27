@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -10,7 +11,11 @@ import 'package:mbe_ui/core/domain/payment_method.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/payment_method_option.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/payment_method_option_repository.dart';
+import 'package:mbe_ui/core/domain/currency.dart';
+import 'package:mbe_ui/features/sales/domain/entities/credit_note.dart';
+import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_method_grid.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -383,4 +388,411 @@ void main() {
       );
     },
   );
+
+  group('credit tile (spec 056 FR-001, FR-002)', () {
+    late MockCreditNoteRepository creditRepository;
+    late MockSalesOrderRepository salesOrders;
+
+    CreditNote note(int id, String remaining) => CreditNote(
+      id: id,
+      customerId: 7,
+      salesOrderId: 300 + id,
+      customerRefundId: 400 + id,
+      customerPaymentId: 500 + id,
+      issued: remaining,
+      remaining: remaining,
+      date: DateTime(2026, 9, id),
+    );
+
+    setUp(() {
+      creditRepository = MockCreditNoteRepository();
+      salesOrders = MockSalesOrderRepository();
+      stubOptions([testOption()]);
+    });
+
+    Future<ProviderContainer> pumpCredit(
+      WidgetTester tester, {
+      Sale? onSale,
+      List<CreditNote>? notes,
+      Override? access,
+    }) async {
+      final target =
+          onSale ?? testSale(status: SaleStatus.completed, balance: '1000.00');
+      when(
+        () => creditRepository.listForCustomer(any()),
+      ).thenAnswer((_) async => notes ?? [note(1, '300.00')]);
+      when(
+        () => salesOrders.getById(saleId: 42),
+      ).thenAnswer((_) async => target);
+      final container = await pumpPos(
+        tester,
+        PaymentMethodGrid(sale: target, facilityId: 9),
+        overrides: [
+          paymentMethodOptionRepositoryProvider.overrideWithValue(
+            optionRepository,
+          ),
+          customerPaymentOverride(paymentRepository),
+          openSessionOverride(),
+          fixedPosSale(target),
+          salesOrderOverride(salesOrders),
+          creditNoteOverride(creditRepository),
+          access ?? creditAccessOverride(),
+        ],
+      );
+      container.read(paymentControllerProvider.notifier).setAmount('1000.00');
+      return container;
+    }
+
+    const tile = Key('payment_credit_note_tile');
+
+    testWidgets('shows the customer\'s balance as its second line', (
+      tester,
+    ) async {
+      await pumpCredit(tester, notes: [note(1, '300.00'), note(2, '50.00')]);
+
+      expect(find.byKey(tile), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(tile),
+          matching: find.text(l10n.paymentCreditNoteTile),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(tile),
+          matching: find.text(l10n.paymentCreditNoteBalance('\$350.00')),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('is absent when the customer holds nothing spendable', (
+      tester,
+    ) async {
+      await pumpCredit(tester, notes: [note(1, '0'), note(2, '0.000000')]);
+
+      expect(find.byKey(tile), findsNothing);
+    });
+
+    testWidgets('is absent on a walk-in sale (FR-004)', (tester) async {
+      await pumpCredit(
+        tester,
+        onSale: testSale(
+          status: SaleStatus.completed,
+          balance: '1000.00',
+          customer: 1,
+        ),
+      );
+
+      expect(find.byKey(tile), findsNothing);
+    });
+
+    testWidgets('is absent on a cancelled sale (FR-007)', (tester) async {
+      await pumpCredit(
+        tester,
+        onSale: testSale(status: SaleStatus.cancelled, balance: '1000.00'),
+      );
+
+      expect(find.byKey(tile), findsNothing);
+    });
+
+    testWidgets('is absent when nothing is owed (FR-007)', (tester) async {
+      await pumpCredit(
+        tester,
+        onSale: testSale(status: SaleStatus.paid, balance: '0.00'),
+      );
+
+      expect(find.byKey(tile), findsNothing);
+    });
+
+    testWidgets('is absent without credit-payments read (FR-014)', (
+      tester,
+    ) async {
+      await pumpCredit(tester, access: creditAccessOverride(creditRead: false));
+
+      expect(find.byKey(tile), findsNothing);
+    });
+
+    testWidgets('is absent without customer-payments create (FR-014)', (
+      tester,
+    ) async {
+      await pumpCredit(
+        tester,
+        access: creditAccessOverride(paymentsCreate: false),
+      );
+
+      expect(find.byKey(tile), findsNothing);
+    });
+
+    testWidgets('tapping applies the note\'s own payment, creating none', (
+      tester,
+    ) async {
+      await pumpCredit(tester);
+
+      await tester.tap(find.byKey(tile));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => paymentRepository.applyPayment(
+          customerPaymentId: 501,
+          salesOrder: 42,
+          // `Decimal` drops the trailing zeros: 300.00 is sent as 300.
+          amount: '300',
+          amountChange: null,
+        ),
+      ).called(1);
+      verifyNever(
+        () => paymentRepository.createPayment(
+          customer: any(named: 'customer'),
+          amount: any(named: 'amount'),
+          method: any(named: 'method'),
+          currency: any(named: 'currency'),
+          paymentCharge: any(named: 'paymentCharge'),
+          reference: any(named: 'reference'),
+        ),
+      );
+    });
+
+    testWidgets('is inert while the grid is disabled', (tester) async {
+      final target = testSale(status: SaleStatus.completed, balance: '1000.00');
+      when(
+        () => creditRepository.listForCustomer(any()),
+      ).thenAnswer((_) async => [note(1, '300.00')]);
+      await pumpPos(
+        tester,
+        PaymentMethodGrid(sale: target, facilityId: 9, enabled: false),
+        overrides: [
+          paymentMethodOptionRepositoryProvider.overrideWithValue(
+            optionRepository,
+          ),
+          customerPaymentOverride(paymentRepository),
+          openSessionOverride(),
+          fixedPosSale(target),
+          creditNoteOverride(creditRepository),
+          creditAccessOverride(),
+        ],
+      );
+
+      await tester.tap(find.byKey(tile));
+      await tester.pumpAndSettle();
+
+      verifyNever(
+        () => paymentRepository.applyPayment(
+          customerPaymentId: any(named: 'customerPaymentId'),
+          salesOrder: any(named: 'salesOrder'),
+          amount: any(named: 'amount'),
+          amountChange: any(named: 'amountChange'),
+        ),
+      );
+    });
+  });
+
+  group('redeem tile (spec 056 FR-005, FR-014)', () {
+    late MockCreditNoteRepository creditRepository;
+    late MockSalesOrderRepository salesOrders;
+
+    const tile = Key('payment_credit_note_redeem_tile');
+    const walkIn = 1;
+
+    Sale walkInSale({
+      SaleStatus status = SaleStatus.completed,
+      String balance = '500.00',
+    }) => testSale(status: status, balance: balance, customer: walkIn);
+
+    setUp(() {
+      creditRepository = MockCreditNoteRepository();
+      salesOrders = MockSalesOrderRepository();
+      stubOptions([testOption()]);
+      when(
+        () => creditRepository.listForCustomer(any()),
+      ).thenAnswer((_) async => const []);
+      when(() => paymentRepository.get(customerPaymentId: 500)).thenAnswer(
+        (_) async => CustomerPayment(
+          customerPaymentId: 500,
+          customerId: walkIn,
+          amount: '200.00',
+          currency: Currency.mxn,
+          methodCode: 0,
+          date: DateTime(2026, 9, 29),
+          facilityId: 9,
+          type: PaymentType.creditNote,
+          unapplied: '200.00',
+        ),
+      );
+      when(
+        () => creditRepository.findByPayment(
+          customerPaymentId: 500,
+          customerId: walkIn,
+        ),
+      ).thenAnswer(
+        (_) async => CreditNote(
+          id: 990,
+          customerId: walkIn,
+          salesOrderId: 343533,
+          customerRefundId: 9605,
+          customerPaymentId: 500,
+          issued: '200.00',
+          remaining: '200.00',
+          date: DateTime(2026, 9, 29),
+        ),
+      );
+    });
+
+    Future<ProviderContainer> pumpRedeem(
+      WidgetTester tester, {
+      Sale? onSale,
+      Override? access,
+    }) async {
+      final target = onSale ?? walkInSale();
+      when(
+        () => salesOrders.getById(saleId: 42),
+      ).thenAnswer((_) async => target);
+      final container = await pumpPos(
+        tester,
+        PaymentMethodGrid(sale: target, facilityId: 9),
+        overrides: [
+          paymentMethodOptionRepositoryProvider.overrideWithValue(
+            optionRepository,
+          ),
+          customerPaymentOverride(paymentRepository),
+          openSessionOverride(),
+          fixedPosSale(target),
+          salesOrderOverride(salesOrders),
+          creditNoteOverride(creditRepository),
+          access ?? creditAccessOverride(paymentsRead: true),
+        ],
+      );
+      container.read(paymentControllerProvider.notifier).setAmount('500.00');
+      return container;
+    }
+
+    testWidgets('shows on a walk-in sale, with its hint', (tester) async {
+      await pumpRedeem(tester);
+
+      expect(find.byKey(tile), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.byKey(tile),
+          matching: find.text(l10n.paymentCreditNoteRedeemTile),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(tile),
+          matching: find.text(l10n.paymentCreditNoteRedeemHint),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('payment_credit_note_tile')), findsNothing);
+    });
+
+    testWidgets('is absent on a named customer\'s sale', (tester) async {
+      await pumpRedeem(
+        tester,
+        onSale: testSale(status: SaleStatus.completed, balance: '500.00'),
+      );
+
+      expect(find.byKey(tile), findsNothing);
+    });
+
+    testWidgets('is absent on a cancelled sale (FR-007)', (tester) async {
+      await pumpRedeem(
+        tester,
+        onSale: walkInSale(status: SaleStatus.cancelled),
+      );
+
+      expect(find.byKey(tile), findsNothing);
+    });
+
+    testWidgets('is absent when nothing is owed (FR-007)', (tester) async {
+      await pumpRedeem(
+        tester,
+        onSale: walkInSale(status: SaleStatus.paid, balance: '0.00'),
+      );
+
+      expect(find.byKey(tile), findsNothing);
+    });
+
+    testWidgets('needs credit-payments read (FR-014)', (tester) async {
+      await pumpRedeem(
+        tester,
+        access: creditAccessOverride(creditRead: false, paymentsRead: true),
+      );
+
+      expect(find.byKey(tile), findsNothing);
+    });
+
+    testWidgets('needs customer-payments create (FR-014)', (tester) async {
+      await pumpRedeem(
+        tester,
+        access: creditAccessOverride(paymentsCreate: false, paymentsRead: true),
+      );
+
+      expect(find.byKey(tile), findsNothing);
+    });
+
+    testWidgets(
+      'needs customer-payments read, to look the ticket up (FR-014)',
+      (tester) async {
+        await pumpRedeem(tester, access: creditAccessOverride());
+
+        expect(find.byKey(tile), findsNothing);
+      },
+    );
+
+    testWidgets('tile, ticket, confirm: applies that note\'s payment for what '
+        'the dialog showed', (tester) async {
+      await pumpRedeem(tester);
+
+      await tester.tap(find.byKey(tile));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('credit_note_ticket_input')),
+        '500',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('credit_note_ticket_confirm')));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => paymentRepository.applyPayment(
+          customerPaymentId: 500,
+          salesOrder: 42,
+          amount: '200',
+          amountChange: null,
+        ),
+      ).called(1);
+      verifyNever(
+        () => paymentRepository.createPayment(
+          customer: any(named: 'customer'),
+          amount: any(named: 'amount'),
+          method: any(named: 'method'),
+          currency: any(named: 'currency'),
+          paymentCharge: any(named: 'paymentCharge'),
+          reference: any(named: 'reference'),
+        ),
+      );
+    });
+
+    testWidgets('cancelling the dialog applies nothing', (tester) async {
+      await pumpRedeem(tester);
+
+      await tester.tap(find.byKey(tile));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.cancelButton));
+      await tester.pumpAndSettle();
+
+      verifyNever(
+        () => paymentRepository.applyPayment(
+          customerPaymentId: any(named: 'customerPaymentId'),
+          salesOrder: any(named: 'salesOrder'),
+          amount: any(named: 'amount'),
+          amountChange: any(named: 'amountChange'),
+        ),
+      );
+    });
+  });
 }

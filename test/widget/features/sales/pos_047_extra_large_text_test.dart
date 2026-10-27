@@ -9,6 +9,7 @@ import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_im
 import 'package:mbe_ui/features/catalog/domain/entities/payment_method_option.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/payment_method_option_repository.dart';
+import 'package:mbe_ui/features/sales/domain/entities/credit_note.dart';
 import 'package:mbe_ui/features/sales/domain/entities/product_lookup_result.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/product_stock_cache.dart';
@@ -146,6 +147,50 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('payment_reference_dialog')), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('the credit-note tile fits, balance and all (spec 056)', (
+      tester,
+    ) async {
+      useExtraLargeText(tester);
+      final credit = MockCreditNoteRepository();
+      final orders = MockSalesOrderRepository();
+      when(() => credit.listForCustomer(any())).thenAnswer(
+        (_) async => [
+          CreditNote(
+            id: 1,
+            customerId: 7,
+            salesOrderId: 301,
+            customerRefundId: 401,
+            customerPaymentId: 501,
+            issued: '1234567.89',
+            remaining: '1234567.89',
+            date: DateTime(2026, 9, 1),
+          ),
+        ],
+      );
+      when(() => orders.getById(saleId: 42)).thenAnswer((_) async => sale);
+
+      await pumpPos(
+        tester,
+        PaymentStep(sale: sale, onClose: () {}),
+        surface: desktop,
+        overrides: [
+          customerPaymentOverride(paymentRepository),
+          openSessionOverride(),
+          paymentMethodOptionRepositoryProvider.overrideWithValue(
+            optionRepository,
+          ),
+          fixedPosSale(sale),
+          salesOrderOverride(orders),
+          creditNoteOverride(credit),
+          creditAccessOverride(),
+        ],
+      );
+
+      expect(find.byKey(const Key('payment_credit_note_tile')), findsOneWidget);
+      expect(find.textContaining('1,234,567.89'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   });

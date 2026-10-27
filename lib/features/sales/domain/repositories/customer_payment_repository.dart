@@ -4,11 +4,15 @@ import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
 
 /// Taking money and applying it to a sale (contracts/mbe-api-pos.md §1, §3).
 ///
-/// [createPayment] and [applyPayment] are always called as a pair — the
-/// tender is recorded, then applied to the order; one logical action
-/// (FR-046). They stay two methods here because they are two endpoints and
-/// the second can fail on its own (wrong currency, order not confirmed),
-/// which the caller has to surface distinctly.
+/// A tender is [createPayment] then [applyPayment] — the payment is recorded,
+/// then applied to the order; one logical action (FR-046). They stay two
+/// methods here because they are two endpoints and the second can fail on its
+/// own (wrong currency, order not confirmed), which the caller has to surface
+/// distinctly.
+///
+/// [applyPayment] is not always preceded by [createPayment]: spending a credit
+/// note applies a payment that already exists — the note's backing payment
+/// (spec 056 R1).
 abstract class CustomerPaymentRepository {
   /// `POST /customer-payments` — records the tender. The cashier's open cash
   /// session is attached server-side; by this feature's own precondition

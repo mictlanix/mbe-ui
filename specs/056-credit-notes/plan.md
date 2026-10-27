@@ -144,3 +144,21 @@ There are no violations to justify.
 | mbe-api#277 (+ addendum) | Legacy notes report 0 remaining, and the cashed-out note 158 reports 1,025.00 | Show the server's figures. Live redemption is tested only with notes issued through mbe-api. |
 | mbe-api#278 | `open_only` gives short or empty pages and a wrong total | Never send it. Filter locally (R2, R8), with a `// simplified` marker to remove when it ships. |
 | `customer_payment` filter (**unfiled**, R4) | A ticket lookup scans walk-in pages | Scan newest first and stop at the first match, with a `// simplified` marker. |
+
+## Deviations found during implementation
+
+Where the code differs from the design documents above. The behaviour in the spec is unchanged; these are mechanics.
+
+| Design said | Implemented | Why |
+|---|---|---|
+| The app "never sends `open_only`" (R2, R8) | It never sends `open_only=true`; the generated client always sends its default, `false` | The default is what the server assumes anyway; the test asserts the value is never `true` |
+| The ticket dialog returns the note (T018) | It returns a `CreditNoteRedemption(note, amount)` | So what is applied is exactly the "Se aplicará" figure the cashier saw, not one recomputed afterwards |
+| Origin cell as text plus a link widget (C5) | One `Text.rich` with a `WidgetSpan` link | A `Row`/`Wrap` pushed the link outside the `DataTable2` cell's hit area at 1400 px; Fecha and Cliente went from `ColumnSize.L` to `M` to give Origen room |
+| Quickstart walked through by hand (T029) | `integration_test/credit_notes_quickstart_test.dart` automates steps 1–4 and 10 against the real app | Steps 5–9 need a spendable note, which the dev tenant lacks until mbe-api#277 ships; they stay covered by controller and widget tests |
+| Shared test fixtures per file | `MockCreditNoteRepository`, `creditNoteOverride` and `creditAccessOverride` added to `pos_test_harness.dart` | Four widget test files need them |
+
+## Follow-ups (not in this delivery)
+
+- **mbe-api#277 / #278** ship: re-check T030 — pass `open_only` and page on the server, and drop the full read in `credit_notes_list_controller.dart`.
+- **File the `customer_payment` filter request** (research R4); when it ships, replace the scan in `CreditNoteRepositoryImpl.findByPayment`.
+- **Origin cell cost:** each row resolves its order through `orderLinkTargetProvider` (up to 20 order reads a page for a user who can read orders). Fine at today's volumes; lazy resolution on tap is the fallback if it is slow.

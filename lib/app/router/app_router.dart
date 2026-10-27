@@ -47,6 +47,7 @@ import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.da
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_workspace_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_detail_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/credit_notes/credit_notes_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payments_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/quotes/quote_screen.dart';
@@ -328,6 +329,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 path: '/sales/payments',
                 builder: (context, state) =>
                     PaymentsListScreen(query: ListQuery.fromUri(state.uri)),
+              ),
+            ],
+          ),
+          // 056-credit-notes: appended last (index 23), same rationale as
+          // `payments` above. A note opens its backing payment's screen, the
+          // top-level `/sales/payments/:paymentId` route below.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/sales/credit-notes',
+                builder: (context, state) =>
+                    CreditNotesListScreen(query: ListQuery.fromUri(state.uri)),
               ),
             ],
           ),
@@ -747,6 +760,11 @@ NavGate? _routeGate(String location) {
   // `paymentsEditor` (100).
   if (location.startsWith('/sales/payments')) {
     return PrivilegeGate(SystemObject.customerPayments, AccessRight.read);
+  }
+  // 056-credit-notes: `creditPayments` (83), matching the server's credit-notes
+  // read. Opening a row goes to `/sales/payments/:id`, which is gated above.
+  if (location.startsWith('/sales/credit-notes')) {
+    return PrivilegeGate(SystemObject.creditPayments, AccessRight.read);
   }
   // 038-advanced-product-search: gated on `products`, matching `/products`
   // itself — this is a catalog browser, not a register or order action, and

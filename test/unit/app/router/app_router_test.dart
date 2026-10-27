@@ -52,6 +52,8 @@ import 'package:mbe_ui/features/catalog/domain/entities/supplier.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/supplier_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_issuer_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_repository.dart';
+import 'package:mbe_ui/features/sales/data/credit_note_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/credit_note_repository.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_quote_repository_impl.dart';
@@ -104,6 +106,8 @@ class MockCashSessionRepository extends Mock implements CashSessionRepository {}
 class MockSalesOrderRepository extends Mock implements SalesOrderRepository {}
 
 class MockSalesQuoteRepository extends Mock implements SalesQuoteRepository {}
+
+class MockCreditNoteRepository extends Mock implements CreditNoteRepository {}
 
 /// Bypasses `AuthNotifier.build()`'s real `TokenStorage`/`AuthRepository`
 /// round-trip, resolving directly to a fixed [AuthState] — this test only
@@ -243,6 +247,20 @@ const _customerPaymentsReaderUser = User(
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.customerPayments, rawValue: 2),
+  ],
+);
+
+/// Holds read on `creditPayments` (83) alone — the gate for spec 056's
+/// `/sales/credit-notes` route, deliberately its own privilege, distinct from
+/// the `customerPayments` one the payment a note opens needs.
+const _creditPaymentsReaderUser = User(
+  userId: 'credit-payments-reader',
+  email: 'credit-payments-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.creditPayments, rawValue: 2),
   ],
 );
 
@@ -574,6 +592,18 @@ void main() {
       ),
     ).thenAnswer((_) async => const OpenSalePage(items: [], total: 0));
 
+    // 056-credit-notes: `CreditNotesListScreen` calls `list` eagerly for a user
+    // who can read credit payments, and a real request would leave a timer
+    // pending past the test.
+    final creditNoteRepository = MockCreditNoteRepository();
+    when(
+      () => creditNoteRepository.list(
+        customerId: any(named: 'customerId'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const CreditNoteListResult(items: [], total: 0));
+
     // 040-sales-quotes: `SalesQuotesListScreen` calls `listQuotes` eagerly,
     // and `QuoteEditorController.build` calls `getById` eagerly whenever
     // `/sales/quotes/:quoteId` names a quote — both need a mock, same
@@ -652,6 +682,7 @@ void main() {
         cashSessionRepositoryProvider.overrideWithValue(cashSessionRepository),
         salesOrderRepositoryProvider.overrideWithValue(salesOrderRepository),
         salesQuoteRepositoryProvider.overrideWithValue(salesQuoteRepository),
+        creditNoteRepositoryProvider.overrideWithValue(creditNoteRepository),
       ],
     );
     addTearDown(container.dispose);
@@ -1003,6 +1034,55 @@ void main() {
       await pumpAt(tester, _customerPaymentsReaderUser, '/sales/payments');
       final shell = tester.widget<AppShell>(find.byType(AppShell));
       expect(shell.navigationShell.currentIndex, NavBranch.salesPayments);
+    });
+  });
+
+  group('056-credit-notes — /sales/credit-notes gates on creditPayments/read '
+      '(FR-013)', () {
+    testWidgets('a user with creditPayments:read reaches the list', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _creditPaymentsReaderUser,
+        '/sales/credit-notes',
+      );
+      expect(handle.router.state.uri.path, '/sales/credit-notes');
+    });
+
+    testWidgets('a user without creditPayments:read is redirected home', (
+      tester,
+    ) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/sales/credit-notes');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('customerPayments:read alone does not open it — the gate is '
+        'its own privilege', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _customerPaymentsReaderUser,
+        '/sales/credit-notes',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('creditPayments:read alone does not open Pagos', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _creditPaymentsReaderUser,
+        '/sales/payments',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('activates shell branch NavBranch.creditNotes (23) — the only '
+        'guard against a silent branch-index mismatch', (tester) async {
+      await pumpAt(tester, _creditPaymentsReaderUser, '/sales/credit-notes');
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(shell.navigationShell.currentIndex, NavBranch.creditNotes);
     });
   });
 
