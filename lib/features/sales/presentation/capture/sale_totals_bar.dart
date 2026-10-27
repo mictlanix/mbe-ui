@@ -116,30 +116,36 @@ class SaleTotalsBar extends ConsumerWidget {
     );
 
     final label = actionLabel;
-    final button = FloatingActionButton.extended(
-      key: actionKey,
-      onPressed: onContinue,
-      // The step being moved to, named plainly, with the arrow after it — the
-      // mock's own `Entrega →`. `FloatingActionButton.extended`'s `icon` slot
-      // would put it in front, so the whole thing is the label. A caller
-      // that supplies [actionLabel] gets that text with no arrow instead —
-      // there is no "next step" for it to point at.
-      label: confirming
-          ? const SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(strokeWidth: 2),
-            )
-          : label != null
-          ? Text(label)
-          : Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(l10n.posStepCobro),
-                SizedBox(width: spacing.xs),
-                const Icon(Icons.arrow_forward),
-              ],
-            ),
+    // Continuing is a critical action that asks about unconfirmed typed text
+    // first (spec 031 FR-024), so a click on it must not count as a click
+    // outside the field: on desktop and web that takes the field's focus, and
+    // losing focus discards the text before the question can be asked.
+    final button = TextFieldTapRegion(
+      child: FloatingActionButton.extended(
+        key: actionKey,
+        onPressed: onContinue,
+        // The step being moved to, named plainly, with the arrow after it — the
+        // mock's own `Entrega →`. `FloatingActionButton.extended`'s `icon` slot
+        // would put it in front, so the whole thing is the label. A caller
+        // that supplies [actionLabel] gets that text with no arrow instead —
+        // there is no "next step" for it to point at.
+        label: confirming
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            : label != null
+            ? Text(label)
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(l10n.posStepCobro),
+                  SizedBox(width: spacing.xs),
+                  const Icon(Icons.arrow_forward),
+                ],
+              ),
+      ),
     );
 
     // Its own surface, not the canvas the lines scroll on: the band is a
