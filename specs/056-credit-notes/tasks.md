@@ -22,9 +22,9 @@ description: "Task list for 056-credit-notes"
 - **Shared files.** Do these sequentially, not in parallel:
   - `lib/features/sales/presentation/payment/payment_controller.dart`: US1 (T009) then US2 (T017).
   - `lib/features/sales/presentation/payment/payment_method_grid.dart`: US1 (T010) then US2 (T019).
-  - `lib/features/sales/presentation/payment/payment_step.dart`: US1 (T011) then US2 (T017).
+  - `lib/features/sales/presentation/payment/payment_step.dart`: US1 only (T012). US2's ticket refusals live in the dialog, not the step.
   - `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`: every key is added once, in T003. If a later task needs another, add it there and run `flutter gen-l10n`. Never hand-edit `lib/l10n/app_localizations*.dart`.
-- **Generated code.** After editing a freezed or `@riverpod` file, run `dart run build_runner build --delete-conflicting-outputs` at the repo root. No client regeneration is needed: `CreditNotesApi` and `OrderApplicationResponse.paymentType` already exist in `lib/generated/openapi`.
+- **Generated code.** After editing a freezed or `@riverpod` file, run `dart run build_runner build --delete-conflicting-outputs` at the repo root. Never run two build_runner processes at once: tasks that both need it are not marked [P] against each other. No client regeneration is needed: `CreditNotesApi` and `OrderApplicationResponse.paymentType` already exist in `lib/generated/openapi`.
 - **Formatting.** Format only the files you changed (`dart format <files>`). Never `dart format .`, and never format `lib/generated/`.
 - **Amounts and dates** go through `formattersProvider` (constitution §V). No `NumberFormat`, no `toStringAsFixed`. Amount arithmetic goes only through `features/sales/domain/money.dart`.
 - **Spacing tokens, not literals** (`Theme.of(context).spacing`). No automated guard catches a literal, so check it in review.
@@ -58,7 +58,7 @@ description: "Task list for 056-credit-notes"
   - `listForCustomer(customerId)`: pages at limit 100 until `total` rows are read; returns oldest first (`date`, then `id`).
   - `findByPayment({customerPaymentId, customerId})`: pages newest first and stops at the first match. Mark it `// simplified: worst case reads every walk-in page (512 on the dev tenant); switch to a customer_payment filter when mbe-api ships one`.
   Depends on T002.
-- [ ] T005 [P] Add `required PaymentType type` to `SalePayment` in `lib/features/sales/domain/entities/sale_payment.dart`, mapped with `PaymentType.fromApi(r.paymentType)` (R6). Update every test helper that builds a `SalePayment` (grep `SalePayment(` under `test/`) to pass `type: PaymentType.immediate`. Run build_runner.
+- [ ] T005 Add `required PaymentType type` to `SalePayment` in `lib/features/sales/domain/entities/sale_payment.dart`, mapped with `PaymentType.fromApi(r.paymentType)` (R6). Update every test helper that builds a `SalePayment` (grep `SalePayment(` under `test/`) to pass `type: PaymentType.immediate`. Run build_runner.
 - [ ] T006 [P] Update the doc comment on `applyPayment` in `lib/features/sales/domain/repositories/customer_payment_repository.dart`: it is no longer always called straight after `createPayment`, since a credit-note redemption applies an existing payment (R1). Comment only, no signature change.
 - [ ] T007 Repository tests in `test/unit/features/sales/credit_note_repository_impl_test.dart`, using the `_FakeHttpClientAdapter` pattern. Cover:
   - `list` sends `customer`, `skip` and `limit`, and never sends `open_only`.
@@ -85,7 +85,8 @@ description: "Task list for 056-credit-notes"
   - Reset the draft amount to the new remaining balance on success, as `tender` does.
   Depends on T004 and T005. Run build_runner.
 - [ ] T010 [US1] Create `lib/features/sales/presentation/payment/customer_credit_controller.dart` with `CustomerCredit(notes, total)` and `customerCreditProvider(saleId)` (data-model §6, R2):
-  - Return an empty value, with no request, for the walk-in customer (`appSettingsProvider.isGenericCustomer`), a cancelled sale, a zero balance, or a user failing `can(creditPayments, read)` and `can(customerPayments, create)` (R7).
+  - Put the shared gate in one function in this file, `bool creditTenderAllowed(Sale sale, AccessControlService access)`: true when the sale isn't cancelled, `balanceOrZero > 0`, and the user passes `can(creditPayments, read)` and `can(customerPayments, create)` (R7, FR-007, FR-014). T019 reuses it, so the rule is written once.
+  - Return an empty value, with no request, for the walk-in customer (`appSettingsProvider.isGenericCustomer`) or when `creditTenderAllowed` is false.
   - Otherwise call `listForCustomer(sale.customer)`, keep notes where `isOpen`, drop any whose `customerPaymentId` appears among the sale's non-cancelled applications from `orderPaymentsControllerProvider(saleId)`, and sum `remaining` with `addAmounts`.
   Run build_runner. Depends on T004.
 - [ ] T011 [US1] In `lib/features/sales/presentation/payment/payment_method_grid.dart`, add the credit tile (contracts C2): key `payment_credit_note_tile`, appended after the method tiles, shown only when `customerCreditProvider(sale.id).total > 0`. Give `_TileData` an optional subtitle override, because the second line is hard-wired to the reference text (`payment_method_grid.dart:233-237`); the tile's subtitle is `paymentCreditNoteBalance(amount)` through `fmt.display.currency`. The tap calls `tenderCreditNotes(sale, credit.notes, enteredAmount: …)` with the draft's amount when the cashier typed one, and is disabled under the same `enabled && !submitting` rule as the other tiles. Depends on T009 and T010.
@@ -100,7 +101,7 @@ description: "Task list for 056-credit-notes"
   - A second tap while one is in flight returns `ignored`.
   Depends on T009.
 - [ ] T015 [P] [US1] Provider tests in `test/unit/features/sales/customer_credit_controller_test.dart`: oldest first, notes with `remaining` 0 left out, a note already among the sale's applications left out, an empty value with no repository call for the walk-in customer, a cancelled sale, a zero balance, and a user lacking `creditPayments` read or `customerPayments` create. Depends on T010.
-- [ ] T016 [US1] Widget tests: extend `test/widget/features/sales/payment_method_grid_test.dart` for the tile (shown with the balance subtitle; hidden when the credit is zero, the user lacks a privilege, or the customer is the walk-in one; tapping applies and the applied row reads "Nota de crédito · Nº {ticket}"; the partial-failure state shows the issue line *and* the server's `ErrorBanner` together). Extend `test/widget/features/sales/payment_step_gate_test.dart` with a check that an issue-only state and an error-only state render as before. Add a case to `test/widget/features/sales/pos_047_extra_large_text_test.dart` with the tile present at the largest text size, which must not clip or overflow. Depends on T011–T013.
+- [ ] T016 [US1] Widget tests: extend `test/widget/features/sales/payment_method_grid_test.dart` for the tile (shown with the balance subtitle; hidden when the credit is zero, the user lacks a privilege, the customer is the walk-in one, the sale is cancelled, or the sale's balance is zero (FR-007); tapping applies and the applied row reads "Nota de crédito · Nº {ticket}"; the partial-failure state shows the issue line *and* the server's `ErrorBanner` together). Extend `test/widget/features/sales/payment_step_gate_test.dart` with a check that an issue-only state and an error-only state render as before. Add a case to `test/widget/features/sales/pos_047_extra_large_text_test.dart` with the tile present at the largest text size, which must not clip or overflow. Depends on T011–T013.
 
 **Checkpoint**: US1 works end to end against mocks, and against a live note issued through mbe-api (quickstart steps 5–6).
 
@@ -112,22 +113,22 @@ description: "Task list for 056-credit-notes"
 
 **Independent test**: with an open note issued to the walk-in customer, start a walk-in sale, redeem it by its backing payment id, and confirm the sale's balance and the note's remaining both fell by the same amount. Then try an unknown number, a used-up note, the same note twice, and a named customer's note (quickstart steps 7–9).
 
-- [ ] T017 [US2] In `payment_controller.dart` and `payment_step.dart`, add `lookupCreditNoteTicket(Sale sale, int ticketNumber)` returning `({CreditNote? note, PaymentIssue? issue, String? ownerName})` (R4), and add `noteNotFound`, `noteUsedUp`, `noteAlreadyOnSale` and `noteOtherCustomer` to `PaymentIssue` with their messages from contracts C3 (`creditNoteNotFound`, `creditNoteUsedUp`, `creditNoteAlreadyOnSale`, `creditNoteOtherCustomer(name)`):
-  1. `CustomerPaymentRepository.get(ticketNumber)`. `NotFoundError`, or a type other than `creditNote`, gives `noteNotFound`.
-  2. A payment whose customer differs from the sale's gives `noteOtherCustomer`, with the owner's name from `customerDisplayName`, falling back to `customerDisplayNameProvider`.
-  3. A payment already among the sale's non-cancelled applications gives `noteAlreadyOnSale`.
-  4. `CreditNoteRepository.findByPayment(...)` for the server's `remaining`. No match gives `noteNotFound`; a match with nothing remaining gives `noteUsedUp`.
+- [ ] T017 [US2] In `payment_controller.dart`, add the `CreditNoteRefusal` enum (`notFound`, `usedUp`, `alreadyOnSale`, `otherCustomer`) and the `CreditNoteLookup` record (data-model §5), and add `lookupCreditNoteTicket(Sale sale, int ticketNumber)` returning `CreditNoteLookup` (R4). Do **not** add these to `PaymentIssue`: only the ticket dialog shows them (T018 maps each to `creditNoteNotFound`, `creditNoteUsedUp`, `creditNoteAlreadyOnSale` or `creditNoteOtherCustomer(name)`), and `payment_step.dart` stays untouched by this task. The lookup runs these steps in order:
+  1. `CustomerPaymentRepository.get(ticketNumber)`. `NotFoundError`, or a type other than `creditNote`, gives `CreditNoteRefusal.notFound`.
+  2. A payment whose customer differs from the sale's gives `CreditNoteRefusal.otherCustomer`, with the owner's name from `customerDisplayName`, falling back to `customerDisplayNameProvider`.
+  3. A payment already among the sale's non-cancelled applications gives `CreditNoteRefusal.alreadyOnSale`.
+  4. `CreditNoteRepository.findByPayment(...)` for the server's `remaining`. No match gives `CreditNoteRefusal.notFound`; a match with nothing remaining gives `CreditNoteRefusal.usedUp`.
   Applying the found note reuses `tenderCreditNotes` with a single note (R1). Depends on T009 and T004.
 - [ ] T018 [P] [US2] Create `lib/features/sales/presentation/payment/credit_note_ticket_dialog.dart` with `showCreditNoteTicketDialog` (contracts C3). Build it on the shared `ResponsiveDialog` (`lib/core/widgets/responsive_dialog.dart`), not `AlertDialog`, so it goes full screen on a phone (wireframes Open Question 5). Take the field's submit-on-Enter behaviour from `payment_reference_dialog.dart`.
   - An autofocused number field `credit_note_ticket_input` (`creditNoteTicketInput`, help line `creditNoteTicketHelp`) that accepts digits only and submits on Enter, so a keyboard-wedge scanner works.
   - Submitting runs `lookupCreditNoteTicket`. While it runs, show `creditNoteTicketSearching` with confirm disabled; the walk-in scan can take seconds (R4).
-  - A refusal shows its message inside the dialog and applies nothing. The field keeps its text and focus.
+  - A refusal (`CreditNoteRefusal`) shows its message inside the dialog and applies nothing. The field keeps its text and focus.
   - A found note shows a card: `creditNoteTicketHeading(number, date)`, `creditNoteTicketAvailable(remaining)` and `creditNoteTicketWillApply(amount)`, where `amount` is `min(remaining, balance, Cobro's entered amount when set)`, computed with `money.dart`. Confirm `credit_note_ticket_confirm` is then enabled. The dialog has no amount field of its own (wireframes Open Question 3).
   - Confirming returns the note and that amount to the caller.
   Depends on T003.
-- [ ] T019 [US2] In `payment_method_grid.dart`, add the walk-in tile `payment_credit_note_redeem_tile` labelled `paymentCreditNoteRedeemTile`, with `paymentCreditNoteRedeemHint` ("Escanea el ticket") as its second line through T011's subtitle override (contracts C3). Show it only on a walk-in sale, with the same gates as T010 plus `can(customerPayments, read)`, and with no credit-total condition. Tapping opens the dialog, passing it the sale and the Cobro step's entered amount. On confirm it calls `tenderCreditNotes(sale, [note], enteredAmount: <the amount the dialog returned>)`, so what is applied is exactly the "Se aplicará" figure the cashier saw. The named-customer tile from T011 and this one are mutually exclusive. Depends on T011, T017 and T018.
-- [ ] T020 [US2] Controller tests for `lookupCreditNoteTicket` in `payment_controller_test.dart`: an unknown payment gives `noteNotFound`; a payment of another type gives `noteNotFound`; a note for another customer gives `noteOtherCustomer` carrying the owner's name; a note already on the sale gives `noteAlreadyOnSale`; a note with remaining 0 gives `noteUsedUp`; a spendable note returns it. Depends on T017.
-- [ ] T021 [US2] Widget tests in `test/widget/features/sales/credit_note_ticket_dialog_test.dart`: Enter submits; the searching state disables confirm; each refusal message shows, nothing is applied, and the field keeps its text; a found note shows its heading, remaining and "Se aplicará" capped at the balance and at the entered amount, and enables confirm; on a phone-width surface the dialog is full screen. Extend `payment_method_grid_test.dart`: the redeem tile shows on a walk-in sale only and respects the gates, and confirming applies the note. Depends on T018 and T019.
+- [ ] T019 [US2] In `payment_method_grid.dart`, add the walk-in tile `payment_credit_note_redeem_tile` labelled `paymentCreditNoteRedeemTile`, with `paymentCreditNoteRedeemHint` ("Escanea el ticket") as its second line through T011's subtitle override (contracts C3). Show it only on a walk-in sale when `creditTenderAllowed(sale, access)` (T010) holds and the user also passes `can(customerPayments, read)` (FR-014), with no credit-total condition. Tapping opens the dialog, passing it the sale and the Cobro step's entered amount. On confirm it calls `tenderCreditNotes(sale, [note], enteredAmount: <the amount the dialog returned>)`, so what is applied is exactly the "Se aplicará" figure the cashier saw. The named-customer tile from T011 and this one are mutually exclusive. Depends on T011, T017 and T018.
+- [ ] T020 [US2] Controller tests for `lookupCreditNoteTicket` in `payment_controller_test.dart`: an unknown payment gives `CreditNoteRefusal.notFound`; a payment of another type gives `CreditNoteRefusal.notFound`; a note for another customer gives `CreditNoteRefusal.otherCustomer` carrying the owner's name; a note already on the sale gives `CreditNoteRefusal.alreadyOnSale`; a note with remaining 0 gives `CreditNoteRefusal.usedUp`; a spendable note returns it. Depends on T017.
+- [ ] T021 [US2] Widget tests in `test/widget/features/sales/credit_note_ticket_dialog_test.dart`: Enter submits; the searching state disables confirm; each refusal message shows, nothing is applied, and the field keeps its text; a found note shows its heading, remaining and "Se aplicará" capped at the balance and at the entered amount, and enables confirm; on a phone-width surface the dialog is full screen. Extend `payment_method_grid_test.dart`: the redeem tile shows on a walk-in sale only; it is hidden on a cancelled sale, on a sale whose balance is zero (FR-007), and for a user lacking any of credit-payments read, customer-payments create or customer-payments read (FR-014); confirming applies the note. Depends on T018 and T019.
 
 **Checkpoint**: US2 works against mocks, and against a live walk-in note issued through mbe-api (quickstart steps 7–9).
 
@@ -175,9 +176,13 @@ description: "Task list for 056-credit-notes"
   - `listForCustomer(10653)` returns note 990 and, with no spendable fixture, reports its remaining as the server sent it.
   - `findByPayment` finds note 990's backing payment 300743.
   - The redemption case runs only when a note with `remaining > 0` exists whose payment has no cash session, otherwise `markTestSkipped` (R11). Don't use note 158: it was paid out in cash.
+  - SC-005, scoped as the spec now states: for notes issued through mbe-api only (found at runtime as notes whose `issued` is above 0 and whose backing payment's `amount` equals it), `issued` equals the payment's `amount` and `remaining` equals its `unapplied`. Skip with `markTestSkipped` when none exists. Legacy notes are not checked until mbe-api#277 ships.
   Depends on T004.
 - [ ] T028 Run `flutter analyze` (must be clean), `dart format` on the changed files only, `flutter test` on every test added or touched above plus `test/unit/core/formatting_guard_test.dart`, and `dart run build_runner build --delete-conflicting-outputs` once more to confirm the generated files are current. Run the live test with `-j 1 --dart-define-from-file=.env`.
-- [ ] T029 Walk through quickstart.md in the real app. Steps 5–9 need a spendable fixture: create one through mbe-api's refund endpoints as described in the quickstart's prerequisites. Record anything that can't be checked live in the spec's `.spec-context.json` verifications, the way spec 054 did for its step 5b.
+- [ ] T029 Walk through quickstart.md in the real app. Steps 5–9 need a spendable fixture: create one through mbe-api's refund endpoints as described in the quickstart's prerequisites. Record anything that can't be checked live in the spec's `.spec-context.json` verifications, the way spec 054 did for its step 5b. Also record two measurements there:
+  - SC-001: the number of actions from opening Cobro to the credit being applied, which must be at most two.
+  - SC-002: the time to redeem a walk-in ticket by scan or typed number, which must be under 30 seconds.
+  SC-004 (no over-spend when two registers spend the same note) can't be staged by hand. It is verified by T014's failure-path test, plus the server's bound on every application. Record that in the verifications rather than claiming a live check.
 - [ ] T030 Confirm the two `// simplified:` markers (T004, T023) are present and name the upstream issue they wait on. Re-check whether mbe-api#277 and #278 have shipped, and the unfiled `customer_payment` filter: if one has, remove the matching workaround and its marker in the same change.
 
 ---
@@ -186,7 +191,7 @@ description: "Task list for 056-credit-notes"
 
 ```text
 T001
- └─ Foundational: T002, T003, T005, T006 [P] ─→ T004 ─→ T007 (T008 [P])
+ └─ Foundational: T002, T003, T006 [P] · T005 (build_runner after T002) ─→ T004 ─→ T007 (T008 [P])
         │
         ├─ US1: T009, T010 ─→ T011, T012 ; T013 [P] ─→ T014, T015 [P] ─→ T016
         │             │
@@ -199,7 +204,7 @@ Polish: T027 [P] after T004 · T028 after everything · T029, T030 last
 ```
 
 **Parallel opportunities:**
-- Foundational: T002, T003, T005 and T006 together; then T007 and T008 together.
+- Foundational: T002, T003 and T006 together, then T005 (it runs build_runner, as T002 does); then T007 and T008 together.
 - Across stories: US3 (T022–T026) can run alongside US1 and US2 once Phase 2 is done, because it shares no file with them.
 - Within US1: T013, T015 beside the controller work; within US2: T018 beside T017.
 

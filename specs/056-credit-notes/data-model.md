@@ -41,15 +41,13 @@ The implementation (`data/credit_note_repository_impl.dart`) wraps `api.CreditNo
 
 ## 5. Payment step state (edited, `payment_controller.dart`)
 
-**`PaymentIssue`** gains:
-- `creditPartlyApplied`: some notes applied, then one failed. It carries the applied amount on the draft.
-- `noteNotFound`, `noteUsedUp`, `noteAlreadyOnSale`, `noteOtherCustomer`: the ticket-lookup refusals (FR-006/006a). `noteOtherCustomer` carries the owner's name.
+**`PaymentIssue`** gains one value, `creditPartlyApplied`: some notes applied, then one failed. It is shown by the payment step.
 
-**`PaymentDraft`** gains:
-- `String? creditApplied`, the amount for the partial message
-- `String? issueSubject`, the owner's name for `noteOtherCustomer`
+**`PaymentDraft`** gains `String? creditApplied`, the amount for the partial message. It is cleared like `issue`.
 
-Both are cleared like `issue`.
+**`CreditNoteRefusal`** (new enum, same file): `notFound`, `usedUp`, `alreadyOnSale`, `otherCustomer`. These are the ticket-lookup refusals (FR-006/006a), and only the ticket dialog shows them. They are kept out of `PaymentIssue` because the step's issue `switch` is exhaustive and would otherwise need cases it never renders.
+
+**`CreditNoteLookup`** (new record type, same file): `({CreditNote? note, CreditNoteRefusal? refusal, String? ownerName})`. Exactly one of `note` and `refusal` is set. `ownerName` is set only with `otherCustomer`. This is what `lookupCreditNoteTicket` returns.
 
 **`TenderResult`** is unchanged. `refused` and `failed` cover the new outcomes.
 

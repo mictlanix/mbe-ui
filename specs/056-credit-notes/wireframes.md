@@ -181,7 +181,7 @@ Drawn once, because the grid is simply the existing one. The tile is absent, not
 
 | Case | Message | FR |
 |---|---|---|
-| No payment with that number, a payment that isn't a credit note, or one from another facility (404) | No hay una nota de crédito con ese número. | FR-006 |
+| No payment with that number, a payment that isn't a credit note, or one from another facility (404) | No hay una nota de crédito con ese número en esta sucursal. | FR-006 |
 | Nothing remaining | Esta nota de crédito ya se usó por completo. | FR-006 |
 | Already applied to this sale | Esta nota de crédito ya está aplicada a esta venta. | FR-006 |
 | Issued to a named customer | Esta nota de crédito es de MARTHA VARELA ORTIZ. Haz la venta a su nombre para usarla. | FR-006a |

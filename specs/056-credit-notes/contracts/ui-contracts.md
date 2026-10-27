@@ -41,10 +41,10 @@
 
 | Refusal | Message (es) |
 |---|---|
-| `noteNotFound` | "No hay una nota de crédito con ese número." |
-| `noteUsedUp` | "Esta nota de crédito ya se usó por completo." |
-| `noteAlreadyOnSale` | "Esta nota de crédito ya está aplicada a esta venta." |
-| `noteOtherCustomer` | "Esta nota de crédito es de {name}. Haz la venta a su nombre para usarla." |
+| `CreditNoteRefusal.notFound` | "No hay una nota de crédito con ese número en esta sucursal." |
+| `CreditNoteRefusal.usedUp` | "Esta nota de crédito ya se usó por completo." |
+| `CreditNoteRefusal.alreadyOnSale` | "Esta nota de crédito ya está aplicada a esta venta." |
+| `CreditNoteRefusal.otherCustomer` | "Esta nota de crédito es de {name}. Haz la venta a su nombre para usarla." |
 
 Refusals show inside the dialog and apply nothing. The field keeps its text and focus, so the cashier can fix a digit and press Enter again.
 

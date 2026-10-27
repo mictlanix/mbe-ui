@@ -72,7 +72,7 @@ Applying goes through R1 with a single note.
 
 **Why:** No endpoint reaches a credit note from its payment. The walk-in customer holds 512 notes on the dev tenant, about 6 pages at roughly 0.85 s each. A ticket brought back is almost always recent, so the newest-first scan usually stops on page 1. The scan is marked `// simplified: worst case reads every walk-in page; switch to the customer_payment filter when mbe-api ships it`.
 
-**Upstream request (not yet filed).** The session's permission classifier blocked filing this issue. The user needs to file it, or approve filing it:
+**Upstream request (not yet filed).** The session's permission check blocked filing this issue twice (2026-10-27). The user needs to file it, or approve filing it:
 
 > **GET /credit-notes: filter by backing customer_payment (redeem a ticket by its number)**
 >

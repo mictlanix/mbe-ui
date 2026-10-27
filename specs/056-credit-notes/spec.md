@@ -37,7 +37,7 @@ A walk-in customer brings back a credit-note ticket. The sale is under the gener
 **Acceptance Scenarios**:
 
 1. **Given** an open note with 200.00 remaining and a sale with a balance of 500.00, **When** the cashier enters the note's ticket number, **Then** the app shows the note's remaining 200.00. **When** they confirm, **Then** 200.00 is applied and the sale's balance becomes 300.00.
-2. **Given** a ticket number that matches no credit note, **When** the cashier enters it, **Then** the app says no credit note has that number and applies nothing.
+2. **Given** a ticket number that matches no credit note at this store, **When** the cashier enters it, **Then** the app says no credit note has that number at this store and applies nothing.
 3. **Given** a note with nothing left, **When** the cashier enters its number, **Then** the app says it has been fully used and applies nothing.
 4. **Given** a note already applied to this same sale, **When** the cashier enters its number again, **Then** the app refuses because the note is already on this sale.
 5. **Given** a note issued to a named customer, **When** the cashier enters its number on a walk-in sale, **Then** the app refuses and says the note belongs to that customer, so the sale should be made out to them.
@@ -56,7 +56,7 @@ A supervisor or cashier opens "Notas de crédito" to answer "does this customer 
 
 1. **Given** a customer with three notes, one of them fully used, **When** the list is filtered to that customer, **Then** all three are shown, newest first, each with issued, remaining, date, refund and source order.
 2. **Given** the same customer, **When** "only with balance" is turned on, **Then** only the two notes with something left are shown, and the count matches.
-3. **Given** a user without read access to credit notes, **When** they look for the screen, **Then** it isn't in their navigation, and a direct link shows the standard no-access state.
+3. **Given** a user without read access to credit notes, **When** they look for the screen, **Then** it isn't in their navigation, and a direct link redirects them to the home screen, as every other gated route does.
 
 ---
 
@@ -65,6 +65,7 @@ A supervisor or cashier opens "Notas de crédito" to answer "does this customer 
 - **Credit already on this sale.** A note already applied to the sale is left out of the balance offered in Story 1, and Story 2 refuses it. Legacy refused a second application of the same note to the same order.
 - **Sale cancelled or already fully paid.** Credit is not offered, and a note can't be redeemed against it.
 - **Note cashed out at a register.** An older legacy version could pay a note out in cash, and such a note is not spendable. The app doesn't detect this itself. The marker legacy used (a cash session on the note) is also written by mbe-api on every note it issues, so a client-side rule would hide every new note. The server's remaining figure must report 0 for a cashed-out note (mbe-api#277).
+- **A ticket from another store.** A walk-in ticket issued at another facility can't be read by a cashier who isn't a payments editor: mbe-api answers "not found", the same as for a number that doesn't exist (mbe-api#273). The app can't tell the two apart, so one message covers both and names the store: no credit note with that number at this store. Legacy had no such limit. Lifting it is a server decision, not this feature's.
 - **Two registers spend the same note at once.** The server bounds every application by the note's remaining amount, so the second application fails. The app shows that failure and re-reads the sale's balance and the customer's credit. It never shows a balance it didn't read back.
 - **Spending several notes partly fails.** If the first notes apply and a later one is refused, the applied ones stay applied. They're ordinary payments the cashier can see on the sale. The app reports how much was applied and re-reads the remaining credit.
 - **A sale's customer changes after credit was applied.** Applied credit stays on the sale. Undoing it belongs to the payments editor (roadmap#26), not this feature.
@@ -88,8 +89,8 @@ A supervisor or cashier opens "Notas de crédito" to answer "does this customer 
 - **FR-010**: Users with read access to credit payments MUST be able to open a "Notas de crédito" list. Each row MUST show the customer, date, amount issued, amount remaining, and the refund and source order the note came from. Rows MUST be newest first.
 - **FR-011**: The list MUST filter by customer and offer an "only with balance" toggle that keeps only notes with something remaining.
 - **FR-012**: Selecting a row MUST open the backing payment on the existing payment detail screen.
-- **FR-013**: The list MUST be hidden from navigation for users without read access to credit payments. A direct link MUST show the standard no-access state.
-- **FR-014**: The credit-note option and redeem-by-number MUST be shown only to users who can both read credit payments and record customer payments.
+- **FR-013**: The list MUST be hidden from navigation for users without read access to credit payments. A direct link MUST redirect them to the home screen, as every other gated route does.
+- **FR-014**: The credit-note option and redeem-by-number MUST be shown only to users who can both read credit payments and record customer payments. Redeem-by-number MUST also require read access to customer payments, because it looks up the ticket's payment.
 - **FR-015**: Amounts issued and remaining MUST be shown exactly as the server reports them. The app MUST NOT compute its own remaining balance.
 
 ### Key Entities
@@ -106,7 +107,7 @@ A supervisor or cashier opens "Notas de crédito" to answer "does this customer 
 - **SC-002**: A cashier can redeem a walk-in ticket in under 30 seconds: scan or type the number, confirm.
 - **SC-003**: In every acceptance scenario, the sale's balance falls by exactly the amount the credit notes' remaining amounts fall. No scenario leaves the two out of step.
 - **SC-004**: No redemption ever exceeds the sale's balance or a note's remaining amount, including when two registers try to spend the same note.
-- **SC-005**: For any customer, the list's issued and remaining figures match the backing payments' amounts and active applications in 100% of the notes checked.
+- **SC-005**: For notes issued through mbe-api, the list's issued and remaining figures match the backing payments' amounts and active applications in 100% of the notes checked. Legacy notes show whatever the server reports (FR-015), and match only once mbe-api#277 ships.
 
 ## Assumptions
 

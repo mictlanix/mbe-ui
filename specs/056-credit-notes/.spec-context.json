@@ -112,10 +112,10 @@
       "title": "Row opens backing payment on payment detail screen"
     },
     "FR-013": {
-      "title": "List hidden without credit-payments read; direct link shows no-access"
+      "title": "List hidden without credit-payments read; direct link redirects home like every gated route"
     },
     "FR-014": {
-      "title": "Redemption needs credit-payments read and customer-payments create"
+      "title": "Redemption needs credit-payments read and customer-payments create; redeem-by-number also customer-payments read"
     },
     "FR-015": {
       "title": "Show server issued/remaining figures; never compute own remaining"

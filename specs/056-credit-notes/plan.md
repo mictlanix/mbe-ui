@@ -63,8 +63,8 @@ These verdicts are against **v1.14.0**.
 | Principle | Verdict | How |
 |---|---|---|
 | **I. Feature-first layering** | Pass | Everything is in `features/sales/{domain,data,presentation}`. Presentation reaches the new repository only through `creditNoteRepositoryProvider`. |
-| **II. Riverpod** | Pass | `customerCreditProvider` and the list controller are providers. The URL is the list's state. Ticket-dialog state is local to the dialog. |
-| **III. Contract-driven API** | Pass | Only generated operations, mapped to a freezed `CreditNote`. Server defects are filed (mbe-api#277, #278), not patched. The `customer_payment` filter request is drafted in R4; filing it is pending the user's approval. The client works without it, through a marked interim scan. |
+| **II. Riverpod** | Pass | `customerCreditProvider` and the list controller are providers. The URL is the list's state. Ticket-dialog state is local to the dialog. `customerCreditProvider` is a plain `FutureProvider.family`, not an `AsyncNotifier`, because it has no mutation method. This follows spec 054's recorded deviation for `paymentDetailProvider` and `paymentApplicationsProvider`. |
+| **III. Contract-driven API** | **Pass once one issue is filed** | Only generated operations, mapped to a freezed `CreditNote`. Server defects are filed (mbe-api#277, #278), not patched. The `customer_payment` filter request is written (research R4, and `issue-customer-payment-filter.md` in the session scratchpad), but **not filed**: the session's permission check blocked `gh issue create` twice. §III requires it to be filed before implementing. The client works without it, through a marked interim scan. |
 | **IV. Deny-by-default RBAC** | Pass | The route and nav are gated by `creditPayments` (83) read. The Cobro tiles need `creditPayments` read and `customerPayments` (8) create, plus read for the ticket lookup. The row tap needs `customerPayments` read. Anything a user can't use is hidden (R7). The route documents its object (C1). |
 | **V. Material 3 / one formatting surface** | Pass | `fmt.display.*` only. Shared components only: `CatalogFilterBar`, `showCatalogFilterSheet`, `CatalogEntityPicker`, `CatalogListStateView`, `DataTableView`, `ErrorBanner`. |
 | **VI. List screen rules** | Pass | Filter row, list, pagination. The search slot is omitted because the endpoint has none, and the facets are in the drawer. Amounts and origin are never truncated; only the customer name is. **No row Edit icon:** a credit note is never edited, following the Pagos and cash-sessions precedent. **Record surface:** the backing payment's existing full detail screen. No new surface is needed. |
@@ -108,11 +108,11 @@ lib/
 │   ├── data/credit_note_repository_impl.dart      # NEW
 │   └── presentation/
 │       ├── payment/
-│       │   ├── payment_controller.dart            # + tenderCreditNotes, ticket lookup, new issues
-│       │   ├── customer_credit_controller.dart    # NEW
+│       │   ├── payment_controller.dart            # + tenderCreditNotes, lookup, CreditNoteRefusal
+│       │   ├── customer_credit_controller.dart    # NEW (+ creditTenderAllowed gate)
 │       │   ├── credit_note_ticket_dialog.dart     # NEW
-│       │   ├── payment_method_grid.dart           # + credit tile, subtitle override
-│       │   ├── payment_step.dart                  # + issue messages
+│       │   ├── payment_method_grid.dart           # + credit tiles, subtitle override
+│       │   ├── payment_step.dart                  # + partial-failure line above the banner
 │       │   └── applied_payments_panel.dart        # + credit-note label
 │       └── credit_notes/                          # NEW
 │           ├── credit_notes_filter.dart
@@ -121,10 +121,12 @@ lib/
 └── l10n/app_en.arb, app_es.arb                    # + keys (C6)
 
 test/
-├── unit/features/sales/      # credit_note_repository_impl, payment_controller (extended),
-│                             # customer_credit_controller, credit_notes_filter, credit_notes_list_controller
-├── widget/features/sales/    # payment_method_grid (extended), credit_note_ticket_dialog,
-│                             # applied_payments_panel, credit_notes_list_screen
+├── unit/features/sales/      # credit_note_repository_impl, credit_note_entity, payment_controller
+│                             # (extended), customer_credit_controller, credit_notes_filter,
+│                             # credit_notes_list_controller
+├── widget/features/sales/    # payment_method_grid (extended; also covers the applied credit-note row),
+│                             # payment_step_gate (extended), pos_047_extra_large_text (extended),
+│                             # credit_note_ticket_dialog, credit_notes_list_screen
 ├── unit/app/router/app_router_test.dart           # + gate
 └── integration/credit_notes_live_test.dart        # NEW
 ```
