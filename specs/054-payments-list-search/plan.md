@@ -67,7 +67,7 @@ These verdicts are against **v1.14.0**.
 |---|---|---|
 | **I. Feature-first layering** | Pass | All new code is in `features/sales/{domain,data,presentation}`. The two `core/domain` additions are tiny enum helpers beside their existing siblings. Presentation reaches data only through providers. |
 | **II. Riverpod** | Pass | `@riverpod` controllers for the list, the detail and the applications. Families for names and order links. The URL is the list's state (`ListQuery`), so there is no extra notifier. |
-| **III. Contract-driven API** | Pass | Only generated operations and models, mapped to freezed entities. Unknown enum values raise `AppError.server()`. The server gaps (no customer name, unchecked facility on detail) are tracked upstream: #270 is filed, and a facility-check issue is recommended (R4). |
+| **III. Contract-driven API** | Pass | Only generated operations and models, mapped to freezed entities. Unknown enum values raise `AppError.server()`. The server gaps (no customer name, unchecked facility on detail) are tracked upstream: #270 is filed, and the facility check is mbe-api#271 (R4). |
 | **IV. Deny-by-default RBAC** | Pass | Route and nav are gated by `customerPayments` (8) read. The mode switch by `paymentsEditor` (100) read. The cash-session facet and link by `pos` (44) read, matching the server. Order links by `pos` (44) or `salesOrders` (7) read. Anything the user can't use is hidden, never disabled. Routes document their objects (C1). |
 | **V. Material 3 / one formatting surface** | Pass | `fmt.display.*` plus `currencyCodeLabel`. No `NumberFormat` in widgets. Shared components only: `CatalogFilterBar`, `CatalogSearchBar`, `showCatalogFilterSheet`, `CatalogEntityPicker`, `DateRangeFilterChip`, `CatalogListStateView`, `DataTableView`, `StatusChip`, `ResponsiveFormGrid`, `ErrorBanner`. |
 | **VI. List screen rules** | Pass | Each screen is a filter row, a list and pagination. Facets live in the drawer, and the search slot is omitted in the mode with no free-text search. Pagination is the shared component. The applications table is unpaginated because a payment's applications are a provably bounded set. |
@@ -149,6 +149,6 @@ There are no violations to justify.
 ## Follow-ups (not in this delivery)
 
 - **mbe-api#270 ships:** regenerate the client, map `customerDisplayName` and prefer it over the provider (R2, C6).
-- **Recommended mbe-api issue:** enforce facility access on `GET /customer-payments/{id}`, `/{id}/applications` and the `facility` parameter of the list (R4). Not filed yet; it needs the user's go-ahead.
+- **mbe-api#271** (filed 2026-10-27): enforce facility access on `GET /customer-payments/{id}`, `/{id}/applications` and the `facility` parameter of the list (R4). Once it ships, the client guards stay as defence in depth.
 - **Possible mbe-api enhancement:** carry `origin` on `ApplicationResponse`, removing the per-order fetch (R8).
 - **#26 and #27:** add their actions (reverse, move, verify, reject) to `PaymentDetailScreen`.

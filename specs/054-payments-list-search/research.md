@@ -61,7 +61,7 @@ Every one of these falls back to the raw number when it resolves to `null` (Edge
 **Decision**:
 - **List:** the facility-scoped mode always sends the user's own facility (`userFacilityIdProvider`) explicitly and offers no facility facet (FR-009).
 - **Detail guard (client-side):** after loading a payment, if `payment.facility != userFacilityId` and the user can't read PaymentsEditor (100), the screen shows the **not-found** state and does not load the applications. This is what makes SC-004 ("including direct links") hold in the UI.
-- **Server gap:** this guard is the only protection, the same as for sales orders. Filing an mbe-api issue for a facility check on `GET /customer-payments/{id}` is recommended but not done: it is an outward-facing action left to the user.
+- **Server gap:** this guard is the only protection, the same as for sales orders. Filed as mbe-api#271 (2026-10-27).
 
 **Alternatives rejected**: showing a "forbidden" state instead of not-found would confirm that the id exists in another facility.
 
