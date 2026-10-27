@@ -38,10 +38,9 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
         skip: skip,
         limit: limit,
       );
-      final items =
-          (response.data?.items.toList() ?? <UserProfileListItem>[])
-              .map(UserProfileSummary.fromListItem)
-              .toList();
+      final items = (response.data?.items.toList() ?? <UserProfileListItem>[])
+          .map(UserProfileSummary.fromListItem)
+          .toList();
       return UserProfileListResult(
         items: items,
         total: response.data?.total ?? 0,
@@ -101,19 +100,20 @@ class UserProfileRepositoryImpl implements UserProfileRepository {
     List<Privilege>? privileges,
   }) async {
     try {
-      final response = await _api.updateUserProfileApiV1UserProfilesProfileIdPut(
-        profileId: profileId,
-        userProfileUpdate: UserProfileUpdate((b) {
-          if (name != null) b.name = name;
-          if (description != null) b.description = description;
-          if (status != null) b.status = status.toApi();
-          if (privileges != null) {
-            b.privileges.replace(
-              _nonZero(privileges).map((p) => p.toProfileUpdate()),
-            );
-          }
-        }),
-      );
+      final response = await _api
+          .updateUserProfileApiV1UserProfilesProfileIdPut(
+            profileId: profileId,
+            userProfileUpdate: UserProfileUpdate((b) {
+              if (name != null) b.name = name;
+              if (description != null) b.description = description;
+              if (status != null) b.status = status.toApi();
+              if (privileges != null) {
+                b.privileges.replace(
+                  _nonZero(privileges).map((p) => p.toProfileUpdate()),
+                );
+              }
+            }),
+          );
       final profile = response.data;
       if (profile == null) throw const AppError.server();
       return UserProfile.fromResponse(profile);

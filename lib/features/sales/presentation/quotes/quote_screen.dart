@@ -276,8 +276,14 @@ class _QuoteScreenBodyState extends ConsumerState<_QuoteScreenBody> {
     final l10n = AppLocalizations.of(context)!;
     final access = ref.watch(accessControlProvider);
     final canUpdate = access.can(SystemObject.salesQuotes, AccessRight.update);
-    final canCreateOrders = access.can(SystemObject.salesOrders, AccessRight.create);
-    final canCreateQuotes = access.can(SystemObject.salesQuotes, AccessRight.create);
+    final canCreateOrders = access.can(
+      SystemObject.salesOrders,
+      AccessRight.create,
+    );
+    final canCreateQuotes = access.can(
+      SystemObject.salesQuotes,
+      AccessRight.create,
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -318,9 +324,7 @@ class _QuoteScreenBodyState extends ConsumerState<_QuoteScreenBody> {
               canCreateOrders,
               canCreateQuotes,
             ),
-            headerExtra: quote == null
-                ? null
-                : QuoteHeaderPanel(sale: quote),
+            headerExtra: quote == null ? null : QuoteHeaderPanel(sale: quote),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -329,9 +333,8 @@ class _QuoteScreenBodyState extends ConsumerState<_QuoteScreenBody> {
             padding: const EdgeInsets.all(24),
             child: ErrorBanner(
               error: toAppError(error),
-              onDismiss: () => ref.invalidate(
-                quoteEditorControllerProvider(widget.quoteId),
-              ),
+              onDismiss: () =>
+                  ref.invalidate(quoteEditorControllerProvider(widget.quoteId)),
             ),
           ),
         ),

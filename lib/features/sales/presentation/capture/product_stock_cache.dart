@@ -20,8 +20,9 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 /// stock-tracked (spec 047, data-model.md ProductStock). The old
 /// `List<WarehouseStock>` value could not tell those two apart, because a
 /// product that is not stockable comes back with an empty list.
-final productStockCacheProvider =
-    StateProvider<Map<int, ProductStock>>((ref) => const {});
+final productStockCacheProvider = StateProvider<Map<int, ProductStock>>(
+  (ref) => const {},
+);
 
 /// Loads the stock of every product on [sale] that has no cache entry yet, so
 /// a resumed sale is gated like a freshly built one (spec 047 FR-010, R4).
@@ -68,7 +69,8 @@ Future<void> ensureStockFor(
     (cache) => {
       ...cache,
       for (final e in loaded.entries)
-        if (!cache.containsKey(e.key) || refresh.contains(e.key)) e.key: e.value,
+        if (!cache.containsKey(e.key) || refresh.contains(e.key))
+          e.key: e.value,
     },
   );
 }

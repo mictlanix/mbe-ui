@@ -284,12 +284,16 @@ void main() {
       return router;
     }
 
-    testWidgets('returns the configuration URI when nothing is pushed', (tester) async {
+    testWidgets('returns the configuration URI when nothing is pushed', (
+      tester,
+    ) async {
       final router = await pumpRouter(tester);
       expect(currentRouteUri(router).toString(), '/base');
     });
 
-    testWidgets('returns the pushed route URI, including after replace', (tester) async {
+    testWidgets('returns the pushed route URI, including after replace', (
+      tester,
+    ) async {
       final router = await pumpRouter(tester);
       router.push('/pushed?a=1');
       await tester.pumpAndSettle();
@@ -300,13 +304,16 @@ void main() {
       expect(currentRouteUri(router).toString(), '/pushed?a=1&b=2');
     });
 
-    testWidgets('falls back to the base route once the pushed route is popped', (tester) async {
-      final router = await pumpRouter(tester);
-      router.push('/pushed?a=1');
-      await tester.pumpAndSettle();
-      router.pop();
-      await tester.pumpAndSettle();
-      expect(currentRouteUri(router).toString(), '/base');
-    });
+    testWidgets(
+      'falls back to the base route once the pushed route is popped',
+      (tester) async {
+        final router = await pumpRouter(tester);
+        router.push('/pushed?a=1');
+        await tester.pumpAndSettle();
+        router.pop();
+        await tester.pumpAndSettle();
+        expect(currentRouteUri(router).toString(), '/base');
+      },
+    );
   });
 }

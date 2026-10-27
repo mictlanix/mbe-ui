@@ -10,10 +10,7 @@ import 'package:mbe_ui/features/pricing/presentation/price_lists_list_controller
 
 class MockPriceListRepository extends Mock implements PriceListRepository {}
 
-PriceList _priceList(int id) => PriceList(
-  priceListId: id,
-  name: 'List $id',
-);
+PriceList _priceList(int id) => PriceList(priceListId: id, name: 'List $id');
 
 void main() {
   late MockPriceListRepository repository;

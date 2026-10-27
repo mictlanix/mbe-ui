@@ -8,10 +8,8 @@ part 'price_list.freezed.dart';
 /// to `double`.
 @freezed
 abstract class PriceList with _$PriceList {
-  const factory PriceList({
-    required int priceListId,
-    required String name,
-  }) = _PriceList;
+  const factory PriceList({required int priceListId, required String name}) =
+      _PriceList;
 
   factory PriceList.fromResponse(PriceListResponse response) {
     return PriceList(

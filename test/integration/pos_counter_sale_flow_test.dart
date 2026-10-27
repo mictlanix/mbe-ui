@@ -150,8 +150,16 @@ void main() {
       final confirmed = await salesOrderRepository.confirm(saleId: sale.id);
       expect(confirmed.status, SaleStatus.completed);
       expect(confirmed.isEditable, isFalse);
-      expect(confirmed.serial, isNotNull, reason: 'FR-040: a folio is assigned');
-      expect(confirmed.total, sale.total, reason: 'confirmation must not reprice');
+      expect(
+        confirmed.serial,
+        isNotNull,
+        reason: 'FR-040: a folio is assigned',
+      );
+      expect(
+        confirmed.total,
+        sale.total,
+        reason: 'confirmation must not reprice',
+      );
 
       // 6. FR-046 — one cash tender for the full balance: create, then apply.
       final paymentId = await paymentRepository.createPayment(

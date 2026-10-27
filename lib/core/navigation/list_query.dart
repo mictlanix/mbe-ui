@@ -169,10 +169,8 @@ class CurrentListQueryBuilder extends StatelessWidget {
     final router = GoRouter.of(context);
     return ListenableBuilder(
       listenable: router.routerDelegate,
-      builder: (context, _) => builder(
-        context,
-        ListQuery.fromUri(currentRouteUri(router)),
-      ),
+      builder: (context, _) =>
+          builder(context, ListQuery.fromUri(currentRouteUri(router))),
     );
   }
 }

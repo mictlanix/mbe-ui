@@ -19,8 +19,7 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 
-class MockUserProfileRepository extends Mock
-    implements UserProfileRepository {}
+class MockUserProfileRepository extends Mock implements UserProfileRepository {}
 
 class MockTokenStorage extends Mock implements TokenStorage {}
 
@@ -77,8 +76,10 @@ void main() {
         limit: any(named: 'limit'),
       ),
     ).thenAnswer(
-      (_) async =>
-          UserProfileListResult(items: _testProfiles, total: _testProfiles.length),
+      (_) async => UserProfileListResult(
+        items: _testProfiles,
+        total: _testProfiles.length,
+      ),
     );
   });
 
@@ -138,38 +139,32 @@ void main() {
     expect(find.text('Warehouse Clerk'), findsOneWidget);
   });
 
-  testWidgets('shows New profile button for an administrator', (
-    tester,
-  ) async {
+  testWidgets('shows New profile button for an administrator', (tester) async {
     await pumpScreen(tester, signedInAs: _adminUser);
 
     expect(find.byKey(const Key('new_user_profile_button')), findsOneWidget);
   });
 
-  testWidgets(
-    'hides New profile button for a non-administrator '
-    '(FR-034, SC-007)',
-    (tester) async {
-      await pumpScreen(tester, signedInAs: _nonAdminUser);
+  testWidgets('hides New profile button for a non-administrator '
+      '(FR-034, SC-007)', (tester) async {
+    await pumpScreen(tester, signedInAs: _nonAdminUser);
 
-      expect(find.byKey(const Key('new_user_profile_button')), findsNothing);
-    },
-  );
+    expect(find.byKey(const Key('new_user_profile_button')), findsNothing);
+  });
 
-  testWidgets(
-    'hides the Edit row action for a non-administrator',
-    (tester) async {
-      await pumpScreen(tester, signedInAs: _nonAdminUser);
+  testWidgets('hides the Edit row action for a non-administrator', (
+    tester,
+  ) async {
+    await pumpScreen(tester, signedInAs: _nonAdminUser);
 
-      expect(
-        find.descendant(
-          of: find.byKey(const Key('user_profiles_table')),
-          matching: find.byIcon(Icons.edit_outlined),
-        ),
-        findsNothing,
-      );
-    },
-  );
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('user_profiles_table')),
+        matching: find.byIcon(Icons.edit_outlined),
+      ),
+      findsNothing,
+    );
+  });
 
   testWidgets(
     'an empty, genuinely unfiltered catalog (status=all) reads as "none '
@@ -182,7 +177,9 @@ void main() {
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
-      ).thenAnswer((_) async => const UserProfileListResult(items: [], total: 0));
+      ).thenAnswer(
+        (_) async => const UserProfileListResult(items: [], total: 0),
+      );
 
       // spec 035 FR-001/FR-002/FR-004: an empty query no longer means
       // "unfiltered" — it now carries the default-applied Active status.
@@ -219,11 +216,16 @@ void main() {
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
-      ).thenAnswer((_) async => const UserProfileListResult(items: [], total: 0));
+      ).thenAnswer(
+        (_) async => const UserProfileListResult(items: [], total: 0),
+      );
 
       await pumpScreen(tester, signedInAs: _adminUser);
 
-      expect(find.byKey(const Key('list_state_filtered_empty')), findsOneWidget);
+      expect(
+        find.byKey(const Key('list_state_filtered_empty')),
+        findsOneWidget,
+      );
       expect(
         find.text('No user profiles yet — create the first one.'),
         findsNothing,
@@ -242,7 +244,9 @@ void main() {
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
-      ).thenAnswer((_) async => const UserProfileListResult(items: [], total: 0));
+      ).thenAnswer(
+        (_) async => const UserProfileListResult(items: [], total: 0),
+      );
 
       await pumpScreen(
         tester,
@@ -250,7 +254,10 @@ void main() {
         query: const ListQuery(search: 'nonexistent'),
       );
 
-      expect(find.byKey(const Key('list_state_filtered_empty')), findsOneWidget);
+      expect(
+        find.byKey(const Key('list_state_filtered_empty')),
+        findsOneWidget,
+      );
       expect(
         find.text('No user profiles yet — create the first one.'),
         findsNothing,

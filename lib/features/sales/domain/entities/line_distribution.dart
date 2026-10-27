@@ -109,7 +109,10 @@ List<LineDistribution> distributionFor({
 /// FR-030's step-level gate: every line accounted for. In mixed mode an
 /// undistributed remainder is expected (it goes to the counter, FR-035), so
 /// only an over-claim blocks closing.
-bool isDistributionComplete(List<LineDistribution> distribution, {required bool isMixed}) {
+bool isDistributionComplete(
+  List<LineDistribution> distribution, {
+  required bool isMixed,
+}) {
   if (distribution.any((d) => d.isOverClaimed)) return false;
   if (isMixed) return true;
   return distribution.every((d) => d.isFullyDistributed);

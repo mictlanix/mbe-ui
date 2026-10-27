@@ -30,15 +30,13 @@ User _user({required bool administrator, int? facilityId}) => User(
   privileges: const [],
 );
 
-SalesOrdersFilter _filter({
-  int? salesperson,
-  int? facility,
-}) => SalesOrdersFilter(
-  from: DateTime(2026, 8, 1),
-  to: DateTime(2026, 8, 31),
-  salesperson: salesperson,
-  facility: facility,
-);
+SalesOrdersFilter _filter({int? salesperson, int? facility}) =>
+    SalesOrdersFilter(
+      from: DateTime(2026, 8, 1),
+      to: DateTime(2026, 8, 31),
+      salesperson: salesperson,
+      facility: facility,
+    );
 
 /// FR-006, FR-011, SC-009 (spec 029): `mine` follows the caller's own role,
 /// never the URL; `salesperson`/`facility` reach the request only for an
@@ -73,7 +71,9 @@ void main() {
       overrides: [
         salesOrderRepositoryProvider.overrideWithValue(repository),
         authProvider.overrideWith(
-          () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: user)),
+          () => _FixedAuthNotifier(
+            AuthState.authenticated(token: 't', user: user),
+          ),
         ),
       ],
     );
@@ -136,31 +136,32 @@ void main() {
     ).called(1);
   });
 
-  test('an administrator with no facility facet set still scopes to their '
-      'own facility — never every facility unscoped (US5 scenario 1)', () async {
-    final c = container(user: _user(administrator: true, facilityId: 9));
-    // `userFacilityIdProvider` reads through the async `authProvider`
-    // — settle it first, or `_fetch` reads it mid-`loading` and treats the
-    // caller as having no facility at all.
-    await c.read(authProvider.future);
+  test(
+    'an administrator with no facility facet set still scopes to their '
+    'own facility — never every facility unscoped (US5 scenario 1)',
+    () async {
+      final c = container(user: _user(administrator: true, facilityId: 9));
+      // `userFacilityIdProvider` reads through the async `authProvider`
+      // — settle it first, or `_fetch` reads it mid-`loading` and treats the
+      // caller as having no facility at all.
+      await c.read(authProvider.future);
 
-    await c.read(
-      salesOrdersListControllerProvider(_filter(), true).future,
-    );
+      await c.read(salesOrdersListControllerProvider(_filter(), true).future);
 
-    verify(
-      () => repository.listOrders(
-        mine: false,
-        facility: 9,
-        salesperson: null,
-        status: any(named: 'status'),
-        dateFrom: any(named: 'dateFrom'),
-        dateTo: any(named: 'dateTo'),
-        search: any(named: 'search'),
-        skip: any(named: 'skip'),
-        limit: any(named: 'limit'),
-        excludeOrigin: any(named: 'excludeOrigin'),
-      ),
-    ).called(1);
-  });
+      verify(
+        () => repository.listOrders(
+          mine: false,
+          facility: 9,
+          salesperson: null,
+          status: any(named: 'status'),
+          dateFrom: any(named: 'dateFrom'),
+          dateTo: any(named: 'dateTo'),
+          search: any(named: 'search'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+          excludeOrigin: any(named: 'excludeOrigin'),
+        ),
+      ).called(1);
+    },
+  );
 }

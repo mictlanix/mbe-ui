@@ -113,35 +113,32 @@ void main() {
       expect(profile.privileges.single.allowRead, isTrue);
     });
 
-    test(
-      'a response entry naming an unknown system object is dropped, not '
-      'thrown (same posture as Privilege.fromResponse)',
-      () async {
-        final repository = _repositoryWith(
-          (options) async => ResponseBody.fromString(
-            jsonEncode({
-              ..._profileJson,
-              'privileges': [
-                {
-                  'system_object': 999999,
-                  'privileges': 15,
-                  'allow_create': true,
-                  'allow_read': true,
-                  'allow_update': true,
-                  'allow_delete': true,
-                },
-              ],
-            }),
-            200,
-            headers: _jsonHeaders,
-          ),
-        );
+    test('a response entry naming an unknown system object is dropped, not '
+        'thrown (same posture as Privilege.fromResponse)', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            ..._profileJson,
+            'privileges': [
+              {
+                'system_object': 999999,
+                'privileges': 15,
+                'allow_create': true,
+                'allow_read': true,
+                'allow_update': true,
+                'allow_delete': true,
+              },
+            ],
+          }),
+          200,
+          headers: _jsonHeaders,
+        ),
+      );
 
-        final profile = await repository.get(profileId: 5);
+      final profile = await repository.get(profileId: 5);
 
-        expect(profile.privileges, isEmpty);
-      },
-    );
+      expect(profile.privileges, isEmpty);
+    });
 
     test('404 maps to AppError.notFound', () async {
       final repository = _repositoryWith(
@@ -173,37 +170,34 @@ void main() {
       expect(profile.name, 'Cashier');
     });
 
-    test(
-      'a privilege whose mask is 0 is never sent — a profile stores an '
-      'entry only for what it grants (FR-010, research.md §4)',
-      () async {
-        RequestOptions? captured;
-        final repository = _repositoryWith((options) async {
-          captured = options;
-          return ResponseBody.fromString(
-            jsonEncode(_profileJson),
-            201,
-            headers: _jsonHeaders,
-          );
-        });
-
-        await repository.create(
-          name: 'Cashier',
-          privileges: const [
-            Privilege(systemObject: SystemObject.users, rawValue: 2),
-            Privilege(systemObject: SystemObject.products, rawValue: 0),
-          ],
+    test('a privilege whose mask is 0 is never sent — a profile stores an '
+        'entry only for what it grants (FR-010, research.md §4)', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_profileJson),
+          201,
+          headers: _jsonHeaders,
         );
+      });
 
-        final sentBody = _decodeBody(captured!.data);
-        final sentPrivileges = sentBody['privileges'] as List<dynamic>;
-        expect(sentPrivileges, hasLength(1));
-        expect(
-          (sentPrivileges.single as Map)['system_object'],
-          SystemObject.users.value,
-        );
-      },
-    );
+      await repository.create(
+        name: 'Cashier',
+        privileges: const [
+          Privilege(systemObject: SystemObject.users, rawValue: 2),
+          Privilege(systemObject: SystemObject.products, rawValue: 0),
+        ],
+      );
+
+      final sentBody = _decodeBody(captured!.data);
+      final sentPrivileges = sentBody['privileges'] as List<dynamic>;
+      expect(sentPrivileges, hasLength(1));
+      expect(
+        (sentPrivileges.single as Map)['system_object'],
+        SystemObject.users.value,
+      );
+    });
 
     test('an empty privilege list saves a valid, permission-less profile '
         '(FR-011)', () async {
@@ -224,20 +218,22 @@ void main() {
       expect(profile.privileges, isEmpty);
     });
 
-    test('409 duplicate name (case-insensitive) maps to a ValidationError',
-        () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({'detail': 'A profile named "Cashier" already exists'}),
-          409,
-          headers: _jsonHeaders,
-        ),
-      );
-      await expectLater(
-        () => repository.create(name: 'cashier'),
-        throwsA(isA<AppError>()),
-      );
-    });
+    test(
+      '409 duplicate name (case-insensitive) maps to a ValidationError',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({'detail': 'A profile named "Cashier" already exists'}),
+            409,
+            headers: _jsonHeaders,
+          ),
+        );
+        await expectLater(
+          () => repository.create(name: 'cashier'),
+          throwsA(isA<AppError>()),
+        );
+      },
+    );
   });
 
   group('UserProfileRepositoryImpl.update', () {
@@ -300,23 +296,20 @@ void main() {
       await repository.delete(profileId: 5);
     });
 
-    test(
-      '409 referenced-by-users conflict maps to an AppError carrying the '
-      'server detail (FR-014)',
-      () async {
-        final repository = _repositoryWith(
-          (options) async => ResponseBody.fromString(
-            jsonEncode({'detail': '3 users still reference this profile'}),
-            409,
-            headers: _jsonHeaders,
-          ),
-        );
-        await expectLater(
-          () => repository.delete(profileId: 5),
-          throwsA(isA<AppError>()),
-        );
-      },
-    );
+    test('409 referenced-by-users conflict maps to an AppError carrying the '
+        'server detail (FR-014)', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': '3 users still reference this profile'}),
+          409,
+          headers: _jsonHeaders,
+        ),
+      );
+      await expectLater(
+        () => repository.delete(profileId: 5),
+        throwsA(isA<AppError>()),
+      );
+    });
   });
 
   group('UserProfileRepositoryImpl.apply', () {

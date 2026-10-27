@@ -21,7 +21,9 @@ class UserSettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final preferences = ref.watch(userDisplayPreferencesControllerProvider);
-    final controller = ref.read(userDisplayPreferencesControllerProvider.notifier);
+    final controller = ref.read(
+      userDisplayPreferencesControllerProvider.notifier,
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsTitle)),
@@ -170,7 +172,10 @@ class _LanguageSection extends StatelessWidget {
               value: const Locale('en'),
               label: Text(l10n.settingsLanguageEnglish),
             ),
-            ButtonSegment(value: null, label: Text(l10n.settingsLanguageSystem)),
+            ButtonSegment(
+              value: null,
+              label: Text(l10n.settingsLanguageSystem),
+            ),
           ],
           selected: {value},
           onSelectionChanged: (selected) => onChanged(selected.first),

@@ -122,9 +122,7 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      final base = AppTheme.of(
-        const BrandConfig(displayName: 'Test'),
-      ).light;
+      final base = AppTheme.of(const BrandConfig(displayName: 'Test')).light;
 
       await tester.pumpWidget(
         MaterialApp(
@@ -141,18 +139,13 @@ void main() {
               children: [
                 CatalogFilterBar(
                   search: const TextField(key: Key('search')),
-                  filters: const [
-                    Icon(Icons.tune, key: Key('filters')),
-                  ],
+                  filters: const [Icon(Icons.tune, key: Key('filters'))],
                 ),
                 Expanded(
                   child: DataTableView<int>(
                     key: const Key('table'),
                     columns: [
-                      DataTableColumn<int>.text(
-                        label: 'N',
-                        text: (n) => '$n',
-                      ),
+                      DataTableColumn<int>.text(label: 'N', text: (n) => '$n'),
                     ],
                     rows: const [1, 2],
                   ),
@@ -212,8 +205,7 @@ void main() {
           expect(
             filters.left,
             moreOrLessEquals(table.left, epsilon: 0.5),
-            reason:
-                'reflowed filters must start on the table card left edge',
+            reason: 'reflowed filters must start on the table card left edge',
           );
         }
       });

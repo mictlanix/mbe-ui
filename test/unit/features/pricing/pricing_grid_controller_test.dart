@@ -25,7 +25,8 @@ class MockProductRepository extends Mock implements ProductRepository {}
 
 class MockPriceListRepository extends Mock implements PriceListRepository {}
 
-class MockProductPriceRepository extends Mock implements ProductPriceRepository {}
+class MockProductPriceRepository extends Mock
+    implements ProductPriceRepository {}
 
 ProductListItem _product(int id) => ProductListItem(
   productId: id,
@@ -60,41 +61,38 @@ void main() {
   });
 
   group('PricingGridFilter.fromQuery (spec 033 data-model.md §7)', () {
-    test(
-      'derives every product-list facet from a ListQuery, mirroring '
-      'ProductFilter.fromQuery',
-      () {
-        final filter = PricingGridFilter.fromQuery(
-          const ListQuery(
-            search: 'clavo',
-            pageIndex: 2,
-            facets: {
-              'status': ['active'],
-              'stockable': ['true'],
-              'salable': ['true'],
-              'purchasable': ['false'],
-              'perishable': ['true'],
-              'seriable': ['false'],
-              'invoiceable': ['true'],
-              'supplier': ['12'],
-              'label': ['3', '7'],
-            },
-          ),
-        );
+    test('derives every product-list facet from a ListQuery, mirroring '
+        'ProductFilter.fromQuery', () {
+      final filter = PricingGridFilter.fromQuery(
+        const ListQuery(
+          search: 'clavo',
+          pageIndex: 2,
+          facets: {
+            'status': ['active'],
+            'stockable': ['true'],
+            'salable': ['true'],
+            'purchasable': ['false'],
+            'perishable': ['true'],
+            'seriable': ['false'],
+            'invoiceable': ['true'],
+            'supplier': ['12'],
+            'label': ['3', '7'],
+          },
+        ),
+      );
 
-        expect(filter.search, 'clavo');
-        expect(filter.pageIndex, 2);
-        expect(filter.status, EntityStatus.active);
-        expect(filter.stockable, isTrue);
-        expect(filter.salable, isTrue);
-        expect(filter.purchasable, isFalse);
-        expect(filter.perishable, isTrue);
-        expect(filter.seriable, isFalse);
-        expect(filter.invoiceable, isTrue);
-        expect(filter.supplier, 12);
-        expect(filter.labels, [3, 7]);
-      },
-    );
+      expect(filter.search, 'clavo');
+      expect(filter.pageIndex, 2);
+      expect(filter.status, EntityStatus.active);
+      expect(filter.stockable, isTrue);
+      expect(filter.salable, isTrue);
+      expect(filter.purchasable, isFalse);
+      expect(filter.perishable, isTrue);
+      expect(filter.seriable, isFalse);
+      expect(filter.invoiceable, isTrue);
+      expect(filter.supplier, 12);
+      expect(filter.labels, [3, 7]);
+    });
 
     test('an empty query yields every default, including a null worklist', () {
       final filter = PricingGridFilter.fromQuery(const ListQuery());
@@ -209,9 +207,10 @@ void main() {
       required List<ProductListItem> products,
       required List<ProductPrice> prices,
     }) async {
-      when(
-        () => priceListRepository.list(limit: 100),
-      ).thenAnswer((_) async => PriceListResult(items: priceLists, total: priceLists.length));
+      when(() => priceListRepository.list(limit: 100)).thenAnswer(
+        (_) async =>
+            PriceListResult(items: priceLists, total: priceLists.length),
+      );
       when(
         () => productRepository.list(
           search: null,
@@ -224,7 +223,9 @@ void main() {
           skip: 0,
           limit: 20,
         ),
-      ).thenAnswer((_) async => ProductListResult(items: products, total: products.length));
+      ).thenAnswer(
+        (_) async => ProductListResult(items: products, total: products.length),
+      );
       when(
         () => productPriceRepository.listForProducts(
           productIds: products.map((p) => p.productId).toList(),
@@ -264,53 +265,49 @@ void main() {
       },
     );
 
-    test(
-      'whitespace alone is the same no-op — the field can be spaced without '
-      'becoming an error',
-      () async {
-        await primeWith(
-          priceLists: [_priceList(5)],
-          products: [_product(1)],
-          prices: const [],
-        );
+    test('whitespace alone is the same no-op — the field can be spaced without '
+        'becoming an error', () async {
+      await primeWith(
+        priceLists: [_priceList(5)],
+        products: [_product(1)],
+        prices: const [],
+      );
 
-        await container
-            .read(pricingGridControllerProvider(filter).notifier)
-            .commitCell(productId: 1, priceListId: 5, typed: '   ');
+      await container
+          .read(pricingGridControllerProvider(filter).notifier)
+          .commitCell(productId: 1, priceListId: 5, typed: '   ');
 
-        expect(
-          container.read(pricingGridControllerProvider(filter)).requireValue
-              .rejected,
-          isEmpty,
-        );
-      },
-    );
-
-    test(
-      'emptying a cell that DOES have a price is still refused — the grid '
-      'has no delete path, so silently doing nothing would look like it '
-      'worked (FR-011 remains unimplemented)',
-      () async {
-        await primeWith(
-          priceLists: [_priceList(5)],
-          products: [_product(1)],
-          prices: [_price(productId: 1, priceListId: 5, price: '10.0000')],
-        );
-
-        await container
-            .read(pricingGridControllerProvider(filter).notifier)
-            .commitCell(productId: 1, priceListId: 5, typed: '');
-
-        final state = container
+      expect(
+        container
             .read(pricingGridControllerProvider(filter))
-            .requireValue;
-        expect(state.rejectedCount, 1);
-        expect(
-          state.valueOf(const PriceCellKey(productId: 1, priceListId: 5)),
-          '10.0000',
-        );
-      },
-    );
+            .requireValue
+            .rejected,
+        isEmpty,
+      );
+    });
+
+    test('emptying a cell that DOES have a price is still refused — the grid '
+        'has no delete path, so silently doing nothing would look like it '
+        'worked (FR-011 remains unimplemented)', () async {
+      await primeWith(
+        priceLists: [_priceList(5)],
+        products: [_product(1)],
+        prices: [_price(productId: 1, priceListId: 5, price: '10.0000')],
+      );
+
+      await container
+          .read(pricingGridControllerProvider(filter).notifier)
+          .commitCell(productId: 1, priceListId: 5, typed: '');
+
+      final state = container
+          .read(pricingGridControllerProvider(filter))
+          .requireValue;
+      expect(state.rejectedCount, 1);
+      expect(
+        state.valueOf(const PriceCellKey(productId: 1, priceListId: 5)),
+        '10.0000',
+      );
+    });
 
     test(
       'rejects a non-numeric value without issuing any write (FR-009)',
@@ -343,81 +340,77 @@ void main() {
       },
     );
 
-    test(
-      'dismissRejected clears every refusal and touches nothing else — a '
-      'rejection never reached the server, so discarding it must not cost '
-      'the accepted edits beside it (FR-023a)',
-      () async {
-        await primeWith(
-          priceLists: [_priceList(5)],
-          products: [_product(1), _product(2)],
-          prices: [
-            _price(productId: 1, priceListId: 5, price: '10.0000'),
-            _price(productId: 2, priceListId: 5, price: '20.0000'),
-          ],
-        );
-        when(
-          () => productPriceRepository.update(productPriceId: 105, price: '11'),
-        ).thenAnswer(
-          (_) async => _price(productId: 1, priceListId: 5, price: '11.0000'),
-        );
-        final notifier = container.read(
-          pricingGridControllerProvider(filter).notifier,
-        );
+    test('dismissRejected clears every refusal and touches nothing else — a '
+        'rejection never reached the server, so discarding it must not cost '
+        'the accepted edits beside it (FR-023a)', () async {
+      await primeWith(
+        priceLists: [_priceList(5)],
+        products: [_product(1), _product(2)],
+        prices: [
+          _price(productId: 1, priceListId: 5, price: '10.0000'),
+          _price(productId: 2, priceListId: 5, price: '20.0000'),
+        ],
+      );
+      when(
+        () => productPriceRepository.update(productPriceId: 105, price: '11'),
+      ).thenAnswer(
+        (_) async => _price(productId: 1, priceListId: 5, price: '11.0000'),
+      );
+      final notifier = container.read(
+        pricingGridControllerProvider(filter).notifier,
+      );
 
-        await notifier.commitCell(productId: 1, priceListId: 5, typed: '11');
-        await notifier.commitCell(productId: 2, priceListId: 5, typed: 'abc');
-        expect(
-          container.read(pricingGridControllerProvider(filter)).requireValue
-              .rejectedCount,
-          1,
-        );
-
-        notifier.dismissRejected();
-
-        final state = container
+      await notifier.commitCell(productId: 1, priceListId: 5, typed: '11');
+      await notifier.commitCell(productId: 2, priceListId: 5, typed: 'abc');
+      expect(
+        container
             .read(pricingGridControllerProvider(filter))
-            .requireValue;
-        expect(state.rejected, isEmpty);
-        // The accepted edit survives, history and all.
-        expect(state.changedCount, 1);
-        expect(state.history, hasLength(1));
-        expect(
-          state.valueOf(const PriceCellKey(productId: 1, priceListId: 5)),
-          '11.0000',
-        );
-      },
-    );
+            .requireValue
+            .rejectedCount,
+        1,
+      );
 
-    test(
-      'Escape on a rejected cell drops that cell\'s refusal, and only that '
-      'one — cancelling an edit cancels its warning too',
-      () async {
-        await primeWith(
-          priceLists: [_priceList(5)],
-          products: [_product(1), _product(2)],
-          prices: [
-            _price(productId: 1, priceListId: 5, price: '10.0000'),
-            _price(productId: 2, priceListId: 5, price: '20.0000'),
-          ],
-        );
-        final notifier = container.read(
-          pricingGridControllerProvider(filter).notifier,
-        );
-        await notifier.commitCell(productId: 1, priceListId: 5, typed: 'abc');
-        await notifier.commitCell(productId: 2, priceListId: 5, typed: 'xyz');
+      notifier.dismissRejected();
 
-        // Reopen the first and Escape out of it.
-        notifier.openCell(const PriceCellKey(productId: 1, priceListId: 5));
-        notifier.closeCell();
+      final state = container
+          .read(pricingGridControllerProvider(filter))
+          .requireValue;
+      expect(state.rejected, isEmpty);
+      // The accepted edit survives, history and all.
+      expect(state.changedCount, 1);
+      expect(state.history, hasLength(1));
+      expect(
+        state.valueOf(const PriceCellKey(productId: 1, priceListId: 5)),
+        '11.0000',
+      );
+    });
 
-        final state = container
-            .read(pricingGridControllerProvider(filter))
-            .requireValue;
-        expect(state.active, isNull);
-        expect(state.rejected.keys.single.productId, 2);
-      },
-    );
+    test('Escape on a rejected cell drops that cell\'s refusal, and only that '
+        'one — cancelling an edit cancels its warning too', () async {
+      await primeWith(
+        priceLists: [_priceList(5)],
+        products: [_product(1), _product(2)],
+        prices: [
+          _price(productId: 1, priceListId: 5, price: '10.0000'),
+          _price(productId: 2, priceListId: 5, price: '20.0000'),
+        ],
+      );
+      final notifier = container.read(
+        pricingGridControllerProvider(filter).notifier,
+      );
+      await notifier.commitCell(productId: 1, priceListId: 5, typed: 'abc');
+      await notifier.commitCell(productId: 2, priceListId: 5, typed: 'xyz');
+
+      // Reopen the first and Escape out of it.
+      notifier.openCell(const PriceCellKey(productId: 1, priceListId: 5));
+      notifier.closeCell();
+
+      final state = container
+          .read(pricingGridControllerProvider(filter))
+          .requireValue;
+      expect(state.active, isNull);
+      expect(state.rejected.keys.single.productId, 2);
+    });
 
     test(
       'rejects a negative value the same way as unparseable text (FR-009)',
@@ -435,7 +428,10 @@ void main() {
         final state = container
             .read(pricingGridControllerProvider(filter))
             .requireValue;
-        expect(state.rejected.values.single.reason, PricingGridErrorCode.invalidAmount);
+        expect(
+          state.rejected.values.single.reason,
+          PricingGridErrorCode.invalidAmount,
+        );
       },
     );
 
@@ -463,23 +459,20 @@ void main() {
       },
     );
 
-    test(
-      'a cell whose stored value only differs in scale is not counted as '
-      'changed, so the summary bar cannot invent work (FR-023)',
-      () async {
-        await primeWith(
-          priceLists: [_priceList(5)],
-          products: [_product(1)],
-          prices: [_price(productId: 1, priceListId: 5, price: '120.0000')],
-        );
+    test('a cell whose stored value only differs in scale is not counted as '
+        'changed, so the summary bar cannot invent work (FR-023)', () async {
+      await primeWith(
+        priceLists: [_priceList(5)],
+        products: [_product(1)],
+        prices: [_price(productId: 1, priceListId: 5, price: '120.0000')],
+      );
 
-        final state = container
-            .read(pricingGridControllerProvider(filter))
-            .requireValue;
-        expect(state.changedCount, 0);
-        expect(state.hasChanges, isFalse);
-      },
-    );
+      final state = container
+          .read(pricingGridControllerProvider(filter))
+          .requireValue;
+      expect(state.changedCount, 0);
+      expect(state.hasChanges, isFalse);
+    });
 
     test(
       'submitting the stored value unchanged issues no write (FR-010)',
@@ -543,85 +536,73 @@ void main() {
       },
     );
 
-    test(
-      'updating an existing price sends only the price, leaving the stored '
-      'profit band untouched — this cell edits price and nothing else '
-      '(FR-034)',
-      () async {
-        await primeWith(
-          priceLists: [_priceList(5)],
-          products: [_product(1)],
-          prices: [
-            _price(
-              productId: 1,
-              priceListId: 5,
-              price: '10.00',
-            ),
-          ],
-        );
-        // spec 036 R10: sent as the canonical, trailing-zero-stripped value.
-        when(
-          () => productPriceRepository.update(
-            productPriceId: 105,
-            price: '12',
-          ),
-        ).thenAnswer(
-          (_) async => _price(
-            productId: 1,
-            priceListId: 5,
-            price: '12.00',
-          ),
-        );
-
-        await container
-            .read(pricingGridControllerProvider(filter).notifier)
-            .commitCell(productId: 1, priceListId: 5, typed: '12.00');
-
-        // The band is omitted, which mbe-api#185 defines as "leave the
-        // stored one alone" — the grid never overwrites what it did not edit.
-        verify(
-          () => productPriceRepository.update(
-            productPriceId: 105,
-            price: '12',
-          ),
-        ).called(1);
-        final state = container
-            .read(pricingGridControllerProvider(filter))
-            .requireValue;
-        expect(state.history.single.writes.single.previous, '10.00');
-        expect(state.history.single.writes.single.next, '12.00');
-      },
-    );
-
-    test('a server 422 rejects the cell with the server\'s own message', () async {
+    test('updating an existing price sends only the price, leaving the stored '
+        'profit band untouched — this cell edits price and nothing else '
+        '(FR-034)', () async {
       await primeWith(
         priceLists: [_priceList(5)],
         products: [_product(1)],
-        prices: const [],
+        prices: [_price(productId: 1, priceListId: 5, price: '10.00')],
       );
+      // spec 036 R10: sent as the canonical, trailing-zero-stripped value.
       when(
-        () => productPriceRepository.create(
-          productId: 1,
-          priceListId: 5,
-          price: '25',
-        ),
-      ).thenThrow(
-        const AppError.validation([
-          FieldError(loc: ['body', 'price'], msg: 'Out of range', type: 'value_error'),
-        ]),
+        () => productPriceRepository.update(productPriceId: 105, price: '12'),
+      ).thenAnswer(
+        (_) async => _price(productId: 1, priceListId: 5, price: '12.00'),
       );
 
       await container
           .read(pricingGridControllerProvider(filter).notifier)
-          .commitCell(productId: 1, priceListId: 5, typed: '25.00');
+          .commitCell(productId: 1, priceListId: 5, typed: '12.00');
 
+      // The band is omitted, which mbe-api#185 defines as "leave the
+      // stored one alone" — the grid never overwrites what it did not edit.
+      verify(
+        () => productPriceRepository.update(productPriceId: 105, price: '12'),
+      ).called(1);
       final state = container
           .read(pricingGridControllerProvider(filter))
           .requireValue;
-      final rejection = state.rejected.values.single;
-      expect(rejection.typed, '25.00');
-      expect(rejection.reason, 'Out of range');
+      expect(state.history.single.writes.single.previous, '10.00');
+      expect(state.history.single.writes.single.next, '12.00');
     });
+
+    test(
+      'a server 422 rejects the cell with the server\'s own message',
+      () async {
+        await primeWith(
+          priceLists: [_priceList(5)],
+          products: [_product(1)],
+          prices: const [],
+        );
+        when(
+          () => productPriceRepository.create(
+            productId: 1,
+            priceListId: 5,
+            price: '25',
+          ),
+        ).thenThrow(
+          const AppError.validation([
+            FieldError(
+              loc: ['body', 'price'],
+              msg: 'Out of range',
+              type: 'value_error',
+            ),
+          ]),
+        );
+
+        await container
+            .read(pricingGridControllerProvider(filter).notifier)
+            .commitCell(productId: 1, priceListId: 5, typed: '25.00');
+
+        final state = container
+            .read(pricingGridControllerProvider(filter))
+            .requireValue;
+        final rejection = state.rejected.values.single;
+        expect(rejection.typed, '25.00');
+        expect(rejection.reason, 'Out of range');
+      },
+    );
   });
 
   group('PricingGridController column actions (spec 033 US3, mbe-api#183)', () {
@@ -661,7 +642,10 @@ void main() {
     final costList = _priceList(0);
     final saleList = _priceList(5);
 
-    Future<void> primeWith(List<ProductPrice> prices, {int products = 3}) async {
+    Future<void> primeWith(
+      List<ProductPrice> prices, {
+      int products = 3,
+    }) async {
       when(() => priceListRepository.list(limit: 100)).thenAnswer(
         (_) async => PriceListResult(items: [costList, saleList], total: 2),
       );
@@ -711,9 +695,9 @@ void main() {
     }
 
     List<PriceCellWrite> capturedWrites() =>
-        verify(() => productPriceRepository.applyPriceChanges(captureAny()))
-                .captured
-                .single
+        verify(
+              () => productPriceRepository.applyPriceChanges(captureAny()),
+            ).captured.single
             as List<PriceCellWrite>;
 
     test(
@@ -761,26 +745,23 @@ void main() {
       verifyNever(() => productPriceRepository.applyPriceChanges(any()));
     });
 
-    test(
-      'copyFromCostList skips rows with no cost price rather than creating '
-      'them at zero, and reads the cost list at id 0 (FR-019a)',
-      () async {
-        await primeWith([
-          _price(productId: 1, priceListId: 0, price: '7.00'),
-          _price(productId: 3, priceListId: 0, price: '9.00'),
-        ]);
-        stubBulk();
+    test('copyFromCostList skips rows with no cost price rather than creating '
+        'them at zero, and reads the cost list at id 0 (FR-019a)', () async {
+      await primeWith([
+        _price(productId: 1, priceListId: 0, price: '7.00'),
+        _price(productId: 3, priceListId: 0, price: '9.00'),
+      ]);
+      stubBulk();
 
-        final changed = await container
-            .read(pricingGridControllerProvider(filter).notifier)
-            .copyFromCostList(priceListId: 5);
+      final changed = await container
+          .read(pricingGridControllerProvider(filter).notifier)
+          .copyFromCostList(priceListId: 5);
 
-        expect(changed, 2);
-        final writes = capturedWrites();
-        expect(writes.map((w) => w.productId), unorderedEquals([1, 3]));
-        expect(writes.map((w) => w.price), unorderedEquals(['7.00', '9.00']));
-      },
-    );
+      expect(changed, 2);
+      final writes = capturedWrites();
+      expect(writes.map((w) => w.productId), unorderedEquals([1, 3]));
+      expect(writes.map((w) => w.price), unorderedEquals(['7.00', '9.00']));
+    });
 
     test('adjustByPercent moves only rows that already have a price on that '
         'column — an unpriced cell is never created at 0', () async {
@@ -814,56 +795,51 @@ void main() {
       expect(capturedWrites().single.price, '90');
     });
 
-    test(
-      'a column action sends every cell exactly once — a repeated '
-      '(product, price_list) is a 400 from mbe-api, deliberately',
-      () async {
-        await primeWith([
-          _price(productId: 1, priceListId: 5, price: '10.00'),
-          _price(productId: 2, priceListId: 5, price: '20.00'),
-        ]);
-        stubBulk();
+    test('a column action sends every cell exactly once — a repeated '
+        '(product, price_list) is a 400 from mbe-api, deliberately', () async {
+      await primeWith([
+        _price(productId: 1, priceListId: 5, price: '10.00'),
+        _price(productId: 2, priceListId: 5, price: '20.00'),
+      ]);
+      stubBulk();
 
-        await container
+      await container
+          .read(pricingGridControllerProvider(filter).notifier)
+          .adjustByPercent(priceListId: 5, percent: Decimal.fromInt(10));
+
+      final writes = capturedWrites();
+      final keys = writes.map((w) => '${w.productId}:${w.priceListId}');
+      expect(keys.toSet(), hasLength(writes.length));
+    });
+
+    test('a failed column action leaves no row changed and no history entry — '
+        'the write is all-or-nothing server-side, so there is nothing to roll '
+        'back locally (FR-015)', () async {
+      await primeWith([
+        _price(productId: 1, priceListId: 5, price: '10.00'),
+        _price(productId: 2, priceListId: 5, price: '20.00'),
+      ]);
+      when(
+        () => productPriceRepository.applyPriceChanges(any()),
+      ).thenThrow(const AppError.server());
+
+      await expectLater(
+        () => container
             .read(pricingGridControllerProvider(filter).notifier)
-            .adjustByPercent(priceListId: 5, percent: Decimal.fromInt(10));
+            .adjustByPercent(priceListId: 5, percent: Decimal.fromInt(5)),
+        throwsA(isA<AppError>()),
+      );
 
-        final writes = capturedWrites();
-        final keys = writes.map((w) => '${w.productId}:${w.priceListId}');
-        expect(keys.toSet(), hasLength(writes.length));
-      },
-    );
-
-    test(
-      'a failed column action leaves no row changed and no history entry — '
-      'the write is all-or-nothing server-side, so there is nothing to roll '
-      'back locally (FR-015)',
-      () async {
-        await primeWith([
-          _price(productId: 1, priceListId: 5, price: '10.00'),
-          _price(productId: 2, priceListId: 5, price: '20.00'),
-        ]);
-        when(
-          () => productPriceRepository.applyPriceChanges(any()),
-        ).thenThrow(const AppError.server());
-
-        await expectLater(
-          () => container
-              .read(pricingGridControllerProvider(filter).notifier)
-              .adjustByPercent(priceListId: 5, percent: Decimal.fromInt(5)),
-          throwsA(isA<AppError>()),
-        );
-
-        final state = container
-            .read(pricingGridControllerProvider(filter))
-            .requireValue;
-        expect(state.history, isEmpty);
-        expect(state.inFlight, isEmpty);
-        expect(state.valueOf(
-          const PriceCellKey(productId: 1, priceListId: 5),
-        ), '10.00');
-      },
-    );
+      final state = container
+          .read(pricingGridControllerProvider(filter))
+          .requireValue;
+      expect(state.history, isEmpty);
+      expect(state.inFlight, isEmpty);
+      expect(
+        state.valueOf(const PriceCellKey(productId: 1, priceListId: 5)),
+        '10.00',
+      );
+    });
 
     test('costListOf finds the deployment cost list at id 0, which a '
         'truthiness check would miss (FR-019a)', () async {
@@ -914,10 +890,13 @@ void main() {
     const filter = PricingGridFilter();
     final saleList = _priceList(5);
 
-    Future<void> primeWith(List<ProductPrice> prices, {int products = 3}) async {
-      when(() => priceListRepository.list(limit: 100)).thenAnswer(
-        (_) async => PriceListResult(items: [saleList], total: 1),
-      );
+    Future<void> primeWith(
+      List<ProductPrice> prices, {
+      int products = 3,
+    }) async {
+      when(
+        () => priceListRepository.list(limit: 100),
+      ).thenAnswer((_) async => PriceListResult(items: [saleList], total: 1));
       when(
         () => productRepository.list(
           search: null,
@@ -964,47 +943,47 @@ void main() {
     }
 
     List<PriceCellWrite> lastWrites() =>
-        verify(() => productPriceRepository.applyPriceChanges(captureAny()))
-                .captured
-                .last
+        verify(
+              () => productPriceRepository.applyPriceChanges(captureAny()),
+            ).captured.last
             as List<PriceCellWrite>;
 
-    test(
-      'a multi-write column action reverses in ONE undo, restoring every '
-      'cell it touched (SC-004, FR-016)',
-      () async {
-        await primeWith([
-          _price(productId: 1, priceListId: 5, price: '10.00'),
-          _price(productId: 2, priceListId: 5, price: '20.00'),
-          _price(productId: 3, priceListId: 5, price: '30.00'),
-        ]);
-        stubBulk();
-        final notifier = container.read(
-          pricingGridControllerProvider(filter).notifier,
-        );
+    test('a multi-write column action reverses in ONE undo, restoring every '
+        'cell it touched (SC-004, FR-016)', () async {
+      await primeWith([
+        _price(productId: 1, priceListId: 5, price: '10.00'),
+        _price(productId: 2, priceListId: 5, price: '20.00'),
+        _price(productId: 3, priceListId: 5, price: '30.00'),
+      ]);
+      stubBulk();
+      final notifier = container.read(
+        pricingGridControllerProvider(filter).notifier,
+      );
 
-        await notifier.adjustByPercent(
-          priceListId: 5,
-          percent: Decimal.fromInt(10),
-        );
-        expect(
-          container.read(pricingGridControllerProvider(filter)).requireValue.history,
-          hasLength(1),
-        );
-
-        final undone = await notifier.undoLast();
-
-        expect(undone, 3);
-        final state = container
+      await notifier.adjustByPercent(
+        priceListId: 5,
+        percent: Decimal.fromInt(10),
+      );
+      expect(
+        container
             .read(pricingGridControllerProvider(filter))
-            .requireValue;
-        expect(state.history, isEmpty);
-        expect(
-          lastWrites().map((w) => w.price),
-          unorderedEquals(['10.00', '20.00', '30.00']),
-        );
-      },
-    );
+            .requireValue
+            .history,
+        hasLength(1),
+      );
+
+      final undone = await notifier.undoLast();
+
+      expect(undone, 3);
+      final state = container
+          .read(pricingGridControllerProvider(filter))
+          .requireValue;
+      expect(state.history, isEmpty);
+      expect(
+        lastWrites().map((w) => w.price),
+        unorderedEquals(['10.00', '20.00', '30.00']),
+      );
+    });
 
     test('undoLast on an empty history is a no-op', () async {
       await primeWith(const []);
@@ -1043,7 +1022,10 @@ void main() {
         verifyNever(() => productPriceRepository.applyPriceChanges(any()));
         // The entry still leaves the history — there is nothing left to undo.
         expect(
-          container.read(pricingGridControllerProvider(filter)).requireValue.history,
+          container
+              .read(pricingGridControllerProvider(filter))
+              .requireValue
+              .history,
           isEmpty,
         );
       },
@@ -1086,7 +1068,10 @@ void main() {
       );
       await notifier.commitCell(productId: 1, priceListId: 5, typed: 'abc');
       expect(
-        container.read(pricingGridControllerProvider(filter)).requireValue.rejectedCount,
+        container
+            .read(pricingGridControllerProvider(filter))
+            .requireValue
+            .rejectedCount,
         1,
       );
 

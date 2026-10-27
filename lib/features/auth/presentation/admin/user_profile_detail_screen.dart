@@ -165,7 +165,8 @@ class _UserProfileDetailScreenState
                 saveKey: const Key('save_user_profile_button'),
                 deleteKey: const Key('delete_user_profile_button'),
                 onEdit: widget.profileId != null
-                    ? () => context.replace('/user-profiles/${widget.profileId}')
+                    ? () =>
+                          context.replace('/user-profiles/${widget.profileId}')
                     : null,
                 onSave: !readOnly ? () => _submit(controller) : null,
                 onDelete: (_isEdit && !readOnly)
@@ -177,9 +178,7 @@ class _UserProfileDetailScreenState
                   // mode (only ever *shown* when `onDelete` is non-null,
                   // i.e. an existing profile), so `formState.name` — never
                   // null — is safe here even in create mode.
-                  message: l10n.deleteUserProfileConfirmMessage(
-                    formState.name,
-                  ),
+                  message: l10n.deleteUserProfileConfirmMessage(formState.name),
                   confirmLabel: l10n.deleteButton,
                   cancelLabel: l10n.cancelButton,
                   confirmKey: const Key('confirm_delete_user_profile'),

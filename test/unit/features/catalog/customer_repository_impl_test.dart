@@ -170,100 +170,110 @@ void main() {
     });
   });
 
-  group('embedded addresses/contacts (020-point-of-sale, mbe-api#132/#133)', () {
-    test('get() maps the embedded collections onto the entity', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode(
-            _customerJson(addresses: [_addressJson()], contacts: [_contactJson()]),
+  group(
+    'embedded addresses/contacts (020-point-of-sale, mbe-api#132/#133)',
+    () {
+      test('get() maps the embedded collections onto the entity', () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode(
+              _customerJson(
+                addresses: [_addressJson()],
+                contacts: [_contactJson()],
+              ),
+            ),
+            200,
+            headers: _jsonHeaders,
           ),
-          200,
-          headers: _jsonHeaders,
-        ),
-      );
-
-      final customer = await repository.get(customerId: 1);
-
-      expect(customer.addresses, hasLength(1));
-      expect(customer.addresses.single.addressId, 11);
-      expect(customer.contacts, hasLength(1));
-      expect(customer.contacts.single.contactId, 21);
-      expect(customer.contacts.single.name, 'Ana López');
-      expect(customer.contacts.single.mobile, '5544332211');
-    });
-
-    test('a response omitting them yields empty lists, not null — list '
-        'projections never include them', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode(_customerJson()),
-          200,
-          headers: _jsonHeaders,
-        ),
-      );
-
-      final customer = await repository.get(customerId: 1);
-
-      expect(customer.addresses, isEmpty);
-      expect(customer.contacts, isEmpty);
-    });
-
-    test('update() omits both keys when neither is passed, so existing links '
-        'are left alone (replace-all semantics)', () async {
-      RequestOptions? captured;
-      final repository = _repositoryWith((options) async {
-        captured = options;
-        return ResponseBody.fromString(
-          jsonEncode(_customerJson()),
-          200,
-          headers: _jsonHeaders,
         );
+
+        final customer = await repository.get(customerId: 1);
+
+        expect(customer.addresses, hasLength(1));
+        expect(customer.addresses.single.addressId, 11);
+        expect(customer.contacts, hasLength(1));
+        expect(customer.contacts.single.contactId, 21);
+        expect(customer.contacts.single.name, 'Ana López');
+        expect(customer.contacts.single.mobile, '5544332211');
       });
 
-      await repository.update(customerId: 1, name: 'Renamed');
-
-      final sentBody = _decodeBody(captured!.data);
-      expect(sentBody.containsKey('addresses'), isFalse);
-      expect(sentBody.containsKey('contacts'), isFalse);
-    });
-
-    test('update() sends the id lists when passed', () async {
-      RequestOptions? captured;
-      final repository = _repositoryWith((options) async {
-        captured = options;
-        return ResponseBody.fromString(
-          jsonEncode(_customerJson()),
-          200,
-          headers: _jsonHeaders,
+      test('a response omitting them yields empty lists, not null — list '
+          'projections never include them', () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode(_customerJson()),
+            200,
+            headers: _jsonHeaders,
+          ),
         );
+
+        final customer = await repository.get(customerId: 1);
+
+        expect(customer.addresses, isEmpty);
+        expect(customer.contacts, isEmpty);
       });
 
-      await repository.update(customerId: 1, addresses: [11, 12], contacts: [21]);
+      test('update() omits both keys when neither is passed, so existing links '
+          'are left alone (replace-all semantics)', () async {
+        RequestOptions? captured;
+        final repository = _repositoryWith((options) async {
+          captured = options;
+          return ResponseBody.fromString(
+            jsonEncode(_customerJson()),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
 
-      final sentBody = _decodeBody(captured!.data);
-      expect(sentBody['addresses'], [11, 12]);
-      expect(sentBody['contacts'], [21]);
-    });
+        await repository.update(customerId: 1, name: 'Renamed');
 
-    test('an empty list is sent, not dropped — it deliberately unlinks '
-        'everything', () async {
-      RequestOptions? captured;
-      final repository = _repositoryWith((options) async {
-        captured = options;
-        return ResponseBody.fromString(
-          jsonEncode(_customerJson()),
-          200,
-          headers: _jsonHeaders,
-        );
+        final sentBody = _decodeBody(captured!.data);
+        expect(sentBody.containsKey('addresses'), isFalse);
+        expect(sentBody.containsKey('contacts'), isFalse);
       });
 
-      await repository.update(customerId: 1, addresses: []);
+      test('update() sends the id lists when passed', () async {
+        RequestOptions? captured;
+        final repository = _repositoryWith((options) async {
+          captured = options;
+          return ResponseBody.fromString(
+            jsonEncode(_customerJson()),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
 
-      final sentBody = _decodeBody(captured!.data);
-      expect(sentBody['addresses'], isEmpty);
-      expect(sentBody.containsKey('addresses'), isTrue);
-    });
-  });
+        await repository.update(
+          customerId: 1,
+          addresses: [11, 12],
+          contacts: [21],
+        );
+
+        final sentBody = _decodeBody(captured!.data);
+        expect(sentBody['addresses'], [11, 12]);
+        expect(sentBody['contacts'], [21]);
+      });
+
+      test('an empty list is sent, not dropped — it deliberately unlinks '
+          'everything', () async {
+        RequestOptions? captured;
+        final repository = _repositoryWith((options) async {
+          captured = options;
+          return ResponseBody.fromString(
+            jsonEncode(_customerJson()),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
+
+        await repository.update(customerId: 1, addresses: []);
+
+        final sentBody = _decodeBody(captured!.data);
+        expect(sentBody['addresses'], isEmpty);
+        expect(sentBody.containsKey('addresses'), isTrue);
+      });
+    },
+  );
 
   group('CustomerRepositoryImpl.update', () {
     test('sends an updated creditLimit via the update-side wrapper class '
@@ -501,7 +511,6 @@ void main() {
     });
   });
 }
-
 
 Map<String, Object?> _discountJson({
   required int id,

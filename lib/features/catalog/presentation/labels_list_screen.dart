@@ -83,10 +83,8 @@ class LabelsListScreen extends ConsumerWidget {
                 key: const Key('new_label_button'),
                 icon: Icon(CatalogAction.create.icon),
                 label: Text(l10n.newLabelTooltip),
-                onPressed: () => _openLabelSheet(
-                  context,
-                  title: l10n.newLabelTitle,
-                ),
+                onPressed: () =>
+                    _openLabelSheet(context, title: l10n.newLabelTitle),
               ),
           ],
         ),

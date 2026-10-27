@@ -207,7 +207,8 @@ void main() {
         expect(
           discountText(tester),
           '15',
-          reason: 'confirmed and reformatted without the field ever losing focus',
+          reason:
+              'confirmed and reformatted without the field ever losing focus',
         );
       });
 
@@ -230,7 +231,11 @@ void main() {
         await tester.testTextInput.receiveAction(TextInputAction.done);
         await tester.pumpAndSettle();
 
-        expect(calls, 1, reason: 'confirming the same value again sends nothing new');
+        expect(
+          calls,
+          1,
+          reason: 'confirming the same value again sends nothing new',
+        );
       });
     });
   }
@@ -243,9 +248,15 @@ void main() {
 
     await pumpLine(tester, salesOrder);
     final field = tester.widget<ConfirmableTextField>(
-      find.ancestor(of: find.byKey(discountKey), matching: find.byType(ConfirmableTextField)),
+      find.ancestor(
+        of: find.byKey(discountKey),
+        matching: find.byType(ConfirmableTextField),
+      ),
     );
     expect(field.textAlign, TextAlign.end);
-    expect(field.keyboardType, const TextInputType.numberWithOptions(decimal: true));
+    expect(
+      field.keyboardType,
+      const TextInputType.numberWithOptions(decimal: true),
+    );
   });
 }

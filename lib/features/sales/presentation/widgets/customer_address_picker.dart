@@ -33,7 +33,8 @@ class _CustomerAddressPicker extends ConsumerStatefulWidget {
       _CustomerAddressPickerState();
 }
 
-class _CustomerAddressPickerState extends ConsumerState<_CustomerAddressPicker> {
+class _CustomerAddressPickerState
+    extends ConsumerState<_CustomerAddressPicker> {
   bool _linking = false;
 
   /// Creates an address and links it to the customer, then returns it. The
@@ -64,7 +65,9 @@ class _CustomerAddressPickerState extends ConsumerState<_CustomerAddressPicker> 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final customer = ref.watch(saleCustomerControllerProvider(widget.customerId));
+    final customer = ref.watch(
+      saleCustomerControllerProvider(widget.customerId),
+    );
 
     return AlertDialog(
       title: Text(l10n.posDeliveryAddressTitle),
@@ -90,7 +93,8 @@ class _CustomerAddressPickerState extends ConsumerState<_CustomerAddressPicker> 
                         title: Text(address.label),
                         onTap: _linking
                             ? null
-                            : () => Navigator.of(context).pop(address.addressId),
+                            : () =>
+                                  Navigator.of(context).pop(address.addressId),
                       );
                     },
                   ),

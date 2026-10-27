@@ -45,7 +45,8 @@ class DestinationCounterRow extends ConsumerStatefulWidget {
   final List<LineDistribution> distribution;
 
   @override
-  ConsumerState<DestinationCounterRow> createState() => _DestinationCounterRowState();
+  ConsumerState<DestinationCounterRow> createState() =>
+      _DestinationCounterRowState();
 }
 
 class _DestinationCounterRowState extends ConsumerState<DestinationCounterRow> {
@@ -132,7 +133,10 @@ class _DestinationCounterRowState extends ConsumerState<DestinationCounterRow> {
                         Padding(
                           padding: EdgeInsets.only(top: spacing.xxs),
                           child: Text(
-                            l10n.posDestinationCounts(lines, fmt.field.quantity(units)),
+                            l10n.posDestinationCounts(
+                              lines,
+                              fmt.field.quantity(units),
+                            ),
                             style: theme.typeRoles.metricLabel.copyWith(
                               color: theme.colorScheme.primary,
                             ),
@@ -153,9 +157,17 @@ class _DestinationCounterRowState extends ConsumerState<DestinationCounterRow> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Divider(height: 1, color: theme.colorScheme.outlineVariant),
+                      Divider(
+                        height: 1,
+                        color: theme.colorScheme.outlineVariant,
+                      ),
                       Padding(
-                        padding: EdgeInsets.fromLTRB(spacing.sm, 0, spacing.sm, spacing.sm),
+                        padding: EdgeInsets.fromLTRB(
+                          spacing.sm,
+                          0,
+                          spacing.sm,
+                          spacing.sm,
+                        ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -165,7 +177,9 @@ class _DestinationCounterRowState extends ConsumerState<DestinationCounterRow> {
                             ),
                             for (var i = 0; i < widget.distribution.length; i++)
                               DestinationLineRow(
-                                key: Key('counter_line_${widget.distribution[i].saleLineId}'),
+                                key: Key(
+                                  'counter_line_${widget.distribution[i].saleLineId}',
+                                ),
                                 productName: widget.distribution[i].productName,
                                 quantity: shares[i],
                                 fmt: fmt,

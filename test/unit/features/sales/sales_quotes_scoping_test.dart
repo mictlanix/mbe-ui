@@ -64,32 +64,35 @@ void main() {
     ).called(1);
   });
 
-  test('customer, salesperson, status and search thread through unchanged', () async {
-    final c = container();
+  test(
+    'customer, salesperson, status and search thread through unchanged',
+    () async {
+      final c = container();
 
-    await c.read(
-      salesQuotesListControllerProvider(
-        const SalesQuotesFilter(
+      await c.read(
+        salesQuotesListControllerProvider(
+          const SalesQuotesFilter(
+            customer: 7,
+            salesperson: 100,
+            status: SaleStatus.draft,
+            search: 'Acme',
+          ),
+        ).future,
+      );
+
+      verify(
+        () => repository.listQuotes(
+          mine: false,
           customer: 7,
           salesperson: 100,
           status: SaleStatus.draft,
           search: 'Acme',
+          skip: 0,
+          limit: any(named: 'limit'),
         ),
-      ).future,
-    );
-
-    verify(
-      () => repository.listQuotes(
-        mine: false,
-        customer: 7,
-        salesperson: 100,
-        status: SaleStatus.draft,
-        search: 'Acme',
-        skip: 0,
-        limit: any(named: 'limit'),
-      ),
-    ).called(1);
-  });
+      ).called(1);
+    },
+  );
 
   test('an empty search string is not sent — `null`, not `""` (matches '
       'the orders list\'s own convention)', () async {

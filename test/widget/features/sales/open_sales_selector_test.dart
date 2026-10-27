@@ -117,7 +117,8 @@ void main() {
           limit: any(named: 'limit'),
         ),
       ).thenAnswer(
-        (_) async => OpenSalePage(items: entry.value, total: entry.value.length),
+        (_) async =>
+            OpenSalePage(items: entry.value, total: entry.value.length),
       );
     }
   }
@@ -173,7 +174,8 @@ void main() {
       expect(
         find.text('#282127'),
         findsNothing,
-        reason: 'the folio is labelled, never a bare number whose meaning '
+        reason:
+            'the folio is labelled, never a bare number whose meaning '
             'depends on whether the sale was confirmed',
       );
       expect(find.text('Acme'), findsWidgets);
@@ -257,7 +259,10 @@ void main() {
       // Scoped to the row: the chip above it carries a folio of its own.
       final row = find.byKey(const Key('open_sale_337482'));
       expect(
-        find.descendant(of: row, matching: find.text(l10n.posOpenSaleId(337482))),
+        find.descendant(
+          of: row,
+          matching: find.text(l10n.posOpenSaleId(337482)),
+        ),
         findsOneWidget,
       );
       expect(
@@ -287,7 +292,9 @@ void main() {
       );
     });
 
-    testWidgets('a sale with no folio yet gets an id-only chip', (tester) async {
+    testWidgets('a sale with no folio yet gets an id-only chip', (
+      tester,
+    ) async {
       stubStatuses();
 
       await pumpPos(
@@ -319,7 +326,11 @@ void main() {
       (tester) async {
         stubStatuses(
           draft: [
-            _openSale(id: 1, status: SaleStatus.draft, date: DateTime(2026, 8, 5, 9)),
+            _openSale(
+              id: 1,
+              status: SaleStatus.draft,
+              date: DateTime(2026, 8, 5, 9),
+            ),
           ],
           completed: [
             _openSale(
@@ -329,7 +340,11 @@ void main() {
             ),
           ],
           paid: [
-            _openSale(id: 3, status: SaleStatus.paid, date: DateTime(2026, 8, 5, 18)),
+            _openSale(
+              id: 3,
+              status: SaleStatus.paid,
+              date: DateTime(2026, 8, 5, 18),
+            ),
           ],
         );
         when(() => salesOrders.getById(saleId: 3)).thenAnswer(
@@ -346,7 +361,9 @@ void main() {
 
         await pumpSelector(tester);
 
-        final draftRow = tester.getTopLeft(find.byKey(const Key('open_sale_1')));
+        final draftRow = tester.getTopLeft(
+          find.byKey(const Key('open_sale_1')),
+        );
         final completedRow = tester.getTopLeft(
           find.byKey(const Key('open_sale_2')),
         );
@@ -396,21 +413,24 @@ void main() {
       for (final status in SaleStatus.values.where(
         (s) => s != SaleStatus.cancelled,
       )) {
-        final captured = verify(
-          () => salesOrders.listOpen(
-            pointSale: 3,
-            status: status,
-            dateFrom: captureAny(named: 'dateFrom'),
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
-        ).captured.single as DateTime?;
+        final captured =
+            verify(
+                  () => salesOrders.listOpen(
+                    pointSale: 3,
+                    status: status,
+                    dateFrom: captureAny(named: 'dateFrom'),
+                    skip: any(named: 'skip'),
+                    limit: any(named: 'limit'),
+                  ),
+                ).captured.single
+                as DateTime?;
 
         expect(captured, isNotNull, reason: '$status must be date-scoped');
         expect(
           captured,
           DateTime(midnight.year, midnight.month, midnight.day),
-          reason: "today's local midnight, unflagged: WallClockDateTimeSerializer "
+          reason:
+              "today's local midnight, unflagged: WallClockDateTimeSerializer "
               "(mictlanix/mbe-ui#176) writes a DateTime's own fields with no "
               'suffix regardless of isUtc, so wireDate no longer needs to '
               'pretend the value is UTC to reach the wire correctly',
@@ -418,7 +438,8 @@ void main() {
         expect(
           captured!.isUtc,
           isFalse,
-          reason: 'wireDate returns a plain local value now — the fake UTC '
+          reason:
+              'wireDate returns a plain local value now — the fake UTC '
               'flag PR #180 needed to satisfy the old serializer is gone',
         );
       }
@@ -454,7 +475,8 @@ void main() {
       expect(
         find.text(l10n.posOpenSaleDraft),
         findsNothing,
-        reason: 'a paid sale is done capturing and owes nothing — it must '
+        reason:
+            'a paid sale is done capturing and owes nothing — it must '
             'not show under the draft/in-progress heading',
       );
     });
@@ -499,9 +521,7 @@ void main() {
     testWidgets('a paid delivery sale with an unfinished distribution is '
         'listed', (tester) async {
       stubStatuses(paid: [_openSale(id: 3, status: SaleStatus.paid)]);
-      when(
-        () => salesOrders.getById(saleId: 3),
-      ).thenAnswer(
+      when(() => salesOrders.getById(saleId: 3)).thenAnswer(
         (_) async => testSale(
           id: 3,
           status: SaleStatus.paid,
@@ -526,9 +546,7 @@ void main() {
       tester,
     ) async {
       stubStatuses(paid: [_openSale(id: 3, status: SaleStatus.paid)]);
-      when(
-        () => salesOrders.getById(saleId: 3),
-      ).thenAnswer(
+      when(() => salesOrders.getById(saleId: 3)).thenAnswer(
         (_) async => testSale(
           id: 3,
           status: SaleStatus.paid,
@@ -550,9 +568,7 @@ void main() {
         'alone (no shipTo) is finished and not listed, without even a '
         'delivery-order lookup', (tester) async {
       stubStatuses(paid: [_openSale(id: 3, status: SaleStatus.paid)]);
-      when(
-        () => salesOrders.getById(saleId: 3),
-      ).thenAnswer(
+      when(() => salesOrders.getById(saleId: 3)).thenAnswer(
         (_) async => testSale(
           id: 3,
           status: SaleStatus.paid,
@@ -571,9 +587,7 @@ void main() {
       tester,
     ) async {
       stubStatuses(paid: [_openSale(id: 3, status: SaleStatus.paid)]);
-      when(
-        () => salesOrders.getById(saleId: 3),
-      ).thenAnswer(
+      when(() => salesOrders.getById(saleId: 3)).thenAnswer(
         (_) async => testSale(
           id: 3,
           status: SaleStatus.paid,
@@ -637,7 +651,9 @@ void main() {
       verifyNever(() => deliveries.listForSale(salesOrder: 4));
     });
 
-    testWidgets('a paid counter sale with no lines is not listed', (tester) async {
+    testWidgets('a paid counter sale with no lines is not listed', (
+      tester,
+    ) async {
       stubStatuses(paid: [_openSale(id: 3, status: SaleStatus.paid)]);
       when(
         () => salesOrders.getById(saleId: 3),

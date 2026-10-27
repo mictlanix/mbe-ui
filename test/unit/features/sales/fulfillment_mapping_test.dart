@@ -15,7 +15,10 @@ import 'package:mbe_ui/features/sales/domain/entities/fulfillment_mode.dart';
 void main() {
   group('FulfillmentType — delivery_order.fulfillment_type (never MIXED)', () {
     test('counterPickup is wire 0, delivery is wire 1', () {
-      expect(FulfillmentType.counterPickup.toApi(), api.FulfillmentType.number0);
+      expect(
+        FulfillmentType.counterPickup.toApi(),
+        api.FulfillmentType.number0,
+      );
       expect(FulfillmentType.delivery.toApi(), api.FulfillmentType.number1);
     });
 
@@ -24,29 +27,47 @@ void main() {
         FulfillmentType.fromApi(api.FulfillmentType.number0),
         FulfillmentType.counterPickup,
       );
-      expect(FulfillmentType.fromApi(api.FulfillmentType.number1), FulfillmentType.delivery);
+      expect(
+        FulfillmentType.fromApi(api.FulfillmentType.number1),
+        FulfillmentType.delivery,
+      );
     });
 
-    test('an unexpected wire value degrades to delivery rather than throwing', () {
-      expect(FulfillmentType.fromApi(api.FulfillmentType.number2), FulfillmentType.delivery);
-    });
+    test(
+      'an unexpected wire value degrades to delivery rather than throwing',
+      () {
+        expect(
+          FulfillmentType.fromApi(api.FulfillmentType.number2),
+          FulfillmentType.delivery,
+        );
+      },
+    );
   });
 
-  group('FulfillmentMode — sales_order.fulfillment_intent (all three values)', () {
-    test('counterPickup, delivery and mixed round-trip on the shared scale', () {
-      for (final mode in FulfillmentMode.values) {
-        expect(FulfillmentMode.fromApi(mode.toApi()), mode);
-      }
-    });
+  group(
+    'FulfillmentMode — sales_order.fulfillment_intent (all three values)',
+    () {
+      test(
+        'counterPickup, delivery and mixed round-trip on the shared scale',
+        () {
+          for (final mode in FulfillmentMode.values) {
+            expect(FulfillmentMode.fromApi(mode.toApi()), mode);
+          }
+        },
+      );
 
-    test('the three modes sit at wire 0, 1 and 2 respectively', () {
-      expect(FulfillmentMode.counterPickup.toApi(), api.FulfillmentType.number0);
-      expect(FulfillmentMode.delivery.toApi(), api.FulfillmentType.number1);
-      expect(FulfillmentMode.mixed.toApi(), api.FulfillmentType.number2);
-    });
+      test('the three modes sit at wire 0, 1 and 2 respectively', () {
+        expect(
+          FulfillmentMode.counterPickup.toApi(),
+          api.FulfillmentType.number0,
+        );
+        expect(FulfillmentMode.delivery.toApi(), api.FulfillmentType.number1);
+        expect(FulfillmentMode.mixed.toApi(), api.FulfillmentType.number2);
+      });
 
-    test('a null intent stays null — "not recorded", not a guessed mode', () {
-      expect(FulfillmentMode.fromApi(null), isNull);
-    });
-  });
+      test('a null intent stays null — "not recorded", not a guessed mode', () {
+        expect(FulfillmentMode.fromApi(null), isNull);
+      });
+    },
+  );
 }

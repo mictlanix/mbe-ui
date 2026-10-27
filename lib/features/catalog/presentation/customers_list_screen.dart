@@ -72,8 +72,7 @@ class CustomersListScreen extends ConsumerWidget {
                 key: const Key('new_customer_button'),
                 icon: Icon(CatalogAction.create.icon),
                 label: Text(l10n.newCustomerTooltip),
-                onPressed: () =>
-                    context.push('$_customersPath/new'),
+                onPressed: () => context.push('$_customersPath/new'),
               ),
           ],
           filters: [
@@ -106,8 +105,7 @@ class CustomersListScreen extends ConsumerWidget {
             emptyMessage: l10n.noCustomersFound,
             createLabel: canCreate ? l10n.newCustomerTooltip : null,
             onCreate: canCreate
-                ? () =>
-                      context.push('$_customersPath/new')
+                ? () => context.push('$_customersPath/new')
                 : null,
             clearFiltersLabel: l10n.clearFiltersButton,
             onClearFilters: () => context.go(_customersPath),

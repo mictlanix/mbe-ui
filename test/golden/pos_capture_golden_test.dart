@@ -94,7 +94,10 @@ void main() {
     await expectGoldenMatrix(
       tester,
       'pos_customer_bar',
-      (brightness, width) => SizedBox(width: width, child: CustomerBar(sale: testSale())),
+      (brightness, width) => SizedBox(
+        width: width,
+        child: CustomerBar(sale: testSale()),
+      ),
       overrides: [
         customerRepositoryProvider.overrideWithValue(customerRepository),
         customerPaymentRepositoryProvider.overrideWithValue(paymentRepository),
@@ -114,7 +117,9 @@ void main() {
             ? SaleLineCard(line: testLine(), facilityId: 9)
             : SaleLineRow(line: testLine(), facilityId: 9),
       ),
-      overrides: [warehouseRepositoryProvider.overrideWithValue(warehouseRepository)],
+      overrides: [
+        warehouseRepositoryProvider.overrideWithValue(warehouseRepository),
+      ],
     );
   });
 

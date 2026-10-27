@@ -30,7 +30,8 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 import 'pos_test_harness.dart';
 import 'session_override.dart';
 
-class MockDeliveryOrderRepository extends Mock implements DeliveryOrderRepository {}
+class MockDeliveryOrderRepository extends Mock
+    implements DeliveryOrderRepository {}
 
 class MockCustomerRepository extends Mock implements CustomerRepository {}
 
@@ -62,8 +63,10 @@ void main() {
     ).thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
   });
 
-  FloatingActionButton continueButton(WidgetTester tester) => tester
-      .widget<FloatingActionButton>(find.byKey(const Key('pos_continue_to_payment')));
+  FloatingActionButton continueButton(WidgetTester tester) =>
+      tester.widget<FloatingActionButton>(
+        find.byKey(const Key('pos_continue_to_payment')),
+      );
 
   void stubUpdateLine(
     MockSalesOrderRepository repo,
@@ -83,21 +86,23 @@ void main() {
     ).thenAnswer(answer);
   }
 
-  Future<ProviderContainer> pumpCapture(WidgetTester tester, MockSalesOrderRepository salesOrder) =>
-      pumpPos(
-        tester,
-        Consumer(
-          builder: (context, ref, _) {
-            final sale = ref.watch(posSaleControllerProvider).value;
-            return CaptureStep(sale: sale, onContinue: () {});
-          },
-        ),
-        overrides: [
-          warehouseOverride(warehouseRepository),
-          salesOrderOverride(salesOrder),
-        ],
-        surface: const Size(1400, 900),
-      );
+  Future<ProviderContainer> pumpCapture(
+    WidgetTester tester,
+    MockSalesOrderRepository salesOrder,
+  ) => pumpPos(
+    tester,
+    Consumer(
+      builder: (context, ref, _) {
+        final sale = ref.watch(posSaleControllerProvider).value;
+        return CaptureStep(sale: sale, onContinue: () {});
+      },
+    ),
+    overrides: [
+      warehouseOverride(warehouseRepository),
+      salesOrderOverride(salesOrder),
+    ],
+    surface: const Size(1400, 900),
+  );
 
   testWidgets('disabled while a line write is outstanding, enabled once the '
       'totals it produced are on screen (SC-001, SC-002)', (tester) async {
@@ -223,7 +228,8 @@ void main() {
     expect(
       continueButton(tester).onPressed,
       isNull,
-      reason: 'confirmed but still coalescing — not yet a request, still outstanding',
+      reason:
+          'confirmed but still coalescing — not yet a request, still outstanding',
     );
 
     // Let the ~400ms debounce fire and the (stubbed, instant) write settle.
@@ -270,8 +276,10 @@ void main() {
   });
 
   group('Cobro step (US4)', () {
-    FloatingActionButton closeButton(WidgetTester tester) => tester
-        .widget<FloatingActionButton>(find.byKey(const Key('payment_close_button')));
+    FloatingActionButton closeButton(WidgetTester tester) =>
+        tester.widget<FloatingActionButton>(
+          find.byKey(const Key('payment_close_button')),
+        );
 
     Future<ProviderContainer> pumpSummary(
       WidgetTester tester,
@@ -325,12 +333,22 @@ void main() {
         ),
       ).thenAnswer((_) async {});
 
-      final container = await pumpSummary(tester, salesOrder, paymentRepository);
+      final container = await pumpSummary(
+        tester,
+        salesOrder,
+        paymentRepository,
+      );
       await container.read(posSaleControllerProvider.notifier).ensureOpen();
       await tester.pumpAndSettle();
-      expect(closeButton(tester).onPressed, isNull, reason: 'balance is still outstanding');
+      expect(
+        closeButton(tester).onPressed,
+        isNull,
+        reason: 'balance is still outstanding',
+      );
 
-      final paymentNotifier = container.read(paymentControllerProvider.notifier);
+      final paymentNotifier = container.read(
+        paymentControllerProvider.notifier,
+      );
       paymentNotifier.setAmount('50.00');
       final submitted = paymentNotifier.tender(initial, methodCode: 1);
       await tester.pump();
@@ -367,20 +385,34 @@ void main() {
         ),
       ).thenAnswer((_) => completer.future);
 
-      final container = await pumpSummary(tester, salesOrder, paymentRepository);
+      final container = await pumpSummary(
+        tester,
+        salesOrder,
+        paymentRepository,
+      );
       await container.read(posSaleControllerProvider.notifier).ensureOpen();
       await tester.pumpAndSettle();
-      expect(closeButton(tester).onPressed, isNotNull, reason: 'balance already settled');
-
-      final reversed = container.read(paymentControllerProvider.notifier).reverse(
-        saleId: initial.id,
-        customerPaymentId: 1,
-        applicationId: 1,
-        reason: 'test',
+      expect(
+        closeButton(tester).onPressed,
+        isNotNull,
+        reason: 'balance already settled',
       );
+
+      final reversed = container
+          .read(paymentControllerProvider.notifier)
+          .reverse(
+            saleId: initial.id,
+            customerPaymentId: 1,
+            applicationId: 1,
+            reason: 'test',
+          );
       await tester.pump();
 
-      expect(closeButton(tester).onPressed, isNull, reason: 'the reversal is still applying');
+      expect(
+        closeButton(tester).onPressed,
+        isNull,
+        reason: 'the reversal is still applying',
+      );
 
       completer.complete();
       await reversed;
@@ -394,7 +426,8 @@ void main() {
       expect(
         closeButton(tester).onPressed,
         isNull,
-        reason: 'the reversal reopened the balance — a different, legitimate gate',
+        reason:
+            'the reversal reopened the balance — a different, legitimate gate',
       );
       when(
         () => salesOrder.getById(saleId: any(named: 'saleId')),
@@ -419,7 +452,11 @@ void main() {
       priceList: const PriceListRef(id: 1, name: 'Mostrador'),
       status: EntityStatus.active,
       addresses: const [
-        AddressListItem(addressId: 11, label: 'Destino uno', type: AddressType.business),
+        AddressListItem(
+          addressId: 11,
+          label: 'Destino uno',
+          type: AddressType.business,
+        ),
       ],
     );
 
@@ -485,13 +522,18 @@ void main() {
       await tester.pumpAndSettle();
 
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
-      FloatingActionButton finishButton() => tester.widget<FloatingActionButton>(
-        find.ancestor(
-          of: find.text(l10n.posFinishSale),
-          matching: find.byType(FloatingActionButton),
-        ),
+      FloatingActionButton finishButton() =>
+          tester.widget<FloatingActionButton>(
+            find.ancestor(
+              of: find.text(l10n.posFinishSale),
+              matching: find.byType(FloatingActionButton),
+            ),
+          );
+      expect(
+        finishButton().onPressed,
+        isNotNull,
+        reason: 'already fully assigned',
       );
-      expect(finishButton().onPressed, isNotNull, reason: 'already fully assigned');
 
       final write = container
           .read(
@@ -502,7 +544,11 @@ void main() {
           .updateDestination(destinationId: 500, comment: 'note');
       await tester.pump();
 
-      expect(finishButton().onPressed, isNull, reason: 'a destination write is outstanding');
+      expect(
+        finishButton().onPressed,
+        isNull,
+        reason: 'a destination write is outstanding',
+      );
 
       completer.complete(fullyAssigned());
       await write;

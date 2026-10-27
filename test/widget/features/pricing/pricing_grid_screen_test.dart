@@ -35,7 +35,8 @@ class MockProductRepository extends Mock implements ProductRepository {}
 
 class MockPriceListRepository extends Mock implements PriceListRepository {}
 
-class MockProductPriceRepository extends Mock implements ProductPriceRepository {}
+class MockProductPriceRepository extends Mock
+    implements ProductPriceRepository {}
 
 const _readOnlyUser = User(
   userId: 'reader',
@@ -58,29 +59,26 @@ const _fullAccessUser = User(
 AccessControlService _accessFor(User user) =>
     AccessControlService(AuthState.authenticated(token: 't', user: user));
 
-const _retail = PriceList(
-  priceListId: 5,
-  name: 'Retail',
-);
+const _retail = PriceList(priceListId: 5, name: 'Retail');
 
 /// The deployment's cost list sits at id **0** — a falsy primary key, which is
 /// why every check on a price-list id in this feature tests for null rather
 /// than truthiness (FR-019a).
-const _costo = PriceList(
-  priceListId: 0,
-  name: 'Costo',
-);
+const _costo = PriceList(priceListId: 0, name: 'Costo');
 
-ProductListItem _product(int id, {String code = 'SKU', String name = 'Product'}) =>
-    ProductListItem(
-      productId: id,
-      code: '$code-$id',
-      name: '$name $id',
-      unitOfMeasurementCode: 'PCE',
-      unitOfMeasurementName: 'Piece',
-      taxRate: '0.16',
-      status: EntityStatus.active,
-    );
+ProductListItem _product(
+  int id, {
+  String code = 'SKU',
+  String name = 'Product',
+}) => ProductListItem(
+  productId: id,
+  code: '$code-$id',
+  name: '$name $id',
+  unitOfMeasurementCode: 'PCE',
+  unitOfMeasurementName: 'Piece',
+  taxRate: '0.16',
+  status: EntityStatus.active,
+);
 
 void main() {
   late MockProductRepository productRepository;
@@ -131,7 +129,9 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           productRepositoryProvider.overrideWithValue(productRepository),
           priceListRepositoryProvider.overrideWithValue(priceListRepository),
-          productPriceRepositoryProvider.overrideWithValue(productPriceRepository),
+          productPriceRepositoryProvider.overrideWithValue(
+            productPriceRepository,
+          ),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
         child: MaterialApp(
@@ -163,8 +163,9 @@ void main() {
       routes: [
         GoRoute(
           path: '/pricing',
-          builder: (context, state) =>
-              Scaffold(body: PricingGridScreen(query: ListQuery.fromUri(state.uri))),
+          builder: (context, state) => Scaffold(
+            body: PricingGridScreen(query: ListQuery.fromUri(state.uri)),
+          ),
         ),
       ],
     );
@@ -181,7 +182,9 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(sharedPreferences),
           productRepositoryProvider.overrideWithValue(productRepository),
           priceListRepositoryProvider.overrideWithValue(priceListRepository),
-          productPriceRepositoryProvider.overrideWithValue(productPriceRepository),
+          productPriceRepositoryProvider.overrideWithValue(
+            productPriceRepository,
+          ),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
         child: MaterialApp.router(
@@ -217,7 +220,8 @@ void main() {
           limit: 20,
         ),
       ).thenAnswer(
-        (_) async => ProductListResult(items: [_product(1), _product(2)], total: 2),
+        (_) async =>
+            ProductListResult(items: [_product(1), _product(2)], total: 2),
       );
       when(
         () => productPriceRepository.listForProducts(
@@ -264,7 +268,9 @@ void main() {
           skip: 0,
           limit: 20,
         ),
-      ).thenAnswer((_) async => ProductListResult(items: [_product(1)], total: 1));
+      ).thenAnswer(
+        (_) async => ProductListResult(items: [_product(1)], total: 1),
+      );
       when(
         () => productPriceRepository.listForProducts(
           productIds: [1],
@@ -312,7 +318,9 @@ void main() {
           skip: 0,
           limit: 20,
         ),
-      ).thenAnswer((_) async => ProductListResult(items: [_product(1)], total: 1));
+      ).thenAnswer(
+        (_) async => ProductListResult(items: [_product(1)], total: 1),
+      );
       when(
         () => productPriceRepository.listForProducts(
           productIds: [1],
@@ -353,7 +361,10 @@ void main() {
 
         await pumpScreen(tester, signedInAs: _readOnlyUser);
 
-        expect(find.byKey(const Key('pricing_grid_column_menu_5')), findsNothing);
+        expect(
+          find.byKey(const Key('pricing_grid_column_menu_5')),
+          findsNothing,
+        );
         expect(find.byIcon(Icons.more_vert), findsNothing);
       },
     );
@@ -385,7 +396,10 @@ void main() {
         await tester.tap(find.byKey(const Key('pricing_grid_column_menu_0')));
         await tester.pumpAndSettle();
 
-        expect(find.byKey(const Key('pricing_grid_fill_down_0')), findsOneWidget);
+        expect(
+          find.byKey(const Key('pricing_grid_fill_down_0')),
+          findsOneWidget,
+        );
         expect(find.byKey(const Key('pricing_grid_copy_cost_0')), findsNothing);
       },
     );
@@ -421,9 +435,9 @@ void main() {
       await tester.pumpAndSettle();
 
       final captured =
-          verify(() => productPriceRepository.applyPriceChanges(captureAny()))
-                  .captured
-                  .single
+          verify(
+                () => productPriceRepository.applyPriceChanges(captureAny()),
+              ).captured.single
               as List<PriceCellWrite>;
       expect(captured, hasLength(1));
       expect(captured.single.price, '27.5');
@@ -484,7 +498,9 @@ void main() {
           skip: 0,
           limit: 20,
         ),
-      ).thenAnswer((_) async => ProductListResult(items: [_product(1)], total: 1));
+      ).thenAnswer(
+        (_) async => ProductListResult(items: [_product(1)], total: 1),
+      );
       when(
         () => productPriceRepository.listForProducts(
           productIds: [1],
@@ -517,7 +533,10 @@ void main() {
 
       await pumpScreen(tester, signedInAs: _fullAccessUser);
 
-      expect(find.byKey(const Key('pricing_grid_worklist_all')), findsOneWidget);
+      expect(
+        find.byKey(const Key('pricing_grid_worklist_all')),
+        findsOneWidget,
+      );
       expect(find.text('Missing Retail (14)'), findsOneWidget);
       expect(find.text('Missing Costo (3)'), findsOneWidget);
     });
@@ -533,7 +552,10 @@ void main() {
 
         await pumpScreen(tester, signedInAs: _fullAccessUser);
 
-        expect(find.byKey(const Key('pricing_grid_worklist_0')), findsOneWidget);
+        expect(
+          find.byKey(const Key('pricing_grid_worklist_0')),
+          findsOneWidget,
+        );
       },
     );
 
@@ -621,7 +643,10 @@ void main() {
 
         await pumpScreen(tester, signedInAs: _fullAccessUser);
 
-        expect(find.byKey(const Key('pricing_grid_worklist_all')), findsNothing);
+        expect(
+          find.byKey(const Key('pricing_grid_worklist_all')),
+          findsNothing,
+        );
         expect(find.byKey(const Key('pricing_grid_worklist_5')), findsNothing);
         // The grid itself still renders — a facet failure is not a page failure.
         expect(find.byKey(const Key('pricing_grid_table')), findsOneWidget);
@@ -672,7 +697,9 @@ void main() {
           skip: 0,
           limit: 20,
         ),
-      ).thenAnswer((_) async => ProductListResult(items: [_product(1)], total: 1));
+      ).thenAnswer(
+        (_) async => ProductListResult(items: [_product(1)], total: 1),
+      );
       when(
         () => productPriceRepository.listForProducts(
           productIds: [1],
@@ -722,7 +749,9 @@ void main() {
           skip: 0,
           limit: 20,
         ),
-      ).thenAnswer((_) async => ProductListResult(items: [_product(1)], total: 1));
+      ).thenAnswer(
+        (_) async => ProductListResult(items: [_product(1)], total: 1),
+      );
       when(
         () => productPriceRepository.listForProducts(
           productIds: [1],
@@ -760,7 +789,9 @@ void main() {
           skip: 0,
           limit: 20,
         ),
-      ).thenAnswer((_) async => ProductListResult(items: [_product(1)], total: 1));
+      ).thenAnswer(
+        (_) async => ProductListResult(items: [_product(1)], total: 1),
+      );
       when(
         () => productPriceRepository.listForProducts(
           productIds: [1],
@@ -868,10 +899,7 @@ void main() {
       await pumpScreen(tester, signedInAs: _fullAccessUser);
       await editOneCell(tester);
 
-      expect(
-        find.byKey(const Key('price_cell_badge_1_5')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('price_cell_badge_1_5')), findsOneWidget);
       final tooltip = tester.widget<Tooltip>(
         find
             .ancestor(
@@ -928,9 +956,9 @@ void main() {
       await tester.pumpAndSettle();
 
       final captured =
-          verify(() => productPriceRepository.applyPriceChanges(captureAny()))
-                  .captured
-                  .last
+          verify(
+                () => productPriceRepository.applyPriceChanges(captureAny()),
+              ).captured.last
               as List<PriceCellWrite>;
       expect(captured.single.price, '25.00');
       expect(find.byKey(const Key('pricing_grid_summary_bar')), findsNothing);
@@ -974,8 +1002,14 @@ void main() {
 
         // Still here, still holding the change — and the table has been put
         // back on the page our state is actually showing.
-        expect(find.byKey(const Key('pricing_grid_discard_dialog')), findsNothing);
-        expect(find.byKey(const Key('pricing_grid_summary_bar')), findsOneWidget);
+        expect(
+          find.byKey(const Key('pricing_grid_discard_dialog')),
+          findsNothing,
+        );
+        expect(
+          find.byKey(const Key('pricing_grid_summary_bar')),
+          findsOneWidget,
+        );
       },
     );
 
@@ -1006,13 +1040,19 @@ void main() {
         ),
       ).thenAnswer((_) async => const []);
 
-      final router = await pumpRoutedScreen(tester, signedInAs: _fullAccessUser);
+      final router = await pumpRoutedScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+      );
 
       await tester.tap(find.byIcon(Icons.chevron_right).first);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(find.byKey(const Key('pricing_grid_discard_dialog')), findsNothing);
+      expect(
+        find.byKey(const Key('pricing_grid_discard_dialog')),
+        findsNothing,
+      );
       expect(
         router.routeInformationProvider.value.uri.toString(),
         contains('page=2'),
@@ -1076,7 +1116,9 @@ void main() {
     // `PricingGridFilter()`, which would read a *different*, never-built
     // provider instance now that the two no longer coincide.
     PricingGridController notifierOf(WidgetTester tester) =>
-        ProviderScope.containerOf(tester.element(find.byType(PricingGridScreen))).read(
+        ProviderScope.containerOf(
+          tester.element(find.byType(PricingGridScreen)),
+        ).read(
           pricingGridControllerProvider(
             PricingGridFilter.fromQuery(const ListQuery()),
           ).notifier,
@@ -1093,9 +1135,9 @@ void main() {
         // the state the bug needed.
         await tester.tap(find.byKey(const Key('price_cell_1_5')));
         await tester.pumpAndSettle();
-        notifierOf(tester).openCell(
-          const PriceCellKey(productId: 2, priceListId: 5),
-        );
+        notifierOf(
+          tester,
+        ).openCell(const PriceCellKey(productId: 2, priceListId: 5));
         await tester.pumpAndSettle();
 
         final field = tester.widget<TextField>(
@@ -1112,9 +1154,9 @@ void main() {
 
       await tester.tap(find.byKey(const Key('price_cell_1_5')));
       await tester.pumpAndSettle();
-      notifierOf(tester).openCell(
-        const PriceCellKey(productId: 2, priceListId: 5),
-      );
+      notifierOf(
+        tester,
+      ).openCell(const PriceCellKey(productId: 2, priceListId: 5));
       await tester.pumpAndSettle();
 
       final field = tester.widget<TextField>(
@@ -1124,10 +1166,7 @@ void main() {
       // 2), not the raw wire value.
       expect(field.controller!.text, '20.00');
       expect(field.controller!.selection.baseOffset, 0);
-      expect(
-        field.controller!.selection.extentOffset,
-        '20.00'.length,
-      );
+      expect(field.controller!.selection.extentOffset, '20.00'.length);
     });
 
     testWidgets(
@@ -1153,15 +1192,14 @@ void main() {
         await pumpScreen(tester, signedInAs: _fullAccessUser);
 
         // A column action moves row 2 while every cell sits in reading mode.
-        await notifierOf(tester).adjustByPercent(
-          priceListId: 5,
-          percent: Decimal.fromInt(10),
-        );
+        await notifierOf(
+          tester,
+        ).adjustByPercent(priceListId: 5, percent: Decimal.fromInt(10));
         await tester.pumpAndSettle();
 
-        notifierOf(tester).openCell(
-          const PriceCellKey(productId: 2, priceListId: 5),
-        );
+        notifierOf(
+          tester,
+        ).openCell(const PriceCellKey(productId: 2, priceListId: 5));
         await tester.pumpAndSettle();
 
         final field = tester.widget<TextField>(

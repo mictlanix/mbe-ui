@@ -11,8 +11,7 @@ import 'package:mbe_ui/features/auth/domain/entities/user_profile.dart';
 import 'package:mbe_ui/features/auth/domain/repositories/user_profile_repository.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/user_profiles_controller.dart';
 
-class MockUserProfileRepository extends Mock
-    implements UserProfileRepository {}
+class MockUserProfileRepository extends Mock implements UserProfileRepository {}
 
 void main() {
   setUpAll(() {
@@ -76,17 +75,20 @@ void main() {
       expect(filter.status, isNull);
     });
 
-    test('an unparseable status degrades to the Active default, not a throw', () {
-      final filter = UserProfileFilter.fromQuery(
-        const ListQuery(
-          facets: {
-            'status': ['not-a-real-status'],
-          },
-        ),
-      );
+    test(
+      'an unparseable status degrades to the Active default, not a throw',
+      () {
+        final filter = UserProfileFilter.fromQuery(
+          const ListQuery(
+            facets: {
+              'status': ['not-a-real-status'],
+            },
+          ),
+        );
 
-      expect(filter.status, EntityStatus.active);
-    });
+        expect(filter.status, EntityStatus.active);
+      },
+    );
   });
 
   group('UserProfileFilterBadge.activeFilterCount', () {
@@ -96,8 +98,9 @@ void main() {
 
     test('1 when status is set', () {
       expect(
-        const UserProfileFilter(status: EntityStatus.inactive)
-            .activeFilterCount,
+        const UserProfileFilter(
+          status: EntityStatus.inactive,
+        ).activeFilterCount,
         1,
       );
     });
@@ -112,8 +115,7 @@ void main() {
 
     test('build(filter) fetches page 0 with the given filter', () async {
       when(
-        () =>
-            repository.list(search: null, status: null, skip: 0, limit: 20),
+        () => repository.list(search: null, status: null, skip: 0, limit: 20),
       ).thenAnswer(
         (_) async =>
             UserProfileListResult(items: [profile(1, 'Cashier')], total: 1),
@@ -166,15 +168,13 @@ void main() {
 
     test('a different pageIndex maps to skip = pageIndex * pageSize', () async {
       when(
-        () =>
-            repository.list(search: null, status: null, skip: 0, limit: 20),
+        () => repository.list(search: null, status: null, skip: 0, limit: 20),
       ).thenAnswer(
         (_) async =>
             UserProfileListResult(items: [profile(1, 'Cashier')], total: 21),
       );
       when(
-        () =>
-            repository.list(search: null, status: null, skip: 20, limit: 20),
+        () => repository.list(search: null, status: null, skip: 20, limit: 20),
       ).thenAnswer(
         (_) async => UserProfileListResult(
           items: [profile(2, 'Warehouse Clerk')],
@@ -260,48 +260,8 @@ void main() {
       );
     });
 
-    test('calls repository.create with the entered name and privileges', () async {
-      when(
-        () => repository.create(
-          name: any(named: 'name'),
-          description: any(named: 'description'),
-          status: any(named: 'status'),
-          privileges: any(named: 'privileges'),
-        ),
-      ).thenAnswer(
-        (_) async => const UserProfile(
-          userProfileId: 5,
-          name: 'Cashier',
-          status: EntityStatus.active,
-          privileges: [],
-        ),
-      );
-
-      final container = makeContainer();
-      addTearDown(container.dispose);
-      final notifier = container.read(
-        userProfileFormControllerProvider.notifier,
-      );
-
-      notifier.nameChanged('Cashier');
-      notifier.privilegeChanged(SystemObject.users, 2);
-
-      await notifier.save();
-
-      verify(
-        () => repository.create(
-          name: 'Cashier',
-          description: any(named: 'description'),
-          status: any(named: 'status'),
-          privileges: any(named: 'privileges'),
-        ),
-      ).called(1);
-      expect(container.read(userProfileFormControllerProvider).saved, isTrue);
-    });
-
     test(
-      'a duplicate-name conflict (case-insensitive) surfaces as a raw '
-      'ValidationError message, input preserved (FR-013)',
+      'calls repository.create with the entered name and privileges',
       () async {
         when(
           () => repository.create(
@@ -310,10 +270,13 @@ void main() {
             status: any(named: 'status'),
             privileges: any(named: 'privileges'),
           ),
-        ).thenThrow(
-          const AppError.validation([
-            FieldError(loc: ['name'], msg: 'A profile named "Cashier" already exists', type: 'conflict'),
-          ]),
+        ).thenAnswer(
+          (_) async => const UserProfile(
+            userProfileId: 5,
+            name: 'Cashier',
+            status: EntityStatus.active,
+            privileges: [],
+          ),
         );
 
         final container = makeContainer();
@@ -321,15 +284,56 @@ void main() {
         final notifier = container.read(
           userProfileFormControllerProvider.notifier,
         );
-        notifier.nameChanged('cashier');
+
+        notifier.nameChanged('Cashier');
+        notifier.privilegeChanged(SystemObject.users, 2);
 
         await notifier.save();
 
-        final state = container.read(userProfileFormControllerProvider);
-        expect(state.error, 'A profile named "Cashier" already exists');
-        expect(state.name, 'cashier');
+        verify(
+          () => repository.create(
+            name: 'Cashier',
+            description: any(named: 'description'),
+            status: any(named: 'status'),
+            privileges: any(named: 'privileges'),
+          ),
+        ).called(1);
+        expect(container.read(userProfileFormControllerProvider).saved, isTrue);
       },
     );
+
+    test('a duplicate-name conflict (case-insensitive) surfaces as a raw '
+        'ValidationError message, input preserved (FR-013)', () async {
+      when(
+        () => repository.create(
+          name: any(named: 'name'),
+          description: any(named: 'description'),
+          status: any(named: 'status'),
+          privileges: any(named: 'privileges'),
+        ),
+      ).thenThrow(
+        const AppError.validation([
+          FieldError(
+            loc: ['name'],
+            msg: 'A profile named "Cashier" already exists',
+            type: 'conflict',
+          ),
+        ]),
+      );
+
+      final container = makeContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(
+        userProfileFormControllerProvider.notifier,
+      );
+      notifier.nameChanged('cashier');
+
+      await notifier.save();
+
+      final state = container.read(userProfileFormControllerProvider);
+      expect(state.error, 'A profile named "Cashier" already exists');
+      expect(state.name, 'cashier');
+    });
   });
 
   group('UserProfileFormController.save (edit mode)', () {
@@ -424,9 +428,7 @@ void main() {
       expect(first.items.map((p) => p.name), ['Cashier']);
 
       serverHasSecondProfile = true;
-      await write(
-        container.read(userProfileFormControllerProvider.notifier),
-      );
+      await write(container.read(userProfileFormControllerProvider.notifier));
 
       final second = await container.read(
         userProfilesControllerProvider(filter).future,
@@ -456,11 +458,10 @@ void main() {
         await notifier.save();
       });
 
-      expect(
-        names,
-        ['Cashier', 'Warehouse Clerk'],
-        reason: 'the catalog list must show a newly created profile',
-      );
+      expect(names, [
+        'Cashier',
+        'Warehouse Clerk',
+      ], reason: 'the catalog list must show a newly created profile');
     });
 
     test('an update invalidates the catalog list', () async {
@@ -486,11 +487,10 @@ void main() {
         await notifier.save(existingProfileId: 5);
       });
 
-      expect(
-        names,
-        ['Cashier', 'Warehouse Clerk'],
-        reason: 'the catalog list must re-read after an update',
-      );
+      expect(names, [
+        'Cashier',
+        'Warehouse Clerk',
+      ], reason: 'the catalog list must re-read after an update');
     });
 
     test('a delete invalidates the catalog list', () async {
@@ -502,63 +502,60 @@ void main() {
         (notifier) => notifier.deleteProfile(5),
       );
 
-      expect(
-        names,
-        ['Cashier', 'Warehouse Clerk'],
-        reason: 'the catalog list must re-read after a delete',
-      );
+      expect(names, [
+        'Cashier',
+        'Warehouse Clerk',
+      ], reason: 'the catalog list must re-read after a delete');
     });
 
-    test('a failed save does NOT invalidate — nothing changed server-side',
-        () async {
-      when(
-        () => repository.create(
-          name: any(named: 'name'),
-          description: any(named: 'description'),
-          status: any(named: 'status'),
-          privileges: any(named: 'privileges'),
-        ),
-      ).thenThrow(const AppError.server(message: 'boom'));
+    test(
+      'a failed save does NOT invalidate — nothing changed server-side',
+      () async {
+        when(
+          () => repository.create(
+            name: any(named: 'name'),
+            description: any(named: 'description'),
+            status: any(named: 'status'),
+            privileges: any(named: 'privileges'),
+          ),
+        ).thenThrow(const AppError.server(message: 'boom'));
 
-      final names = await listNamesAfter((notifier) async {
-        notifier.nameChanged('Cashier');
-        await notifier.save();
-      });
+        final names = await listNamesAfter((notifier) async {
+          notifier.nameChanged('Cashier');
+          await notifier.save();
+        });
 
-      expect(
-        names,
-        ['Cashier'],
-        reason: 'a rejected save changed nothing, so the cached page stands',
-      );
-    });
+        expect(
+          names,
+          ['Cashier'],
+          reason: 'a rejected save changed nothing, so the cached page stands',
+        );
+      },
+    );
   });
 
   group('UserProfileFormController.deleteProfile', () {
-    test(
-      'a referenced-by-users conflict leaves the profile in place and '
-      'surfaces the server\'s reason (FR-014)',
-      () async {
-        when(() => repository.delete(profileId: any(named: 'profileId')))
-            .thenThrow(
-              const AppError.server(
-                message: '3 users still reference this profile',
-              ),
-            );
+    test('a referenced-by-users conflict leaves the profile in place and '
+        'surfaces the server\'s reason (FR-014)', () async {
+      when(
+        () => repository.delete(profileId: any(named: 'profileId')),
+      ).thenThrow(
+        const AppError.server(message: '3 users still reference this profile'),
+      );
 
-        final container = makeContainer();
-        addTearDown(container.dispose);
-        final notifier = container.read(
-          userProfileFormControllerProvider.notifier,
-        );
+      final container = makeContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(
+        userProfileFormControllerProvider.notifier,
+      );
 
-        await notifier.deleteProfile(5);
+      await notifier.deleteProfile(5);
 
-        final state = container.read(userProfileFormControllerProvider);
-        expect(state.deleted, isFalse);
-        expect(state.error, UserProfileFormErrorCode.deleteFailed);
-        expect(state.errorDetail, '3 users still reference this profile');
-      },
-    );
+      final state = container.read(userProfileFormControllerProvider);
+      expect(state.deleted, isFalse);
+      expect(state.error, UserProfileFormErrorCode.deleteFailed);
+      expect(state.errorDetail, '3 users still reference this profile');
+    });
 
     test('a successful delete sets deleted', () async {
       when(

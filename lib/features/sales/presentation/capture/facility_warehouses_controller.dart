@@ -9,7 +9,10 @@ part 'facility_warehouses_controller.g.dart';
 /// warehouse belonging to the sale's own facility. An autodispose family
 /// keyed by facility id, since a sale never changes facility mid-capture.
 @riverpod
-Future<List<Warehouse>> facilityWarehousesController(Ref ref, int facilityId) async {
+Future<List<Warehouse>> facilityWarehousesController(
+  Ref ref,
+  int facilityId,
+) async {
   final result = await ref
       .watch(warehouseRepositoryProvider)
       .list(facilityId: facilityId, limit: 100);

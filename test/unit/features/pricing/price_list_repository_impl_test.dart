@@ -124,30 +124,27 @@ void main() {
       expect(priceList.name, 'Retail');
     });
 
-    test(
-      'never sends the deprecated profit margins — the repository no longer '
-      'accepts them, so a create carries the name alone (spec 033 US7, '
-      'mbe-api#185; the server defaults both to 0)',
-      () async {
-        RequestOptions? captured;
-        final repository = _repositoryWith((options) async {
-          captured = options;
-          return ResponseBody.fromString(
-            jsonEncode(_priceListJson()),
-            201,
-            headers: _jsonHeaders,
-          );
-        });
+    test('never sends the deprecated profit margins — the repository no longer '
+        'accepts them, so a create carries the name alone (spec 033 US7, '
+        'mbe-api#185; the server defaults both to 0)', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_priceListJson()),
+          201,
+          headers: _jsonHeaders,
+        );
+      });
 
-        await repository.create(name: 'Retail');
+      await repository.create(name: 'Retail');
 
-        final sentBody = _decodeBody(captured!.data);
-        expect(sentBody['name'], 'Retail');
-        // Never a value: the server defaults both to 0 on a create.
-        expect(sentBody['high_profit_margin'], isNull);
-        expect(sentBody['low_profit_margin'], isNull);
-      },
-    );
+      final sentBody = _decodeBody(captured!.data);
+      expect(sentBody['name'], 'Retail');
+      // Never a value: the server defaults both to 0 on a create.
+      expect(sentBody['high_profit_margin'], isNull);
+      expect(sentBody['low_profit_margin'], isNull);
+    });
 
     test('omits margins from the request body when not provided', () async {
       RequestOptions? captured;
@@ -209,29 +206,26 @@ void main() {
       expect(priceList.name, 'Retail Updated');
     });
 
-    test(
-      'sends the name and never a profit margin — the repository no longer '
-      'accepts them, and mbe-api#185 reads an absent margin as "leave the '
-      'stored one alone" (spec 033 US7)',
-      () async {
-        RequestOptions? captured;
-        final repository = _repositoryWith((options) async {
-          captured = options;
-          return ResponseBody.fromString(
-            jsonEncode(_priceListJson()),
-            200,
-            headers: _jsonHeaders,
-          );
-        });
+    test('sends the name and never a profit margin — the repository no longer '
+        'accepts them, and mbe-api#185 reads an absent margin as "leave the '
+        'stored one alone" (spec 033 US7)', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode(_priceListJson()),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
 
-        await repository.update(priceListId: 1, name: 'Retail');
+      await repository.update(priceListId: 1, name: 'Retail');
 
-        final sentBody = _decodeBody(captured!.data);
-        expect(sentBody['name'], 'Retail');
-        expect(sentBody['high_profit_margin'], isNull);
-        expect(sentBody['low_profit_margin'], isNull);
-      },
-    );
+      final sentBody = _decodeBody(captured!.data);
+      expect(sentBody['name'], 'Retail');
+      expect(sentBody['high_profit_margin'], isNull);
+      expect(sentBody['low_profit_margin'], isNull);
+    });
 
     test('404 maps to AppError.notFound', () async {
       final repository = _repositoryWith(
@@ -296,20 +290,17 @@ void main() {
       );
     });
 
-    test(
-      'omits `replacement` from the request when null (FR-013)',
-      () async {
-        RequestOptions? captured;
-        final repository = _repositoryWith((options) async {
-          captured = options;
-          return ResponseBody.fromString('', 204);
-        });
+    test('omits `replacement` from the request when null (FR-013)', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString('', 204);
+      });
 
-        await repository.delete(priceListId: 1);
+      await repository.delete(priceListId: 1);
 
-        expect(captured!.queryParameters.containsKey('replacement'), isFalse);
-      },
-    );
+      expect(captured!.queryParameters.containsKey('replacement'), isFalse);
+    });
 
     test('sends `replacement` when named (FR-012)', () async {
       RequestOptions? captured;
@@ -323,35 +314,32 @@ void main() {
       expect(captured!.queryParameters['replacement'], 3);
     });
 
-    test(
-      'a 409 conflict maps to ServerError(409, detail) with the server\'s '
-      'sentence intact (research.md R10)',
-      () async {
-        final repository = _repositoryWith(
-          (options) async => ResponseBody.fromString(
-            jsonEncode({
-              'detail':
-                  'Still referenced by customer.price_list (12) — remove '
-                  'those records first',
-            }),
-            409,
-            headers: _jsonHeaders,
-          ),
-        );
+    test('a 409 conflict maps to ServerError(409, detail) with the server\'s '
+        'sentence intact (research.md R10)', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'detail':
+                'Still referenced by customer.price_list (12) — remove '
+                'those records first',
+          }),
+          409,
+          headers: _jsonHeaders,
+        ),
+      );
 
-        await expectLater(
-          () => repository.delete(priceListId: 1),
-          throwsA(
-            const AppError.server(
-              statusCode: 409,
-              message:
-                  'Still referenced by customer.price_list (12) — remove '
-                  'those records first',
-            ),
+      await expectLater(
+        () => repository.delete(priceListId: 1),
+        throwsA(
+          const AppError.server(
+            statusCode: 409,
+            message:
+                'Still referenced by customer.price_list (12) — remove '
+                'those records first',
           ),
-        );
-      },
-    );
+        ),
+      );
+    });
   });
 
   group('PriceListRepositoryImpl.deletePreview', () {

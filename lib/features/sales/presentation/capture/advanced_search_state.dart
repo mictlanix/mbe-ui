@@ -10,8 +10,9 @@ import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 /// above that. `ProductSearchField` resets it to `const []` immediately
 /// before pushing the screen, and the screen is the only thing that mutates
 /// it afterwards.
-final advancedSearchSelectionProvider =
-    StateProvider<List<ProductListItem>>((ref) => const []);
+final advancedSearchSelectionProvider = StateProvider<List<ProductListItem>>(
+  (ref) => const [],
+);
 
 /// The confirmed selection, handed back to `ProductSearchField` once the
 /// Advanced search screen pops (spec 038 data-model.md §4). `null` except in
@@ -25,5 +26,6 @@ final advancedSearchSelectionProvider =
 /// and `OrderScreen` overrides `saleEditorProvider` inside its own nested
 /// `ProviderScope` — a root-navigator screen cannot add lines to the right
 /// sale itself. The host's own `ProductSearchField` does the adding.
-final advancedSearchResultProvider =
-    StateProvider<List<ProductListItem>?>((ref) => null);
+final advancedSearchResultProvider = StateProvider<List<ProductListItem>?>(
+  (ref) => null,
+);

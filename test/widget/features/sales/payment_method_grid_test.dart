@@ -95,12 +95,17 @@ void main() {
     );
   }
 
-  Future<ProviderContainer> pumpGrid(WidgetTester tester, {bool enabled = true}) async {
+  Future<ProviderContainer> pumpGrid(
+    WidgetTester tester, {
+    bool enabled = true,
+  }) async {
     final container = await pumpPos(
       tester,
       PaymentMethodGrid(sale: sale, facilityId: 9, enabled: enabled),
       overrides: [
-        paymentMethodOptionRepositoryProvider.overrideWithValue(optionRepository),
+        paymentMethodOptionRepositoryProvider.overrideWithValue(
+          optionRepository,
+        ),
         customerPaymentOverride(paymentRepository),
         openSessionOverride(),
       ],
@@ -121,9 +126,13 @@ void main() {
     ),
   ).called(1);
 
-  Container tileContainer(WidgetTester tester, Key tileKey) => tester.widget<Container>(
-    find.descendant(of: find.byKey(tileKey), matching: find.byType(Container)),
-  );
+  Container tileContainer(WidgetTester tester, Key tileKey) =>
+      tester.widget<Container>(
+        find.descendant(
+          of: find.byKey(tileKey),
+          matching: find.byType(Container),
+        ),
+      );
 
   group('configured options', () {
     testWidgets('one tile per option, each with the right secondary line', (
@@ -221,12 +230,17 @@ void main() {
         ]);
       });
 
-      testWidgets('asks for it, and cancelling applies nothing', (tester) async {
+      testWidgets('asks for it, and cancelling applies nothing', (
+        tester,
+      ) async {
         await pumpGrid(tester);
 
         await tester.tap(find.byKey(const Key('payment_option_2')));
         await tester.pumpAndSettle();
-        expect(find.byKey(const Key('payment_reference_dialog')), findsOneWidget);
+        expect(
+          find.byKey(const Key('payment_reference_dialog')),
+          findsOneWidget,
+        );
 
         await tester.tap(find.text('Cancelar'));
         await tester.pumpAndSettle();
@@ -294,7 +308,9 @@ void main() {
     stubOptions(const []);
     await pumpGrid(tester);
 
-    await tester.tap(find.byKey(Key('payment_method_${PaymentMethod.cash.code}')));
+    await tester.tap(
+      find.byKey(Key('payment_method_${PaymentMethod.cash.code}')),
+    );
     await tester.pumpAndSettle();
 
     verifyCreated();
@@ -321,7 +337,9 @@ void main() {
     final container = ProviderContainer(
       retry: (_, _) => null,
       overrides: [
-        paymentMethodOptionRepositoryProvider.overrideWithValue(optionRepository),
+        paymentMethodOptionRepositoryProvider.overrideWithValue(
+          optionRepository,
+        ),
       ],
     );
     addTearDown(container.dispose);

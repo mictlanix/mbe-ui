@@ -62,7 +62,10 @@ abstract class DeliveryOrderRepository {
   });
 
   /// `DELETE /delivery-orders/{id}/lines/{lineId}`.
-  Future<Destination> removeLine({required int destinationId, required int lineId});
+  Future<Destination> removeLine({
+    required int destinationId,
+    required int lineId,
+  });
 
   /// `POST /delivery-orders/{id}/cancel` — used to undo a destination, and
   /// internally by [create] to roll back a half-formed one.

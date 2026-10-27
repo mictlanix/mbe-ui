@@ -15,8 +15,7 @@ import 'package:mbe_ui/features/auth/domain/repositories/user_profile_repository
 import 'package:mbe_ui/features/auth/presentation/admin/user_profile_detail_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-class MockUserProfileRepository extends Mock
-    implements UserProfileRepository {}
+class MockUserProfileRepository extends Mock implements UserProfileRepository {}
 
 const _sparseProfile = UserProfile(
   userProfileId: 5,
@@ -136,27 +135,24 @@ void main() {
     },
   );
 
-  testWidgets(
-    'a sparse profile renders ticked only on the objects it grants, '
-    'unticked everywhere else in the grid (FR-012)',
-    (tester) async {
-      await pumpScreen(tester, profileId: 5);
+  testWidgets('a sparse profile renders ticked only on the objects it grants, '
+      'unticked everywhere else in the grid (FR-012)', (tester) async {
+    await pumpScreen(tester, profileId: 5);
 
-      final productsCreate = tester.widget<Checkbox>(
-        find.byKey(
-          Key('privilege_${SystemObject.products.name}_${AccessRight.read.name}'),
-        ),
-      );
-      expect(productsCreate.value, isTrue);
+    final productsCreate = tester.widget<Checkbox>(
+      find.byKey(
+        Key('privilege_${SystemObject.products.name}_${AccessRight.read.name}'),
+      ),
+    );
+    expect(productsCreate.value, isTrue);
 
-      final vehiclesRead = tester.widget<Checkbox>(
-        find.byKey(
-          Key('privilege_${SystemObject.labels.name}_${AccessRight.read.name}'),
-        ),
-      );
-      expect(vehiclesRead.value, isFalse);
-    },
-  );
+    final vehiclesRead = tester.widget<Checkbox>(
+      find.byKey(
+        Key('privilege_${SystemObject.labels.name}_${AccessRight.read.name}'),
+      ),
+    );
+    expect(vehiclesRead.value, isFalse);
+  });
 
   testWidgets('titles the app bar "Edit Profile" in ordinary edit mode', (
     tester,
@@ -167,24 +163,21 @@ void main() {
     expect(find.text('View Profile'), findsNothing);
   });
 
-  testWidgets(
-    'titles the app bar "View Profile" with an Edit affordance and '
-    'disabled fields when forced read-only',
-    (tester) async {
-      await pumpScreen(tester, profileId: 5, forceReadOnly: true);
+  testWidgets('titles the app bar "View Profile" with an Edit affordance and '
+      'disabled fields when forced read-only', (tester) async {
+    await pumpScreen(tester, profileId: 5, forceReadOnly: true);
 
-      expect(find.text('View Profile'), findsOneWidget);
-      expect(find.byKey(const Key('edit_user_profile_button')), findsOneWidget);
-      expect(
-        tester
-            .widget<TextFormField>(
-              find.byKey(const Key('user_profile_name_field')),
-            )
-            .enabled,
-        isFalse,
-      );
-    },
-  );
+    expect(find.text('View Profile'), findsOneWidget);
+    expect(find.byKey(const Key('edit_user_profile_button')), findsOneWidget);
+    expect(
+      tester
+          .widget<TextFormField>(
+            find.byKey(const Key('user_profile_name_field')),
+          )
+          .enabled,
+      isFalse,
+    );
+  });
 
   testWidgets('hides Delete when forced read-only', (tester) async {
     await pumpScreen(tester, profileId: 5, forceReadOnly: true);
@@ -213,23 +206,23 @@ void main() {
       );
       await tester.tap(
         find.byKey(
-          Key(
-            'privilege_${SystemObject.labels.name}_${AccessRight.read.name}',
-          ),
+          Key('privilege_${SystemObject.labels.name}_${AccessRight.read.name}'),
         ),
       );
       await tester.tap(find.byKey(const Key('save_user_profile_button')));
       await tester.pumpAndSettle();
 
-      final captured = verify(
-        () => repository.update(
-          profileId: 5,
-          name: 'Senior Cashier',
-          description: any(named: 'description'),
-          status: any(named: 'status'),
-          privileges: captureAny(named: 'privileges'),
-        ),
-      ).captured.single as List<Privilege>;
+      final captured =
+          verify(
+                () => repository.update(
+                  profileId: 5,
+                  name: 'Senior Cashier',
+                  description: any(named: 'description'),
+                  status: any(named: 'status'),
+                  privileges: captureAny(named: 'privileges'),
+                ),
+              ).captured.single
+              as List<Privilege>;
 
       expect(
         captured.any((p) => p.systemObject == SystemObject.labels),
@@ -238,36 +231,29 @@ void main() {
     },
   );
 
-  testWidgets(
-    'a delete confirmation blocks an accidental delete, and a 409 '
-    'referenced-conflict leaves the profile in place with the server '
-    'detail shown (FR-014)',
-    (tester) async {
-      when(
-        () => repository.delete(profileId: any(named: 'profileId')),
-      ).thenThrow(
-        const AppError.server(
-          message: '3 users still reference this profile',
-        ),
-      );
+  testWidgets('a delete confirmation blocks an accidental delete, and a 409 '
+      'referenced-conflict leaves the profile in place with the server '
+      'detail shown (FR-014)', (tester) async {
+    when(() => repository.delete(profileId: any(named: 'profileId'))).thenThrow(
+      const AppError.server(message: '3 users still reference this profile'),
+    );
 
-      await pumpScreen(tester, profileId: 5);
+    await pumpScreen(tester, profileId: 5);
 
-      await tester.tap(find.byKey(const Key('delete_user_profile_button')));
-      await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('delete_user_profile_button')));
+    await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('confirm_delete_user_profile')), findsOneWidget);
+    expect(
+      find.byKey(const Key('confirm_delete_user_profile')),
+      findsOneWidget,
+    );
 
-      await tester.tap(find.byKey(const Key('confirm_delete_user_profile')));
-      await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('confirm_delete_user_profile')));
+    await tester.pumpAndSettle();
 
-      expect(find.text('Could not delete the profile.'), findsOneWidget);
-      expect(
-        find.text('3 users still reference this profile'),
-        findsOneWidget,
-      );
-      // The screen is still showing the profile, not popped.
-      expect(find.text('Edit Profile'), findsOneWidget);
-    },
-  );
+    expect(find.text('Could not delete the profile.'), findsOneWidget);
+    expect(find.text('3 users still reference this profile'), findsOneWidget);
+    // The screen is still showing the profile, not popped.
+    expect(find.text('Edit Profile'), findsOneWidget);
+  });
 }

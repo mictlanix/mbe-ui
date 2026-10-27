@@ -319,7 +319,10 @@ void main() {
         await tester.tap(find.byKey(_toggle));
         await tester.pumpAndSettle();
 
-        expect(find.byKey(const Key('sales_order_currency_field')), findsNothing);
+        expect(
+          find.byKey(const Key('sales_order_currency_field')),
+          findsNothing,
+        );
         expect(find.text(l10n.salesOrderCurrencyLabel), findsNothing);
         expect(find.text(l10n.salesOrderExchangeRateLabel), findsNothing);
         expect(find.text(l10n.salesOrderPriorityLabel), findsOneWidget);

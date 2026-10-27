@@ -20,8 +20,7 @@ final customerRepositoryProvider = Provider<CustomerRepository>((ref) {
 });
 
 class CustomerRepositoryImpl implements CustomerRepository {
-  CustomerRepositoryImpl(Dio dio)
-    : _api = CustomersApi(dio, appSerializers);
+  CustomerRepositoryImpl(Dio dio) : _api = CustomersApi(dio, appSerializers);
 
   final CustomersApi _api;
 

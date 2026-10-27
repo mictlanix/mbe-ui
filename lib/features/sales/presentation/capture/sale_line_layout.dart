@@ -81,11 +81,13 @@ double _saleLineScaleRatio(TextScaler scaler) =>
 /// padding `SaleLineRow` applies. Scales with [_saleLineScaleRatio] so a
 /// larger text-size level grows the band instead of clipping the text inside
 /// it (FR-024).
-double saleLineFieldHeight(TextScaler scaler) => 52.0 * _saleLineScaleRatio(scaler);
+double saleLineFieldHeight(TextScaler scaler) =>
+    52.0 * _saleLineScaleRatio(scaler);
 
 /// The height of the box a **text field** puts inside its decoration: one line
 /// of the body role (14 px at the theme's 1.43 line height), scaled.
-double _saleLineTextContentHeight(TextScaler scaler) => 20.0 * _saleLineScaleRatio(scaler);
+double _saleLineTextContentHeight(TextScaler scaler) =>
+    20.0 * _saleLineScaleRatio(scaler);
 
 /// The height of the box a **dropdown** puts inside its decoration. Flutter's
 /// own `_kDenseButtonHeight` floor — `max(lineHeight, max(iconSize, 24))` in
@@ -121,7 +123,8 @@ double saleLineDropdownPadding(TextScaler scaler) =>
 /// Sized for the taller of the two things in it: the field band
 /// ([saleLineFieldHeight]) and the product cell's reserved two name lines plus
 /// its code line. Scales with [_saleLineScaleRatio], same as the field band.
-double saleLineRowHeight(TextScaler scaler) => 60.0 * _saleLineScaleRatio(scaler);
+double saleLineRowHeight(TextScaler scaler) =>
+    60.0 * _saleLineScaleRatio(scaler);
 
 /// Below this, even the two-row fallback has nowhere left to shrink — the
 /// caller substitutes `SaleLineCard` at this width today, so `SaleLineRow`
@@ -133,7 +136,10 @@ const saleLineTwoRowMinWidth = 600.0;
 /// instead — the column and its gap are gone, so the row needs less width to
 /// fit on one line. `true` (the default) keeps every existing caller's
 /// behaviour unchanged.
-SaleLineLayout saleLineLayoutFor(double availableWidth, {bool warehouse = true}) {
+SaleLineLayout saleLineLayoutFor(
+  double availableWidth, {
+  bool warehouse = true,
+}) {
   final singleRowMinWidth = warehouse
       ? saleLineSingleRowMinWidth
       : saleLineSingleRowMinWidthNoWarehouse;

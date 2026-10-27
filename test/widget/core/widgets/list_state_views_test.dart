@@ -216,44 +216,39 @@ void main() {
     expect(find.text('b'), findsOneWidget);
   });
 
-  testWidgets(
-    'a background refresh (AsyncData with isLoading:true, e.g. an '
-    'unchanged-term search resubmission) shows the same bare '
-    'CircularProgressIndicator used for first-load/pagination-change above '
-    'the still-visible previous data, rather than no feedback at all',
-    (tester) async {
-      // Mirrors what a real `ref.invalidate()` actually produces (per
-      // Riverpod's own `AsyncNotifier` refresh logic): `AsyncLoading`
-      // merged with the previous `AsyncData` via `copyWithPrevious`,
-      // yielding `AsyncData(isLoading: true)` with the old value retained.
-      // `copyWithPrevious` is `@internal` since riverpod 3, with no public
-      // equivalent; this fixture still needs the exact state it produces.
-      final loadingWithPreviousData = const AsyncValue<CatalogPage<String>>
-          .loading()
-          // ignore: invalid_use_of_internal_member
-          .copyWithPrevious(AsyncValue.data(_page(const ['a', 'b'])));
+  testWidgets('a background refresh (AsyncData with isLoading:true, e.g. an '
+      'unchanged-term search resubmission) shows the same bare '
+      'CircularProgressIndicator used for first-load/pagination-change above '
+      'the still-visible previous data, rather than no feedback at all', (
+    tester,
+  ) async {
+    // Mirrors what a real `ref.invalidate()` actually produces (per
+    // Riverpod's own `AsyncNotifier` refresh logic): `AsyncLoading`
+    // merged with the previous `AsyncData` via `copyWithPrevious`,
+    // yielding `AsyncData(isLoading: true)` with the old value retained.
+    // `copyWithPrevious` is `@internal` since riverpod 3, with no public
+    // equivalent; this fixture still needs the exact state it produces.
+    final loadingWithPreviousData =
+        const AsyncValue<CatalogPage<String>>.loading()
+        // ignore: invalid_use_of_internal_member
+        .copyWithPrevious(AsyncValue.data(_page(const ['a', 'b'])));
 
-      await pumpState(
-        tester,
-        state: loadingWithPreviousData,
-        isFiltered: false,
-      );
+    await pumpState(tester, state: loadingWithPreviousData, isFiltered: false);
 
-      expect(find.byKey(const Key('list_state_refreshing')), findsOneWidget);
-      expect(
-        find.descendant(
-          of: find.byKey(const Key('list_state_refreshing')),
-          matching: find.byType(CircularProgressIndicator),
-        ),
-        findsOneWidget,
-      );
-      // The previous page's rows stay visible — this is additive
-      // feedback, not a replacement of the content (FR-012).
-      expect(find.byKey(const Key('list_state_data')), findsOneWidget);
-      expect(find.text('a'), findsOneWidget);
-      expect(find.text('b'), findsOneWidget);
-    },
-  );
+    expect(find.byKey(const Key('list_state_refreshing')), findsOneWidget);
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('list_state_refreshing')),
+        matching: find.byType(CircularProgressIndicator),
+      ),
+      findsOneWidget,
+    );
+    // The previous page's rows stay visible — this is additive
+    // feedback, not a replacement of the content (FR-012).
+    expect(find.byKey(const Key('list_state_data')), findsOneWidget);
+    expect(find.text('a'), findsOneWidget);
+    expect(find.text('b'), findsOneWidget);
+  });
 
   testWidgets(
     'a plain (non-refreshing) populated state shows no progress bar',

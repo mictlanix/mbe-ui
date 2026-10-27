@@ -220,10 +220,8 @@ Future<void> pumpScreen(
   await tester.pumpAndSettle();
 }
 
-Future<void> shoot(WidgetTester tester, String name) => expectLater(
-  find.byType(MaterialApp),
-  matchesGoldenFile('shots/$name.png'),
-);
+Future<void> shoot(WidgetTester tester, String name) =>
+    expectLater(find.byType(MaterialApp), matchesGoldenFile('shots/$name.png'));
 
 void main() {
   setUpAll(loadGoldenFonts);
@@ -246,7 +244,9 @@ void main() {
     // `defaultWarehouseControllerProvider` (the warehouse a new line defaults
     // to, FR-024) resolves through this — unstubbed it reaches the real dio
     // client and its secure-storage-backed auth interceptor.
-    when(() => pointSales.get(pointSaleId: any(named: 'pointSaleId'))).thenAnswer(
+    when(
+      () => pointSales.get(pointSaleId: any(named: 'pointSaleId')),
+    ).thenAnswer(
       (_) async => const PointSale(
         pointSaleId: 18,
         facilityId: 51,
@@ -269,9 +269,9 @@ void main() {
         ),
       ).thenAnswer((_) async => const OpenSalePage(items: [], total: 0));
     }
-    when(() => cashSessions.getCurrent()).thenAnswer(
-      (_) async => const CurrentSession(state: SessionState.open),
-    );
+    when(
+      () => cashSessions.getCurrent(),
+    ).thenAnswer((_) async => const CurrentSession(state: SessionState.open));
     when(
       () => warehouses.list(
         search: any(named: 'search'),
@@ -310,7 +310,8 @@ void main() {
       ),
     );
     when(
-      () => payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
+      () =>
+          payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => '0.00');
   });
 
@@ -408,7 +409,9 @@ void main() {
   });
 
   group('the capture surface (US2–US6)', () {
-    testWidgets('desktop 1440 — one row per line, footer flush', (tester) async {
+    testWidgets('desktop 1440 — one row per line, footer flush', (
+      tester,
+    ) async {
       await pumpScreen(
         tester,
         CaptureStep(sale: sale(), onContinue: () {}),
@@ -418,7 +421,9 @@ void main() {
       await shoot(tester, '02_capture_1440');
     });
 
-    testWidgets('tablet landscape 1024 — still one row (FR-037a)', (tester) async {
+    testWidgets('tablet landscape 1024 — still one row (FR-037a)', (
+      tester,
+    ) async {
       await pumpScreen(
         tester,
         CaptureStep(sale: sale(), onContinue: () {}),
@@ -460,7 +465,9 @@ void main() {
       await shoot(tester, '06_customer_band_searching');
     });
 
-    testWidgets('the mode selector alone, first segment selected', (tester) async {
+    testWidgets('the mode selector alone, first segment selected', (
+      tester,
+    ) async {
       await pumpScreen(
         tester,
         Align(

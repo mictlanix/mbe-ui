@@ -26,25 +26,31 @@ void main() {
     ],
   );
 
-  Destination counterDestination({required List<DestinationLine> lines}) => Destination(
-    id: 600,
-    fulfillmentType: FulfillmentType.counterPickup,
-    status: DeliveryOrderStatus.draft,
-    lines: lines,
-  );
+  Destination counterDestination({required List<DestinationLine> lines}) =>
+      Destination(
+        id: 600,
+        fulfillmentType: FulfillmentType.counterPickup,
+        status: DeliveryOrderStatus.draft,
+        lines: lines,
+      );
 
   Future<void> pumpRow(
     WidgetTester tester, {
     Destination? counterDestination,
     required List<Destination> destinations,
   }) async {
-    final distribution = distributionFor(sale: sale, destinations: destinations);
+    final distribution = distributionFor(
+      sale: sale,
+      destinations: destinations,
+    );
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
     await tester.pumpWidget(
       ProviderScope(
         retry: (_, _) => null,
-        overrides: [sharedPreferencesProvider.overrideWithValue(sharedPreferences)],
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+        ],
         child: MaterialApp(
           locale: const Locale('es', 'MX'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -157,7 +163,11 @@ void main() {
         ],
       );
 
-      await pumpRow(tester, counterDestination: destination, destinations: [destination]);
+      await pumpRow(
+        tester,
+        counterDestination: destination,
+        destinations: [destination],
+      );
       await expand(tester);
 
       // 4 (recorded) + 6 (still unassigned) = 10 — the whole line.
@@ -180,7 +190,11 @@ void main() {
         ),
       ],
     );
-    await pumpRow(tester, counterDestination: destination, destinations: [destination]);
+    await pumpRow(
+      tester,
+      counterDestination: destination,
+      destinations: [destination],
+    );
 
     // Header, collapsed: line 5 has 3 (recorded) + 7 (unassigned) = 10;
     // line 6 has 0 (recorded) + 20 (unassigned) = 20. Two non-zero lines,

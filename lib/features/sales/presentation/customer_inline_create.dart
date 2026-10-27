@@ -180,10 +180,8 @@ class _CustomerInlineCreateFormState
               );
               return result.items;
             },
-            onSelected: (t) => controller.taxpayerSelected(
-              t.taxpayerRecipientId,
-              t.name,
-            ),
+            onSelected: (t) =>
+                controller.taxpayerSelected(t.taxpayerRecipientId, t.name),
             initialDisplayText: form.taxpayers.firstOrNull?.name ?? '',
             enabled: enabled,
           ),

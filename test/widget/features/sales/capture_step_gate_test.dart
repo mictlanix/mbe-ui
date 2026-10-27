@@ -40,7 +40,9 @@ void main() {
   });
 
   ProductStock stockOf(String available) => ProductStock(
-    warehouses: [WarehouseStock(warehouse: 3, onHand: available, available: available)],
+    warehouses: [
+      WarehouseStock(warehouse: 3, onHand: available, available: available),
+    ],
   );
 
   Future<ProviderContainer> pumpGate(
@@ -72,7 +74,8 @@ void main() {
   }
 
   bool continueEnabled(WidgetTester tester) =>
-      tester.widget<FloatingActionButton>(find.byKey(continueKey)).onPressed != null;
+      tester.widget<FloatingActionButton>(find.byKey(continueKey)).onPressed !=
+      null;
 
   testWidgets('blocked with a reason while a line is short; unblocked by '
       'lowering the quantity or switching warehouse', (tester) async {
@@ -97,7 +100,11 @@ void main() {
       lines: [testLine(quantity: '6', warehouse: 4)],
     );
     await tester.pumpAndSettle();
-    expect(continueEnabled(tester), isTrue, reason: 'no row for warehouse 4 is unknown');
+    expect(
+      continueEnabled(tester),
+      isTrue,
+      reason: 'no row for warehouse 4 is unknown',
+    );
   });
 
   testWidgets('unknown stock does not block', (tester) async {
@@ -130,7 +137,9 @@ void main() {
           minOrderQty: 1,
           stockRequired: true,
           stockable: true,
-          stock: const [WarehouseStock(warehouse: 3, onHand: '1', available: '1')],
+          stock: const [
+            WarehouseStock(warehouse: 3, onHand: '1', available: '1'),
+          ],
         ),
       ],
     );
@@ -139,7 +148,9 @@ void main() {
     expect(continueEnabled(tester), isFalse);
     expect(find.byKey(reasonKey), findsOneWidget);
     // One batch request by id (mbe-api#237), never a per-code search.
-    verify(() => salesOrders.productLookupByIds(products: [11], customer: 7)).called(1);
+    verify(
+      () => salesOrders.productLookupByIds(products: [11], customer: 7),
+    ).called(1);
     verifyNever(
       () => salesOrders.productLookup(
         pattern: any(named: 'pattern'),
@@ -169,7 +180,9 @@ void main() {
           minOrderQty: 1,
           stockRequired: true,
           stockable: true,
-          stock: const [WarehouseStock(warehouse: 3, onHand: '1', available: '1')],
+          stock: const [
+            WarehouseStock(warehouse: 3, onHand: '1', available: '1'),
+          ],
         ),
       ];
     });
@@ -189,7 +202,9 @@ void main() {
     expect(continueEnabled(tester), isFalse);
   });
 
-  testWidgets('a host that does not enforce stock is never blocked', (tester) async {
+  testWidgets('a host that does not enforce stock is never blocked', (
+    tester,
+  ) async {
     await pumpGate(
       tester,
       testSale(lines: [testLine(quantity: '6')]),
@@ -205,15 +220,26 @@ void main() {
   // warehouse seeded the cache with that warehouse only, so every other one
   // read "unknown" — the pop-up hid their stock, and switching a short line
   // to one of them slipped past the gate.
-  testWidgets('the product search is not filtered to one warehouse', (tester) async {
+  testWidgets('the product search is not filtered to one warehouse', (
+    tester,
+  ) async {
     await pumpGate(
       tester,
       testSale(lines: [testLine(quantity: '1')]),
       // The register's point of sale has a default warehouse, which is
       // exactly what the search used to be filtered to.
-      overrides: [defaultWarehouseControllerProvider.overrideWith((ref, pointSale) async => 3)],
+      overrides: [
+        defaultWarehouseControllerProvider.overrideWith(
+          (ref, pointSale) async => 3,
+        ),
+      ],
     );
 
-    expect(tester.widget<ProductSearchField>(find.byType(ProductSearchField)).warehouse, isNull);
+    expect(
+      tester
+          .widget<ProductSearchField>(find.byType(ProductSearchField))
+          .warehouse,
+      isNull,
+    );
   });
 }

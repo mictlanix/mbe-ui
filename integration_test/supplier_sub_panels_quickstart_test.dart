@@ -219,18 +219,15 @@ void main() {
       Duration timeout = const Duration(seconds: 25),
     }) => pumpUntilTrue(
       () => f.evaluate().isNotEmpty,
-      f.description,
+      f.toString(),
       timeout: timeout,
     );
 
     Future<void> pumpUntilGone(
       Finder f, {
       Duration timeout = const Duration(seconds: 25),
-    }) => pumpUntilTrue(
-      () => f.evaluate().isEmpty,
-      'gone: ${f.description}',
-      timeout: timeout,
-    );
+    }) =>
+        pumpUntilTrue(() => f.evaluate().isEmpty, 'gone: $f', timeout: timeout);
 
     Finder titled(String t) =>
         find.descendant(of: find.byType(AppBar), matching: find.text(t));
@@ -318,6 +315,7 @@ void main() {
           );
           return;
         } catch (_) {
+          // ignore: avoid_print
           print(
             'QS-DBG search attempt $attempt uri=${router().routerDelegate.currentConfiguration.uri} '
             'field=${fieldText('suppliers_search_field')} '
@@ -434,6 +432,7 @@ void main() {
               .where((t) => t.isNotEmpty)
               .take(40)
               .toList();
+          // ignore: avoid_print
           print(
             'QS-DBG loc=${router().routerDelegate.currentConfiguration.last.matchedLocation} '
             'texts=$texts',
@@ -460,8 +459,10 @@ void main() {
     // ------------------------------------------------------------------
     // Login (admin)
     // ------------------------------------------------------------------
+    // ignore: avoid_print
     print('QS: logging in');
     await login(_adminUser, _adminPass);
+    // ignore: avoid_print
     print('QS: logged in');
 
     // Pre-compute server state of all existing suppliers (read-only).
@@ -483,6 +484,7 @@ void main() {
         details[d.supplierId] = d;
       }
     }
+    // ignore: avoid_print
     print('QS: fetched ${details.length} details');
     int linksOf(Supplier s) =>
         s.addresses.length + s.contacts.length + s.bankAccounts.length;
@@ -938,6 +940,7 @@ void main() {
       await openDetail(sid);
       await waitLoaded(testCode);
       await pumpUntilTrue(() => count('edit_agreement_') == 1, 'agreement');
+      // ignore: avoid_print
       print(
         'QS-DBG width=${MediaQuery.of(tester.element(find.byType(Scaffold).last)).size.width} tables=${byKey('supplier_agreements_table').evaluate().length} notasInTable=${find.descendant(of: byKey('supplier_agreements_table'), matching: find.text('Notas')).evaluate().length} sections=${byKey('supplier_agreements_section').evaluate().length}',
       );
@@ -996,59 +999,56 @@ void main() {
     });
 
     // ---- §3 read-only ----
-    await step(
-      '3.1 read-only account sees 4 sections, no mutating '
-      'controls',
-      () async {
-        final sid = testId!;
-        await container().read(authProvider.notifier).signOut();
-        await pumpUntil(byKey('login_username_field'));
-        await login(_roUser, _roPass);
-        router().go('/suppliers');
-        await pumpFor(const Duration(seconds: 4));
-        if (byKey('suppliers_table').evaluate().isEmpty) {
-          final loc =
-              router().routerDelegate.currentConfiguration.last.matchedLocation;
-          expect(loc.startsWith('/suppliers'), isFalse, reason: 'redirected');
-          throw TestFailure(
-            'MBE_READONLY account has no Suppliers Read (system_object 3): '
-            'the Suppliers screen is route-gated and redirects to $loc, so '
-            'the read-only detail view cannot be exercised with it',
-          );
-        }
-        await openRowFromList(testCode);
-        await pumpUntil(titled('Ver proveedor'));
-        await waitLoaded(testCode);
-        await pumpFor(const Duration(seconds: 2));
-        for (final k in [
-          'supplier_addresses_section',
-          'supplier_contacts_section',
-          'supplier_bank_accounts_section',
-          'supplier_agreements_section',
-        ]) {
-          expect(byKey(k), findsOneWidget, reason: 'section $k visible');
-        }
-        final s = await supplierRepo.get(supplierId: sid);
-        expect(count('linked_row_addresses_'), s.addresses.length);
-        expect(count('linked_row_contacts_'), s.contacts.length);
-        expect(count('linked_row_bank_accounts_'), s.bankAccounts.length);
-        expect(count('linked_row_'), greaterThan(0));
-        final forbidden = <String>[];
-        for (final p in [
-          'edit_supplier_button',
-          'save_button',
-          'delete_supplier_button',
-          'unlink_',
-          'linked_new_',
-          'linked_picker_',
-          'add_agreement_button',
-          'edit_agreement_',
-        ]) {
-          if (count(p) > 0) forbidden.add(p);
-        }
-        expect(forbidden, isEmpty, reason: 'present for read-only: $forbidden');
-      },
-    );
+    await step('3.1 read-only account sees 4 sections, no mutating '
+        'controls', () async {
+      final sid = testId!;
+      await container().read(authProvider.notifier).signOut();
+      await pumpUntil(byKey('login_username_field'));
+      await login(_roUser, _roPass);
+      router().go('/suppliers');
+      await pumpFor(const Duration(seconds: 4));
+      if (byKey('suppliers_table').evaluate().isEmpty) {
+        final loc =
+            router().routerDelegate.currentConfiguration.last.matchedLocation;
+        expect(loc.startsWith('/suppliers'), isFalse, reason: 'redirected');
+        throw TestFailure(
+          'MBE_READONLY account has no Suppliers Read (system_object 3): '
+          'the Suppliers screen is route-gated and redirects to $loc, so '
+          'the read-only detail view cannot be exercised with it',
+        );
+      }
+      await openRowFromList(testCode);
+      await pumpUntil(titled('Ver proveedor'));
+      await waitLoaded(testCode);
+      await pumpFor(const Duration(seconds: 2));
+      for (final k in [
+        'supplier_addresses_section',
+        'supplier_contacts_section',
+        'supplier_bank_accounts_section',
+        'supplier_agreements_section',
+      ]) {
+        expect(byKey(k), findsOneWidget, reason: 'section $k visible');
+      }
+      final s = await supplierRepo.get(supplierId: sid);
+      expect(count('linked_row_addresses_'), s.addresses.length);
+      expect(count('linked_row_contacts_'), s.contacts.length);
+      expect(count('linked_row_bank_accounts_'), s.bankAccounts.length);
+      expect(count('linked_row_'), greaterThan(0));
+      final forbidden = <String>[];
+      for (final p in [
+        'edit_supplier_button',
+        'save_button',
+        'delete_supplier_button',
+        'unlink_',
+        'linked_new_',
+        'linked_picker_',
+        'add_agreement_button',
+        'edit_agreement_',
+      ]) {
+        if (count(p) > 0) forbidden.add(p);
+      }
+      expect(forbidden, isEmpty, reason: 'present for read-only: $forbidden');
+    });
 
     softFinding(
       '3.2 profile privilege edit (Bank Accounts Read removal)',

@@ -59,13 +59,17 @@ void main() {
       overrides: [
         customerPaymentOverride(paymentRepository),
         session == null ? openSessionOverride() : sessionOverride(session),
-        paymentMethodOptionRepositoryProvider.overrideWithValue(optionRepository),
+        paymentMethodOptionRepositoryProvider.overrideWithValue(
+          optionRepository,
+        ),
       ],
     );
   }
 
-  FloatingActionButton closeButton(WidgetTester tester) => tester
-      .widget<FloatingActionButton>(find.byKey(const Key('payment_close_button')));
+  FloatingActionButton closeButton(WidgetTester tester) =>
+      tester.widget<FloatingActionButton>(
+        find.byKey(const Key('payment_close_button')),
+      );
 
   group('close gate (FR-049, FR-051)', () {
     testWidgets('disabled while a balance is outstanding on immediate terms', (
@@ -75,7 +79,9 @@ void main() {
       expect(closeButton(tester).onPressed, isNull);
     });
 
-    testWidgets('enabled once the balance reaches exactly zero', (tester) async {
+    testWidgets('enabled once the balance reaches exactly zero', (
+      tester,
+    ) async {
       await pumpStep(tester, balance: '0.00');
       expect(closeButton(tester).onPressed, isNotNull);
     });
@@ -149,7 +155,10 @@ void main() {
       stubTender();
       await pumpStep(tester, balance: '116.00');
 
-      await tester.enterText(find.byKey(const Key('payment_amount_field')), '50.00');
+      await tester.enterText(
+        find.byKey(const Key('payment_amount_field')),
+        '50.00',
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('payment_method_1')));
       await tester.pumpAndSettle();
@@ -172,7 +181,10 @@ void main() {
       stubTender();
       await pumpStep(tester, balance: '116.00');
 
-      await tester.enterText(find.byKey(const Key('payment_amount_field')), '0');
+      await tester.enterText(
+        find.byKey(const Key('payment_amount_field')),
+        '0',
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('payment_method_1')));
       await tester.pumpAndSettle();
@@ -230,8 +242,14 @@ void main() {
           'the tiles', (tester) async {
         await pumpStep(tester, balance: '116.00', session: current);
 
-        expect(find.byKey(const Key('pos_session_blocked_banner')), findsOneWidget);
-        expect(find.byKey(const Key('pos_session_blocked_action')), findsOneWidget);
+        expect(
+          find.byKey(const Key('pos_session_blocked_banner')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('pos_session_blocked_action')),
+          findsOneWidget,
+        );
         final tile = tester.widget<InkWell>(
           find.descendant(
             of: find.byKey(const Key('payment_method_1')),

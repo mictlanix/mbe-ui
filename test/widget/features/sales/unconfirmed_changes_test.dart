@@ -92,7 +92,9 @@ void main() {
   testWidgets('unconfirmed text at the step boundary raises the question '
       'instead of silently discarding or advancing', (tester) async {
     final salesOrder = MockSalesOrderRepository();
-    when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale(lines: [testLine()]));
+    when(
+      () => anyOpen(salesOrder),
+    ).thenAnswer((_) async => testSale(lines: [testLine()]));
     stubUpdateLine(salesOrder, (_) async => testSale(lines: [testLine()]));
 
     final container = await pumpCapture(tester, salesOrder);
@@ -123,8 +125,13 @@ void main() {
   testWidgets('keep commits the typed value exactly as Enter would, then '
       'advances (FR-026)', (tester) async {
     final salesOrder = MockSalesOrderRepository();
-    when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale(lines: [testLine()]));
-    stubUpdateLine(salesOrder, (_) async => testSale(lines: [testLine(discountRate: '0.15')]));
+    when(
+      () => anyOpen(salesOrder),
+    ).thenAnswer((_) async => testSale(lines: [testLine()]));
+    stubUpdateLine(
+      salesOrder,
+      (_) async => testSale(lines: [testLine(discountRate: '0.15')]),
+    );
     stubConfirm(salesOrder, testSale(lines: [testLine(discountRate: '0.15')]));
 
     final container = await pumpCapture(tester, salesOrder);
@@ -155,7 +162,9 @@ void main() {
   testWidgets('keep, refused: the sale stays on Venta and the field restores '
       '(FR-026)', (tester) async {
     final salesOrder = MockSalesOrderRepository();
-    when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale(lines: [testLine()]));
+    when(
+      () => anyOpen(salesOrder),
+    ).thenAnswer((_) async => testSale(lines: [testLine()]));
     stubUpdateLine(salesOrder, (_) async => throw StateError('refused'));
 
     final container = await pumpCapture(tester, salesOrder);
@@ -170,7 +179,10 @@ void main() {
 
     expect(container.read(posStepControllerProvider).current, PosStep.venta);
     expect(
-      tester.widget<TextField>(find.byKey(const Key('sale_line_discount_5'))).controller!.text,
+      tester
+          .widget<TextField>(find.byKey(const Key('sale_line_discount_5')))
+          .controller!
+          .text,
       '0',
     );
   });
@@ -178,7 +190,9 @@ void main() {
   testWidgets('discard drops the typed text, plays the acknowledgement, and '
       'advances (FR-027)', (tester) async {
     final salesOrder = MockSalesOrderRepository();
-    when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale(lines: [testLine()]));
+    when(
+      () => anyOpen(salesOrder),
+    ).thenAnswer((_) async => testSale(lines: [testLine()]));
     stubUpdateLine(salesOrder, (_) async => testSale(lines: [testLine()]));
     stubConfirm(salesOrder, testSale(lines: [testLine()]));
 
@@ -205,7 +219,10 @@ void main() {
       ),
     );
     expect(
-      tester.widget<TextField>(find.byKey(const Key('sale_line_discount_5'))).controller!.text,
+      tester
+          .widget<TextField>(find.byKey(const Key('sale_line_discount_5')))
+          .controller!
+          .text,
       '0',
     );
     expect(container.read(posStepControllerProvider).current, PosStep.cobro);
@@ -214,7 +231,9 @@ void main() {
   testWidgets('keep editing leaves the sale on Venta with the typed text '
       'intact (FR-028)', (tester) async {
     final salesOrder = MockSalesOrderRepository();
-    when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale(lines: [testLine()]));
+    when(
+      () => anyOpen(salesOrder),
+    ).thenAnswer((_) async => testSale(lines: [testLine()]));
     stubUpdateLine(salesOrder, (_) async => testSale(lines: [testLine()]));
 
     final container = await pumpCapture(tester, salesOrder);
@@ -229,7 +248,10 @@ void main() {
 
     expect(container.read(posStepControllerProvider).current, PosStep.venta);
     expect(
-      tester.widget<TextField>(find.byKey(const Key('sale_line_discount_5'))).controller!.text,
+      tester
+          .widget<TextField>(find.byKey(const Key('sale_line_discount_5')))
+          .controller!
+          .text,
       '15',
       reason: 'keep editing is not itself a discard',
     );
@@ -238,8 +260,13 @@ void main() {
   testWidgets('a cashier who confirms every edit never sees the dialog '
       '(SC-013)', (tester) async {
     final salesOrder = MockSalesOrderRepository();
-    when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale(lines: [testLine()]));
-    stubUpdateLine(salesOrder, (_) async => testSale(lines: [testLine(discountRate: '0.15')]));
+    when(
+      () => anyOpen(salesOrder),
+    ).thenAnswer((_) async => testSale(lines: [testLine()]));
+    stubUpdateLine(
+      salesOrder,
+      (_) async => testSale(lines: [testLine(discountRate: '0.15')]),
+    );
     stubConfirm(salesOrder, testSale(lines: [testLine(discountRate: '0.15')]));
 
     final container = await pumpCapture(tester, salesOrder);
@@ -258,11 +285,17 @@ void main() {
   testWidgets('two lines with unconfirmed discounts raise one dialog; keep '
       'commits both (FR-030)', (tester) async {
     final salesOrder = MockSalesOrderRepository();
-    when(
-      () => anyOpen(salesOrder),
-    ).thenAnswer((_) async => testSale(lines: [testLine(id: 5), testLine(id: 6)]));
-    stubUpdateLine(salesOrder, (_) async => testSale(lines: [testLine(id: 5), testLine(id: 6)]));
-    stubConfirm(salesOrder, testSale(lines: [testLine(id: 5), testLine(id: 6)]));
+    when(() => anyOpen(salesOrder)).thenAnswer(
+      (_) async => testSale(lines: [testLine(id: 5), testLine(id: 6)]),
+    );
+    stubUpdateLine(
+      salesOrder,
+      (_) async => testSale(lines: [testLine(id: 5), testLine(id: 6)]),
+    );
+    stubConfirm(
+      salesOrder,
+      testSale(lines: [testLine(id: 5), testLine(id: 6)]),
+    );
 
     final container = await pumpCapture(tester, salesOrder);
     // Driven through each field's own `onChanged` rather than
@@ -320,7 +353,9 @@ void main() {
     tester,
   ) async {
     final salesOrder = MockSalesOrderRepository();
-    when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale(lines: [testLine()]));
+    when(
+      () => anyOpen(salesOrder),
+    ).thenAnswer((_) async => testSale(lines: [testLine()]));
     stubUpdateLine(salesOrder, (_) async => testSale(lines: [testLine()]));
 
     final container = await pumpCapture(tester, salesOrder);

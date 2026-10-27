@@ -35,8 +35,7 @@ class MockUserRepository extends Mock implements UserRepository {}
 
 class MockEmployeeRepository extends Mock implements EmployeeRepository {}
 
-class MockUserProfileRepository extends Mock
-    implements UserProfileRepository {}
+class MockUserProfileRepository extends Mock implements UserProfileRepository {}
 
 const _readOnlyUser = User(
   userId: 'reader',
@@ -467,9 +466,7 @@ void main() {
   });
 
   group('024-user-profiles: profile picker (create mode)', () {
-    testWidgets('appears for an administrator in create mode', (
-      tester,
-    ) async {
+    testWidgets('appears for an administrator in create mode', (tester) async {
       await pumpScreen(tester, signedInAs: _adminUser);
 
       expect(find.byKey(const Key('user_profile_picker')), findsOneWidget);
@@ -563,60 +560,49 @@ void main() {
       expect(find.byKey(const Key('apply_profile_button')), findsNothing);
     });
 
-    testWidgets(
-      'the dialog states both consequences and omits the self-apply '
-      'warning for a different account (FR-020)',
-      (tester) async {
-        await pumpScreen(
-          tester,
-          signedInAs: _adminUser,
-          userId: 'jdoe',
-          surfaceSize: const Size(1400, 1600),
-        );
+    testWidgets('the dialog states both consequences and omits the self-apply '
+        'warning for a different account (FR-020)', (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _adminUser,
+        userId: 'jdoe',
+        surfaceSize: const Size(1400, 1600),
+      );
 
-        await tester.tap(find.byKey(const Key('apply_profile_button')));
-        await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('apply_profile_button')));
+      await tester.pumpAndSettle();
 
-        expect(find.byKey(const Key('apply_profile_dialog')), findsOneWidget);
-        expect(
-          find.byKey(const Key('apply_profile_replace_warning')),
-          findsOneWidget,
-        );
-        expect(
-          find.byKey(const Key('apply_profile_session_warning')),
-          findsOneWidget,
-        );
-        expect(
-          find.byKey(const Key('apply_profile_self_warning')),
-          findsNothing,
-        );
-      },
-    );
+      expect(find.byKey(const Key('apply_profile_dialog')), findsOneWidget);
+      expect(
+        find.byKey(const Key('apply_profile_replace_warning')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('apply_profile_session_warning')),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('apply_profile_self_warning')), findsNothing);
+    });
 
-    testWidgets(
-      'the dialog additionally warns when applying to the signed-in '
-      "administrator's own account (FR-024)",
-      (tester) async {
-        await pumpScreen(
-          tester,
-          signedInAs: _adminUser,
-          userId: _adminUser.userId,
-          surfaceSize: const Size(1400, 1600),
-        );
+    testWidgets('the dialog additionally warns when applying to the signed-in '
+        "administrator's own account (FR-024)", (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _adminUser,
+        userId: _adminUser.userId,
+        surfaceSize: const Size(1400, 1600),
+      );
 
-        await tester.tap(find.byKey(const Key('apply_profile_button')));
-        await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('apply_profile_button')));
+      await tester.pumpAndSettle();
 
-        expect(
-          find.byKey(const Key('apply_profile_self_warning')),
-          findsOneWidget,
-        );
-      },
-    );
+      expect(
+        find.byKey(const Key('apply_profile_self_warning')),
+        findsOneWidget,
+      );
+    });
 
-    testWidgets('cancelling the dialog sends nothing (FR-021)', (
-      tester,
-    ) async {
+    testWidgets('cancelling the dialog sends nothing (FR-021)', (tester) async {
       await pumpScreen(
         tester,
         signedInAs: _adminUser,
@@ -692,10 +678,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.byKey(const Key('apply_profile_dialog')), findsNothing);
-        expect(
-          find.text('Provisioned from Cashier'),
-          findsOneWidget,
-        );
+        expect(find.text('Provisioned from Cashier'), findsOneWidget);
       },
     );
   });

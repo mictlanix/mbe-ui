@@ -13,7 +13,9 @@ import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart'
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_repository.dart';
 
-final deliveryOrderRepositoryProvider = Provider<DeliveryOrderRepository>((ref) {
+final deliveryOrderRepositoryProvider = Provider<DeliveryOrderRepository>((
+  ref,
+) {
   return DeliveryOrderRepositoryImpl(ref.watch(dioProvider));
 });
 
@@ -180,10 +182,11 @@ class DeliveryOrderRepositoryImpl implements DeliveryOrderRepository {
     required String reason,
   }) async {
     try {
-      await _api.cancelDeliveryOrderApiV1DeliveryOrdersDeliveryOrderIdCancelPost(
-        deliveryOrderId: destinationId,
-        reasonRequest: api.ReasonRequest((b) => b.reason = reason),
-      );
+      await _api
+          .cancelDeliveryOrderApiV1DeliveryOrdersDeliveryOrderIdCancelPost(
+            deliveryOrderId: destinationId,
+            reasonRequest: api.ReasonRequest((b) => b.reason = reason),
+          );
     } on DioException catch (e) {
       throw _toAppError(e);
     }
@@ -196,7 +199,8 @@ class DeliveryOrderRepositoryImpl implements DeliveryOrderRepository {
         salesOrder: salesOrder,
         limit: 100,
       );
-      final summaries = response.data?.items ?? const <api.DeliveryOrderSummary>[];
+      final summaries =
+          response.data?.items ?? const <api.DeliveryOrderSummary>[];
 
       // The summary carries no lines, and the distribution panel needs them,
       // so each is read back in full.

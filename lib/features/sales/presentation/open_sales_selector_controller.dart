@@ -26,7 +26,10 @@ part 'open_sales_selector_controller.g.dart';
 /// therefore costs a `getById` plus its delivery orders — issued concurrently,
 /// and only for paid sales, which are the smallest of the three sets.
 @riverpod
-Future<List<OpenSale>> openSalesSelectorController(Ref ref, int pointSale) async {
+Future<List<OpenSale>> openSalesSelectorController(
+  Ref ref,
+  int pointSale,
+) async {
   final salesOrders = ref.watch(salesOrderRepositoryProvider);
 
   // The register's *current trading day*. Unbounded, `completed` and `paid`
@@ -86,11 +89,10 @@ Future<List<OpenSale>> openSalesSelectorController(Ref ref, int pointSale) async
   // sales that need a different action entirely. The section order matches
   // the order a sale moves through, so the top of the list is always the work
   // nearest to hand.
-  return byId.values.toList()
-    ..sort((a, b) {
-      final byStatus = _statusRank(a.status).compareTo(_statusRank(b.status));
-      return byStatus != 0 ? byStatus : b.id.compareTo(a.id);
-    });
+  return byId.values.toList()..sort((a, b) {
+    final byStatus = _statusRank(a.status).compareTo(_statusRank(b.status));
+    return byStatus != 0 ? byStatus : b.id.compareTo(a.id);
+  });
 }
 
 /// Sale ids are sequential, so descending id is newest-first *within* a group
@@ -122,7 +124,10 @@ DateTime _startOfToday() => wireDate(DateTime.now());
 /// register — they would fill the selector permanently (FR-058: a paid
 /// counter sale is finished). It is also the cheap test, so it runs before
 /// any delivery-order round trip.
-Future<List<OpenSale>> _paidAndUndistributed(Ref ref, List<OpenSale> paid) async {
+Future<List<OpenSale>> _paidAndUndistributed(
+  Ref ref,
+  List<OpenSale> paid,
+) async {
   if (paid.isEmpty) return const [];
 
   final salesOrders = ref.watch(salesOrderRepositoryProvider);
@@ -138,13 +143,21 @@ Future<List<OpenSale>> _paidAndUndistributed(Ref ref, List<OpenSale> paid) async
     // nothing was ever named, so it was collected here.
     final recorded = sale.fulfillmentIntent;
     final facilityAddressId = recorded == null && sale.shipTo != null
-        ? await ref.read(facilityAddressControllerProvider(sale.facility).future)
+        ? await ref.read(
+            facilityAddressControllerProvider(sale.facility).future,
+          )
         : null;
-    final isDelivery = saleIsDelivery(sale, facilityAddressId: facilityAddressId);
+    final isDelivery = saleIsDelivery(
+      sale,
+      facilityAddressId: facilityAddressId,
+    );
     if (!isDelivery) return null;
 
     final destinations = await deliveries.listForSale(salesOrder: sale.id);
-    final distribution = distributionFor(sale: sale, destinations: destinations);
+    final distribution = distributionFor(
+      sale: sale,
+      destinations: destinations,
+    );
     final complete = distribution.every((line) => line.isFullyDistributed);
     return complete ? null : candidate;
   });

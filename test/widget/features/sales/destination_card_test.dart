@@ -114,8 +114,9 @@ void main() {
   });
 
   group('expansion is independent per card (research R5, FR-014)', () {
-    testWidgets('tapping the header expands it to list every sale line',
-        (tester) async {
+    testWidgets('tapping the header expands it to list every sale line', (
+      tester,
+    ) async {
       await pumpCard(tester, destination());
 
       expect(find.text('Varilla'), findsNothing);
@@ -147,8 +148,16 @@ void main() {
             home: Scaffold(
               body: Column(
                 children: [
-                  DestinationCard(destination: d1, badge: 'D1', distribution: distribution),
-                  DestinationCard(destination: d2, badge: 'D2', distribution: distribution),
+                  DestinationCard(
+                    destination: d1,
+                    badge: 'D1',
+                    distribution: distribution,
+                  ),
+                  DestinationCard(
+                    destination: d2,
+                    badge: 'D2',
+                    distribution: distribution,
+                  ),
                 ],
               ),
             ),
@@ -175,8 +184,12 @@ void main() {
         findsNothing,
       );
       // Both cards still render in their original order.
-      final order = tester.getTopLeft(find.byKey(const Key('destination_card_500')));
-      final secondOrder = tester.getTopLeft(find.byKey(const Key('destination_card_501')));
+      final order = tester.getTopLeft(
+        find.byKey(const Key('destination_card_500')),
+      );
+      final secondOrder = tester.getTopLeft(
+        find.byKey(const Key('destination_card_501')),
+      );
       expect(order.dy, lessThan(secondOrder.dy));
     });
   });
@@ -201,7 +214,9 @@ void main() {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
-              body: DestinationCounterRow(distribution: buildDistribution(const [])),
+              body: DestinationCounterRow(
+                distribution: buildDistribution(const []),
+              ),
             ),
           ),
         ),
@@ -264,7 +279,9 @@ void main() {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
-              body: DestinationCounterRow(distribution: buildDistribution(const [])),
+              body: DestinationCounterRow(
+                distribution: buildDistribution(const []),
+              ),
             ),
           ),
         ),

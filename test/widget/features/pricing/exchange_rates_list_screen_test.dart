@@ -121,9 +121,7 @@ void main() {
     'a row click opens the record read-only in a panel over the list — no '
     'navigation, since there is no per-record route anymore (spec 035 US5)',
     (tester) async {
-      when(
-        () => repository.get(exchangeRateId: 1),
-      ).thenAnswer(
+      when(() => repository.get(exchangeRateId: 1)).thenAnswer(
         (_) async => ExchangeRate(
           exchangeRateId: 1,
           date: DateTime(2026, 7, 17),

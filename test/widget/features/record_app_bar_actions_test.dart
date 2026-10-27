@@ -47,11 +47,9 @@ import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart'
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_issuer_detail_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-
 class MockLabelRepository extends Mock implements LabelRepository {}
 
 class MockSupplierRepository extends Mock implements SupplierRepository {}
-
 
 class MockEmployeeRepository extends Mock implements EmployeeRepository {}
 

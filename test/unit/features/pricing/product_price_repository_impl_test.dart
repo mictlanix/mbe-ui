@@ -73,7 +73,6 @@ void main() {
     });
   });
 
-
   group(
     'ProductPriceRepositoryImpl.listForProducts (spec 033 research.md §R5)',
     () {
@@ -114,26 +113,23 @@ void main() {
         },
       );
 
-      test(
-        'asks for a page big enough to hold products x lists — the API caps '
-        'both the read and the bulk write at BULK_LIMIT, and a truncated '
-        'page reads as "these products have no price"',
-        () async {
-          RequestOptions? captured;
-          final repository = _repositoryWith((options) async {
-            captured = options;
-            return ResponseBody.fromString(
-              jsonEncode({'items': [], 'total': 0}),
-              200,
-              headers: _jsonHeaders,
-            );
-          });
+      test('asks for a page big enough to hold products x lists — the API caps '
+          'both the read and the bulk write at BULK_LIMIT, and a truncated '
+          'page reads as "these products have no price"', () async {
+        RequestOptions? captured;
+        final repository = _repositoryWith((options) async {
+          captured = options;
+          return ResponseBody.fromString(
+            jsonEncode({'items': [], 'total': 0}),
+            200,
+            headers: _jsonHeaders,
+          );
+        });
 
-          await repository.listForProducts(productIds: [1], priceListIds: [5]);
+        await repository.listForProducts(productIds: [1], priceListIds: [5]);
 
-          expect(captured!.queryParameters['limit'], kProductPriceBulkLimit);
-        },
-      );
+        expect(captured!.queryParameters['limit'], kProductPriceBulkLimit);
+      });
 
       test('filters to the given price-list ids', () async {
         var call = 0;
@@ -223,11 +219,7 @@ void main() {
           );
         });
 
-        await repository.create(
-          productId: 1,
-          priceListId: 5,
-          price: '120.00',
-        );
+        await repository.create(productId: 1, priceListId: 5, price: '120.00');
 
         final sentBody = _decodeBody(captured!.data);
         expect(sentBody['price'], '120.00');
@@ -289,34 +281,34 @@ void main() {
         expect(price.price, '130.00');
       });
 
-      test('⚠️ MANDATORY: sends the update-side wrapper value as a JSON '
-          'decimal string too (`Price1`, not `Price` — research.md §4)', () async {
-        RequestOptions? captured;
-        final repository = _repositoryWith((options) async {
-          captured = options;
-          return ResponseBody.fromString(
-            jsonEncode(_productPriceJson()),
-            200,
-            headers: _jsonHeaders,
-          );
-        });
+      test(
+        '⚠️ MANDATORY: sends the update-side wrapper value as a JSON '
+        'decimal string too (`Price1`, not `Price` — research.md §4)',
+        () async {
+          RequestOptions? captured;
+          final repository = _repositoryWith((options) async {
+            captured = options;
+            return ResponseBody.fromString(
+              jsonEncode(_productPriceJson()),
+              200,
+              headers: _jsonHeaders,
+            );
+          });
 
-        await repository.update(
-          productPriceId: 1,
-          price: '130.00',
-        );
+          await repository.update(productPriceId: 1, price: '130.00');
 
-        final sentBody = _decodeBody(captured!.data);
-        expect(sentBody['price'], '130.00');
-        expect(sentBody['price'], isA<String>());
-        // Omitted, which mbe-api#185 reads as "leave the stored band alone".
-        expect(sentBody['low_profit'], isNull);
-        expect(sentBody['high_profit'], isNull);
-        // The update DTO carries no product/price_list — a row cannot be
-        // moved between products or lists, only revalued (data-model.md §2).
-        expect(sentBody.containsKey('product'), isFalse);
-        expect(sentBody.containsKey('price_list'), isFalse);
-      });
+          final sentBody = _decodeBody(captured!.data);
+          expect(sentBody['price'], '130.00');
+          expect(sentBody['price'], isA<String>());
+          // Omitted, which mbe-api#185 reads as "leave the stored band alone".
+          expect(sentBody['low_profit'], isNull);
+          expect(sentBody['high_profit'], isNull);
+          // The update DTO carries no product/price_list — a row cannot be
+          // moved between products or lists, only revalued (data-model.md §2).
+          expect(sentBody.containsKey('product'), isFalse);
+          expect(sentBody.containsKey('price_list'), isFalse);
+        },
+      );
 
       test('404 maps to AppError.notFound', () async {
         final repository = _repositoryWith(
@@ -328,10 +320,7 @@ void main() {
         );
 
         await expectLater(
-          () => repository.update(
-            productPriceId: 999,
-            price: '1',
-          ),
+          () => repository.update(productPriceId: 999, price: '1'),
           throwsA(const AppError.notFound('Product price not found')),
         );
       });
@@ -426,30 +415,27 @@ void main() {
         expect(calls, 0);
       });
 
-      test(
-        'a 400 on a duplicate (product, price_list) surfaces as a domain '
-        'error rather than a raw DioException — the server refuses to '
-        'resolve two cells for one cell, and so must the client',
-        () async {
-          final repository = _repositoryWith(
-            (options) async => ResponseBody.fromString(
-              jsonEncode({
-                'detail': 'Duplicate entry for product 1 on price list 5',
-              }),
-              400,
-              headers: _jsonHeaders,
-            ),
-          );
+      test('a 400 on a duplicate (product, price_list) surfaces as a domain '
+          'error rather than a raw DioException — the server refuses to '
+          'resolve two cells for one cell, and so must the client', () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'detail': 'Duplicate entry for product 1 on price list 5',
+            }),
+            400,
+            headers: _jsonHeaders,
+          ),
+        );
 
-          await expectLater(
-            () => repository.applyPriceChanges(const [
-              PriceCellWrite(productId: 1, priceListId: 5, price: '10.00'),
-              PriceCellWrite(productId: 1, priceListId: 5, price: '11.00'),
-            ]),
-            throwsA(isA<AppError>()),
-          );
-        },
-      );
+        await expectLater(
+          () => repository.applyPriceChanges(const [
+            PriceCellWrite(productId: 1, priceListId: 5, price: '10.00'),
+            PriceCellWrite(productId: 1, priceListId: 5, price: '11.00'),
+          ]),
+          throwsA(isA<AppError>()),
+        );
+      });
 
       test('5xx maps to AppError.server, leaving no row changed', () async {
         final repository = _repositoryWith(

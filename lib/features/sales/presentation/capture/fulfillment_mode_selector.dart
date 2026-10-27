@@ -74,10 +74,14 @@ class _ModeTrack extends StatelessWidget {
       // covered by whichever segment happens to be filled.
       clipBehavior: Clip.antiAlias,
       decoration: ShapeDecoration(
-        shape: StadiumBorder(side: BorderSide(color: theme.colorScheme.outline)),
+        shape: StadiumBorder(
+          side: BorderSide(color: theme.colorScheme.outline),
+        ),
       ),
       foregroundDecoration: ShapeDecoration(
-        shape: StadiumBorder(side: BorderSide(color: theme.colorScheme.outline)),
+        shape: StadiumBorder(
+          side: BorderSide(color: theme.colorScheme.outline),
+        ),
       ),
       child: Row(
         mainAxisSize: stretch ? MainAxisSize.max : MainAxisSize.min,
@@ -143,7 +147,9 @@ class _ModeSegmentButton extends StatelessWidget {
       selected: selected,
       enabled: enabled,
       child: Material(
-        color: selected ? theme.colorScheme.secondaryContainer : Colors.transparent,
+        color: selected
+            ? theme.colorScheme.secondaryContainer
+            : Colors.transparent,
         child: InkWell(
           key: Key('pos_fulfillment_${segment.mode.name}'),
           onTap: enabled ? onPressed : null,
@@ -159,7 +165,11 @@ class _ModeSegmentButton extends StatelessWidget {
                 // A check in place of the segment's own icon once chosen —
                 // `SegmentedButton`'s `showSelectedIcon` behaviour, and what
                 // the mock draws on its selected segment.
-                Icon(selected ? Icons.check : segment.icon, size: 20, color: foreground),
+                Icon(
+                  selected ? Icons.check : segment.icon,
+                  size: 20,
+                  color: foreground,
+                ),
                 SizedBox(width: theme.spacing.xs),
                 // The label is what gives when the track is squeezed — the
                 // icon and the insets stay, so the segments keep their rhythm
@@ -170,7 +180,9 @@ class _ModeSegmentButton extends StatelessWidget {
                     maxLines: 1,
                     softWrap: false,
                     overflow: TextOverflow.ellipsis,
-                    style: theme.typeRoles.buttonLabel.copyWith(color: foreground),
+                    style: theme.typeRoles.buttonLabel.copyWith(
+                      color: foreground,
+                    ),
                   ),
                 ),
               ],
@@ -226,7 +238,8 @@ class FulfillmentModeSelector extends ConsumerStatefulWidget {
       _FulfillmentModeSelectorState();
 }
 
-class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelector> {
+class _FulfillmentModeSelectorState
+    extends ConsumerState<FulfillmentModeSelector> {
   AppError? _error;
   String? _refusal;
   bool _busy = false;
@@ -254,7 +267,9 @@ class _FulfillmentModeSelectorState extends ConsumerState<FulfillmentModeSelecto
     final sale = widget.sale;
     if (sale != null &&
         ref.read(appSettingsProvider).isGenericCustomer(sale.customer)) {
-      setState(() => _refusal = AppLocalizations.of(context)!.posDeliveryNotPermitted);
+      setState(
+        () => _refusal = AppLocalizations.of(context)!.posDeliveryNotPermitted,
+      );
       return;
     }
 

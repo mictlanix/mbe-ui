@@ -469,9 +469,8 @@ Future<PosRoutedHarness> pumpQuotesRouted(
       ),
       GoRoute(
         path: '/sales/quotes/:quoteId',
-        builder: (context, state) => QuoteScreen(
-          quoteId: int.parse(state.pathParameters['quoteId']!),
-        ),
+        builder: (context, state) =>
+            QuoteScreen(quoteId: int.parse(state.pathParameters['quoteId']!)),
       ),
       // spec 040 FR-025…FR-031: a converted quote lands here — the real
       // `OrderWorkspaceScreen` needs its own, much larger provider setup a

@@ -20,11 +20,16 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         builder: (context, child) => MediaQuery(
-          data: MediaQuery.of(context).copyWith(disableAnimations: disableAnimations),
+          data: MediaQuery.of(
+            context,
+          ).copyWith(disableAnimations: disableAnimations),
           child: child!,
         ),
         home: Scaffold(
-          body: ConfirmableTextField(controller: controller, fieldKey: const Key('f')),
+          body: ConfirmableTextField(
+            controller: controller,
+            fieldKey: const Key('f'),
+          ),
         ),
       ),
     );
@@ -50,7 +55,9 @@ void main() {
   String text(WidgetTester tester) =>
       tester.widget<TextField>(find.byKey(const Key('f'))).controller!.text;
 
-  testWidgets('Enter confirms — one commit, no reset animation', (tester) async {
+  testWidgets('Enter confirms — one commit, no reset animation', (
+    tester,
+  ) async {
     final commits = <String>[];
     final controller = makeController(
       value: '0',
@@ -71,12 +78,17 @@ void main() {
     expect(text(tester), '15');
   });
 
-  testWidgets('focus loss without Enter discards and animates back', (tester) async {
+  testWidgets('focus loss without Enter discards and animates back', (
+    tester,
+  ) async {
     final commits = <String>[];
-    final controller = makeController(value: '0', commit: (v) async {
-      commits.add(v);
-      return true;
-    });
+    final controller = makeController(
+      value: '0',
+      commit: (v) async {
+        commits.add(v);
+        return true;
+      },
+    );
     addTearDown(controller.dispose);
     await pumpField(tester, controller);
 
@@ -89,10 +101,18 @@ void main() {
     expect(text(tester), '15');
 
     await tester.pump(const Duration(milliseconds: 100)); // before the midpoint
-    expect(text(tester), '15', reason: 'the swap must not happen before the fade covers the text');
+    expect(
+      text(tester),
+      '15',
+      reason: 'the swap must not happen before the fade covers the text',
+    );
 
     await tester.pump(const Duration(milliseconds: 150)); // past 250ms total
-    expect(text(tester), '0', reason: 'the animation must land on the restored value');
+    expect(
+      text(tester),
+      '0',
+      reason: 'the animation must land on the restored value',
+    );
     expect(commits, isEmpty, reason: 'unconfirmed text must never be sent');
   });
 
@@ -119,62 +139,71 @@ void main() {
     expect(text(tester), '0');
   });
 
-  testWidgets('a refused commit restores the accepted value with the reset animation', (
+  testWidgets(
+    'a refused commit restores the accepted value with the reset animation',
+    (tester) async {
+      final controller = makeController(value: '0', commit: (_) async => false);
+      addTearDown(controller.dispose);
+      await pumpField(tester, controller);
+
+      await tester.enterText(find.byKey(const Key('f')), '15');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pump();
+      // The commit is async and awaited by submit's fire-and-forget flush —
+      // give it a beat to resolve and start the reset.
+      await tester.pump(const Duration(milliseconds: 10));
+      await tester.pumpAndSettle();
+
+      expect(controller.accepted, '0');
+      expect(text(tester), '0');
+    },
+  );
+
+  testWidgets(
+    'sync with a different value while dirty discards the typed text',
+    (tester) async {
+      final controller = makeController(value: '0');
+      addTearDown(controller.dispose);
+      await pumpField(tester, controller);
+
+      await tester.enterText(find.byKey(const Key('f')), '15');
+      await tester.pump();
+      final ticksBefore = controller.resetTick;
+
+      controller.sync(value: '9');
+      await tester.pumpAndSettle();
+
+      expect(controller.resetTick, ticksBefore + 1);
+      expect(text(tester), '9');
+    },
+  );
+
+  testWidgets(
+    'sync with the same value while dirty leaves the typed text alone',
+    (tester) async {
+      final controller = makeController(value: '0');
+      addTearDown(controller.dispose);
+      await pumpField(tester, controller);
+
+      await tester.enterText(find.byKey(const Key('f')), '15');
+      await tester.pump();
+      final ticksBefore = controller.resetTick;
+
+      controller.sync(value: '0'); // no-op refresh — same as what's accepted
+      await tester.pump();
+
+      expect(
+        controller.resetTick,
+        ticksBefore,
+        reason: 'a no-op refresh must not wipe an edit in progress',
+      );
+      expect(text(tester), '15');
+    },
+  );
+
+  testWidgets('Enter twice on the unchanged value commits once, no reset', (
     tester,
   ) async {
-    final controller = makeController(value: '0', commit: (_) async => false);
-    addTearDown(controller.dispose);
-    await pumpField(tester, controller);
-
-    await tester.enterText(find.byKey(const Key('f')), '15');
-    await tester.testTextInput.receiveAction(TextInputAction.done);
-    await tester.pump();
-    // The commit is async and awaited by submit's fire-and-forget flush —
-    // give it a beat to resolve and start the reset.
-    await tester.pump(const Duration(milliseconds: 10));
-    await tester.pumpAndSettle();
-
-    expect(controller.accepted, '0');
-    expect(text(tester), '0');
-  });
-
-  testWidgets('sync with a different value while dirty discards the typed text', (
-    tester,
-  ) async {
-    final controller = makeController(value: '0');
-    addTearDown(controller.dispose);
-    await pumpField(tester, controller);
-
-    await tester.enterText(find.byKey(const Key('f')), '15');
-    await tester.pump();
-    final ticksBefore = controller.resetTick;
-
-    controller.sync(value: '9');
-    await tester.pumpAndSettle();
-
-    expect(controller.resetTick, ticksBefore + 1);
-    expect(text(tester), '9');
-  });
-
-  testWidgets('sync with the same value while dirty leaves the typed text alone', (
-    tester,
-  ) async {
-    final controller = makeController(value: '0');
-    addTearDown(controller.dispose);
-    await pumpField(tester, controller);
-
-    await tester.enterText(find.byKey(const Key('f')), '15');
-    await tester.pump();
-    final ticksBefore = controller.resetTick;
-
-    controller.sync(value: '0'); // no-op refresh — same as what's accepted
-    await tester.pump();
-
-    expect(controller.resetTick, ticksBefore, reason: 'a no-op refresh must not wipe an edit in progress');
-    expect(text(tester), '15');
-  });
-
-  testWidgets('Enter twice on the unchanged value commits once, no reset', (tester) async {
     final commits = <String>[];
     final controller = makeController(
       value: '0',
@@ -194,31 +223,34 @@ void main() {
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
-    expect(commits, ['15'], reason: 'confirming the same accepted value again sends nothing new');
+    expect(commits, [
+      '15',
+    ], reason: 'confirming the same accepted value again sends nothing new');
     expect(controller.resetTick, ticksBefore, reason: 'nothing was discarded');
   });
 
-  testWidgets('reduced motion swaps the value instantly, still applying and clearing the tint', (
-    tester,
-  ) async {
-    final controller = makeController(value: '0');
-    addTearDown(controller.dispose);
-    await pumpField(tester, controller, disableAnimations: true);
+  testWidgets(
+    'reduced motion swaps the value instantly, still applying and clearing the tint',
+    (tester) async {
+      final controller = makeController(value: '0');
+      addTearDown(controller.dispose);
+      await pumpField(tester, controller, disableAnimations: true);
 
-    await tester.enterText(find.byKey(const Key('f')), '15');
-    await tester.pump();
-    FocusManager.instance.primaryFocus?.unfocus();
-    await tester.pump(); // instant swap — no fade to wait out
+      await tester.enterText(find.byKey(const Key('f')), '15');
+      await tester.pump();
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pump(); // instant swap — no fade to wait out
 
-    expect(text(tester), '0');
-    await tester.pump(const Duration(milliseconds: 300));
-  });
+      expect(text(tester), '0');
+      await tester.pump(const Duration(milliseconds: 300));
+    },
+  );
 
   group('unconfirmed-edits registry', () {
     late ProviderContainer container;
 
     setUp(() {
-      container = ProviderContainer(retry: (_, _) => null, );
+      container = ProviderContainer(retry: (_, _) => null);
       addTearDown(container.dispose);
     });
 
@@ -244,7 +276,11 @@ void main() {
     test('abandoning removes the entry', () {
       const scope = 'field-test-2';
       final registry = container.read(unconfirmedEditsProvider(scope).notifier);
-      final controller = makeController(value: '0', id: 'field-b', unconfirmedEdits: registry);
+      final controller = makeController(
+        value: '0',
+        id: 'field-b',
+        unconfirmedEdits: registry,
+      );
       addTearDown(controller.dispose);
 
       controller.edit('15');
@@ -255,7 +291,11 @@ void main() {
     test('disposing removes the entry', () {
       const scope = 'field-test-3';
       final registry = container.read(unconfirmedEditsProvider(scope).notifier);
-      final controller = makeController(value: '0', id: 'field-c', unconfirmedEdits: registry);
+      final controller = makeController(
+        value: '0',
+        id: 'field-c',
+        unconfirmedEdits: registry,
+      );
 
       controller.edit('15');
       expect(container.read(unconfirmedEditsProvider(scope)), hasLength(1));
@@ -264,20 +304,21 @@ void main() {
     });
   });
 
-  testWidgets('the wrapper adds no insets — field size unaffected by reset activity', (
-    tester,
-  ) async {
-    final controller = makeController(value: '0');
-    addTearDown(controller.dispose);
-    await pumpField(tester, controller);
-    final restingSize = tester.getSize(find.byKey(const Key('f')));
+  testWidgets(
+    'the wrapper adds no insets — field size unaffected by reset activity',
+    (tester) async {
+      final controller = makeController(value: '0');
+      addTearDown(controller.dispose);
+      await pumpField(tester, controller);
+      final restingSize = tester.getSize(find.byKey(const Key('f')));
 
-    await tester.enterText(find.byKey(const Key('f')), '15');
-    await tester.pump();
-    FocusManager.instance.primaryFocus?.unfocus();
-    await tester.pump(const Duration(milliseconds: 100)); // mid-fade
+      await tester.enterText(find.byKey(const Key('f')), '15');
+      await tester.pump();
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pump(const Duration(milliseconds: 100)); // mid-fade
 
-    expect(tester.getSize(find.byKey(const Key('f'))), restingSize);
-    await tester.pumpAndSettle();
-  });
+      expect(tester.getSize(find.byKey(const Key('f'))), restingSize);
+      await tester.pumpAndSettle();
+    },
+  );
 }

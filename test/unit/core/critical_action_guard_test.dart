@@ -15,7 +15,7 @@ void main() {
   late ProviderContainer container;
 
   setUp(() {
-    container = ProviderContainer(retry: (_, _) => null, );
+    container = ProviderContainer(retry: (_, _) => null);
     addTearDown(container.dispose);
   });
 
@@ -28,50 +28,62 @@ void main() {
   int count([String s = scope]) => container.read(pendingWritesProvider(s));
 
   group('track', () {
-    test('two concurrent writes count 2, settle back to 0 one at a time', () async {
-      final first = Completer<void>();
-      final second = Completer<void>();
+    test(
+      'two concurrent writes count 2, settle back to 0 one at a time',
+      () async {
+        final first = Completer<void>();
+        final second = Completer<void>();
 
-      final f1 = writes().track(() => first.future);
-      expect(count(), 1);
-      final f2 = writes().track(() => second.future);
-      expect(count(), 2);
-
-      first.complete();
-      await f1;
-      expect(count(), 1);
-
-      second.complete();
-      await f2;
-      expect(count(), 0);
-    });
-
-    test('a throwing write still releases, and the error still reaches the caller', () async {
-      await expectLater(
-        writes().track(() => Future<void>.error(StateError('refused'))),
-        throwsA(isA<StateError>()),
-      );
-      expect(count(), 0);
-    });
-
-    test('registering a write changes nothing about its result (FR-012)', () async {
-      final result = await writes().track(() async => 42);
-      expect(result, 42);
-    });
-
-    test("a write's new state is observable before the count reaches 0 (research R6)", () async {
-      var published = false;
-      await writes().track(() async {
-        published = true;
-        // `track`'s own decrement runs in its `finally`, after this
-        // callback returns — so by the time it does, the caller's state is
-        // already published, and any concurrent read of `count()` here
-        // would still see the write as outstanding.
+        final f1 = writes().track(() => first.future);
         expect(count(), 1);
-      });
-      expect(published, isTrue);
-      expect(count(), 0);
-    });
+        final f2 = writes().track(() => second.future);
+        expect(count(), 2);
+
+        first.complete();
+        await f1;
+        expect(count(), 1);
+
+        second.complete();
+        await f2;
+        expect(count(), 0);
+      },
+    );
+
+    test(
+      'a throwing write still releases, and the error still reaches the caller',
+      () async {
+        await expectLater(
+          writes().track(() => Future<void>.error(StateError('refused'))),
+          throwsA(isA<StateError>()),
+        );
+        expect(count(), 0);
+      },
+    );
+
+    test(
+      'registering a write changes nothing about its result (FR-012)',
+      () async {
+        final result = await writes().track(() async => 42);
+        expect(result, 42);
+      },
+    );
+
+    test(
+      "a write's new state is observable before the count reaches 0 (research R6)",
+      () async {
+        var published = false;
+        await writes().track(() async {
+          published = true;
+          // `track`'s own decrement runs in its `finally`, after this
+          // callback returns — so by the time it does, the caller's state is
+          // already published, and any concurrent read of `count()` here
+          // would still see the write as outstanding.
+          expect(count(), 1);
+        });
+        expect(published, isTrue);
+        expect(count(), 0);
+      },
+    );
   });
 
   group('begin/end (holds)', () {
@@ -163,21 +175,24 @@ void main() {
     // `package:mbe_ui/features/sales/`.
     const applyProfileScope = 'apply-profile';
 
-    test('the whole mechanism works end to end for a non-sales operation', () async {
-      final applied = Completer<void>();
-      final track = container
-          .read(pendingWritesProvider(applyProfileScope).notifier)
-          .track(() => applied.future);
+    test(
+      'the whole mechanism works end to end for a non-sales operation',
+      () async {
+        final applied = Completer<void>();
+        final track = container
+            .read(pendingWritesProvider(applyProfileScope).notifier)
+            .track(() => applied.future);
 
-      expect(
-        container.read(pendingWritesProvider(applyProfileScope)),
-        1,
-        reason: 'the critical action is gated the same way a POS step is',
-      );
+        expect(
+          container.read(pendingWritesProvider(applyProfileScope)),
+          1,
+          reason: 'the critical action is gated the same way a POS step is',
+        );
 
-      applied.complete();
-      await track;
-      expect(container.read(pendingWritesProvider(applyProfileScope)), 0);
-    });
+        applied.complete();
+        await track;
+        expect(container.read(pendingWritesProvider(applyProfileScope)), 0);
+      },
+    );
   });
 }

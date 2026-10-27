@@ -23,13 +23,17 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         retry: (_, _) => null,
-        overrides: [sharedPreferencesProvider.overrideWithValue(sharedPreferences)],
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+        ],
         child: MaterialApp(
           locale: const Locale('es', 'MX'),
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           builder: (context, child) => MediaQuery(
-            data: MediaQuery.of(context).copyWith(disableAnimations: disableAnimations),
+            data: MediaQuery.of(
+              context,
+            ).copyWith(disableAnimations: disableAnimations),
             child: child!,
           ),
           home: Scaffold(
@@ -47,19 +51,30 @@ void main() {
   testWidgets('typing over a value and losing focus without Enter animates '
       'back to the original — invisible at the swap, restored by the end '
       '(FR-011/FR-013)', (tester) async {
-    final controller = QuantityStepperController(value: '7', onCommit: (_) async => true);
+    final controller = QuantityStepperController(
+      value: '7',
+      onCommit: (_) async => true,
+    );
     addTearDown(controller.dispose);
     await pumpStepper(tester, controller);
 
     await tester.enterText(find.byKey(const Key('qty')), '25');
     await tester.pump();
-    expect(tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text, '25');
+    expect(
+      tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text,
+      '25',
+    );
 
     FocusManager.instance.primaryFocus?.unfocus();
     await tester.pump(); // t=0: reset just started, old text still there
-    expect(tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text, '25');
+    expect(
+      tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text,
+      '25',
+    );
 
-    await tester.pump(const Duration(milliseconds: 100)); // t=100ms, before the midpoint
+    await tester.pump(
+      const Duration(milliseconds: 100),
+    ); // t=100ms, before the midpoint
     expect(
       tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text,
       '25',
@@ -76,7 +91,10 @@ void main() {
 
   testWidgets('a value confirmed with Enter and accepted shows no animation '
       '(FR-014)', (tester) async {
-    final controller = QuantityStepperController(value: '7', onCommit: (_) async => true);
+    final controller = QuantityStepperController(
+      value: '7',
+      onCommit: (_) async => true,
+    );
     addTearDown(controller.dispose);
     await pumpStepper(tester, controller);
 
@@ -86,26 +104,42 @@ void main() {
 
     // The value is already showing — no fade needed to reach it, because
     // nothing was discarded.
-    expect(tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text, '9');
+    expect(
+      tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text,
+      '9',
+    );
 
-    await tester.pump(kQuantityCommitDebounce + const Duration(milliseconds: 50));
+    await tester.pump(
+      kQuantityCommitDebounce + const Duration(milliseconds: 50),
+    );
     await tester.pumpAndSettle();
 
     expect(controller.accepted, '9');
-    expect(tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text, '9');
+    expect(
+      tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text,
+      '9',
+    );
   });
 
   testWidgets('a refused commit restores the accepted value with the same '
       'animation (research R3)', (tester) async {
-    final controller = QuantityStepperController(value: '7', onCommit: (_) async => false);
+    final controller = QuantityStepperController(
+      value: '7',
+      onCommit: (_) async => false,
+    );
     addTearDown(controller.dispose);
     await pumpStepper(tester, controller);
 
     await tester.tap(find.byIcon(Icons.add));
     await tester.pump();
-    expect(tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text, '8');
+    expect(
+      tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text,
+      '8',
+    );
 
-    await tester.pump(kQuantityCommitDebounce + const Duration(milliseconds: 50));
+    await tester.pump(
+      kQuantityCommitDebounce + const Duration(milliseconds: 50),
+    );
     // The refusal lands and starts the reset — not fully settled yet.
     await tester.pump(const Duration(milliseconds: 100));
     expect(
@@ -124,7 +158,10 @@ void main() {
 
   testWidgets('reduced motion swaps the value instantly, still applying and '
       'clearing the tint (FR-016)', (tester) async {
-    final controller = QuantityStepperController(value: '7', onCommit: (_) async => true);
+    final controller = QuantityStepperController(
+      value: '7',
+      onCommit: (_) async => true,
+    );
     addTearDown(controller.dispose);
     await pumpStepper(tester, controller, disableAnimations: true);
 
@@ -136,7 +173,8 @@ void main() {
     expect(
       tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text,
       '7',
-      reason: 'reduced motion still discards the typed value, just without a fade',
+      reason:
+          'reduced motion still discards the typed value, just without a fade',
     );
 
     // The tint clears itself on the same 250 ms schedule even without motion.
@@ -158,13 +196,19 @@ void main() {
     await tester.pump();
 
     expect(tester.takeException(), isNull);
-    expect(tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text, '');
+    expect(
+      tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text,
+      '',
+    );
 
     // Abandoning the empty draft animates back to the last accepted value,
     // exactly like any other discard.
     FocusManager.instance.primaryFocus?.unfocus();
     await tester.pumpAndSettle();
     expect(tester.takeException(), isNull);
-    expect(tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text, '7');
+    expect(
+      tester.widget<TextField>(find.byKey(const Key('qty'))).controller!.text,
+      '7',
+    );
   });
 }

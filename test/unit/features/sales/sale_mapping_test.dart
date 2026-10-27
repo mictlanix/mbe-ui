@@ -112,9 +112,7 @@ void main() {
 
     test('maps every line', () {
       final sale = Sale.fromResponse(
-        _saleResponse(
-          lines: [_lineJson(), _lineJson(salesOrderDetailId: 6)],
-        ),
+        _saleResponse(lines: [_lineJson(), _lineJson(salesOrderDetailId: 6)]),
       );
       expect(sale.lineCount, 2);
       expect(sale.lines.map((l) => l.id), [5, 6]);
@@ -151,9 +149,18 @@ void main() {
 
     group('the generated enums with no preserved member names', () {
       test('currency 0/1/2 map to mxn/usd/eur', () {
-        expect(Sale.fromResponse(_saleResponse(currency: 0)).currency, Currency.mxn);
-        expect(Sale.fromResponse(_saleResponse(currency: 1)).currency, Currency.usd);
-        expect(Sale.fromResponse(_saleResponse(currency: 2)).currency, Currency.eur);
+        expect(
+          Sale.fromResponse(_saleResponse(currency: 0)).currency,
+          Currency.mxn,
+        );
+        expect(
+          Sale.fromResponse(_saleResponse(currency: 1)).currency,
+          Currency.usd,
+        );
+        expect(
+          Sale.fromResponse(_saleResponse(currency: 2)).currency,
+          Currency.eur,
+        );
       });
 
       test('payment terms 0/1 map to immediate/netD', () {
@@ -169,48 +176,69 @@ void main() {
     });
 
     group('back-office header fields (spec 029 data-model.md §1)', () {
-      test('date, dueDate, contact, recipient, recipientName and comment all map', () {
-        final sale = Sale.fromResponse(
-          _saleResponse(
-            contact: 12,
-            recipient: 'XAXX010101000',
-            recipientName: 'Pública en General',
-            comment: 'Entregar en bodega 2',
-          ),
-        );
-        expect(sale.date, DateTime(2026, 8, 5));
-        expect(sale.dueDate, DateTime(2026, 8, 12));
-        expect(sale.contact, 12);
-        expect(sale.recipient, 'XAXX010101000');
-        expect(sale.recipientName, 'Pública en General');
-        expect(sale.comment, 'Entregar en bodega 2');
-      });
+      test(
+        'date, dueDate, contact, recipient, recipientName and comment all map',
+        () {
+          final sale = Sale.fromResponse(
+            _saleResponse(
+              contact: 12,
+              recipient: 'XAXX010101000',
+              recipientName: 'Pública en General',
+              comment: 'Entregar en bodega 2',
+            ),
+          );
+          expect(sale.date, DateTime(2026, 8, 5));
+          expect(sale.dueDate, DateTime(2026, 8, 12));
+          expect(sale.contact, 12);
+          expect(sale.recipient, 'XAXX010101000');
+          expect(sale.recipientName, 'Pública en General');
+          expect(sale.comment, 'Entregar en bodega 2');
+        },
+      );
 
-      test('contact, recipient, recipientName and comment are null when absent', () {
-        final sale = Sale.fromResponse(_saleResponse());
-        expect(sale.contact, isNull);
-        expect(sale.recipient, isNull);
-        expect(sale.recipientName, isNull);
-        expect(sale.comment, isNull);
-      });
+      test(
+        'contact, recipient, recipientName and comment are null when absent',
+        () {
+          final sale = Sale.fromResponse(_saleResponse());
+          expect(sale.contact, isNull);
+          expect(sale.recipient, isNull);
+          expect(sale.recipientName, isNull);
+          expect(sale.comment, isNull);
+        },
+      );
 
-      test('dueDate is mapped but this entity never sends it back (FR-018)', () {
-        // There is no `toApi`/request-building path on `Sale` at all — it is
-        // a read-only DTO-to-entity mapping. Asserting the getter exists and
-        // is distinct from `date` is what "mapped but never sent" means here;
-        // the "never sent" half is enforced by `SalesOrderUpdate` not
-        // accepting the field at all (contracts/mbe-api-sales-orders.md §3).
-        final sale = Sale.fromResponse(_saleResponse());
-        expect(sale.dueDate, isNot(sale.date));
-      });
+      test(
+        'dueDate is mapped but this entity never sends it back (FR-018)',
+        () {
+          // There is no `toApi`/request-building path on `Sale` at all — it is
+          // a read-only DTO-to-entity mapping. Asserting the getter exists and
+          // is distinct from `date` is what "mapped but never sent" means here;
+          // the "never sent" half is enforced by `SalesOrderUpdate` not
+          // accepting the field at all (contracts/mbe-api-sales-orders.md §3).
+          final sale = Sale.fromResponse(_saleResponse());
+          expect(sale.dueDate, isNot(sale.date));
+        },
+      );
     });
 
     group('Priority — the generated enum with no preserved member names', () {
       test('0/1/2/3 map to low/normal/high/critical', () {
-        expect(Sale.fromResponse(_saleResponse(priority: 0)).priority, Priority.low);
-        expect(Sale.fromResponse(_saleResponse(priority: 1)).priority, Priority.normal);
-        expect(Sale.fromResponse(_saleResponse(priority: 2)).priority, Priority.high);
-        expect(Sale.fromResponse(_saleResponse(priority: 3)).priority, Priority.critical);
+        expect(
+          Sale.fromResponse(_saleResponse(priority: 0)).priority,
+          Priority.low,
+        );
+        expect(
+          Sale.fromResponse(_saleResponse(priority: 1)).priority,
+          Priority.normal,
+        );
+        expect(
+          Sale.fromResponse(_saleResponse(priority: 2)).priority,
+          Priority.high,
+        );
+        expect(
+          Sale.fromResponse(_saleResponse(priority: 3)).priority,
+          Priority.critical,
+        );
       });
 
       test('toApi round-trips every member', () {
@@ -221,11 +249,14 @@ void main() {
     });
 
     group('provisionalReference (FR-040)', () {
-      test('an unconfirmed sale has no serial — callers fall back to the id', () {
-        final sale = Sale.fromResponse(_saleResponse());
-        expect(sale.serial, isNull);
-        expect(sale.provisionalReference, 42);
-      });
+      test(
+        'an unconfirmed sale has no serial — callers fall back to the id',
+        () {
+          final sale = Sale.fromResponse(_saleResponse());
+          expect(sale.serial, isNull);
+          expect(sale.provisionalReference, 42);
+        },
+      );
 
       test('a confirmed sale carries the assigned folio', () {
         expect(Sale.fromResponse(_saleResponse(serial: 282127)).serial, 282127);
@@ -295,17 +326,20 @@ void main() {
       expect(line.unit, isNull);
     });
 
-    test('the product\'s photo is resolved to a fetchable URL (mbe-api#157)', () {
-      final line = SaleLine.fromResponse(
-        appSerializers.deserializeWith(
-          api.SalesOrderLineResponse.serializer,
-          // An absolute URL — what mbe-api sends with its own
-          // `IMAGES_BASE_URL` configured — passes through untouched.
-          _lineJson(photo: 'https://cdn.example.com/images/p-11.jpg'),
-        )!,
-      );
-      expect(line.photo, 'https://cdn.example.com/images/p-11.jpg');
-    });
+    test(
+      'the product\'s photo is resolved to a fetchable URL (mbe-api#157)',
+      () {
+        final line = SaleLine.fromResponse(
+          appSerializers.deserializeWith(
+            api.SalesOrderLineResponse.serializer,
+            // An absolute URL — what mbe-api sends with its own
+            // `IMAGES_BASE_URL` configured — passes through untouched.
+            _lineJson(photo: 'https://cdn.example.com/images/p-11.jpg'),
+          )!,
+        );
+        expect(line.photo, 'https://cdn.example.com/images/p-11.jpg');
+      },
+    );
 
     test('a product with no photo maps to null, so the line placeholders '
         '(mbe-api#157)', () {

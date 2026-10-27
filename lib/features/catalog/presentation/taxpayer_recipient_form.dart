@@ -66,9 +66,7 @@ class TaxpayerRecipientFormPanelState
             .loadForEdit(widget.taxpayerRecipientId!);
         if (mounted) {
           setState(
-            () => _snapshot = ref.read(
-              taxpayerRecipientFormControllerProvider,
-            ),
+            () => _snapshot = ref.read(taxpayerRecipientFormControllerProvider),
           );
         }
       });
@@ -270,9 +268,7 @@ class TaxpayerRecipientFormPanelState
               ),
               confirmLabel: l10n.deleteButton,
               cancelLabel: l10n.cancelButton,
-              confirmKey: const Key(
-                'confirm_delete_taxpayer_recipient_button',
-              ),
+              confirmKey: const Key('confirm_delete_taxpayer_recipient_button'),
             ),
           ),
         ),

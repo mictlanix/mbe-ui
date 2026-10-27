@@ -199,11 +199,10 @@ enum PaymentTerms {
 
   final int value;
 
-  static PaymentTerms fromApi(api.PaymentTerms value) =>
-      switch (value.name) {
-        'number1' => PaymentTerms.netD,
-        _ => PaymentTerms.immediate,
-      };
+  static PaymentTerms fromApi(api.PaymentTerms value) => switch (value.name) {
+    'number1' => PaymentTerms.netD,
+    _ => PaymentTerms.immediate,
+  };
 
   api.PaymentTerms toApi() => switch (this) {
     PaymentTerms.immediate => api.PaymentTerms.number0,

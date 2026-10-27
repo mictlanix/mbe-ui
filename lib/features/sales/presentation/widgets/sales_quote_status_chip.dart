@@ -8,12 +8,13 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// mirrors `pos_sale_status_chip.dart`'s own `posSaleStatusLabel`. `paid`
 /// has no quote counterpart (a quote never reaches it — data-model.md §1);
 /// this arm exists only so the switch stays exhaustive.
-String salesQuoteStatusLabel(AppLocalizations l10n, SaleStatus status) => switch (status) {
-  SaleStatus.draft => l10n.salesQuoteStatusDraft,
-  SaleStatus.completed => l10n.salesQuoteStatusCompleted,
-  SaleStatus.paid => l10n.salesQuoteStatusCompleted,
-  SaleStatus.cancelled => l10n.salesQuoteStatusCancelled,
-};
+String salesQuoteStatusLabel(AppLocalizations l10n, SaleStatus status) =>
+    switch (status) {
+      SaleStatus.draft => l10n.salesQuoteStatusDraft,
+      SaleStatus.completed => l10n.salesQuoteStatusCompleted,
+      SaleStatus.paid => l10n.salesQuoteStatusCompleted,
+      SaleStatus.cancelled => l10n.salesQuoteStatusCancelled,
+    };
 
 /// The quotes list's status column (spec 040 FR-035, FR-037). Deliberately
 /// carries no notion of "expired" — [SalesQuoteExpiredMarker] renders that
@@ -34,13 +35,22 @@ class SalesQuoteStatusChip extends StatelessWidget {
       value: status,
       label: label,
       colors: (scheme) => switch (status) {
-        SaleStatus.draft => (scheme.primaryContainer, scheme.onPrimaryContainer),
-        SaleStatus.completed => (scheme.tertiaryContainer, scheme.onTertiaryContainer),
+        SaleStatus.draft => (
+          scheme.primaryContainer,
+          scheme.onPrimaryContainer,
+        ),
+        SaleStatus.completed => (
+          scheme.tertiaryContainer,
+          scheme.onTertiaryContainer,
+        ),
         SaleStatus.paid => (
           scheme.surfaceContainerHighest,
           scheme.onSurfaceVariant,
         ),
-        SaleStatus.cancelled => (scheme.errorContainer, scheme.onErrorContainer),
+        SaleStatus.cancelled => (
+          scheme.errorContainer,
+          scheme.onErrorContainer,
+        ),
       },
     );
   }
@@ -62,7 +72,11 @@ class SalesQuoteExpiredMarker extends StatelessWidget {
     return Tooltip(
       key: const Key('sales_quote_expired_marker'),
       message: l10n.salesQuoteExpiredBadge,
-      child: Icon(Icons.event_busy, size: 16, color: Theme.of(context).colorScheme.error),
+      child: Icon(
+        Icons.event_busy,
+        size: 16,
+        color: Theme.of(context).colorScheme.error,
+      ),
     );
   }
 }

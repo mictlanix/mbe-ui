@@ -43,11 +43,17 @@ void main() {
       expect(filter.status, CashSessionStatus.open);
     });
 
-    test('an unparseable facet value degrades to null rather than throwing', () {
-      final query = const ListQuery().withFacet('cash-drawer', 'not-a-number');
-      final filter = CashSessionFilter.fromQuery(query);
-      expect(filter.cashDrawerId, isNull);
-    });
+    test(
+      'an unparseable facet value degrades to null rather than throwing',
+      () {
+        final query = const ListQuery().withFacet(
+          'cash-drawer',
+          'not-a-number',
+        );
+        final filter = CashSessionFilter.fromQuery(query);
+        expect(filter.cashDrawerId, isNull);
+      },
+    );
 
     test('an unrecognized status name degrades to null', () {
       final query = const ListQuery().withFacet('status', 'not-a-status');
@@ -58,7 +64,10 @@ void main() {
 
   group('CashSessionFilterBadge', () {
     test('activeFilterCount counts each set facet independently', () {
-      const filter = CashSessionFilter(cashDrawerId: 1, status: CashSessionStatus.open);
+      const filter = CashSessionFilter(
+        cashDrawerId: 1,
+        status: CashSessionStatus.open,
+      );
       expect(filter.activeFilterCount, 2);
       expect(filter.hasActiveFilters, isTrue);
     });
@@ -78,39 +87,46 @@ void main() {
       repository = MockCashSessionRepository();
       container = ProviderContainer(
         retry: (_, _) => null,
-        overrides: [cashSessionRepositoryProvider.overrideWithValue(repository)],
+        overrides: [
+          cashSessionRepositoryProvider.overrideWithValue(repository),
+        ],
       );
       addTearDown(container.dispose);
     });
 
-    test('forwards cashDrawerId, cashierId and status to the repository', () async {
-      when(
-        () => repository.list(
+    test(
+      'forwards cashDrawerId, cashierId and status to the repository',
+      () async {
+        when(
+          () => repository.list(
+            cashDrawerId: 5,
+            cashierId: 100,
+            status: CashSessionStatus.open,
+            skip: 0,
+            limit: 20,
+          ),
+        ).thenAnswer(
+          (_) async => const CashSessionListResult(items: [], total: 0),
+        );
+
+        const filter = CashSessionFilter(
           cashDrawerId: 5,
           cashierId: 100,
           status: CashSessionStatus.open,
-          skip: 0,
-          limit: 20,
-        ),
-      ).thenAnswer((_) async => const CashSessionListResult(items: [], total: 0));
+        );
+        await container.read(cashSessionsListControllerProvider(filter).future);
 
-      const filter = CashSessionFilter(
-        cashDrawerId: 5,
-        cashierId: 100,
-        status: CashSessionStatus.open,
-      );
-      await container.read(cashSessionsListControllerProvider(filter).future);
-
-      verify(
-        () => repository.list(
-          cashDrawerId: 5,
-          cashierId: 100,
-          status: CashSessionStatus.open,
-          skip: 0,
-          limit: 20,
-        ),
-      ).called(1);
-    });
+        verify(
+          () => repository.list(
+            cashDrawerId: 5,
+            cashierId: 100,
+            status: CashSessionStatus.open,
+            skip: 0,
+            limit: 20,
+          ),
+        ).called(1);
+      },
+    );
 
     test('maps items and total onto a CatalogPage', () async {
       when(
@@ -122,7 +138,8 @@ void main() {
           limit: any(named: 'limit'),
         ),
       ).thenAnswer(
-        (_) async => CashSessionListResult(items: [_session(1), _session(2)], total: 2),
+        (_) async =>
+            CashSessionListResult(items: [_session(1), _session(2)], total: 2),
       );
 
       final page = await container.read(
@@ -144,7 +161,9 @@ void main() {
           skip: 100,
           limit: 20,
         ),
-      ).thenAnswer((_) async => const CashSessionListResult(items: [], total: 5));
+      ).thenAnswer(
+        (_) async => const CashSessionListResult(items: [], total: 5),
+      );
       when(
         () => repository.list(
           cashDrawerId: any(named: 'cashDrawerId'),
@@ -153,10 +172,14 @@ void main() {
           skip: 0,
           limit: 20,
         ),
-      ).thenAnswer((_) async => CashSessionListResult(items: [_session(1)], total: 5));
+      ).thenAnswer(
+        (_) async => CashSessionListResult(items: [_session(1)], total: 5),
+      );
 
       final page = await container.read(
-        cashSessionsListControllerProvider(const CashSessionFilter(pageIndex: 5)).future,
+        cashSessionsListControllerProvider(
+          const CashSessionFilter(pageIndex: 5),
+        ).future,
       );
 
       expect(page.pageIndex, 0);

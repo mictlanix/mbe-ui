@@ -26,12 +26,18 @@ void main() {
       expect(saleLineLayoutFor(width), SaleLineLayout.twoRow);
     });
 
-    test('exactly at its own threshold, a warehouse-less row is single-row', () {
-      expect(
-        saleLineLayoutFor(saleLineSingleRowMinWidthNoWarehouse, warehouse: false),
-        SaleLineLayout.singleRow,
-      );
-    });
+    test(
+      'exactly at its own threshold, a warehouse-less row is single-row',
+      () {
+        expect(
+          saleLineLayoutFor(
+            saleLineSingleRowMinWidthNoWarehouse,
+            warehouse: false,
+          ),
+          SaleLineLayout.singleRow,
+        );
+      },
+    );
 
     test('just below its own threshold, a warehouse-less row falls back to '
         'two-row, same as a warehoused row does at its own', () {
@@ -77,7 +83,10 @@ void main() {
         saleLineSingleRowMinWidthNoWarehouse,
         warehouse: false,
       );
-      final wide = SaleLineColumns.of(saleLineComfortableWidth, warehouse: false);
+      final wide = SaleLineColumns.of(
+        saleLineComfortableWidth,
+        warehouse: false,
+      );
       expect(wide.quantity, greaterThan(narrow.quantity));
       expect(wide.price, greaterThan(narrow.price));
       expect(wide.discount, greaterThan(narrow.discount));

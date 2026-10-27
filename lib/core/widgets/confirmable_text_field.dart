@@ -402,9 +402,14 @@ class _ConfirmableTextFieldState extends State<ConfirmableTextField>
   void initState() {
     super.initState();
     _lastResetTick = widget.controller.resetTick;
-    _text = TextEditingController(text: _formatted(widget.controller.displayed));
+    _text = TextEditingController(
+      text: _formatted(widget.controller.displayed),
+    );
     _focus = FocusNode()..addListener(_handleFocusChange);
-    _resetAnimation = AnimationController(vsync: this, duration: kFieldResetAnimation);
+    _resetAnimation = AnimationController(
+      vsync: this,
+      duration: kFieldResetAnimation,
+    );
     widget.controller.addListener(_handleControllerChange);
   }
 
@@ -484,7 +489,8 @@ class _ConfirmableTextFieldState extends State<ConfirmableTextField>
   }
 
   Future<void> _playReset() async {
-    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
+    final reduceMotion =
+        MediaQuery.maybeOf(context)?.disableAnimations ?? false;
     if (reduceMotion) {
       _syncIfSettled();
       setState(() => _reducedMotionTint = true);
@@ -528,11 +534,20 @@ class _ConfirmableTextFieldState extends State<ConfirmableTextField>
       animation: _resetAnimation,
       builder: (context, child) {
         final t = _resetAnimation.value;
-        final peak = _reducedMotionTint ? 1.0 : (t < 0.5 ? t / 0.5 : (1 - t) / 0.5);
-        final tint = Color.lerp(Colors.transparent, theme.colorScheme.errorContainer, peak);
+        final peak = _reducedMotionTint
+            ? 1.0
+            : (t < 0.5 ? t / 0.5 : (1 - t) / 0.5);
+        final tint = Color.lerp(
+          Colors.transparent,
+          theme.colorScheme.errorContainer,
+          peak,
+        );
         final opacity = _reducedMotionTint ? 1.0 : 1 - peak;
         return DecoratedBox(
-          decoration: BoxDecoration(color: tint, borderRadius: BorderRadius.circular(8)),
+          decoration: BoxDecoration(
+            color: tint,
+            borderRadius: BorderRadius.circular(8),
+          ),
           child: Opacity(opacity: opacity, child: child),
         );
       },

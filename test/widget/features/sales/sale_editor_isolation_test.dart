@@ -80,10 +80,7 @@ void main() {
         await container.read(orderEditorControllerProvider(2).future);
 
         expect(container.read(posSaleControllerProvider).value?.id, 1);
-        expect(
-          container.read(orderEditorControllerProvider(2)).value?.id,
-          2,
-        );
+        expect(container.read(orderEditorControllerProvider(2)).value?.id, 2);
 
         // Mutating the register's sale must not touch the order, and
         // vice versa — the direct expression of "neither may overwrite or
@@ -141,10 +138,7 @@ void main() {
         await container.read(quoteEditorControllerProvider(3).future);
 
         expect(container.read(posSaleControllerProvider).value?.id, 1);
-        expect(
-          container.read(quoteEditorControllerProvider(3)).value?.id,
-          3,
-        );
+        expect(container.read(quoteEditorControllerProvider(3)).value?.id, 3);
 
         when(
           () => salesOrders.updateLine(
@@ -254,7 +248,11 @@ void main() {
       'two at zero, for every scope in turn',
       (tester) async {
         final container = await pumpAllHosts(tester);
-        const scopes = [posWritesScope, salesOrderWritesScope, salesQuoteWritesScope];
+        const scopes = [
+          posWritesScope,
+          salesOrderWritesScope,
+          salesQuoteWritesScope,
+        ];
         for (final scope in scopes) {
           await checkGateIsolated(
             container,
@@ -266,42 +264,53 @@ void main() {
     );
   });
 
-  group('unconfirmed edits are not shared (contracts/quote-capture-host.md §4)', () {
-    UnconfirmedEdit fixedEdit(Object id) => UnconfirmedEdit(
-      id: id,
-      text: 'draft',
-      confirm: () async => true,
-      discard: () {},
-      resume: () {},
-    );
+  group(
+    'unconfirmed edits are not shared (contracts/quote-capture-host.md §4)',
+    () {
+      UnconfirmedEdit fixedEdit(Object id) => UnconfirmedEdit(
+        id: id,
+        text: 'draft',
+        confirm: () async => true,
+        discard: () {},
+        resume: () {},
+      );
 
-    testWidgets(
-      'registering an unconfirmed edit in any one scope leaves the other '
-      'two empty, for every scope in turn',
-      (tester) async {
-        final container = await pumpAllHosts(tester);
-        const scopes = [posWritesScope, salesOrderWritesScope, salesQuoteWritesScope];
-        for (final scope in scopes) {
-          container
-              .read(unconfirmedEditsProvider(scope).notifier)
-              .put(fixedEdit('field-in-$scope'));
+      testWidgets(
+        'registering an unconfirmed edit in any one scope leaves the other '
+        'two empty, for every scope in turn',
+        (tester) async {
+          final container = await pumpAllHosts(tester);
+          const scopes = [
+            posWritesScope,
+            salesOrderWritesScope,
+            salesQuoteWritesScope,
+          ];
+          for (final scope in scopes) {
+            container
+                .read(unconfirmedEditsProvider(scope).notifier)
+                .put(fixedEdit('field-in-$scope'));
 
-          expect(container.read(unconfirmedEditsProvider(scope)), hasLength(1));
-          for (final other in scopes.where((s) => s != scope)) {
             expect(
-              container.read(unconfirmedEditsProvider(other)),
-              isEmpty,
-              reason: '$other\'s unconfirmed edits are untouched by $scope\'s',
+              container.read(unconfirmedEditsProvider(scope)),
+              hasLength(1),
             );
-          }
+            for (final other in scopes.where((s) => s != scope)) {
+              expect(
+                container.read(unconfirmedEditsProvider(other)),
+                isEmpty,
+                reason:
+                    '$other\'s unconfirmed edits are untouched by $scope\'s',
+              );
+            }
 
-          container
-              .read(unconfirmedEditsProvider(scope).notifier)
-              .remove('field-in-$scope');
-        }
-      },
-    );
-  });
+            container
+                .read(unconfirmedEditsProvider(scope).notifier)
+                .remove('field-in-$scope');
+          }
+        },
+      );
+    },
+  );
 
   // spec 039 US4 / contracts/shared-step-seam.md §6 invariant 3, extended to
   // a third host by spec 040 — "the single most important test this feature
@@ -310,200 +319,186 @@ void main() {
   // own nested scope; this proves that resolution genuinely differs by
   // scope, not merely by construction, with all three documents open in the
   // same session at once.
-  group(
-    'confirming through the seam resolves to the right document, with all '
-    'three open at once (FR-044, spec 040 FR-042)',
-    () {
-      testWidgets(
-        'confirming inside the order workspace\'s nested scope commits the '
-        'order and leaves the register sale and an open quote untouched',
-        (tester) async {
-          late ProviderContainer orderContainer;
-          final container = await pumpPos(
-            tester,
-            ProviderScope(
-              retry: (_, _) => null,
-              overrides: [
-                // The exact four-provider override block
-                // `OrderWorkspaceScreen.build()` installs
-                // (contracts/shared-step-seam.md §5) — reproduced here
-                // rather than mounting the real screen, since this
-                // invariant is about the seam's resolution, not the
-                // workspace's own UI.
-                saleEditorProvider.overrideWith(
-                  (ref) => ref.watch(orderEditorControllerProvider(2).notifier),
-                ),
-                saleWritesScopeProvider.overrideWithValue(
-                  salesOrderWritesScope,
-                ),
-                saleConfirmErrorProvider.overrideWith((ref) => null),
-                saleConfirmFailureProvider.overrideWith((ref) => (_) {}),
-              ],
-              child: Builder(
-                builder: (context) {
-                  orderContainer = ProviderScope.containerOf(
-                    context,
-                    listen: false,
-                  );
-                  return const SizedBox.shrink();
-                },
-              ),
-            ),
+  group('confirming through the seam resolves to the right document, with all '
+      'three open at once (FR-044, spec 040 FR-042)', () {
+    testWidgets(
+      'confirming inside the order workspace\'s nested scope commits the '
+      'order and leaves the register sale and an open quote untouched',
+      (tester) async {
+        late ProviderContainer orderContainer;
+        final container = await pumpPos(
+          tester,
+          ProviderScope(
+            retry: (_, _) => null,
             overrides: [
-              salesOrderOverride(salesOrders),
-              salesQuoteOverride(salesQuotes),
+              // The exact four-provider override block
+              // `OrderWorkspaceScreen.build()` installs
+              // (contracts/shared-step-seam.md §5) — reproduced here
+              // rather than mounting the real screen, since this
+              // invariant is about the seam's resolution, not the
+              // workspace's own UI.
+              saleEditorProvider.overrideWith(
+                (ref) => ref.watch(orderEditorControllerProvider(2).notifier),
+              ),
+              saleWritesScopeProvider.overrideWithValue(salesOrderWritesScope),
+              saleConfirmErrorProvider.overrideWith((ref) => null),
+              saleConfirmFailureProvider.overrideWith((ref) => (_) {}),
             ],
-          );
-
-          when(
-            () => anyOpen(salesOrders),
-          ).thenAnswer((_) async => testSale(id: 1, lines: [testLine()]));
-          when(
-            () => salesOrders.getById(saleId: 2),
-          ).thenAnswer((_) async => testSale(id: 2, lines: [testLine()]));
-          when(() => salesOrders.confirm(saleId: 2)).thenAnswer(
-            (_) async => testSale(
-              id: 2,
-              lines: [testLine()],
-              status: SaleStatus.completed,
+            child: Builder(
+              builder: (context) {
+                orderContainer = ProviderScope.containerOf(
+                  context,
+                  listen: false,
+                );
+                return const SizedBox.shrink();
+              },
             ),
-          );
-          when(
-            () => salesQuotes.getById(quoteId: 3),
-          ).thenAnswer((_) async => testQuote(id: 3, lines: [testQuoteLine()]));
+          ),
+          overrides: [
+            salesOrderOverride(salesOrders),
+            salesQuoteOverride(salesQuotes),
+          ],
+        );
 
-          // All three open at once, exactly as a cashier, a back-office
-          // user and a salesperson writing a quote would have them in the
-          // same running app.
-          // A host's screen watches its controller; so does the test, or
-          // riverpod 3 disposes it between these reads.
-          container.listen(posSaleControllerProvider, (_, _) {});
-          await container.read(posSaleControllerProvider.notifier).ensureOpen();
-          orderContainer.listen(orderEditorControllerProvider(2), (_, _) {});
-          await orderContainer.read(orderEditorControllerProvider(2).future);
-          container.listen(quoteEditorControllerProvider(3), (_, _) {});
-          await container.read(quoteEditorControllerProvider(3).future);
+        when(
+          () => anyOpen(salesOrders),
+        ).thenAnswer((_) async => testSale(id: 1, lines: [testLine()]));
+        when(
+          () => salesOrders.getById(saleId: 2),
+        ).thenAnswer((_) async => testSale(id: 2, lines: [testLine()]));
+        when(() => salesOrders.confirm(saleId: 2)).thenAnswer(
+          (_) async => testSale(
+            id: 2,
+            lines: [testLine()],
+            status: SaleStatus.completed,
+          ),
+        );
+        when(
+          () => salesQuotes.getById(quoteId: 3),
+        ).thenAnswer((_) async => testQuote(id: 3, lines: [testQuoteLine()]));
 
-          // The trigger a real destination create fires — resolved through
-          // the seam inside the *nested* scope, so it reaches the order's
-          // own controller, never the register's or the quote's.
-          await orderContainer.read(saleEditorProvider).confirm();
+        // All three open at once, exactly as a cashier, a back-office
+        // user and a salesperson writing a quote would have them in the
+        // same running app.
+        // A host's screen watches its controller; so does the test, or
+        // riverpod 3 disposes it between these reads.
+        container.listen(posSaleControllerProvider, (_, _) {});
+        await container.read(posSaleControllerProvider.notifier).ensureOpen();
+        orderContainer.listen(orderEditorControllerProvider(2), (_, _) {});
+        await orderContainer.read(orderEditorControllerProvider(2).future);
+        container.listen(quoteEditorControllerProvider(3), (_, _) {});
+        await container.read(quoteEditorControllerProvider(3).future);
 
-          verify(() => salesOrders.confirm(saleId: 2)).called(1);
-          verifyNever(() => salesOrders.confirm(saleId: 1));
-          expect(
-            orderContainer
-                .read(orderEditorControllerProvider(2))
-                .value
-                ?.status,
-            SaleStatus.completed,
-            reason: 'the order is committed',
-          );
-          expect(
-            container.read(posSaleControllerProvider).value?.status,
-            SaleStatus.draft,
-            reason: 'the register sale, open at the same time, is untouched',
-          );
-          expect(
-            container.read(quoteEditorControllerProvider(3)).value?.status,
-            SaleStatus.draft,
-            reason: 'the open quote, untouched, is not confirmed either',
-          );
-        },
+        // The trigger a real destination create fires — resolved through
+        // the seam inside the *nested* scope, so it reaches the order's
+        // own controller, never the register's or the quote's.
+        await orderContainer.read(saleEditorProvider).confirm();
+
+        verify(() => salesOrders.confirm(saleId: 2)).called(1);
+        verifyNever(() => salesOrders.confirm(saleId: 1));
+        expect(
+          orderContainer.read(orderEditorControllerProvider(2)).value?.status,
+          SaleStatus.completed,
+          reason: 'the order is committed',
+        );
+        expect(
+          container.read(posSaleControllerProvider).value?.status,
+          SaleStatus.draft,
+          reason: 'the register sale, open at the same time, is untouched',
+        );
+        expect(
+          container.read(quoteEditorControllerProvider(3)).value?.status,
+          SaleStatus.draft,
+          reason: 'the open quote, untouched, is not confirmed either',
+        );
+      },
+    );
+
+    testWidgets('confirming inside a quote screen\'s nested scope confirms the '
+        'quote and leaves the register sale and an open order untouched', (
+      tester,
+    ) async {
+      late ProviderContainer quoteContainer;
+      final container = await pumpPos(
+        tester,
+        ProviderScope(
+          retry: (_, _) => null,
+          overrides: [
+            // The quote screen's own four-provider override block
+            // (contracts/quote-capture-host.md §1).
+            saleEditorProvider.overrideWith(
+              (ref) => ref.watch(quoteEditorControllerProvider(3).notifier),
+            ),
+            saleWritesScopeProvider.overrideWithValue(salesQuoteWritesScope),
+            saleConfirmErrorProvider.overrideWith((ref) => null),
+            saleConfirmFailureProvider.overrideWith((ref) => (_) {}),
+          ],
+          child: Builder(
+            builder: (context) {
+              quoteContainer = ProviderScope.containerOf(
+                context,
+                listen: false,
+              );
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+        overrides: [
+          salesOrderOverride(salesOrders),
+          salesQuoteOverride(salesQuotes),
+        ],
       );
 
-      testWidgets(
-        'confirming inside a quote screen\'s nested scope confirms the '
-        'quote and leaves the register sale and an open order untouched',
-        (tester) async {
-          late ProviderContainer quoteContainer;
-          final container = await pumpPos(
-            tester,
-            ProviderScope(
-              retry: (_, _) => null,
-              overrides: [
-                // The quote screen's own four-provider override block
-                // (contracts/quote-capture-host.md §1).
-                saleEditorProvider.overrideWith(
-                  (ref) => ref.watch(quoteEditorControllerProvider(3).notifier),
-                ),
-                saleWritesScopeProvider.overrideWithValue(
-                  salesQuoteWritesScope,
-                ),
-                saleConfirmErrorProvider.overrideWith((ref) => null),
-                saleConfirmFailureProvider.overrideWith((ref) => (_) {}),
-              ],
-              child: Builder(
-                builder: (context) {
-                  quoteContainer = ProviderScope.containerOf(
-                    context,
-                    listen: false,
-                  );
-                  return const SizedBox.shrink();
-                },
-              ),
-            ),
-            overrides: [
-              salesOrderOverride(salesOrders),
-              salesQuoteOverride(salesQuotes),
-            ],
-          );
-
-          when(
-            () => anyOpen(salesOrders),
-          ).thenAnswer((_) async => testSale(id: 1, lines: [testLine()]));
-          when(
-            () => salesOrders.getById(saleId: 2),
-          ).thenAnswer((_) async => testSale(id: 2, lines: [testLine()]));
-          when(
-            () => salesQuotes.getById(quoteId: 3),
-          ).thenAnswer((_) async => testQuote(id: 3, lines: [testQuoteLine()]));
-          when(() => salesQuotes.confirm(quoteId: 3)).thenAnswer(
-            (_) async => testQuote(
-              id: 3,
-              lines: [testQuoteLine()],
-              status: SaleStatus.completed,
-            ),
-          );
-
-          // A host's screen watches its controller; so does the test, or
-
-          // riverpod 3 disposes it between these reads.
-
-          container.listen(posSaleControllerProvider, (_, _) {});
-
-          await container.read(posSaleControllerProvider.notifier).ensureOpen();
-          container.listen(orderEditorControllerProvider(2), (_, _) {});
-          await container.read(orderEditorControllerProvider(2).future);
-          quoteContainer.listen(quoteEditorControllerProvider(3), (_, _) {});
-          await quoteContainer.read(quoteEditorControllerProvider(3).future);
-
-          await quoteContainer.read(saleEditorProvider).confirm();
-
-          verify(() => salesQuotes.confirm(quoteId: 3)).called(1);
-          verifyNever(() => salesOrders.confirm(saleId: any(named: 'saleId')));
-          expect(
-            quoteContainer
-                .read(quoteEditorControllerProvider(3))
-                .value
-                ?.status,
-            SaleStatus.completed,
-            reason: 'the quote is confirmed',
-          );
-          expect(
-            container.read(posSaleControllerProvider).value?.status,
-            SaleStatus.draft,
-            reason: 'the register sale, open at the same time, is untouched',
-          );
-          expect(
-            container.read(orderEditorControllerProvider(2)).value?.status,
-            SaleStatus.draft,
-            reason: 'the open order, untouched, is not confirmed either',
-          );
-        },
+      when(
+        () => anyOpen(salesOrders),
+      ).thenAnswer((_) async => testSale(id: 1, lines: [testLine()]));
+      when(
+        () => salesOrders.getById(saleId: 2),
+      ).thenAnswer((_) async => testSale(id: 2, lines: [testLine()]));
+      when(
+        () => salesQuotes.getById(quoteId: 3),
+      ).thenAnswer((_) async => testQuote(id: 3, lines: [testQuoteLine()]));
+      when(() => salesQuotes.confirm(quoteId: 3)).thenAnswer(
+        (_) async => testQuote(
+          id: 3,
+          lines: [testQuoteLine()],
+          status: SaleStatus.completed,
+        ),
       );
-    },
-  );
+
+      // A host's screen watches its controller; so does the test, or
+
+      // riverpod 3 disposes it between these reads.
+
+      container.listen(posSaleControllerProvider, (_, _) {});
+
+      await container.read(posSaleControllerProvider.notifier).ensureOpen();
+      container.listen(orderEditorControllerProvider(2), (_, _) {});
+      await container.read(orderEditorControllerProvider(2).future);
+      quoteContainer.listen(quoteEditorControllerProvider(3), (_, _) {});
+      await quoteContainer.read(quoteEditorControllerProvider(3).future);
+
+      await quoteContainer.read(saleEditorProvider).confirm();
+
+      verify(() => salesQuotes.confirm(quoteId: 3)).called(1);
+      verifyNever(() => salesOrders.confirm(saleId: any(named: 'saleId')));
+      expect(
+        quoteContainer.read(quoteEditorControllerProvider(3)).value?.status,
+        SaleStatus.completed,
+        reason: 'the quote is confirmed',
+      );
+      expect(
+        container.read(posSaleControllerProvider).value?.status,
+        SaleStatus.draft,
+        reason: 'the register sale, open at the same time, is untouched',
+      );
+      expect(
+        container.read(orderEditorControllerProvider(2)).value?.status,
+        SaleStatus.draft,
+        reason: 'the open order, untouched, is not confirmed either',
+      );
+    });
+  });
 
   group(
     'the confirm-failure banner is not shared (contracts/quote-capture-host.md §4)',
@@ -523,15 +518,21 @@ void main() {
                   retry: (_, _) => null,
                   overrides: [
                     saleEditorProvider.overrideWith(
-                      (ref) => ref.watch(orderEditorControllerProvider(2).notifier),
+                      (ref) =>
+                          ref.watch(orderEditorControllerProvider(2).notifier),
                     ),
-                    saleWritesScopeProvider.overrideWithValue(salesOrderWritesScope),
+                    saleWritesScopeProvider.overrideWithValue(
+                      salesOrderWritesScope,
+                    ),
                     saleConfirmErrorProvider.overrideWith((ref) => null),
                     saleConfirmFailureProvider.overrideWith((ref) => (_) {}),
                   ],
                   child: Builder(
                     builder: (context) {
-                      orderContainer = ProviderScope.containerOf(context, listen: false);
+                      orderContainer = ProviderScope.containerOf(
+                        context,
+                        listen: false,
+                      );
                       return const SizedBox.shrink();
                     },
                   ),
@@ -540,15 +541,21 @@ void main() {
                   retry: (_, _) => null,
                   overrides: [
                     saleEditorProvider.overrideWith(
-                      (ref) => ref.watch(quoteEditorControllerProvider(3).notifier),
+                      (ref) =>
+                          ref.watch(quoteEditorControllerProvider(3).notifier),
                     ),
-                    saleWritesScopeProvider.overrideWithValue(salesQuoteWritesScope),
+                    saleWritesScopeProvider.overrideWithValue(
+                      salesQuoteWritesScope,
+                    ),
                     saleConfirmErrorProvider.overrideWith((ref) => null),
                     saleConfirmFailureProvider.overrideWith((ref) => (_) {}),
                   ],
                   child: Builder(
                     builder: (context) {
-                      quoteContainer = ProviderScope.containerOf(context, listen: false);
+                      quoteContainer = ProviderScope.containerOf(
+                        context,
+                        listen: false,
+                      );
                       return const SizedBox.shrink();
                     },
                   ),
@@ -577,7 +584,8 @@ void main() {
           expect(
             container.read(saleConfirmErrorProvider),
             isNull,
-            reason: 'the register\'s own banner (the root default) is untouched',
+            reason:
+                'the register\'s own banner (the root default) is untouched',
           );
         },
       );

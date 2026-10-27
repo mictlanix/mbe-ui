@@ -33,8 +33,7 @@ List<PricingGridRow> buildPricingGridRows({
 }) {
   final byProductId = <int, Map<int, ProductPrice>>{};
   for (final price in prices) {
-    (byProductId[price.productId] ??= {})[price.priceList.priceListId] =
-        price;
+    (byProductId[price.productId] ??= {})[price.priceList.priceListId] = price;
   }
   return products
       .map(

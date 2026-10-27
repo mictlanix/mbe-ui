@@ -152,15 +152,16 @@ void main() {
     warehouses = MockWarehouseRepository();
     sessions = MockCashSessionRepository();
 
-    when(() => sessions.getCurrent()).thenAnswer(
-      (_) async => const CurrentSession(state: SessionState.open),
-    );
+    when(
+      () => sessions.getCurrent(),
+    ).thenAnswer((_) async => const CurrentSession(state: SessionState.open));
 
     when(
       () => customers.get(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => _customer());
     when(
-      () => payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
+      () =>
+          payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => '0');
     when(
       () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
@@ -173,12 +174,7 @@ void main() {
       ),
     ).thenAnswer(
       (_) async => const PriceListResult(
-        items: [
-          PriceList(
-            priceListId: 2,
-            name: 'Mayoreo',
-          ),
-        ],
+        items: [PriceList(priceListId: 2, name: 'Mayoreo')],
         total: 1,
       ),
     );
@@ -191,9 +187,7 @@ void main() {
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
-      ).thenAnswer(
-        (_) async => const OpenSalePage(items: [], total: 0),
-      );
+      ).thenAnswer((_) async => const OpenSalePage(items: [], total: 0));
     }
   });
 

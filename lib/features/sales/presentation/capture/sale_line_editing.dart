@@ -331,8 +331,7 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     );
   }
 
-  Future<void> removeLine() =>
-      ref.read(saleEditorProvider).removeLine(line.id);
+  Future<void> removeLine() => ref.read(saleEditorProvider).removeLine(line.id);
 
   /// The warehouse as a tap field that opens [showWarehousePicker] (spec 047
   /// FR-012, C5). [decoration] and [style] let each tier size the field as its
@@ -351,7 +350,8 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       facilityWarehousesControllerProvider(facilityId),
     );
     final gate =
-        stockGate ?? evaluateLines([line], ref.watch(productStockCacheProvider));
+        stockGate ??
+        evaluateLines([line], ref.watch(productStockCacheProvider));
     final isShort = gate.shortLineIds.contains(line.id);
     final isUnknown = gate.unknownLineIds.contains(line.id);
     final canEdit = enabled;
@@ -365,7 +365,8 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
                 stock: ref.watch(productStockCacheProvider)[line.product],
               );
         var base =
-            decoration ?? InputDecoration(labelText: l10n.posLineWarehouseLabel);
+            decoration ??
+            InputDecoration(labelText: l10n.posLineWarehouseLabel);
         if (isShort) {
           final border = theme.inputDecorationTheme.enabledBorder;
           base = base.copyWith(
@@ -398,12 +399,24 @@ mixin SaleLineEditing<T extends ConsumerStatefulWidget> on ConsumerState<T> {
             child: Row(
               children: [
                 Expanded(
-                  child: Text(name, style: style, overflow: TextOverflow.ellipsis),
+                  child: Text(
+                    name,
+                    style: style,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 if (isShort)
-                  Icon(Icons.warning_amber, size: 18, color: theme.colorScheme.error)
+                  Icon(
+                    Icons.warning_amber,
+                    size: 18,
+                    color: theme.colorScheme.error,
+                  )
                 else if (isUnknown)
-                  Icon(Icons.help_outline, size: 18, color: theme.colorScheme.outline),
+                  Icon(
+                    Icons.help_outline,
+                    size: 18,
+                    color: theme.colorScheme.outline,
+                  ),
                 Icon(
                   Icons.unfold_more,
                   size: 24,

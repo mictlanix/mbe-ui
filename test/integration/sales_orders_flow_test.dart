@@ -75,9 +75,9 @@ void main() {
       // 2. The warehouse a line defaults to — mbe-api does not fill this
       // in on its own (verified live for POS, `pos_counter_sale_flow_test
       // .dart` step 2 — the same document type, same rule).
-      final pointSale = await PointSaleRepositoryImpl(
-        dio,
-      ).get(pointSaleId: opened.pointSale!); // always set: a real back-office order
+      final pointSale = await PointSaleRepositoryImpl(dio).get(
+        pointSaleId: opened.pointSale!,
+      ); // always set: a real back-office order
       final warehouse = pointSale.warehouseId;
 
       // 3. Discover one sellable product from that warehouse.
@@ -91,7 +91,9 @@ void main() {
             compareAmounts(p.price, '0') > 0 &&
             (!p.stockRequired ||
                 p.stock.any(
-                  (s) => s.warehouse == warehouse && compareAmounts(s.available, '0') > 0,
+                  (s) =>
+                      s.warehouse == warehouse &&
+                      compareAmounts(s.available, '0') > 0,
                 )),
       );
       if (sellable.isEmpty) {
@@ -201,7 +203,8 @@ void main() {
       expect(
         unrecordedProbe.origin,
         isNull,
-        reason: 'an order created without an explicit origin must record '
+        reason:
+            'an order created without an explicit origin must record '
             'none — never silently default to either workflow',
       );
 
@@ -217,7 +220,8 @@ void main() {
       expect(
         await foundInFilteredList(posProbe.id),
         isFalse,
-        reason: 'excludeOrigin: pointOfSale must remove every point-of-sale '
+        reason:
+            'excludeOrigin: pointOfSale must remove every point-of-sale '
             'order (FR-004)',
       );
       expect(
@@ -228,7 +232,8 @@ void main() {
       expect(
         await foundInFilteredList(unrecordedProbe.id),
         isTrue,
-        reason: 'an order with no recorded origin must never be hidden by '
+        reason:
+            'an order with no recorded origin must never be hidden by '
             'either list\'s origin filter (FR-005, SC-003)',
       );
     },

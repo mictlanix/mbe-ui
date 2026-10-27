@@ -49,100 +49,92 @@ void main() {
     return dio;
   }
 
-  test(
-    'golden path: a list carrying prices and an assigned customer retires '
-    'in one request, the prices are gone, and the customer reads as being '
-    'on the named replacement (SC-001, SC-002, SC-003)',
-    () async {
-      final dio = await authenticatedDio(_username, _password);
-      final priceListRepo = PriceListRepositoryImpl(dio);
-      final productRepo = ProductRepositoryImpl(dio);
-      final productPriceRepo = ProductPriceRepositoryImpl(dio);
-      final customerRepo = CustomerRepositoryImpl(dio);
+  test('golden path: a list carrying prices and an assigned customer retires '
+      'in one request, the prices are gone, and the customer reads as being '
+      'on the named replacement (SC-001, SC-002, SC-003)', () async {
+    final dio = await authenticatedDio(_username, _password);
+    final priceListRepo = PriceListRepositoryImpl(dio);
+    final productRepo = ProductRepositoryImpl(dio);
+    final productPriceRepo = ProductPriceRepositoryImpl(dio);
+    final customerRepo = CustomerRepositoryImpl(dio);
 
-      final suffix = DateTime.now().millisecondsSinceEpoch;
+    final suffix = DateTime.now().millisecondsSinceEpoch;
 
-      final retiring = await priceListRepo.create(
-        name: 'IT Retirement Retiring $suffix',
-      );
-      final replacement = await priceListRepo.create(
-        name: 'IT Retirement Replacement $suffix',
-      );
-      final product = await productRepo.create(
-        code: 'IT-RETIRE-$suffix',
-        name: 'Integration Test Retirement Product',
-        unitOfMeasurement: _unitOfMeasurement,
-      );
-      await productPriceRepo.create(
-        productId: product.productId,
-        priceListId: retiring.priceListId,
-        price: '19.99',
-      );
-      final customer = await customerRepo.create(
-        code: 'IT-RETIRE-$suffix',
-        name: 'Integration Test Retirement Customer',
-        priceList: retiring.priceListId,
-      );
+    final retiring = await priceListRepo.create(
+      name: 'IT Retirement Retiring $suffix',
+    );
+    final replacement = await priceListRepo.create(
+      name: 'IT Retirement Replacement $suffix',
+    );
+    final product = await productRepo.create(
+      code: 'IT-RETIRE-$suffix',
+      name: 'Integration Test Retirement Product',
+      unitOfMeasurement: _unitOfMeasurement,
+    );
+    await productPriceRepo.create(
+      productId: product.productId,
+      priceListId: retiring.priceListId,
+      price: '19.99',
+    );
+    final customer = await customerRepo.create(
+      code: 'IT-RETIRE-$suffix',
+      name: 'Integration Test Retirement Customer',
+      priceList: retiring.priceListId,
+    );
 
-      // The preview reports both categories, largest first, with a total
-      // (FR-002, SC-005) — asked before anything is touched.
-      final preview = await priceListRepo.deletePreview(
-        priceListId: retiring.priceListId,
-      );
-      expect(
-        preview.categories.map((c) => c.key),
-        containsAll(['product_price.list', 'customer.price_list']),
-      );
-      expect(preview.total, greaterThanOrEqualTo(2));
+    // The preview reports both categories, largest first, with a total
+    // (FR-002, SC-005) — asked before anything is touched.
+    final preview = await priceListRepo.deletePreview(
+      priceListId: retiring.priceListId,
+    );
+    expect(
+      preview.categories.map((c) => c.key),
+      containsAll(['product_price.list', 'customer.price_list']),
+    );
+    expect(preview.total, greaterThanOrEqualTo(2));
 
-      await priceListRepo.delete(
-        priceListId: retiring.priceListId,
-        replacement: replacement.priceListId,
-      );
+    await priceListRepo.delete(
+      priceListId: retiring.priceListId,
+      replacement: replacement.priceListId,
+    );
 
-      // The list is gone.
-      await expectLater(
-        () => priceListRepo.get(priceListId: retiring.priceListId),
-        throwsA(isA<NotFoundError>()),
-      );
+    // The list is gone.
+    await expectLater(
+      () => priceListRepo.get(priceListId: retiring.priceListId),
+      throwsA(isA<NotFoundError>()),
+    );
 
-      // The customer moved to the replacement, exactly as the outcome the
-      // dialog reports (FR-017, SC-003).
-      final movedCustomer = await customerRepo.get(
-        customerId: customer.customerId,
-      );
-      expect(movedCustomer.priceList.id, replacement.priceListId);
-    },
-    skip: !_hasCredentials,
-  );
+    // The customer moved to the replacement, exactly as the outcome the
+    // dialog reports (FR-017, SC-003).
+    final movedCustomer = await customerRepo.get(
+      customerId: customer.customerId,
+    );
+    expect(movedCustomer.priceList.id, replacement.priceListId);
+  }, skip: !_hasCredentials);
 
-  test(
-    'a list something other than its prices and customers still points at '
-    'refuses the deletion, unchanged (FR-018, SC-004 backstop)',
-    () async {
-      final dio = await authenticatedDio(_username, _password);
-      final priceListRepo = PriceListRepositoryImpl(dio);
+  test('a list something other than its prices and customers still points at '
+      'refuses the deletion, unchanged (FR-018, SC-004 backstop)', () async {
+    final dio = await authenticatedDio(_username, _password);
+    final priceListRepo = PriceListRepositoryImpl(dio);
 
-      final blocked = await priceListRepo.create(
-        name: 'IT Retirement Blocked ${DateTime.now().millisecondsSinceEpoch}',
-      );
+    final blocked = await priceListRepo.create(
+      name: 'IT Retirement Blocked ${DateTime.now().millisecondsSinceEpoch}',
+    );
 
-      // Naming the list as its own replacement is refused with a 400
-      // (contracts/mbe-api-price-list-retirement.md §2) — a cheap way to
-      // exercise a real refusal without seeding a sales order.
-      await expectLater(
-        () => priceListRepo.delete(
-          priceListId: blocked.priceListId,
-          replacement: blocked.priceListId,
-        ),
-        throwsA(isA<ServerError>()),
-      );
-
-      final stillThere = await priceListRepo.get(
+    // Naming the list as its own replacement is refused with a 400
+    // (contracts/mbe-api-price-list-retirement.md §2) — a cheap way to
+    // exercise a real refusal without seeding a sales order.
+    await expectLater(
+      () => priceListRepo.delete(
         priceListId: blocked.priceListId,
-      );
-      expect(stillThere.priceListId, blocked.priceListId);
-    },
-    skip: !_hasCredentials,
-  );
+        replacement: blocked.priceListId,
+      ),
+      throwsA(isA<ServerError>()),
+    );
+
+    final stillThere = await priceListRepo.get(
+      priceListId: blocked.priceListId,
+    );
+    expect(stillThere.priceListId, blocked.priceListId);
+  }, skip: !_hasCredentials);
 }

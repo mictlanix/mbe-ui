@@ -52,14 +52,8 @@ const _fullAccessUser = User(
   privileges: [Privilege(systemObject: SystemObject.pricing, rawValue: 6)],
 );
 
-const _retail = PriceList(
-  priceListId: 1,
-  name: 'Retail',
-);
-const _wholesale = PriceList(
-  priceListId: 2,
-  name: 'Wholesale',
-);
+const _retail = PriceList(priceListId: 1, name: 'Retail');
+const _wholesale = PriceList(priceListId: 2, name: 'Wholesale');
 
 AccessControlService _accessFor(User user) =>
     AccessControlService(AuthState.authenticated(token: 't', user: user));
@@ -173,7 +167,11 @@ void main() {
         ],
       );
 
-      await pumpScreen(tester, signedInAs: _fullAccessUser, initialProductId: 1);
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        initialProductId: 1,
+      );
 
       expect(find.text('Retail'), findsOneWidget);
       expect(find.text('Wholesale'), findsOneWidget);
@@ -220,7 +218,11 @@ void main() {
         ),
       ).thenAnswer((_) async => []);
 
-      await pumpScreen(tester, signedInAs: _fullAccessUser, initialProductId: 1);
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        initialProductId: 1,
+      );
 
       final l10n = await AppLocalizations.delegate.load(const Locale('en'));
       expect(find.text(l10n.pricingNoPriceListsEmptyState), findsOneWidget);
@@ -236,7 +238,11 @@ void main() {
         () => priceListRepository.list(limit: 100),
       ).thenThrow(const AppError.server());
 
-      await pumpScreen(tester, signedInAs: _fullAccessUser, initialProductId: 1);
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        initialProductId: 1,
+      );
 
       expect(find.byKey(const Key('list_state_failed')), findsOneWidget);
       expect(find.textContaining('Failed to load prices'), findsNothing);
@@ -282,7 +288,11 @@ void main() {
         ],
       );
 
-      await pumpScreen(tester, signedInAs: _fullAccessUser, initialProductId: 1);
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        initialProductId: 1,
+      );
       await tester.tap(find.byKey(const Key('edit_price_button_1')));
       await tester.pumpAndSettle();
 

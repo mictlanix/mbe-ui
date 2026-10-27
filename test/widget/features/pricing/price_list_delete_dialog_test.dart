@@ -157,7 +157,10 @@ void main() {
 
       await pump(tester);
 
-      expect(find.byKey(const Key('price_list_delete_loading')), findsOneWidget);
+      expect(
+        find.byKey(const Key('price_list_delete_loading')),
+        findsOneWidget,
+      );
       expect(
         tester
             .widget<FilledButton>(
@@ -318,31 +321,26 @@ void main() {
       },
     );
 
-    testWidgets(
-      'confirming sends the deletion with replacement omitted '
-      '(FR-013 second clause)',
-      (tester) async {
-        when(
-          () => repository.delete(priceListId: _priceList.priceListId),
-        ).thenAnswer((_) async {});
+    testWidgets('confirming sends the deletion with replacement omitted '
+        '(FR-013 second clause)', (tester) async {
+      when(
+        () => repository.delete(priceListId: _priceList.priceListId),
+      ).thenAnswer((_) async {});
 
-        await pump(tester);
-        await tester.tap(
-          find.byKey(const Key('price_list_delete_acknowledge')),
-        );
-        await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const Key('price_list_delete_confirm')));
-        await tester.pumpAndSettle();
+      await pump(tester);
+      await tester.tap(find.byKey(const Key('price_list_delete_acknowledge')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('price_list_delete_confirm')));
+      await tester.pumpAndSettle();
 
-        verify(
-          () => repository.delete(priceListId: _priceList.priceListId),
-        ).called(1);
-        expect(outcomeCaptured, isTrue);
-        expect(outcome, isNotNull);
-        expect(outcome!.movedCount, 0);
-        expect(outcome!.replacementName, isNull);
-      },
-    );
+      verify(
+        () => repository.delete(priceListId: _priceList.priceListId),
+      ).called(1);
+      expect(outcomeCaptured, isTrue);
+      expect(outcome, isNotNull);
+      expect(outcome!.movedCount, 0);
+      expect(outcome!.replacementName, isNull);
+    });
 
     testWidgets(
       'the in-flight state shows progress and disables both confirm and '
@@ -371,7 +369,9 @@ void main() {
           isNull,
         );
         expect(
-          tester.widget<TextButton>(find.widgetWithText(TextButton, 'Cancel')).onPressed,
+          tester
+              .widget<TextButton>(find.widgetWithText(TextButton, 'Cancel'))
+              .onPressed,
           isNull,
         );
 
@@ -426,7 +426,9 @@ void main() {
           reason: 'no replacement chosen yet',
         );
 
-        await tester.tap(find.byKey(const Key('price_list_delete_replacement')));
+        await tester.tap(
+          find.byKey(const Key('price_list_delete_replacement')),
+        );
         await tester.pump(const Duration(milliseconds: 350));
 
         expect(find.text('Wholesale'), findsOneWidget);
@@ -463,7 +465,10 @@ void main() {
           (_) async => PriceListResult(items: const [wholesale], total: 1),
         );
         when(
-          () => repository.delete(priceListId: _priceList.priceListId, replacement: 3),
+          () => repository.delete(
+            priceListId: _priceList.priceListId,
+            replacement: 3,
+          ),
         ).thenAnswer((_) async {});
 
         await pump(tester);
@@ -471,7 +476,9 @@ void main() {
           find.byKey(const Key('price_list_delete_acknowledge')),
         );
         await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const Key('price_list_delete_replacement')));
+        await tester.tap(
+          find.byKey(const Key('price_list_delete_replacement')),
+        );
         await tester.pump(const Duration(milliseconds: 350));
         await tester.tap(find.text('Wholesale'));
         await tester.pumpAndSettle();
@@ -515,10 +522,7 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(
-          find.byKey(const Key('price_list_delete_dialog')),
-          findsNothing,
-        );
+        expect(find.byKey(const Key('price_list_delete_dialog')), findsNothing);
         expect(find.text('/customers?priceList=7'), findsOneWidget);
       },
     );
@@ -548,7 +552,10 @@ void main() {
           find.byKey(const Key('price_list_delete_blocked_banner')),
           findsOneWidget,
         );
-        expect(find.text('(blocks deletion — clear these first)'), findsOneWidget);
+        expect(
+          find.text('(blocks deletion — clear these first)'),
+          findsOneWidget,
+        );
         expect(
           find.byKey(const Key('price_list_delete_confirm')),
           findsNothing,
@@ -564,7 +571,10 @@ void main() {
         expect(find.text('Close'), findsOneWidget);
         // The lead line ("will be permanently deleted") would contradict
         // the banner directly above it, so it is suppressed here.
-        expect(find.textContaining('will be permanently deleted'), findsNothing);
+        expect(
+          find.textContaining('will be permanently deleted'),
+          findsNothing,
+        );
 
         verifyNever(
           () => repository.delete(
@@ -614,7 +624,9 @@ void main() {
           find.byKey(const Key('price_list_delete_acknowledge')),
         );
         await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const Key('price_list_delete_replacement')));
+        await tester.tap(
+          find.byKey(const Key('price_list_delete_replacement')),
+        );
         await tester.pump(const Duration(milliseconds: 350));
         await tester.tap(find.text('Wholesale'));
         await tester.pumpAndSettle();
@@ -669,8 +681,10 @@ void main() {
           findsOneWidget,
         );
         expect(
-          find.text('Optional — used only if customers turn out to be '
-              'assigned.'),
+          find.text(
+            'Optional — used only if customers turn out to be '
+            'assigned.',
+          ),
           findsOneWidget,
         );
         expect(
@@ -705,43 +719,35 @@ void main() {
       },
     );
 
-    testWidgets(
-      'a subsequent server refusal still renders via ErrorBanner',
-      (tester) async {
-        when(
-          () => repository.delete(priceListId: _priceList.priceListId),
-        ).thenThrow(
-          const AppError.server(
-            statusCode: 409,
-            message:
-                'Still referenced by customer.price_list (12) — remove '
-                'those records first',
-          ),
-        );
+    testWidgets('a subsequent server refusal still renders via ErrorBanner', (
+      tester,
+    ) async {
+      when(
+        () => repository.delete(priceListId: _priceList.priceListId),
+      ).thenThrow(
+        const AppError.server(
+          statusCode: 409,
+          message:
+              'Still referenced by customer.price_list (12) — remove '
+              'those records first',
+        ),
+      );
 
-        await pump(tester);
-        await tester.ensureVisible(
-          find.byKey(const Key('price_list_delete_acknowledge')),
-        );
-        await tester.tap(
-          find.byKey(const Key('price_list_delete_acknowledge')),
-        );
-        await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const Key('price_list_delete_confirm')));
-        await tester.pumpAndSettle();
+      await pump(tester);
+      await tester.ensureVisible(
+        find.byKey(const Key('price_list_delete_acknowledge')),
+      );
+      await tester.tap(find.byKey(const Key('price_list_delete_acknowledge')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('price_list_delete_confirm')));
+      await tester.pumpAndSettle();
 
-        expect(
-          find.byKey(const Key('price_list_delete_dialog')),
-          findsOneWidget,
-        );
-        expect(
-          find.textContaining(
-            'Still referenced by customer.price_list (12)',
-          ),
-          findsOneWidget,
-        );
-      },
-    );
+      expect(find.byKey(const Key('price_list_delete_dialog')), findsOneWidget);
+      expect(
+        find.textContaining('Still referenced by customer.price_list (12)'),
+        findsOneWidget,
+      );
+    });
   });
 
   group('largest text size (constitution §V, quickstart.md step 15)', () {
@@ -761,9 +767,9 @@ void main() {
             total: 4324,
           ),
         );
-        when(() => repository.list(search: null)).thenAnswer(
-          (_) async => const PriceListResult(items: [], total: 0),
-        );
+        when(
+          () => repository.list(search: null),
+        ).thenAnswer((_) async => const PriceListResult(items: [], total: 0));
 
         await pump(tester, textSizeLevel: TextSizeLevel.extraLarge);
         await tester.pumpAndSettle();

@@ -43,21 +43,18 @@ void main() {
       expect(rows[1].product.productId, 2);
     });
 
-    test(
-      'a product with no price on a list has no entry for it — "not set" is '
-      'absence, not a null value, so it is distinguishable from a stored '
-      'price of zero',
-      () {
-        final rows = buildPricingGridRows(
-          products: [_product(1)],
-          prices: [_price(productId: 1, priceListId: 5, price: '0.00')],
-        );
+    test('a product with no price on a list has no entry for it — "not set" is '
+        'absence, not a null value, so it is distinguishable from a stored '
+        'price of zero', () {
+      final rows = buildPricingGridRows(
+        products: [_product(1)],
+        prices: [_price(productId: 1, priceListId: 5, price: '0.00')],
+      );
 
-        expect(rows.single.prices.containsKey(5), isTrue);
-        expect(rows.single.prices[5]!.price, '0.00');
-        expect(rows.single.prices.containsKey(9), isFalse);
-      },
-    );
+      expect(rows.single.prices.containsKey(5), isTrue);
+      expect(rows.single.prices[5]!.price, '0.00');
+      expect(rows.single.prices.containsKey(9), isFalse);
+    });
 
     test('joins each price to its own product only', () {
       final rows = buildPricingGridRows(
@@ -77,7 +74,10 @@ void main() {
     });
 
     test('a product with no matching price at all gets an empty map', () {
-      final rows = buildPricingGridRows(products: [_product(1)], prices: const []);
+      final rows = buildPricingGridRows(
+        products: [_product(1)],
+        prices: const [],
+      );
 
       expect(rows.single.prices, isEmpty);
     });

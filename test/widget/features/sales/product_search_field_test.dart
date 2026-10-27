@@ -798,10 +798,7 @@ void main() {
         // Still the same screen, at the same address family — a `go` would
         // have unmounted `/host` and, with it, this sale.
         expect(router.state.uri.path, advancedSearchPath);
-        expect(
-          container.read(posSaleControllerProvider).value?.id,
-          sale.id,
-        );
+        expect(container.read(posSaleControllerProvider).value?.id, sale.id);
         verify(() => anyOpen(salesOrders)).called(1);
       },
     );

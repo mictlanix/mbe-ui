@@ -133,7 +133,8 @@ void main() {
         expect(
           query.containsKey('origin'),
           isFalse,
-          reason: 'the inclusive origin parameter must never be sent — it '
+          reason:
+              'the inclusive origin parameter must never be sent — it '
               'would hide every order raised before mbe-api#209 (FR-005)',
         );
       },

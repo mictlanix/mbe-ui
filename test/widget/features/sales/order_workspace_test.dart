@@ -69,10 +69,9 @@ const _noCustomerCreateUser = User(
   privileges: [Privilege(systemObject: SystemObject.salesOrders, rawValue: 4)],
 );
 
-Override _authOverride([User user = _updaterUser]) =>
-    authProvider.overrideWith(
-      () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: user)),
-    );
+Override _authOverride([User user = _updaterUser]) => authProvider.overrideWith(
+  () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: user)),
+);
 
 class MockCustomerRepository extends Mock implements CustomerRepository {}
 

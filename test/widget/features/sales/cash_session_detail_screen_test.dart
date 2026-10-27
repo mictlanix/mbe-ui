@@ -32,7 +32,9 @@ const _canCloseUser = User(
   administrator: false,
   status: EntityStatus.active,
   sessionVersion: 1,
-  privileges: [Privilege(systemObject: SystemObject.cashSessionClose, rawValue: 4)],
+  privileges: [
+    Privilege(systemObject: SystemObject.cashSessionClose, rawValue: 4),
+  ],
 );
 
 const _cannotCloseUser = User(
@@ -145,7 +147,10 @@ void main() {
 
       expect(find.text('Caja 1'), findsWidgets);
       expect(find.text('Ana López'), findsOneWidget);
-      expect(find.byKey(const Key('cash_session_status_chip_open')), findsOneWidget);
+      expect(
+        find.byKey(const Key('cash_session_status_chip_open')),
+        findsOneWidget,
+      );
       expect(find.textContaining('3,240'), findsOneWidget);
     });
 
@@ -154,7 +159,10 @@ void main() {
       await pumpScreen(tester, user: _canCloseUser, session: _closedSession());
 
       expect(find.text('Luis Reyes'), findsOneWidget);
-      expect(find.byKey(const Key('cash_session_status_chip_closed')), findsOneWidget);
+      expect(
+        find.byKey(const Key('cash_session_status_chip_closed')),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('cash_session_close_button')), findsNothing);
       expect(
         find.byKey(const Key('cash_session_denomination_field_500')),
@@ -174,27 +182,29 @@ void main() {
           find.byKey(const Key('cash_session_denomination_field_500')),
           findsOneWidget,
         );
-        expect(find.byKey(const Key('cash_session_close_button')), findsOneWidget);
-      },
-    );
-
-    testWidgets(
-      'an open session without cashSessionClose:update shows the '
-      'supervisor-required message instead — absent, not disabled (FR-025)',
-      (tester) async {
-        await pumpScreen(tester, user: _cannotCloseUser, session: _openSession());
-
         expect(
-          find.byKey(const Key('cash_session_supervisor_required_message')),
+          find.byKey(const Key('cash_session_close_button')),
           findsOneWidget,
         );
-        expect(find.byKey(const Key('cash_session_close_button')), findsNothing);
-        expect(
-          find.byKey(const Key('cash_session_denomination_field_500')),
-          findsNothing,
-        );
       },
     );
+
+    testWidgets('an open session without cashSessionClose:update shows the '
+        'supervisor-required message instead — absent, not disabled (FR-025)', (
+      tester,
+    ) async {
+      await pumpScreen(tester, user: _cannotCloseUser, session: _openSession());
+
+      expect(
+        find.byKey(const Key('cash_session_supervisor_required_message')),
+        findsOneWidget,
+      );
+      expect(find.byKey(const Key('cash_session_close_button')), findsNothing);
+      expect(
+        find.byKey(const Key('cash_session_denomination_field_500')),
+        findsNothing,
+      );
+    });
   });
 
   group('CashSessionDetailScreen — counting (US2)', () {
@@ -225,7 +235,9 @@ void main() {
         '3',
       );
       await tester.pump();
-      await tester.ensureVisible(find.byKey(const Key('cash_session_close_button')));
+      await tester.ensureVisible(
+        find.byKey(const Key('cash_session_close_button')),
+      );
       await tester.tap(find.byKey(const Key('cash_session_close_button')));
       await tester.pumpAndSettle();
 
@@ -247,7 +259,9 @@ void main() {
 
       await pumpScreen(tester, user: _canCloseUser, session: _openSession());
 
-      await tester.ensureVisible(find.byKey(const Key('cash_session_close_button')));
+      await tester.ensureVisible(
+        find.byKey(const Key('cash_session_close_button')),
+      );
       await tester.tap(find.byKey(const Key('cash_session_close_button')));
       await tester.pumpAndSettle();
 
@@ -262,10 +276,14 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byKey(const Key('cash_session_confirm_empty_count_button')));
+      await tester.tap(
+        find.byKey(const Key('cash_session_confirm_empty_count_button')),
+      );
       await tester.pumpAndSettle();
 
-      verify(() => repository.close(cashSessionId: 1, counts: const [])).called(1);
+      verify(
+        () => repository.close(cashSessionId: 1, counts: const []),
+      ).called(1);
     });
   });
 
@@ -296,7 +314,9 @@ void main() {
         '3',
       );
       await tester.pump();
-      await tester.ensureVisible(find.byKey(const Key('cash_session_close_button')));
+      await tester.ensureVisible(
+        find.byKey(const Key('cash_session_close_button')),
+      );
       await tester.tap(find.byKey(const Key('cash_session_close_button')));
       await tester.pumpAndSettle();
     }
@@ -338,8 +358,9 @@ void main() {
       );
     });
 
-    testWidgets('pressing it opens that session\'s cut in the preview',
-        (tester) async {
+    testWidgets('pressing it opens that session\'s cut in the preview', (
+      tester,
+    ) async {
       await pumpScreen(
         tester,
         user: _cutReaderUser,
@@ -380,7 +401,10 @@ void main() {
       );
 
       expect(viewCutButton, findsNothing);
-      expect(find.byKey(const Key('cash_session_close_button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('cash_session_close_button')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('the close dialog no longer says the figures will not be '
@@ -454,8 +478,9 @@ void main() {
     });
 
     testWidgets('after the close, the screen shows the session as closed with '
-        'its own "View cut", without leaving it (FR-007, US3-4)',
-        (tester) async {
+        'its own "View cut", without leaving it (FR-007, US3-4)', (
+      tester,
+    ) async {
       when(
         () => repository.close(cashSessionId: 1, counts: any(named: 'counts')),
       ).thenAnswer((_) async => _closedSession(id: 1));
@@ -474,7 +499,10 @@ void main() {
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('cash_session_status_chip_closed')), findsOneWidget);
+      expect(
+        find.byKey(const Key('cash_session_status_chip_closed')),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('cash_session_close_button')), findsNothing);
       expect(viewCutButton, findsOneWidget);
     });

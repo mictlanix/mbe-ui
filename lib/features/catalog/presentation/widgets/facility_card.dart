@@ -233,10 +233,7 @@ class _Header extends StatelessWidget {
       ],
     );
 
-    final countsRow = _CountsRow(
-      children: children,
-      hasError: hasError,
-    );
+    final countsRow = _CountsRow(children: children, hasError: hasError);
 
     final statusIndicator = isCompact
         ? FacilityStatusDot(status: facility.status)
@@ -481,12 +478,10 @@ class _ExpandedBody extends StatelessWidget {
               CashDrawerChildRow(
                 key: ValueKey('cash_drawer_${cashDrawer.cashDrawerId}'),
                 cashDrawer: cashDrawer,
-                onTap: () =>
-                    cashDrawerActions.onView(cashDrawer.cashDrawerId),
+                onTap: () => cashDrawerActions.onView(cashDrawer.cashDrawerId),
                 onEdit: cashDrawerActions.onEdit == null
                     ? null
-                    : () =>
-                          cashDrawerActions.onEdit!(cashDrawer.cashDrawerId),
+                    : () => cashDrawerActions.onEdit!(cashDrawer.cashDrawerId),
               ),
           ],
         ),

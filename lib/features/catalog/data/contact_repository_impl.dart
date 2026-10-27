@@ -16,13 +16,16 @@ final contactRepositoryProvider = Provider<ContactRepository>((ref) {
 /// `ContactRepository` backed by the generated `ContactsApi`
 /// (mbe-api#133, contracts/mbe-api-pos.md §4).
 class ContactRepositoryImpl implements ContactRepository {
-  ContactRepositoryImpl(Dio dio)
-    : _api = api.ContactsApi(dio, appSerializers);
+  ContactRepositoryImpl(Dio dio) : _api = api.ContactsApi(dio, appSerializers);
 
   final api.ContactsApi _api;
 
   @override
-  Future<List<Contact>> list({String? search, int skip = 0, int limit = 20}) async {
+  Future<List<Contact>> list({
+    String? search,
+    int skip = 0,
+    int limit = 20,
+  }) async {
     try {
       final response = await _api.listContactsApiV1ContactsGet(
         search: search,

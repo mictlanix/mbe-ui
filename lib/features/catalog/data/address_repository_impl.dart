@@ -16,8 +16,7 @@ final addressRepositoryProvider = Provider<AddressRepository>((ref) {
 });
 
 class AddressRepositoryImpl implements AddressRepository {
-  AddressRepositoryImpl(Dio dio)
-    : _api = AddressesApi(dio, appSerializers);
+  AddressRepositoryImpl(Dio dio) : _api = AddressesApi(dio, appSerializers);
 
   final AddressesApi _api;
 

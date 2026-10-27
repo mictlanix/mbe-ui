@@ -373,7 +373,8 @@ void main() {
             limit: any(named: 'limit'),
           ),
         ).thenAnswer(
-          (_) async => CashDrawerListResult(items: [_cashDrawer(1, 2)], total: 1),
+          (_) async =>
+              CashDrawerListResult(items: [_cashDrawer(1, 2)], total: 1),
         );
 
         await pumpScreen(
@@ -410,21 +411,18 @@ void main() {
       },
     );
 
-    testWidgets(
-      'in Spanish the production-site type reads "Planta" '
-      '(046-catalog-improvements FR-012)',
-      (tester) async {
-        await pumpScreen(
-          tester,
-          signedInAs: _fullAccessUser,
-          facilities: [_productionSite],
-          locale: const Locale('es'),
-        );
+    testWidgets('in Spanish the production-site type reads "Planta" '
+        '(046-catalog-improvements FR-012)', (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        facilities: [_productionSite],
+        locale: const Locale('es'),
+      );
 
-        expect(find.text('Planta'), findsOneWidget);
-        expect(find.textContaining('Sitio de producción'), findsNothing);
-      },
-    );
+      expect(find.text('Planta'), findsOneWidget);
+      expect(find.textContaining('Sitio de producción'), findsNothing);
+    });
 
     testWidgets('an empty section shows its named placeholder', (tester) async {
       await pumpScreen(
@@ -637,12 +635,11 @@ void main() {
             limit: any(named: 'limit'),
           ),
         ).thenAnswer(
-          (_) async =>
-              WarehouseListResult(items: [_warehouse(1, 1)], total: 1),
+          (_) async => WarehouseListResult(items: [_warehouse(1, 1)], total: 1),
         );
-        when(() => warehouseRepository.get(warehouseId: 1)).thenAnswer(
-          (_) async => _warehouse(1, 1),
-        );
+        when(
+          () => warehouseRepository.get(warehouseId: 1),
+        ).thenAnswer((_) async => _warehouse(1, 1));
 
         final router = await pumpScreen(
           tester,
@@ -661,53 +658,47 @@ void main() {
         );
         expect(codeField.initialValue, 'WH-1');
         expect(codeField.enabled, isFalse);
-        expect(
-          find.byKey(const Key('edit_warehouse_button')),
-          findsOneWidget,
-        );
+        expect(find.byKey(const Key('edit_warehouse_button')), findsOneWidget);
       },
     );
 
-    testWidgets(
-      'a section create action opens the blank panel with the parent '
-      'facility pre-selected (FR-022/FR-023)',
-      (tester) async {
-        when(() => facilityRepository.get(facilityId: 1)).thenAnswer(
-          (_) async => Facility(
-            facilityId: 1,
-            code: 'FAC-1',
-            name: 'Main Store',
-            type: FacilityType.store,
-            locationId: '55600',
-            locationLabel: '55600',
-            addressId: 1,
-            addressLabel: 'Address',
-            taxpayerRfc: 'AAA010101AAA',
-            status: EntityStatus.active,
-          ),
-        );
+    testWidgets('a section create action opens the blank panel with the parent '
+        'facility pre-selected (FR-022/FR-023)', (tester) async {
+      when(() => facilityRepository.get(facilityId: 1)).thenAnswer(
+        (_) async => Facility(
+          facilityId: 1,
+          code: 'FAC-1',
+          name: 'Main Store',
+          type: FacilityType.store,
+          locationId: '55600',
+          locationLabel: '55600',
+          addressId: 1,
+          addressLabel: 'Address',
+          taxpayerRfc: 'AAA010101AAA',
+          status: EntityStatus.active,
+        ),
+      );
 
-        await pumpScreen(
-          tester,
-          signedInAs: _fullAccessUser,
-          facilities: [_store],
-        );
-        await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
-        await tester.pumpAndSettle();
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        facilities: [_store],
+      );
+      await tester.tap(find.byKey(const Key('facility_card_toggle_1')));
+      await tester.pumpAndSettle();
 
-        await tester.tap(find.byKey(const Key('facility_create_warehouse_1')));
-        await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('facility_create_warehouse_1')));
+      await tester.pumpAndSettle();
 
-        expect(find.byKey(const Key('code_field')), findsOneWidget);
-        final editable = tester.widget<EditableText>(
-          find.descendant(
-            of: find.byKey(const Key('facility_field')),
-            matching: find.byType(EditableText),
-          ),
-        );
-        expect(editable.controller.text, 'Main Store');
-      },
-    );
+      expect(find.byKey(const Key('code_field')), findsOneWidget);
+      final editable = tester.widget<EditableText>(
+        find.descendant(
+          of: find.byKey(const Key('facility_field')),
+          matching: find.byType(EditableText),
+        ),
+      );
+      expect(editable.controller.text, 'Main Store');
+    });
   });
 
   group('retained from before this feature (FR-014/FR-015/FR-016)', () {
@@ -755,7 +746,10 @@ void main() {
         );
 
         expect(find.byKey(const Key('facilities_card_list')), findsNothing);
-        expect(find.byKey(const Key('list_state_filtered_empty')), findsOneWidget);
+        expect(
+          find.byKey(const Key('list_state_filtered_empty')),
+          findsOneWidget,
+        );
       },
     );
 

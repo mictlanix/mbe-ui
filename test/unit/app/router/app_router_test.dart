@@ -68,8 +68,7 @@ class MockFacilityRepository extends Mock implements FacilityRepository {}
 
 class MockUserRepository extends Mock implements UserRepository {}
 
-class MockUserProfileRepository extends Mock
-    implements UserProfileRepository {}
+class MockUserProfileRepository extends Mock implements UserProfileRepository {}
 
 class MockSupplierRepository extends Mock implements SupplierRepository {}
 
@@ -326,15 +325,16 @@ void main() {
         limit: any(named: 'limit'),
       ),
     ).thenAnswer((_) async => const UserProfileListResult(items: [], total: 0));
-    when(() => userProfileRepository.get(profileId: any(named: 'profileId')))
-        .thenAnswer(
-          (_) async => const UserProfile(
-            userProfileId: 5,
-            name: 'Cashier',
-            status: EntityStatus.active,
-            privileges: [],
-          ),
-        );
+    when(
+      () => userProfileRepository.get(profileId: any(named: 'profileId')),
+    ).thenAnswer(
+      (_) async => const UserProfile(
+        userProfileId: 5,
+        name: 'Cashier',
+        status: EntityStatus.active,
+        privileges: [],
+      ),
+    );
 
     final supplierRepository = MockSupplierRepository();
     when(
@@ -516,9 +516,9 @@ void main() {
     // §4). The current stub screen doesn't call it yet, but the override is
     // added now so this shared file is edited once, not twice.
     final cashSessionRepository = MockCashSessionRepository();
-    when(() => cashSessionRepository.getCurrent()).thenAnswer(
-      (_) async => const CurrentSession(state: SessionState.none),
-    );
+    when(
+      () => cashSessionRepository.getCurrent(),
+    ).thenAnswer((_) async => const CurrentSession(state: SessionState.none));
 
     // 023-pos-ux-improvements: `PosSalesListScreen` (T026 onward) watches
     // `PosSalesListController`, which calls `listSales` whenever the signed-in
@@ -611,9 +611,7 @@ void main() {
         productRepositoryProvider.overrideWithValue(productRepository),
         allLabelsProvider.overrideWith((_) async => const []),
         userRepositoryProvider.overrideWithValue(userRepository),
-        userProfileRepositoryProvider.overrideWithValue(
-          userProfileRepository,
-        ),
+        userProfileRepositoryProvider.overrideWithValue(userProfileRepository),
         supplierRepositoryProvider.overrideWithValue(supplierRepository),
         expenseRepositoryProvider.overrideWithValue(expenseRepository),
         vehicleRepositoryProvider.overrideWithValue(vehicleRepository),
@@ -722,99 +720,70 @@ void main() {
     },
   );
 
-  group(
-    '/user-profiles — administrator gate, not a SystemObject '
-    '(024-user-profiles research.md §2)',
-    () {
-      testWidgets('an administrator reaches /user-profiles', (tester) async {
-        final handle = await pumpAt(
-          tester,
-          _administratorUser,
-          '/user-profiles',
-        );
-        expect(handle.router.state.uri.path, '/user-profiles');
-      });
+  group('/user-profiles — administrator gate, not a SystemObject '
+      '(024-user-profiles research.md §2)', () {
+    testWidgets('an administrator reaches /user-profiles', (tester) async {
+      final handle = await pumpAt(tester, _administratorUser, '/user-profiles');
+      expect(handle.router.state.uri.path, '/user-profiles');
+    });
 
-      testWidgets(
-        'a non-administrator holding users/read is redirected away from '
-        '/user-profiles — the case most easily missed, since gating on '
-        'SystemObject.users would let this exact user through',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _noMergeUser,
-            '/user-profiles',
-          );
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
-
-      testWidgets('a user with no access at all is redirected away from '
-          '/user-profiles', (tester) async {
-        final handle = await pumpAt(tester, _noAccessUser, '/user-profiles');
+    testWidgets(
+      'a non-administrator holding users/read is redirected away from '
+      '/user-profiles — the case most easily missed, since gating on '
+      'SystemObject.users would let this exact user through',
+      (tester) async {
+        final handle = await pumpAt(tester, _noMergeUser, '/user-profiles');
         expect(handle.router.state.uri.path, '/');
-      });
+      },
+    );
 
-      testWidgets(
-        'an administrator reaches /user-profiles/new',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _administratorUser,
-            '/user-profiles/new',
-          );
-          expect(handle.router.state.uri.path, '/user-profiles/new');
-        },
-      );
+    testWidgets('a user with no access at all is redirected away from '
+        '/user-profiles', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/user-profiles');
+      expect(handle.router.state.uri.path, '/');
+    });
 
-      testWidgets(
-        'a non-administrator is redirected away from /user-profiles/new',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _noMergeUser,
-            '/user-profiles/new',
-          );
-          expect(handle.router.state.uri.path, '/');
-        },
+    testWidgets('an administrator reaches /user-profiles/new', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _administratorUser,
+        '/user-profiles/new',
       );
+      expect(handle.router.state.uri.path, '/user-profiles/new');
+    });
 
-      testWidgets(
-        'an administrator reaches /user-profiles/:profileId',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _administratorUser,
-            '/user-profiles/5',
-          );
-          expect(handle.router.state.uri.path, '/user-profiles/5');
-        },
-      );
+    testWidgets(
+      'a non-administrator is redirected away from /user-profiles/new',
+      (tester) async {
+        final handle = await pumpAt(tester, _noMergeUser, '/user-profiles/new');
+        expect(handle.router.state.uri.path, '/');
+      },
+    );
 
-      testWidgets(
-        'a non-administrator is redirected away from '
-        '/user-profiles/:profileId, not just the list route',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _noMergeUser,
-            '/user-profiles/5',
-          );
-          expect(handle.router.state.uri.path, '/');
-        },
+    testWidgets('an administrator reaches /user-profiles/:profileId', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _administratorUser,
+        '/user-profiles/5',
       );
+      expect(handle.router.state.uri.path, '/user-profiles/5');
+    });
 
-      testWidgets(
-        'activates shell branch NavBranch.userProfiles (19) — the only '
-        'guard against a silent branch-index mismatch',
-        (tester) async {
-          await pumpAt(tester, _administratorUser, '/user-profiles');
-          final shell = tester.widget<AppShell>(find.byType(AppShell));
-          expect(shell.navigationShell.currentIndex, NavBranch.userProfiles);
-        },
-      );
-    },
-  );
+    testWidgets('a non-administrator is redirected away from '
+        '/user-profiles/:profileId, not just the list route', (tester) async {
+      final handle = await pumpAt(tester, _noMergeUser, '/user-profiles/5');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('activates shell branch NavBranch.userProfiles (19) — the only '
+        'guard against a silent branch-index mismatch', (tester) async {
+      await pumpAt(tester, _administratorUser, '/user-profiles');
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(shell.navigationShell.currentIndex, NavBranch.userProfiles);
+    });
+  });
 
   group(
     'regression: existing routes still gate on Read (post-T023 refactor)',
@@ -835,15 +804,25 @@ void main() {
       // spec 038 FR-002, SC-007: gated on `products`, matching `/products`
       // itself — Advanced search is a catalog browser, not a register or
       // order action.
-      testWidgets('a products-reader reaches /sales/product-search', (tester) async {
-        final handle = await pumpAt(tester, _readOnlyUser, '/sales/product-search');
+      testWidgets('a products-reader reaches /sales/product-search', (
+        tester,
+      ) async {
+        final handle = await pumpAt(
+          tester,
+          _readOnlyUser,
+          '/sales/product-search',
+        );
         expect(handle.router.state.uri.path, '/sales/product-search');
       });
 
       testWidgets(
         'a user without products/read is redirected away from /sales/product-search',
         (tester) async {
-          final handle = await pumpAt(tester, _noAccessUser, '/sales/product-search');
+          final handle = await pumpAt(
+            tester,
+            _noAccessUser,
+            '/sales/product-search',
+          );
           expect(handle.router.state.uri.path, '/');
         },
       );
@@ -915,146 +894,133 @@ void main() {
     },
   );
 
-  group(
-    '021-cash-sessions — /sales/cash-sessions gates on pos/read (FR-036, '
-    'contracts/routes.md §2)',
-    () {
-      testWidgets('a user with pos:read reaches /sales/cash-sessions', (
+  group('021-cash-sessions — /sales/cash-sessions gates on pos/read (FR-036, '
+      'contracts/routes.md §2)', () {
+    testWidgets('a user with pos:read reaches /sales/cash-sessions', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
         tester,
-      ) async {
+        _posReaderUser,
+        '/sales/cash-sessions',
+      );
+      expect(handle.router.state.uri.path, '/sales/cash-sessions');
+    });
+
+    testWidgets('a user without pos:read is redirected away from '
+        '/sales/cash-sessions', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/sales/cash-sessions',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets(
+      'the detail route /sales/cash-sessions/:cashSessionId parses its '
+      'int param and gates identically to the list route',
+      (tester) async {
         final handle = await pumpAt(
           tester,
           _posReaderUser,
-          '/sales/cash-sessions',
+          '/sales/cash-sessions/42',
         );
-        expect(handle.router.state.uri.path, '/sales/cash-sessions');
-      });
+        expect(handle.router.state.uri.path, '/sales/cash-sessions/42');
+      },
+    );
 
-      testWidgets(
-        'a user without pos:read is redirected away from '
-        '/sales/cash-sessions',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _noAccessUser,
-            '/sales/cash-sessions',
-          );
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
+    testWidgets(
+      'a user without pos:read is redirected away from the detail route '
+      'too',
+      (tester) async {
+        final handle = await pumpAt(
+          tester,
+          _noAccessUser,
+          '/sales/cash-sessions/42',
+        );
+        expect(handle.router.state.uri.path, '/');
+      },
+    );
 
-      testWidgets(
-        'the detail route /sales/cash-sessions/:cashSessionId parses its '
-        'int param and gates identically to the list route',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _posReaderUser,
-            '/sales/cash-sessions/42',
-          );
-          expect(handle.router.state.uri.path, '/sales/cash-sessions/42');
-        },
-      );
-
-      testWidgets(
-        'a user without pos:read is redirected away from the detail route '
-        'too',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _noAccessUser,
-            '/sales/cash-sessions/42',
-          );
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
-
-      testWidgets(
-        'activates shell branch NavBranch.cashSessions (17) — the only '
+    testWidgets('activates shell branch NavBranch.cashSessions (17) — the only '
         'guard against a silent branch-index mismatch (contracts/routes.md '
-        '§3)',
-        (tester) async {
-          await pumpAt(tester, _posReaderUser, '/sales/cash-sessions');
-          final shell = tester.widget<AppShell>(find.byType(AppShell));
-          expect(shell.navigationShell.currentIndex, NavBranch.cashSessions);
-        },
-      );
-    },
-  );
+        '§3)', (tester) async {
+      await pumpAt(tester, _posReaderUser, '/sales/cash-sessions');
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(shell.navigationShell.currentIndex, NavBranch.cashSessions);
+    });
+  });
 
-  group(
-    '023-pos-ux-improvements — /sales/pos is the sales list (in the shell), '
-    'the sale workspace moved to top-level sibling routes (research R1, '
-    'contracts/pos-workspace.md §1)',
-    () {
-      testWidgets('a user with pos:read reaches /sales/pos (the sales list)', (
-        tester,
-      ) async {
-        final handle = await pumpAt(tester, _posReaderUser, '/sales/pos');
-        expect(handle.router.state.uri.path, '/sales/pos');
-      });
+  group('023-pos-ux-improvements — /sales/pos is the sales list (in the shell), '
+      'the sale workspace moved to top-level sibling routes (research R1, '
+      'contracts/pos-workspace.md §1)', () {
+    testWidgets('a user with pos:read reaches /sales/pos (the sales list)', (
+      tester,
+    ) async {
+      final handle = await pumpAt(tester, _posReaderUser, '/sales/pos');
+      expect(handle.router.state.uri.path, '/sales/pos');
+    });
 
-      testWidgets(
-        'a user without pos:read is redirected away from /sales/pos',
-        (tester) async {
-          final handle = await pumpAt(tester, _noAccessUser, '/sales/pos');
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
+    testWidgets('a user without pos:read is redirected away from /sales/pos', (
+      tester,
+    ) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/sales/pos');
+      expect(handle.router.state.uri.path, '/');
+    });
 
-      testWidgets(
-        'activates shell branch NavBranch.pos (18) for /sales/pos — the '
-        'branch itself is unchanged; only what it renders moved',
-        (tester) async {
-          await pumpAt(tester, _posReaderUser, '/sales/pos');
-          final shell = tester.widget<AppShell>(find.byType(AppShell));
-          expect(shell.navigationShell.currentIndex, NavBranch.pos);
-        },
-      );
+    testWidgets(
+      'activates shell branch NavBranch.pos (18) for /sales/pos — the '
+      'branch itself is unchanged; only what it renders moved',
+      (tester) async {
+        await pumpAt(tester, _posReaderUser, '/sales/pos');
+        final shell = tester.widget<AppShell>(find.byType(AppShell));
+        expect(shell.navigationShell.currentIndex, NavBranch.pos);
+      },
+    );
 
-      testWidgets(
-        'a user with pos:read reaches /sales/pos/new — the sale workspace, '
-        'a top-level route with no shell around it',
-        (tester) async {
-          final handle = await pumpAt(tester, _posReaderUser, '/sales/pos/new');
-          expect(handle.router.state.uri.path, '/sales/pos/new');
-          // The initial `/` page's AppShell is still mid-exit-transition
-          // right after `pumpAt`'s two bounded `pump()`s (which are enough
-          // for `_redirect`'s own synchronous decision, but not for a page
-          // transition to finish) — settle before asserting on the tree.
-          await tester.pumpAndSettle();
-          expect(find.byType(AppShell), findsNothing);
-        },
-      );
+    testWidgets(
+      'a user with pos:read reaches /sales/pos/new — the sale workspace, '
+      'a top-level route with no shell around it',
+      (tester) async {
+        final handle = await pumpAt(tester, _posReaderUser, '/sales/pos/new');
+        expect(handle.router.state.uri.path, '/sales/pos/new');
+        // The initial `/` page's AppShell is still mid-exit-transition
+        // right after `pumpAt`'s two bounded `pump()`s (which are enough
+        // for `_redirect`'s own synchronous decision, but not for a page
+        // transition to finish) — settle before asserting on the tree.
+        await tester.pumpAndSettle();
+        expect(find.byType(AppShell), findsNothing);
+      },
+    );
 
-      testWidgets(
-        'a user without pos:read is redirected away from /sales/pos/new',
-        (tester) async {
-          final handle = await pumpAt(tester, _noAccessUser, '/sales/pos/new');
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
+    testWidgets(
+      'a user without pos:read is redirected away from /sales/pos/new',
+      (tester) async {
+        final handle = await pumpAt(tester, _noAccessUser, '/sales/pos/new');
+        expect(handle.router.state.uri.path, '/');
+      },
+    );
 
-      testWidgets(
-        'the workspace route /sales/pos/:saleId parses its int param, gates '
-        'identically to /new, and also renders with no shell',
-        (tester) async {
-          final handle = await pumpAt(tester, _posReaderUser, '/sales/pos/42');
-          expect(handle.router.state.uri.path, '/sales/pos/42');
-          await tester.pumpAndSettle();
-          expect(find.byType(AppShell), findsNothing);
-        },
-      );
+    testWidgets(
+      'the workspace route /sales/pos/:saleId parses its int param, gates '
+      'identically to /new, and also renders with no shell',
+      (tester) async {
+        final handle = await pumpAt(tester, _posReaderUser, '/sales/pos/42');
+        expect(handle.router.state.uri.path, '/sales/pos/42');
+        await tester.pumpAndSettle();
+        expect(find.byType(AppShell), findsNothing);
+      },
+    );
 
-      testWidgets(
-        'a user without pos:read is redirected away from /sales/pos/:saleId too',
-        (tester) async {
-          final handle = await pumpAt(tester, _noAccessUser, '/sales/pos/42');
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
-    },
-  );
+    testWidgets(
+      'a user without pos:read is redirected away from /sales/pos/:saleId too',
+      (tester) async {
+        final handle = await pumpAt(tester, _noAccessUser, '/sales/pos/42');
+        expect(handle.router.state.uri.path, '/');
+      },
+    );
+  });
 
   group(
     '029-back-office-sales-orders — /sales/orders gates on salesOrders/read, '
@@ -1072,14 +1038,11 @@ void main() {
         },
       );
 
-      testWidgets(
-        'a user without salesOrders:read is redirected away from '
-        '/sales/orders',
-        (tester) async {
-          final handle = await pumpAt(tester, _noAccessUser, '/sales/orders');
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
+      testWidgets('a user without salesOrders:read is redirected away from '
+          '/sales/orders', (tester) async {
+        final handle = await pumpAt(tester, _noAccessUser, '/sales/orders');
+        expect(handle.router.state.uri.path, '/');
+      });
 
       testWidgets(
         'a user holding only pos:read — not salesOrders — is redirected '
@@ -1090,15 +1053,12 @@ void main() {
         },
       );
 
-      testWidgets(
-        'activates shell branch NavBranch.salesOrders (20) for '
-        '/sales/orders',
-        (tester) async {
-          await pumpAt(tester, _salesOrdersReaderUser, '/sales/orders');
-          final shell = tester.widget<AppShell>(find.byType(AppShell));
-          expect(shell.navigationShell.currentIndex, NavBranch.salesOrders);
-        },
-      );
+      testWidgets('activates shell branch NavBranch.salesOrders (20) for '
+          '/sales/orders', (tester) async {
+        await pumpAt(tester, _salesOrdersReaderUser, '/sales/orders');
+        final shell = tester.widget<AppShell>(find.byType(AppShell));
+        expect(shell.navigationShell.currentIndex, NavBranch.salesOrders);
+      });
 
       testWidgets(
         'a user with salesOrders:read reaches /sales/orders/new — the '
@@ -1115,18 +1075,11 @@ void main() {
         },
       );
 
-      testWidgets(
-        'a user without salesOrders:read is redirected away from '
-        '/sales/orders/new',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _noAccessUser,
-            '/sales/orders/new',
-          );
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
+      testWidgets('a user without salesOrders:read is redirected away from '
+          '/sales/orders/new', (tester) async {
+        final handle = await pumpAt(tester, _noAccessUser, '/sales/orders/new');
+        expect(handle.router.state.uri.path, '/');
+      });
 
       testWidgets(
         'the order route /sales/orders/:orderId parses its int param and '
@@ -1141,125 +1094,91 @@ void main() {
         },
       );
 
-      testWidgets(
-        'a user without salesOrders:read is redirected away from '
-        '/sales/orders/:orderId too',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _noAccessUser,
-            '/sales/orders/42',
-          );
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
+      testWidgets('a user without salesOrders:read is redirected away from '
+          '/sales/orders/:orderId too', (tester) async {
+        final handle = await pumpAt(tester, _noAccessUser, '/sales/orders/42');
+        expect(handle.router.state.uri.path, '/');
+      });
     },
   );
 
-  group(
-    '040-sales-quotes — /sales/quotes gates on salesQuotes/read, not '
-    'salesOrders or pos (research.md R6, R7)',
-    () {
-      testWidgets(
-        'a user with salesQuotes:read reaches /sales/quotes (the list)',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _salesQuotesReaderUser,
-            '/sales/quotes',
-          );
-          expect(handle.router.state.uri.path, '/sales/quotes');
-        },
-      );
+  group('040-sales-quotes — /sales/quotes gates on salesQuotes/read, not '
+      'salesOrders or pos (research.md R6, R7)', () {
+    testWidgets(
+      'a user with salesQuotes:read reaches /sales/quotes (the list)',
+      (tester) async {
+        final handle = await pumpAt(
+          tester,
+          _salesQuotesReaderUser,
+          '/sales/quotes',
+        );
+        expect(handle.router.state.uri.path, '/sales/quotes');
+      },
+    );
 
-      testWidgets(
-        'a user without salesQuotes:read is redirected away from '
-        '/sales/quotes',
-        (tester) async {
-          final handle = await pumpAt(tester, _noAccessUser, '/sales/quotes');
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
+    testWidgets('a user without salesQuotes:read is redirected away from '
+        '/sales/quotes', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/sales/quotes');
+      expect(handle.router.state.uri.path, '/');
+    });
 
-      testWidgets(
-        'a user holding only salesOrders:read — not salesQuotes — is '
+    testWidgets('a user holding only salesOrders:read — not salesQuotes — is '
         'redirected away from /sales/quotes: the two guards are not folded '
-        'into one',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _salesOrdersReaderUser,
-            '/sales/quotes',
-          );
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
-
-      testWidgets(
-        'activates shell branch NavBranch.salesQuotes (21) for '
+        'into one', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _salesOrdersReaderUser,
         '/sales/quotes',
-        (tester) async {
-          await pumpAt(tester, _salesQuotesReaderUser, '/sales/quotes');
-          final shell = tester.widget<AppShell>(find.byType(AppShell));
-          expect(shell.navigationShell.currentIndex, NavBranch.salesQuotes);
-        },
       );
+      expect(handle.router.state.uri.path, '/');
+    });
 
-      testWidgets(
-        'a user with salesQuotes:read reaches /sales/quotes/new — the '
-        'quote screen, a top-level route with no shell around it',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _salesQuotesReaderUser,
-            '/sales/quotes/new',
-          );
-          expect(handle.router.state.uri.path, '/sales/quotes/new');
-          await tester.pumpAndSettle();
-          expect(find.byType(AppShell), findsNothing);
-        },
-      );
+    testWidgets('activates shell branch NavBranch.salesQuotes (21) for '
+        '/sales/quotes', (tester) async {
+      await pumpAt(tester, _salesQuotesReaderUser, '/sales/quotes');
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(shell.navigationShell.currentIndex, NavBranch.salesQuotes);
+    });
 
-      testWidgets(
-        'a user without salesQuotes:read is redirected away from '
+    testWidgets('a user with salesQuotes:read reaches /sales/quotes/new — the '
+        'quote screen, a top-level route with no shell around it', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _salesQuotesReaderUser,
         '/sales/quotes/new',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _noAccessUser,
-            '/sales/quotes/new',
-          );
-          expect(handle.router.state.uri.path, '/');
-        },
       );
+      expect(handle.router.state.uri.path, '/sales/quotes/new');
+      await tester.pumpAndSettle();
+      expect(find.byType(AppShell), findsNothing);
+    });
 
-      testWidgets(
-        'the quote route /sales/quotes/:quoteId parses its int param and '
-        'gates identically to /new',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _salesQuotesReaderUser,
-            '/sales/quotes/42',
-          );
-          expect(handle.router.state.uri.path, '/sales/quotes/42');
-        },
-      );
+    testWidgets('a user without salesQuotes:read is redirected away from '
+        '/sales/quotes/new', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/sales/quotes/new');
+      expect(handle.router.state.uri.path, '/');
+    });
 
-      testWidgets(
-        'a user without salesQuotes:read is redirected away from '
-        '/sales/quotes/:quoteId too',
-        (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _noAccessUser,
-            '/sales/quotes/42',
-          );
-          expect(handle.router.state.uri.path, '/');
-        },
-      );
-    },
-  );
+    testWidgets(
+      'the quote route /sales/quotes/:quoteId parses its int param and '
+      'gates identically to /new',
+      (tester) async {
+        final handle = await pumpAt(
+          tester,
+          _salesQuotesReaderUser,
+          '/sales/quotes/42',
+        );
+        expect(handle.router.state.uri.path, '/sales/quotes/42');
+      },
+    );
+
+    testWidgets('a user without salesQuotes:read is redirected away from '
+        '/sales/quotes/:quoteId too', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/sales/quotes/42');
+      expect(handle.router.state.uri.path, '/');
+    });
+  });
 
   group('018-nested-facility-management — NavBranch renumbering matches the '
       "shell's actual branch order (contracts/routes.md §2)", () {
@@ -1301,7 +1220,9 @@ void main() {
     test('sales-orders is immediately after pos in the Sales group', () {
       final flattened = _flattenDestinations(kNavigationTree);
       final posIndex = flattened.indexWhere((d) => d.id == 'pos');
-      final salesOrdersIndex = flattened.indexWhere((d) => d.id == 'sales-orders');
+      final salesOrdersIndex = flattened.indexWhere(
+        (d) => d.id == 'sales-orders',
+      );
 
       expect(posIndex, isNonNegative);
       expect(salesOrdersIndex, posIndex + 1);
@@ -1367,63 +1288,65 @@ void main() {
     });
   });
 
-  group(
-    'spec 035 FR-030: converted entities\' removed per-record routes '
-    'redirect to their list, not "no route matched"',
-    () {
-      // One entry per entity as its routes are actually removed
-      // (app_router.dart's `_convertedEntityListPaths` — the two lists MUST
-      // stay in lockstep, since a path named here but not yet converted
-      // would just pass against the still-live detail route).
-      for (final path in ['/labels', '/expenses', '/vehicles', '/vehicle-operators', '/price-lists', '/exchange-rates', '/payment-method-options', '/employees', '/taxpayer-recipients']) {
-        testWidgets('$path/new redirects to $path', (tester) async {
+  group('spec 035 FR-030: converted entities\' removed per-record routes '
+      'redirect to their list, not "no route matched"', () {
+    // One entry per entity as its routes are actually removed
+    // (app_router.dart's `_convertedEntityListPaths` — the two lists MUST
+    // stay in lockstep, since a path named here but not yet converted
+    // would just pass against the still-live detail route).
+    for (final path in [
+      '/labels',
+      '/expenses',
+      '/vehicles',
+      '/vehicle-operators',
+      '/price-lists',
+      '/exchange-rates',
+      '/payment-method-options',
+      '/employees',
+      '/taxpayer-recipients',
+    ]) {
+      testWidgets('$path/new redirects to $path', (tester) async {
+        final handle = await pumpAt(tester, _catalogsReaderUser, '$path/new');
+        expect(handle.router.state.uri.path, path);
+      });
+
+      testWidgets('$path/1 redirects to $path', (tester) async {
+        final handle = await pumpAt(tester, _catalogsReaderUser, '$path/1');
+        expect(handle.router.state.uri.path, path);
+      });
+
+      testWidgets(
+        '$path/1?view=true redirects to $path, not just to itself minus '
+        'the query',
+        (tester) async {
           final handle = await pumpAt(
             tester,
             _catalogsReaderUser,
-            '$path/new',
+            '$path/1?view=true',
           );
           expect(handle.router.state.uri.path, path);
-        });
+        },
+      );
 
-        testWidgets('$path/1 redirects to $path', (tester) async {
-          final handle = await pumpAt(tester, _catalogsReaderUser, '$path/1');
+      testWidgets(
+        '$path itself is unaffected — the surviving list route, not a '
+        'legacy record path',
+        (tester) async {
+          final handle = await pumpAt(tester, _catalogsReaderUser, path);
           expect(handle.router.state.uri.path, path);
-        });
+        },
+      );
 
-        testWidgets(
-          '$path/1?view=true redirects to $path, not just to itself minus '
-          'the query',
-          (tester) async {
-            final handle = await pumpAt(
-              tester,
-              _catalogsReaderUser,
-              '$path/1?view=true',
-            );
-            expect(handle.router.state.uri.path, path);
-          },
-        );
-
-        testWidgets(
-          '$path itself is unaffected — the surviving list route, not a '
-          'legacy record path',
-          (tester) async {
-            final handle = await pumpAt(tester, _catalogsReaderUser, path);
-            expect(handle.router.state.uri.path, path);
-          },
-        );
-
-        testWidgets(
-          'the redirect composes with the existing privilege gate for '
+      testWidgets('the redirect composes with the existing privilege gate for '
           '$path — a user without its read privilege hitting the legacy '
-          '$path/1 still ends up denied, not on a list they cannot see',
-          (tester) async {
-            final handle = await pumpAt(tester, _noAccessUser, '$path/1');
-            expect(handle.router.state.uri.path, '/');
-          },
-        );
-      }
-    },
-  );
+          '$path/1 still ends up denied, not on a list they cannot see', (
+        tester,
+      ) async {
+        final handle = await pumpAt(tester, _noAccessUser, '$path/1');
+        expect(handle.router.state.uri.path, '/');
+      });
+    }
+  });
 
   group('spec 049 FR-004: exchange rates exist only on a multi-currency '
       'deployment', () {
@@ -1465,116 +1388,107 @@ void main() {
     });
   });
 
-  group(
-    '046-catalog-improvements: Customers has per-record routes again '
-    '(constitution §VI v1.13.3), gated on customers/read',
-    () {
-      for (final location in [
-        '/customers/new',
-        '/customers/1',
-        '/customers/1?view=true',
-      ]) {
-        testWidgets('$location resolves to the customer detail screen', (
-          tester,
-        ) async {
-          final handle = await pumpAt(tester, _catalogsReaderUser, location);
-          expect(handle.router.state.uri.toString(), location);
-        });
-      }
-
-      testWidgets('a user without customers/read hitting /customers/1 is '
-          'denied', (tester) async {
-        final handle = await pumpAt(tester, _noAccessUser, '/customers/1');
-        expect(handle.router.state.uri.path, '/');
-      });
-    },
-  );
-
-  group(
-    '050-supplier-sub-panels: Suppliers has per-record routes again '
-    '(constitution §VI v1.14.0), gated on suppliers/read',
-    () {
-      for (final location in [
-        '/suppliers/new',
-        '/suppliers/1',
-        '/suppliers/1?view=true',
-      ]) {
-        testWidgets('$location resolves to the supplier detail screen', (
-          tester,
-        ) async {
-          final handle = await pumpAt(tester, _catalogsReaderUser, location);
-          expect(handle.router.state.uri.toString(), location);
-        });
-      }
-
-      testWidgets('a user without suppliers/read hitting /suppliers/1 is '
-          'denied', (tester) async {
-        final handle = await pumpAt(tester, _noAccessUser, '/suppliers/1');
-        expect(handle.router.state.uri.path, '/');
-      });
-    },
-  );
-
-  group(
-    'spec 035 T040-T042: facility-child entities\' removed per-record '
-    'routes redirect to /facilities, the closest surviving surface — they '
-    'have no top-level list of their own',
-    () {
-      for (final path in ['/warehouses', '/points-of-sale', '/cash-drawers']) {
-        testWidgets('$path/new redirects to /facilities', (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _renumberedBranchesReaderUser,
-            '$path/new',
-          );
-          expect(handle.router.state.uri.path, '/facilities');
-        });
-
-        testWidgets('$path/1 redirects to /facilities', (tester) async {
-          final handle = await pumpAt(
-            tester,
-            _renumberedBranchesReaderUser,
-            '$path/1',
-          );
-          expect(handle.router.state.uri.path, '/facilities');
-        });
-
-        testWidgets(
-          '$path/1?view=true redirects to /facilities, not just to itself '
-          'minus the query',
-          (tester) async {
-            final handle = await pumpAt(
-              tester,
-              _renumberedBranchesReaderUser,
-              '$path/1?view=true',
-            );
-            expect(handle.router.state.uri.path, '/facilities');
-          },
-        );
-
-        testWidgets(
-          'the redirect composes with the /facilities privilege gate — a '
-          'user without facilities:read hitting the legacy $path/1 still '
-          'ends up denied, not on a screen they cannot see',
-          (tester) async {
-            final handle = await pumpAt(tester, _noAccessUser, '$path/1');
-            expect(handle.router.state.uri.path, '/');
-          },
-        );
-      }
-
-      testWidgets('/facilities itself is unaffected by the redirect map', (
+  group('046-catalog-improvements: Customers has per-record routes again '
+      '(constitution §VI v1.13.3), gated on customers/read', () {
+    for (final location in [
+      '/customers/new',
+      '/customers/1',
+      '/customers/1?view=true',
+    ]) {
+      testWidgets('$location resolves to the customer detail screen', (
         tester,
       ) async {
+        final handle = await pumpAt(tester, _catalogsReaderUser, location);
+        expect(handle.router.state.uri.toString(), location);
+      });
+    }
+
+    testWidgets('a user without customers/read hitting /customers/1 is '
+        'denied', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/customers/1');
+      expect(handle.router.state.uri.path, '/');
+    });
+  });
+
+  group('050-supplier-sub-panels: Suppliers has per-record routes again '
+      '(constitution §VI v1.14.0), gated on suppliers/read', () {
+    for (final location in [
+      '/suppliers/new',
+      '/suppliers/1',
+      '/suppliers/1?view=true',
+    ]) {
+      testWidgets('$location resolves to the supplier detail screen', (
+        tester,
+      ) async {
+        final handle = await pumpAt(tester, _catalogsReaderUser, location);
+        expect(handle.router.state.uri.toString(), location);
+      });
+    }
+
+    testWidgets('a user without suppliers/read hitting /suppliers/1 is '
+        'denied', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/suppliers/1');
+      expect(handle.router.state.uri.path, '/');
+    });
+  });
+
+  group('spec 035 T040-T042: facility-child entities\' removed per-record '
+      'routes redirect to /facilities, the closest surviving surface — they '
+      'have no top-level list of their own', () {
+    for (final path in ['/warehouses', '/points-of-sale', '/cash-drawers']) {
+      testWidgets('$path/new redirects to /facilities', (tester) async {
         final handle = await pumpAt(
           tester,
           _renumberedBranchesReaderUser,
-          '/facilities',
+          '$path/new',
         );
         expect(handle.router.state.uri.path, '/facilities');
       });
-    },
-  );
+
+      testWidgets('$path/1 redirects to /facilities', (tester) async {
+        final handle = await pumpAt(
+          tester,
+          _renumberedBranchesReaderUser,
+          '$path/1',
+        );
+        expect(handle.router.state.uri.path, '/facilities');
+      });
+
+      testWidgets(
+        '$path/1?view=true redirects to /facilities, not just to itself '
+        'minus the query',
+        (tester) async {
+          final handle = await pumpAt(
+            tester,
+            _renumberedBranchesReaderUser,
+            '$path/1?view=true',
+          );
+          expect(handle.router.state.uri.path, '/facilities');
+        },
+      );
+
+      testWidgets(
+        'the redirect composes with the /facilities privilege gate — a '
+        'user without facilities:read hitting the legacy $path/1 still '
+        'ends up denied, not on a screen they cannot see',
+        (tester) async {
+          final handle = await pumpAt(tester, _noAccessUser, '$path/1');
+          expect(handle.router.state.uri.path, '/');
+        },
+      );
+    }
+
+    testWidgets('/facilities itself is unaffected by the redirect map', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _renumberedBranchesReaderUser,
+        '/facilities',
+      );
+      expect(handle.router.state.uri.path, '/facilities');
+    });
+  });
 }
 
 /// Flattens [kNavigationTree] to its leaf [NavDestination]s, in the same

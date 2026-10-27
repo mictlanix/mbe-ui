@@ -53,10 +53,7 @@ class OpenSalesSelector extends ConsumerWidget {
       key: const Key('open_sales_selector'),
       menuChildren: [
         if (sales.isEmpty)
-          MenuItemButton(
-            onPressed: null,
-            child: Text(l10n.posNoOpenSales),
-          )
+          MenuItemButton(onPressed: null, child: Text(l10n.posNoOpenSales))
         else
           // The list arrives grouped by section, so a heading goes in
           // wherever the section changes. Saying it once per section beats
@@ -87,7 +84,8 @@ class OpenSalesSelector extends ConsumerWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        onPressed: () => controller.isOpen ? controller.close() : controller.open(),
+        onPressed: () =>
+            controller.isOpen ? controller.close() : controller.open(),
       ),
     );
   }
@@ -99,7 +97,11 @@ class OpenSalesSelector extends ConsumerWidget {
   /// opens, and spelling it out here costs width the step indicator needs
   /// (US5, SC-007). The folio stays: it is the number on the customer's
   /// ticket, so it is the one worth the space.
-  String _chipLabel(AppLocalizations l10n, BuildContext context, int openCount) {
+  String _chipLabel(
+    AppLocalizations l10n,
+    BuildContext context,
+    int openCount,
+  ) {
     final reference = [
       if (currentId case final id?) l10n.posOpenSaleId(id),
       if (currentSerial case final serial?) l10n.posOpenSaleSerial(serial),
@@ -109,7 +111,8 @@ class OpenSalesSelector extends ConsumerWidget {
     // Nothing started yet: the chip is purely the way in to the open sales,
     // so it says how many there are.
     if (reference.isEmpty) return openCount == 0 ? l10n.posNoOpenSales : count;
-    if (openCount == 0 || LayoutBreakpoints.isCompact(context)) return reference;
+    if (openCount == 0 || LayoutBreakpoints.isCompact(context))
+      return reference;
     return '$reference · $count';
   }
 }
@@ -154,8 +157,7 @@ class _OpenSaleRow extends ConsumerWidget {
                 // degraded quietly rather than showing a dash, which is why
                 // it outlived the same bug on the sales list
                 // (mictlanix/mbe-api#172, fixed by #173).
-                if (posSaleCustomerLabel(sale) case final name
-                    when name != '—')
+                if (posSaleCustomerLabel(sale) case final name when name != '—')
                   Text(
                     name,
                     style: theme.textTheme.labelSmall,
@@ -211,13 +213,14 @@ class _StatusHeading extends StatelessWidget {
     );
   }
 
-  String _statusLabel(AppLocalizations l10n, SaleStatus status) => switch (status) {
-    SaleStatus.draft => l10n.posOpenSaleDraft,
-    // Never actually reached — `_sectionOf` remaps `completed` to `draft`
-    // before this widget is ever constructed (spec 036 R3). Kept only so
-    // this switch stays exhaustive over `SaleStatus`.
-    SaleStatus.completed => l10n.posOpenSaleDraft,
-    SaleStatus.paid => l10n.posOpenSaleUndelivered,
-    SaleStatus.cancelled => '',
-  };
+  String _statusLabel(AppLocalizations l10n, SaleStatus status) =>
+      switch (status) {
+        SaleStatus.draft => l10n.posOpenSaleDraft,
+        // Never actually reached — `_sectionOf` remaps `completed` to `draft`
+        // before this widget is ever constructed (spec 036 R3). Kept only so
+        // this switch stays exhaustive over `SaleStatus`.
+        SaleStatus.completed => l10n.posOpenSaleDraft,
+        SaleStatus.paid => l10n.posOpenSaleUndelivered,
+        SaleStatus.cancelled => '',
+      };
 }

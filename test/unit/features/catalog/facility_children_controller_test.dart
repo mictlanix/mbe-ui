@@ -156,9 +156,7 @@ void main() {
       );
       when(
         () => pointSaleRepository.list(facilityId: 2, skip: 0, limit: 100),
-      ).thenAnswer(
-        (_) async => const PointSaleListResult(items: [], total: 0),
-      );
+      ).thenAnswer((_) async => const PointSaleListResult(items: [], total: 0));
       when(
         () => cashDrawerRepository.list(facilityId: 2, skip: 0, limit: 100),
       ).thenAnswer(
@@ -279,15 +277,11 @@ void main() {
         addTearDown(container.dispose);
 
         await expectLater(
-          container.read(
-            facilityChildrenControllerProvider(5).future,
-          ),
+          container.read(facilityChildrenControllerProvider(5).future),
           throwsException,
         );
 
-        final state = container.read(
-          facilityChildrenControllerProvider(5),
-        );
+        final state = container.read(facilityChildrenControllerProvider(5));
         expect(state.hasError, isTrue);
       },
     );
@@ -389,12 +383,8 @@ void main() {
           (_, _) {},
           fireImmediately: true,
         );
-        await container.read(
-          facilityChildrenControllerProvider(1).future,
-        );
-        await container.read(
-          facilityChildrenControllerProvider(2).future,
-        );
+        await container.read(facilityChildrenControllerProvider(1).future);
+        await container.read(facilityChildrenControllerProvider(2).future);
         verify(
           () => warehouseRepository.list(facilityId: 1, skip: 0, limit: 100),
         ).called(1);
@@ -417,12 +407,8 @@ void main() {
             .submitUpdate();
 
         // Both facilities' children re-fetched — not just the new one.
-        await container.read(
-          facilityChildrenControllerProvider(1).future,
-        );
-        await container.read(
-          facilityChildrenControllerProvider(2).future,
-        );
+        await container.read(facilityChildrenControllerProvider(1).future);
+        await container.read(facilityChildrenControllerProvider(2).future);
         verify(
           () => warehouseRepository.list(facilityId: 1, skip: 0, limit: 100),
         ).called(1);

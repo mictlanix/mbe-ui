@@ -36,7 +36,9 @@ void main() {
     CurrentSession current, {
     Widget home = const PosGateScreen(),
   }) async {
-    when(() => cashSessionRepository.getCurrent()).thenAnswer((_) async => current);
+    when(
+      () => cashSessionRepository.getCurrent(),
+    ).thenAnswer((_) async => current);
 
     final container = ProviderContainer(
       retry: (_, _) => null,
@@ -55,7 +57,8 @@ void main() {
         ),
         GoRoute(
           path: '/sales/cash-sessions',
-          builder: (context, state) => const Scaffold(body: Text('cash-sessions')),
+          builder: (context, state) =>
+              const Scaffold(body: Text('cash-sessions')),
         ),
         GoRoute(
           path: '/sales/cash-sessions/:cashSessionId',
@@ -81,11 +84,19 @@ void main() {
   }
 
   group('PosGateScreen — no cash session (state == none)', () {
-    testWidgets('shows the explanation and the link to cash sessions', (tester) async {
+    testWidgets('shows the explanation and the link to cash sessions', (
+      tester,
+    ) async {
       await pumpGate(tester, const CurrentSession(state: SessionState.none));
 
-      expect(find.byKey(const Key('pos_gate_no_session_title')), findsOneWidget);
-      expect(find.byKey(const Key('pos_gate_open_session_button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('pos_gate_no_session_title')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('pos_gate_open_session_button')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('the link navigates to /sales/cash-sessions', (tester) async {
@@ -99,17 +110,21 @@ void main() {
   });
 
   group('PosGateScreen — session open (state == open)', () {
-    testWidgets('proceeds — renders neither the gate explanation nor a banner', (
-      tester,
-    ) async {
-      await pumpGate(
-        tester,
-        CurrentSession(state: SessionState.open, session: _session()),
-      );
+    testWidgets(
+      'proceeds — renders neither the gate explanation nor a banner',
+      (tester) async {
+        await pumpGate(
+          tester,
+          CurrentSession(state: SessionState.open, session: _session()),
+        );
 
-      expect(find.byKey(const Key('pos_gate_no_session_title')), findsNothing);
-      expect(find.byKey(const Key('pos_stale_session_banner')), findsNothing);
-    });
+        expect(
+          find.byKey(const Key('pos_gate_no_session_title')),
+          findsNothing,
+        );
+        expect(find.byKey(const Key('pos_stale_session_banner')), findsNothing);
+      },
+    );
   });
 
   group('PosGateScreen — session stale (state == stale)', () {
@@ -122,7 +137,10 @@ void main() {
       );
 
       expect(find.byKey(const Key('pos_gate_no_session_title')), findsNothing);
-      expect(find.byKey(const Key('pos_session_blocked_banner')), findsOneWidget);
+      expect(
+        find.byKey(const Key('pos_session_blocked_banner')),
+        findsOneWidget,
+      );
       expect(
         find.text('La sesión de caja está vencida. Ciérrala para cobrar.'),
         findsOneWidget,
@@ -130,7 +148,9 @@ void main() {
       expect(find.text('Cerrar sesión'), findsOneWidget);
     });
 
-    testWidgets('the action goes to that session\'s close screen', (tester) async {
+    testWidgets('the action goes to that session\'s close screen', (
+      tester,
+    ) async {
       await pumpGate(
         tester,
         CurrentSession(state: SessionState.stale, session: _session()),
@@ -141,7 +161,10 @@ void main() {
 
       expect(find.text('cash-session-1'), findsOneWidget);
       // Pushed, so Back returns to the sale.
-      expect(Navigator.of(tester.element(find.text('cash-session-1'))).canPop(), isTrue);
+      expect(
+        Navigator.of(tester.element(find.text('cash-session-1'))).canPop(),
+        isTrue,
+      );
     });
   });
 
@@ -153,7 +176,10 @@ void main() {
         home: const PosSessionBlockedBanner(),
       );
 
-      expect(find.byKey(const Key('pos_session_blocked_banner')), findsOneWidget);
+      expect(
+        find.byKey(const Key('pos_session_blocked_banner')),
+        findsOneWidget,
+      );
       await tester.tap(find.byKey(const Key('pos_session_blocked_action')));
       await tester.pumpAndSettle();
 

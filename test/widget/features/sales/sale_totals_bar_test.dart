@@ -37,9 +37,11 @@ void main() {
       await pumpBar(tester, onContinue: () {});
       final theme = Theme.of(tester.element(find.byType(SaleTotalsBar)));
 
-      final decoration = tester
-          .widget<Container>(find.byKey(const Key('pos_totals_footer')))
-          .decoration! as BoxDecoration;
+      final decoration =
+          tester
+                  .widget<Container>(find.byKey(const Key('pos_totals_footer')))
+                  .decoration!
+              as BoxDecoration;
 
       // The same plane the line cards sit on, so the summary reads as a
       // statement about them rather than as one more item among them.
@@ -59,30 +61,32 @@ void main() {
   });
 
   group('labelled groups (spec 023 contracts/capture-surface.md §5)', () {
-    testWidgets('shows Artículos, Subtotal and IVA groups, each with a figure', (
-      tester,
-    ) async {
-      await pumpBar(tester, onContinue: () {});
-      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+    testWidgets(
+      'shows Artículos, Subtotal and IVA groups, each with a figure',
+      (tester) async {
+        await pumpBar(tester, onContinue: () {});
+        final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
-      expect(labelText(l10n.posTotalsArticlesLabel), findsOneWidget);
-      expect(labelText(l10n.posTotalsSubtotalLabel), findsOneWidget);
-      expect(labelText(l10n.posTotalsTaxLabel), findsOneWidget);
-      expect(find.text(l10n.posTotalsCounts(1, '2', 2)), findsOneWidget);
-      // Both nouns agree with their own figure — one line, two units.
-      expect(find.text('1 línea · 2 uds.'), findsOneWidget);
-      expect(find.text(r'$100.00'), findsOneWidget); // subtotal
-      expect(find.text(r'$16.00'), findsOneWidget); // IVA
-    });
+        expect(labelText(l10n.posTotalsArticlesLabel), findsOneWidget);
+        expect(labelText(l10n.posTotalsSubtotalLabel), findsOneWidget);
+        expect(labelText(l10n.posTotalsTaxLabel), findsOneWidget);
+        expect(find.text(l10n.posTotalsCounts(1, '2', 2)), findsOneWidget);
+        // Both nouns agree with their own figure — one line, two units.
+        expect(find.text('1 línea · 2 uds.'), findsOneWidget);
+        expect(find.text(r'$100.00'), findsOneWidget); // subtotal
+        expect(find.text(r'$16.00'), findsOneWidget); // IVA
+      },
+    );
 
-    testWidgets('omits the Descuentos group entirely when there is no discount', (
-      tester,
-    ) async {
-      await pumpBar(tester, onContinue: () {});
-      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+    testWidgets(
+      'omits the Descuentos group entirely when there is no discount',
+      (tester) async {
+        await pumpBar(tester, onContinue: () {});
+        final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
-      expect(labelText(l10n.posTotalsDiscountLabel), findsNothing);
-    });
+        expect(labelText(l10n.posTotalsDiscountLabel), findsNothing);
+      },
+    );
 
     testWidgets('shows the Descuentos group, with its figure, when a discount '
         'brings the total below subtotal + tax', (tester) async {
@@ -109,10 +113,7 @@ void main() {
       );
 
       final totalLabel = tester.widget<Column>(
-        find.ancestor(
-          of: find.text(r'$116.00'),
-          matching: find.byType(Column),
-        ),
+        find.ancestor(of: find.text(r'$116.00'), matching: find.byType(Column)),
       );
       expect(totalLabel.crossAxisAlignment, CrossAxisAlignment.end);
     });
@@ -190,7 +191,10 @@ void main() {
         );
         final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
-        expect(find.byKey(const Key('pos_continue_to_payment')), findsOneWidget);
+        expect(
+          find.byKey(const Key('pos_continue_to_payment')),
+          findsOneWidget,
+        );
         // Every group a real sale shows, reading what a freshly opened one
         // reads — the band used to render none of them and then grow the row
         // in place the instant a sale appeared.

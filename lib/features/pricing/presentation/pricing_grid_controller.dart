@@ -398,7 +398,8 @@ class PricingGridController extends _$PricingGridController {
     final outgoing = current.active;
     if (outgoing != null && outgoing != key) {
       final draft = current.activeDraft;
-      if (draft != null && !sameAmount(draft.trim(), current.valueOf(outgoing))) {
+      if (draft != null &&
+          !sameAmount(draft.trim(), current.valueOf(outgoing))) {
         // Fire-and-forget: every branch of `commitCell` clears `active`
         // synchronously, before its first `await` (if any), so by the time
         // control returns here `state.value` already reflects that — this
@@ -756,7 +757,10 @@ class PricingGridController extends _$PricingGridController {
   }) async {
     final current = state.value;
     if (current == null) return 0;
-    final decimalDigits = ref.read(appSettingsProvider).formatting.currencyDecimalDigits;
+    final decimalDigits = ref
+        .read(appSettingsProvider)
+        .formatting
+        .currencyDecimalDigits;
     final factor =
         (Decimal.one +
         (percent / Decimal.fromInt(100)).toDecimal(

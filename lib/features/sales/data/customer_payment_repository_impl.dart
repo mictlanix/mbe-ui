@@ -13,7 +13,9 @@ import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/customer_payment_repository.dart';
 
-final customerPaymentRepositoryProvider = Provider<CustomerPaymentRepository>((ref) {
+final customerPaymentRepositoryProvider = Provider<CustomerPaymentRepository>((
+  ref,
+) {
   return CustomerPaymentRepositoryImpl(ref.watch(dioProvider));
 });
 
@@ -39,17 +41,18 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
     String? reference,
   }) async {
     try {
-      final response = await _payments.createCustomerPaymentApiV1CustomerPaymentsPost(
-        customerPaymentCreate: api.CustomerPaymentCreate((b) {
-          b
-            ..customer = customer
-            ..method = _methodToApi(method)
-            ..currency = currency == null ? null : currencyToApi(currency)
-            ..paymentCharge = paymentCharge
-            ..reference = reference;
-          _setAmount(b.amount, amount);
-        }),
-      );
+      final response = await _payments
+          .createCustomerPaymentApiV1CustomerPaymentsPost(
+            customerPaymentCreate: api.CustomerPaymentCreate((b) {
+              b
+                ..customer = customer
+                ..method = _methodToApi(method)
+                ..currency = currency == null ? null : currencyToApi(currency)
+                ..paymentCharge = paymentCharge
+                ..reference = reference;
+              _setAmount(b.amount, amount);
+            }),
+          );
       final result = response.data;
       if (result == null) throw const AppError.server();
       return result.customerPaymentId;
@@ -72,7 +75,8 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
             applicationCreate: api.ApplicationCreate((b) {
               b.salesOrder = salesOrder;
               _setAmount(b.amount, amount);
-              if (amountChange != null) _setAmountChange(b.amountChange, amountChange);
+              if (amountChange != null)
+                _setAmountChange(b.amountChange, amountChange);
             }),
           );
     } on DioException catch (e) {
@@ -162,4 +166,5 @@ void _setAmountChange(api.AmountChangeBuilder builder, String value) {
 /// The generated `api.PaymentMethod`'s members are named after their wire
 /// numbers (`number1`, `number28`, ...) — the inverse of
 /// `sale_payment.dart`'s `_methodCodeFromApi`.
-api.PaymentMethod _methodToApi(int code) => api.PaymentMethod.valueOf('number$code');
+api.PaymentMethod _methodToApi(int code) =>
+    api.PaymentMethod.valueOf('number$code');

@@ -39,12 +39,15 @@ class PosStepState {
   /// FR-005: two steps for counter pickup, three otherwise.
   int get stepCount => mode == FulfillmentMode.counterPickup ? 2 : 3;
 
-  PosStepState copyWith({PosStep? current, FulfillmentMode? mode, bool? detail}) =>
-      PosStepState(
-        current: current ?? this.current,
-        mode: mode ?? this.mode,
-        detail: detail ?? this.detail,
-      );
+  PosStepState copyWith({
+    PosStep? current,
+    FulfillmentMode? mode,
+    bool? detail,
+  }) => PosStepState(
+    current: current ?? this.current,
+    mode: mode ?? this.mode,
+    detail: detail ?? this.detail,
+  );
 }
 
 /// The step machine (contracts/pos-screen.md §2). Every transition is a
@@ -81,8 +84,10 @@ class PosStepController extends _$PosStepController {
   /// Cobro → done (counter pickup) or Cobro → Entrega (delivery/mixed),
   /// gated on a zero balance unless the sale is on credit terms (FR-049,
   /// FR-051).
-  bool canLeavePayment({required String balance, required bool isCreditTerms}) =>
-      isCreditTerms || isZeroAmount(balance);
+  bool canLeavePayment({
+    required String balance,
+    required bool isCreditTerms,
+  }) => isCreditTerms || isZeroAmount(balance);
 
   void advanceFromCobro() {
     if (state.mode == FulfillmentMode.counterPickup) return;

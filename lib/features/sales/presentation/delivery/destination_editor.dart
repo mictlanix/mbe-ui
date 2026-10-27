@@ -64,7 +64,9 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
   int? _contact;
   String? _contactLabel;
   DateTime? _date;
-  late final _comment = TextEditingController(text: widget.destination?.comment ?? '');
+  late final _comment = TextEditingController(
+    text: widget.destination?.comment ?? '',
+  );
 
   AppError? _error;
   bool _submitting = false;
@@ -94,11 +96,12 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
       customerId: widget.sale.customer,
     );
     if (id == null || !mounted) return;
-    final customer = ref.read(saleCustomerControllerProvider(widget.sale.customer)).value;
+    final customer = ref
+        .read(saleCustomerControllerProvider(widget.sale.customer))
+        .value;
     setState(() {
       _shipTo = id;
-      _addressLabel = customer
-          ?.addresses
+      _addressLabel = customer?.addresses
           .where((a) => a.addressId == id)
           .firstOrNull
           ?.label;
@@ -111,11 +114,12 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
       customerId: widget.sale.customer,
     );
     if (id == null || !mounted) return;
-    final customer = ref.read(saleCustomerControllerProvider(widget.sale.customer)).value;
+    final customer = ref
+        .read(saleCustomerControllerProvider(widget.sale.customer))
+        .value;
     setState(() {
       _contact = id;
-      _contactLabel = customer
-          ?.contacts
+      _contactLabel = customer?.contacts
           .where((c) => c.contactId == id)
           .firstOrNull
           ?.name;
@@ -138,20 +142,25 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
       _error = null;
     });
     try {
-      final comment = _comment.text.trim().isEmpty ? null : _comment.text.trim();
+      final comment = _comment.text.trim().isEmpty
+          ? null
+          : _comment.text.trim();
       final destination = widget.destination;
       if (destination == null) {
-        await widget.controller
-            .addDestination(shipTo: _shipTo!, contact: _contact, date: _date, comment: comment);
+        await widget.controller.addDestination(
+          shipTo: _shipTo!,
+          contact: _contact,
+          date: _date,
+          comment: comment,
+        );
       } else {
-        await widget.controller
-            .updateDestination(
-              destinationId: destination.id,
-              shipTo: _shipTo,
-              contact: _contact,
-              date: _date,
-              comment: comment,
-            );
+        await widget.controller.updateDestination(
+          destinationId: destination.id,
+          shipTo: _shipTo,
+          contact: _contact,
+          date: _date,
+          comment: comment,
+        );
       }
       if (mounted) widget.onDone();
     } on AppError catch (e) {
@@ -223,7 +232,9 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
             key: const Key('destination_comment_field'),
             controller: _comment,
             enabled: !_submitting,
-            decoration: InputDecoration(labelText: l10n.posDeliveryInstructions),
+            decoration: InputDecoration(
+              labelText: l10n.posDeliveryInstructions,
+            ),
           ),
           SizedBox(height: spacing.md),
           // A `Wrap`, because "Cancelar" beside "Agregar destino" does not
@@ -247,7 +258,11 @@ class _DestinationEditorState extends ConsumerState<DestinationEditor> {
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : Text(widget.destination == null ? l10n.posAddDestination : l10n.saveButton),
+                    : Text(
+                        widget.destination == null
+                            ? l10n.posAddDestination
+                            : l10n.saveButton,
+                      ),
               ),
             ],
           ),

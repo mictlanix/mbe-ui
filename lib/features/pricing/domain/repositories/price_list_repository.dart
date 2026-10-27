@@ -14,17 +14,12 @@ abstract class PriceListRepository {
 
   /// `POST /api/v1/price-lists` (FR-002). Throws `ValidationError` on `422`
   /// (e.g. duplicate name).
-  Future<PriceList> create({
-    required String name,
-  });
+  Future<PriceList> create({required String name});
 
   /// `PUT /api/v1/price-lists/{price_list_id}` (FR-003). All fields
   /// optional; only non-null values are sent. Throws `NotFoundError` on
   /// `404`, `ValidationError` on `422`.
-  Future<PriceList> update({
-    required int priceListId,
-    String? name,
-  });
+  Future<PriceList> update({required int priceListId, String? name});
 
   /// `DELETE /api/v1/price-lists/{price_list_id}[?replacement={id}]`
   /// (specs/034-price-list-retirement-ui FR-012). `replacement` is omitted

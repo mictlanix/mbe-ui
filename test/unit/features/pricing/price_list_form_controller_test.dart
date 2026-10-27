@@ -75,26 +75,14 @@ void main() {
 
       final state = container.read(priceListFormControllerProvider);
       expect(state.fieldErrors['name'], PriceListFormErrorCode.nameRequired);
-      verifyNever(
-        () => repository.create(
-          name: any(named: 'name'),
-        ),
-      );
+      verifyNever(() => repository.create(name: any(named: 'name')));
     });
-
 
     test(
       'a valid submission creates the price list and invalidates the list',
       () async {
-        when(
-          () => repository.create(
-            name: 'Retail',
-          ),
-        ).thenAnswer(
-          (_) async => const PriceList(
-            priceListId: 1,
-            name: 'Retail',
-          ),
+        when(() => repository.create(name: 'Retail')).thenAnswer(
+          (_) async => const PriceList(priceListId: 1, name: 'Retail'),
         );
 
         final notifier = container.read(
@@ -109,11 +97,7 @@ void main() {
     );
 
     test('a server validation error surfaces as field errors', () async {
-      when(
-        () => repository.create(
-          name: 'Retail',
-        ),
-      ).thenThrow(
+      when(() => repository.create(name: 'Retail')).thenThrow(
         const AppError.validation([
           FieldError(
             loc: ['body', 'name'],
@@ -146,11 +130,7 @@ void main() {
 
       final state = readOnlyContainer.read(priceListFormControllerProvider);
       expect(state.error, PriceListFormErrorCode.createPermissionDenied);
-      verifyNever(
-        () => repository.create(
-          name: any(named: 'name'),
-        ),
-      );
+      verifyNever(() => repository.create(name: any(named: 'name')));
     });
   });
 
@@ -159,21 +139,12 @@ void main() {
       'sends only the changed field when editing an existing list',
       () async {
         when(() => repository.get(priceListId: 1)).thenAnswer(
-          (_) async => const PriceList(
-            priceListId: 1,
-            name: 'Retail',
-          ),
+          (_) async => const PriceList(priceListId: 1, name: 'Retail'),
         );
         when(
-          () => repository.update(
-            priceListId: 1,
-            name: 'Retail',
-          ),
+          () => repository.update(priceListId: 1, name: 'Retail'),
         ).thenAnswer(
-          (_) async => const PriceList(
-            priceListId: 1,
-            name: 'Retail',
-          ),
+          (_) async => const PriceList(priceListId: 1, name: 'Retail'),
         );
 
         final notifier = container.read(
@@ -194,10 +165,7 @@ void main() {
       'a still-in-use rejection is surfaced and the list stays loaded',
       () async {
         when(() => repository.get(priceListId: 1)).thenAnswer(
-          (_) async => const PriceList(
-            priceListId: 1,
-            name: 'Retail',
-          ),
+          (_) async => const PriceList(priceListId: 1, name: 'Retail'),
         );
         when(() => repository.delete(priceListId: 1)).thenThrow(
           const AppError.server(
@@ -220,58 +188,48 @@ void main() {
       },
     );
 
-    test(
-      'returns true on success and forwards a chosen replacement '
-      '(specs/034-price-list-retirement-ui FR-012)',
-      () async {
-        when(() => repository.get(priceListId: 1)).thenAnswer(
-          (_) async => const PriceList(priceListId: 1, name: 'Retail'),
-        );
-        when(
-          () => repository.delete(priceListId: 1, replacement: 3),
-        ).thenAnswer((_) async {});
+    test('returns true on success and forwards a chosen replacement '
+        '(specs/034-price-list-retirement-ui FR-012)', () async {
+      when(() => repository.get(priceListId: 1)).thenAnswer(
+        (_) async => const PriceList(priceListId: 1, name: 'Retail'),
+      );
+      when(
+        () => repository.delete(priceListId: 1, replacement: 3),
+      ).thenAnswer((_) async {});
 
-        final notifier = container.read(
-          priceListFormControllerProvider.notifier,
-        );
-        await notifier.loadForEdit(1);
+      final notifier = container.read(priceListFormControllerProvider.notifier);
+      await notifier.loadForEdit(1);
 
-        final success = await notifier.delete(replacement: 3);
+      final success = await notifier.delete(replacement: 3);
 
-        expect(success, isTrue);
-        verify(
-          () => repository.delete(priceListId: 1, replacement: 3),
-        ).called(1);
-      },
-    );
+      expect(success, isTrue);
+      verify(() => repository.delete(priceListId: 1, replacement: 3)).called(1);
+    });
 
-    test(
-      'is denied for a read-only user, sets the error, and issues no '
-      'request',
-      () async {
-        when(() => repository.get(priceListId: 1)).thenAnswer(
-          (_) async => const PriceList(priceListId: 1, name: 'Retail'),
-        );
+    test('is denied for a read-only user, sets the error, and issues no '
+        'request', () async {
+      when(() => repository.get(priceListId: 1)).thenAnswer(
+        (_) async => const PriceList(priceListId: 1, name: 'Retail'),
+      );
 
-        final readOnlyContainer = _containerFor(_readOnlyUser, repository);
-        addTearDown(readOnlyContainer.dispose);
-        final notifier = readOnlyContainer.read(
-          priceListFormControllerProvider.notifier,
-        );
-        await notifier.loadForEdit(1);
+      final readOnlyContainer = _containerFor(_readOnlyUser, repository);
+      addTearDown(readOnlyContainer.dispose);
+      final notifier = readOnlyContainer.read(
+        priceListFormControllerProvider.notifier,
+      );
+      await notifier.loadForEdit(1);
 
-        final success = await notifier.delete();
+      final success = await notifier.delete();
 
-        expect(success, isFalse);
-        final state = readOnlyContainer.read(priceListFormControllerProvider);
-        expect(state.error, PriceListFormErrorCode.deletePermissionDenied);
-        verifyNever(
-          () => repository.delete(
-            priceListId: any(named: 'priceListId'),
-            replacement: any(named: 'replacement'),
-          ),
-        );
-      },
-    );
+      expect(success, isFalse);
+      final state = readOnlyContainer.read(priceListFormControllerProvider);
+      expect(state.error, PriceListFormErrorCode.deletePermissionDenied);
+      verifyNever(
+        () => repository.delete(
+          priceListId: any(named: 'priceListId'),
+          replacement: any(named: 'replacement'),
+        ),
+      );
+    });
   });
 }

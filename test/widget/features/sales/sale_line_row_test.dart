@@ -72,7 +72,9 @@ void main() {
   }
 
   group('in-place edit affordances (FR-023)', () {
-    testWidgets('quantity and discount are editable on a draft', (tester) async {
+    testWidgets('quantity and discount are editable on a draft', (
+      tester,
+    ) async {
       await pumpRow(tester);
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
@@ -81,10 +83,7 @@ void main() {
         l10n.posLineDiscountLabel,
       ]) {
         final field = tester.widget<TextField>(
-          find.ancestor(
-            of: find.text(label),
-            matching: find.byType(TextField),
-          ),
+          find.ancestor(of: find.text(label), matching: find.byType(TextField)),
         );
         expect(field.enabled, isTrue, reason: '$label should be editable');
         expect(field.readOnly, isFalse, reason: '$label should be editable');
@@ -130,10 +129,10 @@ void main() {
       );
       // The line carries 0.16 and nothing is cached for its product, so its own
       // rate stands in for the product's — 16 % or nothing, and it starts at 16.
-      expect(
-        picker.items!.map((item) => item.value).toList(),
-        [Decimal.zero, Decimal.parse('0.16')],
-      );
+      expect(picker.items!.map((item) => item.value).toList(), [
+        Decimal.zero,
+        Decimal.parse('0.16'),
+      ]);
       expect(picker.value, Decimal.parse('0.16'));
     });
 
@@ -145,19 +144,17 @@ void main() {
         SaleLineRow(line: testLine(taxRate: '0'), facilityId: 9),
         overrides: [
           warehouseOverride(warehouseRepository),
-          productTaxRateCacheProvider.overrideWith(
-            (ref) => {11: '0.0800'},
-          ),
+          productTaxRateCacheProvider.overrideWith((ref) => {11: '0.0800'}),
         ],
       );
 
       final picker = tester.widget<DropdownButton<Decimal>>(
         find.byType(DropdownButton<Decimal>),
       );
-      expect(
-        picker.items!.map((item) => item.value).toList(),
-        [Decimal.zero, Decimal.parse('0.08')],
-      );
+      expect(picker.items!.map((item) => item.value).toList(), [
+        Decimal.zero,
+        Decimal.parse('0.08'),
+      ]);
       // Rendering it does not rewrite the line: it still reads zero.
       expect(picker.value, Decimal.zero);
     });
@@ -255,7 +252,9 @@ void main() {
       );
     });
 
-    testWidgets('quantity has increment and decrement controls', (tester) async {
+    testWidgets('quantity has increment and decrement controls', (
+      tester,
+    ) async {
       await pumpRow(tester);
       expect(find.byIcon(Icons.add), findsOneWidget);
       expect(find.byIcon(Icons.remove), findsOneWidget);
@@ -316,17 +315,24 @@ void main() {
       }
       // Both pickers refuse a change too.
       expect(
-        tester.widget<InkWell>(find.byKey(const Key('sale_line_warehouse_5'))).onTap,
+        tester
+            .widget<InkWell>(find.byKey(const Key('sale_line_warehouse_5')))
+            .onTap,
         isNull,
       );
       expect(
         tester
-            .widget<DropdownButton<Decimal>>(find.byType(DropdownButton<Decimal>))
+            .widget<DropdownButton<Decimal>>(
+              find.byType(DropdownButton<Decimal>),
+            )
             .onChanged,
         isNull,
       );
       final add = tester.widget<IconButton>(
-        find.ancestor(of: find.byIcon(Icons.add), matching: find.byType(IconButton)),
+        find.ancestor(
+          of: find.byIcon(Icons.add),
+          matching: find.byType(IconButton),
+        ),
       );
       expect(add.onPressed, isNull);
     });
@@ -446,7 +452,10 @@ void main() {
 
       String textOf(String label) => tester
           .widget<TextField>(
-            find.ancestor(of: find.text(label), matching: find.byType(TextField)),
+            find.ancestor(
+              of: find.text(label),
+              matching: find.byType(TextField),
+            ),
           )
           .controller!
           .text;
@@ -508,7 +517,10 @@ void main() {
       );
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
-      expect(find.text(l10n.posLineQuantityWithUnitLabel('Pza')), findsOneWidget);
+      expect(
+        find.text(l10n.posLineQuantityWithUnitLabel('Pza')),
+        findsOneWidget,
+      );
       // The unit is the label, not a cell beside it.
       expect(find.text('Pza'), findsNothing);
     });
@@ -535,8 +547,7 @@ void main() {
   group('one box height, one baseline, under the real theme (FR-038a)', () {
     setUpAll(loadGoldenFonts);
 
-    testWidgets(
-        'every control in the band is '
+    testWidgets('every control in the band is '
         '${saleLineFieldHeight(TextScaler.noScaling)} tall and '
         'every value in it — the line total included — sits on one baseline', (
       tester,
@@ -596,44 +607,44 @@ void main() {
 
   group('one height for every editable control (FR-038a)', () {
     testWidgets(
-        'warehouse, quantity, price, discount and tax are all '
-        '${saleLineFieldHeight(TextScaler.noScaling)} tall and share one vertical centre', (
-      tester,
-    ) async {
-      await pumpPos(
-        tester,
-        SaleLineRow(line: testLine(), facilityId: 9),
-        overrides: [warehouseOverride(warehouseRepository)],
-        surface: const Size(1400, 900),
-      );
-      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
-
-      // Each control's own decorated box, found via its label — the widths
-      // differ by design, the heights must not.
-      Finder boxFor(String label) => find.ancestor(
-        of: find.text(label),
-        matching: find.byType(InputDecorator),
-      );
-
-      final labels = [
-        l10n.posLineWarehouseLabel,
-        l10n.posLineQuantityLabel,
-        l10n.posLinePriceLabel,
-        l10n.posLineDiscountLabel,
-        l10n.posLineTaxLabel,
-      ];
-      final centres = <double>[];
-      for (final label in labels) {
-        expect(boxFor(label), findsOneWidget, reason: label);
-        expect(
-          tester.getSize(boxFor(label)).height,
-          saleLineFieldHeight(TextScaler.noScaling),
-          reason: label,
+      'warehouse, quantity, price, discount and tax are all '
+      '${saleLineFieldHeight(TextScaler.noScaling)} tall and share one vertical centre',
+      (tester) async {
+        await pumpPos(
+          tester,
+          SaleLineRow(line: testLine(), facilityId: 9),
+          overrides: [warehouseOverride(warehouseRepository)],
+          surface: const Size(1400, 900),
         );
-        centres.add(tester.getCenter(boxFor(label)).dy);
-      }
-      expect(centres.toSet(), hasLength(1));
-    });
+        final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+        // Each control's own decorated box, found via its label — the widths
+        // differ by design, the heights must not.
+        Finder boxFor(String label) => find.ancestor(
+          of: find.text(label),
+          matching: find.byType(InputDecorator),
+        );
+
+        final labels = [
+          l10n.posLineWarehouseLabel,
+          l10n.posLineQuantityLabel,
+          l10n.posLinePriceLabel,
+          l10n.posLineDiscountLabel,
+          l10n.posLineTaxLabel,
+        ];
+        final centres = <double>[];
+        for (final label in labels) {
+          expect(boxFor(label), findsOneWidget, reason: label);
+          expect(
+            tester.getSize(boxFor(label)).height,
+            saleLineFieldHeight(TextScaler.noScaling),
+            reason: label,
+          );
+          centres.add(tester.getCenter(boxFor(label)).dy);
+        }
+        expect(centres.toSet(), hasLength(1));
+      },
+    );
 
     testWidgets('a one-line product name and a name long enough to wrap give '
         'rows of the same height — the list does not jump', (tester) async {
@@ -675,9 +686,11 @@ void main() {
         tester,
         quantity: '2',
         stock: const {
-          11: ProductStock(warehouses: [
-            WarehouseStock(warehouse: 3, onHand: '10', available: '10'),
-          ]),
+          11: ProductStock(
+            warehouses: [
+              WarehouseStock(warehouse: 3, onHand: '10', available: '10'),
+            ],
+          ),
         },
       );
       expect(find.byIcon(Icons.warning_amber), findsNothing);
@@ -690,9 +703,11 @@ void main() {
         tester,
         quantity: '5',
         stock: const {
-          11: ProductStock(warehouses: [
-            WarehouseStock(warehouse: 3, onHand: '2', available: '2'),
-          ]),
+          11: ProductStock(
+            warehouses: [
+              WarehouseStock(warehouse: 3, onHand: '2', available: '2'),
+            ],
+          ),
         },
       );
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
@@ -709,9 +724,11 @@ void main() {
         tester,
         quantity: '1',
         stock: const {
-          11: ProductStock(warehouses: [
-            WarehouseStock(warehouse: 3, onHand: '0', available: '0'),
-          ]),
+          11: ProductStock(
+            warehouses: [
+              WarehouseStock(warehouse: 3, onHand: '0', available: '0'),
+            ],
+          ),
         },
       );
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
@@ -727,167 +744,187 @@ void main() {
     });
   });
 
-  group('warehouse picker stock flag (US6, FR-020…FR-022, data-model.md §6)', () {
-    testWidgets(
-      'opening the picker shows the confirmed quantity for a warehouse with '
-      'enough stock — silence there used to be visually identical to '
-      '"unknown", defeating the point of having checked (live-testing fix)',
-      (tester) async {
+  group(
+    'warehouse picker stock flag (US6, FR-020…FR-022, data-model.md §6)',
+    () {
+      testWidgets(
+        'opening the picker shows the confirmed quantity for a warehouse with '
+        'enough stock — silence there used to be visually identical to '
+        '"unknown", defeating the point of having checked (live-testing fix)',
+        (tester) async {
+          await pumpRow(
+            tester,
+            quantity: '2',
+            stock: const {
+              11: ProductStock(
+                warehouses: [
+                  WarehouseStock(warehouse: 3, onHand: '10', available: '10'),
+                ],
+              ),
+            },
+          );
+
+          await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
+          await tester.pumpAndSettle();
+
+          // Warehouse 3 ("Main Warehouse") is the one with cached stock (10, ≥
+          // the ordered 2) — its own figure is shown, not silence. Warehouse 4
+          // ("Overflow") was never looked up, so it is fine for it to still
+          // read "unknown" — this test is only about warehouse 3's own case.
+          expect(find.text('10'), findsOneWidget);
+        },
+      );
+
+      testWidgets('the closed display stays name-only even when the selected '
+          'warehouse itself is short on stock (research R11)', (tester) async {
+        // Warehouse 3 is the line's own selected warehouse (testLine's
+        // default), so this also exercises the line-level shortfall warning
+        // — a second, independent Icons.warning_amber user — without the
+        // picker's own closed display picking up a flag alongside it.
+        await pumpRow(
+          tester,
+          quantity: '5',
+          stock: const {
+            11: ProductStock(
+              warehouses: [
+                WarehouseStock(warehouse: 3, onHand: '2', available: '2'),
+              ],
+            ),
+          },
+        );
+        final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+        expect(find.text('Main Warehouse'), findsOneWidget);
+        expect(find.text(l10n.posLineWarehouseStockShort('2')), findsNothing);
+        expect(find.text(l10n.posLineWarehouseStockNone), findsNothing);
+        expect(find.text(l10n.posLineWarehouseStockUnknown), findsNothing);
+        // The shortfall row's own icon, plus the fixed-size one the closed
+        // field carries; no stock text in the field.
+        expect(find.byIcon(Icons.warning_amber), findsNWidgets(2));
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('sale_line_warehouse_5')),
+            matching: find.byIcon(Icons.warning_amber),
+          ),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('opening the picker flags a warehouse with no cached stock '
+          'as unknown, never as silently in stock', (tester) async {
         await pumpRow(
           tester,
           quantity: '2',
           stock: const {
-            11: ProductStock(warehouses: [WarehouseStock(warehouse: 3, onHand: '10', available: '10')]),
+            11: ProductStock(
+              warehouses: [
+                WarehouseStock(warehouse: 3, onHand: '10', available: '10'),
+              ],
+            ),
           },
         );
+        final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
         await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
         await tester.pumpAndSettle();
 
-        // Warehouse 3 ("Main Warehouse") is the one with cached stock (10, ≥
-        // the ordered 2) — its own figure is shown, not silence. Warehouse 4
-        // ("Overflow") was never looked up, so it is fine for it to still
-        // read "unknown" — this test is only about warehouse 3's own case.
-        expect(find.text('10'), findsOneWidget);
-      },
-    );
+        // Warehouse 3 has enough stock (2 ≤ 10): no flag at all.
+        expect(find.text(l10n.posLineWarehouseStockShort('10')), findsNothing);
+        expect(find.text(l10n.posLineWarehouseStockNone), findsNothing);
+        // Warehouse 4 ("Overflow") was never looked up this session.
+        expect(find.text(l10n.posLineWarehouseStockUnknown), findsOneWidget);
+      });
 
-    testWidgets('the closed display stays name-only even when the selected '
-        'warehouse itself is short on stock (research R11)', (tester) async {
-      // Warehouse 3 is the line's own selected warehouse (testLine's
-      // default), so this also exercises the line-level shortfall warning
-      // — a second, independent Icons.warning_amber user — without the
-      // picker's own closed display picking up a flag alongside it.
-      await pumpRow(
-        tester,
-        quantity: '5',
-        stock: const {
-          11: ProductStock(warehouses: [WarehouseStock(warehouse: 3, onHand: '2', available: '2')]),
-        },
-      );
-      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
-
-      expect(find.text('Main Warehouse'), findsOneWidget);
-      expect(find.text(l10n.posLineWarehouseStockShort('2')), findsNothing);
-      expect(find.text(l10n.posLineWarehouseStockNone), findsNothing);
-      expect(find.text(l10n.posLineWarehouseStockUnknown), findsNothing);
-      // The shortfall row's own icon, plus the fixed-size one the closed
-      // field carries; no stock text in the field.
-      expect(find.byIcon(Icons.warning_amber), findsNWidgets(2));
-      expect(
-        find.descendant(
-          of: find.byKey(const Key('sale_line_warehouse_5')),
-          matching: find.byIcon(Icons.warning_amber),
-        ),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets('opening the picker flags a warehouse with no cached stock '
-        'as unknown, never as silently in stock', (tester) async {
-      await pumpRow(
-        tester,
-        quantity: '2',
-        stock: const {
-          11: ProductStock(warehouses: [WarehouseStock(warehouse: 3, onHand: '10', available: '10')]),
-        },
-      );
-      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
-
-      await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
-      await tester.pumpAndSettle();
-
-      // Warehouse 3 has enough stock (2 ≤ 10): no flag at all.
-      expect(find.text(l10n.posLineWarehouseStockShort('10')), findsNothing);
-      expect(find.text(l10n.posLineWarehouseStockNone), findsNothing);
-      // Warehouse 4 ("Overflow") was never looked up this session.
-      expect(find.text(l10n.posLineWarehouseStockUnknown), findsOneWidget);
-    });
-
-    testWidgets('opening the picker flags an exhausted warehouse as having '
-        'no stock, distinct from a partial shortfall', (tester) async {
-      await pumpRow(
-        tester,
-        quantity: '1',
-        stock: const {
-          11: ProductStock(warehouses: [WarehouseStock(warehouse: 4, onHand: '0', available: '0')]),
-        },
-      );
-      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
-
-      await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
-      await tester.pumpAndSettle();
-
-      expect(find.text(l10n.posLineWarehouseStockNone), findsOneWidget);
-      expect(find.text(l10n.posLineWarehouseStockShort('0')), findsNothing);
-    });
-
-    testWidgets('a warehouse flagged short is still selectable — the flag is '
-        'informational, never a block (FR-022)', (tester) async {
-      final salesOrder = MockSalesOrderRepository();
-      when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale());
-      when(
-        () => salesOrder.updateLine(
-          saleId: any(named: 'saleId'),
-          lineId: any(named: 'lineId'),
-          quantity: any(named: 'quantity'),
-          price: any(named: 'price'),
-          discountRate: any(named: 'discountRate'),
-          taxRate: any(named: 'taxRate'),
-          warehouse: any(named: 'warehouse'),
-          comment: any(named: 'comment'),
-        ),
-      ).thenAnswer((_) async => testSale(lines: [testLine(warehouse: 4)]));
-
-      final container = await pumpPos(
-        tester,
-        Consumer(
-          builder: (context, ref, _) {
-            ref.watch(posSaleControllerProvider);
-            return SaleLineRow(
-              line: testLine(quantity: '5'),
-              facilityId: 9,
-            );
+      testWidgets('opening the picker flags an exhausted warehouse as having '
+          'no stock, distinct from a partial shortfall', (tester) async {
+        await pumpRow(
+          tester,
+          quantity: '1',
+          stock: const {
+            11: ProductStock(
+              warehouses: [
+                WarehouseStock(warehouse: 4, onHand: '0', available: '0'),
+              ],
+            ),
           },
-        ),
-        overrides: [
-          warehouseOverride(warehouseRepository),
-          salesOrderOverride(salesOrder),
-          productStockCacheProvider.overrideWith(
-            (ref) => const {
-              11: ProductStock(warehouses: [WarehouseStock(warehouse: 4, onHand: '2', available: '2')]),
+        );
+        final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+
+        await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
+        await tester.pumpAndSettle();
+
+        expect(find.text(l10n.posLineWarehouseStockNone), findsOneWidget);
+        expect(find.text(l10n.posLineWarehouseStockShort('0')), findsNothing);
+      });
+
+      testWidgets('a warehouse flagged short is still selectable — the flag is '
+          'informational, never a block (FR-022)', (tester) async {
+        final salesOrder = MockSalesOrderRepository();
+        when(() => anyOpen(salesOrder)).thenAnswer((_) async => testSale());
+        when(
+          () => salesOrder.updateLine(
+            saleId: any(named: 'saleId'),
+            lineId: any(named: 'lineId'),
+            quantity: any(named: 'quantity'),
+            price: any(named: 'price'),
+            discountRate: any(named: 'discountRate'),
+            taxRate: any(named: 'taxRate'),
+            warehouse: any(named: 'warehouse'),
+            comment: any(named: 'comment'),
+          ),
+        ).thenAnswer((_) async => testSale(lines: [testLine(warehouse: 4)]));
+
+        final container = await pumpPos(
+          tester,
+          Consumer(
+            builder: (context, ref, _) {
+              ref.watch(posSaleControllerProvider);
+              return SaleLineRow(line: testLine(quantity: '5'), facilityId: 9);
             },
           ),
-        ],
-        surface: const Size(1400, 900),
-      );
-      await container.read(posSaleControllerProvider.notifier).ensureOpen();
-      await tester.pumpAndSettle();
-      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+          overrides: [
+            warehouseOverride(warehouseRepository),
+            salesOrderOverride(salesOrder),
+            productStockCacheProvider.overrideWith(
+              (ref) => const {
+                11: ProductStock(
+                  warehouses: [
+                    WarehouseStock(warehouse: 4, onHand: '2', available: '2'),
+                  ],
+                ),
+              },
+            ),
+          ],
+          surface: const Size(1400, 900),
+        );
+        await container.read(posSaleControllerProvider.notifier).ensureOpen();
+        await tester.pumpAndSettle();
+        final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
-      await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
-      await tester.pumpAndSettle();
-      // The flagged warehouse's own wording is on screen before it is
-      // chosen — an informed choice, not a guess.
-      expect(find.text(l10n.posLineWarehouseStockShort('2')), findsOneWidget);
+        await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
+        await tester.pumpAndSettle();
+        // The flagged warehouse's own wording is on screen before it is
+        // chosen — an informed choice, not a guess.
+        expect(find.text(l10n.posLineWarehouseStockShort('2')), findsOneWidget);
 
-      await tester.tap(find.text('Overflow').last);
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('Overflow').last);
+        await tester.pumpAndSettle();
 
-      verify(
-        () => salesOrder.updateLine(
-          saleId: any(named: 'saleId'),
-          lineId: 5,
-          quantity: null,
-          price: null,
-          discountRate: null,
-          taxRate: null,
-          warehouse: 4,
-          comment: null,
-        ),
-      ).called(1);
-    });
-  });
+        verify(
+          () => salesOrder.updateLine(
+            saleId: any(named: 'saleId'),
+            lineId: 5,
+            quantity: null,
+            price: null,
+            discountRate: null,
+            taxRate: null,
+            warehouse: 4,
+            comment: null,
+          ),
+        ).called(1);
+      });
+    },
+  );
 
   group('layout thresholds (spec 023 FR-037, FR-037a)', () {
     testWidgets(
@@ -907,7 +944,10 @@ void main() {
         // rendered (a single Card, not the two-row Column variant, which
         // would still pass an overflow check but silently be the wrong
         // layout).
-        expect(find.byKey(Key('sale_line_row_${testLine().id}')), findsOneWidget);
+        expect(
+          find.byKey(Key('sale_line_row_${testLine().id}')),
+          findsOneWidget,
+        );
         expect(tester.takeException(), isNull);
       },
     );
@@ -918,7 +958,10 @@ void main() {
       (tester) async {
         await pumpPos(
           tester,
-          CaptureStep(sale: testSale(lines: [testLine()]), onContinue: () {}),
+          CaptureStep(
+            sale: testSale(lines: [testLine()]),
+            onContinue: () {},
+          ),
           overrides: [warehouseOverride(warehouseRepository)],
           surface: const Size(1024, 900),
         );
@@ -943,57 +986,68 @@ void main() {
       },
     );
 
-    testWidgets('the two-row fallback below 950 px, still nothing overflowing', (
-      tester,
-    ) async {
-      await pumpPos(
-        tester,
-        SaleLineRow(line: testLine(), facilityId: 9),
-        overrides: [warehouseOverride(warehouseRepository)],
-        surface: const Size(700, 900),
-      );
-
-      expect(tester.takeException(), isNull);
-      // Every field FR-022 asks for is still there, in the same form it takes
-      // in the single row — nothing was dropped to make the fallback fit, and
-      // nothing became free-text that is a picker above.
-      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
-      for (final label in [
-        l10n.posLineQuantityLabel,
-        l10n.posLinePriceLabel,
-        l10n.posLineDiscountLabel,
-      ]) {
-        expect(
-          find.ancestor(of: find.text(label), matching: find.byType(TextField)),
-          findsOneWidget,
-          reason: label,
+    testWidgets(
+      'the two-row fallback below 950 px, still nothing overflowing',
+      (tester) async {
+        await pumpPos(
+          tester,
+          SaleLineRow(line: testLine(), facilityId: 9),
+          overrides: [warehouseOverride(warehouseRepository)],
+          surface: const Size(700, 900),
         );
-      }
-      expect(find.byKey(const Key('pos_line_tax_rate_picker')), findsOneWidget);
-      expect(find.byKey(const Key('sale_line_warehouse_5')), findsOneWidget);
-    });
+
+        expect(tester.takeException(), isNull);
+        // Every field FR-022 asks for is still there, in the same form it takes
+        // in the single row — nothing was dropped to make the fallback fit, and
+        // nothing became free-text that is a picker above.
+        final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+        for (final label in [
+          l10n.posLineQuantityLabel,
+          l10n.posLinePriceLabel,
+          l10n.posLineDiscountLabel,
+        ]) {
+          expect(
+            find.ancestor(
+              of: find.text(label),
+              matching: find.byType(TextField),
+            ),
+            findsOneWidget,
+            reason: label,
+          );
+        }
+        expect(
+          find.byKey(const Key('pos_line_tax_rate_picker')),
+          findsOneWidget,
+        );
+        expect(find.byKey(const Key('sale_line_warehouse_5')), findsOneWidget);
+      },
+    );
   });
   group('warehouse pop-up (spec 047 US4)', () {
-    testWidgets('tapping the field opens the pop-up; the current row is marked', (
-      tester,
-    ) async {
-      await pumpRow(tester);
+    testWidgets(
+      'tapping the field opens the pop-up; the current row is marked',
+      (tester) async {
+        await pumpRow(tester);
 
-      expect(find.byKey(const Key('warehouse_picker_dialog')), findsNothing);
-      await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
-      await tester.pumpAndSettle();
+        expect(find.byKey(const Key('warehouse_picker_dialog')), findsNothing);
+        await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));
+        await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('warehouse_picker_dialog')), findsOneWidget);
-      expect(find.byKey(const Key('warehouse_option_3')), findsOneWidget);
-      expect(find.byKey(const Key('warehouse_option_4')), findsOneWidget);
-      expect(
-        find.descendant(
-          of: find.byKey(const Key('warehouse_option_3')),
-          matching: find.byIcon(Icons.check),
-        ),
-        findsOneWidget,
-      );
-    });
+        expect(
+          find.byKey(const Key('warehouse_picker_dialog')),
+          findsOneWidget,
+        );
+        expect(find.byKey(const Key('warehouse_option_3')), findsOneWidget);
+        expect(find.byKey(const Key('warehouse_option_4')), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('warehouse_option_3')),
+            matching: find.byIcon(Icons.check),
+          ),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets('picking the current warehouse or cancelling writes nothing', (
       tester,
@@ -1022,7 +1076,9 @@ void main() {
       verifyZeroInteractions(salesOrder);
     });
 
-    testWidgets('the field does nothing on a non-editable sale', (tester) async {
+    testWidgets('the field does nothing on a non-editable sale', (
+      tester,
+    ) async {
       await pumpRow(tester, enabled: false);
 
       await tester.tap(find.byKey(const Key('sale_line_warehouse_5')));

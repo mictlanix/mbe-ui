@@ -543,7 +543,9 @@ void main() {
       );
     });
 
-    testWidgets('DateRangeFilterChip (today, no clear affordance)', (tester) async {
+    testWidgets('DateRangeFilterChip (today, no clear affordance)', (
+      tester,
+    ) async {
       await expectGoldenMatrix(
         tester,
         'date_range_filter_chip_today',
@@ -590,9 +592,7 @@ void main() {
         tester,
         'user_menu_button',
         (brightness, width) => const UserMenuButton(),
-        overrides: [
-          authProvider.overrideWith(_FixtureAuthNotifier.new),
-        ],
+        overrides: [authProvider.overrideWith(_FixtureAuthNotifier.new)],
       );
     });
   });

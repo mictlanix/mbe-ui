@@ -126,7 +126,9 @@ void main() {
 
   group('CustomerFormController.submitCreate validation (FR-018, FR-019)', () {
     test('name/priceList are required before submit', () async {
-      final notifier = container.read(customerFormControllerProvider(null).notifier);
+      final notifier = container.read(
+        customerFormControllerProvider(null).notifier,
+      );
 
       await notifier.submitCreate();
 
@@ -192,12 +194,17 @@ void main() {
 
         await notifier.submitCreate();
 
-        expect(container.read(customerFormControllerProvider(null)).saved, isTrue);
+        expect(
+          container.read(customerFormControllerProvider(null)).saved,
+          isTrue,
+        );
       },
     );
 
     test('a negative credit limit is rejected before submit', () async {
-      final notifier = container.read(customerFormControllerProvider(null).notifier);
+      final notifier = container.read(
+        customerFormControllerProvider(null).notifier,
+      );
       notifier
         ..codeChanged('CUST-001')
         ..nameChanged('Acme Corp')
@@ -228,7 +235,9 @@ void main() {
 
       await notifier.submitCreate();
 
-      final state = readOnlyContainer.read(customerFormControllerProvider(null));
+      final state = readOnlyContainer.read(
+        customerFormControllerProvider(null),
+      );
       expect(state.error, CustomerFormErrorCode.createPermissionDenied);
     });
   });
@@ -283,137 +292,12 @@ void main() {
     );
   });
 
-  group('CustomerFormController linked records (046-catalog-improvements US1)', () {
-    void stubUpdate() => when(
-      () => repository.update(
-        customerId: any(named: 'customerId'),
-        code: any(named: 'code'),
-        name: any(named: 'name'),
-        priceList: any(named: 'priceList'),
-        zone: any(named: 'zone'),
-        creditLimit: any(named: 'creditLimit'),
-        creditDays: any(named: 'creditDays'),
-        salesperson: any(named: 'salesperson'),
-        status: any(named: 'status'),
-        comment: any(named: 'comment'),
-        addresses: any(named: 'addresses'),
-        contacts: any(named: 'contacts'),
-        taxpayers: any(named: 'taxpayers'),
-      ),
-    ).thenAnswer((_) async => _customer());
-
-    test('loadForEdit seeds all three link lists', () async {
-      when(() => repository.get(customerId: 1)).thenAnswer(
-        (_) async => _customer(
-          addresses: [_address10],
-          contacts: [_contact20],
-          taxpayers: [_rfcA, _rfcB],
-        ),
-      );
-
-      await container
-          .read(customerFormControllerProvider(null).notifier)
-          .loadForEdit(1);
-
-      final state = container.read(customerFormControllerProvider(null));
-      expect(state.addresses, [_address10]);
-      expect(state.contacts, [_contact20]);
-      expect(state.taxpayers.map((t) => t.taxpayerRecipientId), [
-        'AAA010101AAA',
-        'BBB010101BBB',
-      ]);
-    });
-
-    test('add de-duplicates and remove drops only the named record', () {
-      final notifier = container.read(customerFormControllerProvider(null).notifier);
-      notifier
-        ..addressAdded(_address10)
-        ..addressAdded(_address10)
-        ..addressAdded(_address11)
-        ..contactAdded(_contact20)
-        ..contactAdded(_contact20)
-        ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcA))
-        ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcA));
-
-      var state = container.read(customerFormControllerProvider(null));
-      expect(state.addresses, [_address10, _address11]);
-      expect(state.contacts, [_contact20]);
-      expect(state.taxpayers, hasLength(1));
-
-      notifier
-        ..addressRemoved(10)
-        ..contactRemoved(20)
-        ..taxpayerRemoved('AAA010101AAA');
-      state = container.read(customerFormControllerProvider(null));
-      expect(state.addresses, [_address11]);
-      expect(state.contacts, isEmpty);
-      expect(state.taxpayers, isEmpty);
-    });
-
-    test('a link change makes the state differ from its loaded snapshot, '
-        'which is what marks the form dirty (FR-005)', () async {
-      when(
-        () => repository.get(customerId: 1),
-      ).thenAnswer((_) async => _customer(addresses: [_address10]));
-      final notifier = container.read(customerFormControllerProvider(null).notifier);
-      await notifier.loadForEdit(1);
-      final loaded = container.read(customerFormControllerProvider(null));
-
-      notifier.addressAdded(_address11);
-
-      expect(container.read(customerFormControllerProvider(null)), isNot(loaded));
-    });
-
-    test('saving an unrelated change keeps every RFC of a multi-RFC customer, '
-        'and every other link (FR-006)', () async {
-      when(() => repository.get(customerId: 1)).thenAnswer(
-        (_) async => _customer(
-          addresses: [_address10],
-          contacts: [_contact20],
-          taxpayers: [_rfcA, _rfcB],
-        ),
-      );
-      stubUpdate();
-      final notifier = container.read(customerFormControllerProvider(null).notifier);
-      await notifier.loadForEdit(1);
-
-      notifier.zoneChanged('Norte');
-      await notifier.submitUpdate();
-
-      verify(
+  group(
+    'CustomerFormController linked records (046-catalog-improvements US1)',
+    () {
+      void stubUpdate() => when(
         () => repository.update(
-          customerId: 1,
-          code: any(named: 'code'),
-          name: any(named: 'name'),
-          priceList: any(named: 'priceList'),
-          zone: 'Norte',
-          creditLimit: any(named: 'creditLimit'),
-          creditDays: any(named: 'creditDays'),
-          salesperson: any(named: 'salesperson'),
-          status: any(named: 'status'),
-          comment: any(named: 'comment'),
-          addresses: [10],
-          contacts: [20],
-          taxpayers: ['AAA010101AAA', 'BBB010101BBB'],
-        ),
-      ).called(1);
-    });
-
-    test('unlinking sends the shorter list and never deletes the record '
-        'itself (FR-004)', () async {
-      when(() => repository.get(customerId: 1)).thenAnswer(
-        (_) async => _customer(taxpayers: [_rfcA, _rfcB]),
-      );
-      stubUpdate();
-      final notifier = container.read(customerFormControllerProvider(null).notifier);
-      await notifier.loadForEdit(1);
-
-      notifier.taxpayerRemoved('AAA010101AAA');
-      await notifier.submitUpdate();
-
-      final sent = verify(
-        () => repository.update(
-          customerId: 1,
+          customerId: any(named: 'customerId'),
           code: any(named: 'code'),
           name: any(named: 'name'),
           priceList: any(named: 'priceList'),
@@ -422,74 +306,233 @@ void main() {
           creditDays: any(named: 'creditDays'),
           salesperson: any(named: 'salesperson'),
           status: any(named: 'status'),
-          comment: any(named: 'comment'),
-          addresses: any(named: 'addresses'),
-          contacts: any(named: 'contacts'),
-          taxpayers: captureAny(named: 'taxpayers'),
-        ),
-      ).captured;
-      expect(sent.single, ['BBB010101BBB']);
-      // The only write is the customer's own link list.
-      verifyNever(() => repository.delete(customerId: any(named: 'customerId')));
-    });
-
-    test('create sends the links chosen before the first save (FR-007)', () async {
-      when(
-        () => repository.create(
-          code: any(named: 'code'),
-          name: any(named: 'name'),
-          priceList: any(named: 'priceList'),
-          zone: any(named: 'zone'),
-          creditLimit: any(named: 'creditLimit'),
-          creditDays: any(named: 'creditDays'),
-          salesperson: any(named: 'salesperson'),
           comment: any(named: 'comment'),
           addresses: any(named: 'addresses'),
           contacts: any(named: 'contacts'),
           taxpayers: any(named: 'taxpayers'),
         ),
       ).thenAnswer((_) async => _customer());
-      final notifier = container.read(customerFormControllerProvider(null).notifier);
-      notifier
-        ..nameChanged('Acme Corp')
-        ..priceListSelected(1, 'Retail')
-        ..addressAdded(_address10)
-        ..contactAdded(_contact20)
-        ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcA));
 
-      await notifier.submitCreate();
+      test('loadForEdit seeds all three link lists', () async {
+        when(() => repository.get(customerId: 1)).thenAnswer(
+          (_) async => _customer(
+            addresses: [_address10],
+            contacts: [_contact20],
+            taxpayers: [_rfcA, _rfcB],
+          ),
+        );
 
-      verify(
-        () => repository.create(
-          code: any(named: 'code'),
-          name: 'Acme Corp',
-          priceList: 1,
-          zone: any(named: 'zone'),
-          creditLimit: any(named: 'creditLimit'),
-          creditDays: any(named: 'creditDays'),
-          salesperson: any(named: 'salesperson'),
-          comment: any(named: 'comment'),
-          addresses: [10],
-          contacts: [20],
-          taxpayers: ['AAA010101AAA'],
-        ),
-      ).called(1);
-    });
+        await container
+            .read(customerFormControllerProvider(null).notifier)
+            .loadForEdit(1);
 
-    test('the POS single-RFC picker replaces the whole set (research R4)', () {
-      final notifier = container.read(customerFormControllerProvider(null).notifier);
-      notifier
-        ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcA))
-        ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcB))
-        ..taxpayerSelected('CCC010101CCC', 'Otra SA');
+        final state = container.read(customerFormControllerProvider(null));
+        expect(state.addresses, [_address10]);
+        expect(state.contacts, [_contact20]);
+        expect(state.taxpayers.map((t) => t.taxpayerRecipientId), [
+          'AAA010101AAA',
+          'BBB010101BBB',
+        ]);
+      });
 
-      final taxpayers = container.read(customerFormControllerProvider(null)).taxpayers;
-      expect(taxpayers.map((t) => t.taxpayerRecipientId), ['CCC010101CCC']);
+      test('add de-duplicates and remove drops only the named record', () {
+        final notifier = container.read(
+          customerFormControllerProvider(null).notifier,
+        );
+        notifier
+          ..addressAdded(_address10)
+          ..addressAdded(_address10)
+          ..addressAdded(_address11)
+          ..contactAdded(_contact20)
+          ..contactAdded(_contact20)
+          ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcA))
+          ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcA));
 
-      notifier.taxpayerSelected(null, '');
-      expect(container.read(customerFormControllerProvider(null)).taxpayers, isEmpty);
-    });
-  });
+        var state = container.read(customerFormControllerProvider(null));
+        expect(state.addresses, [_address10, _address11]);
+        expect(state.contacts, [_contact20]);
+        expect(state.taxpayers, hasLength(1));
+
+        notifier
+          ..addressRemoved(10)
+          ..contactRemoved(20)
+          ..taxpayerRemoved('AAA010101AAA');
+        state = container.read(customerFormControllerProvider(null));
+        expect(state.addresses, [_address11]);
+        expect(state.contacts, isEmpty);
+        expect(state.taxpayers, isEmpty);
+      });
+
+      test('a link change makes the state differ from its loaded snapshot, '
+          'which is what marks the form dirty (FR-005)', () async {
+        when(
+          () => repository.get(customerId: 1),
+        ).thenAnswer((_) async => _customer(addresses: [_address10]));
+        final notifier = container.read(
+          customerFormControllerProvider(null).notifier,
+        );
+        await notifier.loadForEdit(1);
+        final loaded = container.read(customerFormControllerProvider(null));
+
+        notifier.addressAdded(_address11);
+
+        expect(
+          container.read(customerFormControllerProvider(null)),
+          isNot(loaded),
+        );
+      });
+
+      test(
+        'saving an unrelated change keeps every RFC of a multi-RFC customer, '
+        'and every other link (FR-006)',
+        () async {
+          when(() => repository.get(customerId: 1)).thenAnswer(
+            (_) async => _customer(
+              addresses: [_address10],
+              contacts: [_contact20],
+              taxpayers: [_rfcA, _rfcB],
+            ),
+          );
+          stubUpdate();
+          final notifier = container.read(
+            customerFormControllerProvider(null).notifier,
+          );
+          await notifier.loadForEdit(1);
+
+          notifier.zoneChanged('Norte');
+          await notifier.submitUpdate();
+
+          verify(
+            () => repository.update(
+              customerId: 1,
+              code: any(named: 'code'),
+              name: any(named: 'name'),
+              priceList: any(named: 'priceList'),
+              zone: 'Norte',
+              creditLimit: any(named: 'creditLimit'),
+              creditDays: any(named: 'creditDays'),
+              salesperson: any(named: 'salesperson'),
+              status: any(named: 'status'),
+              comment: any(named: 'comment'),
+              addresses: [10],
+              contacts: [20],
+              taxpayers: ['AAA010101AAA', 'BBB010101BBB'],
+            ),
+          ).called(1);
+        },
+      );
+
+      test('unlinking sends the shorter list and never deletes the record '
+          'itself (FR-004)', () async {
+        when(
+          () => repository.get(customerId: 1),
+        ).thenAnswer((_) async => _customer(taxpayers: [_rfcA, _rfcB]));
+        stubUpdate();
+        final notifier = container.read(
+          customerFormControllerProvider(null).notifier,
+        );
+        await notifier.loadForEdit(1);
+
+        notifier.taxpayerRemoved('AAA010101AAA');
+        await notifier.submitUpdate();
+
+        final sent = verify(
+          () => repository.update(
+            customerId: 1,
+            code: any(named: 'code'),
+            name: any(named: 'name'),
+            priceList: any(named: 'priceList'),
+            zone: any(named: 'zone'),
+            creditLimit: any(named: 'creditLimit'),
+            creditDays: any(named: 'creditDays'),
+            salesperson: any(named: 'salesperson'),
+            status: any(named: 'status'),
+            comment: any(named: 'comment'),
+            addresses: any(named: 'addresses'),
+            contacts: any(named: 'contacts'),
+            taxpayers: captureAny(named: 'taxpayers'),
+          ),
+        ).captured;
+        expect(sent.single, ['BBB010101BBB']);
+        // The only write is the customer's own link list.
+        verifyNever(
+          () => repository.delete(customerId: any(named: 'customerId')),
+        );
+      });
+
+      test(
+        'create sends the links chosen before the first save (FR-007)',
+        () async {
+          when(
+            () => repository.create(
+              code: any(named: 'code'),
+              name: any(named: 'name'),
+              priceList: any(named: 'priceList'),
+              zone: any(named: 'zone'),
+              creditLimit: any(named: 'creditLimit'),
+              creditDays: any(named: 'creditDays'),
+              salesperson: any(named: 'salesperson'),
+              comment: any(named: 'comment'),
+              addresses: any(named: 'addresses'),
+              contacts: any(named: 'contacts'),
+              taxpayers: any(named: 'taxpayers'),
+            ),
+          ).thenAnswer((_) async => _customer());
+          final notifier = container.read(
+            customerFormControllerProvider(null).notifier,
+          );
+          notifier
+            ..nameChanged('Acme Corp')
+            ..priceListSelected(1, 'Retail')
+            ..addressAdded(_address10)
+            ..contactAdded(_contact20)
+            ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcA));
+
+          await notifier.submitCreate();
+
+          verify(
+            () => repository.create(
+              code: any(named: 'code'),
+              name: 'Acme Corp',
+              priceList: 1,
+              zone: any(named: 'zone'),
+              creditLimit: any(named: 'creditLimit'),
+              creditDays: any(named: 'creditDays'),
+              salesperson: any(named: 'salesperson'),
+              comment: any(named: 'comment'),
+              addresses: [10],
+              contacts: [20],
+              taxpayers: ['AAA010101AAA'],
+            ),
+          ).called(1);
+        },
+      );
+
+      test(
+        'the POS single-RFC picker replaces the whole set (research R4)',
+        () {
+          final notifier = container.read(
+            customerFormControllerProvider(null).notifier,
+          );
+          notifier
+            ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcA))
+            ..taxpayerAdded(TaxpayerRecipientListItem.fromRecipient(_rfcB))
+            ..taxpayerSelected('CCC010101CCC', 'Otra SA');
+
+          final taxpayers = container
+              .read(customerFormControllerProvider(null))
+              .taxpayers;
+          expect(taxpayers.map((t) => t.taxpayerRecipientId), ['CCC010101CCC']);
+
+          notifier.taxpayerSelected(null, '');
+          expect(
+            container.read(customerFormControllerProvider(null)).taxpayers,
+            isEmpty,
+          );
+        },
+      );
+    },
+  );
   group('the walk-in customer (046-catalog-improvements FR-021)', () {
     late ProviderContainer walkIn;
 
@@ -522,7 +565,9 @@ void main() {
     test(
       'nothing can be linked to it, and its RFCs cannot be removed',
       () async {
-        final notifier = walkIn.read(customerFormControllerProvider(null).notifier);
+        final notifier = walkIn.read(
+          customerFormControllerProvider(null).notifier,
+        );
         await notifier.loadForEdit(1);
         expect(notifier.isGenericCustomer, isTrue);
 
@@ -540,18 +585,25 @@ void main() {
     );
 
     test('a stray address can still be unlinked', () async {
-      final notifier = walkIn.read(customerFormControllerProvider(null).notifier);
+      final notifier = walkIn.read(
+        customerFormControllerProvider(null).notifier,
+      );
       await notifier.loadForEdit(1);
 
       notifier.addressRemoved(10);
 
-      expect(walkIn.read(customerFormControllerProvider(null)).addresses, isEmpty);
+      expect(
+        walkIn.read(customerFormControllerProvider(null)).addresses,
+        isEmpty,
+      );
     });
 
     test(
       'saving always sends the generic RFC alone, correcting any other',
       () async {
-        final notifier = walkIn.read(customerFormControllerProvider(null).notifier);
+        final notifier = walkIn.read(
+          customerFormControllerProvider(null).notifier,
+        );
         await notifier.loadForEdit(1);
 
         await notifier.submitUpdate();
@@ -578,7 +630,9 @@ void main() {
     );
 
     test('any other customer is not affected', () async {
-      final notifier = container.read(customerFormControllerProvider(null).notifier);
+      final notifier = container.read(
+        customerFormControllerProvider(null).notifier,
+      );
       await notifier.loadForEdit(1);
 
       expect(notifier.isGenericCustomer, isFalse);

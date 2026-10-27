@@ -6,49 +6,43 @@ import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_cont
 
 void main() {
   group('SalesOrdersFilter.fromQuery — the month default', () {
-    test(
-      'two calls with the same "today" instant, at different microseconds, '
-      'produce an equal filter — the confirmed infinite-loop trap '
-      '(research §R5)',
-      () {
-        // Regression: `SalesOrdersListController` is watched by a
-        // `@riverpod` family keyed on the whole `SalesOrdersFilter`. If
-        // `today` were used at full `DateTime.now()` precision, no two
-        // calls across separate widget rebuilds would ever construct an
-        // equal filter, so the family would never reuse a provider
-        // instance — confirmed for `PosSalesFilter` (spec 023): a widget
-        // test pumping the list screen never settled until `fromQuery`
-        // truncated `today` to a calendar date before use.
-        final first = SalesOrdersFilter.fromQuery(
-          const ListQuery(),
-          today: DateTime(2026, 8, 10, 9, 0, 0, 0),
-          isAdministrator: false,
-        );
-        final second = SalesOrdersFilter.fromQuery(
-          const ListQuery(),
-          today: DateTime(2026, 8, 10, 9, 0, 0, 999),
-          isAdministrator: false,
-        );
-        expect(first, equals(second));
-      },
-    );
+    test('two calls with the same "today" instant, at different microseconds, '
+        'produce an equal filter — the confirmed infinite-loop trap '
+        '(research §R5)', () {
+      // Regression: `SalesOrdersListController` is watched by a
+      // `@riverpod` family keyed on the whole `SalesOrdersFilter`. If
+      // `today` were used at full `DateTime.now()` precision, no two
+      // calls across separate widget rebuilds would ever construct an
+      // equal filter, so the family would never reuse a provider
+      // instance — confirmed for `PosSalesFilter` (spec 023): a widget
+      // test pumping the list screen never settled until `fromQuery`
+      // truncated `today` to a calendar date before use.
+      final first = SalesOrdersFilter.fromQuery(
+        const ListQuery(),
+        today: DateTime(2026, 8, 10, 9, 0, 0, 0),
+        isAdministrator: false,
+      );
+      final second = SalesOrdersFilter.fromQuery(
+        const ListQuery(),
+        today: DateTime(2026, 8, 10, 9, 0, 0, 999),
+        isAdministrator: false,
+      );
+      expect(first, equals(second));
+    });
 
-    test(
-      'defaults from/to to the first and last day of the calendar month '
-      'containing today',
-      () {
-        final today = DateTime(2026, 8, 10, 23, 59, 59, 999);
-        final filter = SalesOrdersFilter.fromQuery(
-          const ListQuery(),
-          today: today,
-          isAdministrator: false,
-        );
+    test('defaults from/to to the first and last day of the calendar month '
+        'containing today', () {
+      final today = DateTime(2026, 8, 10, 23, 59, 59, 999);
+      final filter = SalesOrdersFilter.fromQuery(
+        const ListQuery(),
+        today: today,
+        isAdministrator: false,
+      );
 
-        expect(filter.from, DateTime(2026, 8, 1));
-        expect(filter.to, DateTime(2026, 8, 31));
-        expect(filter.isDefaultRange(today), isTrue);
-      },
-    );
+      expect(filter.from, DateTime(2026, 8, 1));
+      expect(filter.to, DateTime(2026, 8, 31));
+      expect(filter.isDefaultRange(today), isTrue);
+    });
 
     test('an explicit date-from/date-to facet overrides the default', () {
       final filter = SalesOrdersFilter.fromQuery(
@@ -66,31 +60,43 @@ void main() {
       expect(filter.isDefaultRange(DateTime(2026, 8, 10)), isFalse);
     });
 
-    test(
-      'an unparseable date facet degrades to the month default rather than '
-      'throwing',
-      () {
-        final filter = SalesOrdersFilter.fromQuery(
-          const ListQuery(facets: {'date-from': ['not-a-date']}),
-          today: DateTime(2026, 8, 10),
-          isAdministrator: false,
-        );
-        expect(filter.from, DateTime(2026, 8, 1));
-      },
-    );
-
-    test('an unrecognized status name degrades to null rather than throwing', () {
+    test('an unparseable date facet degrades to the month default rather than '
+        'throwing', () {
       final filter = SalesOrdersFilter.fromQuery(
-        const ListQuery(facets: {'status': ['not-a-status']}),
+        const ListQuery(
+          facets: {
+            'date-from': ['not-a-date'],
+          },
+        ),
         today: DateTime(2026, 8, 10),
         isAdministrator: false,
       );
-      expect(filter.status, isNull);
+      expect(filter.from, DateTime(2026, 8, 1));
     });
+
+    test(
+      'an unrecognized status name degrades to null rather than throwing',
+      () {
+        final filter = SalesOrdersFilter.fromQuery(
+          const ListQuery(
+            facets: {
+              'status': ['not-a-status'],
+            },
+          ),
+          today: DateTime(2026, 8, 10),
+          isAdministrator: false,
+        );
+        expect(filter.status, isNull);
+      },
+    );
 
     test('a recognized status name decodes', () {
       final filter = SalesOrdersFilter.fromQuery(
-        const ListQuery(facets: {'status': ['draft']}),
+        const ListQuery(
+          facets: {
+            'status': ['draft'],
+          },
+        ),
         today: DateTime(2026, 8, 10),
         isAdministrator: false,
       );
@@ -189,5 +195,4 @@ void main() {
       expect(filter.activeFilterCount(today), 0);
     });
   });
-
 }

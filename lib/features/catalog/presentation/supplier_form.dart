@@ -108,7 +108,11 @@ class SupplierFormPanelState extends ConsumerState<SupplierForm> {
           .read(supplierFormControllerProvider(widget.supplierId).notifier)
           .loadForEdit(widget.supplierId!);
       if (mounted) {
-        setState(() => _snapshot = ref.read(supplierFormControllerProvider(widget.supplierId)));
+        setState(
+          () => _snapshot = ref.read(
+            supplierFormControllerProvider(widget.supplierId),
+          ),
+        );
       }
     });
   }
@@ -120,8 +124,12 @@ class SupplierFormPanelState extends ConsumerState<SupplierForm> {
 
   @override
   Widget build(BuildContext context) {
-    final formState = ref.watch(supplierFormControllerProvider(widget.supplierId));
-    final controller = ref.read(supplierFormControllerProvider(widget.supplierId).notifier);
+    final formState = ref.watch(
+      supplierFormControllerProvider(widget.supplierId),
+    );
+    final controller = ref.read(
+      supplierFormControllerProvider(widget.supplierId).notifier,
+    );
     final access = ref.watch(accessControlProvider);
     final canCreate = access.can(SystemObject.suppliers, AccessRight.create);
     final canUpdate = access.can(SystemObject.suppliers, AccessRight.update);

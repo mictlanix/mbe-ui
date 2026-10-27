@@ -114,9 +114,9 @@ void main() {
       // 3. The warehouse a line defaults to (same rule
       // `sales_orders_flow_test.dart` and `pos_counter_sale_flow_test.dart`
       // both confirm live: mbe-api does not fill this in on its own).
-      final pointSale = await PointSaleRepositoryImpl(
-        dio,
-      ).get(pointSaleId: opened.pointSale!); // always set: a real back-office order
+      final pointSale = await PointSaleRepositoryImpl(dio).get(
+        pointSaleId: opened.pointSale!,
+      ); // always set: a real back-office order
       final warehouse = pointSale.warehouseId;
 
       // 4. Discover one sellable product from that warehouse.

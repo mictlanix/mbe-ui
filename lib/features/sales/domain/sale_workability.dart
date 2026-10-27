@@ -1,5 +1,6 @@
 import 'package:mbe_ui/features/sales/domain/entities/open_sale.dart';
-import 'package:mbe_ui/features/sales/domain/entities/sale.dart' show SaleStatus;
+import 'package:mbe_ui/features/sales/domain/entities/sale.dart'
+    show SaleStatus;
 import 'package:mbe_ui/features/sales/domain/money.dart';
 
 /// Whether a listed sale can still be worked on, and therefore whether its

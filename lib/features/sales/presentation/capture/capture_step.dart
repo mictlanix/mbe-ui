@@ -195,7 +195,12 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
     if (widget.showWarehouse) {
       ref
           .read(productStockCacheProvider.notifier)
-          .update((cache) => {...cache, result.product: ProductStock.fromLookup(result)});
+          .update(
+            (cache) => {
+              ...cache,
+              result.product: ProductStock.fromLookup(result),
+            },
+          );
     }
     // The product table's tax rate, cached for the line's tax picker
     // (FR-038b) — the lookup is the only payload that carries it. Kept for
@@ -492,9 +497,13 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
               children: [
                 Flexible(
                   child: Text(
-                    l10n.posCaptureUnknownStock(stockGate.unknownLineIds.length),
+                    l10n.posCaptureUnknownStock(
+                      stockGate.unknownLineIds.length,
+                    ),
                     key: const Key('capture_unknown_stock_note'),
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
                 SizedBox(width: spacing.sm),

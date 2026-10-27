@@ -72,7 +72,10 @@ class DestinationCard extends ConsumerStatefulWidget {
   /// Assigns a sale line to this destination for the first time
   /// (`POST .../lines`, mbe-api#163) — called only for a line
   /// [Destination.lines] does not yet carry.
-  final Future<void> Function({required int saleLineId, required String quantity})?
+  final Future<void> Function({
+    required int saleLineId,
+    required String quantity,
+  })?
   onAssign;
 
   /// Adjusts a line this destination already carries (`PUT .../lines/{id}`)
@@ -107,7 +110,9 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
   final Map<int, String> _lineErrors = {};
 
   bool get _interactive =>
-      widget.onAssign != null && widget.onAdjust != null && widget.onDrop != null;
+      widget.onAssign != null &&
+      widget.onAdjust != null &&
+      widget.onDrop != null;
 
   @override
   void dispose() {
@@ -123,8 +128,10 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
   /// FR-021's clamp: the destination could hold everything [line] still
   /// owes plus whatever it already holds (research R7) — the same figure
   /// `update_line`/`add_line` validate server-side.
-  String _ceilingFor(LineDistribution line) =>
-      addAmounts(line.claimable, line.perDestination[widget.destination.id] ?? '0');
+  String _ceilingFor(LineDistribution line) => addAmounts(
+    line.claimable,
+    line.perDestination[widget.destination.id] ?? '0',
+  );
 
   /// The controller for [line], created on first use and re-synced from the
   /// latest server value and ceiling on every build (research R7's `sync`
@@ -178,8 +185,9 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
       if (!mounted) return false;
       final l10n = AppLocalizations.of(context)!;
       setState(() {
-        _lineErrors[saleLineId] =
-            l10n.posDeliveryAssignmentRefused(e.serverMessage ?? l10n.errorServerGeneric);
+        _lineErrors[saleLineId] = l10n.posDeliveryAssignmentRefused(
+          e.serverMessage ?? l10n.errorServerGeneric,
+        );
       });
       return false;
     }
@@ -287,7 +295,11 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
     );
   }
 
-  Widget _identity(BuildContext context, AppLocalizations l10n, AppFormatters fmt) {
+  Widget _identity(
+    BuildContext context,
+    AppLocalizations l10n,
+    AppFormatters fmt,
+  ) {
     final theme = Theme.of(context);
     final destination = widget.destination;
     final subtitle = [
@@ -338,7 +350,10 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.posDestinationLinesTitle, style: theme.typeRoles.metricLabel),
+          Text(
+            l10n.posDestinationLinesTitle,
+            style: theme.typeRoles.metricLabel,
+          ),
           for (final line in widget.distribution)
             _interactive
                 ? _assignableRow(context, l10n, fmt, line)
@@ -352,13 +367,16 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
   /// that doesn't need them) — the quantity this destination takes, and
   /// nothing to interact with. [DestinationLineRow] (spec 030 research R11)
   /// is the same shape `DestinationCounterRow`'s expanded body draws.
-  Widget _readOnlyRow(BuildContext context, AppFormatters fmt, LineDistribution line) =>
-      DestinationLineRow(
-        key: Key('destination_line_${widget.destination.id}_${line.saleLineId}'),
-        productName: line.productName,
-        quantity: line.perDestination[widget.destination.id] ?? '0',
-        fmt: fmt,
-      );
+  Widget _readOnlyRow(
+    BuildContext context,
+    AppFormatters fmt,
+    LineDistribution line,
+  ) => DestinationLineRow(
+    key: Key('destination_line_${widget.destination.id}_${line.saleLineId}'),
+    productName: line.productName,
+    quantity: line.perDestination[widget.destination.id] ?? '0',
+    fmt: fmt,
+  );
 
   /// Contract §4.3: product name and what the sale still owes, an
   /// "elsewhere" chip when the counter holds some of it, and the stepper
@@ -403,7 +421,9 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
                         Text(
-                          l10n.posDistributionOrdered(fmt.field.quantity(line.ordered)),
+                          l10n.posDistributionOrdered(
+                            fmt.field.quantity(line.ordered),
+                          ),
                           style: theme.typeRoles.metricLabel,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -411,7 +431,9 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
                         if (!isZeroAmount(line.atCounter))
                           _chip(
                             context,
-                            l10n.posDestinationCounterChip(fmt.field.quantity(line.atCounter)),
+                            l10n.posDestinationCounterChip(
+                              fmt.field.quantity(line.atCounter),
+                            ),
                           ),
                       ],
                     ),
@@ -439,7 +461,10 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
           if (error != null)
             Padding(
               padding: EdgeInsets.only(top: spacing.xxs),
-              child: Text(error, style: TextStyle(color: theme.colorScheme.error)),
+              child: Text(
+                error,
+                style: TextStyle(color: theme.colorScheme.error),
+              ),
             ),
         ],
       ),

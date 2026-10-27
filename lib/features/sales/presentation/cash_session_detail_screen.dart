@@ -63,7 +63,10 @@ class _DetailBody extends ConsumerWidget {
     final fmt = ref.watch(formattersProvider);
     final status = cashSessionStatusOf(session, today: DateTime.now());
     final access = ref.watch(accessControlProvider);
-    final canClose = access.can(SystemObject.cashSessionClose, AccessRight.update);
+    final canClose = access.can(
+      SystemObject.cashSessionClose,
+      AccessRight.update,
+    );
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -81,10 +84,16 @@ class _DetailBody extends ConsumerWidget {
                 CashSessionStatusChip(status: status),
               ),
               FormGridChild(
-                _LabeledText(l10n.cashSessionDrawerFieldLabel, session.cashDrawerName),
+                _LabeledText(
+                  l10n.cashSessionDrawerFieldLabel,
+                  session.cashDrawerName,
+                ),
               ),
               FormGridChild(
-                _LabeledText(l10n.cashSessionCashierFieldLabel, session.cashierName),
+                _LabeledText(
+                  l10n.cashSessionCashierFieldLabel,
+                  session.cashierName,
+                ),
               ),
               FormGridChild(
                 _LabeledText(
@@ -192,7 +201,10 @@ class _PaymentsByMethodSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.cashSessionPaymentsByMethodLabel, style: Theme.of(context).textTheme.titleSmall),
+        Text(
+          l10n.cashSessionPaymentsByMethodLabel,
+          style: Theme.of(context).textTheme.titleSmall,
+        ),
         for (final total in session.paymentsByMethod)
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 2),
@@ -226,7 +238,9 @@ class _CloseSection extends ConsumerWidget {
     // before this widget ever mounts (research.md §19). Guarded by
     // `cashSessionId == null` so it never re-fires once loaded.
     if (formState.cashSessionId == null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => controller.loadSession(session));
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => controller.loadSession(session),
+      );
     }
 
     return Column(
@@ -243,7 +257,11 @@ class _CloseSection extends ConsumerWidget {
                   type: 'error',
                 ),
                 if (formState.errorDetail != null)
-                  FieldError(loc: const [], msg: formState.errorDetail!, type: 'error'),
+                  FieldError(
+                    loc: const [],
+                    msg: formState.errorDetail!,
+                    type: 'error',
+                  ),
               ]),
             ),
           ),
@@ -404,7 +422,11 @@ String _localizeCloseFormError(AppLocalizations l10n, String code) {
   }
 }
 
-String _differenceDisplay(AppLocalizations l10n, String difference, AppFormatters fmt) {
+String _differenceDisplay(
+  AppLocalizations l10n,
+  String difference,
+  AppFormatters fmt,
+) {
   final amount = num.tryParse(difference) ?? 0;
   final formatted = fmt.display.currency(difference);
   if (amount > 0) return '$formatted (${l10n.cashSessionDifferenceOver})';

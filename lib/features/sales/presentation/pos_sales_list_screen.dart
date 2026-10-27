@@ -107,17 +107,25 @@ class PosSalesListScreen extends ConsumerWidget {
     Future<void> startNewSale() async {
       final messenger = ScaffoldMessenger.of(context);
       final router = GoRouter.of(context);
-      final current = await ref.refresh(currentSessionControllerProvider.future);
+      final current = await ref.refresh(
+        currentSessionControllerProvider.future,
+      );
       switch (current.state) {
         case SessionState.open:
           await router.push('$_posPath/new');
         case SessionState.stale:
-          messenger.showSnackBar(SnackBar(content: Text(l10n.posSessionExpiredRedirect)));
+          messenger.showSnackBar(
+            SnackBar(content: Text(l10n.posSessionExpiredRedirect)),
+          );
           // Pushed, not `go`: the close screen is a top-level route with no
           // side navigation, so replacing the stack left no way back.
-          await router.push('/sales/cash-sessions/${current.session!.cashSessionId}');
+          await router.push(
+            '/sales/cash-sessions/${current.session!.cashSessionId}',
+          );
         case SessionState.none:
-          messenger.showSnackBar(SnackBar(content: Text(l10n.posSalesNewSaleBlockedNoSession)));
+          messenger.showSnackBar(
+            SnackBar(content: Text(l10n.posSalesNewSaleBlockedNoSession)),
+          );
       }
     }
 
@@ -292,7 +300,11 @@ class PosSalesListScreen extends ConsumerWidget {
                             .read(documentActionsProvider)
                             .preview(
                               context,
-                              saleTicketRef(l10n, id: sale.id, serial: sale.serial),
+                              saleTicketRef(
+                                l10n,
+                                id: sale.id,
+                                serial: sale.serial,
+                              ),
                             ),
                       ),
                   ],
@@ -424,11 +436,14 @@ class _PosSalesFiltersPanel extends StatelessWidget {
 
 /// The ticket of a sale, titled by its folio, or by its id padded as mbe-api
 /// pads the file name (`ticket-00000007.pdf`) while it has none yet.
-DocumentRef saleTicketRef(AppLocalizations l10n, {required int id, int? serial}) =>
-    DocumentRef(
-      kind: DocumentKind.saleTicket,
-      recordId: id,
-      title: l10n.documentTicketTitle(
-        serial?.toString() ?? id.toString().padLeft(8, '0'),
-      ),
-    );
+DocumentRef saleTicketRef(
+  AppLocalizations l10n, {
+  required int id,
+  int? serial,
+}) => DocumentRef(
+  kind: DocumentKind.saleTicket,
+  recordId: id,
+  title: l10n.documentTicketTitle(
+    serial?.toString() ?? id.toString().padLeft(8, '0'),
+  ),
+);

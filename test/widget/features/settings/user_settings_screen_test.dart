@@ -9,13 +9,18 @@ import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/settings/presentation/user_settings_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-Future<void> _pump(WidgetTester tester, {Map<String, Object> prefs = const {}}) async {
+Future<void> _pump(
+  WidgetTester tester, {
+  Map<String, Object> prefs = const {},
+}) async {
   SharedPreferences.setMockInitialValues(prefs);
   final sharedPreferences = await SharedPreferences.getInstance();
   await tester.pumpWidget(
     ProviderScope(
       retry: (_, _) => null,
-      overrides: [sharedPreferencesProvider.overrideWithValue(sharedPreferences)],
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(sharedPreferences),
+      ],
       child: MaterialApp(
         locale: const Locale('en'),
         supportedLocales: AppLocalizations.supportedLocales,
@@ -32,9 +37,18 @@ void main() {
     testWidgets('renders all three controls with no RBAC gate', (tester) async {
       await _pump(tester);
 
-      expect(find.byKey(const Key('settings_appearance_selector')), findsOneWidget);
-      expect(find.byKey(const Key('settings_text_size_selector')), findsOneWidget);
-      expect(find.byKey(const Key('settings_language_selector')), findsOneWidget);
+      expect(
+        find.byKey(const Key('settings_appearance_selector')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('settings_text_size_selector')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('settings_language_selector')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('AppBar.actions is empty (constitution §VI)', (tester) async {
@@ -44,31 +58,34 @@ void main() {
       expect(appBar.actions, anyOf(isNull, isEmpty));
     });
 
-    testWidgets('tapping Dark calls setThemeMode and updates immediately (FR-020)', (
+    testWidgets(
+      'tapping Dark calls setThemeMode and updates immediately (FR-020)',
+      (tester) async {
+        await _pump(tester);
+
+        await tester.tap(find.text('Dark'));
+        await tester.pumpAndSettle();
+
+        final context = tester.element(find.byType(UserSettingsScreen));
+        final state = ProviderScope.containerOf(
+          context,
+        ).read(userDisplayPreferencesControllerProvider);
+        expect(state.themeMode, ThemeMode.dark);
+      },
+    );
+
+    testWidgets('tapping a text-size level calls setTextSizeLevel', (
       tester,
     ) async {
-      await _pump(tester);
-
-      await tester.tap(find.text('Dark'));
-      await tester.pumpAndSettle();
-
-      final context = tester.element(find.byType(UserSettingsScreen));
-      final state = ProviderScope.containerOf(context).read(
-        userDisplayPreferencesControllerProvider,
-      );
-      expect(state.themeMode, ThemeMode.dark);
-    });
-
-    testWidgets('tapping a text-size level calls setTextSizeLevel', (tester) async {
       await _pump(tester);
 
       await tester.tap(find.text('Extra large'));
       await tester.pumpAndSettle();
 
       final context = tester.element(find.byType(UserSettingsScreen));
-      final state = ProviderScope.containerOf(context).read(
-        userDisplayPreferencesControllerProvider,
-      );
+      final state = ProviderScope.containerOf(
+        context,
+      ).read(userDisplayPreferencesControllerProvider);
       expect(state.textSizeLevel, TextSizeLevel.extraLarge);
     });
 
@@ -79,14 +96,19 @@ void main() {
       await tester.pumpAndSettle();
 
       final context = tester.element(find.byType(UserSettingsScreen));
-      final state = ProviderScope.containerOf(context).read(
-        userDisplayPreferencesControllerProvider,
-      );
+      final state = ProviderScope.containerOf(
+        context,
+      ).read(userDisplayPreferencesControllerProvider);
       expect(state.localeOverride, const Locale('es'));
     });
 
-    testWidgets('a previously-stored preference is reflected on open', (tester) async {
-      await _pump(tester, prefs: {'theme_mode': 'dark', 'text_size_level': 'large'});
+    testWidgets('a previously-stored preference is reflected on open', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        prefs: {'theme_mode': 'dark', 'text_size_level': 'large'},
+      );
 
       final appearance = tester.widget<SegmentedButton<ThemeMode>>(
         find.byKey(const Key('settings_appearance_selector')),

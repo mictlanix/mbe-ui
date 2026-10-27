@@ -16,7 +16,8 @@ class _PaymentReferenceDialog extends StatefulWidget {
   const _PaymentReferenceDialog();
 
   @override
-  State<_PaymentReferenceDialog> createState() => _PaymentReferenceDialogState();
+  State<_PaymentReferenceDialog> createState() =>
+      _PaymentReferenceDialogState();
 }
 
 class _PaymentReferenceDialogState extends State<_PaymentReferenceDialog> {

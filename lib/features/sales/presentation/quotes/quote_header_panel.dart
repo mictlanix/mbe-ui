@@ -110,9 +110,9 @@ class _QuoteHeaderPanelState extends ConsumerState<QuoteHeaderPanel> {
   /// typed-but-unconfirmed text, through the prompt the screen already shows
   /// before it confirms. "Seguir editando" cancels.
   Future<void> _viewDocument() async {
-    final title = AppLocalizations.of(context)!.documentSalesQuoteTitle(
-      widget.sale.id.toString().padLeft(8, '0'),
-    );
+    final title = AppLocalizations.of(
+      context,
+    )!.documentSalesQuoteTitle(widget.sale.id.toString().padLeft(8, '0'));
     final quoteId = widget.sale.id;
     final proceed = await resolveUnconfirmedEdits(
       context,
@@ -182,14 +182,15 @@ class _QuoteHeaderPanelState extends ConsumerState<QuoteHeaderPanel> {
     }
   }
 
-  String _statusLabel(AppLocalizations l10n, SaleStatus status) => switch (status) {
-    SaleStatus.draft => l10n.salesQuoteStatusDraft,
-    SaleStatus.completed => l10n.salesQuoteStatusCompleted,
-    SaleStatus.cancelled => l10n.salesQuoteStatusCancelled,
-    // A quote never reaches `paid` (data-model.md §1) — this arm exists
-    // only so the switch is exhaustive.
-    SaleStatus.paid => l10n.salesQuoteStatusCompleted,
-  };
+  String _statusLabel(AppLocalizations l10n, SaleStatus status) =>
+      switch (status) {
+        SaleStatus.draft => l10n.salesQuoteStatusDraft,
+        SaleStatus.completed => l10n.salesQuoteStatusCompleted,
+        SaleStatus.cancelled => l10n.salesQuoteStatusCancelled,
+        // A quote never reaches `paid` (data-model.md §1) — this arm exists
+        // only so the switch is exhaustive.
+        SaleStatus.paid => l10n.salesQuoteStatusCompleted,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -212,7 +213,10 @@ class _QuoteHeaderPanelState extends ConsumerState<QuoteHeaderPanel> {
             // FR-007-equivalent (order_header_panel.dart): the disclosed
             // group reads as a group, not as more of the same row.
             if (_expanded) ...[
-              Divider(height: spacing.lg, color: theme.colorScheme.outlineVariant),
+              Divider(
+                height: spacing.lg,
+                color: theme.colorScheme.outlineVariant,
+              ),
               _disclosedGroup(context, canEdit),
             ],
             if (_error != null) ...[
@@ -380,7 +384,8 @@ class _QuoteHeaderPanelState extends ConsumerState<QuoteHeaderPanel> {
         key: const Key('sales_quote_more_actions_button'),
         icon: const Icon(Icons.more_vert),
         tooltip: l10n.salesQuoteMoreActionsTooltip,
-        onPressed: () => controller.isOpen ? controller.close() : controller.open(),
+        onPressed: () =>
+            controller.isOpen ? controller.close() : controller.open(),
       ),
     );
   }
@@ -415,8 +420,9 @@ class _QuoteHeaderPanelState extends ConsumerState<QuoteHeaderPanel> {
 
 /// Same shared keys `order_header_panel.dart`'s own `_currencyLabel` reads
 /// (`currencyMxnLabel`/`currencyUsdLabel`/`currencyEurLabel`).
-String _currencyLabel(AppLocalizations l10n, Currency currency) => switch (currency) {
-  Currency.mxn => l10n.currencyMxnLabel,
-  Currency.usd => l10n.currencyUsdLabel,
-  Currency.eur => l10n.currencyEurLabel,
-};
+String _currencyLabel(AppLocalizations l10n, Currency currency) =>
+    switch (currency) {
+      Currency.mxn => l10n.currencyMxnLabel,
+      Currency.usd => l10n.currencyUsdLabel,
+      Currency.eur => l10n.currencyEurLabel,
+    };

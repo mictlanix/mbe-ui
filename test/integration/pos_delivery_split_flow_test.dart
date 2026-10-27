@@ -149,7 +149,11 @@ void main() {
         amount: confirmed.balance!, // always set: a real register sale
       );
       final paid = await salesOrders.getById(saleId: confirmed.id);
-      expect(paid.isPaid, isTrue, reason: 'delivery runs after payment (D-002)');
+      expect(
+        paid.isPaid,
+        isTrue,
+        reason: 'delivery runs after payment (D-002)',
+      );
 
       // ── Two destinations ───────────────────────────────────────────────
       // The customer needs addresses to ship to; creating and linking them is
@@ -208,11 +212,11 @@ void main() {
 
       // ── SC-005, asserted from what the server actually stored ──────────
       final recorded = await deliveries.listForSale(salesOrder: paid.id);
-      expect(
-        recorded.map((d) => d.id).toSet(),
-        {destinationOne.id, destinationTwo.id, remainder.id},
-        reason: 'all three destinations belong to this sale',
-      );
+      expect(recorded.map((d) => d.id).toSet(), {
+        destinationOne.id,
+        destinationTwo.id,
+        remainder.id,
+      }, reason: 'all three destinations belong to this sale');
 
       final distribution = distributionFor(sale: paid, destinations: recorded);
       for (final line in distribution) {
@@ -227,17 +231,13 @@ void main() {
       }
 
       // And the split line really is spread across both addresses.
-      final split = distribution.firstWhere((d) => d.saleLineId == splitLine.id);
+      final split = distribution.firstWhere(
+        (d) => d.saleLineId == splitLine.id,
+      );
       expect(split.perDestination[destinationOne.id], isNotNull);
       expect(split.perDestination[destinationTwo.id], isNotNull);
-      expect(
-        compareAmounts(split.perDestination[destinationOne.id]!, '2'),
-        0,
-      );
-      expect(
-        compareAmounts(split.perDestination[destinationTwo.id]!, '1'),
-        0,
-      );
+      expect(compareAmounts(split.perDestination[destinationOne.id]!, '2'), 0);
+      expect(compareAmounts(split.perDestination[destinationTwo.id]!, '1'), 0);
     },
     skip: !_canRun,
     timeout: const Timeout(Duration(minutes: 5)),

@@ -113,7 +113,9 @@ class OpenSessionFormController extends _$OpenSessionFormController {
       return;
     }
 
-    if (!ref.read(accessControlProvider).can(SystemObject.pos, AccessRight.create)) {
+    if (!ref
+        .read(accessControlProvider)
+        .can(SystemObject.pos, AccessRight.create)) {
       state = state.copyWith(
         error: OpenSessionFormErrorCode.openPermissionDenied,
         errorDetail: null,
@@ -161,7 +163,10 @@ class OpenSessionFormController extends _$OpenSessionFormController {
           errorDetail: null,
         );
       } else {
-        state = state.copyWith(submitting: false, fieldErrors: serverFieldErrors);
+        state = state.copyWith(
+          submitting: false,
+          fieldErrors: serverFieldErrors,
+        );
       }
       return;
     }
@@ -173,7 +178,9 @@ class OpenSessionFormController extends _$OpenSessionFormController {
       var cashierBusy = false;
       int? blockingSessionId;
       try {
-        final current = await ref.read(cashSessionRepositoryProvider).getCurrent();
+        final current = await ref
+            .read(cashSessionRepositoryProvider)
+            .getCurrent();
         final session = current.session;
         if (session != null) {
           cashierBusy = true;

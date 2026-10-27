@@ -26,8 +26,7 @@ class MockAuthRepository extends Mock implements AuthRepository {}
 
 class MockUserRepository extends Mock implements UserRepository {}
 
-class MockUserProfileRepository extends Mock
-    implements UserProfileRepository {}
+class MockUserProfileRepository extends Mock implements UserProfileRepository {}
 
 class MockTokenStorage extends Mock implements TokenStorage {}
 
@@ -336,16 +335,15 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
 
     verify(
-      () =>
-          userRepository.list(
-            search: null,
-            // spec 035 FR-001/FR-002: an unmodified status facet now
-            // defaults to Active, not "no filter".
-            status: EntityStatus.active,
-            profileId: any(named: 'profileId'),
-            skip: 20,
-            limit: 20,
-          ),
+      () => userRepository.list(
+        search: null,
+        // spec 035 FR-001/FR-002: an unmodified status facet now
+        // defaults to Active, not "no filter".
+        status: EntityStatus.active,
+        profileId: any(named: 'profileId'),
+        skip: 20,
+        limit: 20,
+      ),
     ).called(1);
   });
 
@@ -485,69 +483,64 @@ void main() {
       },
     );
 
-    testWidgets(
-      'a profile facet in the URL narrows the list, and the picker '
-      "resolves the id to the profile's name, not the raw id (FR-028)",
-      (tester) async {
-        when(
-          () => userRepository.list(
-            search: any(named: 'search'),
-            status: any(named: 'status'),
-            profileId: 5,
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
-        ).thenAnswer(
-          (_) async => UserListResult(items: [_testUsers[1]], total: 1),
-        );
+    testWidgets('a profile facet in the URL narrows the list, and the picker '
+        "resolves the id to the profile's name, not the raw id (FR-028)", (
+      tester,
+    ) async {
+      when(
+        () => userRepository.list(
+          search: any(named: 'search'),
+          status: any(named: 'status'),
+          profileId: 5,
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async => UserListResult(items: [_testUsers[1]], total: 1),
+      );
 
-        await pumpScreen(
-          tester,
-          signedInAs: _adminUser,
-          query: const ListQuery(
-            facets: {
-              'profile': ['5'],
-            },
-          ),
-        );
+      await pumpScreen(
+        tester,
+        signedInAs: _adminUser,
+        query: const ListQuery(
+          facets: {
+            'profile': ['5'],
+          },
+        ),
+      );
 
-        verify(
-          () => userRepository.list(
-            search: any(named: 'search'),
-            status: any(named: 'status'),
-            profileId: 5,
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
-        ).called(greaterThanOrEqualTo(1));
+      verify(
+        () => userRepository.list(
+          search: any(named: 'search'),
+          status: any(named: 'status'),
+          profileId: 5,
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).called(greaterThanOrEqualTo(1));
 
-        await tester.tap(find.byKey(const Key('users_filter_button')));
-        await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('users_filter_button')));
+      await tester.pumpAndSettle();
 
-        final picker = find.byKey(const Key('users_filter_profile'));
-        expect(picker, findsOneWidget);
-        final field = tester.widget<TextFormField>(
-          find.descendant(of: picker, matching: find.byType(TextFormField)),
-        );
-        expect(field.controller?.text ?? field.initialValue, 'Cashier');
-      },
-    );
+      final picker = find.byKey(const Key('users_filter_profile'));
+      expect(picker, findsOneWidget);
+      final field = tester.widget<TextFormField>(
+        find.descendant(of: picker, matching: find.byType(TextFormField)),
+      );
+      expect(field.controller?.text ?? field.initialValue, 'Cashier');
+    });
 
-    testWidgets(
-      'omits the profile filter for a non-administrator, since the '
-      'picker itself calls an administrator-only endpoint (FR-034)',
-      (tester) async {
-        await pumpScreen(tester, signedInAs: _limitedUser);
+    testWidgets('omits the profile filter for a non-administrator, since the '
+        'picker itself calls an administrator-only endpoint (FR-034)', (
+      tester,
+    ) async {
+      await pumpScreen(tester, signedInAs: _limitedUser);
 
-        await tester.tap(find.byKey(const Key('users_filter_button')));
-        await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('users_filter_button')));
+      await tester.pumpAndSettle();
 
-        expect(
-          find.byKey(const Key('users_filter_profile')),
-          findsNothing,
-        );
-      },
-    );
+      expect(find.byKey(const Key('users_filter_profile')), findsNothing);
+    });
 
     testWidgets('clearing filters removes the profile facet alongside status', (
       tester,

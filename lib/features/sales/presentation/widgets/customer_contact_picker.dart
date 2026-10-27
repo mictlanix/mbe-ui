@@ -33,7 +33,8 @@ class _CustomerContactPicker extends ConsumerStatefulWidget {
       _CustomerContactPickerState();
 }
 
-class _CustomerContactPickerState extends ConsumerState<_CustomerContactPicker> {
+class _CustomerContactPickerState
+    extends ConsumerState<_CustomerContactPicker> {
   bool _linking = false;
 
   Future<void> _createAndLink(List<Contact> existing) async {
@@ -59,7 +60,9 @@ class _CustomerContactPickerState extends ConsumerState<_CustomerContactPicker> 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final customer = ref.watch(saleCustomerControllerProvider(widget.customerId));
+    final customer = ref.watch(
+      saleCustomerControllerProvider(widget.customerId),
+    );
 
     return AlertDialog(
       title: Text(l10n.posDeliveryContactTitle),
@@ -81,7 +84,8 @@ class _CustomerContactPickerState extends ConsumerState<_CustomerContactPicker> 
                             : Text(contact.preferredPhone!),
                         onTap: _linking
                             ? null
-                            : () => Navigator.of(context).pop(contact.contactId),
+                            : () =>
+                                  Navigator.of(context).pop(contact.contactId),
                       ),
                   ],
                 ),

@@ -144,7 +144,10 @@ class DeliveryController extends _$DeliveryController {
     final existing = state.value ?? const <Destination>[];
     final lines = existing.isEmpty
         ? [
-            for (final line in distributionFor(sale: sale, destinations: existing))
+            for (final line in distributionFor(
+              sale: sale,
+              destinations: existing,
+            ))
               if (compareAmounts(line.claimable, '0') > 0)
                 DestinationLineRequest(
                   salesOrderDetail: line.saleLineId,
@@ -273,7 +276,11 @@ class DeliveryController extends _$DeliveryController {
   }) => _tracked(() async {
     final updated = await ref
         .read(deliveryOrderRepositoryProvider)
-        .updateLine(destinationId: destinationId, lineId: lineId, quantity: quantity);
+        .updateLine(
+          destinationId: destinationId,
+          lineId: lineId,
+          quantity: quantity,
+        );
     return _replace(updated);
   });
 

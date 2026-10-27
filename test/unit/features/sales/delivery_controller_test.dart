@@ -87,7 +87,11 @@ Customer _customer() => const Customer(
   priceList: PriceListRef(id: 1, name: 'Mostrador'),
   status: EntityStatus.active,
   addresses: [
-    AddressListItem(addressId: 11, label: 'Destino uno', type: AddressType.business),
+    AddressListItem(
+      addressId: 11,
+      label: 'Destino uno',
+      type: AddressType.business,
+    ),
   ],
 );
 
@@ -151,7 +155,10 @@ void main() {
     "the first destination's create carries every line's claimable quantity",
     () async {
       final sale = _sale(
-        lines: [_line(id: 5, quantity: '10'), _line(id: 6, quantity: '4')],
+        lines: [
+          _line(id: 5, quantity: '10'),
+          _line(id: 6, quantity: '4'),
+        ],
       );
       container = containerFor(sale);
       when(
@@ -213,108 +220,102 @@ void main() {
       ).captured;
       expect(captured, hasLength(1));
       final lines = captured.single as List<DestinationLineRequest>;
-      expect(
-        lines.map((l) => (l.salesOrderDetail, l.quantity)),
-        [(5, '10'), (6, '4')],
-      );
-    },
-  );
-
-  test(
-    'confirm() precedes the first delivery-order create — the sale is still '
-    'draft at that point (spec 036 R1)',
-    () async {
-      final sale = _sale(lines: [_line(id: 5, quantity: '10')]);
-      container = containerFor(sale);
-      when(
-        () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
-      ).thenAnswer((_) async => const []);
-      when(
-        () => deliveries.create(
-          salesOrder: any(named: 'salesOrder'),
-          fulfillmentType: any(named: 'fulfillmentType'),
-          shipTo: any(named: 'shipTo'),
-          contact: any(named: 'contact'),
-          date: any(named: 'date'),
-          comment: any(named: 'comment'),
-          lines: any(named: 'lines'),
-        ),
-      ).thenAnswer((_) async => _created(lines: const []));
-
-      await container.read(deliveryControllerProvider(sale).future);
-      await container
-          .read(deliveryControllerProvider(sale).notifier)
-          .addDestination(shipTo: 11);
-
-      verifyInOrder([
-        () => salesOrders.confirm(saleId: 42),
-        () => deliveries.create(
-              salesOrder: any(named: 'salesOrder'),
-              fulfillmentType: any(named: 'fulfillmentType'),
-              shipTo: any(named: 'shipTo'),
-              contact: any(named: 'contact'),
-              date: any(named: 'date'),
-              comment: any(named: 'comment'),
-              lines: any(named: 'lines'),
-            ),
+      expect(lines.map((l) => (l.salesOrderDetail, l.quantity)), [
+        (5, '10'),
+        (6, '4'),
       ]);
-      // The ship-to copy is for back-office orders only; the register's
-      // sale goes straight to confirm, as before.
-      verifyNever(
-        () => salesOrders.updateHeader(
-          saleId: any(named: 'saleId'),
-          shipTo: any(named: 'shipTo'),
-        ),
-      );
     },
   );
 
-  test(
-    'a second destination still sends an explicit empty list, unchanged '
-    '(FR-025)',
-    () async {
-      final sale = _sale(lines: [_line(id: 5, quantity: '10')]);
-      container = containerFor(sale);
-      when(
-        () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
-      ).thenAnswer((_) async => [_created(lines: const [])]);
-      when(
-        () => deliveries.create(
-          salesOrder: any(named: 'salesOrder'),
-          fulfillmentType: any(named: 'fulfillmentType'),
-          shipTo: any(named: 'shipTo'),
-          contact: any(named: 'contact'),
-          date: any(named: 'date'),
-          comment: any(named: 'comment'),
-          lines: any(named: 'lines'),
-        ),
-      ).thenAnswer(
-        (_) async => Destination(
-          id: 501,
-          fulfillmentType: FulfillmentType.delivery,
-          shipTo: 12,
-          status: DeliveryOrderStatus.draft,
-        ),
-      );
+  test('confirm() precedes the first delivery-order create — the sale is still '
+      'draft at that point (spec 036 R1)', () async {
+    final sale = _sale(lines: [_line(id: 5, quantity: '10')]);
+    container = containerFor(sale);
+    when(
+      () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
+    ).thenAnswer((_) async => const []);
+    when(
+      () => deliveries.create(
+        salesOrder: any(named: 'salesOrder'),
+        fulfillmentType: any(named: 'fulfillmentType'),
+        shipTo: any(named: 'shipTo'),
+        contact: any(named: 'contact'),
+        date: any(named: 'date'),
+        comment: any(named: 'comment'),
+        lines: any(named: 'lines'),
+      ),
+    ).thenAnswer((_) async => _created(lines: const []));
 
-      await container.read(deliveryControllerProvider(sale).future);
-      await container
-          .read(deliveryControllerProvider(sale).notifier)
-          .addDestination(shipTo: 12);
+    await container.read(deliveryControllerProvider(sale).future);
+    await container
+        .read(deliveryControllerProvider(sale).notifier)
+        .addDestination(shipTo: 11);
 
-      verify(
-        () => deliveries.create(
-          salesOrder: 42,
-          fulfillmentType: FulfillmentType.delivery,
-          shipTo: 12,
-          contact: null,
-          date: null,
-          comment: null,
-          lines: const [],
-        ),
-      ).called(1);
-    },
-  );
+    verifyInOrder([
+      () => salesOrders.confirm(saleId: 42),
+      () => deliveries.create(
+        salesOrder: any(named: 'salesOrder'),
+        fulfillmentType: any(named: 'fulfillmentType'),
+        shipTo: any(named: 'shipTo'),
+        contact: any(named: 'contact'),
+        date: any(named: 'date'),
+        comment: any(named: 'comment'),
+        lines: any(named: 'lines'),
+      ),
+    ]);
+    // The ship-to copy is for back-office orders only; the register's
+    // sale goes straight to confirm, as before.
+    verifyNever(
+      () => salesOrders.updateHeader(
+        saleId: any(named: 'saleId'),
+        shipTo: any(named: 'shipTo'),
+      ),
+    );
+  });
+
+  test('a second destination still sends an explicit empty list, unchanged '
+      '(FR-025)', () async {
+    final sale = _sale(lines: [_line(id: 5, quantity: '10')]);
+    container = containerFor(sale);
+    when(
+      () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
+    ).thenAnswer((_) async => [_created(lines: const [])]);
+    when(
+      () => deliveries.create(
+        salesOrder: any(named: 'salesOrder'),
+        fulfillmentType: any(named: 'fulfillmentType'),
+        shipTo: any(named: 'shipTo'),
+        contact: any(named: 'contact'),
+        date: any(named: 'date'),
+        comment: any(named: 'comment'),
+        lines: any(named: 'lines'),
+      ),
+    ).thenAnswer(
+      (_) async => Destination(
+        id: 501,
+        fulfillmentType: FulfillmentType.delivery,
+        shipTo: 12,
+        status: DeliveryOrderStatus.draft,
+      ),
+    );
+
+    await container.read(deliveryControllerProvider(sale).future);
+    await container
+        .read(deliveryControllerProvider(sale).notifier)
+        .addDestination(shipTo: 12);
+
+    verify(
+      () => deliveries.create(
+        salesOrder: 42,
+        fulfillmentType: FulfillmentType.delivery,
+        shipTo: 12,
+        contact: null,
+        date: null,
+        comment: null,
+        lines: const [],
+      ),
+    ).called(1);
+  });
 
   test('a refused create adds nothing to state', () async {
     final sale = _sale(lines: [_line(id: 5, quantity: '10')]);
@@ -342,9 +343,6 @@ void main() {
       throwsA(isA<AppError>()),
     );
 
-    expect(
-      container.read(deliveryControllerProvider(sale)).value,
-      isEmpty,
-    );
+    expect(container.read(deliveryControllerProvider(sale)).value, isEmpty);
   });
 }

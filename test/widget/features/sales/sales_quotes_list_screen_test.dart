@@ -164,7 +164,11 @@ void main() {
           salesQuotes,
           page: SalesQuotePage(
             items: [
-              _quoteSummary(id: 1, status: SaleStatus.completed, hasExpired: true),
+              _quoteSummary(
+                id: 1,
+                status: SaleStatus.completed,
+                hasExpired: true,
+              ),
             ],
             total: 1,
           ),
@@ -184,46 +188,56 @@ void main() {
       },
     );
 
-    testWidgets(
-      'no expired marker for a quote that has not expired',
-      (tester) async {
-        stubListQuotes(
-          salesQuotes,
-          page: SalesQuotePage(
-            items: [_quoteSummary(id: 1, status: SaleStatus.draft)],
-            total: 1,
-          ),
-        );
-
-        await pumpListRouted(tester);
-        await tester.pumpAndSettle();
-
-        expect(
-          find.byKey(const Key('sales_quote_expired_marker')),
-          findsNothing,
-        );
-      },
-    );
-
-    testWidgets('New quote is absent without create rights', (tester) async {
-      stubListQuotes(salesQuotes, page: const SalesQuotePage(items: [], total: 0));
-
-      await pumpListRouted(tester, user: _user(canCreate: false));
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('sales_quotes_new_quote_button')), findsNothing);
-    });
-
-    testWidgets('New quote is present with create rights', (tester) async {
-      stubListQuotes(salesQuotes, page: const SalesQuotePage(items: [], total: 0));
+    testWidgets('no expired marker for a quote that has not expired', (
+      tester,
+    ) async {
+      stubListQuotes(
+        salesQuotes,
+        page: SalesQuotePage(
+          items: [_quoteSummary(id: 1, status: SaleStatus.draft)],
+          total: 1,
+        ),
+      );
 
       await pumpListRouted(tester);
       await tester.pumpAndSettle();
 
-      expect(find.byKey(const Key('sales_quotes_new_quote_button')), findsOneWidget);
+      expect(find.byKey(const Key('sales_quote_expired_marker')), findsNothing);
     });
 
-    testWidgets('Edit row action is absent without update rights', (tester) async {
+    testWidgets('New quote is absent without create rights', (tester) async {
+      stubListQuotes(
+        salesQuotes,
+        page: const SalesQuotePage(items: [], total: 0),
+      );
+
+      await pumpListRouted(tester, user: _user(canCreate: false));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('sales_quotes_new_quote_button')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('New quote is present with create rights', (tester) async {
+      stubListQuotes(
+        salesQuotes,
+        page: const SalesQuotePage(items: [], total: 0),
+      );
+
+      await pumpListRouted(tester);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('sales_quotes_new_quote_button')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('Edit row action is absent without update rights', (
+      tester,
+    ) async {
       stubListQuotes(
         salesQuotes,
         page: SalesQuotePage(items: [_quoteSummary(id: 1)], total: 1),
@@ -253,23 +267,22 @@ void main() {
       },
     );
 
-    testWidgets(
-      'Edit row action is present for a draft quote and an updater',
-      (tester) async {
-        stubListQuotes(
-          salesQuotes,
-          page: SalesQuotePage(
-            items: [_quoteSummary(id: 1, status: SaleStatus.draft)],
-            total: 1,
-          ),
-        );
+    testWidgets('Edit row action is present for a draft quote and an updater', (
+      tester,
+    ) async {
+      stubListQuotes(
+        salesQuotes,
+        page: SalesQuotePage(
+          items: [_quoteSummary(id: 1, status: SaleStatus.draft)],
+          total: 1,
+        ),
+      );
 
-        await pumpListRouted(tester);
-        await tester.pumpAndSettle();
+      await pumpListRouted(tester);
+      await tester.pumpAndSettle();
 
-        expect(find.byTooltip(l10n.editActionTooltip), findsOneWidget);
-      },
-    );
+      expect(find.byTooltip(l10n.editActionTooltip), findsOneWidget);
+    });
   });
 
   group('filters (FR-036)', () {
@@ -277,7 +290,10 @@ void main() {
       'the status facet narrows the request and lands in the address, '
       'counted in the badge',
       (tester) async {
-        stubListQuotes(salesQuotes, page: const SalesQuotePage(items: [], total: 0));
+        stubListQuotes(
+          salesQuotes,
+          page: const SalesQuotePage(items: [], total: 0),
+        );
 
         final router = await pumpListRouted(tester);
         await tester.tap(find.byKey(const Key('sales_quotes_filter_button')));
@@ -314,7 +330,10 @@ void main() {
     testWidgets(
       'the customer facet narrows the request and lands in the address',
       (tester) async {
-        stubListQuotes(salesQuotes, page: const SalesQuotePage(items: [], total: 0));
+        stubListQuotes(
+          salesQuotes,
+          page: const SalesQuotePage(items: [], total: 0),
+        );
 
         final router = await pumpListRouted(tester);
         router.go(
@@ -342,7 +361,10 @@ void main() {
     testWidgets(
       'clear-all drops both facets rather than leaving either behind',
       (tester) async {
-        stubListQuotes(salesQuotes, page: const SalesQuotePage(items: [], total: 0));
+        stubListQuotes(
+          salesQuotes,
+          page: const SalesQuotePage(items: [], total: 0),
+        );
 
         final router = await pumpListRouted(
           tester,
@@ -369,33 +391,33 @@ void main() {
       },
     );
 
-    testWidgets(
-      'a non-numeric search term narrows the list rather than being '
-      'silently dropped (regression guard, mbe-api#213)',
-      (tester) async {
-        stubListQuotes(salesQuotes, page: const SalesQuotePage(items: [], total: 0));
+    testWidgets('a non-numeric search term narrows the list rather than being '
+        'silently dropped (regression guard, mbe-api#213)', (tester) async {
+      stubListQuotes(
+        salesQuotes,
+        page: const SalesQuotePage(items: [], total: 0),
+      );
 
-        final router = await pumpListRouted(tester);
-        await tester.enterText(
-          find.byKey(const Key('sales_quotes_search_field')),
-          'Acme',
-        );
-        await tester.testTextInput.receiveAction(TextInputAction.search);
-        await tester.pumpAndSettle();
+      final router = await pumpListRouted(tester);
+      await tester.enterText(
+        find.byKey(const Key('sales_quotes_search_field')),
+        'Acme',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await tester.pumpAndSettle();
 
-        expect(router.state.uri.queryParameters['search'], 'Acme');
-        verify(
-          () => salesQuotes.listQuotes(
-            mine: any(named: 'mine'),
-            customer: any(named: 'customer'),
-            salesperson: any(named: 'salesperson'),
-            status: any(named: 'status'),
-            search: 'Acme',
-            skip: any(named: 'skip'),
-            limit: any(named: 'limit'),
-          ),
-        ).called(greaterThan(0));
-      },
-    );
+      expect(router.state.uri.queryParameters['search'], 'Acme');
+      verify(
+        () => salesQuotes.listQuotes(
+          mine: any(named: 'mine'),
+          customer: any(named: 'customer'),
+          salesperson: any(named: 'salesperson'),
+          status: any(named: 'status'),
+          search: 'Acme',
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).called(greaterThan(0));
+    });
   });
 }

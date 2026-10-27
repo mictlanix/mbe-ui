@@ -100,7 +100,8 @@ void main() {
       () => customers.get(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => _customer());
     when(
-      () => payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
+      () =>
+          payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => '0');
     when(
       () => priceLists.list(
@@ -110,12 +111,7 @@ void main() {
       ),
     ).thenAnswer(
       (_) async => const PriceListResult(
-        items: [
-          PriceList(
-            priceListId: 2,
-            name: 'Mayoreo',
-          ),
-        ],
+        items: [PriceList(priceListId: 2, name: 'Mayoreo')],
         total: 1,
       ),
     );
@@ -211,7 +207,9 @@ void main() {
           contacts: any(named: 'contacts'),
           taxpayers: any(named: 'taxpayers'),
         ),
-      ).thenAnswer((_) async => _customer(id: 99, name: 'FERRETERÍA LOS PINOS'));
+      ).thenAnswer(
+        (_) async => _customer(id: 99, name: 'FERRETERÍA LOS PINOS'),
+      );
       when(
         () => salesOrders.updateHeader(
           saleId: any(named: 'saleId'),
@@ -284,7 +282,9 @@ void main() {
           paymentTerms: any(named: 'paymentTerms'),
         ),
       ).thenAnswer((_) async => after);
-      when(() => salesOrders.getById(saleId: 42)).thenAnswer((_) async => after);
+      when(
+        () => salesOrders.getById(saleId: 42),
+      ).thenAnswer((_) async => after);
 
       // Scoped to the footer: testLine()'s own `total` field is fixed at
       // "116.00" regardless of `price`, so the line row's bare figure would
@@ -414,11 +414,9 @@ void main() {
           taxpayers: captureAny(named: 'taxpayers'),
         ),
       ).captured.single;
-      expect(
-        sent,
-        ['XAXX010101000'],
-        reason: 'the RFC is the primary key mbe-api#150 links by',
-      );
+      expect(sent, [
+        'XAXX010101000',
+      ], reason: 'the RFC is the primary key mbe-api#150 links by');
     });
 
     testWidgets('an unset tax registration sends null, not an empty list — '
@@ -472,11 +470,7 @@ void main() {
 
     testWidgets('a cashier without the customers create privilege is not '
         'offered it at all', (tester) async {
-      await pumpCapture(
-        tester,
-        sale: testSale(),
-        canCreateCustomers: false,
-      );
+      await pumpCapture(tester, sale: testSale(), canCreateCustomers: false);
       expect(find.byKey(const Key('pos_create_customer_button')), findsNothing);
     });
   });

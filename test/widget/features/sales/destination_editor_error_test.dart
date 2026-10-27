@@ -75,9 +75,8 @@ void main() {
       () => customerRepository.get(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => _customer());
     when(
-      () => deliveryRepository.listForSale(
-        salesOrder: any(named: 'salesOrder'),
-      ),
+      () =>
+          deliveryRepository.listForSale(salesOrder: any(named: 'salesOrder')),
     ).thenAnswer((_) async => [_existing()]);
   });
 
@@ -87,7 +86,9 @@ void main() {
     final salesOrders = MockSalesOrderRepository();
     // spec 036 R1: a no-op-shaped answer — this file's tests care about the
     // delivery-order create refusal, not confirm's own effect.
-    when(() => salesOrders.confirm(saleId: sale.id)).thenAnswer((_) async => sale);
+    when(
+      () => salesOrders.confirm(saleId: sale.id),
+    ).thenAnswer((_) async => sale);
     final container = await pumpPos(
       tester,
       DeliveryStep(sale: sale, mode: FulfillmentMode.delivery, onClose: () {}),
@@ -107,8 +108,9 @@ void main() {
 
   group('a destination the server refuses (FR-037)', () {
     testWidgets('shows the server\'s own message inline, inside the sheet, '
-        'and leaves every already-created destination untouched',
-        (tester) async {
+        'and leaves every already-created destination untouched', (
+      tester,
+    ) async {
       when(
         () => deliveryRepository.create(
           salesOrder: any(named: 'salesOrder'),
@@ -132,7 +134,9 @@ void main() {
       expect(find.byKey(const Key('destination_card_500')), findsOneWidget);
 
       // Opens as a sheet (contract §6) rather than replacing the list.
-      await tester.tap(find.byKey(const Key('delivery_add_destination_button')));
+      await tester.tap(
+        find.byKey(const Key('delivery_add_destination_button')),
+      );
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('destination_editor')), findsOneWidget);
       // The already-recorded destination stays reachable behind the sheet.
@@ -200,7 +204,10 @@ void main() {
       // Prefilled from the destination already on screen.
       expect(find.text('Av. Reforma 100'), findsWidgets);
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
-      expect(find.widgetWithText(FilledButton, l10n.saveButton), findsOneWidget);
+      expect(
+        find.widgetWithText(FilledButton, l10n.saveButton),
+        findsOneWidget,
+      );
 
       await tester.enterText(
         find.byKey(const Key('destination_comment_field')),
@@ -261,7 +268,10 @@ void main() {
 
       expect(find.byKey(const Key('destination_editor')), findsOneWidget);
       expect(find.byKey(const Key('destination_editor_error')), findsOneWidget);
-      expect(find.textContaining('La entrega ya fue confirmada'), findsOneWidget);
+      expect(
+        find.textContaining('La entrega ya fue confirmada'),
+        findsOneWidget,
+      );
 
       await tester.tapAt(const Offset(10, 10)); // dismiss, leave the sheet
       // Verify nothing about the on-screen destination moved.
@@ -292,7 +302,9 @@ void main() {
       var closed = false;
       final sale = testSale(lines: [testLine(id: 5, quantity: '10')]);
       final salesOrders = MockSalesOrderRepository();
-      when(() => salesOrders.confirm(saleId: sale.id)).thenAnswer((_) async => sale);
+      when(
+        () => salesOrders.confirm(saleId: sale.id),
+      ).thenAnswer((_) async => sale);
 
       // `FulfillmentMode.delivery` is what `resumeTargetFor` reconstructs
       // for *any* addressed sale — a genuinely mixed one included, since
@@ -312,13 +324,16 @@ void main() {
         ],
       );
       // `posSaleControllerProvider` is `autoDispose` and nothing in
-    // `DeliveryStep`'s own tree watches it — a live subscription keeps
-    // `fixedPosSale`'s seeded instance alive for the rest of the test.
-    container.listen(posSaleControllerProvider, (_, _) {});
-    await container.read(posSaleControllerProvider.future);
+      // `DeliveryStep`'s own tree watches it — a live subscription keeps
+      // `fixedPosSale`'s seeded instance alive for the rest of the test.
+      container.listen(posSaleControllerProvider, (_, _) {});
+      await container.read(posSaleControllerProvider.future);
 
       // 6 of 10 unassigned: the close is blocked and says so.
-      expect(find.byKey(const Key('delivery_outstanding_notice')), findsOneWidget);
+      expect(
+        find.byKey(const Key('delivery_outstanding_notice')),
+        findsOneWidget,
+      );
       expect(
         tester
             .widget<FloatingActionButton>(
@@ -328,7 +343,9 @@ void main() {
         isNull,
       );
 
-      await tester.tap(find.byKey(const Key('delivery_sweep_to_counter_button')));
+      await tester.tap(
+        find.byKey(const Key('delivery_sweep_to_counter_button')),
+      );
       await tester.pumpAndSettle();
 
       verify(
@@ -345,10 +362,13 @@ void main() {
       expect(closed, isTrue);
     });
 
-    testWidgets('the sweep action is absent once nothing is outstanding',
-        (tester) async {
+    testWidgets('the sweep action is absent once nothing is outstanding', (
+      tester,
+    ) async {
       when(
-        () => deliveryRepository.listForSale(salesOrder: any(named: 'salesOrder')),
+        () => deliveryRepository.listForSale(
+          salesOrder: any(named: 'salesOrder'),
+        ),
       ).thenAnswer(
         (_) async => [
           Destination(
@@ -373,17 +393,26 @@ void main() {
 
       await pumpStep(tester);
 
-      expect(find.byKey(const Key('delivery_outstanding_notice')), findsNothing);
-      expect(find.byKey(const Key('delivery_sweep_to_counter_button')), findsNothing);
+      expect(
+        find.byKey(const Key('delivery_outstanding_notice')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('delivery_sweep_to_counter_button')),
+        findsNothing,
+      );
     });
   });
 
   group('a recorded counter-pickup destination stays visible', () {
     testWidgets('a resumed sale shows its counter row even though the mode '
-        'came back as delivery — and offers no way to remove it',
-        (tester) async {
+        'came back as delivery — and offers no way to remove it', (
+      tester,
+    ) async {
       when(
-        () => deliveryRepository.listForSale(salesOrder: any(named: 'salesOrder')),
+        () => deliveryRepository.listForSale(
+          salesOrder: any(named: 'salesOrder'),
+        ),
       ).thenAnswer(
         (_) async => [
           _existing(),

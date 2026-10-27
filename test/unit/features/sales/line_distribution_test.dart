@@ -8,23 +8,26 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 
-SaleLine _line({required int id, required String quantity, String name = 'Widget'}) =>
-    SaleLine(
-      id: id,
-      product: id * 10,
-      productCode: 'P-$id',
-      productName: name,
-      quantity: quantity,
-      cost: '10',
-      price: '20',
-      discountRate: '0',
-      taxRate: '0.16',
-      taxIncluded: false,
-      warehouse: 3,
-      subtotal: '0',
-      taxTotal: '0',
-      total: '0',
-    );
+SaleLine _line({
+  required int id,
+  required String quantity,
+  String name = 'Widget',
+}) => SaleLine(
+  id: id,
+  product: id * 10,
+  productCode: 'P-$id',
+  productName: name,
+  quantity: quantity,
+  cost: '10',
+  price: '20',
+  discountRate: '0',
+  taxRate: '0.16',
+  taxIncluded: false,
+  warehouse: 3,
+  subtotal: '0',
+  taxTotal: '0',
+  total: '0',
+);
 
 Sale _sale(List<SaleLine> lines) => Sale(
   id: 42,
@@ -125,7 +128,9 @@ void main() {
       'submitted', () {
     final result = distributionFor(
       sale: _sale([_line(id: 1, quantity: '10')]),
-      destinations: [_destination(id: 100, claims: {1: '4'})],
+      destinations: [
+        _destination(id: 100, claims: {1: '4'}),
+      ],
       draft: {1: '2'},
     );
 
@@ -139,7 +144,9 @@ void main() {
       'accepted', () {
     final result = distributionFor(
       sale: _sale([_line(id: 1, quantity: '10')]),
-      destinations: [_destination(id: 100, claims: {1: '8'})],
+      destinations: [
+        _destination(id: 100, claims: {1: '8'}),
+      ],
       draft: {1: '5'},
     );
 
@@ -155,7 +162,9 @@ void main() {
         _line(id: 1, quantity: '10', name: 'Cement'),
         _line(id: 2, quantity: '5', name: 'Rebar'),
       ]),
-      destinations: [_destination(id: 100, claims: {2: '5'})],
+      destinations: [
+        _destination(id: 100, claims: {2: '5'}),
+      ],
     );
 
     expect(result.map((d) => d.saleLineId), [1, 2]);
@@ -185,7 +194,9 @@ void main() {
       'arithmetic is decimal, never string equality', () {
     final result = distributionFor(
       sale: _sale([_line(id: 1, quantity: '10.0000')]),
-      destinations: [_destination(id: 100, claims: {1: '2.5000'})],
+      destinations: [
+        _destination(id: 100, claims: {1: '2.5000'}),
+      ],
       draft: {1: '7.50'},
     );
 
@@ -226,7 +237,9 @@ void main() {
   group('isDistributionComplete (FR-030, FR-035)', () {
     List<LineDistribution> withRemainder() => distributionFor(
       sale: _sale([_line(id: 1, quantity: '10')]),
-      destinations: [_destination(id: 100, claims: {1: '6'})],
+      destinations: [
+        _destination(id: 100, claims: {1: '6'}),
+      ],
     );
 
     test('delivery mode is incomplete while anything is left over', () {
@@ -240,7 +253,9 @@ void main() {
     test('delivery mode is complete once everything is distributed', () {
       final complete = distributionFor(
         sale: _sale([_line(id: 1, quantity: '10')]),
-        destinations: [_destination(id: 100, claims: {1: '10'})],
+        destinations: [
+          _destination(id: 100, claims: {1: '10'}),
+        ],
       );
       expect(isDistributionComplete(complete, isMixed: false), isTrue);
     });
@@ -248,7 +263,9 @@ void main() {
     test('an over-claim blocks closing in either mode', () {
       final over = distributionFor(
         sale: _sale([_line(id: 1, quantity: '10')]),
-        destinations: [_destination(id: 100, claims: {1: '12'})],
+        destinations: [
+          _destination(id: 100, claims: {1: '12'}),
+        ],
       );
       expect(isDistributionComplete(over, isMixed: false), isFalse);
       expect(isDistributionComplete(over, isMixed: true), isFalse);

@@ -145,28 +145,25 @@ void main() {
     },
   );
 
-  testWidgets(
-    'the customers row exposes a navigation affordance only when the '
-    'callback is given',
-    (tester) async {
-      var tapped = false;
-      await _pump(
-        tester,
-        const PriceListDeletePreview(
-          categories: [
-            PriceListDeleteCategory(key: 'customer.price_list', count: 12),
-          ],
-          total: 12,
-        ),
-        onViewCustomers: () => tapped = true,
-      );
+  testWidgets('the customers row exposes a navigation affordance only when the '
+      'callback is given', (tester) async {
+    var tapped = false;
+    await _pump(
+      tester,
+      const PriceListDeletePreview(
+        categories: [
+          PriceListDeleteCategory(key: 'customer.price_list', count: 12),
+        ],
+        total: 12,
+      ),
+      onViewCustomers: () => tapped = true,
+    );
 
-      final link = find.byKey(const Key('price_list_delete_customers_link'));
-      expect(link, findsOneWidget);
-      await tester.tap(link);
-      expect(tapped, isTrue);
-    },
-  );
+    final link = find.byKey(const Key('price_list_delete_customers_link'));
+    expect(link, findsOneWidget);
+    await tester.tap(link);
+    expect(tapped, isTrue);
+  });
 
   testWidgets(
     'a destroyed-only row (no customers) exposes no navigation affordance',

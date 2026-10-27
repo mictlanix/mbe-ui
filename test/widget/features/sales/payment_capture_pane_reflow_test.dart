@@ -53,7 +53,9 @@ void main() {
         overrides: [
           customerPaymentOverride(paymentRepository),
           openSessionOverride(),
-          paymentMethodOptionRepositoryProvider.overrideWithValue(optionRepository),
+          paymentMethodOptionRepositoryProvider.overrideWithValue(
+            optionRepository,
+          ),
         ],
       );
 
@@ -97,14 +99,18 @@ void main() {
     },
   );
 
-  testWidgets('opens with the balance pre-filled (spec 047 FR-016)', (tester) async {
+  testWidgets('opens with the balance pre-filled (spec 047 FR-016)', (
+    tester,
+  ) async {
     final container = await pumpPos(
       tester,
       PaymentCapturePane(sale: testSale(balance: '116.00'), enabled: true),
       overrides: [
         customerPaymentOverride(paymentRepository),
         openSessionOverride(),
-        paymentMethodOptionRepositoryProvider.overrideWithValue(optionRepository),
+        paymentMethodOptionRepositoryProvider.overrideWithValue(
+          optionRepository,
+        ),
       ],
     );
 

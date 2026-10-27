@@ -144,103 +144,112 @@ void main() {
   });
 
   group('addLine — sends priceAdjustment as a wire-value string', () {
-    test('quantity, price and priceAdjustment all go through the string arm', () async {
-      final requests = <RequestOptions>[];
-      final repository = _repositoryWith((options) async {
-        requests.add(options);
-        return ResponseBody.fromString(
-          jsonEncode(_quoteJson(lines: [_lineJson(priceAdjustment: '3.50')])),
-          201,
-          headers: _jsonHeaders,
+    test(
+      'quantity, price and priceAdjustment all go through the string arm',
+      () async {
+        final requests = <RequestOptions>[];
+        final repository = _repositoryWith((options) async {
+          requests.add(options);
+          return ResponseBody.fromString(
+            jsonEncode(_quoteJson(lines: [_lineJson(priceAdjustment: '3.50')])),
+            201,
+            headers: _jsonHeaders,
+          );
+        });
+
+        final quote = await repository.addLine(
+          quoteId: 30,
+          product: 11,
+          quantity: '2',
+          price: '50.00',
+          priceAdjustment: '3.50',
+          discountRate: '0',
         );
-      });
 
-      final quote = await repository.addLine(
-        quoteId: 30,
-        product: 11,
-        quantity: '2',
-        price: '50.00',
-        priceAdjustment: '3.50',
-        discountRate: '0',
-      );
+        final body = _decodeBody(requests.single.data);
+        expect(body['product'], 11);
+        expect(body['quantity'], '2');
+        expect(body['price'], '50.00');
+        expect(body['price_adjustment'], '3.50');
+        expect(body['discount_rate'], '0');
+        expect(quote.lines.single.priceAdjustment, '3.50');
+      },
+    );
 
-      final body = _decodeBody(requests.single.data);
-      expect(body['product'], 11);
-      expect(body['quantity'], '2');
-      expect(body['price'], '50.00');
-      expect(body['price_adjustment'], '3.50');
-      expect(body['discount_rate'], '0');
-      expect(quote.lines.single.priceAdjustment, '3.50');
-    });
+    test(
+      'omitting priceAdjustment leaves it off the request entirely',
+      () async {
+        final requests = <RequestOptions>[];
+        final repository = _repositoryWith((options) async {
+          requests.add(options);
+          return ResponseBody.fromString(
+            jsonEncode(_quoteJson(lines: [_lineJson()])),
+            201,
+            headers: _jsonHeaders,
+          );
+        });
 
-    test('omitting priceAdjustment leaves it off the request entirely', () async {
-      final requests = <RequestOptions>[];
-      final repository = _repositoryWith((options) async {
-        requests.add(options);
-        return ResponseBody.fromString(
-          jsonEncode(_quoteJson(lines: [_lineJson()])),
-          201,
-          headers: _jsonHeaders,
+        await repository.addLine(quoteId: 30, product: 11);
+
+        expect(
+          _decodeBody(requests.single.data).containsKey('price_adjustment'),
+          isFalse,
+          reason: 'an omitted value means "server default", not zero',
         );
-      });
-
-      await repository.addLine(quoteId: 30, product: 11);
-
-      expect(
-        _decodeBody(requests.single.data).containsKey('price_adjustment'),
-        isFalse,
-        reason: 'an omitted value means "server default", not zero',
-      );
-    });
+      },
+    );
   });
 
   group('convert — maps the response as a SALES ORDER, not a quote', () {
-    test('the returned Sale carries the order-only fields a quote lacks', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({
-            'sales_order_id': 99,
-            'facility': 9,
-            'point_sale': 3,
-            'salesperson': 100,
-            'customer': 7,
-            'customer_name': null,
-            'payment_terms': 0,
-            'date': '2026-09-20T00:00:00.000',
-            'due_date': '2026-09-27T00:00:00.000',
-            'contact': null,
-            'recipient': null,
-            'recipient_name': null,
-            'priority': 1,
-            'comment': null,
-            'currency': 0,
-            'exchange_rate': '1',
-            'ship_to': null,
-            'promise_date': '2026-09-22T00:00:00.000',
-            'status': 'draft',
-            'lines': <Object>[],
-            'subtotal': '100.00',
-            'tax_total': '16.00',
-            'total': '116.00',
-            'balance': '116.00',
-            'sales_quote': 30,
-          }),
-          201,
-          headers: _jsonHeaders,
-        ),
-      );
+    test(
+      'the returned Sale carries the order-only fields a quote lacks',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'sales_order_id': 99,
+              'facility': 9,
+              'point_sale': 3,
+              'salesperson': 100,
+              'customer': 7,
+              'customer_name': null,
+              'payment_terms': 0,
+              'date': '2026-09-20T00:00:00.000',
+              'due_date': '2026-09-27T00:00:00.000',
+              'contact': null,
+              'recipient': null,
+              'recipient_name': null,
+              'priority': 1,
+              'comment': null,
+              'currency': 0,
+              'exchange_rate': '1',
+              'ship_to': null,
+              'promise_date': '2026-09-22T00:00:00.000',
+              'status': 'draft',
+              'lines': <Object>[],
+              'subtotal': '100.00',
+              'tax_total': '16.00',
+              'total': '116.00',
+              'balance': '116.00',
+              'sales_quote': 30,
+            }),
+            201,
+            headers: _jsonHeaders,
+          ),
+        );
 
-      final order = await repository.convert(quoteId: 30);
+        final order = await repository.convert(quoteId: 30);
 
-      expect(order.id, 99);
-      // Present, unlike a quote's own mapping — proof this went through
-      // `Sale.fromResponse`, not `Sale.fromQuoteResponse`
-      // (contracts/sales-quote-repository.md §1).
-      expect(order.pointSale, 3);
-      expect(order.promiseDate, isNotNull);
-      expect(order.priority, isNotNull);
-      expect(order.balance, '116.00');
-    });
+        expect(order.id, 99);
+        // Present, unlike a quote's own mapping — proof this went through
+        // `Sale.fromResponse`, not `Sale.fromQuoteResponse`
+        // (contracts/sales-quote-repository.md §1).
+        expect(order.pointSale, 3);
+        expect(order.promiseDate, isNotNull);
+        expect(order.priority, isNotNull);
+        expect(order.balance, '116.00');
+      },
+    );
   });
 
   group('error mapping (contracts/sales-quote-repository.md §2)', () {
@@ -249,7 +258,9 @@ void main() {
         'alone would lose', () async {
       final repository = _repositoryWith(
         (options) async => ResponseBody.fromString(
-          jsonEncode({'detail': 'No point of sale is configured for your user'}),
+          jsonEncode({
+            'detail': 'No point of sale is configured for your user',
+          }),
           422,
           headers: _jsonHeaders,
         ),

@@ -22,14 +22,8 @@ class MockPriceListRepository extends Mock implements PriceListRepository {}
 class MockProductPriceRepository extends Mock
     implements ProductPriceRepository {}
 
-const _retail = PriceList(
-  priceListId: 1,
-  name: 'Retail',
-);
-const _wholesale = PriceList(
-  priceListId: 2,
-  name: 'Wholesale',
-);
+const _retail = PriceList(priceListId: 1, name: 'Retail');
+const _wholesale = PriceList(priceListId: 2, name: 'Wholesale');
 
 const _fullAccessUser = User(
   userId: 'editor',
@@ -183,10 +177,8 @@ void main() {
         ],
       );
       when(
-        () => productPriceRepository.update(
-          productPriceId: 10,
-          price: '110.00',
-        ),
+        () =>
+            productPriceRepository.update(productPriceId: 10, price: '110.00'),
       ).thenAnswer(
         (_) async => ProductPrice(
           productPriceId: 10,

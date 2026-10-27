@@ -78,7 +78,9 @@ void main() {
           cashDrawerId: cashDrawerId,
           openingAmount: '0',
         ),
-        throwsA(isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409)),
+        throwsA(
+          isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409),
+        ),
       );
 
       // 3. US2 — submit a count and close.

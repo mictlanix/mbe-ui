@@ -37,20 +37,22 @@ const emptyValuePlaceholder = '—';
 
 /// `display.*` — read-only rendering (contracts/formatting-surface.md).
 class DisplayFormatters {
-  DisplayFormatters({required Locale locale, required FormattingSettings settings})
-    : _settings = settings,
-      _currency = NumberFormat.currency(
-        locale: locale.toString(),
-        symbol: settings.currencySymbol,
-        decimalDigits: settings.currencyDecimalDigits,
-      ),
-      _percent = NumberFormat.decimalPatternDigits(
-        locale: locale.toString(),
-        decimalDigits: settings.percentDecimalDigits,
-      ),
-      _date = DateFormat(settings.datePattern, locale.toString()),
-      _dateTime = DateFormat(settings.dateTimePattern, locale.toString()),
-      _count = NumberFormat.decimalPattern(locale.toString());
+  DisplayFormatters({
+    required Locale locale,
+    required FormattingSettings settings,
+  }) : _settings = settings,
+       _currency = NumberFormat.currency(
+         locale: locale.toString(),
+         symbol: settings.currencySymbol,
+         decimalDigits: settings.currencyDecimalDigits,
+       ),
+       _percent = NumberFormat.decimalPatternDigits(
+         locale: locale.toString(),
+         decimalDigits: settings.percentDecimalDigits,
+       ),
+       _date = DateFormat(settings.datePattern, locale.toString()),
+       _dateTime = DateFormat(settings.dateTimePattern, locale.toString()),
+       _count = NumberFormat.decimalPattern(locale.toString());
 
   final FormattingSettings _settings;
   final NumberFormat _currency;
@@ -107,7 +109,8 @@ class DisplayFormatters {
   /// exact behavior. A value greater than `0` caps the shown precision at
   /// that many decimals (still with trailing zeros dropped within the cap),
   /// for a deployment whose quantities carry unreasonably long precision.
-  String quantity(String? value) => _formatQuantity(value, _settings.quantityDecimalDigits);
+  String quantity(String? value) =>
+      _formatQuantity(value, _settings.quantityDecimalDigits);
 
   /// A whole-number count with locale grouping, e.g. `4312` → `"4,312"`
   /// (en) / `"4.312"` (es-MX). Not [quantity]: that one takes a decimal
@@ -125,9 +128,7 @@ class DisplayFormatters {
     final parsed = Decimal.tryParse(value);
     if (parsed == null) return emptyValuePlaceholder;
     if (decimalDigits <= 0) return parsed.toString();
-    return Decimal.parse(
-      parsed.toStringAsFixed(decimalDigits),
-    ).toString();
+    return Decimal.parse(parsed.toStringAsFixed(decimalDigits)).toString();
   }
 }
 
@@ -136,7 +137,8 @@ class DisplayFormatters {
 /// would have to type around or that would break re-parsing.
 @immutable
 class FieldFormatters {
-  const FieldFormatters({required FormattingSettings settings}) : _settings = settings;
+  const FieldFormatters({required FormattingSettings settings})
+    : _settings = settings;
 
   final FormattingSettings _settings;
 
@@ -154,7 +156,8 @@ class FieldFormatters {
   /// caller must still send back the original unrounded value when the user
   /// has not edited the field (spec.md Edge Cases) — that is a UI-level
   /// rule this formatter cannot enforce on its own.
-  String price(String value) => _formatFixed(value, _settings.currencyDecimalDigits);
+  String price(String value) =>
+      _formatFixed(value, _settings.currencyDecimalDigits);
 
   /// Inverse of [price]. Returns `null` for input it cannot read, so the
   /// caller rejects the edit rather than sending nonsense.

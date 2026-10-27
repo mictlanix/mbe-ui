@@ -37,6 +37,10 @@ final hasOtherOpenSessionsProvider = FutureProvider<bool>((ref) async {
 
   final result = await ref
       .watch(cashSessionRepositoryProvider)
-      .list(cashierId: session.cashierId, status: CashSessionStatus.open, limit: 100);
+      .list(
+        cashierId: session.cashierId,
+        status: CashSessionStatus.open,
+        limit: 100,
+      );
   return result.total > 1;
 });

@@ -58,7 +58,11 @@ class _GateBody extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.point_of_sale_outlined, size: 48, color: theme.colorScheme.outline),
+            Icon(
+              Icons.point_of_sale_outlined,
+              size: 48,
+              color: theme.colorScheme.outline,
+            ),
             const SizedBox(height: 16),
             Text(
               key: const Key('pos_gate_no_session_title'),
@@ -133,7 +137,9 @@ class _BlockedBanner extends StatelessWidget {
         spacing: theme.spacing.sm,
         children: [
           Text(
-            stale ? l10n.posSessionExpiredPaymentsBlocked : l10n.posGateNoSessionBody,
+            stale
+                ? l10n.posSessionExpiredPaymentsBlocked
+                : l10n.posGateNoSessionBody,
             style: TextStyle(color: theme.colorScheme.onErrorContainer),
           ),
           TextButton(
@@ -143,7 +149,11 @@ class _BlockedBanner extends StatelessWidget {
             onPressed: () => stale
                 ? context.push('/sales/cash-sessions/$sessionId')
                 : context.go('/sales/cash-sessions'),
-            child: Text(stale ? l10n.posSessionCloseAction : l10n.posGateOpenSessionAction),
+            child: Text(
+              stale
+                  ? l10n.posSessionCloseAction
+                  : l10n.posGateOpenSessionAction,
+            ),
           ),
         ],
       ),

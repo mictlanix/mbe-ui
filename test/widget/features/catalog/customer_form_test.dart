@@ -280,7 +280,6 @@ void main() {
         reason: 'code_field must not render above credit_days_field',
       );
     });
-
   });
 
   group('view mode (forceReadOnly)', () {
@@ -426,9 +425,7 @@ void main() {
           retry: (_, _) => null,
           overrides: [
             customerRepositoryProvider.overrideWithValue(repository),
-            priceListRepositoryProvider.overrideWithValue(
-              priceListRepository,
-            ),
+            priceListRepositoryProvider.overrideWithValue(priceListRepository),
             employeeRepositoryProvider.overrideWithValue(employeeRepository),
             accessControlProvider.overrideWithValue(
               _accessFor(_fullAccessUser),
@@ -462,9 +459,7 @@ void main() {
             sharedPreferencesProvider.overrideWithValue(prefs),
             appSettingsProvider.overrideWithValue(_testSettings()),
             customerRepositoryProvider.overrideWithValue(repository),
-            priceListRepositoryProvider.overrideWithValue(
-              priceListRepository,
-            ),
+            priceListRepositoryProvider.overrideWithValue(priceListRepository),
             employeeRepositoryProvider.overrideWithValue(employeeRepository),
             accessControlProvider.overrideWithValue(
               _accessFor(_fullAccessUser),
@@ -534,9 +529,18 @@ void main() {
         existing: _linked,
       );
 
-      expect(find.byKey(const Key('customer_addresses_section')), findsOneWidget);
-      expect(find.byKey(const Key('customer_contacts_section')), findsOneWidget);
-      expect(find.byKey(const Key('customer_taxpayers_section')), findsOneWidget);
+      expect(
+        find.byKey(const Key('customer_addresses_section')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('customer_contacts_section')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('customer_taxpayers_section')),
+        findsOneWidget,
+      );
       expect(find.text('Calle 1 #2, Centro'), findsOneWidget);
       expect(find.text('Av. 3 #4, Norte'), findsOneWidget);
       expect(find.text('Ana'), findsOneWidget);
@@ -593,7 +597,10 @@ void main() {
       expect(find.byKey(const Key('linked_new_addresses')), findsOneWidget);
       expect(find.byKey(const Key('linked_new_contacts')), findsOneWidget);
       expect(find.byKey(const Key('linked_new_taxpayers')), findsOneWidget);
-      expect(find.byKey(const Key('linked_picker_addresses_0')), findsOneWidget);
+      expect(
+        find.byKey(const Key('linked_picker_addresses_0')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('saving an unrelated change keeps both RFCs and every other '
@@ -621,7 +628,9 @@ void main() {
         'without deleting the record (FR-004/FR-005)', (tester) async {
       stubUpdate();
       final key = GlobalKey<CustomerFormPanelState>();
-      when(() => repository.get(customerId: 3)).thenAnswer((_) async => _linked);
+      when(
+        () => repository.get(customerId: 3),
+      ).thenAnswer((_) async => _linked);
       await tester.binding.setSurfaceSize(const Size(1024, 2400));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       final prefs = await _prefs();
@@ -661,7 +670,9 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(capturedUpdate()[2], ['BBB010101BBB']);
-      verifyNever(() => repository.delete(customerId: any(named: 'customerId')));
+      verifyNever(
+        () => repository.delete(customerId: any(named: 'customerId')),
+      );
     });
 
     testWidgets('a contact created with "New" survives a failed save, and '
@@ -711,8 +722,14 @@ void main() {
 
       await tester.tap(find.byKey(const Key('linked_new_contacts')));
       await tester.pumpAndSettle();
-      await tester.enterText(find.byKey(const Key('contact_name_field')), 'Luis');
-      await tester.enterText(find.byKey(const Key('contact_mobile_field')), '555');
+      await tester.enterText(
+        find.byKey(const Key('contact_name_field')),
+        'Luis',
+      );
+      await tester.enterText(
+        find.byKey(const Key('contact_mobile_field')),
+        '555',
+      );
       await tester.tap(find.byKey(const Key('contact_save_button')));
       await tester.pumpAndSettle();
       expect(find.text('Luis'), findsOneWidget);

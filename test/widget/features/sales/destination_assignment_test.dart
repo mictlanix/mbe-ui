@@ -43,17 +43,22 @@ void main() {
     priceList: const PriceListRef(id: 1, name: 'Mostrador'),
     status: EntityStatus.active,
     addresses: const [
-      AddressListItem(addressId: 11, label: 'Destino uno', type: AddressType.business),
+      AddressListItem(
+        addressId: 11,
+        label: 'Destino uno',
+        type: AddressType.business,
+      ),
     ],
   );
 
-  Destination existingDestination({List<DestinationLine> lines = const []}) => Destination(
-    id: 500,
-    fulfillmentType: FulfillmentType.delivery,
-    shipTo: 11,
-    status: DeliveryOrderStatus.draft,
-    lines: lines,
-  );
+  Destination existingDestination({List<DestinationLine> lines = const []}) =>
+      Destination(
+        id: 500,
+        fulfillmentType: FulfillmentType.delivery,
+        shipTo: 11,
+        status: DeliveryOrderStatus.draft,
+        lines: lines,
+      );
 
   Destination updatedWith(List<DestinationLine> lines) => Destination(
     id: 500,
@@ -81,7 +86,9 @@ void main() {
     // spec 036 R1: `addDestination`/`sweepRemainderToCounter` confirm the
     // sale first when it's still `draft` — a no-op answer is enough since
     // these tests don't assert on confirm's own effect.
-    when(() => salesOrders.confirm(saleId: sale.id)).thenAnswer((_) async => sale);
+    when(
+      () => salesOrders.confirm(saleId: sale.id),
+    ).thenAnswer((_) async => sale);
     final container = await pumpPos(
       tester,
       DeliveryStep(sale: sale, mode: FulfillmentMode.delivery, onClose: () {}),
@@ -134,7 +141,9 @@ void main() {
 
       await pumpStep(tester);
       await expand(tester);
-      await tester.tap(find.byKey(const Key('destination_claim_all_5')).hitTestable().first);
+      await tester.tap(
+        find.byKey(const Key('destination_claim_all_5')).hitTestable().first,
+      );
       await tester.pumpAndSettle();
 
       verify(
@@ -198,7 +207,11 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(
-        () => deliveries.updateLine(destinationId: 500, lineId: 900, quantity: '5'),
+        () => deliveries.updateLine(
+          destinationId: 500,
+          lineId: 900,
+          quantity: '5',
+        ),
       ).called(1);
       verifyNever(
         () => deliveries.addLine(
@@ -241,7 +254,9 @@ void main() {
       await tester.tap(find.byIcon(Icons.remove).first);
       await tester.pumpAndSettle();
 
-      verify(() => deliveries.removeLine(destinationId: 500, lineId: 900)).called(1);
+      verify(
+        () => deliveries.removeLine(destinationId: 500, lineId: 900),
+      ).called(1);
       verifyNever(
         () => deliveries.updateLine(
           destinationId: any(named: 'destinationId'),
@@ -296,7 +311,10 @@ void main() {
       await expand(tester);
 
       expect(
-        tester.widget<TextField>(find.byKey(const Key('destination_quantity_5'))).controller!.text,
+        tester
+            .widget<TextField>(find.byKey(const Key('destination_quantity_5')))
+            .controller!
+            .text,
         '4',
       );
 
@@ -307,7 +325,10 @@ void main() {
       // without an explicit write it would still show the pre-tap value
       // while the header and the rail moved to 5.
       expect(
-        tester.widget<TextField>(find.byKey(const Key('destination_quantity_5'))).controller!.text,
+        tester
+            .widget<TextField>(find.byKey(const Key('destination_quantity_5')))
+            .controller!
+            .text,
         '5',
         reason: "the stepper's figure must follow the value it just sent",
       );
@@ -367,7 +388,10 @@ void main() {
 
       // Every tap is already on screen, before any request goes out.
       expect(
-        tester.widget<TextField>(find.byKey(const Key('destination_quantity_5'))).controller!.text,
+        tester
+            .widget<TextField>(find.byKey(const Key('destination_quantity_5')))
+            .controller!
+            .text,
         '7',
         reason: 'the field must not wait for the network',
       );
@@ -384,7 +408,11 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(
-        () => deliveries.updateLine(destinationId: 500, lineId: 900, quantity: '7'),
+        () => deliveries.updateLine(
+          destinationId: 500,
+          lineId: 900,
+          quantity: '7',
+        ),
       ).called(1);
     });
   });
@@ -408,75 +436,88 @@ void main() {
     });
   });
 
-  group('the client-side clamp sends nothing out of range (FR-021, SC-006)', () {
-    testWidgets('typing more than the sale still owes sends no request',
-        (tester) async {
-      when(
-        () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
-      ).thenAnswer((_) async => [existingDestination()]);
+  group(
+    'the client-side clamp sends nothing out of range (FR-021, SC-006)',
+    () {
+      testWidgets('typing more than the sale still owes sends no request', (
+        tester,
+      ) async {
+        when(
+          () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
+        ).thenAnswer((_) async => [existingDestination()]);
 
-      await pumpStep(tester);
-      await expand(tester);
-      await tester.enterText(find.byKey(const Key('destination_quantity_5')), '20');
-      await tester.testTextInput.receiveAction(TextInputAction.done);
-      await tester.pump();
+        await pumpStep(tester);
+        await expand(tester);
+        await tester.enterText(
+          find.byKey(const Key('destination_quantity_5')),
+          '20',
+        );
+        await tester.testTextInput.receiveAction(TextInputAction.done);
+        await tester.pump();
 
-      // Spec 030 FR-013: the discard now animates rather than snapping back
-      // silently — still showing the typed value right after Enter, before
-      // the fade has covered it.
-      expect(
-        tester
-            .widget<TextField>(find.byKey(const Key('destination_quantity_5')))
-            .controller!
-            .text,
-        '20',
-      );
+        // Spec 030 FR-013: the discard now animates rather than snapping back
+        // silently — still showing the typed value right after Enter, before
+        // the fade has covered it.
+        expect(
+          tester
+              .widget<TextField>(
+                find.byKey(const Key('destination_quantity_5')),
+              )
+              .controller!
+              .text,
+          '20',
+        );
 
-      await tester.pumpAndSettle();
+        await tester.pumpAndSettle();
 
-      verifyNever(
-        () => deliveries.addLine(
-          destinationId: any(named: 'destinationId'),
-          salesOrderDetail: any(named: 'salesOrderDetail'),
-          quantity: any(named: 'quantity'),
-        ),
-      );
-      // Reverted to the last confirmed value.
-      expect(find.text('0'), findsWidgets);
-    });
-
-    testWidgets("the '+' stepper is disabled once the ceiling is reached",
-        (tester) async {
-      when(
-        () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
-      ).thenAnswer(
-        (_) async => [
-          existingDestination(
-            lines: const [
-              DestinationLine(
-                id: 900,
-                salesOrderDetail: 5,
-                product: 11,
-                productCode: 'P-11',
-                productName: 'Widget',
-                quantity: '10',
-              ),
-            ],
+        verifyNever(
+          () => deliveries.addLine(
+            destinationId: any(named: 'destinationId'),
+            salesOrderDetail: any(named: 'salesOrderDetail'),
+            quantity: any(named: 'quantity'),
           ),
-        ],
-      );
+        );
+        // Reverted to the last confirmed value.
+        expect(find.text('0'), findsWidgets);
+      });
 
-      await pumpStep(tester);
-      await expand(tester);
+      testWidgets("the '+' stepper is disabled once the ceiling is reached", (
+        tester,
+      ) async {
+        when(
+          () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
+        ).thenAnswer(
+          (_) async => [
+            existingDestination(
+              lines: const [
+                DestinationLine(
+                  id: 900,
+                  salesOrderDetail: 5,
+                  product: 11,
+                  productCode: 'P-11',
+                  productName: 'Widget',
+                  quantity: '10',
+                ),
+              ],
+            ),
+          ],
+        );
 
-      final addButton = tester.widget<IconButton>(
-        find
-            .ancestor(of: find.byIcon(Icons.add).first, matching: find.byType(IconButton))
-            .first,
-      );
-      expect(addButton.onPressed, isNull);
-    });
-  });
+        await pumpStep(tester);
+        await expand(tester);
+
+        final addButton = tester.widget<IconButton>(
+          find
+              .ancestor(
+                of: find.byIcon(Icons.add).first,
+                matching: find.byType(IconButton),
+              )
+              .first,
+        );
+        expect(addButton.onPressed, isNull);
+      });
+    },
+  );
 
   group('a refused assignment (FR-024)', () {
     testWidgets('reverts the displayed quantity and reports the message on '
@@ -512,10 +553,16 @@ void main() {
         ],
       );
       final salesOrders = MockSalesOrderRepository();
-      when(() => salesOrders.confirm(saleId: sale.id)).thenAnswer((_) async => sale);
+      when(
+        () => salesOrders.confirm(saleId: sale.id),
+      ).thenAnswer((_) async => sale);
       final container = await pumpPos(
         tester,
-        DeliveryStep(sale: sale, mode: FulfillmentMode.delivery, onClose: () {}),
+        DeliveryStep(
+          sale: sale,
+          mode: FulfillmentMode.delivery,
+          onClose: () {},
+        ),
         overrides: [
           deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
           customerRepositoryProvider.overrideWithValue(customers),
@@ -539,7 +586,9 @@ void main() {
     );
 
     Future<void> addFirstDestination(WidgetTester tester) async {
-      await tester.tap(find.byKey(const Key('delivery_add_destination_button')));
+      await tester.tap(
+        find.byKey(const Key('delivery_add_destination_button')),
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('destination_address_button')));
       await tester.pumpAndSettle();
@@ -627,15 +676,28 @@ void main() {
         // see every line already at its full ordered quantity.
         expect(find.byKey(const Key('destination_card_500')), findsOneWidget);
         expect(
-          tester.widget<TextField>(find.byKey(const Key('destination_quantity_5'))).controller!.text,
+          tester
+              .widget<TextField>(
+                find.byKey(const Key('destination_quantity_5')),
+              )
+              .controller!
+              .text,
           '10',
         );
         expect(
-          tester.widget<TextField>(find.byKey(const Key('destination_quantity_6'))).controller!.text,
+          tester
+              .widget<TextField>(
+                find.byKey(const Key('destination_quantity_6')),
+              )
+              .controller!
+              .text,
           '4',
         );
         final l10n = await AppLocalizations.delegate.load(const Locale('es'));
-        expect(find.text(l10n.posDeliveryAssignedUnits('14', '14')), findsOneWidget);
+        expect(
+          find.text(l10n.posDeliveryAssignedUnits('14', '14')),
+          findsOneWidget,
+        );
 
         // Still adjustable exactly like a manually-entered quantity (FR-024):
         // stepping line 5 down one unit goes through the same adjustLine
@@ -649,42 +711,55 @@ void main() {
         await tester.pumpAndSettle();
 
         verify(
-          () => deliveries.updateLine(destinationId: 500, lineId: 900, quantity: '9'),
+          () => deliveries.updateLine(
+            destinationId: 500,
+            lineId: 900,
+            quantity: '9',
+          ),
         ).called(1);
         expect(
-          tester.widget<TextField>(find.byKey(const Key('destination_quantity_5'))).controller!.text,
+          tester
+              .widget<TextField>(
+                find.byKey(const Key('destination_quantity_5')),
+              )
+              .controller!
+              .text,
           '9',
         );
       },
     );
 
-    testWidgets(
-      'deleting the auto-assigned destination returns every line to '
-      'unassigned',
-      (tester) async {
-        when(
-          () => deliveries.cancel(
-            destinationId: any(named: 'destinationId'),
-            reason: any(named: 'reason'),
-          ),
-        ).thenAnswer((_) async {});
+    testWidgets('deleting the auto-assigned destination returns every line to '
+        'unassigned', (tester) async {
+      when(
+        () => deliveries.cancel(
+          destinationId: any(named: 'destinationId'),
+          reason: any(named: 'reason'),
+        ),
+      ).thenAnswer((_) async {});
 
-        await pumpEmptyStep(tester);
-        await addFirstDestination(tester);
-        expect(find.byKey(const Key('destination_card_500')), findsOneWidget);
+      await pumpEmptyStep(tester);
+      await addFirstDestination(tester);
+      expect(find.byKey(const Key('destination_card_500')), findsOneWidget);
 
-        await tester.tap(find.byKey(const Key('destination_remove_500')));
-        await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('destination_remove_500')));
+      await tester.pumpAndSettle();
 
-        verify(
-          () => deliveries.cancel(destinationId: 500, reason: any(named: 'reason')),
-        ).called(1);
-        expect(find.byKey(const Key('destination_card_500')), findsNothing);
+      verify(
+        () =>
+            deliveries.cancel(destinationId: 500, reason: any(named: 'reason')),
+      ).called(1);
+      expect(find.byKey(const Key('destination_card_500')), findsNothing);
 
-        final l10n = await AppLocalizations.delegate.load(const Locale('es'));
-        expect(find.text(l10n.posDeliveryAssignedUnits('0', '14')), findsOneWidget);
-        expect(find.byKey(const Key('delivery_outstanding_notice')), findsOneWidget);
-      },
-    );
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+      expect(
+        find.text(l10n.posDeliveryAssignedUnits('0', '14')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('delivery_outstanding_notice')),
+        findsOneWidget,
+      );
+    });
   });
 }

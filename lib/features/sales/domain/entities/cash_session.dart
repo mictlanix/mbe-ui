@@ -62,8 +62,10 @@ abstract class CashSession with _$CashSession {
 /// this as "cash received."
 @freezed
 abstract class PaymentMethodTotal with _$PaymentMethodTotal {
-  const factory PaymentMethodTotal({required int method, required String total}) =
-      _PaymentMethodTotal;
+  const factory PaymentMethodTotal({
+    required int method,
+    required String total,
+  }) = _PaymentMethodTotal;
 
   factory PaymentMethodTotal.fromResponse(MethodTotal r) =>
       PaymentMethodTotal(method: r.method, total: r.total);

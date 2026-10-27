@@ -56,7 +56,8 @@ void main() {
       () => customers.get(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => _customer());
     when(
-      () => payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
+      () =>
+          payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => '0');
   });
 
@@ -224,16 +225,16 @@ void main() {
         ),
       ).thenAnswer((_) async => const <ProductLookupResult>[]);
 
-      await container.read(
-        productLookupControllerProvider('clavo').future,
-      );
+      await container.read(productLookupControllerProvider('clavo').future);
 
       verify(() => anyOpen(salesOrders)).called(1);
-      verify(() => salesOrders.productLookup(
-            pattern: 'clavo',
-            customer: 7,
-            warehouse: any(named: 'warehouse'),
-          )).called(1);
+      verify(
+        () => salesOrders.productLookup(
+          pattern: 'clavo',
+          customer: 7,
+          warehouse: any(named: 'warehouse'),
+        ),
+      ).called(1);
     });
 
     testWidgets('finishing a sale returns the register to empty rather than '

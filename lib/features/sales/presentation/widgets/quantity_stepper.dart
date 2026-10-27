@@ -249,44 +249,50 @@ class QuantityStepper extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    String format(String wire) => ref.read(formattersProvider).field.quantity(wire);
-    return decoration == null ? _pillSkin(theme, format) : _fieldSkin(theme, format);
+    String format(String wire) =>
+        ref.read(formattersProvider).field.quantity(wire);
+    return decoration == null
+        ? _pillSkin(theme, format)
+        : _fieldSkin(theme, format);
   }
 
   // ── Pill skin (delivery destination card) ───────────────────────────────
 
-  Widget _pillSkin(ThemeData theme, String Function(String) format) => Container(
-    height: 44,
-    padding: const EdgeInsets.symmetric(horizontal: 2),
-    decoration: BoxDecoration(
-      color: theme.colorScheme.surfaceContainerHighest,
-      border: Border.all(color: theme.colorScheme.outlineVariant),
-      borderRadius: theme.shapes.xlRadius,
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _pillButton(Icons.remove, controller.canDecrement, -1),
-        SizedBox(
-          width: 56,
-          child: ConfirmableTextField(
-            controller: controller,
-            fieldKey: fieldKey,
-            enabled: enabled,
-            textAlign: TextAlign.center,
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            format: format,
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              isDense: true,
-              contentPadding: EdgeInsets.zero,
-            ),
-          ),
+  Widget _pillSkin(ThemeData theme, String Function(String) format) =>
+      Container(
+        height: 44,
+        padding: const EdgeInsets.symmetric(horizontal: 2),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest,
+          border: Border.all(color: theme.colorScheme.outlineVariant),
+          borderRadius: theme.shapes.xlRadius,
         ),
-        _pillButton(Icons.add, controller.canIncrement, 1),
-      ],
-    ),
-  );
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _pillButton(Icons.remove, controller.canDecrement, -1),
+            SizedBox(
+              width: 56,
+              child: ConfirmableTextField(
+                controller: controller,
+                fieldKey: fieldKey,
+                enabled: enabled,
+                textAlign: TextAlign.center,
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                format: format,
+                decoration: const InputDecoration(
+                  border: InputBorder.none,
+                  isDense: true,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ),
+            _pillButton(Icons.add, controller.canIncrement, 1),
+          ],
+        ),
+      );
 
   Widget _pillButton(IconData icon, bool boundOk, int delta) => IconButton(
     icon: Icon(icon, size: 18),
@@ -321,7 +327,11 @@ class QuantityStepper extends ConsumerWidget {
     final onPressed = enabled && boundOk ? () => controller.step(delta) : null;
     final tooltip = delta < 0 ? decrementTooltip : incrementTooltip;
     if (!dense) {
-      return IconButton(icon: Icon(icon), tooltip: tooltip, onPressed: onPressed);
+      return IconButton(
+        icon: Icon(icon),
+        tooltip: tooltip,
+        onPressed: onPressed,
+      );
     }
     return IconButton(
       icon: Icon(icon, size: 18),
@@ -329,7 +339,9 @@ class QuantityStepper extends ConsumerWidget {
       padding: EdgeInsets.zero,
       constraints: const BoxConstraints.tightFor(width: 32, height: 32),
       visualDensity: VisualDensity.compact,
-      style: IconButton.styleFrom(tapTargetSize: MaterialTapTargetSize.shrinkWrap),
+      style: IconButton.styleFrom(
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
       onPressed: onPressed,
     );
   }

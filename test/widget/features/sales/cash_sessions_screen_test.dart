@@ -77,7 +77,10 @@ const _canCloseUser = User(
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.pos, rawValue: 1), // create
-    Privilege(systemObject: SystemObject.cashSessionClose, rawValue: 4), // update
+    Privilege(
+      systemObject: SystemObject.cashSessionClose,
+      rawValue: 4,
+    ), // update
   ],
 );
 
@@ -120,7 +123,9 @@ void main() {
     List<CashSession> historyItems = const [],
     int? otherOpenSessionsTotalFor,
   }) async {
-    when(() => cashSessionRepository.getCurrent()).thenAnswer((_) async => current);
+    when(
+      () => cashSessionRepository.getCurrent(),
+    ).thenAnswer((_) async => current);
     when(
       () => cashSessionRepository.list(
         cashDrawerId: any(named: 'cashDrawerId'),
@@ -130,7 +135,10 @@ void main() {
         limit: any(named: 'limit'),
       ),
     ).thenAnswer(
-      (_) async => CashSessionListResult(items: historyItems, total: historyItems.length),
+      (_) async => CashSessionListResult(
+        items: historyItems,
+        total: historyItems.length,
+      ),
     );
     // hasOtherOpenSessionsProvider calls list(cashierId:, status: open,
     // limit: 100) with no cashDrawerId/skip. Mocktail resolves overlapping
@@ -155,7 +163,9 @@ void main() {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         authProvider.overrideWith(
-          () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: user)),
+          () => _FixedAuthNotifier(
+            AuthState.authenticated(token: 't', user: user),
+          ),
         ),
         accessControlProvider.overrideWithValue(
           AccessControlService(AuthState.authenticated(token: 't', user: user)),
@@ -177,9 +187,8 @@ void main() {
         ),
         GoRoute(
           path: '/sales/cash-sessions/:id',
-          builder: (context, state) => Scaffold(
-            body: Text('detail-${state.pathParameters['id']}'),
-          ),
+          builder: (context, state) =>
+              Scaffold(body: Text('detail-${state.pathParameters['id']}')),
         ),
       ],
     );
@@ -211,22 +220,31 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  group('CashSessionsScreen — the route is a standard list screen (US5, FR-027)', () {
-    testWidgets('no form is embedded above the history list', (tester) async {
-      await pumpScreen(
-        tester,
-        user: _canOpenWithDrawerAccessUser,
-        current: const CurrentSession(state: SessionState.none),
-        historyItems: [_session()],
-      );
+  group(
+    'CashSessionsScreen — the route is a standard list screen (US5, FR-027)',
+    () {
+      testWidgets('no form is embedded above the history list', (tester) async {
+        await pumpScreen(
+          tester,
+          user: _canOpenWithDrawerAccessUser,
+          current: const CurrentSession(state: SessionState.none),
+          historyItems: [_session()],
+        );
 
-      // The open-shift form's own fields must not be visible until the
-      // sheet is opened — they used to sit directly on the screen.
-      expect(find.byKey(const Key('cash_session_drawer_field')), findsNothing);
-      expect(find.byKey(const Key('cash_session_opening_amount_field')), findsNothing);
-      expect(find.byKey(const Key('cash_sessions_table')), findsOneWidget);
-    });
-  });
+        // The open-shift form's own fields must not be visible until the
+        // sheet is opened — they used to sit directly on the screen.
+        expect(
+          find.byKey(const Key('cash_session_drawer_field')),
+          findsNothing,
+        );
+        expect(
+          find.byKey(const Key('cash_session_opening_amount_field')),
+          findsNothing,
+        );
+        expect(find.byKey(const Key('cash_sessions_table')), findsOneWidget);
+      });
+    },
+  );
 
   group('CashSessionsScreen — shift toolbar action (US5, FR-027/FR-028a)', () {
     testWidgets(
@@ -238,8 +256,13 @@ void main() {
           current: const CurrentSession(state: SessionState.none),
         );
 
-        final l10n = await AppLocalizations.delegate.load(const Locale('es', 'MX'));
-        expect(find.byKey(const Key('cash_sessions_shift_button')), findsOneWidget);
+        final l10n = await AppLocalizations.delegate.load(
+          const Locale('es', 'MX'),
+        );
+        expect(
+          find.byKey(const Key('cash_sessions_shift_button')),
+          findsOneWidget,
+        );
         expect(find.text(l10n.cashSessionOpenButtonLabel), findsOneWidget);
       },
     );
@@ -253,9 +276,15 @@ void main() {
         current: CurrentSession(state: SessionState.open, session: _session()),
       );
 
-      expect(find.byKey(const Key('cash_sessions_shift_button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('cash_sessions_shift_button')),
+        findsOneWidget,
+      );
       expect(find.text('Caja 1'), findsOneWidget);
-      expect(find.byKey(const Key('cash_session_status_chip_open')), findsOneWidget);
+      expect(
+        find.byKey(const Key('cash_session_status_chip_open')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('stale shift: the toolbar action itself signals staleness', (
@@ -267,8 +296,14 @@ void main() {
         current: CurrentSession(state: SessionState.stale, session: _session()),
       );
 
-      expect(find.byKey(const Key('cash_sessions_shift_button')), findsOneWidget);
-      expect(find.byKey(const Key('cash_session_status_chip_stale')), findsOneWidget);
+      expect(
+        find.byKey(const Key('cash_sessions_shift_button')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('cash_session_status_chip_stale')),
+        findsOneWidget,
+      );
     });
 
     testWidgets(
@@ -280,7 +315,10 @@ void main() {
           current: const CurrentSession(state: SessionState.none),
         );
 
-        expect(find.byKey(const Key('cash_sessions_shift_button')), findsNothing);
+        expect(
+          find.byKey(const Key('cash_sessions_shift_button')),
+          findsNothing,
+        );
       },
     );
   });
@@ -296,12 +334,18 @@ void main() {
         );
         await openShiftSheet(tester);
 
-        expect(find.byKey(const Key('cash_session_drawer_field')), findsOneWidget);
+        expect(
+          find.byKey(const Key('cash_session_drawer_field')),
+          findsOneWidget,
+        );
         expect(
           find.byKey(const Key('cash_session_opening_amount_field')),
           findsOneWidget,
         );
-        expect(find.byKey(const Key('cash_session_open_button')), findsOneWidget);
+        expect(
+          find.byKey(const Key('cash_session_open_button')),
+          findsOneWidget,
+        );
       },
     );
 
@@ -320,7 +364,10 @@ void main() {
           find.byKey(const Key('cash_session_drawer_static_label')),
           findsOneWidget,
         );
-        expect(find.byKey(const Key('cash_session_drawer_field')), findsNothing);
+        expect(
+          find.byKey(const Key('cash_session_drawer_field')),
+          findsNothing,
+        );
         expect(find.text('Caja 5'), findsOneWidget);
         verifyNever(
           () => cashDrawerRepository.list(
@@ -349,7 +396,10 @@ void main() {
           find.byKey(const Key('cash_session_drawer_blocked_message')),
           findsOneWidget,
         );
-        expect(find.byKey(const Key('cash_session_drawer_field')), findsNothing);
+        expect(
+          find.byKey(const Key('cash_session_drawer_field')),
+          findsNothing,
+        );
         expect(
           find.byKey(const Key('cash_session_drawer_static_label')),
           findsNothing,
@@ -396,7 +446,10 @@ void main() {
         await pumpScreen(
           tester,
           user: _canOpenWithDrawerAccessUser,
-          current: CurrentSession(state: SessionState.open, session: _session()),
+          current: CurrentSession(
+            state: SessionState.open,
+            session: _session(),
+          ),
         );
         await openShiftSheet(tester);
 
@@ -411,7 +464,10 @@ void main() {
         // every other currency site in the app, which never had this bug
         // because they never called `Localizations.localeOf` themselves.
         expect(find.textContaining(r'$3,240.00'), findsOneWidget);
-        expect(find.byKey(const Key('cash_session_close_button')), findsOneWidget);
+        expect(
+          find.byKey(const Key('cash_session_close_button')),
+          findsOneWidget,
+        );
       },
     );
 
@@ -421,11 +477,17 @@ void main() {
         await pumpScreen(
           tester,
           user: _canOpenWithDrawerAccessUser,
-          current: CurrentSession(state: SessionState.stale, session: _session()),
+          current: CurrentSession(
+            state: SessionState.stale,
+            session: _session(),
+          ),
         );
         await openShiftSheet(tester);
 
-        expect(find.byKey(const Key('cash_session_close_button')), findsOneWidget);
+        expect(
+          find.byKey(const Key('cash_session_close_button')),
+          findsOneWidget,
+        );
       },
     );
 
@@ -436,7 +498,10 @@ void main() {
         await pumpScreen(
           tester,
           user: _canOpenWithDrawerAccessUser,
-          current: CurrentSession(state: SessionState.open, session: _session()),
+          current: CurrentSession(
+            state: SessionState.open,
+            session: _session(),
+          ),
         );
         await openShiftSheet(tester);
 
@@ -445,7 +510,10 @@ void main() {
 
         expect(find.text('detail-1'), findsOneWidget);
         // The sheet itself must be gone, not left open behind the new route.
-        expect(find.byKey(const Key('cash_session_close_button')), findsNothing);
+        expect(
+          find.byKey(const Key('cash_session_close_button')),
+          findsNothing,
+        );
       },
     );
   });
@@ -457,12 +525,18 @@ void main() {
         await pumpScreen(
           tester,
           user: _canOpenWithDrawerAccessUser,
-          current: CurrentSession(state: SessionState.open, session: _session()),
+          current: CurrentSession(
+            state: SessionState.open,
+            session: _session(),
+          ),
           otherOpenSessionsTotalFor: 100,
         );
         await openShiftSheet(tester);
 
-        expect(find.byKey(const Key('cash_session_other_sessions_warning')), findsOneWidget);
+        expect(
+          find.byKey(const Key('cash_session_other_sessions_warning')),
+          findsOneWidget,
+        );
       },
     );
 
@@ -472,11 +546,17 @@ void main() {
         await pumpScreen(
           tester,
           user: _canOpenWithDrawerAccessUser,
-          current: CurrentSession(state: SessionState.open, session: _session()),
+          current: CurrentSession(
+            state: SessionState.open,
+            session: _session(),
+          ),
         );
         await openShiftSheet(tester);
 
-        expect(find.byKey(const Key('cash_session_other_sessions_warning')), findsNothing);
+        expect(
+          find.byKey(const Key('cash_session_other_sessions_warning')),
+          findsNothing,
+        );
       },
     );
   });
@@ -495,23 +575,27 @@ void main() {
       expect(find.text('Ana López'), findsWidgets);
     });
 
-    testWidgets('the search slot renders nothing — a deliberate departure, '
-        'not a missing feature (research.md §12, spec D-003, spec 027 FR-029)', (
-      tester,
-    ) async {
-      await pumpScreen(
-        tester,
-        user: _canOpenWithDrawerAccessUser,
-        current: const CurrentSession(state: SessionState.none),
-      );
+    testWidgets(
+      'the search slot renders nothing — a deliberate departure, '
+      'not a missing feature (research.md §12, spec D-003, spec 027 FR-029)',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          user: _canOpenWithDrawerAccessUser,
+          current: const CurrentSession(state: SessionState.none),
+        );
 
-      // Every other list screen's search box is a CatalogSearchBar — its
-      // absence here is the deliberate departure (research.md §12), not the
-      // absence of every TextField on the page (the shift sheet legitimately
-      // has some, once opened).
-      expect(find.byType(CatalogSearchBar), findsNothing);
-      expect(find.byKey(const Key('cash_sessions_filter_button')), findsOneWidget);
-    });
+        // Every other list screen's search box is a CatalogSearchBar — its
+        // absence here is the deliberate departure (research.md §12), not the
+        // absence of every TextField on the page (the shift sheet legitimately
+        // has some, once opened).
+        expect(find.byType(CatalogSearchBar), findsNothing);
+        expect(
+          find.byKey(const Key('cash_sessions_filter_button')),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets('a row click opens that session\'s detail, read-only — the '
         'row\'s sole affordance, no row action icons (FR-030)', (tester) async {
@@ -528,7 +612,9 @@ void main() {
       expect(find.text('detail-1'), findsOneWidget);
     });
 
-    testWidgets('the empty state renders when there is no history', (tester) async {
+    testWidgets('the empty state renders when there is no history', (
+      tester,
+    ) async {
       await pumpScreen(
         tester,
         user: _canOpenWithDrawerAccessUser,
@@ -539,144 +625,144 @@ void main() {
     });
   });
 
-  group(
-    'CashSessionsScreen — history list refresh after open/close (spec 041 '
-    'US3, FR-008–FR-011)',
-    () {
-      testWidgets(
-        'opening a session causes the history list to be fetched a second '
-        'time, with no other action taken',
-        (tester) async {
-          when(
-            () => cashSessionRepository.open(
-              cashDrawerId: any(named: 'cashDrawerId'),
-              openingAmount: any(named: 'openingAmount'),
-            ),
-          ).thenAnswer((_) async => _session());
+  group('CashSessionsScreen — history list refresh after open/close (spec 041 '
+      'US3, FR-008–FR-011)', () {
+    testWidgets(
+      'opening a session causes the history list to be fetched a second '
+      'time, with no other action taken',
+      (tester) async {
+        when(
+          () => cashSessionRepository.open(
+            cashDrawerId: any(named: 'cashDrawerId'),
+            openingAmount: any(named: 'openingAmount'),
+          ),
+        ).thenAnswer((_) async => _session());
 
-          await pumpScreen(
-            tester,
-            user: _canOpenNoDrawerAccessAssignedUser,
-            current: const CurrentSession(state: SessionState.none),
-          );
-          verify(
-            () => cashSessionRepository.list(
-              cashDrawerId: any(named: 'cashDrawerId'),
-              cashierId: any(named: 'cashierId'),
-              status: any(named: 'status'),
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).called(1);
+        await pumpScreen(
+          tester,
+          user: _canOpenNoDrawerAccessAssignedUser,
+          current: const CurrentSession(state: SessionState.none),
+        );
+        verify(
+          () => cashSessionRepository.list(
+            cashDrawerId: any(named: 'cashDrawerId'),
+            cashierId: any(named: 'cashierId'),
+            status: any(named: 'status'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(1);
 
-          await openShiftSheet(tester);
-          await tester.tap(find.byKey(const Key('cash_session_open_button')));
-          await tester.pumpAndSettle();
+        await openShiftSheet(tester);
+        await tester.tap(find.byKey(const Key('cash_session_open_button')));
+        await tester.pumpAndSettle();
 
-          verify(
-            () => cashSessionRepository.list(
-              cashDrawerId: any(named: 'cashDrawerId'),
-              cashierId: any(named: 'cashierId'),
-              status: any(named: 'status'),
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).called(1);
-        },
-      );
+        verify(
+          () => cashSessionRepository.list(
+            cashDrawerId: any(named: 'cashDrawerId'),
+            cashierId: any(named: 'cashierId'),
+            status: any(named: 'status'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(1);
+      },
+    );
 
-      testWidgets(
-        'closing the current session causes the history list to be fetched '
-        'a second time',
-        (tester) async {
-          when(
-            () => cashSessionRepository.close(
-              cashSessionId: any(named: 'cashSessionId'),
-              counts: any(named: 'counts'),
-            ),
-          ).thenAnswer((_) async => _session());
+    testWidgets(
+      'closing the current session causes the history list to be fetched '
+      'a second time',
+      (tester) async {
+        when(
+          () => cashSessionRepository.close(
+            cashSessionId: any(named: 'cashSessionId'),
+            counts: any(named: 'counts'),
+          ),
+        ).thenAnswer((_) async => _session());
 
-          final container = await pumpScreen(
-            tester,
-            user: _canCloseUser,
-            current: CurrentSession(state: SessionState.open, session: _session()),
-          );
-          verify(
-            () => cashSessionRepository.list(
-              cashDrawerId: any(named: 'cashDrawerId'),
-              cashierId: any(named: 'cashierId'),
-              status: any(named: 'status'),
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).called(1);
+        final container = await pumpScreen(
+          tester,
+          user: _canCloseUser,
+          current: CurrentSession(
+            state: SessionState.open,
+            session: _session(),
+          ),
+        );
+        verify(
+          () => cashSessionRepository.list(
+            cashDrawerId: any(named: 'cashDrawerId'),
+            cashierId: any(named: 'cashierId'),
+            status: any(named: 'status'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(1);
 
-          // The close button on this screen's shift card only navigates to
-          // the session's own detail route (`cash_session_detail_screen
-          // .dart`), where the real submit actually happens — this test's
-          // stand-in `/sales/cash-sessions/:id` route is a bare `Text`, so
-          // the close is driven directly through the same controller the
-          // real detail screen uses, exactly as `pos_lazy_open_test.dart`
-          // drives a controller directly rather than simulating its host
-          // screen.
-          final closeController = container.read(
-            closeSessionFormControllerProvider.notifier,
-          );
-          closeController.loadSession(_session());
-          await closeController.submit();
-          await tester.pumpAndSettle();
+        // The close button on this screen's shift card only navigates to
+        // the session's own detail route (`cash_session_detail_screen
+        // .dart`), where the real submit actually happens — this test's
+        // stand-in `/sales/cash-sessions/:id` route is a bare `Text`, so
+        // the close is driven directly through the same controller the
+        // real detail screen uses, exactly as `pos_lazy_open_test.dart`
+        // drives a controller directly rather than simulating its host
+        // screen.
+        final closeController = container.read(
+          closeSessionFormControllerProvider.notifier,
+        );
+        closeController.loadSession(_session());
+        await closeController.submit();
+        await tester.pumpAndSettle();
 
-          verify(
-            () => cashSessionRepository.list(
-              cashDrawerId: any(named: 'cashDrawerId'),
-              cashierId: any(named: 'cashierId'),
-              status: any(named: 'status'),
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).called(1);
-        },
-      );
+        verify(
+          () => cashSessionRepository.list(
+            cashDrawerId: any(named: 'cashDrawerId'),
+            cashierId: any(named: 'cashierId'),
+            status: any(named: 'status'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(1);
+      },
+    );
 
-      testWidgets(
-        'cancelling the open form without submitting does not trigger any '
-        'additional history-list fetch',
-        (tester) async {
-          await pumpScreen(
-            tester,
-            user: _canOpenWithDrawerAccessUser,
-            current: const CurrentSession(state: SessionState.none),
-          );
-          verify(
-            () => cashSessionRepository.list(
-              cashDrawerId: any(named: 'cashDrawerId'),
-              cashierId: any(named: 'cashierId'),
-              status: any(named: 'status'),
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).called(1);
+    testWidgets(
+      'cancelling the open form without submitting does not trigger any '
+      'additional history-list fetch',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          user: _canOpenWithDrawerAccessUser,
+          current: const CurrentSession(state: SessionState.none),
+        );
+        verify(
+          () => cashSessionRepository.list(
+            cashDrawerId: any(named: 'cashDrawerId'),
+            cashierId: any(named: 'cashierId'),
+            status: any(named: 'status'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).called(1);
 
-          await openShiftSheet(tester);
-          await tester.tap(find.byKey(const Key('filter_sheet_close_button')));
-          await tester.pumpAndSettle();
+        await openShiftSheet(tester);
+        await tester.tap(find.byKey(const Key('filter_sheet_close_button')));
+        await tester.pumpAndSettle();
 
-          // mocktail's `verify` marks matched calls VERIFIED so a later
-          // verify/verifyNever only sees calls made *since* the previous
-          // verify — the initial load's one call was already consumed
-          // above, so `verifyNever` here correctly asserts no *new* call
-          // followed the cancel (FR-010).
-          verifyNever(
-            () => cashSessionRepository.list(
-              cashDrawerId: any(named: 'cashDrawerId'),
-              cashierId: any(named: 'cashierId'),
-              status: any(named: 'status'),
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          );
-        },
-      );
-    },
-  );
+        // mocktail's `verify` marks matched calls VERIFIED so a later
+        // verify/verifyNever only sees calls made *since* the previous
+        // verify — the initial load's one call was already consumed
+        // above, so `verifyNever` here correctly asserts no *new* call
+        // followed the cancel (FR-010).
+        verifyNever(
+          () => cashSessionRepository.list(
+            cashDrawerId: any(named: 'cashDrawerId'),
+            cashierId: any(named: 'cashierId'),
+            status: any(named: 'status'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        );
+      },
+    );
+  });
 }

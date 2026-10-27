@@ -113,24 +113,17 @@ void main() {
     skip: !_hasKnownProduct,
   );
 
-  test(
-    'scenario 2: a partial name search finds matching products',
-    () async {
-      final result = await productRepository.list(
-        search: _knownProductNamePart,
-      );
+  test('scenario 2: a partial name search finds matching products', () async {
+    final result = await productRepository.list(search: _knownProductNamePart);
 
-      expect(
-        result.items.any(
-          (p) => p.name.toLowerCase().contains(
-            _knownProductNamePart.toLowerCase(),
-          ),
-        ),
-        isTrue,
-      );
-    },
-    skip: !_hasKnownProductName,
-  );
+    expect(
+      result.items.any(
+        (p) =>
+            p.name.toLowerCase().contains(_knownProductNamePart.toLowerCase()),
+      ),
+      isTrue,
+    );
+  }, skip: !_hasKnownProductName);
 
   test(
     'scenario 4: a user without products privilege is denied access (FR-012, SC-004)',
@@ -165,56 +158,50 @@ void main() {
     expect(fetched.code, code);
   }, skip: !_hasCreateCredentials);
 
-  test(
-    'US2 scenario 2: a duplicate code is rejected (FR-004)',
-    () async {
-      final repo = await authenticatedProductRepository(
-        _createUsername,
-        _createPassword,
-      );
-      final code = 'IT-${DateTime.now().millisecondsSinceEpoch}';
+  test('US2 scenario 2: a duplicate code is rejected (FR-004)', () async {
+    final repo = await authenticatedProductRepository(
+      _createUsername,
+      _createPassword,
+    );
+    final code = 'IT-${DateTime.now().millisecondsSinceEpoch}';
 
-      await repo.create(
+    await repo.create(
+      code: code,
+      name: 'Integration Test Widget',
+      unitOfMeasurement: _unitOfMeasurement,
+    );
+
+    // A duplicate code is a 409, not a 422: mbe-api raises its own
+    // `HTTPException` for it, and `mapDioException` reserves
+    // `ValidationError` for 422's field-error list. Same shape the cash
+    // session suite asserts on for its own conflicts.
+    await expectLater(
+      () => repo.create(
         code: code,
-        name: 'Integration Test Widget',
+        name: 'Integration Test Widget Duplicate',
         unitOfMeasurement: _unitOfMeasurement,
-      );
+      ),
+      throwsA(
+        isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409),
+      ),
+    );
+  }, skip: !_hasCreateCredentials);
 
-      // A duplicate code is a 409, not a 422: mbe-api raises its own
-      // `HTTPException` for it, and `mapDioException` reserves
-      // `ValidationError` for 422's field-error list. Same shape the cash
-      // session suite asserts on for its own conflicts.
-      await expectLater(
-        () => repo.create(
-          code: code,
-          name: 'Integration Test Widget Duplicate',
-          unitOfMeasurement: _unitOfMeasurement,
-        ),
-        throwsA(isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409)),
-      );
-    },
-    skip: !_hasCreateCredentials,
-  );
+  test('US2 scenario 4: an invalid name is rejected (FR-006)', () async {
+    final repo = await authenticatedProductRepository(
+      _createUsername,
+      _createPassword,
+    );
 
-  test(
-    'US2 scenario 4: an invalid name is rejected (FR-006)',
-    () async {
-      final repo = await authenticatedProductRepository(
-        _createUsername,
-        _createPassword,
-      );
-
-      await expectLater(
-        () => repo.create(
-          code: 'IT-${DateTime.now().millisecondsSinceEpoch}',
-          name: 'Hi',
-          unitOfMeasurement: _unitOfMeasurement,
-        ),
-        throwsA(isA<ValidationError>()),
-      );
-    },
-    skip: !_hasCreateCredentials,
-  );
+    await expectLater(
+      () => repo.create(
+        code: 'IT-${DateTime.now().millisecondsSinceEpoch}',
+        name: 'Hi',
+        unitOfMeasurement: _unitOfMeasurement,
+      ),
+      throwsA(isA<ValidationError>()),
+    );
+  }, skip: !_hasCreateCredentials);
 
   test('US3 scenario 1: editing a name/tax rate persists and is reflected on '
       'a fresh get() (FR-009)', () async {
@@ -265,7 +252,9 @@ void main() {
 
       await expectLater(
         () => repo.update(productId: toRename.productId, code: existingCode),
-        throwsA(isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409)),
+        throwsA(
+          isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409),
+        ),
       );
     },
     skip: !_hasCreateCredentials,

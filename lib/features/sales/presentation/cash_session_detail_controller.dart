@@ -10,6 +10,8 @@ part 'cash_session_detail_controller.g.dart';
 class CashSessionDetailController extends _$CashSessionDetailController {
   @override
   Future<CashSession> build(int cashSessionId) {
-    return ref.watch(cashSessionRepositoryProvider).get(cashSessionId: cashSessionId);
+    return ref
+        .watch(cashSessionRepositoryProvider)
+        .get(cashSessionId: cashSessionId);
   }
 }

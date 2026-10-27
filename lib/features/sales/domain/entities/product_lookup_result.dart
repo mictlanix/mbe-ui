@@ -2,7 +2,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/network/photo_url.dart';
-import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart' show unitLabelOf;
+import 'package:mbe_ui/features/sales/domain/entities/sale_line.dart'
+    show unitLabelOf;
 
 part 'product_lookup_result.freezed.dart';
 

@@ -88,10 +88,7 @@ List<Widget> buildCatalogRowActions({
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 spacing: 12,
-                children: [
-                  Icon(action.icon, size: 20),
-                  Text(action.tooltip),
-                ],
+                children: [Icon(action.icon, size: 20), Text(action.tooltip)],
               ),
             ),
         ],

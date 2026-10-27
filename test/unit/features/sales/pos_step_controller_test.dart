@@ -8,7 +8,7 @@ void main() {
   late ProviderContainer container;
 
   setUp(() {
-    container = ProviderContainer(retry: (_, _) => null, );
+    container = ProviderContainer(retry: (_, _) => null);
     addTearDown(container.dispose);
   });
 
@@ -91,7 +91,10 @@ void main() {
       n.setMode(FulfillmentMode.delivery);
       n.advanceToCobro();
       n.advanceFromCobro();
-      expect(container.read(posStepControllerProvider).current, PosStep.entrega);
+      expect(
+        container.read(posStepControllerProvider).current,
+        PosStep.entrega,
+      );
     });
 
     test('moves to Entrega for mixed', () {
@@ -99,7 +102,10 @@ void main() {
       n.setMode(FulfillmentMode.mixed);
       n.advanceToCobro();
       n.advanceFromCobro();
-      expect(container.read(posStepControllerProvider).current, PosStep.entrega);
+      expect(
+        container.read(posStepControllerProvider).current,
+        PosStep.entrega,
+      );
     });
   });
 

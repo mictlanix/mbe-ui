@@ -37,7 +37,9 @@ void main() {
 
     test('a single low-value denomination with a large quantity does not '
         'drift — the exact-decimal property, not an approximation', () {
-      const counts = [DenominationCount(denomination: '0.50', quantity: 1000000)];
+      const counts = [
+        DenominationCount(denomination: '0.50', quantity: 1000000),
+      ];
       expect(countedTotal(counts), Decimal.parse('500000'));
     });
   });
@@ -53,7 +55,10 @@ void main() {
         openingAmount: '500',
         payments: [
           PaymentMethodTotal(method: PaymentMethod.cash.code, total: '3240'),
-          PaymentMethodTotal(method: PaymentMethod.creditCard.code, total: '1180'),
+          PaymentMethodTotal(
+            method: PaymentMethod.creditCard.code,
+            total: '1180',
+          ),
         ],
       );
       // 500 + 3240, credit card excluded entirely.
@@ -65,7 +70,10 @@ void main() {
       final result = expectedCash(
         openingAmount: '500',
         payments: [
-          PaymentMethodTotal(method: PaymentMethod.debitCard.code, total: '900'),
+          PaymentMethodTotal(
+            method: PaymentMethod.debitCard.code,
+            total: '900',
+          ),
         ],
       );
       expect(result, Decimal.parse('500'));
@@ -75,7 +83,9 @@ void main() {
         'the figure is advisory and must reflect reality, not hide it', () {
       final result = expectedCash(
         openingAmount: '500',
-        payments: [PaymentMethodTotal(method: PaymentMethod.cash.code, total: '-100')],
+        payments: [
+          PaymentMethodTotal(method: PaymentMethod.cash.code, total: '-100'),
+        ],
       );
       expect(result, Decimal.parse('400'));
     });

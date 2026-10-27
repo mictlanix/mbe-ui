@@ -32,9 +32,7 @@ void main() {
   });
 
   test('clear delegates to the underlying storage', () async {
-    when(
-      () => storage.delete(key: any(named: 'key')),
-    ).thenAnswer((_) async {});
+    when(() => storage.delete(key: any(named: 'key'))).thenAnswer((_) async {});
 
     await tokenStorage.clear();
 
@@ -46,10 +44,16 @@ void main() {
       () => storage.read(key: any(named: 'key')),
     ).thenThrow(PlatformException(code: 'boom'));
     when(
-      () => storage.write(key: any(named: 'key'), value: any(named: 'value')),
+      () => storage.write(
+        key: any(named: 'key'),
+        value: any(named: 'value'),
+      ),
     ).thenThrow(PlatformException(code: 'boom'));
 
     expect(() => tokenStorage.read(), throwsA(isA<PlatformException>()));
-    expect(() => tokenStorage.write('token'), throwsA(isA<PlatformException>()));
+    expect(
+      () => tokenStorage.write('token'),
+      throwsA(isA<PlatformException>()),
+    );
   });
 }

@@ -154,7 +154,10 @@ class AppSettings {
       defaultLocale: _parseLocale(_defaultLocaleEnv),
       formatting: FormattingSettings.fromEnvironment(),
       inputDebounce: _parseDebounceMs(_inputDebounceMsEnv, 300),
-      quantityCommitDebounce: _parseDebounceMs(_quantityCommitDebounceMsEnv, 400),
+      quantityCommitDebounce: _parseDebounceMs(
+        _quantityCommitDebounceMsEnv,
+        400,
+      ),
       productSearchMultiSelect: _parseBool(_productSearchMultiSelectEnv, true),
       multiCurrencyEnabled: _parseBool(_multiCurrencyEnabledEnv, false),
     );

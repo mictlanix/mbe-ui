@@ -86,8 +86,7 @@ class _WarehousePickerDialog extends ConsumerWidget {
         selected != null &&
         !saleIds.contains(selected) &&
         !groups.any((g) => g.warehouses.any((r) => r.warehouse == selected));
-    final showOthers =
-        (stock != null && stock!.stockable) || currentUnlisted;
+    final showOthers = (stock != null && stock!.stockable) || currentUnlisted;
 
     // One row per warehouse, local or other: tap pops its id.
     Widget row({
@@ -133,9 +132,9 @@ class _WarehousePickerDialog extends ConsumerWidget {
           Text(l10n.posWarehousePickerTitle),
           Text(
             subtitle,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: scheme.onSurfaceVariant,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
           ),
         ],
       ),

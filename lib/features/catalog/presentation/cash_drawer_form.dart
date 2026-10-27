@@ -84,9 +84,7 @@ class CashDrawerFormPanelState extends ConsumerState<CashDrawerForm> {
         ref
             .read(cashDrawerFormControllerProvider.notifier)
             .facilitySelected(facilityId, name ?? '');
-        setState(
-          () => _snapshot = ref.read(cashDrawerFormControllerProvider),
-        );
+        setState(() => _snapshot = ref.read(cashDrawerFormControllerProvider));
       });
     } else {
       _snapshot = ref.read(cashDrawerFormControllerProvider);

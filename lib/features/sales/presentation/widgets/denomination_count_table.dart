@@ -57,7 +57,10 @@ class DenominationCountTable extends ConsumerWidget {
                   flex: 2,
                   child: Text(
                     fmt.display.currency(
-                      extendedAmount(denomination, quantities[denomination] ?? 0),
+                      extendedAmount(
+                        denomination,
+                        quantities[denomination] ?? 0,
+                      ),
                     ),
                     textAlign: TextAlign.right,
                   ),

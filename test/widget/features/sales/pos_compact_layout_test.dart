@@ -84,7 +84,8 @@ void main() {
       ),
     );
     when(
-      () => payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
+      () =>
+          payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => '0');
     when(
       () => payments.listForOrder(saleId: any(named: 'saleId')),
@@ -149,7 +150,10 @@ void main() {
 
     testWidgets('every field of a line is still editable — nothing is dropped '
         'to make it fit (FR-022)', (tester) async {
-      await pumpCapture(tester, sale: testSale(lines: [testLine(unit: 'Pza')]));
+      await pumpCapture(
+        tester,
+        sale: testSale(lines: [testLine(unit: 'Pza')]),
+      );
 
       final card = find.byType(SaleLineCard);
       for (final label in [
@@ -167,7 +171,10 @@ void main() {
       }
       // The unit is inline on the quantity field rather than a column of its
       // own, but it is still shown.
-      expect(find.descendant(of: card, matching: find.text('Pza')), findsOneWidget);
+      expect(
+        find.descendant(of: card, matching: find.text('Pza')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('the totals and the primary action stay put while the lines '
@@ -238,13 +245,17 @@ void main() {
         overrides: [
           customerPaymentOverride(payments),
           openSessionOverride(),
-          paymentMethodOptionRepositoryProvider.overrideWithValue(paymentOptions),
+          paymentMethodOptionRepositoryProvider.overrideWithValue(
+            paymentOptions,
+          ),
         ],
       );
     }
 
     testWidgets('amount entry, the quick amounts, the method chips and the '
-        'number pad are all reachable by vertical scroll alone', (tester) async {
+        'number pad are all reachable by vertical scroll alone', (
+      tester,
+    ) async {
       await pumpPayment(tester);
 
       expect(find.byKey(const Key('payment_amount_field')), findsOneWidget);

@@ -23,12 +23,19 @@ void main() {
       expect(filter.search, 'Acme');
     });
 
-    test('an unrecognized status name degrades to null rather than throwing', () {
-      final filter = SalesQuotesFilter.fromQuery(
-        const ListQuery(facets: {'status': ['not-a-status']}),
-      );
-      expect(filter.status, isNull);
-    });
+    test(
+      'an unrecognized status name degrades to null rather than throwing',
+      () {
+        final filter = SalesQuotesFilter.fromQuery(
+          const ListQuery(
+            facets: {
+              'status': ['not-a-status'],
+            },
+          ),
+        );
+        expect(filter.status, isNull);
+      },
+    );
 
     test('an unparseable customer/salesperson facet degrades to null', () {
       final filter = SalesQuotesFilter.fromQuery(

@@ -197,7 +197,8 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                     decoration: InputDecoration(
                       labelText: l10n.posLineDiscountLabel,
                     ),
-                    format: (wire) => ref.read(formattersProvider).field.rate(wire),
+                    format: (wire) =>
+                        ref.read(formattersProvider).field.rate(wire),
                   ),
                 ),
                 // Chosen, not typed (FR-038b).
@@ -241,7 +242,9 @@ class _SaleLineCardState extends ConsumerState<SaleLineCard>
                 controller: commentField,
                 enabled: enabled,
                 fieldKey: Key('sale_line_comment_${line.id}'),
-                decoration: InputDecoration(labelText: l10n.salesOrderCommentLabel),
+                decoration: InputDecoration(
+                  labelText: l10n.salesOrderCommentLabel,
+                ),
               ),
           ],
         ),

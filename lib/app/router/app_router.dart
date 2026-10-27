@@ -479,9 +479,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/sales/quotes/:quoteId',
-        builder: (context, state) => QuoteScreen(
-          quoteId: int.parse(state.pathParameters['quoteId']!),
-        ),
+        builder: (context, state) =>
+            QuoteScreen(quoteId: int.parse(state.pathParameters['quoteId']!)),
       ),
       // 038-advanced-product-search: a top-level sibling, not a shell branch
       // — there is no nav entry for it. Search term, filters and page all
@@ -491,9 +490,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       // `go` would unmount whichever sale pushed it (research.md R1).
       GoRoute(
         path: advancedSearchPath,
-        builder: (context, state) => AdvancedSearchScreen(
-          query: ListQuery.fromUri(state.uri),
-        ),
+        builder: (context, state) =>
+            AdvancedSearchScreen(query: ListQuery.fromUri(state.uri)),
       ),
     ],
   );
@@ -504,10 +502,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 /// (FR-003, SC-003; research.md §4).
 class _AuthRefreshListenable extends ChangeNotifier {
   _AuthRefreshListenable(Ref ref) {
-    _subscription = ref.listen(
-      authProvider,
-      (_, _) => notifyListeners(),
-    );
+    _subscription = ref.listen(authProvider, (_, _) => notifyListeners());
   }
 
   late final ProviderSubscription<AsyncValue<AuthState>> _subscription;

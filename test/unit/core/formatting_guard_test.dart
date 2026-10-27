@@ -42,7 +42,8 @@ void main() {
   bool isAllowed(String path) {
     if (path.startsWith('lib/core/formatting/')) return true;
     if (path.startsWith('lib/generated/')) return true;
-    if (path.startsWith('lib/l10n/app_localizations') && path.endsWith('.dart')) {
+    if (path.startsWith('lib/l10n/app_localizations') &&
+        path.endsWith('.dart')) {
       return true;
     }
     return allowedIntlImporters.contains(path);

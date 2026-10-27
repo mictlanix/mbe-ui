@@ -374,8 +374,9 @@ void main() {
     expect(find.byType(OrderWorkspaceScreen), findsNothing);
   });
 
-  testWidgets('an unexpected failure is shown in the sheet, never swallowed',
-      (tester) async {
+  testWidgets('an unexpected failure is shown in the sheet, never swallowed', (
+    tester,
+  ) async {
     stubCreate(() async => throw StateError('unexpected'));
     await pumpOrder(tester);
 
@@ -387,7 +388,9 @@ void main() {
     // Not stuck: the user can try again.
     expect(
       tester
-          .widget<FilledButton>(find.byKey(const Key('destination_save_button')))
+          .widget<FilledButton>(
+            find.byKey(const Key('destination_save_button')),
+          )
           .onPressed,
       isNotNull,
     );

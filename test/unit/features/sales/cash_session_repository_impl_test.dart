@@ -23,7 +23,12 @@ void main() {
         (options) async => ResponseBody.fromString(
           jsonEncode({
             'state': 'open',
-            'session': _cashSessionJson(id: 42, drawerName: 'Caja 1', cashierFirst: 'Ana', cashierLast: 'López'),
+            'session': _cashSessionJson(
+              id: 42,
+              drawerName: 'Caja 1',
+              cashierFirst: 'Ana',
+              cashierLast: 'López',
+            ),
           }),
           200,
           headers: _jsonHeaders,
@@ -59,7 +64,12 @@ void main() {
         (options) async => ResponseBody.fromString(
           jsonEncode({
             'state': 'stale',
-            'session': _cashSessionJson(id: 7, drawerName: 'Caja 2', cashierFirst: 'Luis', cashierLast: 'Reyes'),
+            'session': _cashSessionJson(
+              id: 7,
+              drawerName: 'Caja 2',
+              cashierFirst: 'Luis',
+              cashierLast: 'Reyes',
+            ),
           }),
           200,
           headers: _jsonHeaders,
@@ -84,7 +94,11 @@ void main() {
         );
       });
 
-      await repository.list(cashDrawerId: 1, cashierId: 2, status: CashSessionStatus.open);
+      await repository.list(
+        cashDrawerId: 1,
+        cashierId: 2,
+        status: CashSessionStatus.open,
+      );
 
       expect(captured['cash_drawer'], 1);
       expect(captured['cashier'], 2);
@@ -97,8 +111,18 @@ void main() {
         (options) async => ResponseBody.fromString(
           jsonEncode({
             'items': [
-              _cashSessionJson(id: 1, drawerName: 'Caja 1', cashierFirst: 'Ana', cashierLast: 'López'),
-              _cashSessionJson(id: 2, drawerName: 'Caja 2', cashierFirst: 'Luis', cashierLast: 'Reyes'),
+              _cashSessionJson(
+                id: 1,
+                drawerName: 'Caja 1',
+                cashierFirst: 'Ana',
+                cashierLast: 'López',
+              ),
+              _cashSessionJson(
+                id: 2,
+                drawerName: 'Caja 2',
+                cashierFirst: 'Luis',
+                cashierLast: 'Reyes',
+              ),
             ],
             'total': 2,
           }),
@@ -122,7 +146,14 @@ void main() {
       final repository = _repositoryWith((options) async {
         capturedBody = options.data as Map<String, dynamic>;
         return ResponseBody.fromString(
-          jsonEncode(_cashSessionJson(id: 1, drawerName: 'Caja 1', cashierFirst: 'Ana', cashierLast: 'López')),
+          jsonEncode(
+            _cashSessionJson(
+              id: 1,
+              drawerName: 'Caja 1',
+              cashierFirst: 'Ana',
+              cashierLast: 'López',
+            ),
+          ),
           201,
           headers: _jsonHeaders,
         );
@@ -135,42 +166,57 @@ void main() {
       expect(capturedBody!['opening_amount'], isA<String>());
     });
 
-    test('a null cashDrawerId omits cash_drawer from the request entirely', () async {
-      Map<String, dynamic>? capturedBody;
-      final repository = _repositoryWith((options) async {
-        capturedBody = options.data as Map<String, dynamic>;
-        return ResponseBody.fromString(
-          jsonEncode(_cashSessionJson(id: 1, drawerName: 'Caja 1', cashierFirst: 'Ana', cashierLast: 'López')),
-          201,
-          headers: _jsonHeaders,
-        );
-      });
+    test(
+      'a null cashDrawerId omits cash_drawer from the request entirely',
+      () async {
+        Map<String, dynamic>? capturedBody;
+        final repository = _repositoryWith((options) async {
+          capturedBody = options.data as Map<String, dynamic>;
+          return ResponseBody.fromString(
+            jsonEncode(
+              _cashSessionJson(
+                id: 1,
+                drawerName: 'Caja 1',
+                cashierFirst: 'Ana',
+                cashierLast: 'López',
+              ),
+            ),
+            201,
+            headers: _jsonHeaders,
+          );
+        });
 
-      await repository.open(openingAmount: '0');
+        await repository.open(openingAmount: '0');
 
-      expect(capturedBody!.containsKey('cash_drawer'), isFalse);
-    });
+        expect(capturedBody!.containsKey('cash_drawer'), isFalse);
+      },
+    );
 
-    test('409 drawer-busy maps to ServerError carrying the detail string', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({'detail': 'That cash drawer already has an open session'}),
-          409,
-          headers: _jsonHeaders,
-        ),
-      );
-
-      await expectLater(
-        () => repository.open(cashDrawerId: 1, openingAmount: '0'),
-        throwsA(
-          isA<ServerError>().having(
-            (e) => e.message,
-            'message',
-            'That cash drawer already has an open session',
+    test(
+      '409 drawer-busy maps to ServerError carrying the detail string',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'detail': 'That cash drawer already has an open session',
+            }),
+            409,
+            headers: _jsonHeaders,
           ),
-        ),
-      );
-    });
+        );
+
+        await expectLater(
+          () => repository.open(cashDrawerId: 1, openingAmount: '0'),
+          throwsA(
+            isA<ServerError>().having(
+              (e) => e.message,
+              'message',
+              'That cash drawer already has an open session',
+            ),
+          ),
+        );
+      },
+    );
 
     test('409 cashier-busy maps to ServerError carrying its own distinct '
         'detail string — the repository does not discriminate the two, that '
@@ -178,7 +224,8 @@ void main() {
       final repository = _repositoryWith(
         (options) async => ResponseBody.fromString(
           jsonEncode({
-            'detail': 'You already have an open session; close it before opening another',
+            'detail':
+                'You already have an open session; close it before opening another',
           }),
           409,
           headers: _jsonHeaders,
@@ -204,7 +251,8 @@ void main() {
             'detail': [
               {
                 'loc': ['body', 'opening_amount'],
-                'msg': 'No cash drawer is configured for your user; set one or supply it explicitly',
+                'msg':
+                    'No cash drawer is configured for your user; set one or supply it explicitly',
                 'type': 'value_error',
               },
             ],
@@ -225,7 +273,14 @@ void main() {
     test('maps to a CashSession', () async {
       final repository = _repositoryWith(
         (options) async => ResponseBody.fromString(
-          jsonEncode(_cashSessionJson(id: 9, drawerName: 'Caja 1', cashierFirst: 'Ana', cashierLast: 'López')),
+          jsonEncode(
+            _cashSessionJson(
+              id: 9,
+              drawerName: 'Caja 1',
+              cashierFirst: 'Ana',
+              cashierLast: 'López',
+            ),
+          ),
           200,
           headers: _jsonHeaders,
         ),
@@ -253,38 +308,41 @@ void main() {
   });
 
   group('CashSessionRepositoryImpl.close', () {
-    test('sends each denomination as a plain string and quantity as an int', () async {
-      Map<String, dynamic>? capturedBody;
-      final repository = _repositoryWith((options) async {
-        capturedBody = options.data as Map<String, dynamic>;
-        return ResponseBody.fromString(
-          jsonEncode(
-            _cashSessionJson(
-              id: 1,
-              drawerName: 'Caja 1',
-              cashierFirst: 'Ana',
-              cashierLast: 'López',
-              end: '2026-08-05T18:00:00',
+    test(
+      'sends each denomination as a plain string and quantity as an int',
+      () async {
+        Map<String, dynamic>? capturedBody;
+        final repository = _repositoryWith((options) async {
+          capturedBody = options.data as Map<String, dynamic>;
+          return ResponseBody.fromString(
+            jsonEncode(
+              _cashSessionJson(
+                id: 1,
+                drawerName: 'Caja 1',
+                cashierFirst: 'Ana',
+                cashierLast: 'López',
+                end: '2026-08-05T18:00:00',
+              ),
             ),
-          ),
-          200,
-          headers: _jsonHeaders,
+            200,
+            headers: _jsonHeaders,
+          );
+        });
+
+        await repository.close(
+          cashSessionId: 1,
+          counts: const [
+            DenominationCount(denomination: '500', quantity: 3),
+            DenominationCount(denomination: '100', quantity: 2),
+          ],
         );
-      });
 
-      await repository.close(
-        cashSessionId: 1,
-        counts: const [
-          DenominationCount(denomination: '500', quantity: 3),
-          DenominationCount(denomination: '100', quantity: 2),
-        ],
-      );
-
-      final counts = capturedBody!['counts'] as List<dynamic>;
-      expect(counts, hasLength(2));
-      expect(counts[0], {'denomination': '500', 'quantity': 3});
-      expect(counts[1], {'denomination': '100', 'quantity': 2});
-    });
+        final counts = capturedBody!['counts'] as List<dynamic>;
+        expect(counts, hasLength(2));
+        expect(counts[0], {'denomination': '500', 'quantity': 3});
+        expect(counts[1], {'denomination': '100', 'quantity': 2});
+      },
+    );
 
     test('an empty counts list still sends an empty array, not an absent '
         'key — matches the server default', () async {
@@ -311,22 +369,29 @@ void main() {
       expect(capturedBody!['counts'], isEmpty);
     });
 
-    test('409 already-closed maps to ServerError with the detail string', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({'detail': 'Session is already closed'}),
-          409,
-          headers: _jsonHeaders,
-        ),
-      );
+    test(
+      '409 already-closed maps to ServerError with the detail string',
+      () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({'detail': 'Session is already closed'}),
+            409,
+            headers: _jsonHeaders,
+          ),
+        );
 
-      await expectLater(
-        () => repository.close(cashSessionId: 1, counts: const []),
-        throwsA(
-          isA<ServerError>().having((e) => e.message, 'message', 'Session is already closed'),
-        ),
-      );
-    });
+        await expectLater(
+          () => repository.close(cashSessionId: 1, counts: const []),
+          throwsA(
+            isA<ServerError>().having(
+              (e) => e.message,
+              'message',
+              'Session is already closed',
+            ),
+          ),
+        );
+      },
+    );
   });
 }
 
@@ -346,7 +411,11 @@ Map<String, Object?> _cashSessionJson({
     'comment': null,
     'status': 0,
   },
-  'cashier': _employeeJson(id: 100, firstName: cashierFirst, lastName: cashierLast),
+  'cashier': _employeeJson(
+    id: 100,
+    firstName: cashierFirst,
+    lastName: cashierLast,
+  ),
   'start': '2026-08-05T09:00:00',
   'end': end,
   'cash_supervisor': null,

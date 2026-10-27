@@ -37,8 +37,7 @@ final priceListDisplayNameProvider = FutureProvider.family<String?, int>((
 /// `PriceListRepository` backed by the generated `mbe_api_client`
 /// `PriceListsApi` (contracts/mbe-api-pricing.md §1).
 class PriceListRepositoryImpl implements PriceListRepository {
-  PriceListRepositoryImpl(Dio dio)
-    : _api = PriceListsApi(dio, appSerializers);
+  PriceListRepositoryImpl(Dio dio) : _api = PriceListsApi(dio, appSerializers);
 
   final PriceListsApi _api;
 
@@ -80,9 +79,7 @@ class PriceListRepositoryImpl implements PriceListRepository {
   }
 
   @override
-  Future<PriceList> create({
-    required String name,
-  }) async {
+  Future<PriceList> create({required String name}) async {
     try {
       final response = await _api.createPriceListApiV1PriceListsPost(
         priceListCreate: PriceListCreate((b) {
@@ -98,10 +95,7 @@ class PriceListRepositoryImpl implements PriceListRepository {
   }
 
   @override
-  Future<PriceList> update({
-    required int priceListId,
-    String? name,
-  }) async {
+  Future<PriceList> update({required int priceListId, String? name}) async {
     try {
       final response = await _api.updatePriceListApiV1PriceListsPriceListIdPut(
         priceListId: priceListId,

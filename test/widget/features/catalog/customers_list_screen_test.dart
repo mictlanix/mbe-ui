@@ -318,10 +318,7 @@ void main() {
       'name is resolved for cold-load display (data-model.md §4)',
       (tester) async {
         when(() => priceListRepository.get(priceListId: 1)).thenAnswer(
-          (_) async => const PriceList(
-            priceListId: 1,
-            name: 'Retail',
-          ),
+          (_) async => const PriceList(priceListId: 1, name: 'Retail'),
         );
 
         await pumpScreen(

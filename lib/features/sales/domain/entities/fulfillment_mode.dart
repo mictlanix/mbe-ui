@@ -18,12 +18,13 @@ enum FulfillmentMode {
   /// than being read as a guess (mbe-api#171: the field means exactly this,
   /// and a client that turned `null` into a mode would be reintroducing the
   /// same wrong-answer risk the field was added to avoid).
-  static FulfillmentMode? fromApi(api.FulfillmentType? value) => switch (value?.name) {
-    'number0' => FulfillmentMode.counterPickup,
-    'number1' => FulfillmentMode.delivery,
-    'number2' => FulfillmentMode.mixed,
-    _ => null,
-  };
+  static FulfillmentMode? fromApi(api.FulfillmentType? value) =>
+      switch (value?.name) {
+        'number0' => FulfillmentMode.counterPickup,
+        'number1' => FulfillmentMode.delivery,
+        'number2' => FulfillmentMode.mixed,
+        _ => null,
+      };
 
   api.FulfillmentType toApi() => switch (this) {
     FulfillmentMode.counterPickup => api.FulfillmentType.number0,

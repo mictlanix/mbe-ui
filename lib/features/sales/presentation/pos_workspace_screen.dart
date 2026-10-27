@@ -65,12 +65,15 @@ class PosWorkspaceScreen extends ConsumerWidget {
             return const Scaffold(body: PosGateScreen());
           }
           if (current.state == SessionState.stale) {
-            return _StaleSessionRedirect(sessionId: current.session!.cashSessionId);
+            return _StaleSessionRedirect(
+              sessionId: current.session!.cashSessionId,
+            );
           }
         }
         return _PosWorkspaceBody(saleId: saleId);
       },
-      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (error, stackTrace) => Scaffold(
         body: Center(
           // Matches cash_session_detail_screen.dart's own error-state
@@ -108,7 +111,9 @@ class _StaleSessionRedirectState extends State<_StaleSessionRedirect> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final message = AppLocalizations.of(context)!.posSessionExpiredRedirect;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
       // Replaces only `/new`, so Back from the close screen returns to
       // wherever the cashier came from instead of a dead end.
       context.pushReplacement('/sales/cash-sessions/${widget.sessionId}');
@@ -321,14 +326,18 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
   /// A **finished** sale (paid, fully distributed) is deliberately not one
   /// of these reasons — it opens as the read-only sale detail (spec 048
   /// FR-010, `opensAsReadOnlyDetail`).
-  _UnreachableReason? _unreachableReasonFor(AsyncValue<Sale?> sale, Sale? current) {
+  _UnreachableReason? _unreachableReasonFor(
+    AsyncValue<Sale?> sale,
+    Sale? current,
+  ) {
     if (widget.saleId == null) return null;
     final error = sale.error;
     if (error != null && toAppError(error) is NotFoundError) {
       return _UnreachableReason.unknown;
     }
     if (current != null) {
-      if (current.status == SaleStatus.cancelled) return _UnreachableReason.cancelled;
+      if (current.status == SaleStatus.cancelled)
+        return _UnreachableReason.cancelled;
       final myRegister = ref.read(registerPointSaleProvider);
       if (myRegister != null && current.pointSale != myRegister) {
         return _UnreachableReason.otherRegister;
@@ -360,7 +369,8 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
     // The selector is keyed by the register, not by the sale in hand — so an
     // untouched POS still offers the open sales to resume. Without this,
     // reloading the page would strand every unfinished sale (US3).
-    final pointSale = current?.pointSale ?? ref.watch(registerPointSaleProvider);
+    final pointSale =
+        current?.pointSale ?? ref.watch(registerPointSaleProvider);
 
     // spec 036 FR-005: whether the step track's Venta pill is a tappable way
     // back to the cart. Loading/error on the payments read denies the
@@ -395,7 +405,9 @@ class _PosWorkspaceBodyState extends ConsumerState<_PosWorkspaceBody> {
         // the border is what the rails, the footer bands and the cards in
         // this workspace already use to state a boundary.
         shape: Border(
-          bottom: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+          bottom: BorderSide(
+            color: Theme.of(context).colorScheme.outlineVariant,
+          ),
         ),
         leading: IconButton(
           key: const Key('pos_workspace_back'),
@@ -680,7 +692,8 @@ class _UnreachableSalePanel extends StatelessWidget {
           key: const Key('pos_workspace_back'),
           icon: const Icon(Icons.arrow_back),
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () => context.canPop() ? context.pop() : context.go('/sales/pos'),
+          onPressed: () =>
+              context.canPop() ? context.pop() : context.go('/sales/pos'),
         ),
       ),
       body: Center(
@@ -690,7 +703,11 @@ class _UnreachableSalePanel extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline, size: 48, color: theme.colorScheme.outline),
+              Icon(
+                Icons.error_outline,
+                size: 48,
+                color: theme.colorScheme.outline,
+              ),
               const SizedBox(height: 16),
               Text(
                 l10n.posSaleUnreachableTitle,
@@ -698,7 +715,11 @@ class _UnreachableSalePanel extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              Text(message, style: theme.textTheme.bodyMedium, textAlign: TextAlign.center),
+              Text(
+                message,
+                style: theme.textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 16),
               FilledButton(
                 onPressed: () => context.go('/sales/pos'),
@@ -783,7 +804,8 @@ class _StepHost extends ConsumerWidget {
   /// is done, so the change due is shown and a new sale is offered (FR-050).
   void _closePayment(BuildContext context, WidgetRef ref) {
     final stepNotifier = ref.read(posStepControllerProvider.notifier);
-    if (ref.read(posStepControllerProvider).mode != FulfillmentMode.counterPickup) {
+    if (ref.read(posStepControllerProvider).mode !=
+        FulfillmentMode.counterPickup) {
       stepNotifier.advanceFromCobro();
       return;
     }

@@ -9,12 +9,13 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// (`posOpenSaleDraft`/`Unpaid`/`Undelivered`), which describe what the
 /// *selector* wants doing about a sale rather than the status itself, and
 /// have no label at all for `cancelled` (data-model §7).
-String posSaleStatusLabel(AppLocalizations l10n, SaleStatus status) => switch (status) {
-  SaleStatus.draft => l10n.posSaleStatusDraft,
-  SaleStatus.completed => l10n.posSaleStatusCompleted,
-  SaleStatus.paid => l10n.posSaleStatusPaid,
-  SaleStatus.cancelled => l10n.posSaleStatusCancelled,
-};
+String posSaleStatusLabel(AppLocalizations l10n, SaleStatus status) =>
+    switch (status) {
+      SaleStatus.draft => l10n.posSaleStatusDraft,
+      SaleStatus.completed => l10n.posSaleStatusCompleted,
+      SaleStatus.paid => l10n.posSaleStatusPaid,
+      SaleStatus.cancelled => l10n.posSaleStatusCancelled,
+    };
 
 /// The sales list's status column (spec 023 contracts/pos-sales-list.md §2).
 /// Mirrors `CashSessionStatusChip`'s colour-pair shape: `cancelled` reads as
@@ -36,13 +37,22 @@ class PosSaleStatusChip extends StatelessWidget {
       value: status,
       label: label,
       colors: (scheme) => switch (status) {
-        SaleStatus.draft => (scheme.primaryContainer, scheme.onPrimaryContainer),
-        SaleStatus.completed => (scheme.tertiaryContainer, scheme.onTertiaryContainer),
+        SaleStatus.draft => (
+          scheme.primaryContainer,
+          scheme.onPrimaryContainer,
+        ),
+        SaleStatus.completed => (
+          scheme.tertiaryContainer,
+          scheme.onTertiaryContainer,
+        ),
         SaleStatus.paid => (
           scheme.surfaceContainerHighest,
           scheme.onSurfaceVariant,
         ),
-        SaleStatus.cancelled => (scheme.errorContainer, scheme.onErrorContainer),
+        SaleStatus.cancelled => (
+          scheme.errorContainer,
+          scheme.onErrorContainer,
+        ),
       },
     );
   }

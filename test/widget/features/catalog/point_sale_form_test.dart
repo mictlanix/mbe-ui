@@ -301,7 +301,9 @@ void main() {
       expect(find.byKey(const Key('delete_point_sale_button')), findsOneWidget);
       await tester.tap(find.byKey(const Key('delete_point_sale_button')));
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('confirm_delete_point_sale_button')));
+      await tester.tap(
+        find.byKey(const Key('confirm_delete_point_sale_button')),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('code_field')), findsOneWidget);

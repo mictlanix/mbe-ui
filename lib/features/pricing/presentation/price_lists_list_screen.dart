@@ -84,10 +84,8 @@ class PriceListsListScreen extends ConsumerWidget {
                 key: const Key('new_price_list_button'),
                 icon: Icon(CatalogAction.create.icon),
                 label: Text(l10n.newPriceListTooltip),
-                onPressed: () => _openPriceListSheet(
-                  context,
-                  title: l10n.newPriceListTitle,
-                ),
+                onPressed: () =>
+                    _openPriceListSheet(context, title: l10n.newPriceListTitle),
               ),
           ],
         ),

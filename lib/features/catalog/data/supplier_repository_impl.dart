@@ -39,8 +39,7 @@ final supplierDisplayNameProvider = FutureProvider.family<String?, int>((
 });
 
 class SupplierRepositoryImpl implements SupplierRepository {
-  SupplierRepositoryImpl(Dio dio)
-    : _api = SuppliersApi(dio, appSerializers);
+  SupplierRepositoryImpl(Dio dio) : _api = SuppliersApi(dio, appSerializers);
 
   final SuppliersApi _api;
 

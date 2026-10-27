@@ -35,8 +35,10 @@ void main() {
     ),
   );
 
-  FloatingActionButton closeButton(WidgetTester tester) => tester
-      .widget<FloatingActionButton>(find.byKey(const Key('payment_close_button')));
+  FloatingActionButton closeButton(WidgetTester tester) =>
+      tester.widget<FloatingActionButton>(
+        find.byKey(const Key('payment_close_button')),
+      );
 
   testWidgets('total, paid, remaining and change all render at once', (
     tester,
@@ -49,9 +51,7 @@ void main() {
     expect(find.text(l10n.posPaymentChangeLabel), findsOneWidget);
   });
 
-  testWidgets('the change row reads zero with no tender keyed', (
-    tester,
-  ) async {
+  testWidgets('the change row reads zero with no tender keyed', (tester) async {
     await pumpPanel(tester, balance: '116.00');
 
     final changeRow = find.ancestor(
@@ -85,11 +85,7 @@ void main() {
   testWidgets('the gate hint is absent on credit terms — nothing is gated', (
     tester,
   ) async {
-    await pumpPanel(
-      tester,
-      balance: '116.00',
-      paymentTerms: PaymentTerms.netD,
-    );
+    await pumpPanel(tester, balance: '116.00', paymentTerms: PaymentTerms.netD);
     expect(closeButton(tester).onPressed, isNotNull);
     expect(find.text(l10n.posPaymentGateHint), findsNothing);
   });

@@ -44,7 +44,8 @@ class AdvancedSearchScreen extends ConsumerStatefulWidget {
   final ListQuery query;
 
   @override
-  ConsumerState<AdvancedSearchScreen> createState() => _AdvancedSearchScreenState();
+  ConsumerState<AdvancedSearchScreen> createState() =>
+      _AdvancedSearchScreenState();
 }
 
 class _AdvancedSearchScreenState extends ConsumerState<AdvancedSearchScreen> {
@@ -69,7 +70,9 @@ class _AdvancedSearchScreenState extends ConsumerState<AdvancedSearchScreen> {
     final current = notifier.state;
     final already = current.any((p) => p.productId == product.productId);
     if (already) {
-      notifier.state = current.where((p) => p.productId != product.productId).toList();
+      notifier.state = current
+          .where((p) => p.productId != product.productId)
+          .toList();
     } else if (multiSelect) {
       notifier.state = [...current, product];
     } else {
@@ -136,10 +139,11 @@ class _AdvancedSearchScreenState extends ConsumerState<AdvancedSearchScreen> {
                     applyLabel: l10n.applyFilters,
                     onClearAll: () => _replaceWith(const ListQuery()),
                     builder: (_) => CurrentListQueryBuilder(
-                      builder: (context, currentQuery) => _AdvancedSearchFiltersPanel(
-                        query: currentQuery,
-                        onChanged: _replaceWith,
-                      ),
+                      builder: (context, currentQuery) =>
+                          _AdvancedSearchFiltersPanel(
+                            query: currentQuery,
+                            onChanged: _replaceWith,
+                          ),
                     ),
                   ),
                 ),
@@ -154,7 +158,8 @@ class _AdvancedSearchScreenState extends ConsumerState<AdvancedSearchScreen> {
               clearFiltersLabel: l10n.clearFiltersButton,
               onClearFilters: () => _replaceWith(const ListQuery()),
               retryLabel: l10n.retryButton,
-              onRetry: () => ref.invalidate(productsListControllerProvider(filter)),
+              onRetry: () =>
+                  ref.invalidate(productsListControllerProvider(filter)),
               onData: (page) => DataTableView<ProductListItem>(
                 key: const Key('advanced_search_table'),
                 columns: [
@@ -168,7 +173,9 @@ class _AdvancedSearchScreenState extends ConsumerState<AdvancedSearchScreen> {
                     // it (FR-014).
                     fixedWidth: 48,
                     cellBuilder: (context, p) {
-                      final selected = selection.any((s) => s.productId == p.productId);
+                      final selected = selection.any(
+                        (s) => s.productId == p.productId,
+                      );
                       return IgnorePointer(
                         key: Key('advanced_search_row_${p.productId}'),
                         child: Checkbox(value: selected, onChanged: null),
@@ -178,7 +185,8 @@ class _AdvancedSearchScreenState extends ConsumerState<AdvancedSearchScreen> {
                   DataTableColumn(
                     label: '',
                     fixedWidth: 96,
-                    cellBuilder: (context, p) => ProductPhoto(photoUrl: p.photo, size: 72),
+                    cellBuilder: (context, p) =>
+                        ProductPhoto(photoUrl: p.photo, size: 72),
                   ),
                   DataTableColumn.text(
                     label: l10n.columnCode,
@@ -203,7 +211,8 @@ class _AdvancedSearchScreenState extends ConsumerState<AdvancedSearchScreen> {
                 ],
                 rows: page.items,
                 pagination: page,
-                onPageChanged: (pageIndex) => _replaceWith(query.copyWith(pageIndex: pageIndex)),
+                onPageChanged: (pageIndex) =>
+                    _replaceWith(query.copyWith(pageIndex: pageIndex)),
                 onRowTap: (p) => _toggle(p, multiSelect: multiSelect),
               ),
             ),
@@ -212,7 +221,9 @@ class _AdvancedSearchScreenState extends ConsumerState<AdvancedSearchScreen> {
             selection: selection,
             multiSelect: multiSelect,
             canPop: canPop,
-            onClear: () => ref.read(advancedSearchSelectionProvider.notifier).state = const [],
+            onClear: () =>
+                ref.read(advancedSearchSelectionProvider.notifier).state =
+                    const [],
             onCancel: _cancel,
             onConfirm: () => _confirm(selection),
           ),
@@ -293,7 +304,10 @@ class _BottomActionBar extends StatelessWidget {
                     ),
                 ],
                 if (!canPop)
-                  Text(l10n.advancedSearchNoSaleHint, style: theme.textTheme.bodySmall),
+                  Text(
+                    l10n.advancedSearchNoSaleHint,
+                    style: theme.textTheme.bodySmall,
+                  ),
               ],
             ),
             TextButton(
@@ -321,7 +335,10 @@ class _BottomActionBar extends StatelessWidget {
 /// the URL changes while the sheet — on its own navigator route — is open,
 /// the same pattern `_ProductFiltersPanel` uses.
 class _AdvancedSearchFiltersPanel extends ConsumerWidget {
-  const _AdvancedSearchFiltersPanel({required this.query, required this.onChanged});
+  const _AdvancedSearchFiltersPanel({
+    required this.query,
+    required this.onChanged,
+  });
 
   final ListQuery query;
   final ValueChanged<ListQuery> onChanged;
@@ -331,11 +348,17 @@ class _AdvancedSearchFiltersPanel extends ConsumerWidget {
     final filter = ProductFilter.fromQuery(query);
     final l10n = AppLocalizations.of(context)!;
     final allLabels = ref.watch(allLabelsProvider).value ?? <LabelItem>[];
-    final forcedFilter = filter.copyWith(status: EntityStatus.active, salable: true);
-    final labelCounts = ref.watch(productLabelFacetsProvider(forcedFilter)).value;
+    final forcedFilter = filter.copyWith(
+      status: EntityStatus.active,
+      salable: true,
+    );
+    final labelCounts = ref
+        .watch(productLabelFacetsProvider(forcedFilter))
+        .value;
     final supplierRepo = ref.read(supplierRepositoryProvider);
     final supplierDisplayText = filter.supplier != null
-        ? ref.watch(supplierDisplayNameProvider(filter.supplier!)).value ?? '${filter.supplier}'
+        ? ref.watch(supplierDisplayNameProvider(filter.supplier!)).value ??
+              '${filter.supplier}'
         : '';
 
     return Column(
@@ -356,7 +379,9 @@ class _AdvancedSearchFiltersPanel extends ConsumerWidget {
               label: l10n.productsStockableFilter,
               value: filter.stockable,
               onChanged: (value) => onChanged(
-                query.withFacet('stockable', value?.toString()).copyWith(pageIndex: 0),
+                query
+                    .withFacet('stockable', value?.toString())
+                    .copyWith(pageIndex: 0),
               ),
             ),
             _TriStateFilterChip(
@@ -364,7 +389,9 @@ class _AdvancedSearchFiltersPanel extends ConsumerWidget {
               label: l10n.productsPurchasableFilter,
               value: filter.purchasable,
               onChanged: (value) => onChanged(
-                query.withFacet('purchasable', value?.toString()).copyWith(pageIndex: 0),
+                query
+                    .withFacet('purchasable', value?.toString())
+                    .copyWith(pageIndex: 0),
               ),
             ),
             _TriStateFilterChip(
@@ -372,7 +399,9 @@ class _AdvancedSearchFiltersPanel extends ConsumerWidget {
               label: l10n.productsPerishableFilter,
               value: filter.perishable,
               onChanged: (value) => onChanged(
-                query.withFacet('perishable', value?.toString()).copyWith(pageIndex: 0),
+                query
+                    .withFacet('perishable', value?.toString())
+                    .copyWith(pageIndex: 0),
               ),
             ),
             _TriStateFilterChip(
@@ -380,7 +409,9 @@ class _AdvancedSearchFiltersPanel extends ConsumerWidget {
               label: l10n.productsSeriableFilter,
               value: filter.seriable,
               onChanged: (value) => onChanged(
-                query.withFacet('seriable', value?.toString()).copyWith(pageIndex: 0),
+                query
+                    .withFacet('seriable', value?.toString())
+                    .copyWith(pageIndex: 0),
               ),
             ),
             _TriStateFilterChip(
@@ -388,7 +419,9 @@ class _AdvancedSearchFiltersPanel extends ConsumerWidget {
               label: l10n.productsInvoiceableFilter,
               value: filter.invoiceable,
               onChanged: (value) => onChanged(
-                query.withFacet('invoiceable', value?.toString()).copyWith(pageIndex: 0),
+                query
+                    .withFacet('invoiceable', value?.toString())
+                    .copyWith(pageIndex: 0),
               ),
             ),
           ],
@@ -404,11 +437,15 @@ class _AdvancedSearchFiltersPanel extends ConsumerWidget {
           label: l10n.productsSupplierSearchHint,
           displayStringForOption: (s) => '${s.code} — ${s.name}',
           optionsBuilder: (search) async {
-            final result = await supplierRepo.list(search: search.isEmpty ? null : search);
+            final result = await supplierRepo.list(
+              search: search.isEmpty ? null : search,
+            );
             return result.items;
           },
           onSelected: (s) => onChanged(
-            query.withFacet('supplier', '${s.supplierId}').copyWith(pageIndex: 0),
+            query
+                .withFacet('supplier', '${s.supplierId}')
+                .copyWith(pageIndex: 0),
           ),
           initialDisplayText: supplierDisplayText,
         ),
@@ -426,7 +463,10 @@ class _AdvancedSearchFiltersPanel extends ConsumerWidget {
             labelCounts: labelCounts,
             onChanged: (labelIds) => onChanged(
               query
-                  .withFacetValues('label', labelIds.map((id) => '$id').toList())
+                  .withFacetValues(
+                    'label',
+                    labelIds.map((id) => '$id').toList(),
+                  )
                   .copyWith(pageIndex: 0),
             ),
           ),

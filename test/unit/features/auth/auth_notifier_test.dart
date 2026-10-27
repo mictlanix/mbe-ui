@@ -158,32 +158,27 @@ void main() {
     },
   );
 
-  test(
-    'signIn against an unreachable backend reports backendUnavailable, '
-    'not invalidCredentials',
-    () async {
-      when(() => tokenStorage.read()).thenAnswer((_) async => null);
-      when(
-        () => authRepository.login(
-          username: any(named: 'username'),
-          password: any(named: 'password'),
-        ),
-      ).thenThrow(const AppError.network('Connection refused'));
+  test('signIn against an unreachable backend reports backendUnavailable, '
+      'not invalidCredentials', () async {
+    when(() => tokenStorage.read()).thenAnswer((_) async => null);
+    when(
+      () => authRepository.login(
+        username: any(named: 'username'),
+        password: any(named: 'password'),
+      ),
+    ).thenThrow(const AppError.network('Connection refused'));
 
-      await container.read(authProvider.future);
-      await container
-          .read(authProvider.notifier)
-          .signIn(username: 'jdoe', password: 'secret');
+    await container.read(authProvider.future);
+    await container
+        .read(authProvider.notifier)
+        .signIn(username: 'jdoe', password: 'secret');
 
-      final state = container.read(authProvider).value;
-      expect(
-        state,
-        const AuthState.unauthenticated(
-          reason: SignOutReason.backendUnavailable,
-        ),
-      );
-    },
-  );
+    final state = container.read(authProvider).value;
+    expect(
+      state,
+      const AuthState.unauthenticated(reason: SignOutReason.backendUnavailable),
+    );
+  });
 
   test(
     'signOut clears the token and transitions to unauthenticated(signedOut)',
@@ -221,22 +216,25 @@ void main() {
     },
   );
 
-  test('reloadCurrentUser replaces the user with the one from /auth/me', () async {
-    final flagged = testUser.copyWith(mustChangePassword: true);
-    when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');
-    var calls = 0;
-    when(
-      () => authRepository.me(),
-    ).thenAnswer((_) async => calls++ == 0 ? flagged : testUser);
+  test(
+    'reloadCurrentUser replaces the user with the one from /auth/me',
+    () async {
+      final flagged = testUser.copyWith(mustChangePassword: true);
+      when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');
+      var calls = 0;
+      when(
+        () => authRepository.me(),
+      ).thenAnswer((_) async => calls++ == 0 ? flagged : testUser);
 
-    await container.read(authProvider.future);
-    await container.read(authProvider.notifier).reloadCurrentUser();
+      await container.read(authProvider.future);
+      await container.read(authProvider.notifier).reloadCurrentUser();
 
-    expect(
-      container.read(authProvider).value,
-      const AuthState.authenticated(token: 'token123', user: testUser),
-    );
-  });
+      expect(
+        container.read(authProvider).value,
+        const AuthState.authenticated(token: 'token123', user: testUser),
+      );
+    },
+  );
 
   test('reloadCurrentUser signs out on a 401', () async {
     when(() => tokenStorage.read()).thenAnswer((_) async => 'token123');

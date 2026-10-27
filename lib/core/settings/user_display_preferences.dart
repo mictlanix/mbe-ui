@@ -33,7 +33,9 @@ class UserDisplayPreferences {
     return UserDisplayPreferences(
       themeMode: themeMode ?? this.themeMode,
       textSizeLevel: textSizeLevel ?? this.textSizeLevel,
-      localeOverride: localeOverride != null ? localeOverride() : this.localeOverride,
+      localeOverride: localeOverride != null
+          ? localeOverride()
+          : this.localeOverride,
     );
   }
 

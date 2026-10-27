@@ -28,7 +28,8 @@ const _localeOverrideKey = 'locale_override';
 /// controller (data-model.md §3) — `app.dart` reads `themeMode` from here
 /// instead.
 @Riverpod(keepAlive: true)
-class UserDisplayPreferencesController extends _$UserDisplayPreferencesController {
+class UserDisplayPreferencesController
+    extends _$UserDisplayPreferencesController {
   @override
   UserDisplayPreferences build() {
     final prefs = ref.watch(sharedPreferencesProvider);
@@ -43,12 +44,16 @@ class UserDisplayPreferencesController extends _$UserDisplayPreferencesControlle
   /// (FR-021) — no separate Save step.
   Future<void> setThemeMode(ThemeMode mode) async {
     state = state.copyWith(themeMode: mode);
-    await ref.read(sharedPreferencesProvider).setString(_themeModeKey, mode.name);
+    await ref
+        .read(sharedPreferencesProvider)
+        .setString(_themeModeKey, mode.name);
   }
 
   Future<void> setTextSizeLevel(TextSizeLevel level) async {
     state = state.copyWith(textSizeLevel: level);
-    await ref.read(sharedPreferencesProvider).setString(_textSizeLevelKey, level.name);
+    await ref
+        .read(sharedPreferencesProvider)
+        .setString(_textSizeLevelKey, level.name);
   }
 
   /// `null` clears the override — "follow system"/deployment default
@@ -91,14 +96,16 @@ class UserDisplayPreferencesController extends _$UserDisplayPreferencesControlle
   }
 }
 
-String _encodeLocale(Locale locale) =>
-    locale.countryCode == null ? locale.languageCode : '${locale.languageCode}_${locale.countryCode}';
+String _encodeLocale(Locale locale) => locale.countryCode == null
+    ? locale.languageCode
+    : '${locale.languageCode}_${locale.countryCode}';
 
 Locale? _decodeLocale(String code) {
   final parts = code.split('_');
   final language = parts.isNotEmpty ? parts.first : '';
   if (language.isEmpty) return null;
-  if (parts.length > 1 && parts[1].isNotEmpty) return Locale(language, parts[1]);
+  if (parts.length > 1 && parts[1].isNotEmpty)
+    return Locale(language, parts[1]);
   return Locale(language);
 }
 

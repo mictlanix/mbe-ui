@@ -53,10 +53,14 @@ class WallClockDateTimeSerializer implements PrimitiveSerializer<DateTime> {
     FullType specifiedType = FullType.unspecified,
   }) {
     String pad(int value, int width) => value.toString().padLeft(width, '0');
-    final date = '${pad(dateTime.year, 4)}-${pad(dateTime.month, 2)}-${pad(dateTime.day, 2)}';
+    final date =
+        '${pad(dateTime.year, 4)}-${pad(dateTime.month, 2)}-${pad(dateTime.day, 2)}';
     final time =
         '${pad(dateTime.hour, 2)}:${pad(dateTime.minute, 2)}:${pad(dateTime.second, 2)}';
-    return '$date' 'T' '$time' '.${pad(dateTime.millisecond, 3)}';
+    return '$date'
+        'T'
+        '$time'
+        '.${pad(dateTime.millisecond, 3)}';
   }
 }
 
@@ -72,4 +76,6 @@ class WallClockDateTimeSerializer implements PrimitiveSerializer<DateTime> {
 /// `test/unit/core/network/serializers_guard_test.dart` (FR-009), so a new
 /// repository copied from an old one cannot silently reintroduce the shift.
 final appSerializers =
-    (api.standardSerializers.toBuilder()..add(const WallClockDateTimeSerializer())).build();
+    (api.standardSerializers.toBuilder()
+          ..add(const WallClockDateTimeSerializer()))
+        .build();

@@ -70,7 +70,8 @@ class LabelFormPanelState extends ConsumerState<LabelForm> {
         await ref
             .read(labelFormControllerProvider.notifier)
             .loadForEdit(widget.labelId!);
-        if (mounted) setState(() => _snapshot = ref.read(labelFormControllerProvider));
+        if (mounted)
+          setState(() => _snapshot = ref.read(labelFormControllerProvider));
       });
     } else {
       // Create mode never loads — the pristine baseline is available

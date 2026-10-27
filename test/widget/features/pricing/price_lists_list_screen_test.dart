@@ -41,14 +41,8 @@ const _fullAccessUser = User(
 );
 
 const _testLists = [
-  PriceList(
-    priceListId: 1,
-    name: 'Retail',
-  ),
-  PriceList(
-    priceListId: 2,
-    name: 'Wholesale',
-  ),
+  PriceList(priceListId: 1, name: 'Retail'),
+  PriceList(priceListId: 2, name: 'Wholesale'),
 ];
 
 AccessControlService _accessFor(User user) =>
@@ -217,10 +211,7 @@ void main() {
       );
       expect(nameField.initialValue, 'Retail');
       expect(nameField.enabled, isFalse);
-      expect(
-        find.byKey(const Key('edit_price_list_button')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('edit_price_list_button')), findsOneWidget);
     },
   );
 

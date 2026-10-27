@@ -82,7 +82,9 @@ class SalesQuotesListController extends _$SalesQuotesListController {
     );
   }
 
-  Future<CatalogPage<SalesQuoteSummary>> _fetch(SalesQuotesFilter filter) async {
+  Future<CatalogPage<SalesQuoteSummary>> _fetch(
+    SalesQuotesFilter filter,
+  ) async {
     final result = await ref
         .read(salesQuoteRepositoryProvider)
         .listQuotes(

@@ -105,7 +105,10 @@ void main() {
       );
       expect(unpaid.status, SaleStatus.completed);
       expect(
-        compareAmounts(unpaid.balance!, '0'), // always set: a real register sale
+        compareAmounts(
+          unpaid.balance!,
+          '0',
+        ), // always set: a real register sale
         greaterThan(0),
       );
 

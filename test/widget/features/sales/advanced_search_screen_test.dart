@@ -108,10 +108,15 @@ void main() {
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
-      ).thenAnswer((_) async => ProductListResult(items: products, total: products.length));
+      ).thenAnswer(
+        (_) async => ProductListResult(items: products, total: products.length),
+      );
     }
     final effectiveFacets =
-        labelFacets ?? labels.map((l) => ProductLabelFacet(labelId: l.labelId, count: 1)).toList();
+        labelFacets ??
+        labels
+            .map((l) => ProductLabelFacet(labelId: l.labelId, count: 1))
+            .toList();
     when(
       () => productRepository.productLabelFacets(
         search: any(named: 'search'),
@@ -125,14 +130,20 @@ void main() {
 
     final routes = [
       if (withHost)
-        GoRoute(path: '/host', builder: (_, _) => const Scaffold(body: Text('host'))),
+        GoRoute(
+          path: '/host',
+          builder: (_, _) => const Scaffold(body: Text('host')),
+        ),
       GoRoute(
         path: advancedSearchPath,
-        builder: (_, state) => AdvancedSearchScreen(query: ListQuery.fromUri(state.uri)),
+        builder: (_, state) =>
+            AdvancedSearchScreen(query: ListQuery.fromUri(state.uri)),
       ),
     ];
     final router = GoRouter(
-      initialLocation: withHost ? '/host' : query.toUri(advancedSearchPath).toString(),
+      initialLocation: withHost
+          ? '/host'
+          : query.toUri(advancedSearchPath).toString(),
       routes: routes,
     );
 
@@ -199,11 +210,17 @@ void main() {
     });
 
     testWidgets('tapping a row toggles its checkbox; the checkbox cell has '
-        'no handler of its own — only the row toggles it, once', (tester) async {
+        'no handler of its own — only the row toggles it, once', (
+      tester,
+    ) async {
       await pumpScreen(tester);
 
       Checkbox checkboxFor(int productId) =>
-          (tester.widget<IgnorePointer>(find.byKey(Key('advanced_search_row_$productId'))).child
+          (tester
+                  .widget<IgnorePointer>(
+                    find.byKey(Key('advanced_search_row_$productId')),
+                  )
+                  .child
               as Checkbox);
 
       expect(checkboxFor(1).value, isFalse);
@@ -216,7 +233,10 @@ void main() {
       // handler underneath — exactly one toggle, not two (which would
       // cancel out to no visible change, indistinguishable from zero) and
       // not zero (research.md R4).
-      await tester.tap(find.byKey(const Key('advanced_search_row_1')), warnIfMissed: false);
+      await tester.tap(
+        find.byKey(const Key('advanced_search_row_1')),
+        warnIfMissed: false,
+      );
       await tester.pumpAndSettle();
       expect(checkboxFor(1).value, isFalse);
     });
@@ -248,7 +268,9 @@ void main() {
   });
 
   group('list states (FR-013)', () {
-    testWidgets('a failed fetch shows retry, which re-issues the request', (tester) async {
+    testWidgets('a failed fetch shows retry, which re-issues the request', (
+      tester,
+    ) async {
       await pumpScreen(tester, listError: const AppError.server());
       expect(find.byKey(const Key('list_state_failed')), findsOneWidget);
 
@@ -264,7 +286,9 @@ void main() {
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
-      ).thenAnswer((_) async => const ProductListResult(items: _products, total: 2));
+      ).thenAnswer(
+        (_) async => const ProductListResult(items: _products, total: 2),
+      );
 
       await tester.tap(find.byKey(const Key('list_state_retry_button')));
       await tester.pumpAndSettle();
@@ -272,35 +296,43 @@ void main() {
       expect(find.text('SKU-001'), findsOneWidget);
     });
 
-    testWidgets('an empty filtered result shows clear-filters, which restores the table', (
-      tester,
-    ) async {
-      final router = await pumpScreen(
-        tester,
-        products: const [],
-        query: const ListQuery(search: 'nothing-matches'),
-      );
-      expect(find.byKey(const Key('list_state_filtered_empty')), findsOneWidget);
+    testWidgets(
+      'an empty filtered result shows clear-filters, which restores the table',
+      (tester) async {
+        final router = await pumpScreen(
+          tester,
+          products: const [],
+          query: const ListQuery(search: 'nothing-matches'),
+        );
+        expect(
+          find.byKey(const Key('list_state_filtered_empty')),
+          findsOneWidget,
+        );
 
-      when(
-        () => productRepository.list(
-          search: any(named: 'search'),
-          status: any(named: 'status'),
-          stockable: any(named: 'stockable'),
-          salable: any(named: 'salable'),
-          purchasable: any(named: 'purchasable'),
-          supplier: any(named: 'supplier'),
-          labels: any(named: 'labels'),
-          skip: any(named: 'skip'),
-          limit: any(named: 'limit'),
-        ),
-      ).thenAnswer((_) async => const ProductListResult(items: _products, total: 2));
+        when(
+          () => productRepository.list(
+            search: any(named: 'search'),
+            status: any(named: 'status'),
+            stockable: any(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            supplier: any(named: 'supplier'),
+            labels: any(named: 'labels'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const ProductListResult(items: _products, total: 2),
+        );
 
-      await tester.tap(find.byKey(const Key('list_state_clear_filters_button')));
-      await tester.pumpAndSettle();
-      expect(router.state.uri.toString(), advancedSearchPath);
-      expect(find.text('SKU-001'), findsOneWidget);
-    });
+        await tester.tap(
+          find.byKey(const Key('list_state_clear_filters_button')),
+        );
+        await tester.pumpAndSettle();
+        expect(router.state.uri.toString(), advancedSearchPath);
+        expect(find.text('SKU-001'), findsOneWidget);
+      },
+    );
   });
 
   group('filters (FR-008, FR-009, FR-010)', () {
@@ -316,166 +348,239 @@ void main() {
       ),
     );
 
-    testWidgets('the panel offers Stockable, Purchasable, Perishable, Seriable, '
-        'Invoiceable, Supplier and Label — '
-        'no Status, no Salable', (tester) async {
-      await pumpScreen(
-        tester,
-        labels: const [LabelItem(labelId: 1, name: 'Ferretería')],
-      );
+    testWidgets(
+      'the panel offers Stockable, Purchasable, Perishable, Seriable, '
+      'Invoiceable, Supplier and Label — '
+      'no Status, no Salable',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          labels: const [LabelItem(labelId: 1, name: 'Ferretería')],
+        );
 
-      expect(filterBadge(tester).isLabelVisible, isFalse);
-      await openFilterSheet(tester);
+        expect(filterBadge(tester).isLabelVisible, isFalse);
+        await openFilterSheet(tester);
 
-      expect(find.byKey(const Key('advanced_search_filter_stockable')), findsOneWidget);
-      expect(find.byKey(const Key('advanced_search_filter_purchasable')), findsOneWidget);
-      expect(find.byKey(const Key('advanced_search_filter_perishable')), findsOneWidget);
-      expect(find.byKey(const Key('advanced_search_filter_seriable')), findsOneWidget);
-      expect(find.byKey(const Key('advanced_search_filter_invoiceable')), findsOneWidget);
-      expect(find.byKey(const Key('advanced_search_filter_supplier')), findsOneWidget);
-      expect(find.byKey(const Key('advanced_search_filter_label')), findsOneWidget);
-      expect(find.byKey(const Key('products_filter_status')), findsNothing);
-      expect(find.byKey(const Key('advanced_search_filter_salable')), findsNothing);
-    });
+        expect(
+          find.byKey(const Key('advanced_search_filter_stockable')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('advanced_search_filter_purchasable')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('advanced_search_filter_perishable')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('advanced_search_filter_seriable')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('advanced_search_filter_invoiceable')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('advanced_search_filter_supplier')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('advanced_search_filter_label')),
+          findsOneWidget,
+        );
+        expect(find.byKey(const Key('products_filter_status')), findsNothing);
+        expect(
+          find.byKey(const Key('advanced_search_filter_salable')),
+          findsNothing,
+        );
+      },
+    );
 
-    testWidgets('a supplier + one label shows a badge of 2, not the forced facets\' count', (
-      tester,
-    ) async {
-      when(
-        () => supplierRepository.list(search: any(named: 'search')),
-      ).thenAnswer((_) async => const SupplierListResult(items: [], total: 0));
+    testWidgets(
+      'a supplier + one label shows a badge of 2, not the forced facets\' count',
+      (tester) async {
+        when(
+          () => supplierRepository.list(search: any(named: 'search')),
+        ).thenAnswer(
+          (_) async => const SupplierListResult(items: [], total: 0),
+        );
 
-      await pumpScreen(
-        tester,
-        labels: const [LabelItem(labelId: 1, name: 'Ferretería')],
-        query: const ListQuery(facets: {'supplier': ['9'], 'label': ['1']}),
-      );
+        await pumpScreen(
+          tester,
+          labels: const [LabelItem(labelId: 1, name: 'Ferretería')],
+          query: const ListQuery(
+            facets: {
+              'supplier': ['9'],
+              'label': ['1'],
+            },
+          ),
+        );
 
-      expect(filterBadge(tester).isLabelVisible, isTrue);
-      expect(filterBadge(tester).label, isA<Text>().having((t) => t.data, 'data', '2'));
-    });
+        expect(filterBadge(tester).isLabelVisible, isTrue);
+        expect(
+          filterBadge(tester).label,
+          isA<Text>().having((t) => t.data, 'data', '2'),
+        );
+      },
+    );
 
-    testWidgets('perishable, seriable and invoiceable each count toward the badge', (
-      tester,
-    ) async {
-      await pumpScreen(
-        tester,
-        query: const ListQuery(
-          facets: {'perishable': ['true'], 'seriable': ['false'], 'invoiceable': ['true']},
-        ),
-      );
+    testWidgets(
+      'perishable, seriable and invoiceable each count toward the badge',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          query: const ListQuery(
+            facets: {
+              'perishable': ['true'],
+              'seriable': ['false'],
+              'invoiceable': ['true'],
+            },
+          ),
+        );
 
-      expect(filterBadge(tester).isLabelVisible, isTrue);
-      expect(filterBadge(tester).label, isA<Text>().having((t) => t.data, 'data', '3'));
-    });
+        expect(filterBadge(tester).isLabelVisible, isTrue);
+        expect(
+          filterBadge(tester).label,
+          isA<Text>().having((t) => t.data, 'data', '3'),
+        );
+      },
+    );
 
-    testWidgets('applying a filter while on page 2 returns the table to page 1 (FR-011)', (
-      tester,
-    ) async {
-      final router = await pumpScreen(
-        tester,
-        labels: const [LabelItem(labelId: 1, name: 'Ferretería')],
-        query: const ListQuery(pageIndex: 1),
-      );
+    testWidgets(
+      'applying a filter while on page 2 returns the table to page 1 (FR-011)',
+      (tester) async {
+        final router = await pumpScreen(
+          tester,
+          labels: const [LabelItem(labelId: 1, name: 'Ferretería')],
+          query: const ListQuery(pageIndex: 1),
+        );
 
-      await openFilterSheet(tester);
-      await tester.tap(find.byKey(const Key('advanced_search_filter_stockable')));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('filter_sheet_apply_button')));
-      await tester.pumpAndSettle();
-
-      expect(router.state.uri.queryParameters['page'], isNull);
-      expect(router.state.uri.queryParameters['stockable'], 'true');
-    });
-
-    testWidgets('three labels then Stockable, all accumulate while the screen is pushed; '
-        'deselecting one removes only that one (spec 047 US2)', (tester) async {
-      final router = await pumpScreen(
-        tester,
-        labels: const [
-          LabelItem(labelId: 1, name: 'Alfa'),
-          LabelItem(labelId: 2, name: 'Beta'),
-          LabelItem(labelId: 3, name: 'Gama'),
-        ],
-        query: const ListQuery(search: 'wid'),
-      );
-      await openFilterSheet(tester);
-
-      final chips = find.descendant(
-        of: find.byKey(const Key('advanced_search_filter_label')),
-        matching: find.byType(FilterChip),
-      );
-      bool isSelected(int index) => tester.widget<FilterChip>(chips.at(index)).selected;
-
-      for (var i = 0; i < 3; i++) {
-        await tester.tap(chips.at(i));
+        await openFilterSheet(tester);
+        await tester.tap(
+          find.byKey(const Key('advanced_search_filter_stockable')),
+        );
         await tester.pumpAndSettle();
-      }
-      await tester.tap(find.byKey(const Key('advanced_search_filter_stockable')));
-      await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('filter_sheet_apply_button')));
+        await tester.pumpAndSettle();
 
-      expect([isSelected(0), isSelected(1), isSelected(2)], [true, true, true]);
-      final uri = router.routerDelegate.currentConfiguration.uri;
-      expect(currentRouteUri(router).queryParametersAll['label'], ['1', '2', '3']);
-      expect(currentRouteUri(router).queryParameters['stockable'], 'true');
-      expect(currentRouteUri(router).queryParameters['search'], 'wid');
-      expect(uri.path, isNot(advancedSearchPath)); // base route is still /host
+        expect(router.state.uri.queryParameters['page'], isNull);
+        expect(router.state.uri.queryParameters['stockable'], 'true');
+      },
+    );
 
-      final captured = verify(
-        () => productRepository.list(
-          search: captureAny(named: 'search'),
-          status: any(named: 'status'),
-          stockable: captureAny(named: 'stockable'),
-          salable: any(named: 'salable'),
-          purchasable: any(named: 'purchasable'),
-          supplier: any(named: 'supplier'),
-          labels: captureAny(named: 'labels'),
-          skip: any(named: 'skip'),
-          limit: any(named: 'limit'),
-        ),
-      ).captured;
-      expect(captured.sublist(captured.length - 3), [[1, 2, 3], 'wid', true]);
+    testWidgets(
+      'three labels then Stockable, all accumulate while the screen is pushed; '
+      'deselecting one removes only that one (spec 047 US2)',
+      (tester) async {
+        final router = await pumpScreen(
+          tester,
+          labels: const [
+            LabelItem(labelId: 1, name: 'Alfa'),
+            LabelItem(labelId: 2, name: 'Beta'),
+            LabelItem(labelId: 3, name: 'Gama'),
+          ],
+          query: const ListQuery(search: 'wid'),
+        );
+        await openFilterSheet(tester);
 
-      await tester.tap(chips.at(1));
-      await tester.pumpAndSettle();
-      expect([isSelected(0), isSelected(1), isSelected(2)], [true, false, true]);
-      expect(currentRouteUri(router).queryParametersAll['label'], ['1', '3']);
-      expect(currentRouteUri(router).queryParameters['stockable'], 'true');
-    });
+        final chips = find.descendant(
+          of: find.byKey(const Key('advanced_search_filter_label')),
+          matching: find.byType(FilterChip),
+        );
+        bool isSelected(int index) =>
+            tester.widget<FilterChip>(chips.at(index)).selected;
+
+        for (var i = 0; i < 3; i++) {
+          await tester.tap(chips.at(i));
+          await tester.pumpAndSettle();
+        }
+        await tester.tap(
+          find.byKey(const Key('advanced_search_filter_stockable')),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          [isSelected(0), isSelected(1), isSelected(2)],
+          [true, true, true],
+        );
+        final uri = router.routerDelegate.currentConfiguration.uri;
+        expect(currentRouteUri(router).queryParametersAll['label'], [
+          '1',
+          '2',
+          '3',
+        ]);
+        expect(currentRouteUri(router).queryParameters['stockable'], 'true');
+        expect(currentRouteUri(router).queryParameters['search'], 'wid');
+        expect(
+          uri.path,
+          isNot(advancedSearchPath),
+        ); // base route is still /host
+
+        final captured = verify(
+          () => productRepository.list(
+            search: captureAny(named: 'search'),
+            status: any(named: 'status'),
+            stockable: captureAny(named: 'stockable'),
+            salable: any(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            supplier: any(named: 'supplier'),
+            labels: captureAny(named: 'labels'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).captured;
+        expect(captured.sublist(captured.length - 3), [
+          [1, 2, 3],
+          'wid',
+          true,
+        ]);
+
+        await tester.tap(chips.at(1));
+        await tester.pumpAndSettle();
+        expect(
+          [isSelected(0), isSelected(1), isSelected(2)],
+          [true, false, true],
+        );
+        expect(currentRouteUri(router).queryParametersAll['label'], ['1', '3']);
+        expect(currentRouteUri(router).queryParameters['stockable'], 'true');
+      },
+    );
   });
 
   group('the forced filter is unforgeable (FR-008, SC-004)', () {
-    testWidgets('a hand-crafted status=all&salable=false still yields active+salable products', (
-      tester,
-    ) async {
-      await pumpScreen(
-        tester,
-        query: const ListQuery(
-          facets: {
-            'status': ['all'],
-            'salable': ['false'],
-          },
-        ),
-      );
+    testWidgets(
+      'a hand-crafted status=all&salable=false still yields active+salable products',
+      (tester) async {
+        await pumpScreen(
+          tester,
+          query: const ListQuery(
+            facets: {
+              'status': ['all'],
+              'salable': ['false'],
+            },
+          ),
+        );
 
-      // The forced filter is what the mock was called with — status/salable
-      // from the URL never reach the repository call.
-      final captured = verify(
-        () => productRepository.list(
-          search: any(named: 'search'),
-          status: captureAny(named: 'status'),
-          stockable: any(named: 'stockable'),
-          salable: captureAny(named: 'salable'),
-          purchasable: any(named: 'purchasable'),
-          supplier: any(named: 'supplier'),
-          labels: any(named: 'labels'),
-          skip: any(named: 'skip'),
-          limit: any(named: 'limit'),
-        ),
-      ).captured;
-      expect(captured[0], EntityStatus.active);
-      expect(captured[1], isTrue);
-    });
+        // The forced filter is what the mock was called with — status/salable
+        // from the URL never reach the repository call.
+        final captured = verify(
+          () => productRepository.list(
+            search: any(named: 'search'),
+            status: captureAny(named: 'status'),
+            stockable: any(named: 'stockable'),
+            salable: captureAny(named: 'salable'),
+            purchasable: any(named: 'purchasable'),
+            supplier: any(named: 'supplier'),
+            labels: any(named: 'labels'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).captured;
+        expect(captured[0], EntityStatus.active);
+        expect(captured[1], isTrue);
+      },
+    );
   });
 
   group('multiple selection (FR-017)', () {
@@ -535,7 +640,9 @@ void main() {
             skip: 20,
             limit: 20,
           ),
-        ).thenAnswer((_) async => const ProductListResult(items: pageTwo, total: 21));
+        ).thenAnswer(
+          (_) async => const ProductListResult(items: pageTwo, total: 21),
+        );
 
         await tester.tap(find.text('SKU-001'));
         await tester.pumpAndSettle();
@@ -564,60 +671,73 @@ void main() {
       },
     );
 
-    testWidgets('"Clear selection" empties the count and every tick without leaving the screen', (
-      tester,
-    ) async {
-      final router = await pumpScreen(tester, withHost: false);
+    testWidgets(
+      '"Clear selection" empties the count and every tick without leaving the screen',
+      (tester) async {
+        final router = await pumpScreen(tester, withHost: false);
 
-      await tester.tap(find.text('SKU-001'));
-      await tester.pumpAndSettle();
-      expect(find.text('1 seleccionados'), findsOneWidget);
+        await tester.tap(find.text('SKU-001'));
+        await tester.pumpAndSettle();
+        expect(find.text('1 seleccionados'), findsOneWidget);
 
-      await tester.tap(find.byKey(const Key('advanced_search_clear_selection')));
-      await tester.pumpAndSettle();
+        await tester.tap(
+          find.byKey(const Key('advanced_search_clear_selection')),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('1 seleccionados'), findsNothing);
-      expect(find.byKey(const Key('advanced_search_clear_selection')), findsNothing);
-      expect(router.state.uri.toString(), advancedSearchPath);
-    });
+        expect(find.text('1 seleccionados'), findsNothing);
+        expect(
+          find.byKey(const Key('advanced_search_clear_selection')),
+          findsNothing,
+        );
+        expect(router.state.uri.toString(), advancedSearchPath);
+      },
+    );
   });
 
   group('deployment-configured selection mode (FR-015, FR-016)', () {
-    testWidgets('single-selection mode: ticking a second row releases the first', (tester) async {
-      await pumpScreen(tester, multiSelect: false);
+    testWidgets(
+      'single-selection mode: ticking a second row releases the first',
+      (tester) async {
+        await pumpScreen(tester, multiSelect: false);
 
-      await tester.tap(find.text('SKU-001'));
-      await tester.pumpAndSettle();
-      expect(find.text('1 seleccionados'), findsOneWidget);
-      // No clear action in single-selection mode.
-      expect(find.byKey(const Key('advanced_search_clear_selection')), findsNothing);
+        await tester.tap(find.text('SKU-001'));
+        await tester.pumpAndSettle();
+        expect(find.text('1 seleccionados'), findsOneWidget);
+        // No clear action in single-selection mode.
+        expect(
+          find.byKey(const Key('advanced_search_clear_selection')),
+          findsNothing,
+        );
 
-      await tester.tap(find.text('SKU-002'));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('SKU-002'));
+        await tester.pumpAndSettle();
 
-      expect(find.text('1 seleccionados'), findsOneWidget);
-      final addButton = tester.widget<FilledButton>(
-        find.byKey(const Key('advanced_search_add_button')),
-      );
-      expect((addButton.child! as Text).data, 'Agregar (1)');
-    });
+        expect(find.text('1 seleccionados'), findsOneWidget);
+        final addButton = tester.widget<FilledButton>(
+          find.byKey(const Key('advanced_search_add_button')),
+        );
+        expect((addButton.child! as Text).data, 'Agregar (1)');
+      },
+    );
 
-    testWidgets('multi-selection mode (the default) is unaffected — regression guard', (
-      tester,
-    ) async {
-      await pumpScreen(tester);
+    testWidgets(
+      'multi-selection mode (the default) is unaffected — regression guard',
+      (tester) async {
+        await pumpScreen(tester);
 
-      await tester.tap(find.text('SKU-001'));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('SKU-002'));
-      await tester.pumpAndSettle();
+        await tester.tap(find.text('SKU-001'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('SKU-002'));
+        await tester.pumpAndSettle();
 
-      expect(find.text('2 seleccionados'), findsOneWidget);
-      final addButton = tester.widget<FilledButton>(
-        find.byKey(const Key('advanced_search_add_button')),
-      );
-      expect((addButton.child! as Text).data, 'Agregar (2)');
-    });
+        expect(find.text('2 seleccionados'), findsOneWidget);
+        final addButton = tester.widget<FilledButton>(
+          find.byKey(const Key('advanced_search_add_button')),
+        );
+        expect((addButton.child! as Text).data, 'Agregar (2)');
+      },
+    );
   });
 
   group('compact layout (FR-014)', () {
@@ -634,14 +754,28 @@ void main() {
         final container = ProviderScope.containerOf(
           tester.element(find.byType(AdvancedSearchScreen)),
         );
-        container.read(advancedSearchSelectionProvider.notifier).state = [_products.first];
+        container.read(advancedSearchSelectionProvider.notifier).state = [
+          _products.first,
+        ];
         await tester.pumpAndSettle();
 
         expect(tester.takeException(), isNull);
-        expect(find.byKey(const Key('advanced_search_search_field')), findsOneWidget);
-        expect(find.byKey(const Key('advanced_search_filter_button')), findsOneWidget);
-        expect(find.byKey(const Key('advanced_search_cancel_button')), findsOneWidget);
-        expect(find.byKey(const Key('advanced_search_add_button')), findsOneWidget);
+        expect(
+          find.byKey(const Key('advanced_search_search_field')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('advanced_search_filter_button')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('advanced_search_cancel_button')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('advanced_search_add_button')),
+          findsOneWidget,
+        );
         expect(find.text('1 seleccionados'), findsOneWidget);
       },
     );

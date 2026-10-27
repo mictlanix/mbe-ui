@@ -67,7 +67,10 @@ void main() {
     bool isMixed = false,
     Destination? counterDestination,
   }) async {
-    final distribution = distributionFor(sale: sale, destinations: destinations);
+    final distribution = distributionFor(
+      sale: sale,
+      destinations: destinations,
+    );
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
     await tester.pumpWidget(
@@ -96,16 +99,18 @@ void main() {
   }
 
   group('the header (FR-035)', () {
-    testWidgets('states how many lines and destinations are shown',
-        (tester) async {
+    testWidgets('states how many lines and destinations are shown', (
+      tester,
+    ) async {
       await pumpPanel(tester, [d1, d2]);
       expect(find.text('2 líneas · 2 destinos'), findsOneWidget);
     });
   });
 
   group('the rows agree with the cards\' badges (research R8, FR-032)', () {
-    testWidgets('each row carries a chip per destination holding some of it',
-        (tester) async {
+    testWidgets('each row carries a chip per destination holding some of it', (
+      tester,
+    ) async {
       await pumpPanel(tester, [d1, d2]);
 
       final varilla = find.byKey(const Key('distribution_row_5'));
@@ -122,11 +127,15 @@ void main() {
       );
     });
 
-    testWidgets('a line nobody has claimed yet shows no destination chip',
-        (tester) async {
+    testWidgets('a line nobody has claimed yet shows no destination chip', (
+      tester,
+    ) async {
       await pumpPanel(tester, [d1]);
       final cemento = find.byKey(const Key('distribution_row_6'));
-      expect(find.descendant(of: cemento, matching: find.textContaining('D')), findsNothing);
+      expect(
+        find.descendant(of: cemento, matching: find.textContaining('D')),
+        findsNothing,
+      );
     });
   });
 
@@ -137,7 +146,10 @@ void main() {
 
       final cemento = find.byKey(const Key('distribution_row_6'));
       expect(
-        find.descendant(of: cemento, matching: find.byIcon(Icons.warning_amber_outlined)),
+        find.descendant(
+          of: cemento,
+          matching: find.byIcon(Icons.warning_amber_outlined),
+        ),
         findsOneWidget,
       );
     });
@@ -148,7 +160,10 @@ void main() {
 
       final cemento = find.byKey(const Key('distribution_row_6'));
       expect(
-        find.descendant(of: cemento, matching: find.byIcon(Icons.warning_amber_outlined)),
+        find.descendant(
+          of: cemento,
+          matching: find.byIcon(Icons.warning_amber_outlined),
+        ),
         findsNothing,
       );
       expect(
@@ -196,8 +211,9 @@ void main() {
       await tester.pump();
     }
 
-    testWidgets('states the assigned-units total against the sale total',
-        (tester) async {
+    testWidgets('states the assigned-units total against the sale total', (
+      tester,
+    ) async {
       await pumpFoot(tester, assigned: '6', total: '26');
       expect(find.text('6 / 26 unidades asignadas'), findsOneWidget);
     });
@@ -209,7 +225,10 @@ void main() {
         outstandingMessage: 'Falta asignar: Cemento (20)',
         onClose: null,
       );
-      expect(find.byKey(const Key('delivery_outstanding_notice')), findsOneWidget);
+      expect(
+        find.byKey(const Key('delivery_outstanding_notice')),
+        findsOneWidget,
+      );
       expect(find.text('Falta asignar: Cemento (20)'), findsOneWidget);
 
       final button = tester.widget<FloatingActionButton>(
@@ -218,10 +237,14 @@ void main() {
       expect(button.onPressed, isNull);
     });
 
-    testWidgets('an enabled finish action shows no outstanding notice',
-        (tester) async {
+    testWidgets('an enabled finish action shows no outstanding notice', (
+      tester,
+    ) async {
       await pumpFoot(tester, onClose: () {});
-      expect(find.byKey(const Key('delivery_outstanding_notice')), findsNothing);
+      expect(
+        find.byKey(const Key('delivery_outstanding_notice')),
+        findsNothing,
+      );
 
       final button = tester.widget<FloatingActionButton>(
         find.byKey(const Key('delivery_close_button')),

@@ -47,7 +47,9 @@ void main() {
   );
 
   group('the track', () {
-    testWidgets('is exactly an extended FAB tall, in a stadium', (tester) async {
+    testWidgets('is exactly an extended FAB tall, in a stadium', (
+      tester,
+    ) async {
       await pumpSelector(tester);
 
       final track = find.byKey(const Key('pos_fulfillment_selector'));
@@ -180,9 +182,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.local_shipping_outlined), findsNothing);
 
-      await tester.tap(
-        find.byKey(const Key('pos_fulfillment_counterPickup')),
-      );
+      await tester.tap(find.byKey(const Key('pos_fulfillment_counterPickup')));
       await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.store_outlined), findsNothing);

@@ -129,7 +129,8 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
     // pickup-only, since that customer cannot use either — checked against
     // the sale's own persisted `fulfillmentIntent` (shared between POS and
     // back-office orders), not any POS-only local state.
-    final previousMode = widget.sale?.fulfillmentIntent ?? FulfillmentMode.counterPickup;
+    final previousMode =
+        widget.sale?.fulfillmentIntent ?? FulfillmentMode.counterPickup;
     final demoteToPickup =
         customer != null &&
         previousMode != FulfillmentMode.counterPickup &&
@@ -161,11 +162,15 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
         // Keeps the POS mode selector's own local state in step with the
         // server-side reset just made above; a no-op where this bar is used
         // outside POS capture (no widget there reads this provider).
-        ref.read(posStepControllerProvider.notifier).setMode(FulfillmentMode.counterPickup);
+        ref
+            .read(posStepControllerProvider.notifier)
+            .setMode(FulfillmentMode.counterPickup);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             key: const Key('pos_generic_customer_pickup_reset_notice'),
-            content: Text(AppLocalizations.of(context)!.posGenericCustomerResetToPickup),
+            content: Text(
+              AppLocalizations.of(context)!.posGenericCustomerResetToPickup,
+            ),
           ),
         );
       }
@@ -215,7 +220,9 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
     if (!attached || !mounted) return;
     setState(() => _busy = true);
     try {
-      await ref.read(saleEditorProvider).updateHeader(paymentTerms: PaymentTerms.netD);
+      await ref
+          .read(saleEditorProvider)
+          .updateHeader(paymentTerms: PaymentTerms.netD);
     } on AppError {
       // FR-010a: swallowed. The customer is already attached by the write
       // above; a refusal here leaves the order on immediate terms, which the
@@ -261,14 +268,16 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
   /// Immediate is what mbe-api itself derives for a customer with no credit
   /// line, which the walk-in customer is — so the dropdown shows the terms
   /// the sale would actually be raised on, not a guess.
-  PaymentTerms get _terms => widget.sale?.paymentTerms ?? PaymentTerms.immediate;
+  PaymentTerms get _terms =>
+      widget.sale?.paymentTerms ?? PaymentTerms.immediate;
 
   /// Whether [customer] has a credit line to sell against — the same
   /// predicate `_TermsFact` applies to a fuller `Customer` record (below),
   /// reused here against the picker's own `CustomerListItem` so the
   /// dropdown's enablement and this bar's attach-time default can never
   /// disagree (spec 037 research R2).
-  bool _hasCreditLine(CustomerListItem customer) => !isZeroAmount(customer.creditLimit);
+  bool _hasCreditLine(CustomerListItem customer) =>
+      !isZeroAmount(customer.creditLimit);
 
   @override
   Widget build(BuildContext context) {
@@ -311,7 +320,10 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_error != null) ...[
-              ErrorBanner(error: _error!, onDismiss: () => setState(() => _error = null)),
+              ErrorBanner(
+                error: _error!,
+                onDismiss: () => setState(() => _error = null),
+              ),
               SizedBox(height: spacing.xs),
             ],
             AnimatedSize(
@@ -330,7 +342,8 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
                         canCreate: _canCreateCustomers,
                         onSearch: _startSearch,
                         onCreate: _createCustomer,
-                        onTermsChanged: (terms) => _updateHeader(paymentTerms: terms),
+                        onTermsChanged: (terms) =>
+                            _updateHeader(paymentTerms: terms),
                       )
                     : _SearchingView(
                         key: const ValueKey('searching'),
@@ -350,7 +363,8 @@ class _CustomerBarState extends ConsumerState<CustomerBar> {
                         // Only where searching is the whole face — see
                         // `_SearchingView.canCreate`. POS keeps its create
                         // action in the facts view alone, exactly as before.
-                        canCreate: widget.startInSearchMode && _canCreateCustomers,
+                        canCreate:
+                            widget.startInSearchMode && _canCreateCustomers,
                         onCreate: _createCustomer,
                       ),
               ),
@@ -567,7 +581,9 @@ class _TermsFact extends ConsumerWidget {
           // The shared value role, not a raw text-theme slot — same size as
           // every other value in the bar, and tier-aware (FR-016d).
           style: theme.typeRoles.fieldInput,
-          onChanged: enabled ? (terms) => terms != null ? onChanged(terms) : null : null,
+          onChanged: enabled
+              ? (terms) => terms != null ? onChanged(terms) : null
+              : null,
           items: [
             DropdownMenuItem(
               value: PaymentTerms.immediate,
@@ -622,7 +638,8 @@ class _SearchingView extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     return Focus(
       onKeyEvent: (node, event) {
-        if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+        if (event is KeyDownEvent &&
+            event.logicalKey == LogicalKeyboardKey.escape) {
           onCancel();
           return KeyEventResult.handled;
         }

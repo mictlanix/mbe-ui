@@ -97,8 +97,10 @@ class _PriceCellState extends ConsumerState<PriceCell> {
   /// and `ref` is unusable by then.
   late final AppFormatters _fmt;
 
-  PriceCellKey get _key =>
-      PriceCellKey(productId: widget.productId, priceListId: widget.priceListId);
+  PriceCellKey get _key => PriceCellKey(
+    productId: widget.productId,
+    priceListId: widget.priceListId,
+  );
 
   @override
   void initState() {
@@ -216,7 +218,9 @@ class _PriceCellState extends ConsumerState<PriceCell> {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
     final key = event.logicalKey;
     if (key == LogicalKeyboardKey.escape) {
-      ref.read(pricingGridControllerProvider(widget.filter).notifier).closeCell();
+      ref
+          .read(pricingGridControllerProvider(widget.filter).notifier)
+          .closeCell();
       return KeyEventResult.handled;
     }
     if (key == LogicalKeyboardKey.tab) {
@@ -291,7 +295,12 @@ class _PriceCellState extends ConsumerState<PriceCell> {
     );
     final Widget? badge;
     if (rejected != null) {
-      badge = Icon(Icons.error_outline, key: badgeKey, size: 14, color: colors.error);
+      badge = Icon(
+        Icons.error_outline,
+        key: badgeKey,
+        size: 14,
+        color: colors.error,
+      );
     } else if (widget.inFlight) {
       badge = SizedBox(
         key: badgeKey,

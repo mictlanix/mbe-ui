@@ -11,7 +11,11 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// the cashier must hand the change over. This card outlives the draft and
 /// stays until [onDismiss].
 class PaymentChangeCard extends ConsumerWidget {
-  const PaymentChangeCard({super.key, required this.amount, required this.onDismiss});
+  const PaymentChangeCard({
+    super.key,
+    required this.amount,
+    required this.onDismiss,
+  });
 
   /// The change, as a wire decimal string.
   final String amount;

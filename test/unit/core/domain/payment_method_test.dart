@@ -6,7 +6,10 @@ import 'package:mbe_ui/core/domain/payment_method.dart';
 void main() {
   group('paymentMethodIcon', () {
     test('maps the common tenders to their tile icons', () {
-      expect(paymentMethodIcon(PaymentMethod.cash.code), Icons.payments_outlined);
+      expect(
+        paymentMethodIcon(PaymentMethod.cash.code),
+        Icons.payments_outlined,
+      );
       expect(
         paymentMethodIcon(PaymentMethod.creditCard.code),
         Icons.credit_score_outlined,
@@ -22,7 +25,10 @@ void main() {
     });
 
     test('maps one code from every other group in the table', () {
-      expect(paymentMethodIcon(PaymentMethod.check.code), Icons.receipt_long_outlined);
+      expect(
+        paymentMethodIcon(PaymentMethod.check.code),
+        Icons.receipt_long_outlined,
+      );
       expect(
         paymentMethodIcon(PaymentMethod.electronicPurse.code),
         Icons.account_balance_wallet_outlined,

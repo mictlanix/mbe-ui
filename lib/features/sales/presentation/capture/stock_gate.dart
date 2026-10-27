@@ -30,11 +30,7 @@ class StockGate {
 /// summed per (product, warehouse) across lines, so two lines of one product
 /// cannot each fit while together exceeding the stock.
 StockGate evaluateStock(Sale sale, Map<int, ProductStock> cache) =>
-    evaluateLines(
-      sale.lines,
-      cache,
-      draft: sale.status == SaleStatus.draft,
-    );
+    evaluateLines(sale.lines, cache, draft: sale.status == SaleStatus.draft);
 
 /// [evaluateStock] over a bare list of lines, for a caller that has no [Sale]
 /// (a single line judged on its own).

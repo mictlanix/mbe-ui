@@ -107,33 +107,42 @@ void main() {
       expect(target.mode, FulfillmentMode.delivery);
     });
 
-    test('no shipTo at all is counter pickup — nothing has been chosen yet', () {
-      final target = resumeTargetFor(
-        _sale(status: SaleStatus.draft),
-        facilityAddressId: _facilityAddress,
-      );
-      expect(target.mode, FulfillmentMode.counterPickup);
-    });
+    test(
+      'no shipTo at all is counter pickup — nothing has been chosen yet',
+      () {
+        final target = resumeTargetFor(
+          _sale(status: SaleStatus.draft),
+          facilityAddressId: _facilityAddress,
+        );
+        expect(target.mode, FulfillmentMode.counterPickup);
+      },
+    );
   });
 
   group('a recorded fulfilmentIntent is trusted over the shipTo heuristic '
       '(mbe-api#170/#171)', () {
-    test('mixed survives a resume — the bug the address alone could not fix',
-        () {
-      // A mixed sale writes the customer's address, byte-identical to a
-      // pure-delivery one — the whole reason the address heuristic could
-      // never recover `mixed`. `fulfillmentIntent` is the fix.
-      final target = resumeTargetFor(
-        _sale(
-          status: SaleStatus.paid,
-          shipTo: 777,
-          fulfillmentIntent: FulfillmentMode.mixed,
-        ),
-        facilityAddressId: _facilityAddress,
-      );
-      expect(target.mode, FulfillmentMode.mixed);
-      expect(target.step, PosStep.entrega, reason: 'mixed still owes its distribution');
-    });
+    test(
+      'mixed survives a resume — the bug the address alone could not fix',
+      () {
+        // A mixed sale writes the customer's address, byte-identical to a
+        // pure-delivery one — the whole reason the address heuristic could
+        // never recover `mixed`. `fulfillmentIntent` is the fix.
+        final target = resumeTargetFor(
+          _sale(
+            status: SaleStatus.paid,
+            shipTo: 777,
+            fulfillmentIntent: FulfillmentMode.mixed,
+          ),
+          facilityAddressId: _facilityAddress,
+        );
+        expect(target.mode, FulfillmentMode.mixed);
+        expect(
+          target.step,
+          PosStep.entrega,
+          reason: 'mixed still owes its distribution',
+        );
+      },
+    );
 
     test('a recorded counterPickup is trusted even without shipTo agreeing '
         'yet', () {
@@ -193,7 +202,8 @@ void main() {
       expect(
         target.step,
         PosStep.cobro,
-        reason: 'without the facility address it cannot be known to be a '
+        reason:
+            'without the facility address it cannot be known to be a '
             'delivery sale, so Entrega is not asserted',
       );
     });

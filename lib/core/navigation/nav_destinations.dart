@@ -166,10 +166,7 @@ const List<NavItem> kNavigationTree = [
         selectedIcon: Icons.receipt_long,
         route: '/taxpayer-recipients',
         branchIndex: NavBranch.taxpayerRecipients,
-        gate: PrivilegeGate(
-          SystemObject.taxpayerRecipients,
-          AccessRight.read,
-        ),
+        gate: PrivilegeGate(SystemObject.taxpayerRecipients, AccessRight.read),
       ),
       NavDestination(
         id: 'expenses',

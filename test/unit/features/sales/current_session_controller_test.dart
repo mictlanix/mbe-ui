@@ -43,11 +43,13 @@ void main() {
 
   group('CurrentSessionController', () {
     test('surfaces state=none with no session', () async {
-      when(() => repository.getCurrent()).thenAnswer(
-        (_) async => const CurrentSession(state: SessionState.none),
-      );
+      when(
+        () => repository.getCurrent(),
+      ).thenAnswer((_) async => const CurrentSession(state: SessionState.none));
 
-      final result = await container.read(currentSessionControllerProvider.future);
+      final result = await container.read(
+        currentSessionControllerProvider.future,
+      );
 
       expect(result.state, SessionState.none);
       expect(result.session, isNull);
@@ -55,10 +57,13 @@ void main() {
 
     test('surfaces state=open with the session', () async {
       when(() => repository.getCurrent()).thenAnswer(
-        (_) async => CurrentSession(state: SessionState.open, session: _session()),
+        (_) async =>
+            CurrentSession(state: SessionState.open, session: _session()),
       );
 
-      final result = await container.read(currentSessionControllerProvider.future);
+      final result = await container.read(
+        currentSessionControllerProvider.future,
+      );
 
       expect(result.state, SessionState.open);
       expect(result.session!.cashSessionId, 1);
@@ -72,15 +77,17 @@ void main() {
         ),
       );
 
-      final result = await container.read(currentSessionControllerProvider.future);
+      final result = await container.read(
+        currentSessionControllerProvider.future,
+      );
 
       expect(result.state, SessionState.stale);
     });
 
     test('performs exactly one getCurrent call', () async {
-      when(() => repository.getCurrent()).thenAnswer(
-        (_) async => const CurrentSession(state: SessionState.none),
-      );
+      when(
+        () => repository.getCurrent(),
+      ).thenAnswer((_) async => const CurrentSession(state: SessionState.none));
 
       await container.read(currentSessionControllerProvider.future);
 
@@ -93,9 +100,9 @@ void main() {
       'described)', () {
     test('false when the caller has no open session at all — the query is '
         'never issued, since there is no cashierId to query with', () async {
-      when(() => repository.getCurrent()).thenAnswer(
-        (_) async => const CurrentSession(state: SessionState.none),
-      );
+      when(
+        () => repository.getCurrent(),
+      ).thenAnswer((_) async => const CurrentSession(state: SessionState.none));
 
       final result = await container.read(hasOtherOpenSessionsProvider.future);
 
@@ -114,7 +121,8 @@ void main() {
     test('false when the exact query finds only the current session '
         'itself (total == 1)', () async {
       when(() => repository.getCurrent()).thenAnswer(
-        (_) async => CurrentSession(state: SessionState.open, session: _session()),
+        (_) async =>
+            CurrentSession(state: SessionState.open, session: _session()),
       );
       when(
         () => repository.list(
@@ -135,7 +143,8 @@ void main() {
         'this cashier — exhaustive across every drawer, unlike the '
         'superseded same-drawer heuristic', () async {
       when(() => repository.getCurrent()).thenAnswer(
-        (_) async => CurrentSession(state: SessionState.open, session: _session()),
+        (_) async =>
+            CurrentSession(state: SessionState.open, session: _session()),
       );
       when(
         () => repository.list(

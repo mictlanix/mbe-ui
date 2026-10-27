@@ -145,7 +145,8 @@ void main() {
         (_) async => LabelPage(items: _testLabels, total: _testLabels.length),
       );
       when(() => repository.get(labelId: 1)).thenAnswer(
-        (_) async => const Label(labelId: 1, name: 'Clearance', comment: 'Sale'),
+        (_) async =>
+            const Label(labelId: 1, name: 'Clearance', comment: 'Sale'),
       );
 
       final router = GoRouter(
@@ -220,11 +221,7 @@ void main() {
         await tester.pumpAndSettle();
 
         verify(
-          () => repository.listDetailed(
-            search: null,
-            skip: 0,
-            limit: 20,
-          ),
+          () => repository.listDetailed(search: null, skip: 0, limit: 20),
         ).called(1);
       },
     );
@@ -271,173 +268,168 @@ void main() {
     });
   });
 
-  group(
-    'the full US5 round trip (spec 035 T045): create, view, edit, delete, '
-    'all from the list screen',
-    () {
-      testWidgets(
-        'create → save keeps the list\'s query and closes the panel',
-        (tester) async {
-          when(
-            () => repository.create(name: 'Sale', comment: null),
-          ).thenAnswer((_) async => const Label(labelId: 3, name: 'Sale'));
-          final router = await pumpScreen(
-            tester,
-            signedInAs: _fullAccessUser,
-            query: const ListQuery(search: 'clear'),
-          );
-          final locationBefore = router.state.uri.toString();
-
-          await tester.tap(find.byKey(const Key('new_label_button')));
-          await tester.pumpAndSettle();
-          await tester.enterText(
-            find.byKey(const Key('label_name_field')),
-            'Sale',
-          );
-          await tester.tap(find.byKey(const Key('save_button')));
-          await tester.pumpAndSettle();
-
-          // Panel closed — the field is gone.
-          expect(find.byKey(const Key('label_name_field')), findsNothing);
-          // The list's own query is exactly what it was; save never
-          // navigated the list route itself.
-          expect(router.state.uri.toString(), locationBefore);
-        },
+  group('the full US5 round trip (spec 035 T045): create, view, edit, delete, '
+      'all from the list screen', () {
+    testWidgets('create → save keeps the list\'s query and closes the panel', (
+      tester,
+    ) async {
+      when(
+        () => repository.create(name: 'Sale', comment: null),
+      ).thenAnswer((_) async => const Label(labelId: 3, name: 'Sale'));
+      final router = await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        query: const ListQuery(search: 'clear'),
       );
+      final locationBefore = router.state.uri.toString();
 
-      testWidgets(
-        'view → Edit → save round-trips through a single panel instance, '
-        'and the reopened panel for a different record starts clean — not '
-        'showing the previous record\'s stale values (plan.md Risks: the '
-        'form controller is a global singleton, not a family)',
-        (tester) async {
-          when(() => repository.get(labelId: 1)).thenAnswer(
-            (_) async => const Label(labelId: 1, name: 'Clearance', comment: 'Sale'),
-          );
-          when(() => repository.get(labelId: 2)).thenAnswer(
-            (_) async => const Label(labelId: 2, name: 'Featured'),
-          );
-          when(
-            () => repository.update(
-              labelId: 1,
-              name: 'Clearance Sale',
-              comment: 'Sale',
-            ),
-          ).thenAnswer(
-            (_) async => const Label(
-              labelId: 1,
-              name: 'Clearance Sale',
-              comment: 'Sale',
-            ),
-          );
-          await pumpScreen(tester, signedInAs: _fullAccessUser);
+      await tester.tap(find.byKey(const Key('new_label_button')));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byKey(const Key('label_name_field')), 'Sale');
+      await tester.tap(find.byKey(const Key('save_button')));
+      await tester.pumpAndSettle();
 
-          // Open record 1 read-only, switch to Edit, change the name, save.
-          await tester.tap(find.text('Clearance'));
-          await tester.pumpAndSettle();
-          await tester.tap(find.byKey(const Key('edit_label_button')));
-          await tester.pumpAndSettle();
-          await tester.enterText(
-            find.byKey(const Key('label_name_field')),
-            'Clearance Sale',
-          );
-          await tester.tap(find.byKey(const Key('save_button')));
-          await tester.pumpAndSettle();
-          expect(find.byKey(const Key('label_name_field')), findsNothing);
+      // Panel closed — the field is gone.
+      expect(find.byKey(const Key('label_name_field')), findsNothing);
+      // The list's own query is exactly what it was; save never
+      // navigated the list route itself.
+      expect(router.state.uri.toString(), locationBefore);
+    });
 
-          // Now open record 2 — must show record 2's own values, not
-          // record 1's just-edited ones.
-          await tester.tap(find.text('Featured'));
-          await tester.pumpAndSettle();
+    testWidgets(
+      'view → Edit → save round-trips through a single panel instance, '
+      'and the reopened panel for a different record starts clean — not '
+      'showing the previous record\'s stale values (plan.md Risks: the '
+      'form controller is a global singleton, not a family)',
+      (tester) async {
+        when(() => repository.get(labelId: 1)).thenAnswer(
+          (_) async =>
+              const Label(labelId: 1, name: 'Clearance', comment: 'Sale'),
+        );
+        when(
+          () => repository.get(labelId: 2),
+        ).thenAnswer((_) async => const Label(labelId: 2, name: 'Featured'));
+        when(
+          () => repository.update(
+            labelId: 1,
+            name: 'Clearance Sale',
+            comment: 'Sale',
+          ),
+        ).thenAnswer(
+          (_) async =>
+              const Label(labelId: 1, name: 'Clearance Sale', comment: 'Sale'),
+        );
+        await pumpScreen(tester, signedInAs: _fullAccessUser);
 
-          final nameField = tester.widget<TextFormField>(
-            find.byKey(const Key('label_name_field')),
-          );
-          expect(nameField.initialValue, 'Featured');
-        },
+        // Open record 1 read-only, switch to Edit, change the name, save.
+        await tester.tap(find.text('Clearance'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('edit_label_button')));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('label_name_field')),
+          'Clearance Sale',
+        );
+        await tester.tap(find.byKey(const Key('save_button')));
+        await tester.pumpAndSettle();
+        expect(find.byKey(const Key('label_name_field')), findsNothing);
+
+        // Now open record 2 — must show record 2's own values, not
+        // record 1's just-edited ones.
+        await tester.tap(find.text('Featured'));
+        await tester.pumpAndSettle();
+
+        final nameField = tester.widget<TextFormField>(
+          find.byKey(const Key('label_name_field')),
+        );
+        expect(nameField.initialValue, 'Featured');
+      },
+    );
+
+    testWidgets(
+      'delete closes the panel and the record is gone from the list',
+      (tester) async {
+        when(
+          () => repository.get(labelId: 2),
+        ).thenAnswer((_) async => const Label(labelId: 2, name: 'Featured'));
+        when(() => repository.delete(labelId: 2)).thenAnswer((_) async {});
+        when(
+          () => repository.listDetailed(
+            search: any(named: 'search'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const LabelPage(items: _testLabels, total: 2),
+        );
+
+        await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+        await tester.tap(
+          find.byIcon(Icons.edit_outlined).at(1),
+        ); // 'Featured' row
+        await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('delete_label_button')));
+        await tester.pumpAndSettle();
+
+        // Now stub the post-delete refetch to reflect the deletion, since
+        // the panel's own delete call invalidates the list controller.
+        when(
+          () => repository.listDetailed(
+            search: any(named: 'search'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const LabelPage(
+            items: [Label(labelId: 1, name: 'Clearance', comment: 'Sale')],
+            total: 1,
+          ),
+        );
+        await tester.tap(find.byKey(const Key('confirm_delete_label_button')));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('label_name_field')), findsNothing);
+        expect(find.text('Featured'), findsNothing);
+      },
+    );
+
+    testWidgets('dismissing a dirty panel by tapping outside it warns before '
+        'discarding the edit (spec 035 FR-032)', (tester) async {
+      when(() => repository.get(labelId: 1)).thenAnswer(
+        (_) async =>
+            const Label(labelId: 1, name: 'Clearance', comment: 'Sale'),
       );
+      tester.view.physicalSize = const Size(1200, 900);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
 
-      testWidgets(
-        'delete closes the panel and the record is gone from the list',
-        (tester) async {
-          when(() => repository.get(labelId: 2)).thenAnswer(
-            (_) async => const Label(labelId: 2, name: 'Featured'),
-          );
-          when(() => repository.delete(labelId: 2)).thenAnswer((_) async {});
-          when(
-            () => repository.listDetailed(
-              search: any(named: 'search'),
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).thenAnswer((_) async => const LabelPage(items: _testLabels, total: 2));
+      await pumpScreen(tester, signedInAs: _fullAccessUser);
 
-          await pumpScreen(tester, signedInAs: _fullAccessUser);
-
-          await tester.tap(find.byIcon(Icons.edit_outlined).at(1)); // 'Featured' row
-          await tester.pumpAndSettle();
-          await tester.tap(find.byKey(const Key('delete_label_button')));
-          await tester.pumpAndSettle();
-
-          // Now stub the post-delete refetch to reflect the deletion, since
-          // the panel's own delete call invalidates the list controller.
-          when(
-            () => repository.listDetailed(
-              search: any(named: 'search'),
-              skip: any(named: 'skip'),
-              limit: any(named: 'limit'),
-            ),
-          ).thenAnswer(
-            (_) async => const LabelPage(
-              items: [Label(labelId: 1, name: 'Clearance', comment: 'Sale')],
-              total: 1,
-            ),
-          );
-          await tester.tap(find.byKey(const Key('confirm_delete_label_button')));
-          await tester.pumpAndSettle();
-
-          expect(find.byKey(const Key('label_name_field')), findsNothing);
-          expect(find.text('Featured'), findsNothing);
-        },
+      await tester.tap(
+        find.byIcon(Icons.edit_outlined).at(0),
+      ); // 'Clearance' row
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('label_name_field')),
+        'Changed',
       );
+      await tester.pump();
 
-      testWidgets(
-        'dismissing a dirty panel by tapping outside it warns before '
-        'discarding the edit (spec 035 FR-032)',
-        (tester) async {
-          when(() => repository.get(labelId: 1)).thenAnswer(
-            (_) async => const Label(labelId: 1, name: 'Clearance', comment: 'Sale'),
-          );
-          tester.view.physicalSize = const Size(1200, 900);
-          tester.view.devicePixelRatio = 1;
-          addTearDown(tester.view.resetPhysicalSize);
-          addTearDown(tester.view.resetDevicePixelRatio);
+      // Tap well outside the side sheet (which is right-anchored and
+      // 640 px wide) to hit the modal barrier.
+      await tester.tapAt(const Offset(20, 20));
+      await tester.pumpAndSettle();
 
-          await pumpScreen(tester, signedInAs: _fullAccessUser);
-
-          await tester.tap(find.byIcon(Icons.edit_outlined).at(0)); // 'Clearance' row
-          await tester.pumpAndSettle();
-          await tester.enterText(
-            find.byKey(const Key('label_name_field')),
-            'Changed',
-          );
-          await tester.pump();
-
-          // Tap well outside the side sheet (which is right-anchored and
-          // 640 px wide) to hit the modal barrier.
-          await tester.tapAt(const Offset(20, 20));
-          await tester.pumpAndSettle();
-
-          expect(
-            find.byKey(const Key('record_sheet_discard_dialog')),
-            findsOneWidget,
-          );
-          // Cancelling the discard leaves the edit in place.
-          await tester.tap(find.byKey(const Key('record_sheet_discard_cancel')));
-          await tester.pumpAndSettle();
-          expect(find.byKey(const Key('label_name_field')), findsOneWidget);
-        },
+      expect(
+        find.byKey(const Key('record_sheet_discard_dialog')),
+        findsOneWidget,
       );
-    },
-  );
+      // Cancelling the discard leaves the edit in place.
+      await tester.tap(find.byKey(const Key('record_sheet_discard_cancel')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('label_name_field')), findsOneWidget);
+    });
+  });
 }

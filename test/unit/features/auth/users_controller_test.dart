@@ -157,8 +157,13 @@ void main() {
 
     test('build(filter) fetches page 0 with the given filter', () async {
       when(
-        () =>
-            userRepository.list(search: null, status: null, profileId: null, skip: 0, limit: 20),
+        () => userRepository.list(
+          search: null,
+          status: null,
+          profileId: null,
+          skip: 0,
+          limit: 20,
+        ),
       ).thenAnswer(
         (_) async => UserListResult(items: [user('jdoe')], total: 1),
       );
@@ -210,42 +215,37 @@ void main() {
       },
     );
 
-    test(
-      'a profile facet in the filter is passed to the repository '
-      '(024-user-profiles FR-028)',
-      () async {
-        when(
-          () => userRepository.list(
-            search: null,
-            status: null,
-            profileId: 5,
-            skip: 0,
-            limit: 20,
-          ),
-        ).thenAnswer(
-          (_) async => UserListResult(items: [user('jdoe')], total: 1),
-        );
+    test('a profile facet in the filter is passed to the repository '
+        '(024-user-profiles FR-028)', () async {
+      when(
+        () => userRepository.list(
+          search: null,
+          status: null,
+          profileId: 5,
+          skip: 0,
+          limit: 20,
+        ),
+      ).thenAnswer(
+        (_) async => UserListResult(items: [user('jdoe')], total: 1),
+      );
 
-        final container = makeContainer();
-        addTearDown(container.dispose);
+      final container = makeContainer();
+      addTearDown(container.dispose);
 
-        const filter = UserFilter(profileId: 5);
-        final page = await container.read(
-          usersControllerProvider(filter).future,
-        );
+      const filter = UserFilter(profileId: 5);
+      final page = await container.read(usersControllerProvider(filter).future);
 
-        expect(page.items.single.userId, 'jdoe');
-        verify(
-          () => userRepository.list(
-            search: null,
-            status: null,
-            profileId: 5,
-            skip: 0,
-            limit: 20,
-          ),
-        ).called(1);
-      },
-    );
+      expect(page.items.single.userId, 'jdoe');
+      verify(
+        () => userRepository.list(
+          search: null,
+          status: null,
+          profileId: 5,
+          skip: 0,
+          limit: 20,
+        ),
+      ).called(1);
+    });
 
     test(
       'a different search maps to a different provider instance and query',
@@ -290,8 +290,13 @@ void main() {
 
     test('a different pageIndex maps to skip = pageIndex * pageSize', () async {
       when(
-        () =>
-            userRepository.list(search: null, status: null, profileId: null, skip: 0, limit: 20),
+        () => userRepository.list(
+          search: null,
+          status: null,
+          profileId: null,
+          skip: 0,
+          limit: 20,
+        ),
       ).thenAnswer(
         (_) async => UserListResult(items: [user('jdoe')], total: 21),
       );
@@ -442,10 +447,7 @@ void main() {
         ),
       ).thenAnswer(
         (_) async => UserListResult(
-          items: [
-            summary('jdoe'),
-            if (serverHasSecondUser) summary('newbie'),
-          ],
+          items: [summary('jdoe'), if (serverHasSecondUser) summary('newbie')],
           total: serverHasSecondUser ? 2 : 1,
         ),
       );
@@ -487,11 +489,10 @@ void main() {
         await notifier.save();
       });
 
-      expect(
-        ids,
-        ['jdoe', 'newbie'],
-        reason: 'the users list must show a newly created account',
-      );
+      expect(ids, [
+        'jdoe',
+        'newbie',
+      ], reason: 'the users list must show a newly created account');
     });
 
     test('a create with a differing confirmation is refused', () async {
@@ -629,40 +630,41 @@ void main() {
         await notifier.save(existingUserId: 'jdoe');
       });
 
-      expect(
-        ids,
-        ['jdoe', 'newbie'],
-        reason: 'the users list must re-read after an update',
-      );
+      expect(ids, [
+        'jdoe',
+        'newbie',
+      ], reason: 'the users list must re-read after an update');
     });
 
-    test('a failed save does NOT invalidate — nothing changed server-side',
-        () async {
-      when(
-        () => userRepository.create(
-          userId: any(named: 'userId'),
-          password: any(named: 'password'),
-          email: any(named: 'email'),
-          employeeId: any(named: 'employeeId'),
-          profileId: any(named: 'profileId'),
-        ),
-      ).thenThrow(const AppError.server(message: 'boom'));
+    test(
+      'a failed save does NOT invalidate — nothing changed server-side',
+      () async {
+        when(
+          () => userRepository.create(
+            userId: any(named: 'userId'),
+            password: any(named: 'password'),
+            email: any(named: 'email'),
+            employeeId: any(named: 'employeeId'),
+            profileId: any(named: 'profileId'),
+          ),
+        ).thenThrow(const AppError.server(message: 'boom'));
 
-      final ids = await listIdsAfter((notifier) async {
-        notifier.userIdChanged('newbie');
-        notifier.passwordChanged('secret1');
-        notifier.passwordConfirmChanged('secret1');
-        notifier.emailChanged('newbie@example.com');
-        notifier.employeeSelected(7, 'Jane Doe');
-        await notifier.save();
-      });
+        final ids = await listIdsAfter((notifier) async {
+          notifier.userIdChanged('newbie');
+          notifier.passwordChanged('secret1');
+          notifier.passwordConfirmChanged('secret1');
+          notifier.emailChanged('newbie@example.com');
+          notifier.employeeSelected(7, 'Jane Doe');
+          await notifier.save();
+        });
 
-      expect(
-        ids,
-        ['jdoe'],
-        reason: 'a rejected save changed nothing, so the cached page stands',
-      );
-    });
+        expect(
+          ids,
+          ['jdoe'],
+          reason: 'a rejected save changed nothing, so the cached page stands',
+        );
+      },
+    );
   });
 
   group('UserFormController.save (create mode)', () {
@@ -718,56 +720,53 @@ void main() {
       },
     );
 
-    test(
-      'with a profile chosen, calls create with that profileId and skips '
-      'the follow-up privileges PUT entirely, even with a non-empty grid '
-      '(024-user-profiles research.md §7 — the single most damaging slip '
-      'this feature could ship with)',
-      () async {
-        when(
-          () => userRepository.create(
-            userId: any(named: 'userId'),
-            password: any(named: 'password'),
-            email: any(named: 'email'),
-            employeeId: any(named: 'employeeId'),
-            profileId: any(named: 'profileId'),
-          ),
-        ).thenAnswer((_) async => _testUser);
+    test('with a profile chosen, calls create with that profileId and skips '
+        'the follow-up privileges PUT entirely, even with a non-empty grid '
+        '(024-user-profiles research.md §7 — the single most damaging slip '
+        'this feature could ship with)', () async {
+      when(
+        () => userRepository.create(
+          userId: any(named: 'userId'),
+          password: any(named: 'password'),
+          email: any(named: 'email'),
+          employeeId: any(named: 'employeeId'),
+          profileId: any(named: 'profileId'),
+        ),
+      ).thenAnswer((_) async => _testUser);
 
-        final container = makeContainer();
-        addTearDown(container.dispose);
-        final notifier = container.read(userFormControllerProvider.notifier);
+      final container = makeContainer();
+      addTearDown(container.dispose);
+      final notifier = container.read(userFormControllerProvider.notifier);
 
-        notifier.userIdChanged('jdoe');
-        notifier.passwordChanged('secret1');
-        notifier.passwordConfirmChanged('secret1');
-        notifier.emailChanged('jdoe@example.com');
-        notifier.employeeSelected(7, 'Jane Doe');
-        // Hand-ticked despite a profile being chosen — must not reach the
-        // server, since the profile already determines the full set.
-        notifier.privilegeChanged(SystemObject.users, 2);
-        notifier.profileSelected(5, 'Cashier');
+      notifier.userIdChanged('jdoe');
+      notifier.passwordChanged('secret1');
+      notifier.passwordConfirmChanged('secret1');
+      notifier.emailChanged('jdoe@example.com');
+      notifier.employeeSelected(7, 'Jane Doe');
+      // Hand-ticked despite a profile being chosen — must not reach the
+      // server, since the profile already determines the full set.
+      notifier.privilegeChanged(SystemObject.users, 2);
+      notifier.profileSelected(5, 'Cashier');
 
-        await notifier.save();
+      await notifier.save();
 
-        verify(
-          () => userRepository.create(
-            userId: 'jdoe',
-            password: 'secret1',
-            email: 'jdoe@example.com',
-            employeeId: 7,
-            profileId: 5,
-          ),
-        ).called(1);
-        verifyNever(
-          () => userRepository.update(
-            userId: any(named: 'userId'),
-            privileges: any(named: 'privileges'),
-          ),
-        );
-        expect(container.read(userFormControllerProvider).saved, isTrue);
-      },
-    );
+      verify(
+        () => userRepository.create(
+          userId: 'jdoe',
+          password: 'secret1',
+          email: 'jdoe@example.com',
+          employeeId: 7,
+          profileId: 5,
+        ),
+      ).called(1);
+      verifyNever(
+        () => userRepository.update(
+          userId: any(named: 'userId'),
+          privileges: any(named: 'privileges'),
+        ),
+      );
+      expect(container.read(userFormControllerProvider).saved, isTrue);
+    });
 
     test('shows error when email is empty', () async {
       final container = makeContainer();

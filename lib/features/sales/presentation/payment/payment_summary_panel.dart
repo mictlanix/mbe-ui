@@ -50,7 +50,9 @@ class PaymentSummaryPanel extends ConsumerWidget {
     // Watched so the change row is live; read for the gate, which depends
     // only on the sale's own balance and terms, not on draft state.
     ref.watch(paymentControllerProvider);
-    final change = ref.read(paymentControllerProvider.notifier).changeFor(sale.balanceOrZero);
+    final change = ref
+        .read(paymentControllerProvider.notifier)
+        .changeFor(sale.balanceOrZero);
     // spec 031 FR-007: additional to the balance/terms gate below, not
     // instead of it — a payment (or a reversal) still applying must not let
     // the cashier continue on a balance that is about to change.
@@ -71,7 +73,9 @@ class PaymentSummaryPanel extends ConsumerWidget {
       padding: EdgeInsets.all(spacing.cardPadding),
       decoration: BoxDecoration(
         color: theme.elevations.raised.surfaceColor,
-        border: Border(top: BorderSide(color: theme.colorScheme.outlineVariant)),
+        border: Border(
+          top: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -89,7 +93,9 @@ class PaymentSummaryPanel extends ConsumerWidget {
             // The same figure the mock draws in amber — here, as everywhere
             // else in this design system, emphasis is a bolder/larger role
             // rather than a literal color (SC-006).
-            figureStyle: balanceOutstanding ? typeRoles.metricValue : typeRoles.money,
+            figureStyle: balanceOutstanding
+                ? typeRoles.metricValue
+                : typeRoles.money,
           ),
           Padding(
             padding: EdgeInsets.symmetric(vertical: spacing.sm),

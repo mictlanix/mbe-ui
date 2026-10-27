@@ -55,7 +55,11 @@ void main() {
         }
       });
 
-      Future<bool> foundBy({String? search, DateTime? dateFrom, DateTime? dateTo}) async {
+      Future<bool> foundBy({
+        String? search,
+        DateTime? dateFrom,
+        DateTime? dateTo,
+      }) async {
         final page = await salesOrders.listSales(
           pointSale: probe.pointSale!, // always set: a real register sale
           search: search,
@@ -142,7 +146,8 @@ void main() {
       expect(
         unrecordedProbe.origin,
         isNull,
-        reason: 'an order created without an explicit origin must record '
+        reason:
+            'an order created without an explicit origin must record '
             'none — never silently default to either workflow',
       );
 
@@ -169,7 +174,8 @@ void main() {
       expect(
         await foundInFilteredList(unrecordedProbe.id),
         isFalse,
-        reason: 'an inclusive origin filter also leaves out an order that '
+        reason:
+            'an inclusive origin filter also leaves out an order that '
             'recorded no origin — the deliberate consequence of scoping the '
             'register list inclusively: every sale predating mbe-api#209 is '
             'absent here, and remains reachable on the back-office list',

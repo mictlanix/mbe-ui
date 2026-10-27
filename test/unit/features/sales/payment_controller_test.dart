@@ -69,9 +69,9 @@ void main() {
     payments = MockCustomerPaymentRepository();
     salesOrders = MockSalesOrderRepository();
     cashSessions = MockCashSessionRepository();
-    when(() => cashSessions.getCurrent()).thenAnswer(
-      (_) async => const CurrentSession(state: SessionState.open),
-    );
+    when(
+      () => cashSessions.getCurrent(),
+    ).thenAnswer((_) async => const CurrentSession(state: SessionState.open));
     when(
       () => payments.createPayment(
         customer: any(named: 'customer'),
@@ -109,64 +109,58 @@ void main() {
     return c;
   }
 
-  test(
-    'tender confirms the still-draft sale exactly once, before creating the '
-    'payment',
-    () async {
-      final sale = _sale();
-      container = containerFor(sale);
-      await container.read(posSaleControllerProvider.future);
-      when(() => salesOrders.confirm(saleId: 42)).thenAnswer((_) async => sale);
-      when(() => salesOrders.getById(saleId: 42)).thenAnswer((_) async => sale);
+  test('tender confirms the still-draft sale exactly once, before creating the '
+      'payment', () async {
+    final sale = _sale();
+    container = containerFor(sale);
+    await container.read(posSaleControllerProvider.future);
+    when(() => salesOrders.confirm(saleId: 42)).thenAnswer((_) async => sale);
+    when(() => salesOrders.getById(saleId: 42)).thenAnswer((_) async => sale);
 
-      final notifier = container.read(paymentControllerProvider.notifier);
-      notifier.setAmount('116.00');
+    final notifier = container.read(paymentControllerProvider.notifier);
+    notifier.setAmount('116.00');
 
-      final result = await notifier.tender(sale, methodCode: 1);
+    final result = await notifier.tender(sale, methodCode: 1);
 
-      expect(result, TenderResult.applied);
-      verify(() => salesOrders.confirm(saleId: 42)).called(1);
-      verify(
-        () => payments.createPayment(
-          customer: 7,
-          amount: '116.00',
-          method: 1,
-          currency: any(named: 'currency'),
-          paymentCharge: any(named: 'paymentCharge'),
-          reference: any(named: 'reference'),
-        ),
-      ).called(1);
-    },
-  );
+    expect(result, TenderResult.applied);
+    verify(() => salesOrders.confirm(saleId: 42)).called(1);
+    verify(
+      () => payments.createPayment(
+        customer: 7,
+        amount: '116.00',
+        method: 1,
+        currency: any(named: 'currency'),
+        paymentCharge: any(named: 'paymentCharge'),
+        reference: any(named: 'reference'),
+      ),
+    ).called(1);
+  });
 
-  test(
-    'a tender on a sale that is no longer draft does not confirm again '
-    '(the tender still goes through)',
-    () async {
-      final sale = _sale(status: SaleStatus.completed);
-      container = containerFor(sale);
-      await container.read(posSaleControllerProvider.future);
-      when(() => salesOrders.getById(saleId: 42)).thenAnswer((_) async => sale);
+  test('a tender on a sale that is no longer draft does not confirm again '
+      '(the tender still goes through)', () async {
+    final sale = _sale(status: SaleStatus.completed);
+    container = containerFor(sale);
+    await container.read(posSaleControllerProvider.future);
+    when(() => salesOrders.getById(saleId: 42)).thenAnswer((_) async => sale);
 
-      final notifier = container.read(paymentControllerProvider.notifier);
-      notifier.setAmount('50.00');
+    final notifier = container.read(paymentControllerProvider.notifier);
+    notifier.setAmount('50.00');
 
-      final result = await notifier.tender(sale, methodCode: 1);
+    final result = await notifier.tender(sale, methodCode: 1);
 
-      expect(result, TenderResult.applied);
-      verifyNever(() => salesOrders.confirm(saleId: any(named: 'saleId')));
-      verify(
-        () => payments.createPayment(
-          customer: any(named: 'customer'),
-          amount: any(named: 'amount'),
-          method: any(named: 'method'),
-          currency: any(named: 'currency'),
-          paymentCharge: any(named: 'paymentCharge'),
-          reference: any(named: 'reference'),
-        ),
-      ).called(1);
-    },
-  );
+    expect(result, TenderResult.applied);
+    verifyNever(() => salesOrders.confirm(saleId: any(named: 'saleId')));
+    verify(
+      () => payments.createPayment(
+        customer: any(named: 'customer'),
+        amount: any(named: 'amount'),
+        method: any(named: 'method'),
+        currency: any(named: 'currency'),
+        paymentCharge: any(named: 'paymentCharge'),
+        reference: any(named: 'reference'),
+      ),
+    ).called(1);
+  });
 
   test(
     'a refused confirm blocks the tender — createPayment is never reached',
@@ -205,9 +199,9 @@ void main() {
         final sale = _sale();
         container = containerFor(sale);
         await container.read(posSaleControllerProvider.future);
-        when(() => cashSessions.getCurrent()).thenAnswer(
-          (_) async => CurrentSession(state: state),
-        );
+        when(
+          () => cashSessions.getCurrent(),
+        ).thenAnswer((_) async => CurrentSession(state: state));
 
         final notifier = container.read(paymentControllerProvider.notifier);
         notifier.setAmount('116.00');
@@ -247,22 +241,25 @@ void main() {
     );
 
     for (final amount in ['', '0', '0.00']) {
-      test('an amount of "$amount" is refused with amountRequired and no API call', () async {
-        final sale = _sale(status: SaleStatus.completed);
-        container = containerFor(sale);
-        await container.read(posSaleControllerProvider.future);
-        final notifier = container.read(paymentControllerProvider.notifier);
-        notifier.setAmount(amount);
+      test(
+        'an amount of "$amount" is refused with amountRequired and no API call',
+        () async {
+          final sale = _sale(status: SaleStatus.completed);
+          container = containerFor(sale);
+          await container.read(posSaleControllerProvider.future);
+          final notifier = container.read(paymentControllerProvider.notifier);
+          notifier.setAmount(amount);
 
-        final result = await notifier.tender(sale, methodCode: 1);
+          final result = await notifier.tender(sale, methodCode: 1);
 
-        expect(result, TenderResult.refused);
-        expect(
-          container.read(paymentControllerProvider).issue,
-          PaymentIssue.amountRequired,
-        );
-        expectNoPaymentCreated();
-      });
+          expect(result, TenderResult.refused);
+          expect(
+            container.read(paymentControllerProvider).issue,
+            PaymentIssue.amountRequired,
+          );
+          expectNoPaymentCreated();
+        },
+      );
     }
 
     test('a tap while a tender is in flight is ignored (FR-017)', () async {
@@ -345,36 +342,45 @@ void main() {
       ).called(1);
     });
 
-    test('after a partial payment the amount becomes the new remaining balance', () async {
-      final sale = _sale(status: SaleStatus.completed);
-      container = containerFor(sale);
-      await container.read(posSaleControllerProvider.future);
-      when(() => salesOrders.getById(saleId: 42))
-          .thenAnswer((_) async => _sale(status: SaleStatus.completed, balance: '66.00'));
-      final notifier = container.read(paymentControllerProvider.notifier);
-      notifier.setAmount('50.00');
+    test(
+      'after a partial payment the amount becomes the new remaining balance',
+      () async {
+        final sale = _sale(status: SaleStatus.completed);
+        container = containerFor(sale);
+        await container.read(posSaleControllerProvider.future);
+        when(() => salesOrders.getById(saleId: 42)).thenAnswer(
+          (_) async => _sale(status: SaleStatus.completed, balance: '66.00'),
+        );
+        final notifier = container.read(paymentControllerProvider.notifier);
+        notifier.setAmount('50.00');
 
-      await notifier.tender(sale, methodCode: 1);
+        await notifier.tender(sale, methodCode: 1);
 
-      expect(container.read(paymentControllerProvider).amount, '66.00');
-      expect(container.read(paymentControllerProvider).submitting, isFalse);
-    });
+        expect(container.read(paymentControllerProvider).amount, '66.00');
+        expect(container.read(paymentControllerProvider).submitting, isFalse);
+      },
+    );
 
-    test('prefillAmount seeds an empty amount, never overwrites a keyed one', () async {
-      container = containerFor(_sale());
-      final notifier = container.read(paymentControllerProvider.notifier);
+    test(
+      'prefillAmount seeds an empty amount, never overwrites a keyed one',
+      () async {
+        container = containerFor(_sale());
+        final notifier = container.read(paymentControllerProvider.notifier);
 
-      notifier.prefillAmount('116.00');
-      expect(container.read(paymentControllerProvider).amount, '116.00');
+        notifier.prefillAmount('116.00');
+        expect(container.read(paymentControllerProvider).amount, '116.00');
 
-      notifier.setAmount('20.00');
-      notifier.prefillAmount('116.00');
-      expect(container.read(paymentControllerProvider).amount, '20.00');
-    });
+        notifier.setAmount('20.00');
+        notifier.prefillAmount('116.00');
+        expect(container.read(paymentControllerProvider).amount, '20.00');
+      },
+    );
   });
 
   group('overpayment and change (spec 047 US6)', () {
-    Future<(PaymentController, Sale)> arrange({String amount = '150.00'}) async {
+    Future<(PaymentController, Sale)> arrange({
+      String amount = '150.00',
+    }) async {
       final sale = _sale(status: SaleStatus.completed);
       container = containerFor(sale);
       container.listen(paymentControllerProvider, (_, _) {});
@@ -387,28 +393,31 @@ void main() {
       return (notifier, sale);
     }
 
-    test('a non-cash method over the balance is refused before any API call', () async {
-      final (notifier, sale) = await arrange();
+    test(
+      'a non-cash method over the balance is refused before any API call',
+      () async {
+        final (notifier, sale) = await arrange();
 
-      final result = await notifier.tender(sale, methodCode: 4);
+        final result = await notifier.tender(sale, methodCode: 4);
 
-      expect(result, TenderResult.refused);
-      expect(
-        container.read(paymentControllerProvider).issue,
-        PaymentIssue.overpayNonCash,
-      );
-      verifyNever(() => cashSessions.getCurrent());
-      verifyNever(
-        () => payments.createPayment(
-          customer: any(named: 'customer'),
-          amount: any(named: 'amount'),
-          method: any(named: 'method'),
-          currency: any(named: 'currency'),
-          paymentCharge: any(named: 'paymentCharge'),
-          reference: any(named: 'reference'),
-        ),
-      );
-    });
+        expect(result, TenderResult.refused);
+        expect(
+          container.read(paymentControllerProvider).issue,
+          PaymentIssue.overpayNonCash,
+        );
+        verifyNever(() => cashSessions.getCurrent());
+        verifyNever(
+          () => payments.createPayment(
+            customer: any(named: 'customer'),
+            amount: any(named: 'amount'),
+            method: any(named: 'method'),
+            currency: any(named: 'currency'),
+            paymentCharge: any(named: 'paymentCharge'),
+            reference: any(named: 'reference'),
+          ),
+        );
+      },
+    );
 
     test('a non-cash method at exactly the balance is accepted', () async {
       final (notifier, sale) = await arrange(amount: '116.00');
@@ -444,16 +453,19 @@ void main() {
       expect(container.read(paymentControllerProvider).lastChange, isNull);
     });
 
-    test('lastChange survives typing, and is cleared by dismissChange', () async {
-      final (notifier, sale) = await arrange();
-      await notifier.tender(sale, methodCode: 1);
+    test(
+      'lastChange survives typing, and is cleared by dismissChange',
+      () async {
+        final (notifier, sale) = await arrange();
+        await notifier.tender(sale, methodCode: 1);
 
-      notifier.setAmount('20.00');
-      expect(container.read(paymentControllerProvider).lastChange, '34');
+        notifier.setAmount('20.00');
+        expect(container.read(paymentControllerProvider).lastChange, '34');
 
-      notifier.dismissChange();
-      expect(container.read(paymentControllerProvider).lastChange, isNull);
-    });
+        notifier.dismissChange();
+        expect(container.read(paymentControllerProvider).lastChange, isNull);
+      },
+    );
 
     test('the next tender clears lastChange', () async {
       final (notifier, sale) = await arrange();
@@ -471,14 +483,17 @@ void main() {
       expect(container.read(paymentControllerProvider).lastChange, isNull);
     });
 
-    test('leaving the step disposes the draft, and with it lastChange', () async {
-      final (notifier, sale) = await arrange();
-      await notifier.tender(sale, methodCode: 1);
-      expect(container.read(paymentControllerProvider).lastChange, '34');
+    test(
+      'leaving the step disposes the draft, and with it lastChange',
+      () async {
+        final (notifier, sale) = await arrange();
+        await notifier.tender(sale, methodCode: 1);
+        expect(container.read(paymentControllerProvider).lastChange, '34');
 
-      container.invalidate(paymentControllerProvider);
+        container.invalidate(paymentControllerProvider);
 
-      expect(container.read(paymentControllerProvider).lastChange, isNull);
-    });
+        expect(container.read(paymentControllerProvider).lastChange, isNull);
+      },
+    );
   });
 }

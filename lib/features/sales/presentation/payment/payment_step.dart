@@ -72,7 +72,10 @@ class PaymentStep extends ConsumerWidget {
       sale: sale,
       enabled: enabled && sessionValid,
     );
-    final appliedPayments = AppliedPaymentsPanel(saleId: sale.id, enabled: enabled);
+    final appliedPayments = AppliedPaymentsPanel(
+      saleId: sale.id,
+      enabled: enabled,
+    );
     final summary = PaymentSummaryPanel(sale: sale, onClose: onClose);
     // spec 047 FR-020: above the summary, not inside the draft's own amount
     // area — the draft is already reset for the next tender by now.
@@ -82,7 +85,9 @@ class PaymentStep extends ConsumerWidget {
             padding: EdgeInsets.all(spacing.sm),
             child: PaymentChangeCard(
               amount: draft.lastChange!,
-              onDismiss: ref.read(paymentControllerProvider.notifier).dismissChange,
+              onDismiss: ref
+                  .read(paymentControllerProvider.notifier)
+                  .dismissChange,
             ),
           );
 
@@ -105,7 +110,11 @@ class PaymentStep extends ConsumerWidget {
               padding: EdgeInsets.all(spacing.screenMargin),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [const PosSessionBlockedBanner(), ?error, capturePane],
+                children: [
+                  const PosSessionBlockedBanner(),
+                  ?error,
+                  capturePane,
+                ],
               ),
             ),
           ),

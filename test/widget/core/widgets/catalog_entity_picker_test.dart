@@ -154,7 +154,9 @@ void main() {
 
       await pumpPicker(
         tester,
-        overrides: [inputDebounceProvider.overrideWithValue(overriddenDebounce)],
+        overrides: [
+          inputDebounceProvider.overrideWithValue(overriddenDebounce),
+        ],
         optionsBuilder: (query) async => const [_Item(1, 'Widget')],
       );
 

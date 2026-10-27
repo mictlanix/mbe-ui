@@ -49,21 +49,31 @@ void main() {
       );
     });
 
-    test('a completed sale with a zero balance falls back to the resumable set', () {
-      final sale = _sale(id: 7, status: SaleStatus.completed, balance: '0.00');
-      expect(saleIsWorkable(sale, resumableIds: {7}), isTrue);
-      expect(saleIsWorkable(sale, resumableIds: const {}), isFalse);
-    });
+    test(
+      'a completed sale with a zero balance falls back to the resumable set',
+      () {
+        final sale = _sale(
+          id: 7,
+          status: SaleStatus.completed,
+          balance: '0.00',
+        );
+        expect(saleIsWorkable(sale, resumableIds: {7}), isTrue);
+        expect(saleIsWorkable(sale, resumableIds: const {}), isFalse);
+      },
+    );
 
-    test('a paid sale with a non-zero balance is workable — it still owes money', () {
-      expect(
-        saleIsWorkable(
-          _sale(status: SaleStatus.paid, balance: '25.00'),
-          resumableIds: const {},
-        ),
-        isTrue,
-      );
-    });
+    test(
+      'a paid sale with a non-zero balance is workable — it still owes money',
+      () {
+        expect(
+          saleIsWorkable(
+            _sale(status: SaleStatus.paid, balance: '25.00'),
+            resumableIds: const {},
+          ),
+          isTrue,
+        );
+      },
+    );
 
     test(
       'a zero-balance paid sale is workable only when the resumable set says so',
@@ -74,18 +84,23 @@ void main() {
       },
     );
 
-    test(
-      'an unresolved (empty) resumable set makes a zero-balance paid sale '
-      'provisionally not workable, never a doomed Edit',
-      () {
-        final sale = _sale(id: 3, status: SaleStatus.paid, balance: '0.00');
-        expect(saleIsWorkable(sale, resumableIds: const {}), isFalse);
-      },
-    );
+    test('an unresolved (empty) resumable set makes a zero-balance paid sale '
+        'provisionally not workable, never a doomed Edit', () {
+      final sale = _sale(id: 3, status: SaleStatus.paid, balance: '0.00');
+      expect(saleIsWorkable(sale, resumableIds: const {}), isFalse);
+    });
 
     test('"0.00" and "0" both count as a zero balance', () {
-      final zeroDecimal = _sale(id: 5, status: SaleStatus.completed, balance: '0.00');
-      final zeroPlain = _sale(id: 5, status: SaleStatus.completed, balance: '0');
+      final zeroDecimal = _sale(
+        id: 5,
+        status: SaleStatus.completed,
+        balance: '0.00',
+      );
+      final zeroPlain = _sale(
+        id: 5,
+        status: SaleStatus.completed,
+        balance: '0',
+      );
       expect(saleIsWorkable(zeroDecimal, resumableIds: const {}), isFalse);
       expect(saleIsWorkable(zeroPlain, resumableIds: const {}), isFalse);
     });

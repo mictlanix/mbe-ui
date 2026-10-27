@@ -10,6 +10,8 @@ part 'denomination_count.freezed.dart';
 /// is always one of [kMxnDenominations]'s values.
 @freezed
 abstract class DenominationCount with _$DenominationCount {
-  const factory DenominationCount({required String denomination, required int quantity}) =
-      _DenominationCount;
+  const factory DenominationCount({
+    required String denomination,
+    required int quantity,
+  }) = _DenominationCount;
 }

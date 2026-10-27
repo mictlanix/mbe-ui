@@ -31,10 +31,15 @@ enum CashSessionStatus {
 ///
 /// [today] is injected rather than read from `DateTime.now()` internally, so
 /// the midnight-boundary edge case is deterministic and testable.
-CashSessionStatus cashSessionStatusOf(CashSession session, {required DateTime today}) {
+CashSessionStatus cashSessionStatusOf(
+  CashSession session, {
+  required DateTime today,
+}) {
   if (session.end != null) return CashSessionStatus.closed;
   final start = session.start;
   final startDate = DateTime(start.year, start.month, start.day);
   final todayDate = DateTime(today.year, today.month, today.day);
-  return startDate.isBefore(todayDate) ? CashSessionStatus.stale : CashSessionStatus.open;
+  return startDate.isBefore(todayDate)
+      ? CashSessionStatus.stale
+      : CashSessionStatus.open;
 }

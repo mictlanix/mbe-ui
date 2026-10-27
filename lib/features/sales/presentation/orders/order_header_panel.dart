@@ -134,9 +134,9 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
   /// here is typed-but-unconfirmed text, through the prompt the workspace
   /// already shows before it continues to delivery. "Seguir editando" cancels.
   Future<void> _viewPedido() async {
-    final title = AppLocalizations.of(context)!.documentSalesOrderTitle(
-      widget.sale.id.toString().padLeft(8, '0'),
-    );
+    final title = AppLocalizations.of(
+      context,
+    )!.documentSalesOrderTitle(widget.sale.id.toString().padLeft(8, '0'));
     final saleId = widget.sale.id;
     final proceed = await resolveUnconfirmedEdits(
       context,
@@ -228,7 +228,10 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
             // FR-007: the disclosed group reads as a group, not as more of
             // the same row.
             if (_expanded) ...[
-              Divider(height: spacing.lg, color: theme.colorScheme.outlineVariant),
+              Divider(
+                height: spacing.lg,
+                color: theme.colorScheme.outlineVariant,
+              ),
               // spec 037 FR-012: Priority, Currency, Exchange rate, Tax ID
               // (recipient), Comment — supersedes spec 032 FR-004's ordering.
               // Delivery details (ship-to) and Contact left this group in
@@ -274,59 +277,61 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                         onChanged: !widget.canEditPriority
                             ? null
                             : (priority) {
-                                if (priority != null) _update(priority: priority);
+                                if (priority != null)
+                                  _update(priority: priority);
                               },
                       ),
                     ),
                   ),
                   // Spec 049 FR-005: both are multi-currency controls.
                   if (ref.watch(multiCurrencyEnabledProvider)) ...[
-                      // FR-012: the artboard shows currency read-only in the
-                      // strip and an editable exchange rate here. This product
-                      // has it the other way round — currency is the editable
-                      // one, the rate is server-derived — so the pair lives here
-                      // rather than currency being duplicated into the strip.
-                      FormGridChild(
-                        CompactField(
-                          label: l10n.salesOrderCurrencyLabel,
-                          editable: canEdit,
-                          fillWidth: true,
-                          enabled: canEdit,
-                          child: DropdownButtonFormField<Currency>(
-                            key: const Key('sales_order_currency_field'),
-                            initialValue: sale.currency,
-                            // The Spanish label "MXN — Peso Mexicano" is wider than
-                            // a six-column grid cell at some widths; without this
-                            // the row overflows instead of ellipsizing.
-                            isExpanded: true,
-                            isDense: true,
-                            // Same reason as the bare picker: a dropdown resolves
-                            // its style from the theme (`titleMedium`, 16px), not
-                            // from `CompactField`'s `DefaultTextStyle`.
-                            style: theme.typeRoles.fieldInput,
-                            decoration: _bareField,
-                            items: [
-                              for (final currency in Currency.values)
-                                DropdownMenuItem(
-                                  value: currency,
-                                  child: Text(_currencyLabel(l10n, currency)),
-                                ),
-                            ],
-                            onChanged: !canEdit
-                                ? null
-                                : (currency) {
-                                    if (currency != null) _update(currency: currency);
-                                  },
-                          ),
+                    // FR-012: the artboard shows currency read-only in the
+                    // strip and an editable exchange rate here. This product
+                    // has it the other way round — currency is the editable
+                    // one, the rate is server-derived — so the pair lives here
+                    // rather than currency being duplicated into the strip.
+                    FormGridChild(
+                      CompactField(
+                        label: l10n.salesOrderCurrencyLabel,
+                        editable: canEdit,
+                        fillWidth: true,
+                        enabled: canEdit,
+                        child: DropdownButtonFormField<Currency>(
+                          key: const Key('sales_order_currency_field'),
+                          initialValue: sale.currency,
+                          // The Spanish label "MXN — Peso Mexicano" is wider than
+                          // a six-column grid cell at some widths; without this
+                          // the row overflows instead of ellipsizing.
+                          isExpanded: true,
+                          isDense: true,
+                          // Same reason as the bare picker: a dropdown resolves
+                          // its style from the theme (`titleMedium`, 16px), not
+                          // from `CompactField`'s `DefaultTextStyle`.
+                          style: theme.typeRoles.fieldInput,
+                          decoration: _bareField,
+                          items: [
+                            for (final currency in Currency.values)
+                              DropdownMenuItem(
+                                value: currency,
+                                child: Text(_currencyLabel(l10n, currency)),
+                              ),
+                          ],
+                          onChanged: !canEdit
+                              ? null
+                              : (currency) {
+                                  if (currency != null)
+                                    _update(currency: currency);
+                                },
                         ),
                       ),
-                      FormGridChild(
-                        CompactField(
-                          label: l10n.salesOrderExchangeRateLabel,
-                          fillWidth: true,
-                          child: Text(sale.exchangeRate),
-                        ),
+                    ),
+                    FormGridChild(
+                      CompactField(
+                        label: l10n.salesOrderExchangeRateLabel,
+                        fillWidth: true,
+                        child: Text(sale.exchangeRate),
                       ),
+                    ),
                   ],
                   FormGridChild(
                     CompactField(
@@ -349,7 +354,8 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                               .list(search: query.isEmpty ? null : query);
                           return result.items;
                         },
-                        onSelected: (r) => _update(recipient: r.taxpayerRecipientId),
+                        onSelected: (r) =>
+                            _update(recipient: r.taxpayerRecipientId),
                         initialDisplayText: sale.recipient,
                         enabled: canEdit,
                       ),
@@ -363,7 +369,9 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                       controller: _commentController,
                       enabled: canEdit,
                       fieldKey: const Key('sales_order_comment_field'),
-                      decoration: InputDecoration(labelText: l10n.salesOrderCommentLabel),
+                      decoration: InputDecoration(
+                        labelText: l10n.salesOrderCommentLabel,
+                      ),
                     ),
                     span: FormGridSpan.full,
                   ),
@@ -480,7 +488,10 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
               optionsBuilder: (query) async {
                 final result = await ref
                     .read(employeeRepositoryProvider)
-                    .list(search: query.isEmpty ? null : query, salesPerson: true);
+                    .list(
+                      search: query.isEmpty ? null : query,
+                      salesPerson: true,
+                    );
                 return result.items;
               },
               onSelected: (e) => _update(salesperson: e.employeeId),
@@ -520,7 +531,6 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
           : detailsToggle,
     );
   }
-
 }
 
 /// Strips a Material form field of the box `CompactField` replaces (spec 037
@@ -536,16 +546,17 @@ const _bareField = InputDecoration(
   contentPadding: EdgeInsets.zero,
 );
 
-String _currencyLabel(AppLocalizations l10n, Currency currency) => switch (currency) {
-  Currency.mxn => l10n.currencyMxnLabel,
-  Currency.usd => l10n.currencyUsdLabel,
-  Currency.eur => l10n.currencyEurLabel,
-};
+String _currencyLabel(AppLocalizations l10n, Currency currency) =>
+    switch (currency) {
+      Currency.mxn => l10n.currencyMxnLabel,
+      Currency.usd => l10n.currencyUsdLabel,
+      Currency.eur => l10n.currencyEurLabel,
+    };
 
-String _priorityLabel(AppLocalizations l10n, Priority priority) => switch (priority) {
-  Priority.low => l10n.salesOrderPriorityLow,
-  Priority.normal => l10n.salesOrderPriorityNormal,
-  Priority.high => l10n.salesOrderPriorityHigh,
-  Priority.critical => l10n.salesOrderPriorityCritical,
-};
-
+String _priorityLabel(AppLocalizations l10n, Priority priority) =>
+    switch (priority) {
+      Priority.low => l10n.salesOrderPriorityLow,
+      Priority.normal => l10n.salesOrderPriorityNormal,
+      Priority.high => l10n.salesOrderPriorityHigh,
+      Priority.critical => l10n.salesOrderPriorityCritical,
+    };

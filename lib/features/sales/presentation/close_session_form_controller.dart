@@ -72,7 +72,9 @@ class CloseSessionFormController extends _$CloseSessionFormController {
       cashSessionId: session.cashSessionId,
       expectedCash: formatAmount(expected),
       countedTotal: formatAmount(Decimal.zero),
-      difference: formatAmount(difference(counted: Decimal.zero, expected: expected)),
+      difference: formatAmount(
+        difference(counted: Decimal.zero, expected: expected),
+      ),
     );
   }
 
@@ -90,7 +92,9 @@ class CloseSessionFormController extends _$CloseSessionFormController {
     state = state.copyWith(
       quantities: quantities,
       countedTotal: formatAmount(counted),
-      difference: formatAmount(difference(counted: counted, expected: expected)),
+      difference: formatAmount(
+        difference(counted: counted, expected: expected),
+      ),
       error: null,
       errorDetail: null,
       fieldErrors: const {},
@@ -149,7 +153,10 @@ class CloseSessionFormController extends _$CloseSessionFormController {
       state = state.copyWith(submitting: false, closed: true);
     } on AppError catch (e) {
       if (e is ValidationError) {
-        state = state.copyWith(submitting: false, fieldErrors: _fieldErrorsFromServer(e));
+        state = state.copyWith(
+          submitting: false,
+          fieldErrors: _fieldErrorsFromServer(e),
+        );
       } else if (e is ServerError && e.statusCode == 409) {
         // FR-024: entered quantities are NOT cleared — the state above this
         // catch block is untouched except for submitting/error/errorDetail.

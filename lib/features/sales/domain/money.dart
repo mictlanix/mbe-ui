@@ -101,17 +101,21 @@ String subtractAmounts(String a, String b) =>
 /// zero if equal, positive if [a] > [b]. The one correct way to compare two
 /// money amounts in this codebase; never compare the raw strings or convert
 /// through `double`.
-int compareAmounts(String a, String b) => parseAmount(a).compareTo(parseAmount(b));
+int compareAmounts(String a, String b) =>
+    parseAmount(a).compareTo(parseAmount(b));
 
 /// `true` iff [value] is exactly zero — the payment-step close gate
 /// (`Sale.balance`) and the delivery-distribution-complete check both read
 /// this rather than a string/`==` comparison, which would miss `"0"` vs
 /// `"0.00"`.
-bool isZeroAmount(String value) => parseAmount(value).compareTo(Decimal.zero) == 0;
+bool isZeroAmount(String value) =>
+    parseAmount(value).compareTo(Decimal.zero) == 0;
 
 /// Half of [value], rounded to two decimal places — the payment step's
 /// "Mitad" quick-amount chip. Rounded because a tender is money handed over,
 /// not an exact half of an odd cent: an unrounded `0.005` would be refused.
 String halveAmount(String value) => formatAmount(
-  (parseAmount(value) / Decimal.fromInt(2)).toDecimal(scaleOnInfinitePrecision: 2),
+  (parseAmount(value) / Decimal.fromInt(2)).toDecimal(
+    scaleOnInfinitePrecision: 2,
+  ),
 );

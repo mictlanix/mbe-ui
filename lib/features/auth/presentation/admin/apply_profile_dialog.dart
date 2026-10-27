@@ -70,8 +70,7 @@ class _ApplyProfileDialogState extends ConsumerState<_ApplyProfileDialog> {
                   );
                   return result.items;
                 },
-                onSelected: (p) =>
-                    setState(() => _profileId = p.userProfileId),
+                onSelected: (p) => setState(() => _profileId = p.userProfileId),
                 enabled: !_submitting,
               ),
             const SizedBox(height: 16),
@@ -117,7 +116,9 @@ class _ApplyProfileDialogState extends ConsumerState<_ApplyProfileDialog> {
     // own context may already be gone, but the underlying screen's
     // ScaffoldMessenger ancestor is what a success SnackBar needs anyway.
     final messenger = ScaffoldMessenger.of(context);
-    final successText = AppLocalizations.of(context)!.applyProfileSuccessMessage;
+    final successText = AppLocalizations.of(
+      context,
+    )!.applyProfileSuccessMessage;
 
     setState(() => _submitting = true);
     await ref

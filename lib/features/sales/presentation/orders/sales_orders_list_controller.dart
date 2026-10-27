@@ -67,8 +67,12 @@ abstract class SalesOrdersFilter with _$SalesOrdersFilter {
       from: from,
       to: to,
       status: statusRaw != null ? _statusByName(statusRaw) : null,
-      salesperson: isAdministrator ? _parseIntFacet(query.facet('salesperson')) : null,
-      facility: isAdministrator ? _parseIntFacet(query.facet('facility')) : null,
+      salesperson: isAdministrator
+          ? _parseIntFacet(query.facet('salesperson'))
+          : null,
+      facility: isAdministrator
+          ? _parseIntFacet(query.facet('facility'))
+          : null,
       search: query.search,
       pageIndex: query.pageIndex,
     );
@@ -84,7 +88,8 @@ DateTime? _parseDateFacet(String? value) {
   }
 }
 
-int? _parseIntFacet(String? value) => value == null ? null : int.tryParse(value);
+int? _parseIntFacet(String? value) =>
+    value == null ? null : int.tryParse(value);
 
 SaleStatus? _statusByName(String name) {
   for (final status in SaleStatus.values) {
@@ -94,7 +99,8 @@ SaleStatus? _statusByName(String name) {
 }
 
 /// `yyyy-MM-dd` encoding for a `date-from`/`date-to` facet value.
-String encodeSalesOrdersDateFacet(DateTime date) => _dateFacetFormat.format(date);
+String encodeSalesOrdersDateFacet(DateTime date) =>
+    _dateFacetFormat.format(date);
 
 extension SalesOrdersFilterBadge on SalesOrdersFilter {
   String get fromFacetValue => encodeSalesOrdersDateFacet(from);
@@ -139,7 +145,10 @@ bool _isSameDate(DateTime a, DateTime b) =>
 @riverpod
 class SalesOrdersListController extends _$SalesOrdersListController {
   @override
-  Future<CatalogPage<OpenSale>> build(SalesOrdersFilter filter, bool isAdministrator) {
+  Future<CatalogPage<OpenSale>> build(
+    SalesOrdersFilter filter,
+    bool isAdministrator,
+  ) {
     return fetchClampedPage(
       pageIndex: filter.pageIndex,
       pageSize: _pageSize,

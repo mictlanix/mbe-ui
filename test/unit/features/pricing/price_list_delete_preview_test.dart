@@ -24,10 +24,7 @@ void main() {
   group('PriceListDeleteCategory.fate — whole-key match (research.md R2)', () {
     test('product_price.list is destroyed', () {
       expect(
-        const PriceListDeleteCategory(
-          key: 'product_price.list',
-          count: 1,
-        ).fate,
+        const PriceListDeleteCategory(key: 'product_price.list', count: 1).fate,
         PriceListDeleteFate.destroyed,
       );
     });
@@ -82,11 +79,10 @@ void main() {
         ], 4324),
       );
 
-      expect(
-        preview.categories.map((c) => c.key),
-        ['product_price.list', 'customer.price_list'],
-        reason: 'largest-first ordering comes from the server',
-      );
+      expect(preview.categories.map((c) => c.key), [
+        'product_price.list',
+        'customer.price_list',
+      ], reason: 'largest-first ordering comes from the server');
       expect(preview.categories.map((c) => c.count), [4312, 12]);
       // SC-005: never re-summed client-side, so the figure always agrees
       // with the backend's own accounting.

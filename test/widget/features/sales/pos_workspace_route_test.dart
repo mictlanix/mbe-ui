@@ -99,13 +99,16 @@ void main() {
     pointSales = MockPointSaleRepository();
     paymentMethodOptions = MockPaymentMethodOptionRepository();
 
-    when(() => cashSessions.getCurrent()).thenAnswer(
-      (_) async => const CurrentSession(state: SessionState.open),
-    );
-    when(() => customers.get(customerId: any(named: 'customerId')))
-        .thenAnswer((_) async => _customer());
-    when(() => payments.outstandingBalanceFor(customerId: any(named: 'customerId')))
-        .thenAnswer((_) async => '0');
+    when(
+      () => cashSessions.getCurrent(),
+    ).thenAnswer((_) async => const CurrentSession(state: SessionState.open));
+    when(
+      () => customers.get(customerId: any(named: 'customerId')),
+    ).thenAnswer((_) async => _customer());
+    when(
+      () =>
+          payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
+    ).thenAnswer((_) async => '0');
     when(
       () => paymentMethodOptions.list(
         search: any(named: 'search'),
@@ -114,8 +117,12 @@ void main() {
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
-    ).thenAnswer((_) async => const PaymentMethodOptionPage(items: [], total: 0));
-    when(() => pointSales.get(pointSaleId: any(named: 'pointSaleId'))).thenAnswer(
+    ).thenAnswer(
+      (_) async => const PaymentMethodOptionPage(items: [], total: 0),
+    );
+    when(
+      () => pointSales.get(pointSaleId: any(named: 'pointSaleId')),
+    ).thenAnswer(
       (_) async => const PointSale(
         pointSaleId: _registerPointSale,
         facilityId: 9,
@@ -171,7 +178,9 @@ void main() {
     customerPaymentOverride(payments),
     cashSessionRepositoryProvider.overrideWithValue(cashSessions),
     pointSaleRepositoryProvider.overrideWithValue(pointSales),
-    paymentMethodOptionRepositoryProvider.overrideWithValue(paymentMethodOptions),
+    paymentMethodOptionRepositoryProvider.overrideWithValue(
+      paymentMethodOptions,
+    ),
   ];
 
   group('/sales/pos/new — nothing is created until the first action', () {
@@ -191,7 +200,9 @@ void main() {
     testWidgets(
       'the first action opens the sale and rewrites the URL to /sales/pos/<id>',
       (tester) async {
-        when(() => anyOpen(salesOrders)).thenAnswer((_) async => testSale(id: 99));
+        when(
+          () => anyOpen(salesOrders),
+        ).thenAnswer((_) async => testSale(id: 99));
 
         final (router, container) = await pumpPosRouted(
           tester,
@@ -208,22 +219,28 @@ void main() {
     );
   });
 
-  group('/sales/pos/:saleId — loads the existing sale, never opens a new one', () {
-    testWidgets('calls getById with that id, and never open()', (tester) async {
-      when(() => salesOrders.getById(saleId: 42))
-          .thenAnswer((_) async => testSale(id: 42));
-
-      final (router, _) = await pumpPosRouted(
+  group(
+    '/sales/pos/:saleId — loads the existing sale, never opens a new one',
+    () {
+      testWidgets('calls getById with that id, and never open()', (
         tester,
-        initialLocation: '/sales/pos/42',
-        overrides: overrides(),
-      );
+      ) async {
+        when(
+          () => salesOrders.getById(saleId: 42),
+        ).thenAnswer((_) async => testSale(id: 42));
 
-      expect(router.state.uri.path, '/sales/pos/42');
-      verify(() => salesOrders.getById(saleId: 42)).called(1);
-      verifyNever(() => anyOpen(salesOrders));
-    });
-  });
+        final (router, _) = await pumpPosRouted(
+          tester,
+          initialLocation: '/sales/pos/42',
+          overrides: overrides(),
+        );
+
+        expect(router.state.uri.path, '/sales/pos/42');
+        verify(() => salesOrders.getById(saleId: 42)).called(1);
+        verifyNever(() => anyOpen(salesOrders));
+      });
+    },
+  );
 
   group('a confirmation error belongs to its sale (#191)', () {
     const carriedOver = AppError.creditHold('Customer is on credit hold');
@@ -246,8 +263,9 @@ void main() {
     testWidgets('mounting /sales/pos/:saleId clears an earlier sale\'s error', (
       tester,
     ) async {
-      when(() => salesOrders.getById(saleId: 42))
-          .thenAnswer((_) async => testSale(id: 42));
+      when(
+        () => salesOrders.getById(saleId: 42),
+      ).thenAnswer((_) async => testSale(id: 42));
 
       final (_, container) = await pumpPosRouted(
         tester,
@@ -319,9 +337,9 @@ void main() {
     testWidgets('/sales/pos/new with no session keeps the full-screen gate', (
       tester,
     ) async {
-      when(() => cashSessions.getCurrent()).thenAnswer(
-        (_) async => const CurrentSession(state: SessionState.none),
-      );
+      when(
+        () => cashSessions.getCurrent(),
+      ).thenAnswer((_) async => const CurrentSession(state: SessionState.none));
 
       final (router, _) = await pumpPosRouted(
         tester,
@@ -330,7 +348,10 @@ void main() {
       );
 
       expect(router.state.uri.path, '/sales/pos/new');
-      expect(find.byKey(const Key('pos_gate_no_session_title')), findsOneWidget);
+      expect(
+        find.byKey(const Key('pos_gate_no_session_title')),
+        findsOneWidget,
+      );
     });
 
     for (final (label, current) in [
@@ -340,8 +361,9 @@ void main() {
       testWidgets('/sales/pos/:saleId under $label still renders the sale, '
           'with the blocking banner', (tester) async {
         when(() => cashSessions.getCurrent()).thenAnswer((_) async => current);
-        when(() => salesOrders.getById(saleId: 42))
-            .thenAnswer((_) async => testSale(id: 42));
+        when(
+          () => salesOrders.getById(saleId: 42),
+        ).thenAnswer((_) async => testSale(id: 42));
 
         final (router, _) = await pumpPosRouted(
           tester,
@@ -351,32 +373,43 @@ void main() {
 
         expect(router.state.uri.path, '/sales/pos/42');
         verify(() => salesOrders.getById(saleId: 42)).called(1);
-        expect(find.byKey(const Key('pos_gate_no_session_title')), findsNothing);
-        expect(find.byKey(const Key('pos_session_blocked_banner')), findsOneWidget);
+        expect(
+          find.byKey(const Key('pos_gate_no_session_title')),
+          findsNothing,
+        );
+        expect(
+          find.byKey(const Key('pos_session_blocked_banner')),
+          findsOneWidget,
+        );
       });
     }
   });
 
   group('an unreachable sale (contracts/pos-workspace.md §1.2)', () {
-    testWidgets('an unknown sale (404) renders the unreachable panel, opening no sale', (
+    testWidgets(
+      'an unknown sale (404) renders the unreachable panel, opening no sale',
+      (tester) async {
+        when(
+          () => salesOrders.getById(saleId: 999),
+        ).thenThrow(const AppError.notFound());
+
+        await pumpPosRouted(
+          tester,
+          initialLocation: '/sales/pos/999',
+          overrides: overrides(),
+        );
+
+        expect(find.byKey(const Key('pos_sale_unreachable')), findsOneWidget);
+        verifyNever(() => anyOpen(salesOrders));
+      },
+    );
+
+    testWidgets('a cancelled sale renders the unreachable panel', (
       tester,
     ) async {
-      when(() => salesOrders.getById(saleId: 999))
-          .thenThrow(const AppError.notFound());
-
-      await pumpPosRouted(
-        tester,
-        initialLocation: '/sales/pos/999',
-        overrides: overrides(),
-      );
-
-      expect(find.byKey(const Key('pos_sale_unreachable')), findsOneWidget);
-      verifyNever(() => anyOpen(salesOrders));
-    });
-
-    testWidgets('a cancelled sale renders the unreachable panel', (tester) async {
-      when(() => salesOrders.getById(saleId: 5))
-          .thenAnswer((_) async => testSale(id: 5, status: SaleStatus.cancelled));
+      when(
+        () => salesOrders.getById(saleId: 5),
+      ).thenAnswer((_) async => testSale(id: 5, status: SaleStatus.cancelled));
 
       await pumpPosRouted(
         tester,
@@ -387,29 +420,31 @@ void main() {
       expect(find.byKey(const Key('pos_sale_unreachable')), findsOneWidget);
     });
 
-    testWidgets('a sale belonging to another register renders the unreachable panel', (
-      tester,
-    ) async {
-      when(() => salesOrders.getById(saleId: 6)).thenAnswer(
-        (_) async => testSale(id: 6, pointSale: 999),
-      );
+    testWidgets(
+      'a sale belonging to another register renders the unreachable panel',
+      (tester) async {
+        when(
+          () => salesOrders.getById(saleId: 6),
+        ).thenAnswer((_) async => testSale(id: 6, pointSale: 999));
 
-      await pumpPosRouted(
-        tester,
-        initialLocation: '/sales/pos/6',
-        overrides: overrides(registerPointSaleId: _registerPointSale),
-      );
+        await pumpPosRouted(
+          tester,
+          initialLocation: '/sales/pos/6',
+          overrides: overrides(registerPointSaleId: _registerPointSale),
+        );
 
-      expect(find.byKey(const Key('pos_sale_unreachable')), findsOneWidget);
-    });
+        expect(find.byKey(const Key('pos_sale_unreachable')), findsOneWidget);
+      },
+    );
   });
 
   group('Back discards an empty draft (contracts/pos-workspace.md §6)', () {
     testWidgets('cancels the empty draft, then returns to the list', (
       tester,
     ) async {
-      when(() => anyOpen(salesOrders))
-          .thenAnswer((_) async => testSale(id: 77, lines: const []));
+      when(
+        () => anyOpen(salesOrders),
+      ).thenAnswer((_) async => testSale(id: 77, lines: const []));
       when(() => salesOrders.cancel(saleId: 77)).thenAnswer((_) async {});
       when(
         () => salesOrders.listSales(
@@ -452,13 +487,21 @@ void main() {
     testWidgets(
       'a sale recorded from "Nueva venta" re-queries the list on the way back',
       (tester) async {
-        stubListSales(salesOrders, page: const OpenSalePage(items: [], total: 0));
+        stubListSales(
+          salesOrders,
+          page: const OpenSalePage(items: [], total: 0),
+        );
         // A sale with lines: the Back path only cancels an *empty* draft, so
         // this is one that was actually recorded.
-        when(() => anyOpen(salesOrders))
-            .thenAnswer((_) async => testSale(id: 77, lines: [testLine()]));
-        when(() => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100))
-            .thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
+        when(
+          () => anyOpen(salesOrders),
+        ).thenAnswer((_) async => testSale(id: 77, lines: [testLine()]));
+        when(
+          () =>
+              warehouses.list(facilityId: any(named: 'facilityId'), limit: 100),
+        ).thenAnswer(
+          (_) async => const WarehouseListResult(items: [], total: 0),
+        );
 
         final (router, container) = await pumpPosRouted(
           tester,
@@ -510,93 +553,104 @@ void main() {
     );
   });
 
-  group(
-    'layout: no rail, no bounded width, one footer band '
-    '(contracts/pos-workspace.md §2, §3)',
-    () {
-      testWidgets('no AppNavigation rail is present', (tester) async {
-        when(() => salesOrders.getById(saleId: 10))
-            .thenAnswer((_) async => testSale(id: 10, lines: [testLine()]));
-        when(() => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100))
-            .thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
+  group('layout: no rail, no bounded width, one footer band '
+      '(contracts/pos-workspace.md §2, §3)', () {
+    testWidgets('no AppNavigation rail is present', (tester) async {
+      when(
+        () => salesOrders.getById(saleId: 10),
+      ).thenAnswer((_) async => testSale(id: 10, lines: [testLine()]));
+      when(
+        () => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100),
+      ).thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
+
+      await pumpPosRouted(
+        tester,
+        initialLocation: '/sales/pos/10',
+        overrides: overrides(),
+        surface: const Size(1440, 900),
+      );
+
+      expect(find.byType(AppNavigation), findsNothing);
+      expect(find.byType(NavigationDrawer), findsNothing);
+    });
+
+    testWidgets(
+      'the capture surface spans the full window width — nothing bounds '
+      'or centres it',
+      (tester) async {
+        when(
+          () => salesOrders.getById(saleId: 11),
+        ).thenAnswer((_) async => testSale(id: 11, lines: [testLine()]));
+        when(
+          () =>
+              warehouses.list(facilityId: any(named: 'facilityId'), limit: 100),
+        ).thenAnswer(
+          (_) async => const WarehouseListResult(items: [], total: 0),
+        );
+
+        const width = 1440.0;
+        await pumpPosRouted(
+          tester,
+          initialLocation: '/sales/pos/11',
+          overrides: overrides(),
+          surface: const Size(width, 900),
+        );
+
+        final totalsBarWidth = tester.getSize(find.byType(SaleTotalsBar)).width;
+        expect(
+          totalsBarWidth,
+          width,
+          reason:
+              'the footer band is a direct, unbounded child of the '
+              'workspace body — it should span the same width the '
+              'Scaffold itself renders at, not a narrower centred column',
+        );
+      },
+    );
+
+    testWidgets(
+      'the primary action lives inside SaleTotalsBar — one footer band, '
+      'not two',
+      (tester) async {
+        when(
+          () => salesOrders.getById(saleId: 12),
+        ).thenAnswer((_) async => testSale(id: 12, lines: [testLine()]));
+        when(
+          () =>
+              warehouses.list(facilityId: any(named: 'facilityId'), limit: 100),
+        ).thenAnswer(
+          (_) async => const WarehouseListResult(items: [], total: 0),
+        );
 
         await pumpPosRouted(
           tester,
-          initialLocation: '/sales/pos/10',
+          initialLocation: '/sales/pos/12',
           overrides: overrides(),
           surface: const Size(1440, 900),
         );
 
-        expect(find.byType(AppNavigation), findsNothing);
-        expect(find.byType(NavigationDrawer), findsNothing);
-      });
-
-      testWidgets(
-        'the capture surface spans the full window width — nothing bounds '
-        'or centres it',
-        (tester) async {
-          when(() => salesOrders.getById(saleId: 11))
-              .thenAnswer((_) async => testSale(id: 11, lines: [testLine()]));
-          when(() => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100))
-              .thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
-
-          const width = 1440.0;
-          await pumpPosRouted(
-            tester,
-            initialLocation: '/sales/pos/11',
-            overrides: overrides(),
-            surface: const Size(width, 900),
-          );
-
-          final totalsBarWidth = tester.getSize(find.byType(SaleTotalsBar)).width;
-          expect(
-            totalsBarWidth,
-            width,
-            reason:
-                'the footer band is a direct, unbounded child of the '
-                'workspace body — it should span the same width the '
-                'Scaffold itself renders at, not a narrower centred column',
-          );
-        },
-      );
-
-      testWidgets(
-        'the primary action lives inside SaleTotalsBar — one footer band, '
-        'not two',
-        (tester) async {
-          when(() => salesOrders.getById(saleId: 12))
-              .thenAnswer((_) async => testSale(id: 12, lines: [testLine()]));
-          when(() => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100))
-              .thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
-
-          await pumpPosRouted(
-            tester,
-            initialLocation: '/sales/pos/12',
-            overrides: overrides(),
-            surface: const Size(1440, 900),
-          );
-
-          expect(
-            find.descendant(
-              of: find.byType(SaleTotalsBar),
-              matching: find.byKey(const Key('pos_continue_to_payment')),
-            ),
-            findsOneWidget,
-          );
-        },
-      );
-    },
-  );
+        expect(
+          find.descendant(
+            of: find.byType(SaleTotalsBar),
+            matching: find.byKey(const Key('pos_continue_to_payment')),
+          ),
+          findsOneWidget,
+        );
+      },
+    );
+  });
 
   // Asserted against the **real** header and footer, not a stand-in: these are
   // presentation decisions on private widgets, and the only honest way to hold
   // them is through the screen that owns them.
   group('the header step track (spec 023 FR-005, mock frame 2a)', () {
     Future<void> pumpWorkspace(WidgetTester tester) async {
-      when(() => salesOrders.getById(saleId: 20))
-          .thenAnswer((_) async => testSale(id: 20, lines: [testLine()]));
-      when(() => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100))
-          .thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
+      when(
+        () => salesOrders.getById(saleId: 20),
+      ).thenAnswer((_) async => testSale(id: 20, lines: [testLine()]));
+      when(
+        () => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100),
+      ).thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
       await pumpPosRouted(
         tester,
         initialLocation: '/sales/pos/20',
@@ -624,11 +678,17 @@ void main() {
       // A counter-pickup sale is two steps (FR-005) — the third is not merely
       // unhighlighted, it is absent.
       expect(
-        find.descendant(of: track, matching: find.text('1 · ${l10n.posStepVenta}')),
+        find.descendant(
+          of: track,
+          matching: find.text('1 · ${l10n.posStepVenta}'),
+        ),
         findsOneWidget,
       );
       expect(
-        find.descendant(of: track, matching: find.text('2 · ${l10n.posStepCobro}')),
+        find.descendant(
+          of: track,
+          matching: find.text('2 · ${l10n.posStepCobro}'),
+        ),
         findsOneWidget,
       );
       expect(find.text('3 · ${l10n.posStepEntrega}'), findsNothing);
@@ -679,12 +739,15 @@ void main() {
       required int saleId,
       required List<SalePayment> payments_,
     }) async {
-      when(() => salesOrders.getById(saleId: saleId))
-          .thenAnswer((_) async => testSale(id: saleId, lines: [testLine()]));
-      when(() => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100))
-          .thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
-      when(() => payments.listForOrder(saleId: saleId))
-          .thenAnswer((_) async => payments_);
+      when(
+        () => salesOrders.getById(saleId: saleId),
+      ).thenAnswer((_) async => testSale(id: saleId, lines: [testLine()]));
+      when(
+        () => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100),
+      ).thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
+      when(
+        () => payments.listForOrder(saleId: saleId),
+      ).thenAnswer((_) async => payments_);
 
       final (_, container) = await pumpPosRouted(
         tester,
@@ -785,10 +848,12 @@ void main() {
   group('the footer band (spec 023 contracts/capture-surface.md §5)', () {
     testWidgets('the counts are ruled off from the money, and the action names '
         'the step it moves to', (tester) async {
-      when(() => salesOrders.getById(saleId: 21))
-          .thenAnswer((_) async => testSale(id: 21, lines: [testLine()]));
-      when(() => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100))
-          .thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
+      when(
+        () => salesOrders.getById(saleId: 21),
+      ).thenAnswer((_) async => testSale(id: 21, lines: [testLine()]));
+      when(
+        () => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100),
+      ).thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
       await pumpPosRouted(
         tester,
         initialLocation: '/sales/pos/21',
@@ -822,21 +887,27 @@ void main() {
       List<Destination> destinations = const [],
       Size surface = const Size(1440, 900),
     }) async {
-      when(() => salesOrders.getById(saleId: sale.id))
-          .thenAnswer((_) async => sale);
-      when(() => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100))
-          .thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
-      when(() => payments.listForOrder(saleId: sale.id))
-          .thenAnswer((_) async => const []);
+      when(
+        () => salesOrders.getById(saleId: sale.id),
+      ).thenAnswer((_) async => sale);
+      when(
+        () => warehouses.list(facilityId: any(named: 'facilityId'), limit: 100),
+      ).thenAnswer((_) async => const WarehouseListResult(items: [], total: 0));
+      when(
+        () => payments.listForOrder(saleId: sale.id),
+      ).thenAnswer((_) async => const []);
       final deliveries = MockDeliveryOrderRepository();
-      when(() => deliveries.listForSale(salesOrder: sale.id))
-          .thenAnswer((_) async => destinations);
+      when(
+        () => deliveries.listForSale(salesOrder: sale.id),
+      ).thenAnswer((_) async => destinations);
       final (_, container) = await pumpPosRouted(
         tester,
         initialLocation: '/sales/pos/${sale.id}',
         overrides: [
           ...overrides(),
-          facilityAddressControllerProvider.overrideWith((ref, facilityId) async => 500),
+          facilityAddressControllerProvider.overrideWith(
+            (ref, facilityId) async => 500,
+          ),
           deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
         ],
         surface: surface,
@@ -864,7 +935,12 @@ void main() {
         'selector or edit action', (tester) async {
       final container = await pumpSale(
         tester,
-        testSale(id: 50, status: SaleStatus.paid, balance: '0', lines: [testLine()]),
+        testSale(
+          id: 50,
+          status: SaleStatus.paid,
+          balance: '0',
+          lines: [testLine()],
+        ),
       );
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
@@ -949,7 +1025,10 @@ void main() {
         surface: phoneSurface,
       );
 
-      expect(container.read(posStepControllerProvider).current, PosStep.entrega);
+      expect(
+        container.read(posStepControllerProvider).current,
+        PosStep.entrega,
+      );
       expect(tester.takeException(), isNull);
     });
 
@@ -980,8 +1059,12 @@ void main() {
       expect(container.read(posStepControllerProvider).current, PosStep.cobro);
 
       when(() => salesOrders.getById(saleId: 54)).thenAnswer(
-        (_) async =>
-            testSale(id: 54, status: SaleStatus.paid, balance: '0', lines: [testLine()]),
+        (_) async => testSale(
+          id: 54,
+          status: SaleStatus.paid,
+          balance: '0',
+          lines: [testLine()],
+        ),
       );
       await container.read(posSaleControllerProvider.notifier).load(54);
       await tester.pumpAndSettle();

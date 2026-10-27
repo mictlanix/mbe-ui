@@ -90,7 +90,10 @@ void main() {
     bool multiCurrency = false,
   }) => pumpPos(
     tester,
-    PaymentStep(sale: testSale(status: SaleStatus.completed, balance: balance), onClose: () {}),
+    PaymentStep(
+      sale: testSale(status: SaleStatus.completed, balance: balance),
+      onClose: () {},
+    ),
     surface: surface,
     overrides: [
       multiCurrencyEnabledProvider.overrideWithValue(multiCurrency),

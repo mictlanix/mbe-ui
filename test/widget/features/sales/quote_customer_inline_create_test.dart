@@ -118,9 +118,7 @@ void main() {
     );
     // The customer band's facts view fetches the attached customer's own
     // record by id regardless of how it got attached — picked or created.
-    when(
-      () => customers.get(customerId: any(named: 'customerId')),
-    ).thenAnswer(
+    when(() => customers.get(customerId: any(named: 'customerId'))).thenAnswer(
       (_) async => const Customer(
         customerId: 99,
         code: 'C-99',
@@ -221,7 +219,10 @@ void main() {
     );
     final opened = testQuote(customer: 99);
     when(
-      () => salesQuotes.open(customer: 99, salesperson: any(named: 'salesperson')),
+      () => salesQuotes.open(
+        customer: 99,
+        salesperson: any(named: 'salesperson'),
+      ),
     ).thenAnswer((_) async => opened);
     // After opening, `_maybeRewriteUrl` (quote_screen.dart) replaces the
     // route from `/sales/quotes/new` to `/sales/quotes/${opened.id}`, a

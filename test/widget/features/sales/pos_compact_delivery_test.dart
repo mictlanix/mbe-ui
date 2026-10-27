@@ -40,9 +40,7 @@ Customer _customer() => const Customer(
       type: AddressType.business,
     ),
   ],
-  contacts: [
-    Contact(contactId: 21, name: 'Ana López', phone: '55 1234 5678'),
-  ],
+  contacts: [Contact(contactId: 21, name: 'Ana López', phone: '55 1234 5678')],
 );
 
 /// Carries only what mbe-api actually returns — the `ship_to`/`contact`
@@ -142,7 +140,8 @@ void main() {
       expect(
         find.text(l10n.posDeliveryAddressPending),
         findsNothing,
-        reason: 'the "address pending" fallback is for a destination with no '
+        reason:
+            'the "address pending" fallback is for a destination with no '
             'ship_to at all, not for every destination ever created',
       );
     });
@@ -203,14 +202,25 @@ void main() {
         const Offset(0, -100),
       );
       await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('delivery_add_destination_button')));
+      await tester.tap(
+        find.byKey(const Key('delivery_add_destination_button')),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(DestinationEditor), findsOneWidget);
-      expect(find.byKey(const Key('destination_address_button')), findsOneWidget);
-      expect(find.byKey(const Key('destination_contact_button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('destination_address_button')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('destination_contact_button')),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('destination_date_button')), findsOneWidget);
-      expect(find.byKey(const Key('destination_comment_field')), findsOneWidget);
+      expect(
+        find.byKey(const Key('destination_comment_field')),
+        findsOneWidget,
+      );
       // No quantity field at all — FR-027's header-only sheet.
       expect(find.byKey(const Key('destination_quantity_5')), findsNothing);
       expectNoHorizontalScroll(tester);
@@ -255,7 +265,11 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(
-        () => deliveries.updateLine(destinationId: 500, lineId: 900, quantity: '5'),
+        () => deliveries.updateLine(
+          destinationId: 500,
+          lineId: 900,
+          quantity: '5',
+        ),
       ).called(1);
       expectNoHorizontalScroll(tester);
     });

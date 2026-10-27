@@ -29,7 +29,8 @@ class MockProductRepository extends Mock implements ProductRepository {}
 
 class MockPriceListRepository extends Mock implements PriceListRepository {}
 
-class MockProductPriceRepository extends Mock implements ProductPriceRepository {}
+class MockProductPriceRepository extends Mock
+    implements ProductPriceRepository {}
 
 const _filter = PricingGridFilter();
 
@@ -45,13 +46,16 @@ ProductListItem _product(int id) => ProductListItem(
 
 PriceList _priceList(int id) => PriceList(priceListId: id, name: 'List $id');
 
-ProductPrice _price({required int productId, required int priceListId, required String price}) =>
-    ProductPrice(
-      productPriceId: productId * 100 + priceListId,
-      productId: productId,
-      priceList: _priceList(priceListId),
-      price: price,
-    );
+ProductPrice _price({
+  required int productId,
+  required int priceListId,
+  required String price,
+}) => ProductPrice(
+  productPriceId: productId * 100 + priceListId,
+  productId: productId,
+  priceList: _priceList(priceListId),
+  price: price,
+);
 
 void main() {
   late MockProductRepository productRepository;
@@ -71,7 +75,9 @@ void main() {
         sharedPreferencesProvider.overrideWithValue(sharedPreferences),
         productRepositoryProvider.overrideWithValue(productRepository),
         priceListRepositoryProvider.overrideWithValue(priceListRepository),
-        productPriceRepositoryProvider.overrideWithValue(productPriceRepository),
+        productPriceRepositoryProvider.overrideWithValue(
+          productPriceRepository,
+        ),
       ],
     );
     addTearDown(container.dispose);
@@ -91,7 +97,9 @@ void main() {
         skip: 0,
         limit: 20,
       ),
-    ).thenAnswer((_) async => ProductListResult(items: [_product(1)], total: 1));
+    ).thenAnswer(
+      (_) async => ProductListResult(items: [_product(1)], total: 1),
+    );
     when(
       () => productPriceRepository.listForProducts(
         productIds: [1],
@@ -143,7 +151,10 @@ void main() {
   testWidgets('reading state shows the formatted price when one exists', (
     tester,
   ) async {
-    await pump(tester, price: _price(productId: 1, priceListId: 5, price: '25.00'));
+    await pump(
+      tester,
+      price: _price(productId: 1, priceListId: 5, price: '25.00'),
+    );
     expect(find.textContaining('25.00'), findsOneWidget);
   });
 
@@ -152,7 +163,9 @@ void main() {
     await tester.tap(find.byKey(const Key('price_cell_1_5')));
     await tester.pump();
 
-    final state = container.read(pricingGridControllerProvider(_filter)).requireValue;
+    final state = container
+        .read(pricingGridControllerProvider(_filter))
+        .requireValue;
     expect(state.active?.productId, 1);
     expect(state.active?.priceListId, 5);
   });
@@ -164,7 +177,9 @@ void main() {
     await tester.tap(find.byKey(const Key('price_cell_1_5')));
     await tester.pump();
 
-    final state = container.read(pricingGridControllerProvider(_filter)).requireValue;
+    final state = container
+        .read(pricingGridControllerProvider(_filter))
+        .requireValue;
     expect(state.active, isNull);
   });
 
@@ -230,9 +245,7 @@ void main() {
       );
       addTearDown(customContainer.dispose);
       customContainer.listen(pricingGridControllerProvider(_filter), (_, _) {});
-      await customContainer.read(
-        pricingGridControllerProvider(_filter).future,
-      );
+      await customContainer.read(pricingGridControllerProvider(_filter).future);
 
       await tester.pumpWidget(
         UncontrolledProviderScope(
@@ -276,11 +289,16 @@ void main() {
         // `Decimal` (contracts/app-settings-additions.md C3).
         price: '30',
       ),
-    ).thenAnswer((_) async => _price(productId: 1, priceListId: 5, price: '30.00'));
+    ).thenAnswer(
+      (_) async => _price(productId: 1, priceListId: 5, price: '30.00'),
+    );
     final moves = <PriceCellMove>[];
     await pump(tester, price: null, isActive: true, moves: moves);
 
-    await tester.enterText(find.byKey(const Key('price_cell_field_1_5')), '30.00');
+    await tester.enterText(
+      find.byKey(const Key('price_cell_field_1_5')),
+      '30.00',
+    );
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pumpAndSettle();
 
@@ -302,11 +320,16 @@ void main() {
         priceListId: any(named: 'priceListId'),
         price: any(named: 'price'),
       ),
-    ).thenAnswer((_) async => _price(productId: 1, priceListId: 5, price: '30.00'));
+    ).thenAnswer(
+      (_) async => _price(productId: 1, priceListId: 5, price: '30.00'),
+    );
     final moves = <PriceCellMove>[];
     await pump(tester, price: null, isActive: true, moves: moves);
 
-    await tester.enterText(find.byKey(const Key('price_cell_field_1_5')), '30.00');
+    await tester.enterText(
+      find.byKey(const Key('price_cell_field_1_5')),
+      '30.00',
+    );
     await tester.sendKeyEvent(LogicalKeyboardKey.tab);
     await tester.pumpAndSettle();
 
@@ -319,7 +342,10 @@ void main() {
     final moves = <PriceCellMove>[];
     await pump(tester, price: null, isActive: true, moves: moves);
 
-    await tester.enterText(find.byKey(const Key('price_cell_field_1_5')), 'abc');
+    await tester.enterText(
+      find.byKey(const Key('price_cell_field_1_5')),
+      'abc',
+    );
     await tester.sendKeyEvent(LogicalKeyboardKey.escape);
     await tester.pumpAndSettle();
 
@@ -331,7 +357,9 @@ void main() {
         price: any(named: 'price'),
       ),
     );
-    final state = container.read(pricingGridControllerProvider(_filter)).requireValue;
+    final state = container
+        .read(pricingGridControllerProvider(_filter))
+        .requireValue;
     expect(state.active, isNull);
   });
 
@@ -343,7 +371,9 @@ void main() {
           .read(pricingGridControllerProvider(_filter).notifier)
           .commitCell(productId: 1, priceListId: 5, typed: 'abc');
 
-      final state = container.read(pricingGridControllerProvider(_filter)).requireValue;
+      final state = container
+          .read(pricingGridControllerProvider(_filter))
+          .requireValue;
       final rejection = state.rejected.values.single;
 
       await pump(tester, price: null, rejected: rejection);
@@ -364,8 +394,12 @@ void main() {
           priceListId: 5,
           price: '30', // parsed/round-tripped, not the raw typed '30.00'
         ),
-      ).thenAnswer((_) async => _price(productId: 1, priceListId: 5, price: '30.00'));
-      final notifier = container.read(pricingGridControllerProvider(_filter).notifier);
+      ).thenAnswer(
+        (_) async => _price(productId: 1, priceListId: 5, price: '30.00'),
+      );
+      final notifier = container.read(
+        pricingGridControllerProvider(_filter).notifier,
+      );
       // Syncs the controller's own `active` with this test's `isActive: true`
       // widget prop — this file pumps `PriceCell` directly rather than
       // through the screen that normally drives `openCell` on a real tap, so
@@ -373,7 +407,10 @@ void main() {
       notifier.openCell(const PriceCellKey(productId: 1, priceListId: 5));
       await pump(tester, price: null, isActive: true);
 
-      await tester.enterText(find.byKey(const Key('price_cell_field_1_5')), '30.00');
+      await tester.enterText(
+        find.byKey(const Key('price_cell_field_1_5')),
+        '30.00',
+      );
       await tester.pump();
 
       // Production's own onTap for another (reading-mode) cell calls exactly
@@ -391,7 +428,9 @@ void main() {
           price: '30',
         ),
       ).called(1);
-      final state = container.read(pricingGridControllerProvider(_filter)).requireValue;
+      final state = container
+          .read(pricingGridControllerProvider(_filter))
+          .requireValue;
       expect(state.active, const PriceCellKey(productId: 2, priceListId: 5));
     },
   );
@@ -406,11 +445,16 @@ void main() {
           priceListId: 5,
           price: '30', // parsed/round-tripped, not the raw typed '30.00'
         ),
-      ).thenAnswer((_) async => _price(productId: 1, priceListId: 5, price: '30.00'));
+      ).thenAnswer(
+        (_) async => _price(productId: 1, priceListId: 5, price: '30.00'),
+      );
       final moves = <PriceCellMove>[];
       await pump(tester, price: null, isActive: true, moves: moves);
 
-      await tester.enterText(find.byKey(const Key('price_cell_field_1_5')), '30.00');
+      await tester.enterText(
+        find.byKey(const Key('price_cell_field_1_5')),
+        '30.00',
+      );
       await tester.testTextInput.receiveAction(TextInputAction.done);
       // `pricing_grid_screen.dart`'s `onMoveFrom` resolves the next cell and
       // opens it right after the keyboard move's own explicit commit — this
@@ -441,10 +485,15 @@ void main() {
           priceListId: 5,
           price: '30', // parsed/round-tripped, not the raw typed '30.00'
         ),
-      ).thenAnswer((_) async => _price(productId: 1, priceListId: 5, price: '30.00'));
+      ).thenAnswer(
+        (_) async => _price(productId: 1, priceListId: 5, price: '30.00'),
+      );
       await pump(tester, price: null, isActive: true);
 
-      await tester.enterText(find.byKey(const Key('price_cell_field_1_5')), '30.00');
+      await tester.enterText(
+        find.byKey(const Key('price_cell_field_1_5')),
+        '30.00',
+      );
       await tester.pump();
 
       // No move, no Escape — just the cell disappearing, the one case
@@ -466,18 +515,26 @@ void main() {
     'typing an invalid value then opening a different cell still shows the '
     'rejected badge and reason (FR-010)',
     (tester) async {
-      final notifier = container.read(pricingGridControllerProvider(_filter).notifier);
+      final notifier = container.read(
+        pricingGridControllerProvider(_filter).notifier,
+      );
       notifier.openCell(const PriceCellKey(productId: 1, priceListId: 5));
       await pump(tester, price: null, isActive: true);
 
-      await tester.enterText(find.byKey(const Key('price_cell_field_1_5')), 'abc');
+      await tester.enterText(
+        find.byKey(const Key('price_cell_field_1_5')),
+        'abc',
+      );
       await tester.pump();
 
       notifier.openCell(const PriceCellKey(productId: 2, priceListId: 5));
       await tester.pumpAndSettle();
 
-      final state = container.read(pricingGridControllerProvider(_filter)).requireValue;
-      final rejection = state.rejected[const PriceCellKey(productId: 1, priceListId: 5)];
+      final state = container
+          .read(pricingGridControllerProvider(_filter))
+          .requireValue;
+      final rejection =
+          state.rejected[const PriceCellKey(productId: 1, priceListId: 5)];
       expect(rejection?.typed, 'abc');
       expect(rejection?.reason, PricingGridErrorCode.invalidAmount);
 

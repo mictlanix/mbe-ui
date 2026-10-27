@@ -146,7 +146,9 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
                     Expanded(
                       child: Text(
                         shortfallText,
-                        style: TextStyle(color: Theme.of(context).colorScheme.error),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                       ),
                     ),
                     if (enabled)
@@ -192,9 +194,8 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
   /// two lines of name.
   Widget _productCell(BuildContext context, SaleLine line) {
     final theme = Theme.of(context);
-    final nameStyle = (theme.textTheme.bodyMedium ?? const TextStyle()).copyWith(
-      height: 1.2,
-    );
+    final nameStyle = (theme.textTheme.bodyMedium ?? const TextStyle())
+        .copyWith(height: 1.2);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -206,7 +207,8 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                height: 2 * (nameStyle.fontSize ?? 14) * (nameStyle.height ?? 1),
+                height:
+                    2 * (nameStyle.fontSize ?? 14) * (nameStyle.height ?? 1),
                 child: Text(
                   line.productName,
                   style: nameStyle,
@@ -405,10 +407,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
             _band(width: columns.warehouse, child: _warehouseCell(l10n)),
             gap,
           ],
-          _band(
-            width: columns.quantity,
-            child: _quantityStepper(l10n),
-          ),
+          _band(width: columns.quantity, child: _quantityStepper(l10n)),
           gap,
           _band(width: columns.price, child: _priceCell(l10n)),
           gap,
@@ -470,10 +469,7 @@ class _SaleLineRowState extends ConsumerState<SaleLineRow>
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _band(
-                width: columns.quantity,
-                child: _quantityStepper(l10n),
-              ),
+              _band(width: columns.quantity, child: _quantityStepper(l10n)),
               gap,
               Expanded(child: _priceCell(l10n)),
               gap,

@@ -11,7 +11,10 @@ import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 /// fake, so a router is the direct way to observe whether navigation
 /// happened at all.
 void main() {
-  Future<GoRouter> pumpRouter(WidgetTester tester, {required String path}) async {
+  Future<GoRouter> pumpRouter(
+    WidgetTester tester, {
+    required String path,
+  }) async {
     final router = GoRouter(
       initialLocation: path,
       routes: [
@@ -44,7 +47,8 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(refreshCalled, isFalse);
-      final location = router.routerDelegate.currentConfiguration.uri.toString();
+      final location = router.routerDelegate.currentConfiguration.uri
+          .toString();
       expect(location, contains('search=new-term'));
       // Page reset to 0 -> no `page` param in the encoded URL (FR-020).
       expect(location, isNot(contains('page=')));
@@ -56,7 +60,8 @@ void main() {
     'current page/facets (FR-008/FR-011)',
     (tester) async {
       final router = await pumpRouter(tester, path: '/list?page=3');
-      final locationBefore = router.routerDelegate.currentConfiguration.uri.toString();
+      final locationBefore = router.routerDelegate.currentConfiguration.uri
+          .toString();
       var refreshCalled = false;
 
       submitCatalogSearch(
@@ -71,7 +76,8 @@ void main() {
 
       expect(refreshCalled, isTrue);
       // No navigation occurred at all — the route is exactly what it was.
-      final locationAfter = router.routerDelegate.currentConfiguration.uri.toString();
+      final locationAfter = router.routerDelegate.currentConfiguration.uri
+          .toString();
       expect(locationAfter, locationBefore);
     },
   );

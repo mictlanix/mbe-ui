@@ -50,7 +50,8 @@ void main() {
     tester,
   ) async {
     final container = await pumpPos(tester, const _StepIndicator());
-    container.read(posStepControllerProvider.notifier)
+    container
+        .read(posStepControllerProvider.notifier)
         .setMode(FulfillmentMode.counterPickup);
     await tester.pumpAndSettle();
 
@@ -69,7 +70,8 @@ void main() {
 
   testWidgets('a delivery sale gains the third step (FR-018)', (tester) async {
     final container = await pumpPos(tester, const _StepIndicator());
-    container.read(posStepControllerProvider.notifier)
+    container
+        .read(posStepControllerProvider.notifier)
         .setMode(FulfillmentMode.delivery);
     await tester.pumpAndSettle();
 
@@ -79,7 +81,8 @@ void main() {
 
   testWidgets('a mixed sale gains the third step too', (tester) async {
     final container = await pumpPos(tester, const _StepIndicator());
-    container.read(posStepControllerProvider.notifier)
+    container
+        .read(posStepControllerProvider.notifier)
         .setMode(FulfillmentMode.mixed);
     await tester.pumpAndSettle();
 

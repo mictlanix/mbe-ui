@@ -31,15 +31,11 @@ void main() {
         ], 63),
       );
 
-      expect(
-        preview.categories.map((c) => c.key),
-        [
-          'sales_order_detail.product',
-          'purchase_order_detail.product',
-          'product_price.product',
-        ],
-        reason: 'largest-first ordering comes from the server',
-      );
+      expect(preview.categories.map((c) => c.key), [
+        'sales_order_detail.product',
+        'purchase_order_detail.product',
+        'product_price.product',
+      ], reason: 'largest-first ordering comes from the server');
       expect(preview.categories.map((c) => c.count), [42, 18, 3]);
       // SC-006: never re-summed client-side, so the figure always agrees
       // with the backend's own accounting.

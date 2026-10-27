@@ -153,9 +153,14 @@ class SaleTotalsBar extends ConsumerWidget {
       key: const Key('pos_totals_footer'),
       decoration: BoxDecoration(
         color: theme.elevations.raised.surfaceColor,
-        border: Border(top: BorderSide(color: theme.colorScheme.outlineVariant)),
+        border: Border(
+          top: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
       ),
-      padding: EdgeInsets.symmetric(horizontal: spacing.screenMargin, vertical: spacing.sm),
+      padding: EdgeInsets.symmetric(
+        horizontal: spacing.screenMargin,
+        vertical: spacing.sm,
+      ),
       child: compact
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -167,10 +172,7 @@ class SaleTotalsBar extends ConsumerWidget {
                   SizedBox(height: spacing.xs),
                   secondaryAction!,
                 ],
-                if (showAction) ...[
-                  SizedBox(height: spacing.xs),
-                  button,
-                ],
+                if (showAction) ...[SizedBox(height: spacing.xs), button],
               ],
             )
           // Centred, so the labelled stat blocks, the total and the action all
@@ -186,7 +188,9 @@ class SaleTotalsBar extends ConsumerWidget {
                   secondaryAction!,
                 ],
                 if (showAction) ...[
-                  SizedBox(width: secondaryAction == null ? spacing.lg : spacing.xs),
+                  SizedBox(
+                    width: secondaryAction == null ? spacing.lg : spacing.xs,
+                  ),
                   button,
                 ],
               ],
@@ -232,11 +236,19 @@ class SaleTotalsBar extends ConsumerWidget {
       ),
       // What the sale *is* on one side, what it *costs* on the other.
       _divider(context),
-      _group(context, l10n.posTotalsSubtotalLabel, fmt.display.currency(subtotal)),
+      _group(
+        context,
+        l10n.posTotalsSubtotalLabel,
+        fmt.display.currency(subtotal),
+      ),
       if (!isZeroAmount(discount))
         // The mock's leading minus is display-only — [discount] itself is
         // still the plain magnitude FR-047 derives from Sale.
-        _group(context, l10n.posTotalsDiscountLabel, '−${fmt.display.currency(discount)}'),
+        _group(
+          context,
+          l10n.posTotalsDiscountLabel,
+          '−${fmt.display.currency(discount)}',
+        ),
       _group(context, l10n.posTotalsTaxLabel, fmt.display.currency(taxTotal)),
     ];
   }

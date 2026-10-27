@@ -33,8 +33,7 @@ final warehouseDisplayNameProvider = FutureProvider.family<String?, int>((
 });
 
 class WarehouseRepositoryImpl implements WarehouseRepository {
-  WarehouseRepositoryImpl(Dio dio)
-    : _api = WarehousesApi(dio, appSerializers);
+  WarehouseRepositoryImpl(Dio dio) : _api = WarehousesApi(dio, appSerializers);
 
   final WarehousesApi _api;
 

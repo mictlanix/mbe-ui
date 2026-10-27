@@ -85,8 +85,12 @@ void main() {
     employees = MockEmployeeRepository();
     facilities = MockFacilityRepository();
     stubListOrders(salesOrders, page: testSalesPage(const []));
-    when(() => employees.get(employeeId: 100)).thenAnswer((_) async => _employee(100));
-    when(() => facilities.get(facilityId: 5)).thenAnswer((_) async => _facility(5));
+    when(
+      () => employees.get(employeeId: 100),
+    ).thenAnswer((_) async => _employee(100));
+    when(
+      () => facilities.get(facilityId: 5),
+    ).thenAnswer((_) async => _facility(5));
   });
 
   Future<void> pump(
@@ -100,7 +104,10 @@ void main() {
       overrides: [
         authProvider.overrideWith(
           () => _FixedAuthNotifier(
-            AuthState.authenticated(token: 't', user: _user(administrator: administrator)),
+            AuthState.authenticated(
+              token: 't',
+              user: _user(administrator: administrator),
+            ),
           ),
         ),
         salesOrderOverride(salesOrders),
@@ -119,13 +126,19 @@ void main() {
       find.byKey(const Key('sales_orders_filter_salesperson')),
       findsOneWidget,
     );
-    expect(find.byKey(const Key('sales_orders_filter_facility')), findsOneWidget);
+    expect(
+      find.byKey(const Key('sales_orders_filter_facility')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('both facets are absent for an ordinary user', (tester) async {
     await pump(tester, administrator: false);
 
-    expect(find.byKey(const Key('sales_orders_filter_salesperson')), findsNothing);
+    expect(
+      find.byKey(const Key('sales_orders_filter_salesperson')),
+      findsNothing,
+    );
     expect(find.byKey(const Key('sales_orders_filter_facility')), findsNothing);
   });
 
@@ -160,7 +173,9 @@ void main() {
     'with neither facet set, the facility one still shows the caller\'s '
     'own facility rather than a blank field (scenario 2)',
     (tester) async {
-      when(() => facilities.get(facilityId: 9)).thenAnswer((_) async => _facility(9));
+      when(
+        () => facilities.get(facilityId: 9),
+      ).thenAnswer((_) async => _facility(9));
 
       await pump(tester, administrator: true);
 

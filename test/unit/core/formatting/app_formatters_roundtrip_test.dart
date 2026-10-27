@@ -49,7 +49,8 @@ void main() {
           expect(
             d(parsedBack!),
             d(variant),
-            reason: '$variant → "$formatted" → $parsedBack must be the same value',
+            reason:
+                '$variant → "$formatted" → $parsedBack must be the same value',
           );
         });
       }
@@ -66,7 +67,8 @@ void main() {
           expect(
             d(parsedBack!),
             d(variant),
-            reason: '$variant → "$formatted" → $parsedBack must be the same value',
+            reason:
+                '$variant → "$formatted" → $parsedBack must be the same value',
           );
         });
       }
@@ -79,11 +81,16 @@ void main() {
         test('"$variant" round-trips to the same value', () {
           final formatted = field.quantity(variant);
           final parsedBack = field.parseQuantity(formatted);
-          expect(parsedBack, isNotNull, reason: 'quantity output must parse back');
+          expect(
+            parsedBack,
+            isNotNull,
+            reason: 'quantity output must parse back',
+          );
           expect(
             d(parsedBack!),
             d(variant),
-            reason: '$variant → "$formatted" → $parsedBack must be the same value',
+            reason:
+                '$variant → "$formatted" → $parsedBack must be the same value',
           );
         });
       }

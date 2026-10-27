@@ -41,8 +41,16 @@ void main() {
     priceList: const PriceListRef(id: 1, name: 'Mostrador'),
     status: EntityStatus.active,
     addresses: const [
-      AddressListItem(addressId: 11, label: 'Destino uno', type: AddressType.business),
-      AddressListItem(addressId: 12, label: 'Destino dos', type: AddressType.business),
+      AddressListItem(
+        addressId: 11,
+        label: 'Destino uno',
+        type: AddressType.business,
+      ),
+      AddressListItem(
+        addressId: 12,
+        label: 'Destino dos',
+        type: AddressType.business,
+      ),
     ],
     contacts: const [
       Contact(contactId: 21, name: 'Ana Ruiz', phone: '55 1234 5678'),
@@ -89,30 +97,43 @@ void main() {
       () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
     ).thenAnswer(
       (_) async => [
-        existing(id: 500, shipTo: 11, contact: 21, salesOrderDetail: 5, quantity: '6'),
-        existing(id: 501, shipTo: 12, contact: 22, salesOrderDetail: 6, quantity: '20'),
+        existing(
+          id: 500,
+          shipTo: 11,
+          contact: 21,
+          salesOrderDetail: 5,
+          quantity: '6',
+        ),
+        existing(
+          id: 501,
+          shipTo: 12,
+          contact: 22,
+          salesOrderDetail: 6,
+          quantity: '20',
+        ),
       ],
     );
   });
 
-  Future<void> pumpStep(WidgetTester tester, {required Size surface}) => pumpPos(
-    tester,
-    DeliveryStep(
-      sale: testSale(
-        lines: [
-          testLine(id: 5, productName: 'Varilla', quantity: '6'),
-          testLine(id: 6, productName: 'Cemento', quantity: '20'),
+  Future<void> pumpStep(WidgetTester tester, {required Size surface}) =>
+      pumpPos(
+        tester,
+        DeliveryStep(
+          sale: testSale(
+            lines: [
+              testLine(id: 5, productName: 'Varilla', quantity: '6'),
+              testLine(id: 6, productName: 'Cemento', quantity: '20'),
+            ],
+          ),
+          mode: FulfillmentMode.mixed,
+          onClose: () {},
+        ),
+        surface: surface,
+        overrides: [
+          deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
+          customerRepositoryProvider.overrideWithValue(customers),
         ],
-      ),
-      mode: FulfillmentMode.mixed,
-      onClose: () {},
-    ),
-    surface: surface,
-    overrides: [
-      deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
-      customerRepositoryProvider.overrideWithValue(customers),
-    ],
-  );
+      );
 
   group('the two-region shape at the Large tier (US1, SC-001)', () {
     testWidgets('the counter row, both cards, the add action and the rail '
@@ -130,8 +151,9 @@ void main() {
       expect(find.byKey(const Key('delivery_close_button')), findsOneWidget);
     });
 
-    testWidgets('no card header wraps at exactly 1200 px (research R1)',
-        (tester) async {
+    testWidgets('no card header wraps at exactly 1200 px (research R1)', (
+      tester,
+    ) async {
       await pumpStep(tester, surface: const Size(1200, 900));
 
       // The header row (badge, identity, divider, counts, icons) fits on
@@ -142,8 +164,9 @@ void main() {
       expect(find.byKey(const Key('destination_card_500')), findsOneWidget);
     });
 
-    testWidgets('at 1199 px the content is one column with the foot pinned',
-        (tester) async {
+    testWidgets('at 1199 px the content is one column with the foot pinned', (
+      tester,
+    ) async {
       await pumpStep(tester, surface: const Size(1199, 900));
 
       expect(
@@ -196,7 +219,8 @@ void main() {
           matching: find.text('Cemento'),
         ),
         findsNothing,
-        reason: '501 must still be collapsed, not inherit 500\'s expanded state',
+        reason:
+            '501 must still be collapsed, not inherit 500\'s expanded state',
       );
     });
   });
@@ -216,34 +240,48 @@ void main() {
   });
 
   group('adding a destination from a side sheet (US4, contract §6)', () {
-    Future<void> pumpWithRemainder(WidgetTester tester, {required Size surface}) =>
-        pumpPos(
-          tester,
-          DeliveryStep(
-            sale: testSale(
-              lines: [
-                testLine(id: 5, productName: 'Varilla', quantity: '6'),
-                // Only 15 of 20 claimed below — 5 left unassigned.
-                testLine(id: 6, productName: 'Cemento', quantity: '20'),
-              ],
-            ),
-            mode: FulfillmentMode.mixed,
-            onClose: () {},
-          ),
-          surface: surface,
-          overrides: [
-            deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
-            customerRepositoryProvider.overrideWithValue(customers),
+    Future<void> pumpWithRemainder(
+      WidgetTester tester, {
+      required Size surface,
+    }) => pumpPos(
+      tester,
+      DeliveryStep(
+        sale: testSale(
+          lines: [
+            testLine(id: 5, productName: 'Varilla', quantity: '6'),
+            // Only 15 of 20 claimed below — 5 left unassigned.
+            testLine(id: 6, productName: 'Cemento', quantity: '20'),
           ],
-        );
+        ),
+        mode: FulfillmentMode.mixed,
+        onClose: () {},
+      ),
+      surface: surface,
+      overrides: [
+        deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
+        customerRepositoryProvider.overrideWithValue(customers),
+      ],
+    );
 
     setUp(() {
       when(
         () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
       ).thenAnswer(
         (_) async => [
-          existing(id: 500, shipTo: 11, contact: 21, salesOrderDetail: 5, quantity: '6'),
-          existing(id: 501, shipTo: 12, contact: 22, salesOrderDetail: 6, quantity: '15'),
+          existing(
+            id: 500,
+            shipTo: 11,
+            contact: 21,
+            salesOrderDetail: 5,
+            quantity: '6',
+          ),
+          existing(
+            id: 501,
+            shipTo: 12,
+            contact: 22,
+            salesOrderDetail: 6,
+            quantity: '15',
+          ),
         ],
       );
     });
@@ -252,7 +290,9 @@ void main() {
         'the destination cards still visible behind it', (tester) async {
       await pumpWithRemainder(tester, surface: const Size(1440, 900));
 
-      await tester.tap(find.byKey(const Key('delivery_add_destination_button')));
+      await tester.tap(
+        find.byKey(const Key('delivery_add_destination_button')),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('destination_editor')), findsOneWidget);
@@ -261,14 +301,18 @@ void main() {
 
       // Right-anchored: the sheet's left edge sits well right of the
       // window's own left edge, unlike a bottom sheet spanning the width.
-      final sheetLeft = tester.getTopLeft(find.byKey(const Key('destination_editor'))).dx;
+      final sheetLeft = tester
+          .getTopLeft(find.byKey(const Key('destination_editor')))
+          .dx;
       expect(sheetLeft, greaterThan(800));
     });
 
     testWidgets('a resize across the two-region threshold with the sheet '
         'open keeps it usable', (tester) async {
       await pumpWithRemainder(tester, surface: const Size(1440, 900));
-      await tester.tap(find.byKey(const Key('delivery_add_destination_button')));
+      await tester.tap(
+        find.byKey(const Key('delivery_add_destination_button')),
+      );
       await tester.pumpAndSettle();
 
       await tester.enterText(
@@ -285,26 +329,35 @@ void main() {
 
   group('editing a destination opens the same presentation as adding one '
       '(spec 030 US3)', () {
-    Future<void> pumpWithOne(WidgetTester tester, {required Size surface}) => pumpPos(
-      tester,
-      DeliveryStep(
-        sale: testSale(lines: [testLine(id: 5, productName: 'Varilla', quantity: '6')]),
-        mode: FulfillmentMode.delivery,
-        onClose: () {},
-      ),
-      surface: surface,
-      overrides: [
-        deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
-        customerRepositoryProvider.overrideWithValue(customers),
-      ],
-    );
+    Future<void> pumpWithOne(WidgetTester tester, {required Size surface}) =>
+        pumpPos(
+          tester,
+          DeliveryStep(
+            sale: testSale(
+              lines: [testLine(id: 5, productName: 'Varilla', quantity: '6')],
+            ),
+            mode: FulfillmentMode.delivery,
+            onClose: () {},
+          ),
+          surface: surface,
+          overrides: [
+            deliveryOrderRepositoryProvider.overrideWithValue(deliveries),
+            customerRepositoryProvider.overrideWithValue(customers),
+          ],
+        );
 
     setUp(() {
       when(
         () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
       ).thenAnswer(
         (_) async => [
-          existing(id: 500, shipTo: 11, contact: 21, salesOrderDetail: 5, quantity: '6'),
+          existing(
+            id: 500,
+            shipTo: 11,
+            contact: 21,
+            salesOrderDetail: 5,
+            quantity: '6',
+          ),
         ],
       );
     });
@@ -320,7 +373,9 @@ void main() {
       final l10n = await AppLocalizations.delegate.load(const Locale('es'));
       expect(find.text(l10n.posEditDestinationSheetTitle), findsOneWidget);
 
-      final sheetLeft = tester.getTopLeft(find.byKey(const Key('destination_editor'))).dx;
+      final sheetLeft = tester
+          .getTopLeft(find.byKey(const Key('destination_editor')))
+          .dx;
       expect(sheetLeft, greaterThan(800));
     });
 
@@ -336,7 +391,9 @@ void main() {
       expect(find.text(l10n.posEditDestinationSheetTitle), findsOneWidget);
 
       // A bottom sheet spans (most of) the width, unlike the side sheet.
-      final sheetLeft = tester.getTopLeft(find.byKey(const Key('destination_editor'))).dx;
+      final sheetLeft = tester
+          .getTopLeft(find.byKey(const Key('destination_editor')))
+          .dx;
       expect(sheetLeft, lessThan(100));
     });
   });

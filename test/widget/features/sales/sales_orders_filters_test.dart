@@ -55,7 +55,9 @@ void main() {
       initialLocation: query.toUri('/sales/orders').toString(),
       overrides: [
         authProvider.overrideWith(
-          () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: _user())),
+          () => _FixedAuthNotifier(
+            AuthState.authenticated(token: 't', user: _user()),
+          ),
         ),
         salesOrderOverride(salesOrders),
       ],
@@ -222,5 +224,4 @@ void main() {
 
     expect(find.text('1'), findsOneWidget);
   });
-
 }

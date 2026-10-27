@@ -66,9 +66,8 @@ class PaymentMethodOptionFormPanelState
             .loadForEdit(widget.paymentMethodOptionId!);
         if (mounted) {
           setState(
-            () => _snapshot = ref.read(
-              paymentMethodOptionFormControllerProvider,
-            ),
+            () =>
+                _snapshot = ref.read(paymentMethodOptionFormControllerProvider),
           );
         }
       });

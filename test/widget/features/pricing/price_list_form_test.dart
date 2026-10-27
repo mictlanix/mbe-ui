@@ -39,10 +39,7 @@ const _fullAccessUser = User(
   privileges: [Privilege(systemObject: SystemObject.priceLists, rawValue: 15)],
 );
 
-const _existing = PriceList(
-  priceListId: 1,
-  name: 'Retail',
-);
+const _existing = PriceList(priceListId: 1, name: 'Retail');
 
 AccessControlService _accessFor(User user) =>
     AccessControlService(AuthState.authenticated(token: 't', user: user));
@@ -129,30 +126,27 @@ void main() {
       },
     );
 
-    testWidgets(
-      'the form carries no profit-margin fields — retired with the '
-      'sales-order validation that read them (spec 033 US7/FR-034, '
-      'mbe-api#185)',
-      (tester) async {
-        await pumpScreen(
-          tester,
-          signedInAs: _fullAccessUser,
-          priceListId: 1,
-          forceReadOnly: true,
-        );
+    testWidgets('the form carries no profit-margin fields — retired with the '
+        'sales-order validation that read them (spec 033 US7/FR-034, '
+        'mbe-api#185)', (tester) async {
+      await pumpScreen(
+        tester,
+        signedInAs: _fullAccessUser,
+        priceListId: 1,
+        forceReadOnly: true,
+      );
 
-        expect(
-          find.byKey(const Key('price_list_high_margin_field')),
-          findsNothing,
-        );
-        expect(
-          find.byKey(const Key('price_list_low_margin_field')),
-          findsNothing,
-        );
-        // The name field is untouched — the record is still editable.
-        expect(find.byKey(const Key('price_list_name_field')), findsOneWidget);
-      },
-    );
+      expect(
+        find.byKey(const Key('price_list_high_margin_field')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('price_list_low_margin_field')),
+        findsNothing,
+      );
+      // The name field is untouched — the record is still editable.
+      expect(find.byKey(const Key('price_list_name_field')), findsOneWidget);
+    });
   });
 
   group('edit mode', () {
@@ -173,9 +167,7 @@ void main() {
       'the review dialog (specs/034-price-list-retirement-ui, replacing '
       'the old plain confirmation)',
       (tester) async {
-        when(
-          () => repository.deletePreview(priceListId: 1),
-        ).thenAnswer(
+        when(() => repository.deletePreview(priceListId: 1)).thenAnswer(
           (_) async => const PriceListDeletePreview(
             categories: [
               PriceListDeleteCategory(key: 'product_price.list', count: 4312),
@@ -193,8 +185,14 @@ void main() {
         await tester.tap(find.byKey(const Key('delete_price_list_button')));
         await tester.pumpAndSettle();
 
-        expect(find.byKey(const Key('price_list_delete_dialog')), findsOneWidget);
-        expect(find.byKey(const Key('price_list_delete_summary')), findsOneWidget);
+        expect(
+          find.byKey(const Key('price_list_delete_dialog')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('price_list_delete_summary')),
+          findsOneWidget,
+        );
       },
     );
 
@@ -202,9 +200,7 @@ void main() {
       'confirming a server rejection leaves the dialog open and the form '
       'in place (US1 §6)',
       (tester) async {
-        when(
-          () => repository.deletePreview(priceListId: 1),
-        ).thenAnswer(
+        when(() => repository.deletePreview(priceListId: 1)).thenAnswer(
           (_) async => const PriceListDeletePreview(
             categories: [
               PriceListDeleteCategory(key: 'product_price.list', count: 4312),
@@ -238,7 +234,10 @@ void main() {
         // Still on the detail screen, and the dialog is still open with the
         // refusal shown — the deletion did not go through.
         expect(find.byKey(const Key('price_list_name_field')), findsOneWidget);
-        expect(find.byKey(const Key('price_list_delete_dialog')), findsOneWidget);
+        expect(
+          find.byKey(const Key('price_list_delete_dialog')),
+          findsOneWidget,
+        );
         expect(
           find.textContaining('Price list is assigned to a customer'),
           findsOneWidget,

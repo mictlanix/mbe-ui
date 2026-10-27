@@ -171,7 +171,9 @@ void main() {
 
         expect(
           tester
-              .widget<TextFormField>(find.byKey(const Key('expense_name_field')))
+              .widget<TextFormField>(
+                find.byKey(const Key('expense_name_field')),
+              )
               .enabled,
           isFalse,
         );
@@ -181,7 +183,9 @@ void main() {
 
         expect(
           tester
-              .widget<TextFormField>(find.byKey(const Key('expense_name_field')))
+              .widget<TextFormField>(
+                find.byKey(const Key('expense_name_field')),
+              )
               .enabled,
           isTrue,
         );

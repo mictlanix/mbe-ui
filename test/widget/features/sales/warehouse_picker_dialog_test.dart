@@ -118,18 +118,19 @@ void main() {
     expect(result.value, isNull);
   });
 
-  testWidgets('a product that is not stock-tracked says any warehouse is valid', (
-    tester,
-  ) async {
-    await openPicker(
-      tester,
-      productStock: const ProductStock(stockRequired: false),
-    );
-    final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+  testWidgets(
+    'a product that is not stock-tracked says any warehouse is valid',
+    (tester) async {
+      await openPicker(
+        tester,
+        productStock: const ProductStock(stockRequired: false),
+      );
+      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
-    expect(find.text(l10n.posWarehousePickerNotTracked), findsOneWidget);
-    expect(find.byIcon(Icons.warning_amber), findsNothing);
-  });
+      expect(find.text(l10n.posWarehousePickerNotTracked), findsOneWidget);
+      expect(find.byIcon(Icons.warning_amber), findsNothing);
+    },
+  );
 
   testWidgets('at 390 px there is no horizontal scroll or overflow', (
     tester,
@@ -144,7 +145,12 @@ void main() {
   group('other facilities (spec 048 US3)', () {
     const other = ProductStock(
       warehouses: [
-        WarehouseStock(warehouse: 3, onHand: '10', available: '10', facilityId: 9),
+        WarehouseStock(
+          warehouse: 3,
+          onHand: '10',
+          available: '10',
+          facilityId: 9,
+        ),
         WarehouseStock(
           warehouse: 20,
           warehouseName: 'Bodega Norte',
@@ -164,23 +170,30 @@ void main() {
       ],
     );
 
-    testWidgets('lists them below the local rows, grouped, and a tap pops the id', (
-      tester,
-    ) async {
-      final result = await openPicker(tester, productStock: other);
-      final l10n = await AppLocalizations.delegate.load(const Locale('es'));
+    testWidgets(
+      'lists them below the local rows, grouped, and a tap pops the id',
+      (tester) async {
+        final result = await openPicker(tester, productStock: other);
+        final l10n = await AppLocalizations.delegate.load(const Locale('es'));
 
-      expect(find.byKey(const Key('warehouse_other_facilities')), findsOneWidget);
-      expect(find.text(l10n.posWarehousePickerOtherFacilities), findsOneWidget);
-      expect(find.text('Norte'), findsOneWidget);
-      expect(find.byKey(const Key('warehouse_other_20')), findsOneWidget);
-      // Nothing available and not the current one: not offered.
-      expect(find.byKey(const Key('warehouse_other_21')), findsNothing);
+        expect(
+          find.byKey(const Key('warehouse_other_facilities')),
+          findsOneWidget,
+        );
+        expect(
+          find.text(l10n.posWarehousePickerOtherFacilities),
+          findsOneWidget,
+        );
+        expect(find.text('Norte'), findsOneWidget);
+        expect(find.byKey(const Key('warehouse_other_20')), findsOneWidget);
+        // Nothing available and not the current one: not offered.
+        expect(find.byKey(const Key('warehouse_other_21')), findsNothing);
 
-      await tester.tap(find.byKey(const Key('warehouse_other_20')));
-      await tester.pumpAndSettle();
-      expect(result.value, 20);
-    });
+        await tester.tap(find.byKey(const Key('warehouse_other_20')));
+        await tester.pumpAndSettle();
+        expect(result.value, 20);
+      },
+    );
 
     testWidgets('a current warehouse in another facility is selected', (
       tester,
@@ -220,7 +233,10 @@ void main() {
       ) async {
         await openPicker(tester, productStock: productStock, selected: 77);
 
-        expect(find.byKey(const Key('warehouse_other_facilities')), findsOneWidget);
+        expect(
+          find.byKey(const Key('warehouse_other_facilities')),
+          findsOneWidget,
+        );
         expect(find.text('#77'), findsOneWidget);
         expect(
           find.descendant(
@@ -302,7 +318,10 @@ void main() {
         ),
       );
 
-      expect(find.byKey(const Key('warehouse_other_facilities')), findsOneWidget);
+      expect(
+        find.byKey(const Key('warehouse_other_facilities')),
+        findsOneWidget,
+      );
       expectNoHorizontalScroll(tester);
       expect(tester.takeException(), isNull);
     });

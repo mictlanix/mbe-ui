@@ -178,11 +178,8 @@ class _FacilitiesListScreenState extends ConsumerState<FacilitiesListScreen> {
             actions: [
               _ExpandAllButton(
                 facilities: pageAsync.value?.items ?? const [],
-                allExpanded: _allExpanded(
-                  pageAsync.value?.items ?? const [],
-                ),
-                onPressed: () =>
-                    _toggleAll(pageAsync.value?.items ?? const []),
+                allExpanded: _allExpanded(pageAsync.value?.items ?? const []),
+                onPressed: () => _toggleAll(pageAsync.value?.items ?? const []),
               ),
               if (!isCompact && canCreateFacility)
                 FilledButton.icon(
@@ -352,14 +349,8 @@ class _FacilitiesListScreenState extends ConsumerState<FacilitiesListScreen> {
     AppLocalizations l10n,
     int facilityId,
   ) {
-    final canUpdate = access.can(
-      SystemObject.pointsOfSale,
-      AccessRight.update,
-    );
-    final canCreate = access.can(
-      SystemObject.pointsOfSale,
-      AccessRight.create,
-    );
+    final canUpdate = access.can(SystemObject.pointsOfSale, AccessRight.update);
+    final canCreate = access.can(SystemObject.pointsOfSale, AccessRight.create);
     return FacilityChildActions(
       onView: (id) => _openPointSaleSheet(
         context,

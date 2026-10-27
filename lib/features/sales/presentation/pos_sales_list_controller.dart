@@ -146,11 +146,15 @@ class PosSalesListController extends _$PosSalesListController {
     return fetchClampedPage(
       pageIndex: filter.pageIndex,
       pageSize: _pageSize,
-      fetch: (pageIndex) => _fetch(pointSale, filter.copyWith(pageIndex: pageIndex)),
+      fetch: (pageIndex) =>
+          _fetch(pointSale, filter.copyWith(pageIndex: pageIndex)),
     );
   }
 
-  Future<CatalogPage<OpenSale>> _fetch(int pointSale, PosSalesFilter filter) async {
+  Future<CatalogPage<OpenSale>> _fetch(
+    int pointSale,
+    PosSalesFilter filter,
+  ) async {
     final result = await ref
         .read(salesOrderRepositoryProvider)
         .listSales(

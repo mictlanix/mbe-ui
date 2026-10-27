@@ -120,9 +120,7 @@ void main() {
   }
 
   group('create mode', () {
-    testWidgets('shows an empty form with Save and no Delete', (
-      tester,
-    ) async {
+    testWidgets('shows an empty form with Save and no Delete', (tester) async {
       await pumpScreen(tester, signedInAs: _fullAccessUser);
 
       expect(find.byKey(const Key('name_field')), findsOneWidget);
@@ -300,13 +298,9 @@ void main() {
           retry: (_, _) => null,
           overrides: [
             sharedPreferencesProvider.overrideWithValue(sharedPreferences),
-            paymentMethodOptionRepositoryProvider.overrideWithValue(
-              repository,
-            ),
+            paymentMethodOptionRepositoryProvider.overrideWithValue(repository),
             facilityRepositoryProvider.overrideWithValue(facilityRepository),
-            warehouseRepositoryProvider.overrideWithValue(
-              warehouseRepository,
-            ),
+            warehouseRepositoryProvider.overrideWithValue(warehouseRepository),
             accessControlProvider.overrideWithValue(
               _accessFor(_fullAccessUser),
             ),
@@ -402,13 +396,9 @@ void main() {
           retry: (_, _) => null,
           overrides: [
             sharedPreferencesProvider.overrideWithValue(sharedPreferences),
-            paymentMethodOptionRepositoryProvider.overrideWithValue(
-              repository,
-            ),
+            paymentMethodOptionRepositoryProvider.overrideWithValue(repository),
             facilityRepositoryProvider.overrideWithValue(facilityRepository),
-            warehouseRepositoryProvider.overrideWithValue(
-              warehouseRepository,
-            ),
+            warehouseRepositoryProvider.overrideWithValue(warehouseRepository),
             accessControlProvider.overrideWithValue(
               _accessFor(_fullAccessUser),
             ),
@@ -440,13 +430,9 @@ void main() {
           retry: (_, _) => null,
           overrides: [
             sharedPreferencesProvider.overrideWithValue(sharedPreferences),
-            paymentMethodOptionRepositoryProvider.overrideWithValue(
-              repository,
-            ),
+            paymentMethodOptionRepositoryProvider.overrideWithValue(repository),
             facilityRepositoryProvider.overrideWithValue(facilityRepository),
-            warehouseRepositoryProvider.overrideWithValue(
-              warehouseRepository,
-            ),
+            warehouseRepositoryProvider.overrideWithValue(warehouseRepository),
             accessControlProvider.overrideWithValue(
               _accessFor(_fullAccessUser),
             ),
@@ -455,10 +441,7 @@ void main() {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
-              body: PaymentMethodOptionForm(
-                key: key,
-                paymentMethodOptionId: 1,
-              ),
+              body: PaymentMethodOptionForm(key: key, paymentMethodOptionId: 1),
             ),
           ),
         ),

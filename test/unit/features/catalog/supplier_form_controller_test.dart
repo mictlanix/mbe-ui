@@ -63,15 +63,22 @@ void main() {
 
   group('SupplierFormController field updates', () {
     test('codeChanged updates state and clears prior errors', () {
-      final notifier = container.read(supplierFormControllerProvider(null).notifier);
+      final notifier = container.read(
+        supplierFormControllerProvider(null).notifier,
+      );
       notifier.codeChanged('SUP-001');
-      expect(container.read(supplierFormControllerProvider(null)).code, 'SUP-001');
+      expect(
+        container.read(supplierFormControllerProvider(null)).code,
+        'SUP-001',
+      );
     });
   });
 
   group('SupplierFormController.submitCreate validation (FR-010, FR-011)', () {
     test('an empty code/name is rejected before submit', () async {
-      final notifier = container.read(supplierFormControllerProvider(null).notifier);
+      final notifier = container.read(
+        supplierFormControllerProvider(null).notifier,
+      );
 
       await notifier.submitCreate();
 
@@ -87,7 +94,9 @@ void main() {
     });
 
     test('a negative credit limit is rejected before submit', () async {
-      final notifier = container.read(supplierFormControllerProvider(null).notifier);
+      final notifier = container.read(
+        supplierFormControllerProvider(null).notifier,
+      );
       notifier
         ..codeChanged('SUP-001')
         ..nameChanged('Acme Corp')
@@ -134,8 +143,14 @@ void main() {
 
         await notifier.submitCreate();
 
-        expect(container.read(supplierFormControllerProvider(null)).saved, isTrue);
-        expect(container.read(supplierFormControllerProvider(null)).supplierId, 1);
+        expect(
+          container.read(supplierFormControllerProvider(null)).saved,
+          isTrue,
+        );
+        expect(
+          container.read(supplierFormControllerProvider(null)).supplierId,
+          1,
+        );
       },
     );
 
@@ -159,7 +174,9 @@ void main() {
         ]),
       );
 
-      final notifier = container.read(supplierFormControllerProvider(null).notifier);
+      final notifier = container.read(
+        supplierFormControllerProvider(null).notifier,
+      );
       notifier
         ..codeChanged('SUP-001')
         ..nameChanged('Acme Corp');
@@ -184,7 +201,9 @@ void main() {
 
       await notifier.submitCreate();
 
-      final state = readOnlyContainer.read(supplierFormControllerProvider(null));
+      final state = readOnlyContainer.read(
+        supplierFormControllerProvider(null),
+      );
       expect(state.error, SupplierFormErrorCode.createPermissionDenied);
       verifyNever(
         () => repository.create(
@@ -239,7 +258,10 @@ void main() {
 
         await notifier.submitUpdate();
 
-        expect(container.read(supplierFormControllerProvider(null)).saved, isTrue);
+        expect(
+          container.read(supplierFormControllerProvider(null)).saved,
+          isTrue,
+        );
       },
     );
   });
@@ -376,8 +398,8 @@ void main() {
 
     test('a link change clears a prior error', () {
       notifierOf().codeChanged('');
-      container.read(supplierFormControllerProvider(null).notifier).state = stateOf()
-          .copyWith(error: SupplierFormErrorCode.updateFailed);
+      container.read(supplierFormControllerProvider(null).notifier).state =
+          stateOf().copyWith(error: SupplierFormErrorCode.updateFailed);
 
       notifierOf().addressAdded(addressA);
 

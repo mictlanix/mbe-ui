@@ -26,7 +26,10 @@ const _canCloseUser = User(
   status: EntityStatus.active,
   sessionVersion: 1,
   privileges: [
-    Privilege(systemObject: SystemObject.cashSessionClose, rawValue: 4), // update
+    Privilege(
+      systemObject: SystemObject.cashSessionClose,
+      rawValue: 4,
+    ), // update
   ],
 );
 
@@ -79,22 +82,27 @@ void main() {
   });
 
   group('CloseSessionFormController.loadSession', () {
-    test('computes expected cash as opening amount + cash-method total only', () {
-      container
-          .read(closeSessionFormControllerProvider.notifier)
-          .loadSession(_session());
+    test(
+      'computes expected cash as opening amount + cash-method total only',
+      () {
+        container
+            .read(closeSessionFormControllerProvider.notifier)
+            .loadSession(_session());
 
-      final state = container.read(closeSessionFormControllerProvider);
-      expect(state.cashSessionId, 1);
-      expect(Decimal.parse(state.expectedCash), Decimal.parse('3740'));
-      expect(state.countedTotal, '0');
-    });
+        final state = container.read(closeSessionFormControllerProvider);
+        expect(state.cashSessionId, 1);
+        expect(Decimal.parse(state.expectedCash), Decimal.parse('3740'));
+        expect(state.countedTotal, '0');
+      },
+    );
   });
 
   group('CloseSessionFormController.quantityChanged', () {
     test('updates the counted total, expected figure stays fixed, and the '
         'difference recomputes on every change', () {
-      final controller = container.read(closeSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        closeSessionFormControllerProvider.notifier,
+      );
       controller.loadSession(_session());
 
       controller.quantityChanged('500', 3);
@@ -109,7 +117,9 @@ void main() {
     });
 
     test('a zero difference reads as exactly zero, not omitted', () {
-      final controller = container.read(closeSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        closeSessionFormControllerProvider.notifier,
+      );
       controller.loadSession(_session(openingAmount: '0', payments: const []));
 
       final state = container.read(closeSessionFormControllerProvider);
@@ -118,7 +128,9 @@ void main() {
 
     test('changing the same denomination again replaces, not adds to, its '
         'quantity', () {
-      final controller = container.read(closeSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        closeSessionFormControllerProvider.notifier,
+      );
       controller.loadSession(_session());
 
       controller.quantityChanged('500', 3);
@@ -133,13 +145,12 @@ void main() {
     test('submits only positive-quantity denominations, sets closed, and '
         'invalidates the caches that must refresh', () async {
       when(
-        () => repository.close(
-          cashSessionId: 1,
-          counts: any(named: 'counts'),
-        ),
+        () => repository.close(cashSessionId: 1, counts: any(named: 'counts')),
       ).thenAnswer((_) async => _session(payments: const []));
 
-      final controller = container.read(closeSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        closeSessionFormControllerProvider.notifier,
+      );
       controller.loadSession(_session());
       controller.quantityChanged('500', 3);
       controller.quantityChanged('100', 0);
@@ -147,12 +158,14 @@ void main() {
 
       await controller.submit();
 
-      final captured = verify(
-        () => repository.close(
-          cashSessionId: 1,
-          counts: captureAny(named: 'counts'),
-        ),
-      ).captured.single as List<DenominationCount>;
+      final captured =
+          verify(
+                () => repository.close(
+                  cashSessionId: 1,
+                  counts: captureAny(named: 'counts'),
+                ),
+              ).captured.single
+              as List<DenominationCount>;
 
       expect(captured, hasLength(2));
       expect(
@@ -177,20 +190,25 @@ void main() {
         () => repository.close(cashSessionId: 1, counts: const []),
       ).thenAnswer((_) async => _session(payments: const []));
 
-      final controller = container.read(closeSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        closeSessionFormControllerProvider.notifier,
+      );
       controller.loadSession(_session());
       await controller.submit();
 
       expect(container.read(closeSessionFormControllerProvider).closed, isTrue);
-      verify(() => repository.close(cashSessionId: 1, counts: const [])).called(1);
+      verify(
+        () => repository.close(cashSessionId: 1, counts: const []),
+      ).called(1);
     });
   });
 
   group('CloseSessionFormController.submit — the detail screen refreshes', () {
     test('a successful close invalidates the session\'s detail, so it is '
         're-read as closed (spec 044 FR-007, research R14)', () async {
-      when(() => repository.get(cashSessionId: 1))
-          .thenAnswer((_) async => _session());
+      when(
+        () => repository.get(cashSessionId: 1),
+      ).thenAnswer((_) async => _session());
       when(
         () => repository.close(cashSessionId: 1, counts: const []),
       ).thenAnswer((_) async => _session(payments: const []));
@@ -204,7 +222,9 @@ void main() {
       await container.read(cashSessionDetailControllerProvider(1).future);
       verify(() => repository.get(cashSessionId: 1)).called(1);
 
-      final controller = container.read(closeSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        closeSessionFormControllerProvider.notifier,
+      );
       controller.loadSession(_session());
       await controller.submit();
       await container.read(cashSessionDetailControllerProvider(1).future);
@@ -213,8 +233,9 @@ void main() {
     });
 
     test('a failed close does not refresh it', () async {
-      when(() => repository.get(cashSessionId: 1))
-          .thenAnswer((_) async => _session());
+      when(
+        () => repository.get(cashSessionId: 1),
+      ).thenAnswer((_) async => _session());
       when(
         () => repository.close(cashSessionId: 1, counts: const []),
       ).thenThrow(const AppError.server(statusCode: 500));
@@ -227,7 +248,9 @@ void main() {
       await container.read(cashSessionDetailControllerProvider(1).future);
       clearInteractions(repository);
 
-      final controller = container.read(closeSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        closeSessionFormControllerProvider.notifier,
+      );
       controller.loadSession(_session());
       await controller.submit();
       await container.pump();
@@ -260,36 +283,47 @@ void main() {
   });
 
   group('CloseSessionFormController.submit — failures', () {
-    test('409 already-closed preserves the entered quantities and refreshes '
-        'state (FR-024) — never crashes, never silently clears input', () async {
-      when(
-        () => repository.close(
-          cashSessionId: 1,
-          counts: any(named: 'counts'),
-        ),
-      ).thenThrow(const AppError.server(statusCode: 409, message: 'Session is already closed'));
+    test(
+      '409 already-closed preserves the entered quantities and refreshes '
+      'state (FR-024) — never crashes, never silently clears input',
+      () async {
+        when(
+          () =>
+              repository.close(cashSessionId: 1, counts: any(named: 'counts')),
+        ).thenThrow(
+          const AppError.server(
+            statusCode: 409,
+            message: 'Session is already closed',
+          ),
+        );
 
-      final controller = container.read(closeSessionFormControllerProvider.notifier);
-      controller.loadSession(_session());
-      controller.quantityChanged('500', 3);
-      await controller.submit();
+        final controller = container.read(
+          closeSessionFormControllerProvider.notifier,
+        );
+        controller.loadSession(_session());
+        controller.quantityChanged('500', 3);
+        await controller.submit();
 
-      final state = container.read(closeSessionFormControllerProvider);
-      expect(state.error, CloseSessionFormErrorCode.alreadyClosed);
-      expect(state.quantities['500'], 3, reason: 'entered counts must survive a 409');
-      expect(state.submitting, isFalse);
-      expect(state.closed, isFalse);
-    });
+        final state = container.read(closeSessionFormControllerProvider);
+        expect(state.error, CloseSessionFormErrorCode.alreadyClosed);
+        expect(
+          state.quantities['500'],
+          3,
+          reason: 'entered counts must survive a 409',
+        );
+        expect(state.submitting, isFalse);
+        expect(state.closed, isFalse);
+      },
+    );
 
     test('404 maps to sessionNotFound', () async {
       when(
-        () => repository.close(
-          cashSessionId: 1,
-          counts: any(named: 'counts'),
-        ),
+        () => repository.close(cashSessionId: 1, counts: any(named: 'counts')),
       ).thenThrow(const AppError.notFound('Cash session not found'));
 
-      final controller = container.read(closeSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        closeSessionFormControllerProvider.notifier,
+      );
       controller.loadSession(_session());
       await controller.submit();
 
@@ -299,22 +333,25 @@ void main() {
       );
     });
 
-    test('an unrelated server error maps to the generic closeFailed code', () async {
-      when(
-        () => repository.close(
-          cashSessionId: 1,
-          counts: any(named: 'counts'),
-        ),
-      ).thenThrow(const AppError.server(statusCode: 500));
+    test(
+      'an unrelated server error maps to the generic closeFailed code',
+      () async {
+        when(
+          () =>
+              repository.close(cashSessionId: 1, counts: any(named: 'counts')),
+        ).thenThrow(const AppError.server(statusCode: 500));
 
-      final controller = container.read(closeSessionFormControllerProvider.notifier);
-      controller.loadSession(_session());
-      await controller.submit();
+        final controller = container.read(
+          closeSessionFormControllerProvider.notifier,
+        );
+        controller.loadSession(_session());
+        await controller.submit();
 
-      expect(
-        container.read(closeSessionFormControllerProvider).error,
-        CloseSessionFormErrorCode.closeFailed,
-      );
-    });
+        expect(
+          container.read(closeSessionFormControllerProvider).error,
+          CloseSessionFormErrorCode.closeFailed,
+        );
+      },
+    );
   });
 }

@@ -227,8 +227,6 @@ void main() {
     expect(find.text('customers list'), findsOneWidget);
   });
 
-
-
   group('after a save (spec 052 FR-007a)', () {
     // Creating needs a price list, which the form picks through a search
     // field; set it through the controller instead of driving the picker.
@@ -333,10 +331,8 @@ void main() {
       // 100 ms steps, so a shorter stub would finish before the form ever
       // built its loading state, and its fields would stay blank.
       when(() => repository.get(customerId: 1)).thenAnswer(
-        (_) => Future.delayed(
-          const Duration(milliseconds: 500),
-          () => _customer,
-        ),
+        (_) =>
+            Future.delayed(const Duration(milliseconds: 500), () => _customer),
       );
       final router = await pumpAt(tester, '/customers/1?view=true');
       String fieldText(String key) => tester
@@ -375,9 +371,7 @@ void main() {
         discount: '0.10000000',
       );
       var listCalls = 0;
-      when(
-        () => repository.listDiscounts(customerId: 1),
-      ).thenAnswer((_) async {
+      when(() => repository.listDiscounts(customerId: 1)).thenAnswer((_) async {
         listCalls++;
         return const [discount];
       });

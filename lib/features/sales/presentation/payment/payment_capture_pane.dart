@@ -29,7 +29,11 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// against, now guarded here because this is the widget that actually gets
 /// remounted across that switch.
 class PaymentCapturePane extends ConsumerStatefulWidget {
-  const PaymentCapturePane({super.key, required this.sale, required this.enabled});
+  const PaymentCapturePane({
+    super.key,
+    required this.sale,
+    required this.enabled,
+  });
 
   final Sale sale;
   final bool enabled;
@@ -47,13 +51,17 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
   void initState() {
     super.initState();
     _amountController.addListener(() {
-      ref.read(paymentControllerProvider.notifier).setAmount(_amountController.text);
+      ref
+          .read(paymentControllerProvider.notifier)
+          .setAmount(_amountController.text);
     });
     // FR-016: open with the balance already keyed. Deferred — a provider
     // must not change while the tree is still building.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      ref.read(paymentControllerProvider.notifier).prefillAmount(widget.sale.balanceOrZero);
+      ref
+          .read(paymentControllerProvider.notifier)
+          .prefillAmount(widget.sale.balanceOrZero);
     });
   }
 
@@ -95,7 +103,10 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
 
     // Keep the field in step when the controller sets the amount itself — the
     // pre-fill, and the new balance after a successful tender.
-    ref.listen(paymentControllerProvider.select((draft) => draft.amount), (_, amount) {
+    ref.listen(paymentControllerProvider.select((draft) => draft.amount), (
+      _,
+      amount,
+    ) {
       if (amount == _amountController.text) return;
       _amountController.text = amount.isEmpty ? '' : fmt.field.price(amount);
     });
@@ -105,7 +116,9 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
       children: [
         PaymentAmountField(
           controller: _amountController,
-          currency: ref.watch(multiCurrencyEnabledProvider) ? sale.currency : null,
+          currency: ref.watch(multiCurrencyEnabledProvider)
+              ? sale.currency
+              : null,
           enabled: enabled,
         ),
         SizedBox(height: spacing.sm),
@@ -114,7 +127,9 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
           children: [
             ActionChip(
               label: Text(l10n.posQuickAmountRemaining),
-              onPressed: enabled ? () => _quickAmount(sale.balanceOrZero) : null,
+              onPressed: enabled
+                  ? () => _quickAmount(sale.balanceOrZero)
+                  : null,
             ),
             for (final note in _noteChips(sale.balanceOrZero))
               ActionChip(
@@ -142,7 +157,10 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
               facilityId: sale.facility,
               enabled: enabled,
             );
-            final keypad = NumberPad(controller: _amountController, enabled: enabled);
+            final keypad = NumberPad(
+              controller: _amountController,
+              enabled: enabled,
+            );
             if (constraints.maxWidth >= 900) {
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,7 +173,11 @@ class _PaymentCapturePaneState extends ConsumerState<PaymentCapturePane> {
             }
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [methods, SizedBox(height: spacing.md), keypad],
+              children: [
+                methods,
+                SizedBox(height: spacing.md),
+                keypad,
+              ],
             );
           },
         ),

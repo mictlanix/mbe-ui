@@ -237,7 +237,6 @@ class PriceListFormController extends _$PriceListFormController {
   }
 }
 
-
 Map<String, String> _fieldErrorsFromServer(ValidationError error) {
   final result = <String, String>{};
   for (final fieldError in error.errors) {

@@ -34,9 +34,12 @@ void main() {
       expect(field.parseRate('16'), '0.16');
     });
 
-    test('parseRate returns null for unparseable input — parsePercentAsRate\'s existing contract', () {
-      expect(field.parseRate('abc'), isNull);
-    });
+    test(
+      'parseRate returns null for unparseable input — parsePercentAsRate\'s existing contract',
+      () {
+        expect(field.parseRate('abc'), isNull);
+      },
+    );
   });
 
   group('field.quantity / parseQuantity', () {

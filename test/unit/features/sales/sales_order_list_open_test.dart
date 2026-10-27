@@ -53,7 +53,8 @@ void main() {
       expect(
         query['date_from'],
         '2026-08-07T00:00:00.000',
-        reason: 'the wall-clock date the register means, with no offset — '
+        reason:
+            'the wall-clock date the register means, with no offset — '
             'the literal string mbe-api always receives regardless of host '
             'timezone, since WallClockDateTimeSerializer formats a value\'s '
             'own fields rather than converting through the host\'s clock '
@@ -85,7 +86,8 @@ void main() {
       expect(
         requests.single.queryParameters['date_from'],
         '2026-08-07T00:00:00.000',
-        reason: 'a local DateTime used to make built_value serialize-time '
+        reason:
+            'a local DateTime used to make built_value serialize-time '
             'throw an ArgumentError, silently dropping the request before '
             'dio ever sent it (research R5); it must now reach the wire '
             'with no offset instead (FR-003)',
@@ -133,7 +135,8 @@ void main() {
       expect(
         query['date_to'],
         '2026-08-10T23:59:59.999',
-        reason: 'mbe-api compares date_to against the sale\'s full timestamp, '
+        reason:
+            'mbe-api compares date_to against the sale\'s full timestamp, '
             'inclusively — encoding it as midnight made the default '
             '"today" filter answer total: 0 for a register that had traded',
       );
@@ -164,7 +167,8 @@ void main() {
         expect(
           query.containsKey('exclude_origin'),
           isFalse,
-          reason: 'the register\'s list narrows inclusively; exclusion is the '
+          reason:
+              'the register\'s list narrows inclusively; exclusion is the '
               'back-office list\'s mechanism, not this one\'s',
         );
       },

@@ -69,7 +69,8 @@ User _user({
         systemObject: SystemObject.salesOrders,
         rawValue: (canUpdateSalesOrders ? 4 : 0) | (canReadSalesOrders ? 2 : 0),
       ),
-    if (canCreatePos) const Privilege(systemObject: SystemObject.pos, rawValue: 1),
+    if (canCreatePos)
+      const Privilege(systemObject: SystemObject.pos, rawValue: 1),
   ],
 );
 
@@ -97,8 +98,9 @@ void main() {
     // reads the name mbe-api joins onto the row (#173). Stubbed to throw so
     // a regression that reintroduces the per-row lookup fails loudly rather
     // than quietly costing a request per row.
-    when(() => customers.get(customerId: any(named: 'customerId')))
-        .thenAnswer((_) async => throw const AppError.notFound());
+    when(
+      () => customers.get(customerId: any(named: 'customerId')),
+    ).thenAnswer((_) async => throw const AppError.notFound());
     // The register's open-sales set (`openSalesSelectorControllerProvider`)
     // is watched for `saleIsWorkable`'s resumable-ids fallback — stubbed
     // empty by default so it resolves without needing delivery/facility
@@ -113,9 +115,9 @@ void main() {
         ),
       ).thenAnswer((_) async => const OpenSalePage(items: [], total: 0));
     }
-    when(() => cashSessions.getCurrent()).thenAnswer(
-      (_) async => const CurrentSession(state: SessionState.open),
-    );
+    when(
+      () => cashSessions.getCurrent(),
+    ).thenAnswer((_) async => const CurrentSession(state: SessionState.open));
   });
 
   Future<void> pumpList(
@@ -159,16 +161,18 @@ void main() {
     ListQuery query = const ListQuery(),
     TextSizeLevel? textLevel,
   }) async {
-    when(() => cashSessions.getCurrent()).thenAnswer(
-      (_) async => const CurrentSession(state: SessionState.open),
-    );
+    when(
+      () => cashSessions.getCurrent(),
+    ).thenAnswer((_) async => const CurrentSession(state: SessionState.open));
     final (router, _) = await pumpPosRouted(
       tester,
       initialLocation: query.toUri('/sales/pos').toString(),
       textLevel: textLevel,
       overrides: [
         authProvider.overrideWith(
-          () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: _user())),
+          () => _FixedAuthNotifier(
+            AuthState.authenticated(token: 't', user: _user()),
+          ),
         ),
         salesOrderOverride(salesOrders),
         cashSessionRepositoryProvider.overrideWithValue(cashSessions),
@@ -221,7 +225,9 @@ void main() {
     testWidgets('a cancelled sale shows no Edit icon', (tester) async {
       stubListSales(
         salesOrders,
-        page: testSalesPage([testOpenSale(id: 4, status: SaleStatus.cancelled)]),
+        page: testSalesPage([
+          testOpenSale(id: 4, status: SaleStatus.cancelled),
+        ]),
       );
       await pumpList(tester);
 
@@ -258,7 +264,10 @@ void main() {
       await pumpList(tester);
 
       expect(find.text('Acme Corp'), findsOneWidget);
-      expect(find.byKey(const Key('pos_sale_status_chip_draft')), findsOneWidget);
+      expect(
+        find.byKey(const Key('pos_sale_status_chip_draft')),
+        findsOneWidget,
+      );
       // spec 028: this used to render "116,00 $" (Spain-style comma
       // decimal) because this screen's own `Localizations.localeOf(context)
       // .toString()` resolved to bare 'es' (Flutter drops the country
@@ -343,7 +352,9 @@ void main() {
       await pumpList(tester);
       await tester.pumpAndSettle();
 
-      final l10n = await AppLocalizations.delegate.load(const Locale('es', 'MX'));
+      final l10n = await AppLocalizations.delegate.load(
+        const Locale('es', 'MX'),
+      );
       expect(find.text(l10n.posSalesEmptyToday), findsOneWidget);
       // The date-range/status facets moved into the shared filter drawer
       // (spec 027 US4) — no inline chip renders any more; the badged button
@@ -362,11 +373,17 @@ void main() {
         stubListSales(salesOrders, page: testSalesPage(const []));
         await pumpList(
           tester,
-          query: const ListQuery(facets: {'date-from': ['2026-08-01']}),
+          query: const ListQuery(
+            facets: {
+              'date-from': ['2026-08-01'],
+            },
+          ),
         );
         await tester.pumpAndSettle();
 
-        final l10n = await AppLocalizations.delegate.load(const Locale('es', 'MX'));
+        final l10n = await AppLocalizations.delegate.load(
+          const Locale('es', 'MX'),
+        );
         // `emptyMessage` renders only in the plain-empty state
         // (list_state_views.dart) — a filtered result gets the shared
         // generic message every other catalog uses.
@@ -386,10 +403,19 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.byType(DateRangeFilterChip), findsNothing);
-        expect(find.byKey(const Key('pos_sales_status_filter_chip')), findsNothing);
+        expect(
+          find.byKey(const Key('pos_sales_status_filter_chip')),
+          findsNothing,
+        );
         expect(find.byKey(const Key('pos_sales_search_field')), findsOneWidget);
-        expect(find.byKey(const Key('pos_sales_new_sale_button')), findsOneWidget);
-        expect(find.byKey(const Key('pos_sales_filter_button')), findsOneWidget);
+        expect(
+          find.byKey(const Key('pos_sales_new_sale_button')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('pos_sales_filter_button')),
+          findsOneWidget,
+        );
       },
     );
 
@@ -397,7 +423,11 @@ void main() {
       stubListSales(salesOrders, page: testSalesPage(const []));
       await pumpList(
         tester,
-        query: const ListQuery(facets: {'status': ['draft']}),
+        query: const ListQuery(
+          facets: {
+            'status': ['draft'],
+          },
+        ),
       );
       await tester.pumpAndSettle();
 
@@ -417,7 +447,9 @@ void main() {
         await tester.tap(find.byKey(const Key('pos_sales_filter_button')));
         await tester.pumpAndSettle();
 
-        await tester.tap(find.byKey(const Key('pos_sales_filter_status_draft')));
+        await tester.tap(
+          find.byKey(const Key('pos_sales_filter_status_draft')),
+        );
         await tester.pumpAndSettle();
 
         verify(
@@ -454,7 +486,9 @@ void main() {
 
         await tester.tap(find.byKey(const Key('pos_sales_filter_button')));
         await tester.pumpAndSettle();
-        await tester.tap(find.byKey(const Key('filter_sheet_clear_all_button')));
+        await tester.tap(
+          find.byKey(const Key('filter_sheet_clear_all_button')),
+        );
         await tester.pumpAndSettle();
 
         final badge = tester.widget<Badge>(find.byType(Badge));
@@ -529,87 +563,102 @@ void main() {
     });
   });
 
-  group('PosSalesListScreen — "Nueva venta" (contracts/pos-sales-list.md §7)', () {
-    testWidgets('enabled with an open cash session', (tester) async {
-      stubListSales(salesOrders, page: testSalesPage(const []));
-      await pumpList(tester, sessionOpen: true);
-      await tester.pumpAndSettle();
+  group(
+    'PosSalesListScreen — "Nueva venta" (contracts/pos-sales-list.md §7)',
+    () {
+      testWidgets('enabled with an open cash session', (tester) async {
+        stubListSales(salesOrders, page: testSalesPage(const []));
+        await pumpList(tester, sessionOpen: true);
+        await tester.pumpAndSettle();
 
-      final button = tester.widget<FilledButton>(
-        find.byKey(const Key('pos_sales_new_sale_button')),
+        final button = tester.widget<FilledButton>(
+          find.byKey(const Key('pos_sales_new_sale_button')),
+        );
+        expect(button.onPressed, isNotNull);
+      });
+
+      testWidgets('disabled with no cash session', (tester) async {
+        stubListSales(salesOrders, page: testSalesPage(const []));
+        await pumpList(tester, sessionOpen: false);
+        await tester.pumpAndSettle();
+
+        final button = tester.widget<FilledButton>(
+          find.byKey(const Key('pos_sales_new_sale_button')),
+        );
+        expect(button.onPressed, isNull);
+      });
+
+      testWidgets('absent without the pos create privilege', (tester) async {
+        stubListSales(salesOrders, page: testSalesPage(const []));
+        await pumpList(tester, user: _user(canCreatePos: false));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.byKey(const Key('pos_sales_new_sale_button')),
+          findsNothing,
+        );
+      });
+
+      testWidgets(
+        'enabled with a stale session (the tap redirects, spec 047)',
+        (tester) async {
+          stubListSales(salesOrders, page: testSalesPage(const []));
+          when(() => cashSessions.getCurrent()).thenAnswer(
+            (_) async => CurrentSession(
+              state: SessionState.stale,
+              session: _staleSession(),
+            ),
+          );
+          await pumpList(tester);
+          await tester.pumpAndSettle();
+
+          final button = tester.widget<FilledButton>(
+            find.byKey(const Key('pos_sales_new_sale_button')),
+          );
+          expect(button.onPressed, isNotNull);
+        },
       );
-      expect(button.onPressed, isNotNull);
-    });
 
-    testWidgets('disabled with no cash session', (tester) async {
-      stubListSales(salesOrders, page: testSalesPage(const []));
-      await pumpList(tester, sessionOpen: false);
-      await tester.pumpAndSettle();
+      testWidgets('with a stale session, tapping lands on that session\'s close '
+          'screen with the explanation (spec 047 C1)', (tester) async {
+        stubListSales(salesOrders, page: testSalesPage(const []));
+        final router = await pumpListRouted(tester);
+        when(() => cashSessions.getCurrent()).thenAnswer(
+          (_) async => CurrentSession(
+            state: SessionState.stale,
+            session: _staleSession(),
+          ),
+        );
 
-      final button = tester.widget<FilledButton>(
-        find.byKey(const Key('pos_sales_new_sale_button')),
-      );
-      expect(button.onPressed, isNull);
-    });
+        await tester.tap(find.byKey(const Key('pos_sales_new_sale_button')));
+        await tester.pumpAndSettle();
 
-    testWidgets('absent without the pos create privilege', (tester) async {
-      stubListSales(salesOrders, page: testSalesPage(const []));
-      await pumpList(tester, user: _user(canCreatePos: false));
-      await tester.pumpAndSettle();
+        expect(router.state.uri.path, '/sales/cash-sessions/77');
+        expect(find.text('cash-session-77'), findsOneWidget);
+        // Pushed, so Back leads out of the close screen (found live: `go`
+        // left a top-level screen with no way back).
+        expect(router.canPop(), isTrue);
+        expect(
+          find.text(
+            'Tu sesión de caja está vencida. Ciérrala para continuar vendiendo.',
+          ),
+          findsOneWidget,
+        );
+      });
 
-      expect(find.byKey(const Key('pos_sales_new_sale_button')), findsNothing);
-    });
+      testWidgets('with an open session, tapping opens /sales/pos/new', (
+        tester,
+      ) async {
+        stubListSales(salesOrders, page: testSalesPage(const []));
+        final router = await pumpListRouted(tester);
 
-    testWidgets('enabled with a stale session (the tap redirects, spec 047)', (
-      tester,
-    ) async {
-      stubListSales(salesOrders, page: testSalesPage(const []));
-      when(() => cashSessions.getCurrent()).thenAnswer(
-        (_) async => CurrentSession(state: SessionState.stale, session: _staleSession()),
-      );
-      await pumpList(tester);
-      await tester.pumpAndSettle();
+        await tester.tap(find.byKey(const Key('pos_sales_new_sale_button')));
+        await tester.pumpAndSettle();
 
-      final button = tester.widget<FilledButton>(
-        find.byKey(const Key('pos_sales_new_sale_button')),
-      );
-      expect(button.onPressed, isNotNull);
-    });
-
-    testWidgets('with a stale session, tapping lands on that session\'s close '
-        'screen with the explanation (spec 047 C1)', (tester) async {
-      stubListSales(salesOrders, page: testSalesPage(const []));
-      final router = await pumpListRouted(tester);
-      when(() => cashSessions.getCurrent()).thenAnswer(
-        (_) async => CurrentSession(state: SessionState.stale, session: _staleSession()),
-      );
-
-      await tester.tap(find.byKey(const Key('pos_sales_new_sale_button')));
-      await tester.pumpAndSettle();
-
-      expect(router.state.uri.path, '/sales/cash-sessions/77');
-      expect(find.text('cash-session-77'), findsOneWidget);
-      // Pushed, so Back leads out of the close screen (found live: `go`
-      // left a top-level screen with no way back).
-      expect(router.canPop(), isTrue);
-      expect(
-        find.text(
-          'Tu sesión de caja está vencida. Ciérrala para continuar vendiendo.',
-        ),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets('with an open session, tapping opens /sales/pos/new', (tester) async {
-      stubListSales(salesOrders, page: testSalesPage(const []));
-      final router = await pumpListRouted(tester);
-
-      await tester.tap(find.byKey(const Key('pos_sales_new_sale_button')));
-      await tester.pumpAndSettle();
-
-      expect(router.state.uri.path, '/sales/pos/new');
-    });
-  });
+        expect(router.state.uri.path, '/sales/pos/new');
+      });
+    },
+  );
 
   group('PosSalesListScreen — "Ver ticket" row action (spec 044 US4)', () {
     late FakeDocumentSource source;
@@ -655,11 +704,7 @@ void main() {
         salesOrders,
         page: testSalesPage([testOpenSale(id: 1, status: SaleStatus.draft)]),
       );
-      await pumpList(
-        tester,
-        user: _user(),
-        overrides: documentOverrides(),
-      );
+      await pumpList(tester, user: _user(), overrides: documentOverrides());
 
       expect(ticketIcon, findsNothing);
     });

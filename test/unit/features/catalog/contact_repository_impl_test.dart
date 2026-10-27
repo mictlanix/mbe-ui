@@ -32,7 +32,10 @@ void main() {
       final repository = _repositoryWith(
         (options) async => ResponseBody.fromString(
           jsonEncode({
-            'items': [_contactJson(), _contactJson(contactId: 22, name: 'Beto')],
+            'items': [
+              _contactJson(),
+              _contactJson(contactId: 22, name: 'Beto'),
+            ],
             'total': 2,
           }),
           200,
@@ -107,30 +110,32 @@ void main() {
   });
 
   group('ContactRepositoryImpl.create', () {
-    test('sends the captured fields and maps the created contact back',
-        () async {
-      RequestOptions? captured;
-      final repository = _repositoryWith((options) async {
-        captured = options;
-        return ResponseBody.fromString(
-          jsonEncode(_contactJson()),
-          201,
-          headers: _jsonHeaders,
+    test(
+      'sends the captured fields and maps the created contact back',
+      () async {
+        RequestOptions? captured;
+        final repository = _repositoryWith((options) async {
+          captured = options;
+          return ResponseBody.fromString(
+            jsonEncode(_contactJson()),
+            201,
+            headers: _jsonHeaders,
+          );
+        });
+
+        final created = await repository.create(
+          name: 'Ana López',
+          jobTitle: 'Almacén',
+          mobile: '5544332211',
         );
-      });
 
-      final created = await repository.create(
-        name: 'Ana López',
-        jobTitle: 'Almacén',
-        mobile: '5544332211',
-      );
-
-      final sentBody = _decodeBody(captured!.data);
-      expect(sentBody['name'], 'Ana López');
-      expect(sentBody['job_title'], 'Almacén');
-      expect(sentBody['mobile'], '5544332211');
-      expect(created.contactId, 21);
-    });
+        final sentBody = _decodeBody(captured!.data);
+        expect(sentBody['name'], 'Ana López');
+        expect(sentBody['job_title'], 'Almacén');
+        expect(sentBody['mobile'], '5544332211');
+        expect(created.contactId, 21);
+      },
+    );
 
     test('a rejected create maps to AppError.validation', () async {
       final repository = _repositoryWith(

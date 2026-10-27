@@ -23,7 +23,10 @@ void main() {
       expect(settings.photosBaseUrl, settings.apiBaseUrl);
       expect(settings.posDefaultCustomerId, 1);
       expect(settings.defaultLocale, const Locale('es', 'MX'));
-      expect(settings.brand, const BrandConfig(displayName: 'Mictlanix Business Essentials'));
+      expect(
+        settings.brand,
+        const BrandConfig(displayName: 'Mictlanix Business Essentials'),
+      );
       // spec 028 FR-011: the date default is ISO, not the locale-derived
       // rendering the app used before this feature.
       expect(settings.formatting, const FormattingSettings());
@@ -190,19 +193,22 @@ void main() {
       expect(nonEmptyOrDefault('d/M/yyyy', 'yyyy-MM-dd'), 'd/M/yyyy');
     });
 
-    test('FormattingSettings.fromEnvironment reproduces the ISO default with no --dart-define', () {
-      // Mirrors the AppSettings.fromEnvironment() test above: fromEnvironment()
-      // reads compile-time values, so this only proves the no-.env path.
-      final settings = FormattingSettings.fromEnvironment();
+    test(
+      'FormattingSettings.fromEnvironment reproduces the ISO default with no --dart-define',
+      () {
+        // Mirrors the AppSettings.fromEnvironment() test above: fromEnvironment()
+        // reads compile-time values, so this only proves the no-.env path.
+        final settings = FormattingSettings.fromEnvironment();
 
-      expect(settings.datePattern, 'yyyy-MM-dd');
-      expect(settings.dateTimePattern, 'yyyy-MM-dd HH:mm');
-      expect(settings.currencySymbol, r'$');
-      expect(settings.currencyCode, 'MXN');
-      expect(settings.currencyDecimalDigits, 2);
-      expect(settings.percentDecimalDigits, 2);
-      expect(settings.quantityDecimalDigits, 0);
-    });
+        expect(settings.datePattern, 'yyyy-MM-dd');
+        expect(settings.dateTimePattern, 'yyyy-MM-dd HH:mm');
+        expect(settings.currencySymbol, r'$');
+        expect(settings.currencyCode, 'MXN');
+        expect(settings.currencyDecimalDigits, 2);
+        expect(settings.percentDecimalDigits, 2);
+        expect(settings.quantityDecimalDigits, 0);
+      },
+    );
   });
 
   // spec 036 T060: AppSettings.inputDebounce/quantityCommitDebounce parse
@@ -214,7 +220,8 @@ void main() {
   group('AppSettings debounce-setting fallback rules (spec 036 FR-030)', () {
     Duration parseDebounceMs(String value, int fallbackMs) {
       final parsed = int.tryParse(value);
-      if (parsed == null || parsed < 0) return Duration(milliseconds: fallbackMs);
+      if (parsed == null || parsed < 0)
+        return Duration(milliseconds: fallbackMs);
       return Duration(milliseconds: parsed);
     }
 
@@ -243,7 +250,10 @@ void main() {
         final settings = AppSettings.fromEnvironment();
 
         expect(settings.inputDebounce, const Duration(milliseconds: 300));
-        expect(settings.quantityCommitDebounce, const Duration(milliseconds: 400));
+        expect(
+          settings.quantityCommitDebounce,
+          const Duration(milliseconds: 400),
+        );
       },
     );
   });

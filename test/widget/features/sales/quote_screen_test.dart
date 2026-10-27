@@ -52,10 +52,9 @@ const _updaterUser = User(
   ],
 );
 
-Override _authOverride([User user = _updaterUser]) =>
-    authProvider.overrideWith(
-      () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: user)),
-    );
+Override _authOverride([User user = _updaterUser]) => authProvider.overrideWith(
+  () => _FixedAuthNotifier(AuthState.authenticated(token: 't', user: user)),
+);
 
 const _realCustomer = CustomerListItem(
   customerId: 7,
@@ -130,7 +129,8 @@ void main() {
       () => customers.get(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => _customerRecord());
     when(
-      () => payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
+      () =>
+          payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => '0');
   });
 
@@ -217,7 +217,10 @@ void main() {
       );
       final opened = testQuote(customer: 7);
       when(
-        () => salesQuotes.open(customer: 7, salesperson: any(named: 'salesperson')),
+        () => salesQuotes.open(
+          customer: 7,
+          salesperson: any(named: 'salesperson'),
+        ),
       ).thenAnswer((_) async => opened);
       when(
         () => salesQuotes.getById(quoteId: opened.id),
@@ -236,7 +239,10 @@ void main() {
       // followed by a correcting update, and never an origin or a
       // fulfilment intent, neither of which exists on a quote (FR-008).
       verify(
-        () => salesQuotes.open(customer: 7, salesperson: any(named: 'salesperson')),
+        () => salesQuotes.open(
+          customer: 7,
+          salesperson: any(named: 'salesperson'),
+        ),
       ).called(1);
       verifyNever(
         () => salesQuotes.updateHeader(
@@ -257,7 +263,10 @@ void main() {
         (_) async => const CustomerPage(items: [_realCustomer], total: 1),
       );
       when(
-        () => salesQuotes.open(customer: 7, salesperson: any(named: 'salesperson')),
+        () => salesQuotes.open(
+          customer: 7,
+          salesperson: any(named: 'salesperson'),
+        ),
       ).thenAnswer((_) async => opened);
       when(
         () => salesQuotes.getById(quoteId: opened.id),
@@ -391,7 +400,9 @@ void main() {
           quoteId: 30,
           comment: 'Precio válido 30 días',
         ),
-      ).thenAnswer((_) async => draft.copyWith(comment: 'Precio válido 30 días'));
+      ).thenAnswer(
+        (_) async => draft.copyWith(comment: 'Precio válido 30 días'),
+      );
       await openQuote(tester, draft);
       await expandDetails(tester);
 
@@ -481,10 +492,15 @@ void main() {
           quoteId: 30,
           paymentTerms: PaymentTerms.netD,
         ),
-      ).thenAnswer((_) async => draft.copyWith(paymentTerms: PaymentTerms.netD));
+      ).thenAnswer(
+        (_) async => draft.copyWith(paymentTerms: PaymentTerms.netD),
+      );
       await openQuote(tester, draft);
 
-      expect(find.byKey(const Key('pos_payment_terms_dropdown')), findsOneWidget);
+      expect(
+        find.byKey(const Key('pos_payment_terms_dropdown')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('the status field is labelled Estado, not Referencia — its '
@@ -518,10 +534,7 @@ void main() {
 
       // Only the comment sits behind the disclosure now — currency is
       // never anything but a fact here, so it moved back into the strip.
-      expect(
-        find.byKey(const Key('sales_quote_comment_field')),
-        findsNothing,
-      );
+      expect(find.byKey(const Key('sales_quote_comment_field')), findsNothing);
 
       await expandDetails(tester);
 
@@ -592,13 +605,16 @@ void main() {
         () => salesQuotes.getById(quoteId: 30),
       ).thenAnswer((_) async => confirmedQuote());
       await pumpQuoteScreen(tester, quoteId: 30);
-      expect(find.byKey(const Key('sales_quote_convert_button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('sales_quote_convert_button')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('absent for a draft quote', (tester) async {
-      when(
-        () => salesQuotes.getById(quoteId: 30),
-      ).thenAnswer((_) async => testQuote(customer: 7, id: 30, lines: [testQuoteLine()]));
+      when(() => salesQuotes.getById(quoteId: 30)).thenAnswer(
+        (_) async => testQuote(customer: 7, id: 30, lines: [testQuoteLine()]),
+      );
       await pumpQuoteScreen(tester, quoteId: 30);
       expect(find.byKey(const Key('sales_quote_convert_button')), findsNothing);
     });
@@ -645,7 +661,10 @@ void main() {
     for (final refusal in [
       ('draft', 'Only a confirmed quote can be converted; confirm it first'),
       ('cancelled', 'A cancelled quote cannot be converted'),
-      ('expired', 'Quote has expired and cannot be converted; duplicate it to re-quote'),
+      (
+        'expired',
+        'Quote has expired and cannot be converted; duplicate it to re-quote',
+      ),
       ('no point of sale', 'No point of sale is configured for your user'),
     ]) {
       testWidgets('shows a distinct message for the "${refusal.$1}" refusal '
@@ -653,9 +672,9 @@ void main() {
         when(
           () => salesQuotes.getById(quoteId: 30),
         ).thenAnswer((_) async => confirmedQuote());
-        when(() => salesQuotes.convert(quoteId: 30)).thenThrow(
-          AppError.server(statusCode: 409, message: refusal.$2),
-        );
+        when(
+          () => salesQuotes.convert(quoteId: 30),
+        ).thenThrow(AppError.server(statusCode: 409, message: refusal.$2));
 
         await pumpQuoteScreen(tester, quoteId: 30);
         await tester.tap(find.byKey(const Key('sales_quote_convert_button')));
@@ -688,7 +707,10 @@ void main() {
         ],
       );
       expect(find.byKey(const Key('sales_quote_convert_button')), findsNothing);
-      expect(find.byKey(const Key('sales_quote_duplicate_button')), findsOneWidget);
+      expect(
+        find.byKey(const Key('sales_quote_duplicate_button')),
+        findsOneWidget,
+      );
 
       await tester.tap(find.byKey(const Key('sales_quote_duplicate_button')));
       await tester.pumpAndSettle();
@@ -708,7 +730,10 @@ void main() {
         (_) async => const CustomerPage(items: [_realCustomer], total: 1),
       );
       when(
-        () => salesQuotes.open(customer: 7, salesperson: any(named: 'salesperson')),
+        () => salesQuotes.open(
+          customer: 7,
+          salesperson: any(named: 'salesperson'),
+        ),
       ).thenAnswer((_) async => opened);
       when(
         () => salesQuotes.getById(quoteId: opened.id),
@@ -752,7 +777,8 @@ void main() {
       expect(
         continueButton(),
         findsNothing,
-        reason: 'the primary action disappears once confirmed, per '
+        reason:
+            'the primary action disappears once confirmed, per '
             'showAction rather than a disabled onPressed',
       );
     });
@@ -762,8 +788,7 @@ void main() {
     testWidgets('a draft resumes editable, with its customer and lines '
         'intact', (tester) async {
       when(() => salesQuotes.getById(quoteId: 30)).thenAnswer(
-        (_) async =>
-            testQuote(customer: 7, id: 30, lines: [testQuoteLine()]),
+        (_) async => testQuote(customer: 7, id: 30, lines: [testQuoteLine()]),
       );
 
       await pumpQuoteScreen(tester, quoteId: 30);
@@ -811,10 +836,7 @@ void main() {
 
       expect(productSearchEnabled(tester), isFalse);
       expect(continueButton(), findsNothing);
-      expect(
-        find.byKey(const Key('sales_quote_convert_button')),
-        findsNothing,
-      );
+      expect(find.byKey(const Key('sales_quote_convert_button')), findsNothing);
     });
   });
 
@@ -824,40 +846,39 @@ void main() {
       SaleStatus.completed,
       SaleStatus.cancelled,
     ]) {
-      testWidgets(
-        'offered and working on a ${status.name} quote',
-        (tester) async {
-          when(() => salesQuotes.getById(quoteId: 30)).thenAnswer(
-            (_) async => testQuote(customer: 7, id: 30, status: status),
-          );
-          when(
-            () => salesQuotes.duplicate(quoteId: 30),
-          ).thenAnswer((_) async => testQuote(customer: 7, id: 31));
+      testWidgets('offered and working on a ${status.name} quote', (
+        tester,
+      ) async {
+        when(() => salesQuotes.getById(quoteId: 30)).thenAnswer(
+          (_) async => testQuote(customer: 7, id: 30, status: status),
+        );
+        when(
+          () => salesQuotes.duplicate(quoteId: 30),
+        ).thenAnswer((_) async => testQuote(customer: 7, id: 31));
 
-          final (router, _) = await pumpQuotesRouted(
-            tester,
-            initialLocation: '/sales/quotes/30',
-            overrides: [
-              multiCurrencyEnabledProvider.overrideWithValue(true),
-              _authOverride(),
-              salesOrderOverride(salesOrders),
-              salesQuoteOverride(salesQuotes),
-              customerRepositoryProvider.overrideWithValue(customers),
-              customerPaymentOverride(payments),
-            ],
-          );
+        final (router, _) = await pumpQuotesRouted(
+          tester,
+          initialLocation: '/sales/quotes/30',
+          overrides: [
+            multiCurrencyEnabledProvider.overrideWithValue(true),
+            _authOverride(),
+            salesOrderOverride(salesOrders),
+            salesQuoteOverride(salesQuotes),
+            customerRepositoryProvider.overrideWithValue(customers),
+            customerPaymentOverride(payments),
+          ],
+        );
 
-          expect(
-            find.byKey(const Key('sales_quote_duplicate_button')),
-            findsOneWidget,
-          );
-          await tester.tap(find.byKey(const Key('sales_quote_duplicate_button')));
-          await tester.pumpAndSettle();
+        expect(
+          find.byKey(const Key('sales_quote_duplicate_button')),
+          findsOneWidget,
+        );
+        await tester.tap(find.byKey(const Key('sales_quote_duplicate_button')));
+        await tester.pumpAndSettle();
 
-          verify(() => salesQuotes.duplicate(quoteId: 30)).called(1);
-          expect(router.state.uri.path, '/sales/quotes/31');
-        },
-      );
+        verify(() => salesQuotes.duplicate(quoteId: 30)).called(1);
+        expect(router.state.uri.path, '/sales/quotes/31');
+      });
     }
 
     testWidgets(

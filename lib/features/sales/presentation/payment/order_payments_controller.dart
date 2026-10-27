@@ -13,5 +13,7 @@ part 'order_payments_controller.g.dart';
 /// each application and reversal.
 @riverpod
 Future<List<SalePayment>> orderPaymentsController(Ref ref, int saleId) {
-  return ref.watch(customerPaymentRepositoryProvider).listForOrder(saleId: saleId);
+  return ref
+      .watch(customerPaymentRepositoryProvider)
+      .listForOrder(saleId: saleId);
 }

@@ -36,8 +36,7 @@ final employeeDisplayNameProvider = FutureProvider.family<String?, int>((
 });
 
 class EmployeeRepositoryImpl implements EmployeeRepository {
-  EmployeeRepositoryImpl(Dio dio)
-    : _api = EmployeesApi(dio, appSerializers);
+  EmployeeRepositoryImpl(Dio dio) : _api = EmployeesApi(dio, appSerializers);
 
   final EmployeesApi _api;
 

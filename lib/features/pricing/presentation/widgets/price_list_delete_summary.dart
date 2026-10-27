@@ -196,9 +196,7 @@ class _CategoryRow extends StatelessWidget {
                 ),
                 Text(
                   '($noteText)',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: noteColor,
-                  ),
+                  style: theme.textTheme.labelSmall?.copyWith(color: noteColor),
                 ),
                 if (onViewCustomers != null)
                   InkWell(

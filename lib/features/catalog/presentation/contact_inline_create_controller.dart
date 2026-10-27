@@ -43,13 +43,18 @@ class ContactInlineCreateController extends _$ContactInlineCreateController {
   void nameChanged(String v) => state = _clearErrors(state.copyWith(name: v));
   void jobTitleChanged(String v) => state = state.copyWith(jobTitle: v);
   void phoneChanged(String v) => state = _clearErrors(state.copyWith(phone: v));
-  void mobileChanged(String v) => state = _clearErrors(state.copyWith(mobile: v));
+  void mobileChanged(String v) =>
+      state = _clearErrors(state.copyWith(mobile: v));
   void emailChanged(String v) => state = state.copyWith(email: v);
 
   Future<void> submit() async {
     final fieldErrors = _validate();
     if (fieldErrors.isNotEmpty) {
-      state = state.copyWith(fieldErrors: fieldErrors, error: null, errorDetail: null);
+      state = state.copyWith(
+        fieldErrors: fieldErrors,
+        error: null,
+        errorDetail: null,
+      );
       return;
     }
 
@@ -67,7 +72,10 @@ class ContactInlineCreateController extends _$ContactInlineCreateController {
       state = state.copyWith(submitting: false, created: created);
     } on AppError catch (e) {
       if (e is ValidationError) {
-        state = state.copyWith(submitting: false, fieldErrors: _fieldErrorsFromServer(e));
+        state = state.copyWith(
+          submitting: false,
+          fieldErrors: _fieldErrorsFromServer(e),
+        );
       } else {
         state = state.copyWith(
           submitting: false,

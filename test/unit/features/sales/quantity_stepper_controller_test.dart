@@ -27,7 +27,9 @@ void main() {
       }
       expect(controller.displayed, '6');
 
-      await Future<void>.delayed(kQuantityCommitDebounce + const Duration(milliseconds: 100));
+      await Future<void>.delayed(
+        kQuantityCommitDebounce + const Duration(milliseconds: 100),
+      );
 
       expect(commits, ['6']);
     });
@@ -56,11 +58,15 @@ void main() {
 
         // Past the shared default (400ms) but short of the overridden one:
         // nothing should have committed yet.
-        await Future<void>.delayed(kQuantityCommitDebounce + const Duration(milliseconds: 100));
+        await Future<void>.delayed(
+          kQuantityCommitDebounce + const Duration(milliseconds: 100),
+        );
         expect(commits, isEmpty);
 
         await Future<void>.delayed(
-          overriddenDebounce - kQuantityCommitDebounce + const Duration(milliseconds: 100),
+          overriddenDebounce -
+              kQuantityCommitDebounce +
+              const Duration(milliseconds: 100),
         );
         expect(commits, ['2']);
       },
@@ -109,14 +115,21 @@ void main() {
       addTearDown(controller.dispose);
 
       controller.step(1); // pending '2'
-      final firstFlush = controller.flush(); // starts the in-flight commit of '2'
+      final firstFlush = controller
+          .flush(); // starts the in-flight commit of '2'
 
       // A second step lands mid-flight.
       controller.step(1); // pending '3', scheduled behind the in-flight one
-      await controller.flush(); // in-flight already running; this must not overlap it
+      await controller
+          .flush(); // in-flight already running; this must not overlap it
 
-      expect(calls, 1, reason: 'the second flush must not start a second commit '
-          'while the first is still in flight');
+      expect(
+        calls,
+        1,
+        reason:
+            'the second flush must not start a second commit '
+            'while the first is still in flight',
+      );
 
       inFlight.complete(true);
       await firstFlush;
@@ -155,7 +168,9 @@ void main() {
       addTearDown(controller.dispose);
 
       controller.step(1); // pending '2'
-      controller.sync(value: '9'); // a discount edit refetched the sale mid-burst
+      controller.sync(
+        value: '9',
+      ); // a discount edit refetched the sale mid-burst
 
       expect(controller.displayed, '2');
       expect(controller.accepted, '9');
@@ -172,7 +187,11 @@ void main() {
       controller.sync(value: '9');
 
       expect(controller.displayed, '9');
-      expect(controller.resetTick, ticksBefore, reason: 'an ordinary update never animates');
+      expect(
+        controller.resetTick,
+        ticksBefore,
+        reason: 'an ordinary update never animates',
+      );
     });
   });
 

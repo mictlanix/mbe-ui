@@ -57,8 +57,7 @@ class PriceListDeleteDialog extends ConsumerStatefulWidget {
       _PriceListDeleteDialogState();
 }
 
-class _PriceListDeleteDialogState
-    extends ConsumerState<PriceListDeleteDialog> {
+class _PriceListDeleteDialogState extends ConsumerState<PriceListDeleteDialog> {
   // Per-widget input state with the dialog's own lifetime (constitution
   // §II) — not a provider, since nothing outside this dialog reads it.
   bool _acknowledged = false;
@@ -201,9 +200,7 @@ class _PriceListDeleteDialogState
                     value: _acknowledged,
                     onChanged: submitting
                         ? null
-                        : (_) => setState(
-                            () => _acknowledged = !_acknowledged,
-                          ),
+                        : (_) => setState(() => _acknowledged = !_acknowledged),
                     controlAffinity: ListTileControlAffinity.leading,
                     contentPadding: EdgeInsets.zero,
                     title: Text(l10n.priceListDeleteAcknowledge),
@@ -466,10 +463,7 @@ class _ReplacementPicker extends ConsumerWidget {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 4, left: 4),
-          child: Text(
-            helperText,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
+          child: Text(helperText, style: Theme.of(context).textTheme.bodySmall),
         ),
       ],
     );

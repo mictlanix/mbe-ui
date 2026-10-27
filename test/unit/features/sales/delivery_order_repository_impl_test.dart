@@ -31,7 +31,10 @@ Map<String, Object?> _orderJson({
   'lines': lines ?? [],
 };
 
-Map<String, Object?> _lineJson({int salesOrderDetail = 1, String quantity = '4'}) => {
+Map<String, Object?> _lineJson({
+  int salesOrderDetail = 1,
+  String quantity = '4',
+}) => {
   'delivery_order_detail_id': 900,
   'sales_order_detail': salesOrderDetail,
   'product': 11,
@@ -64,7 +67,9 @@ void main() {
       await repository.create(
         salesOrder: 42,
         fulfillmentType: FulfillmentType.delivery,
-        lines: const [DestinationLineRequest(salesOrderDetail: 1, quantity: '4')],
+        lines: const [
+          DestinationLineRequest(salesOrderDetail: 1, quantity: '4'),
+        ],
       );
 
       final post = _decodeBody(requests.first.data);
@@ -121,11 +126,9 @@ void main() {
         comment: 'Leave at the gate',
       );
 
-      expect(
-        requests.map((r) => r.method),
-        ['POST'],
-        reason: 'no follow-up PUT — the create carries the header now',
-      );
+      expect(requests.map((r) => r.method), [
+        'POST',
+      ], reason: 'no follow-up PUT — the create carries the header now');
       final post = _decodeBody(requests.single.data);
       expect(post['ship_to'], 77);
       expect(post['contact'], 21);
@@ -168,7 +171,8 @@ void main() {
       expect(
         post['date'],
         contains('2026-08-17'),
-        reason: 'the calendar day the cashier picked, not shifted by the '
+        reason:
+            'the calendar day the cashier picked, not shifted by the '
             'local UTC offset',
       );
     });
@@ -190,74 +194,101 @@ void main() {
           fulfillmentType: FulfillmentType.delivery,
           shipTo: 999,
         ),
-        throwsA(isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409)),
+        throwsA(
+          isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409),
+        ),
       );
 
-      expect(
-        requests.map((r) => r.method),
-        ['POST'],
-        reason: 'the destination was never partially created (FR-037)',
-      );
+      expect(requests.map((r) => r.method), [
+        'POST',
+      ], reason: 'the destination was never partially created (FR-037)');
     });
   });
 
-  group('addLine — assigning a line to an existing destination (mbe-api#163)', () {
-    test('posts the line and returns the updated destination', () async {
-      final requests = <RequestOptions>[];
-      final repository = _repositoryWith((options) async {
-        requests.add(options);
-        return ResponseBody.fromString(
-          jsonEncode(_orderJson(lines: [_lineJson(salesOrderDetail: 5, quantity: '6')])),
-          201,
-          headers: _jsonHeaders,
+  group(
+    'addLine — assigning a line to an existing destination (mbe-api#163)',
+    () {
+      test('posts the line and returns the updated destination', () async {
+        final requests = <RequestOptions>[];
+        final repository = _repositoryWith((options) async {
+          requests.add(options);
+          return ResponseBody.fromString(
+            jsonEncode(
+              _orderJson(
+                lines: [_lineJson(salesOrderDetail: 5, quantity: '6')],
+              ),
+            ),
+            201,
+            headers: _jsonHeaders,
+          );
+        });
+
+        final destination = await repository.addLine(
+          destinationId: 500,
+          salesOrderDetail: 5,
+          quantity: '6',
+        );
+
+        final request = requests.single;
+        expect(request.method, 'POST');
+        expect(request.path, endsWith('/delivery-orders/500/lines'));
+        expect(_decodeBody(request.data), {
+          'sales_order_detail': 5,
+          'quantity': '6',
+        });
+        expect(destination.lines.single.quantity, '6');
+      });
+
+      test('a sale line already on this destination is refused with 409, not '
+          'folded into the existing row', () async {
+        final repository = _repositoryWith(
+          (options) async => ResponseBody.fromString(
+            jsonEncode({
+              'detail': 'Line 5 is already on this delivery order as line 900',
+            }),
+            409,
+            headers: _jsonHeaders,
+          ),
+        );
+
+        await expectLater(
+          () => repository.addLine(
+            destinationId: 500,
+            salesOrderDetail: 5,
+            quantity: '2',
+          ),
+          throwsA(
+            isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409),
+          ),
         );
       });
 
-      final destination = await repository.addLine(
-        destinationId: 500,
-        salesOrderDetail: 5,
-        quantity: '6',
-      );
-
-      final request = requests.single;
-      expect(request.method, 'POST');
-      expect(request.path, endsWith('/delivery-orders/500/lines'));
-      expect(_decodeBody(request.data), {'sales_order_detail': 5, 'quantity': '6'});
-      expect(destination.lines.single.quantity, '6');
-    });
-
-    test('a sale line already on this destination is refused with 409, not '
-        'folded into the existing row', () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({'detail': 'Line 5 is already on this delivery order as line 900'}),
-          409,
-          headers: _jsonHeaders,
-        ),
-      );
-
-      await expectLater(
-        () => repository.addLine(destinationId: 500, salesOrderDetail: 5, quantity: '2'),
-        throwsA(isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409)),
-      );
-    });
-
-    test('an over-claim or an unknown/foreign line is refused with 422',
+      test(
+        'an over-claim or an unknown/foreign line is refused with 422',
         () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode({'detail': 'The sales order line has 2 left to deliver; 6 was requested'}),
-          422,
-          headers: _jsonHeaders,
-        ),
-      );
+          final repository = _repositoryWith(
+            (options) async => ResponseBody.fromString(
+              jsonEncode({
+                'detail':
+                    'The sales order line has 2 left to deliver; 6 was requested',
+              }),
+              422,
+              headers: _jsonHeaders,
+            ),
+          );
 
-      await expectLater(
-        () => repository.addLine(destinationId: 500, salesOrderDetail: 5, quantity: '6'),
-        throwsA(isA<ValidationError>()),
+          await expectLater(
+            () => repository.addLine(
+              destinationId: 500,
+              salesOrderDetail: 5,
+              quantity: '6',
+            ),
+            throwsA(isA<ValidationError>()),
+          );
+        },
       );
-    });
-  });
+    },
+  );
 
   group('updateHeader — editing an already-created destination (spec 030)', () {
     test('a successful update returns the changed destination', () async {
@@ -281,10 +312,11 @@ void main() {
       final request = requests.single;
       expect(request.method, 'PUT');
       expect(request.path, endsWith('/delivery-orders/500'));
-      expect(
-        _decodeBody(request.data),
-        {'ship_to': 22, 'contact': 8, 'comment': 'Entregar por la tarde'},
-      );
+      expect(_decodeBody(request.data), {
+        'ship_to': 22,
+        'contact': 8,
+        'comment': 'Entregar por la tarde',
+      });
       expect(destination.shipTo, 22);
     });
 
@@ -292,7 +324,9 @@ void main() {
         '409', () async {
       final repository = _repositoryWith(
         (options) async => ResponseBody.fromString(
-          jsonEncode({'detail': 'A delivery order in CONFIRMED can no longer be edited'}),
+          jsonEncode({
+            'detail': 'A delivery order in CONFIRMED can no longer be edited',
+          }),
           409,
           headers: _jsonHeaders,
         ),
@@ -300,7 +334,9 @@ void main() {
 
       await expectLater(
         () => repository.updateHeader(destinationId: 500, shipTo: 22),
-        throwsA(isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409)),
+        throwsA(
+          isA<ServerError>().having((e) => e.statusCode, 'statusCode', 409),
+        ),
       );
     });
 

@@ -123,7 +123,9 @@ class PaymentController extends _$PaymentController {
   /// closed since the screen rendered. A failed read counts as invalid.
   Future<bool> _sessionIsValid() async {
     try {
-      final current = await ref.refresh(currentSessionControllerProvider.future);
+      final current = await ref.refresh(
+        currentSessionControllerProvider.future,
+      );
       return current.isValid;
     } on Object {
       return false;
@@ -162,9 +164,16 @@ class PaymentController extends _$PaymentController {
     }
 
     // Held through the session re-read too, so a second tap cannot slip in.
-    state = state.copyWith(submitting: true, clearError: true, clearLastChange: true);
+    state = state.copyWith(
+      submitting: true,
+      clearError: true,
+      clearLastChange: true,
+    );
     if (!await _sessionIsValid()) {
-      state = state.copyWith(submitting: false, issue: PaymentIssue.sessionInvalid);
+      state = state.copyWith(
+        submitting: false,
+        issue: PaymentIssue.sessionInvalid,
+      );
       return TenderResult.refused;
     }
     if (requiresReference && (reference?.isEmpty ?? true)) {
@@ -210,7 +219,10 @@ class PaymentController extends _$PaymentController {
 
         // FR-016: the next tender starts from what is still owed — a partial
         // payment leaves a balance the cashier goes straight on to collect.
-        final remaining = ref.read(posSaleControllerProvider).value?.balanceOrZero;
+        final remaining = ref
+            .read(posSaleControllerProvider)
+            .value
+            ?.balanceOrZero;
         state = PaymentDraft(
           amount: remaining == null || isZeroAmount(remaining) ? '' : remaining,
           lastChange: isZeroAmount(change) ? null : change,

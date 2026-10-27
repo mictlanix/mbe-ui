@@ -79,7 +79,8 @@ void main() {
       () => customers.get(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => _customer());
     when(
-      () => payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
+      () =>
+          payments.outstandingBalanceFor(customerId: any(named: 'customerId')),
     ).thenAnswer((_) async => '0');
   });
 
@@ -108,7 +109,9 @@ void main() {
   testWidgets('the cancel action is absent without update rights', (
     tester,
   ) async {
-    when(() => salesQuotes.getById(quoteId: 30)).thenAnswer((_) async => quote());
+    when(
+      () => salesQuotes.getById(quoteId: 30),
+    ).thenAnswer((_) async => quote());
 
     await pumpQuote(tester, user: _readOnlyUser);
 
@@ -116,7 +119,9 @@ void main() {
   });
 
   testWidgets('offered on a draft', (tester) async {
-    when(() => salesQuotes.getById(quoteId: 30)).thenAnswer((_) async => quote());
+    when(
+      () => salesQuotes.getById(quoteId: 30),
+    ).thenAnswer((_) async => quote());
 
     await pumpQuote(tester);
 
@@ -148,7 +153,9 @@ void main() {
   testWidgets('cancelling requires an explicit confirmation dialog', (
     tester,
   ) async {
-    when(() => salesQuotes.getById(quoteId: 30)).thenAnswer((_) async => quote());
+    when(
+      () => salesQuotes.getById(quoteId: 30),
+    ).thenAnswer((_) async => quote());
 
     await pumpQuote(tester);
     await tester.tap(cancelAction);
@@ -159,7 +166,9 @@ void main() {
   });
 
   testWidgets('dismissing the dialog cancels nothing', (tester) async {
-    when(() => salesQuotes.getById(quoteId: 30)).thenAnswer((_) async => quote());
+    when(
+      () => salesQuotes.getById(quoteId: 30),
+    ).thenAnswer((_) async => quote());
 
     await pumpQuote(tester);
     await tester.tap(cancelAction);
@@ -194,9 +203,13 @@ void main() {
 
   testWidgets('a refused cancel keeps the quote untouched with the reason '
       'shown', (tester) async {
-    when(() => salesQuotes.getById(quoteId: 30)).thenAnswer((_) async => quote());
+    when(
+      () => salesQuotes.getById(quoteId: 30),
+    ).thenAnswer((_) async => quote());
     when(() => salesQuotes.cancel(quoteId: 30)).thenThrow(
-      const AppError.server(message: 'A cancelled quote cannot be cancelled again'),
+      const AppError.server(
+        message: 'A cancelled quote cannot be cancelled again',
+      ),
     );
 
     await pumpQuote(tester);

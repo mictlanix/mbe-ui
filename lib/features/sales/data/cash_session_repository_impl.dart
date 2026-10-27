@@ -3,7 +3,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart'
     hide CashSessionStatus, DenominationCount;
-import 'package:mbe_api_client/mbe_api_client.dart' as gen show DenominationCount;
+import 'package:mbe_api_client/mbe_api_client.dart'
+    as gen
+    show DenominationCount;
 import 'package:one_of/any_of.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
@@ -21,14 +23,16 @@ final cashSessionRepositoryProvider = Provider<CashSessionRepository>((ref) {
 });
 
 class CashSessionRepositoryImpl implements CashSessionRepository {
-  CashSessionRepositoryImpl(Dio dio) : _api = CashSessionsApi(dio, appSerializers);
+  CashSessionRepositoryImpl(Dio dio)
+    : _api = CashSessionsApi(dio, appSerializers);
 
   final CashSessionsApi _api;
 
   @override
   Future<CurrentSession> getCurrent() async {
     try {
-      final response = await _api.getCurrentSessionApiV1CashSessionsCurrentGet();
+      final response = await _api
+          .getCurrentSessionApiV1CashSessionsCurrentGet();
       final result = response.data;
       if (result == null) throw const AppError.server();
       return CurrentSession.fromResponse(result);
@@ -69,7 +73,10 @@ class CashSessionRepositoryImpl implements CashSessionRepository {
   }
 
   @override
-  Future<CashSession> open({int? cashDrawerId, required String openingAmount}) async {
+  Future<CashSession> open({
+    int? cashDrawerId,
+    required String openingAmount,
+  }) async {
     try {
       final response = await _api.openCashSessionApiV1CashSessionsPost(
         cashSessionOpen: CashSessionOpen((b) {
@@ -88,9 +95,10 @@ class CashSessionRepositoryImpl implements CashSessionRepository {
   @override
   Future<CashSession> get({required int cashSessionId}) async {
     try {
-      final response = await _api.getCashSessionApiV1CashSessionsCashSessionIdGet(
-        cashSessionId: cashSessionId,
-      );
+      final response = await _api
+          .getCashSessionApiV1CashSessionsCashSessionIdGet(
+            cashSessionId: cashSessionId,
+          );
       final cashSession = response.data;
       if (cashSession == null) throw const AppError.server();
       return CashSession.fromResponse(cashSession);

@@ -95,7 +95,9 @@ void main() {
 
   group('OpenSessionFormController.drawerSelected', () {
     test('sets the drawer and clears prior errors', () {
-      final controller = container.read(openSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        openSessionFormControllerProvider.notifier,
+      );
       controller.drawerSelected(3, 'Caja 3');
 
       final state = container.read(openSessionFormControllerProvider);
@@ -112,7 +114,10 @@ void main() {
       await container.read(openSessionFormControllerProvider.notifier).submit();
 
       final state = container.read(openSessionFormControllerProvider);
-      expect(state.fieldErrors['cashDrawer'], OpenSessionFormErrorCode.drawerRequired);
+      expect(
+        state.fieldErrors['cashDrawer'],
+        OpenSessionFormErrorCode.drawerRequired,
+      );
       verifyNever(
         () => repository.open(
           cashDrawerId: any(named: 'cashDrawerId'),
@@ -122,7 +127,9 @@ void main() {
     });
 
     test('a negative opening amount is rejected before submitting', () async {
-      final controller = container.read(openSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        openSessionFormControllerProvider.notifier,
+      );
       controller.drawerSelected(1, 'Caja 1');
       controller.openingAmountChanged('-5');
       await controller.submit();
@@ -140,40 +147,54 @@ void main() {
       );
     });
 
-    test('a non-numeric opening amount is rejected before submitting', () async {
-      final controller = container.read(openSessionFormControllerProvider.notifier);
-      controller.drawerSelected(1, 'Caja 1');
-      controller.openingAmountChanged('abc');
-      await controller.submit();
+    test(
+      'a non-numeric opening amount is rejected before submitting',
+      () async {
+        final controller = container.read(
+          openSessionFormControllerProvider.notifier,
+        );
+        controller.drawerSelected(1, 'Caja 1');
+        controller.openingAmountChanged('abc');
+        await controller.submit();
 
-      final state = container.read(openSessionFormControllerProvider);
-      expect(
-        state.fieldErrors['openingAmount'],
-        OpenSessionFormErrorCode.amountInvalid,
-      );
-    });
+        final state = container.read(openSessionFormControllerProvider);
+        expect(
+          state.fieldErrors['openingAmount'],
+          OpenSessionFormErrorCode.amountInvalid,
+        );
+      },
+    );
 
-    test('a blank opening amount is accepted and defaults to zero (FR-008)', () async {
-      when(
-        () => repository.open(cashDrawerId: 1, openingAmount: '0'),
-      ).thenAnswer((_) async => _session());
+    test(
+      'a blank opening amount is accepted and defaults to zero (FR-008)',
+      () async {
+        when(
+          () => repository.open(cashDrawerId: 1, openingAmount: '0'),
+        ).thenAnswer((_) async => _session());
 
-      final controller = container.read(openSessionFormControllerProvider.notifier);
-      controller.drawerSelected(1, 'Caja 1');
-      controller.openingAmountChanged('');
-      await controller.submit();
+        final controller = container.read(
+          openSessionFormControllerProvider.notifier,
+        );
+        controller.drawerSelected(1, 'Caja 1');
+        controller.openingAmountChanged('');
+        await controller.submit();
 
-      final state = container.read(openSessionFormControllerProvider);
-      expect(state.saved, isTrue);
-      verify(() => repository.open(cashDrawerId: 1, openingAmount: '0')).called(1);
-    });
+        final state = container.read(openSessionFormControllerProvider);
+        expect(state.saved, isTrue);
+        verify(
+          () => repository.open(cashDrawerId: 1, openingAmount: '0'),
+        ).called(1);
+      },
+    );
 
     test('a zero opening amount is accepted (FR-008)', () async {
       when(
         () => repository.open(cashDrawerId: 1, openingAmount: '0'),
       ).thenAnswer((_) async => _session());
 
-      final controller = container.read(openSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        openSessionFormControllerProvider.notifier,
+      );
       controller.drawerSelected(1, 'Caja 1');
       controller.openingAmountChanged('0');
       await controller.submit();
@@ -189,13 +210,16 @@ void main() {
         () => repository.open(cashDrawerId: 5, openingAmount: '500'),
       ).thenAnswer((_) async => _session());
       when(() => repository.getCurrent()).thenAnswer(
-        (_) async => CurrentSession(state: SessionState.open, session: _session()),
+        (_) async =>
+            CurrentSession(state: SessionState.open, session: _session()),
       );
 
       // Read once to create the provider before submit invalidates it.
       container.read(currentSessionControllerProvider);
 
-      final controller = container.read(openSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        openSessionFormControllerProvider.notifier,
+      );
       controller.drawerSelected(5, 'Caja 1');
       controller.openingAmountChanged('500');
       await controller.submit();
@@ -203,7 +227,9 @@ void main() {
       final state = container.read(openSessionFormControllerProvider);
       expect(state.saved, isTrue);
       expect(state.submitting, isFalse);
-      verify(() => repository.open(cashDrawerId: 5, openingAmount: '500')).called(1);
+      verify(
+        () => repository.open(cashDrawerId: 5, openingAmount: '500'),
+      ).called(1);
     });
   });
 
@@ -230,77 +256,97 @@ void main() {
     });
   });
 
-  group('OpenSessionFormController.submit — 409 disambiguation (research §4)', () {
-    test('when the re-read finds the caller now has a session, reports '
-        'cashierBusy and records the blocking session id — never by parsing '
-        'the raw detail string', () async {
-      when(() => repository.open(cashDrawerId: 1, openingAmount: '0')).thenThrow(
-        const AppError.server(
-          statusCode: 409,
-          message: 'You already have an open session; close it before opening another',
-        ),
-      );
-      when(() => repository.getCurrent()).thenAnswer(
-        (_) async =>
-            CurrentSession(state: SessionState.open, session: _session(cashSessionId: 77)),
-      );
+  group(
+    'OpenSessionFormController.submit — 409 disambiguation (research §4)',
+    () {
+      test('when the re-read finds the caller now has a session, reports '
+          'cashierBusy and records the blocking session id — never by parsing '
+          'the raw detail string', () async {
+        when(
+          () => repository.open(cashDrawerId: 1, openingAmount: '0'),
+        ).thenThrow(
+          const AppError.server(
+            statusCode: 409,
+            message:
+                'You already have an open session; close it before opening another',
+          ),
+        );
+        when(() => repository.getCurrent()).thenAnswer(
+          (_) async => CurrentSession(
+            state: SessionState.open,
+            session: _session(cashSessionId: 77),
+          ),
+        );
 
-      final controller = container.read(openSessionFormControllerProvider.notifier);
-      controller.drawerSelected(1, 'Caja 1');
-      await controller.submit();
+        final controller = container.read(
+          openSessionFormControllerProvider.notifier,
+        );
+        controller.drawerSelected(1, 'Caja 1');
+        await controller.submit();
 
-      final state = container.read(openSessionFormControllerProvider);
-      expect(state.error, OpenSessionFormErrorCode.cashierBusy);
-      expect(state.blockingSessionId, 77);
-      verify(() => repository.getCurrent()).called(1);
-    });
+        final state = container.read(openSessionFormControllerProvider);
+        expect(state.error, OpenSessionFormErrorCode.cashierBusy);
+        expect(state.blockingSessionId, 77);
+        verify(() => repository.getCurrent()).called(1);
+      });
 
-    test('when the re-read finds no session for the caller, reports '
-        'drawerBusy — a distinct code with a distinct remedy from '
-        'cashierBusy', () async {
-      when(() => repository.open(cashDrawerId: 1, openingAmount: '0')).thenThrow(
-        const AppError.server(
-          statusCode: 409,
-          message: 'That cash drawer already has an open session',
-        ),
-      );
-      when(() => repository.getCurrent()).thenAnswer(
-        (_) async => const CurrentSession(state: SessionState.none),
-      );
+      test('when the re-read finds no session for the caller, reports '
+          'drawerBusy — a distinct code with a distinct remedy from '
+          'cashierBusy', () async {
+        when(
+          () => repository.open(cashDrawerId: 1, openingAmount: '0'),
+        ).thenThrow(
+          const AppError.server(
+            statusCode: 409,
+            message: 'That cash drawer already has an open session',
+          ),
+        );
+        when(() => repository.getCurrent()).thenAnswer(
+          (_) async => const CurrentSession(state: SessionState.none),
+        );
 
-      final controller = container.read(openSessionFormControllerProvider.notifier);
-      controller.drawerSelected(1, 'Caja 1');
-      await controller.submit();
+        final controller = container.read(
+          openSessionFormControllerProvider.notifier,
+        );
+        controller.drawerSelected(1, 'Caja 1');
+        await controller.submit();
 
-      final state = container.read(openSessionFormControllerProvider);
-      expect(state.error, OpenSessionFormErrorCode.drawerBusy);
-      expect(state.blockingSessionId, isNull);
-    });
+        final state = container.read(openSessionFormControllerProvider);
+        expect(state.error, OpenSessionFormErrorCode.drawerBusy);
+        expect(state.blockingSessionId, isNull);
+      });
 
-    test('if the re-read itself fails, falls back to drawerBusy rather than '
-        'crashing or leaving the form in a stuck submitting state', () async {
-      when(() => repository.open(cashDrawerId: 1, openingAmount: '0')).thenThrow(
-        const AppError.server(statusCode: 409, message: 'conflict'),
-      );
-      when(() => repository.getCurrent()).thenThrow(const AppError.network());
+      test('if the re-read itself fails, falls back to drawerBusy rather than '
+          'crashing or leaving the form in a stuck submitting state', () async {
+        when(
+          () => repository.open(cashDrawerId: 1, openingAmount: '0'),
+        ).thenThrow(
+          const AppError.server(statusCode: 409, message: 'conflict'),
+        );
+        when(() => repository.getCurrent()).thenThrow(const AppError.network());
 
-      final controller = container.read(openSessionFormControllerProvider.notifier);
-      controller.drawerSelected(1, 'Caja 1');
-      await controller.submit();
+        final controller = container.read(
+          openSessionFormControllerProvider.notifier,
+        );
+        controller.drawerSelected(1, 'Caja 1');
+        await controller.submit();
 
-      final state = container.read(openSessionFormControllerProvider);
-      expect(state.error, OpenSessionFormErrorCode.drawerBusy);
-      expect(state.submitting, isFalse);
-    });
-  });
+        final state = container.read(openSessionFormControllerProvider);
+        expect(state.error, OpenSessionFormErrorCode.drawerBusy);
+        expect(state.submitting, isFalse);
+      });
+    },
+  );
 
   group('OpenSessionFormController.submit — other failures', () {
     test('404 (drawer vanished) maps to drawerNotFound', () async {
-      when(() => repository.open(cashDrawerId: 1, openingAmount: '0')).thenThrow(
-        const AppError.notFound('Cash drawer not found'),
-      );
+      when(
+        () => repository.open(cashDrawerId: 1, openingAmount: '0'),
+      ).thenThrow(const AppError.notFound('Cash drawer not found'));
 
-      final controller = container.read(openSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        openSessionFormControllerProvider.notifier,
+      );
       controller.drawerSelected(1, 'Caja 1');
       await controller.submit();
 
@@ -310,29 +356,42 @@ void main() {
       );
     });
 
-    test('an unrelated server error maps to the generic openFailed code', () async {
-      when(() => repository.open(cashDrawerId: 1, openingAmount: '0')).thenThrow(
-        const AppError.server(statusCode: 500),
-      );
+    test(
+      'an unrelated server error maps to the generic openFailed code',
+      () async {
+        when(
+          () => repository.open(cashDrawerId: 1, openingAmount: '0'),
+        ).thenThrow(const AppError.server(statusCode: 500));
 
-      final controller = container.read(openSessionFormControllerProvider.notifier);
-      controller.drawerSelected(1, 'Caja 1');
-      await controller.submit();
+        final controller = container.read(
+          openSessionFormControllerProvider.notifier,
+        );
+        controller.drawerSelected(1, 'Caja 1');
+        await controller.submit();
 
-      expect(
-        container.read(openSessionFormControllerProvider).error,
-        OpenSessionFormErrorCode.openFailed,
-      );
-    });
+        expect(
+          container.read(openSessionFormControllerProvider).error,
+          OpenSessionFormErrorCode.openFailed,
+        );
+      },
+    );
 
     test('a validation 422 with field errors is surfaced per-field', () async {
-      when(() => repository.open(cashDrawerId: 1, openingAmount: '0')).thenThrow(
+      when(
+        () => repository.open(cashDrawerId: 1, openingAmount: '0'),
+      ).thenThrow(
         const AppError.validation([
-          FieldError(loc: ['body', 'opening_amount'], msg: 'Invalid', type: 'value_error'),
+          FieldError(
+            loc: ['body', 'opening_amount'],
+            msg: 'Invalid',
+            type: 'value_error',
+          ),
         ]),
       );
 
-      final controller = container.read(openSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        openSessionFormControllerProvider.notifier,
+      );
       controller.drawerSelected(1, 'Caja 1');
       await controller.submit();
 
@@ -343,11 +402,13 @@ void main() {
     test('a validation 422 with no field errors (a plain-string-detail 422, '
         'e.g. "no drawer configured") degrades to a generic error instead of '
         'silently clearing the form with no explanation', () async {
-      when(() => repository.open(cashDrawerId: 1, openingAmount: '0')).thenThrow(
-        const AppError.validation([]),
-      );
+      when(
+        () => repository.open(cashDrawerId: 1, openingAmount: '0'),
+      ).thenThrow(const AppError.validation([]));
 
-      final controller = container.read(openSessionFormControllerProvider.notifier);
+      final controller = container.read(
+        openSessionFormControllerProvider.notifier,
+      );
       controller.drawerSelected(1, 'Caja 1');
       await controller.submit();
 

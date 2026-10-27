@@ -58,7 +58,9 @@ void main() {
     );
   });
 
-  testWidgets('the card shows the change and stays until dismissed', (tester) async {
+  testWidgets('the card shows the change and stays until dismissed', (
+    tester,
+  ) async {
     var dismissed = 0;
     await pumpPos(
       tester,
@@ -84,7 +86,9 @@ void main() {
       overrides: [
         customerPaymentOverride(paymentRepository),
         openSessionOverride(),
-        paymentMethodOptionRepositoryProvider.overrideWithValue(optionRepository),
+        paymentMethodOptionRepositoryProvider.overrideWithValue(
+          optionRepository,
+        ),
       ],
     );
 
@@ -93,7 +97,10 @@ void main() {
       await pumpStep(tester);
       expect(find.byKey(const Key('payment_change_card')), findsNothing);
 
-      await tester.enterText(find.byKey(const Key('payment_amount_field')), '150.00');
+      await tester.enterText(
+        find.byKey(const Key('payment_amount_field')),
+        '150.00',
+      );
       await tester.pumpAndSettle();
       // The preview: the summary's own row shows the excess while typing.
       expect(
@@ -135,12 +142,18 @@ void main() {
     ) async {
       await pumpStep(tester);
 
-      await tester.enterText(find.byKey(const Key('payment_amount_field')), '150.00');
+      await tester.enterText(
+        find.byKey(const Key('payment_amount_field')),
+        '150.00',
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('payment_method_4')));
       await tester.pumpAndSettle();
 
-      expect(find.text('Solo el efectivo puede exceder el saldo.'), findsOneWidget);
+      expect(
+        find.text('Solo el efectivo puede exceder el saldo.'),
+        findsOneWidget,
+      );
       expect(find.byKey(const Key('payment_change_card')), findsNothing);
       verifyNever(
         () => paymentRepository.createPayment(
@@ -157,7 +170,10 @@ void main() {
     testWidgets('fits a phone with no horizontal scroll', (tester) async {
       await pumpStep(tester, surface: const Size(390, 844));
 
-      await tester.enterText(find.byKey(const Key('payment_amount_field')), '150.00');
+      await tester.enterText(
+        find.byKey(const Key('payment_amount_field')),
+        '150.00',
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('payment_method_1')));
       await tester.pumpAndSettle();
