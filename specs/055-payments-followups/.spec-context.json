@@ -3,7 +3,7 @@
   "specName": "Payments Follow-ups",
   "branch": "055-payments-followups",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -391,5 +391,38 @@
     }
   ],
   "telemetryInstanceId": "e226d84f-085d-4e06-91ed-b8c95854d944",
-  "currentTask": "T041"
+  "currentTask": null,
+  "concerns": [
+    {
+      "note": "finished, unverified",
+      "step": "implement"
+    }
+  ],
+  "verified": [
+    {
+      "what": "live walkthrough integration_test/payments_quickstart_test.dart on macOS against the dev tenant",
+      "result": "22/22 steps PASS, none skipped (2026-10-27, branch head before merge)",
+      "command": "flutter test integration_test/payments_quickstart_test.dart -d macos --dart-define-from-file=.env.settings --dart-define-from-file=.env"
+    },
+    {
+      "what": "reviewer manual check in the web build (T039)",
+      "result": "ticket preview from row and view, customer-name search, one-line rows at desktop; network panel shows no per-customer lookups; search 735 ms"
+    },
+    {
+      "what": "flutter analyze on merged main",
+      "command": "flutter analyze",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 5.6,
+      "result": "Analyzing mbe-ui...                                              · No issues found! (ran in 3.8s)"
+    },
+    {
+      "what": "payments, documents and payment-entity unit and widget tests on merged main",
+      "command": "flutter test test/unit/features/sales test/unit/core/documents test/widget/features/sales test/widget/core/documents",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 39.8,
+      "result": "DataTable2 built: 0ms · 00:36 +1378: /Users/augusto/development/repos/mictlanix/mbe-ui/test/widget/features/sales/payments_filters_test.dart: (tearDownAll) · 00:36 +1378: All tests passed!"
+    }
+  ]
 }
