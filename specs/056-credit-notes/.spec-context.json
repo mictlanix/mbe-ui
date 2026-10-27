@@ -2,8 +2,8 @@
   "workflow": "companion",
   "specName": "Credit Notes",
   "branch": "056-credit-notes",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -46,6 +46,27 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-10-27T20:20:10.780Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-27T20:22:41.934Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-27T20:23:55.688Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-27T20:23:58.589Z"
     }
   ],
   "last_action": "living specs evaluated — skipped (not configured)",
