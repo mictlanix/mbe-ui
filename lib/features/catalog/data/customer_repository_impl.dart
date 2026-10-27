@@ -19,6 +19,26 @@ final customerRepositoryProvider = Provider<CustomerRepository>((ref) {
   return CustomerRepositoryImpl(ref.watch(dioProvider));
 });
 
+/// Resolves a customer id to the customer's name — for the payments list and
+/// payment view, whose rows carry only `customer` (spec 054 research R2,
+/// until mbe-api#270 puts the name on the row). One request per distinct id,
+/// since a family is keyed by it. `null` on any failure — a deleted customer,
+/// or a user without Customers read — so a caller falls back to the number
+/// rather than blocking the screen.
+final customerDisplayNameProvider = FutureProvider.family<String?, int>((
+  ref,
+  customerId,
+) async {
+  try {
+    final customer = await ref
+        .watch(customerRepositoryProvider)
+        .get(customerId: customerId);
+    return customer.name;
+  } catch (_) {
+    return null;
+  }
+});
+
 class CustomerRepositoryImpl implements CustomerRepository {
   CustomerRepositoryImpl(Dio dio) : _api = CustomersApi(dio, appSerializers);
 

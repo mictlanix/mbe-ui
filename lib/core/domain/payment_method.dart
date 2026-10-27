@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -108,3 +109,14 @@ IconData paymentMethodIcon(int code) {
     PaymentMethod.governmentFunding => Icons.payments_outlined,
   };
 }
+
+/// The generated `api.PaymentMethod` is an `EnumClass` whose members are
+/// named `number0`/`number1`/`number28`/... after their wire numbers, with
+/// no schema-level names to preserve — the same generator gap `PaymentTerms`
+/// and `CurrencyCode` hit (see `sale.dart`). The suffix *is* the SAT code,
+/// so it is parsed back out rather than switched over 15 members by hand.
+///
+/// Promoted from `sale_payment.dart`'s private copy (spec 054 research R10)
+/// so the sale-side and payment-side entities share one mapping.
+int paymentMethodCodeFromApi(api.PaymentMethod value) =>
+    int.tryParse(value.name.replaceFirst('number', '')) ?? 0;

@@ -146,6 +146,23 @@ test/
 
 There are no violations to justify.
 
+## Deviations found during implementation
+
+Where the code differs from the design documents above. The behaviour in the spec is unchanged; these are mechanics.
+
+| Design said | Implemented | Why |
+|---|---|---|
+| Repository returns `CatalogPage<CustomerPayment>` (C4) | Returns `CustomerPaymentListResult(items, total)`; the controller builds the page | Every other domain repository returns a plain list result (`CashSessionListResult`); `CatalogPage` is a presentation type |
+| `PaymentDetailController` / `PaymentApplicationsController` as `@riverpod` classes (data-model §6) | Plain `FutureProvider.family`s, `paymentDetailProvider` and `paymentApplicationsProvider` | Neither has a mutation method, so a generated class added nothing. The applications provider waits on the detail provider, so the facility guard is enforced by the data itself |
+| An unknown `CurrencyCode` throws `AppError.server()` (data-model §1) | The existing `currencyFromApi` is reused and defaults to MXN | It is the app's one mapping, and the generated enum has only the three codes, so no unknown can arrive. An unknown `PaymentType` still throws |
+| "No change to `core/widgets/`" (Constraints) | `DateRangeFilterChip` accepts `null` dates and shows "Cualquier fecha" | R6 chose no default date range, and the shared chip required one. The change is additive; its two existing callers are untouched |
+| `CashSession.cashDrawerFacilityId` required (R7) | Nullable | Twelve test fixtures construct a `CashSession`. `fromResponse` always sets it, and `null` never matches the user's facility |
+| `NavBranch.salesPayments` in `app_navigation.dart` | In `core/navigation/nav_destinations.dart` | That is where `NavBranch` lives |
+| Nav label key `navPayments` (C5) | `paymentsMenuTitle` | Matches the `…MenuTitle` convention every other entry uses |
+| `paymentsListEmptyFiltered` key (C5) | Not added | The shared `CatalogListStateView` renders its own filtered-empty view |
+| `yyyy-MM-dd` facets encoded with `DateFormat` | Encoded and parsed by hand in `payments_filter.dart` | The formatting guard (spec 028 FR-018) keeps `intl` out of everything but the formatting surface, and a new allowlist entry is what it warns against |
+| Spacing: the cash-sessions screen uses literals | New screens use `Theme.of(context).spacing` tokens | Constitution §V |
+
 ## Follow-ups (not in this delivery)
 
 - **mbe-api#270 ships:** regenerate the client, map `customerDisplayName` and prefer it over the provider (R2, C6).

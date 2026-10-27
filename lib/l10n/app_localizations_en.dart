@@ -4211,4 +4211,168 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get customerDiscountChangeProductTooltip => 'Change product';
+
+  @override
+  String get paymentsMenuTitle => 'Payments';
+
+  @override
+  String get paymentTypeNa => 'N/A';
+
+  @override
+  String get paymentTypeImmediate => 'Cash sale';
+
+  @override
+  String get paymentTypeCreditPayment => 'Credit payment';
+
+  @override
+  String get paymentTypePaymentInAdvance => 'Payment in advance';
+
+  @override
+  String get paymentTypeCreditNote => 'Credit note';
+
+  @override
+  String get paymentTypeExpense => 'Expense';
+
+  @override
+  String get paymentVerified => 'Verified';
+
+  @override
+  String get paymentUnverified => 'Unverified';
+
+  @override
+  String get paymentApplicationReversed => 'Reversed';
+
+  @override
+  String get paymentsColumnFolio => 'No.';
+
+  @override
+  String get paymentsColumnDate => 'Date';
+
+  @override
+  String get paymentsColumnCustomer => 'Customer';
+
+  @override
+  String get paymentsColumnAmount => 'Amount';
+
+  @override
+  String get paymentsColumnMethod => 'Payment method';
+
+  @override
+  String get paymentsColumnReference => 'Reference';
+
+  @override
+  String get paymentsColumnType => 'Type';
+
+  @override
+  String get paymentsColumnUnapplied => 'Unapplied';
+
+  @override
+  String get paymentsColumnVerified => 'Verified';
+
+  @override
+  String get paymentsFilterCustomer => 'Customer';
+
+  @override
+  String get paymentsFilterDate => 'Date';
+
+  @override
+  String get paymentsFilterMethod => 'Payment method';
+
+  @override
+  String get paymentsFilterMethodAll => 'All';
+
+  @override
+  String get paymentsFilterVerified => 'Verification';
+
+  @override
+  String get paymentsVerifiedAny => 'All';
+
+  @override
+  String get paymentsVerifiedYes => 'Verified';
+
+  @override
+  String get paymentsVerifiedNo => 'Unverified';
+
+  @override
+  String get paymentsFilterCashSession => 'Cash session';
+
+  @override
+  String get paymentsListEmpty => 'There are no payments yet.';
+
+  @override
+  String get dateRangeFilterAny => 'Any date';
+
+  @override
+  String get paymentViewTitle => 'View payment';
+
+  @override
+  String paymentHeaderTitle(int id) {
+    return 'Payment $id';
+  }
+
+  @override
+  String get paymentSummaryAmount => 'Amount';
+
+  @override
+  String get paymentSummaryApplied => 'Applied';
+
+  @override
+  String get paymentSummaryUnapplied => 'Unapplied';
+
+  @override
+  String get paymentFieldPaymentOption => 'Payment option';
+
+  @override
+  String get paymentFieldFacility => 'Facility';
+
+  @override
+  String get paymentFieldCashSession => 'Cash session';
+
+  @override
+  String get paymentFieldVerifier => 'Verified by';
+
+  @override
+  String get paymentApplicationsTitle => 'Applications';
+
+  @override
+  String get paymentApplicationsEmpty =>
+      'This payment hasn\'t been applied to any order.';
+
+  @override
+  String get paymentApplicationsColumnOrder => 'Order';
+
+  @override
+  String get paymentApplicationsColumnApplied => 'Applied';
+
+  @override
+  String get paymentApplicationsColumnChange => 'Change';
+
+  @override
+  String get paymentApplicationsColumnApplier => 'Applied by';
+
+  @override
+  String get paymentApplicationsColumnDate => 'Date';
+
+  @override
+  String get paymentApplicationsColumnStatus => 'Status';
+
+  @override
+  String paymentNotFound(int id) {
+    return 'Payment $id doesn\'t exist.';
+  }
+
+  @override
+  String get paymentBackToList => 'Back to Payments';
+
+  @override
+  String get paymentsScopeFacility => 'This facility';
+
+  @override
+  String get paymentsScopeAll => 'All facilities';
+
+  @override
+  String get paymentsSearchReferenceHint => 'Search reference…';
+
+  @override
+  String get paymentsColumnFacility => 'Facility';
 }

@@ -7626,6 +7626,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change product'**
   String get customerDiscountChangeProductTooltip;
+
+  /// spec 054: Sales navigation entry and list title for customer payments
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get paymentsMenuTitle;
+
+  /// spec 054 FR-017: payment type NA
+  ///
+  /// In en, this message translates to:
+  /// **'N/A'**
+  String get paymentTypeNa;
+
+  /// spec 054 FR-017: payment type IMMEDIATE (legacy Contado)
+  ///
+  /// In en, this message translates to:
+  /// **'Cash sale'**
+  String get paymentTypeImmediate;
+
+  /// spec 054 FR-017: payment type CREDIT_PAYMENT
+  ///
+  /// In en, this message translates to:
+  /// **'Credit payment'**
+  String get paymentTypeCreditPayment;
+
+  /// spec 054 FR-017: payment type PAYMENT_IN_ADVANCE
+  ///
+  /// In en, this message translates to:
+  /// **'Payment in advance'**
+  String get paymentTypePaymentInAdvance;
+
+  /// spec 054 FR-017: payment type CREDIT_NOTE
+  ///
+  /// In en, this message translates to:
+  /// **'Credit note'**
+  String get paymentTypeCreditNote;
+
+  /// spec 054 FR-017: payment type EXPENSE
+  ///
+  /// In en, this message translates to:
+  /// **'Expense'**
+  String get paymentTypeExpense;
+
+  /// spec 054: status chip for a payment someone has verified
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get paymentVerified;
+
+  /// spec 054: status chip for a payment nobody has verified
+  ///
+  /// In en, this message translates to:
+  /// **'Unverified'**
+  String get paymentUnverified;
+
+  /// spec 054 FR-014: status chip on a reversed payment application
+  ///
+  /// In en, this message translates to:
+  /// **'Reversed'**
+  String get paymentApplicationReversed;
+
+  /// spec 054 FR-005: payment number column
+  ///
+  /// In en, this message translates to:
+  /// **'No.'**
+  String get paymentsColumnFolio;
+
+  /// spec 054 FR-005: payment date column
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get paymentsColumnDate;
+
+  /// spec 054 FR-005: customer column
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get paymentsColumnCustomer;
+
+  /// spec 054 FR-005: payment amount column
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get paymentsColumnAmount;
+
+  /// spec 054 FR-005: method (and option) column
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get paymentsColumnMethod;
+
+  /// spec 054 FR-005: reference column
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get paymentsColumnReference;
+
+  /// spec 054 FR-005: payment type column
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get paymentsColumnType;
+
+  /// spec 054 FR-005: unapplied amount column
+  ///
+  /// In en, this message translates to:
+  /// **'Unapplied'**
+  String get paymentsColumnUnapplied;
+
+  /// spec 054 FR-005: verified state column
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get paymentsColumnVerified;
+
+  /// spec 054 FR-006: customer filter label
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get paymentsFilterCustomer;
+
+  /// spec 054 FR-006: date range filter label
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get paymentsFilterDate;
+
+  /// spec 054 FR-006: payment method filter label
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get paymentsFilterMethod;
+
+  /// spec 054 FR-006: no payment method selected
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get paymentsFilterMethodAll;
+
+  /// spec 054 FR-007: verified tri-state filter label
+  ///
+  /// In en, this message translates to:
+  /// **'Verification'**
+  String get paymentsFilterVerified;
+
+  /// spec 054 FR-007: verified filter, any state
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get paymentsVerifiedAny;
+
+  /// spec 054 FR-007: verified filter, only verified
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get paymentsVerifiedYes;
+
+  /// spec 054 FR-007: verified filter, only unverified
+  ///
+  /// In en, this message translates to:
+  /// **'Unverified'**
+  String get paymentsVerifiedNo;
+
+  /// spec 054 FR-006a: cash session filter label
+  ///
+  /// In en, this message translates to:
+  /// **'Cash session'**
+  String get paymentsFilterCashSession;
+
+  /// spec 054: empty state with no filters
+  ///
+  /// In en, this message translates to:
+  /// **'There are no payments yet.'**
+  String get paymentsListEmpty;
+
+  /// spec 054: DateRangeFilterChip label when no date range is set
+  ///
+  /// In en, this message translates to:
+  /// **'Any date'**
+  String get dateRangeFilterAny;
+
+  /// spec 054: AppBar title of the read-only payment screen
+  ///
+  /// In en, this message translates to:
+  /// **'View payment'**
+  String get paymentViewTitle;
+
+  /// spec 054: heading of the payment screen
+  ///
+  /// In en, this message translates to:
+  /// **'Payment {id}'**
+  String paymentHeaderTitle(int id);
+
+  /// spec 054 FR-013a: the payment amount in the header summary
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get paymentSummaryAmount;
+
+  /// spec 054 FR-013a: sum of the non-reversed applications
+  ///
+  /// In en, this message translates to:
+  /// **'Applied'**
+  String get paymentSummaryApplied;
+
+  /// spec 054 FR-013a: the unapplied amount
+  ///
+  /// In en, this message translates to:
+  /// **'Unapplied'**
+  String get paymentSummaryUnapplied;
+
+  /// spec 054 FR-013: payment option field
+  ///
+  /// In en, this message translates to:
+  /// **'Payment option'**
+  String get paymentFieldPaymentOption;
+
+  /// spec 054 FR-013: facility field
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get paymentFieldFacility;
+
+  /// spec 054 FR-013: cash session field
+  ///
+  /// In en, this message translates to:
+  /// **'Cash session'**
+  String get paymentFieldCashSession;
+
+  /// spec 054 FR-013: verifier field
+  ///
+  /// In en, this message translates to:
+  /// **'Verified by'**
+  String get paymentFieldVerifier;
+
+  /// spec 054 FR-014: applications section title
+  ///
+  /// In en, this message translates to:
+  /// **'Applications'**
+  String get paymentApplicationsTitle;
+
+  /// spec 054 Story 2 scenario 3: no applications
+  ///
+  /// In en, this message translates to:
+  /// **'This payment hasn\'t been applied to any order.'**
+  String get paymentApplicationsEmpty;
+
+  /// spec 054 FR-014: order column
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get paymentApplicationsColumnOrder;
+
+  /// spec 054 FR-014: applied amount column
+  ///
+  /// In en, this message translates to:
+  /// **'Applied'**
+  String get paymentApplicationsColumnApplied;
+
+  /// spec 054 FR-014: change returned column
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get paymentApplicationsColumnChange;
+
+  /// spec 054 FR-014: applier column
+  ///
+  /// In en, this message translates to:
+  /// **'Applied by'**
+  String get paymentApplicationsColumnApplier;
+
+  /// spec 054 FR-014: application date column
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get paymentApplicationsColumnDate;
+
+  /// spec 054 FR-014: reversed marker column
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get paymentApplicationsColumnStatus;
+
+  /// spec 054 FR-013b: not-found state
+  ///
+  /// In en, this message translates to:
+  /// **'Payment {id} doesn\'t exist.'**
+  String paymentNotFound(int id);
+
+  /// spec 054: button on the not-found state
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Payments'**
+  String get paymentBackToList;
+
+  /// spec 054 FR-002: scope switch, the user's own facility
+  ///
+  /// In en, this message translates to:
+  /// **'This facility'**
+  String get paymentsScopeFacility;
+
+  /// spec 054 FR-002: scope switch, across facilities (Payments Editor only)
+  ///
+  /// In en, this message translates to:
+  /// **'All facilities'**
+  String get paymentsScopeAll;
+
+  /// spec 054 FR-010: reference search box, all-facilities scope
+  ///
+  /// In en, this message translates to:
+  /// **'Search reference…'**
+  String get paymentsSearchReferenceHint;
+
+  /// spec 054 FR-011: facility column, all-facilities scope
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get paymentsColumnFacility;
 }
 
 class _AppLocalizationsDelegate

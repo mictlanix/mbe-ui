@@ -93,4 +93,44 @@ void main() {
     expect(routeRequiresMultiCurrency('/products'), isFalse);
     expect(routeRequiresMultiCurrency('/exchange-rates-archive'), isFalse);
   });
+
+  group('Pagos destination (spec 054 FR-001)', () {
+    test('a user without Customer Payments read has no entry', () {
+      expect(
+        visibleIds(multiCurrency: false, administrator: false),
+        isNot(contains('payments')),
+      );
+      // POS read alone is not enough: a payment is permissioned separately.
+      expect(
+        visibleIds(
+          multiCurrency: false,
+          administrator: false,
+          privileges: const [
+            Privilege(systemObject: SystemObject.pos, rawValue: 2),
+          ],
+        ),
+        isNot(contains('payments')),
+      );
+    });
+
+    test('a user with Customer Payments read has the entry', () {
+      expect(
+        visibleIds(
+          multiCurrency: false,
+          administrator: false,
+          privileges: const [
+            Privilege(systemObject: SystemObject.customerPayments, rawValue: 2),
+          ],
+        ),
+        contains('payments'),
+      );
+    });
+
+    test('an administrator has the entry', () {
+      expect(
+        visibleIds(multiCurrency: false, administrator: true),
+        contains('payments'),
+      );
+    });
+  });
 }

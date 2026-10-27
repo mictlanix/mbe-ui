@@ -232,6 +232,20 @@ const _posReaderUser = User(
   privileges: [Privilege(systemObject: SystemObject.pos, rawValue: 2)],
 );
 
+/// Holds read on `customerPayments` (8) alone — no `pos` — the gate for spec
+/// 054's `/sales/payments*` routes, deliberately its own privilege so an
+/// accountant without a register still reaches Pagos.
+const _customerPaymentsReaderUser = User(
+  userId: 'customer-payments-reader',
+  email: 'customer-payments-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.customerPayments, rawValue: 2),
+  ],
+);
+
 /// Holds read on `salesOrders` (7) alone — no `pos` — the gate for
 /// 029-back-office-sales-orders' `/sales/orders*` routes (contracts/
 /// routes.md §3). Deliberately a *different* privilege from `_posReaderUser`
@@ -949,6 +963,46 @@ void main() {
       await pumpAt(tester, _posReaderUser, '/sales/cash-sessions');
       final shell = tester.widget<AppShell>(find.byType(AppShell));
       expect(shell.navigationShell.currentIndex, NavBranch.cashSessions);
+    });
+  });
+
+  group('054-payments-list-search — /sales/payments gates on '
+      'customerPayments/read (FR-001, Story 1 scenario 10)', () {
+    testWidgets('a user with customerPayments:read reaches /sales/payments', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _customerPaymentsReaderUser,
+        '/sales/payments',
+      );
+      expect(handle.router.state.uri.path, '/sales/payments');
+    });
+
+    testWidgets('a user without customerPayments:read is redirected away from '
+        '/sales/payments', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/sales/payments');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('pos:read alone does not open /sales/payments — the gate is '
+        'its own privilege', (tester) async {
+      final handle = await pumpAt(tester, _posReaderUser, '/sales/payments');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('the gate is a prefix, so a payment\'s own address is covered '
+        'too', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/sales/payments/42');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('activates shell branch NavBranch.salesPayments', (
+      tester,
+    ) async {
+      await pumpAt(tester, _customerPaymentsReaderUser, '/sales/payments');
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(shell.navigationShell.currentIndex, NavBranch.salesPayments);
     });
   });
 

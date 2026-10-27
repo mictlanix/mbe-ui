@@ -60,6 +60,11 @@ class NavBranch {
   // above — display order comes from position within `kNavigationTree`
   // (this destination sits right after `sales-orders` there).
   static const int salesQuotes = 21;
+
+  // 054-payments-list-search: appended last, same rationale as `cashSessions`
+  // above — display order comes from position within `kNavigationTree` (this
+  // destination sits right after `cash-sessions` there).
+  static const int salesPayments = 22;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -261,6 +266,19 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.cashSessions,
         gate: PrivilegeGate(SystemObject.pos, AccessRight.read),
       ),
+      // 054-payments-list-search: next to the cash sessions it relates to.
+      // Gated on `customerPayments`, not `pos` — a payment is permissioned
+      // separately server-side, so an accountant without a register still
+      // reaches it.
+      NavDestination(
+        id: 'payments',
+        label: _paymentsLabel,
+        icon: Icons.payments_outlined,
+        selectedIcon: Icons.payments,
+        route: '/sales/payments',
+        branchIndex: NavBranch.salesPayments,
+        gate: PrivilegeGate(SystemObject.customerPayments, AccessRight.read),
+      ),
       NavDestination(
         id: 'pos',
         label: _posLabel,
@@ -329,6 +347,7 @@ String _cashSessionsLabel(AppLocalizations l10n) => l10n.cashSessionsMenuTitle;
 String _posLabel(AppLocalizations l10n) => l10n.posMenuTitle;
 String _salesOrdersLabel(AppLocalizations l10n) => l10n.salesOrdersMenuTitle;
 String _salesQuotesLabel(AppLocalizations l10n) => l10n.salesQuotesMenuTitle;
+String _paymentsLabel(AppLocalizations l10n) => l10n.paymentsMenuTitle;
 
 /// The navigation tree filtered by the current user's access (constitution
 /// §IV, FR-005/FR-006): destinations the user cannot read are removed, and a

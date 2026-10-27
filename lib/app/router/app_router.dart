@@ -46,6 +46,8 @@ import 'package:mbe_ui/features/sales/presentation/capture/advanced_search_scree
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_workspace_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/payments/payment_detail_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/payments/payments_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/quotes/quote_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/quotes/sales_quotes_list_screen.dart';
@@ -317,6 +319,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 054-payments-list-search: appended last (index 22), same rationale
+          // as `cashSessions` above. A payment's own screen lives at the
+          // top-level `/sales/payments/:paymentId` route below.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/sales/payments',
+                builder: (context, state) =>
+                    PaymentsListScreen(query: ListQuery.fromUri(state.uri)),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -481,6 +495,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/sales/quotes/:quoteId',
         builder: (context, state) =>
             QuoteScreen(quoteId: int.parse(state.pathParameters['quoteId']!)),
+      ),
+      // 054-payments-list-search: a payment's own read-only screen. A
+      // non-numeric id parses to `null`, which the screen shows as not found
+      // rather than throwing here.
+      GoRoute(
+        path: '/sales/payments/:paymentId',
+        builder: (context, state) => PaymentDetailScreen(
+          paymentId: int.tryParse(state.pathParameters['paymentId'] ?? ''),
+        ),
       ),
       // 038-advanced-product-search: a top-level sibling, not a shell branch
       // — there is no nav entry for it. Search term, filters and page all
@@ -717,6 +740,13 @@ NavGate? _routeGate(String location) {
   // they all share the `/sales/quotes` prefix (FR-001, FR-002).
   if (location.startsWith('/sales/quotes')) {
     return PrivilegeGate(SystemObject.salesQuotes, AccessRight.read);
+  }
+  // 054-payments-list-search: `customerPayments` (8), matching the server. The
+  // prefix covers the list and every `/sales/payments/:paymentId`. The
+  // cross-facility mode is gated separately, inside the screen, on
+  // `paymentsEditor` (100).
+  if (location.startsWith('/sales/payments')) {
+    return PrivilegeGate(SystemObject.customerPayments, AccessRight.read);
   }
   // 038-advanced-product-search: gated on `products`, matching `/products`
   // itself — this is a catalog browser, not a register or order action, and

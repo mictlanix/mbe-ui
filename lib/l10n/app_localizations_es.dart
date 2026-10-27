@@ -4259,4 +4259,168 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get customerDiscountChangeProductTooltip => 'Cambiar producto';
+
+  @override
+  String get paymentsMenuTitle => 'Pagos';
+
+  @override
+  String get paymentTypeNa => 'N/A';
+
+  @override
+  String get paymentTypeImmediate => 'Contado';
+
+  @override
+  String get paymentTypeCreditPayment => 'Pago de crédito';
+
+  @override
+  String get paymentTypePaymentInAdvance => 'Pago anticipado';
+
+  @override
+  String get paymentTypeCreditNote => 'Nota de crédito';
+
+  @override
+  String get paymentTypeExpense => 'Gasto';
+
+  @override
+  String get paymentVerified => 'Verificado';
+
+  @override
+  String get paymentUnverified => 'Sin verificar';
+
+  @override
+  String get paymentApplicationReversed => 'Revertida';
+
+  @override
+  String get paymentsColumnFolio => 'Folio';
+
+  @override
+  String get paymentsColumnDate => 'Fecha';
+
+  @override
+  String get paymentsColumnCustomer => 'Cliente';
+
+  @override
+  String get paymentsColumnAmount => 'Importe';
+
+  @override
+  String get paymentsColumnMethod => 'Forma de pago';
+
+  @override
+  String get paymentsColumnReference => 'Referencia';
+
+  @override
+  String get paymentsColumnType => 'Tipo';
+
+  @override
+  String get paymentsColumnUnapplied => 'Sin aplicar';
+
+  @override
+  String get paymentsColumnVerified => 'Verificado';
+
+  @override
+  String get paymentsFilterCustomer => 'Cliente';
+
+  @override
+  String get paymentsFilterDate => 'Fecha';
+
+  @override
+  String get paymentsFilterMethod => 'Forma de pago';
+
+  @override
+  String get paymentsFilterMethodAll => 'Todas';
+
+  @override
+  String get paymentsFilterVerified => 'Verificación';
+
+  @override
+  String get paymentsVerifiedAny => 'Todos';
+
+  @override
+  String get paymentsVerifiedYes => 'Verificados';
+
+  @override
+  String get paymentsVerifiedNo => 'Sin verificar';
+
+  @override
+  String get paymentsFilterCashSession => 'Sesión de caja';
+
+  @override
+  String get paymentsListEmpty => 'Todavía no hay pagos.';
+
+  @override
+  String get dateRangeFilterAny => 'Cualquier fecha';
+
+  @override
+  String get paymentViewTitle => 'Ver pago';
+
+  @override
+  String paymentHeaderTitle(int id) {
+    return 'Pago $id';
+  }
+
+  @override
+  String get paymentSummaryAmount => 'Importe';
+
+  @override
+  String get paymentSummaryApplied => 'Aplicado';
+
+  @override
+  String get paymentSummaryUnapplied => 'Sin aplicar';
+
+  @override
+  String get paymentFieldPaymentOption => 'Opción de pago';
+
+  @override
+  String get paymentFieldFacility => 'Sucursal';
+
+  @override
+  String get paymentFieldCashSession => 'Sesión de caja';
+
+  @override
+  String get paymentFieldVerifier => 'Verificado por';
+
+  @override
+  String get paymentApplicationsTitle => 'Aplicaciones';
+
+  @override
+  String get paymentApplicationsEmpty =>
+      'Este pago no se ha aplicado a ningún pedido.';
+
+  @override
+  String get paymentApplicationsColumnOrder => 'Pedido';
+
+  @override
+  String get paymentApplicationsColumnApplied => 'Aplicado';
+
+  @override
+  String get paymentApplicationsColumnChange => 'Cambio';
+
+  @override
+  String get paymentApplicationsColumnApplier => 'Aplicó';
+
+  @override
+  String get paymentApplicationsColumnDate => 'Fecha';
+
+  @override
+  String get paymentApplicationsColumnStatus => 'Estado';
+
+  @override
+  String paymentNotFound(int id) {
+    return 'El pago $id no existe.';
+  }
+
+  @override
+  String get paymentBackToList => 'Volver a Pagos';
+
+  @override
+  String get paymentsScopeFacility => 'Esta sucursal';
+
+  @override
+  String get paymentsScopeAll => 'Todas las sucursales';
+
+  @override
+  String get paymentsSearchReferenceHint => 'Buscar referencia…';
+
+  @override
+  String get paymentsColumnFacility => 'Sucursal';
 }

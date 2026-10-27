@@ -21,6 +21,12 @@ abstract class CashSession with _$CashSession {
     required int cashDrawerId,
     required String cashDrawerName,
     required String cashDrawerCode,
+
+    /// The drawer's facility — a session has no facility column of its own,
+    /// so this is the only way to tell which facility it belongs to (spec 054
+    /// research R7). `null` only for a hand-built value; `fromResponse` always
+    /// sets it, and a `null` never counts as the user's facility.
+    int? cashDrawerFacilityId,
     required int cashierId,
     required String cashierName,
     required DateTime start,
@@ -36,6 +42,7 @@ abstract class CashSession with _$CashSession {
     cashDrawerId: r.cashDrawer.cashDrawerId,
     cashDrawerName: r.cashDrawer.name,
     cashDrawerCode: r.cashDrawer.code,
+    cashDrawerFacilityId: r.cashDrawer.facility,
     cashierId: r.cashier.employeeId,
     cashierName: '${r.cashier.firstName} ${r.cashier.lastName}',
     start: r.start,
