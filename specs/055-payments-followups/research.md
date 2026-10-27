@@ -152,6 +152,7 @@ The row tap still opens the payment view.
 | **5b** | A missing back-office application becomes a `fail` with the reason "run tool/seed_payment_fixtures.py", no longer a `softFinding` (FR-019). |
 | **New 12** | The ticket. Open a credit payment or advance (the seeded one, or any one discovered), tap `payment_view_ticket_button`, and wait for the preview dialog to render a page. Close the dialog. Open an `IMMEDIATE` payment and assert there is no ticket button. Repeat from a list row via `payment_view_ticket_<id>`. The print dialog itself isn't driven, because it's a native OS dialog. |
 | **New 13** | Customer-name search. Type part of a discovered customer's name and assert that every row's customer contains it, ignoring case. |
+| **8 (updated)** | The non-editor now has the customer-name search box in the facility scope, so the step asserts it's present with the customer hint, while the scope switch and "Sucursal" stay absent and `?scope=all` stays ignored. |
 | **9 (extended)** | As QA054, through the authenticated Dio: `GET /customer-payments/{other}` and `/{other}/applications` must be 404, `/{other}/ticket` must be 404, and `GET /customer-payments?facility=<other>` must be 403 (FR-017). The UI assertion "El pago N no existe." stays. |
 
 **Rationale**: Each step maps to a spec FR and an issue checkbox. The skip-to-fail change is what makes SC-006 ("none skipped") checkable.

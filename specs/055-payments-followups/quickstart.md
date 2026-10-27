@@ -4,7 +4,8 @@ How to check this feature end to end against the dev tenant. Contract details ar
 
 ## Prerequisites
 
-- mbe-api running locally at `main` `b5fb935` or later, with PRs #273, #274 and #275.
+- mbe-api running locally at `main` `b5fb935` or later, with PRs #273, #274 and #275, serving `http://127.0.0.1:8000`.
+- Docker running (Colima on macOS), for `tool/generate_api_client.sh` when regenerating the client.
 - `.env` with `MBE_ADMIN_*`, `MBE_POS_*` (admin) and `MBE_QA054_*` (non-editor). After a database reset, run `python3 tool/seed_test_accounts.py`.
 - The seed fixture:
 
