@@ -25,14 +25,19 @@
 | Outcome | What the step shows |
 |---|---|
 | Applied | The balance and the applied rows refresh. A new row reads "Nota de crédito · {amount}" (C4). The draft is pre-filled with the remaining balance. |
-| `creditPartlyApplied` | The issue message "Se aplicaron {applied} de crédito; el resto no se pudo aplicar." and an `ErrorBanner` with the server's error. Everything re-reads. |
+| `creditPartlyApplied` | Both, one above the other: the issue line "Se aplicaron {applied} de crédito; el resto no se pudo aplicar.", then the shared `ErrorBanner` with the server's reason. Everything re-reads. Today the step shows the banner *or* the issue line, so the step's `error` widget must render both when both are set (wireframes Open Question 1). |
 
 ## C3. Payment step: walk-in ticket (FR-005, FR-006, FR-006a)
 
-- **Tile:** key `payment_credit_note_redeem_tile`, labelled "Canjear nota de crédito". It replaces C2's tile on a walk-in sale. **Gate:** C2's gates, plus `can(customerPayments, read)`, with no credit-total condition.
-- **Dialog:** `showCreditNoteTicketDialog`.
-  - An autofocused number field, key `credit_note_ticket_input`. Enter submits it.
-  - Once a valid note is found, the dialog shows "Saldo disponible {remaining}" and enables confirm (key `credit_note_ticket_confirm`). Confirm applies `min(remaining, balance)`, or the entered amount when it is smaller.
+- **Tile:** key `payment_credit_note_redeem_tile`, labelled "Canjear nota de crédito", with the second line "Escanea el ticket". It replaces C2's tile on a walk-in sale. **Gate:** C2's gates, plus `can(customerPayments, read)`, with no credit-total condition.
+- **Dialog:** `showCreditNoteTicketDialog`, built on the shared `ResponsiveDialog` (`core/widgets/responsive_dialog.dart`). It's a regular dialog on wide screens and full screen on a phone.
+  - An autofocused number field, key `credit_note_ticket_input`, labelled "Número de ticket", with the help line "Escanea el código de barras del ticket o escríbelo." Enter submits it.
+  - While the lookup runs, the dialog shows "Buscando…" and confirm stays disabled.
+  - Once a valid note is found, the dialog shows a card with:
+    - "Nota de crédito Nº {number} · {date}"
+    - "Saldo disponible {remaining}"
+    - "Se aplicará {amount}", where `amount` = `min(remaining, balance, Cobro's entered amount when set)`
+    Confirm (key `credit_note_ticket_confirm`) applies exactly that amount. The dialog has no amount field of its own (wireframes Open Question 3).
 
 | Refusal | Message (es) |
 |---|---|
@@ -41,11 +46,11 @@
 | `noteAlreadyOnSale` | "Esta nota de crédito ya está aplicada a esta venta." |
 | `noteOtherCustomer` | "Esta nota de crédito es de {name}. Haz la venta a su nombre para usarla." |
 
-Refusals show inside the dialog and apply nothing.
+Refusals show inside the dialog and apply nothing. The field keeps its text and focus, so the cashier can fix a digit and press Enter again.
 
 ## C4. Applied payments panel (FR-009)
 
-A row whose `SalePayment.type == PaymentType.creditNote` leads with `paymentTypeLabel` ("Nota de crédito") where the method label would be. Its icon is `Icons.receipt_long_outlined`. Everything else (amount, undo, cancelled styling) is unchanged.
+A row whose `SalePayment.type == PaymentType.creditNote` leads with `paymentTypeLabel` ("Nota de crédito") where the method label would be, followed by "Nº {customerPayment}", the ticket number. That way a cashier can match a row to the paper ticket, and tell several spent notes apart (wireframes Open Question 9). Its icon is `Icons.receipt_long_outlined`. Everything else (amount, undo, cancelled styling) is unchanged.
 
 ## C5. "Notas de crédito" list (FR-010 to FR-013)
 
@@ -77,8 +82,10 @@ A row whose `SalePayment.type == PaymentType.creditNote` leads with `paymentType
 - `creditNotesEmpty`
 
 **Payment step:**
-- `paymentCreditNoteTile`, `paymentCreditNoteBalance` (`{amount}`), `paymentCreditNoteRedeemTile`, `paymentCreditPartlyApplied` (`{amount}`)
+- `paymentCreditNoteTile`, `paymentCreditNoteBalance` (`{amount}`), `paymentCreditNoteRedeemTile`, `paymentCreditNoteRedeemHint`, `paymentCreditPartlyApplied` (`{amount}`)
+- `appliedPaymentCreditNoteNumber` (`{number}`)
 
 **Ticket dialog:**
-- `creditNoteTicketTitle`, `creditNoteTicketInput`, `creditNoteTicketAvailable` (`{amount}`), `creditNoteTicketConfirm`
+- `creditNoteTicketTitle`, `creditNoteTicketInput`, `creditNoteTicketHelp`, `creditNoteTicketSearching`, `creditNoteTicketConfirm`
+- `creditNoteTicketHeading` (`{number}`, `{date}`), `creditNoteTicketAvailable` (`{amount}`), `creditNoteTicketWillApply` (`{amount}`)
 - `creditNoteNotFound`, `creditNoteUsedUp`, `creditNoteAlreadyOnSale`, `creditNoteOtherCustomer` (`{name}`)

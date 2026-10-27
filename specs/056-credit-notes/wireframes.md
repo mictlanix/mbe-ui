@@ -284,6 +284,8 @@ The row lands on spec 054's payment view. Two known effects:
 
 ## Open Questions
 
+**Status (2026-10-27):** the user accepted every assumed answer. Questions 1, 3, 4, 5 and 9 changed the design and are folded into contracts C2, C3, C4 and C6 and tasks T012, T013, T016, T018, T019 and T021. Questions 2, 6, 7 and 8 needed no change.
+
 1. **How does the partial-failure state show both lines?** `payment_step.dart` renders the server `ErrorBanner` *or* the issue message, never both. Options: (a) render the issue line above the banner when both are set; (b) fold the applied amount into a custom banner. **Wireframe assumed (a).** It's a two-line change to the step's `error` widget and keeps the shared banner untouched. *Changes C2 and T012.*
 2. **What does the tile show while the customer's credit loads?** Options: hidden until loaded; a placeholder tile. **Assumed hidden.** It's one quick request, and a tile that appears a moment later beats a placeholder that may turn into nothing. *Fits C2 as written.*
 3. **Can the cashier change the amount inside the ticket dialog?** Options: no, it uses the Cobro amount field's value as the cap; or yes, an amount field in the dialog. **Assumed no**, with "Se aplicará" shown so the cap is visible. *Adds the "Se aplicará" line to C3.*

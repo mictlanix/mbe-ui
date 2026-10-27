@@ -80,6 +80,7 @@ These verdicts are against **v1.14.0**.
 ```text
 specs/056-credit-notes/
 ├── spec.md                # /speckit-specify (2026-10-27)
+├── wireframes.md          # /speckit-wireframes-draft (drawn after the plan; answers folded into contracts)
 ├── plan.md                # This file
 ├── research.md            # Phase 0 (R1–R11)
 ├── data-model.md          # Phase 1
