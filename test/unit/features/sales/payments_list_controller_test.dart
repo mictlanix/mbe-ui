@@ -88,6 +88,7 @@ void main() {
         dateTo: any(named: 'dateTo'),
         methodCode: any(named: 'methodCode'),
         verified: any(named: 'verified'),
+        search: any(named: 'search'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
@@ -113,6 +114,34 @@ void main() {
         dateTo: null,
         methodCode: null,
         verified: null,
+        search: null,
+        skip: 0,
+        limit: 20,
+      ),
+    ).called(1);
+  });
+
+  test('forwards the customer-name search with the facets, still with the '
+      'user\'s facility (spec 055 FR-010)', () async {
+    stubList(total: 1, items: [_payment(1)]);
+    final container = containerFor(facilityId: 9);
+
+    await container.read(
+      paymentsListControllerProvider(
+        const PaymentsFilter(customerId: 12, customerSearch: 'ana'),
+      ).future,
+    );
+
+    verify(
+      () => repository.list(
+        facilityId: 9,
+        customerId: 12,
+        cashSessionId: null,
+        dateFrom: null,
+        dateTo: null,
+        methodCode: null,
+        verified: null,
+        search: 'ana',
         skip: 0,
         limit: 20,
       ),
@@ -144,6 +173,7 @@ void main() {
         dateTo: DateTime(2026, 8, 5),
         methodCode: 4,
         verified: false,
+        search: null,
         skip: 40,
         limit: 20,
       ),
@@ -173,6 +203,7 @@ void main() {
         dateTo: any(named: 'dateTo'),
         methodCode: any(named: 'methodCode'),
         verified: any(named: 'verified'),
+        search: any(named: 'search'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
@@ -204,6 +235,7 @@ void main() {
         dateTo: any(named: 'dateTo'),
         methodCode: any(named: 'methodCode'),
         verified: any(named: 'verified'),
+        search: any(named: 'search'),
         skip: 100,
         limit: 20,
       ),
@@ -219,6 +251,7 @@ void main() {
         dateTo: any(named: 'dateTo'),
         methodCode: any(named: 'methodCode'),
         verified: any(named: 'verified'),
+        search: any(named: 'search'),
         skip: 0,
         limit: 20,
       ),
@@ -261,6 +294,7 @@ void main() {
         dateTo: any(named: 'dateTo'),
         methodCode: any(named: 'methodCode'),
         verified: any(named: 'verified'),
+        search: any(named: 'search'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
@@ -324,6 +358,7 @@ void main() {
           dateTo: any(named: 'dateTo'),
           methodCode: any(named: 'methodCode'),
           verified: any(named: 'verified'),
+          search: any(named: 'search'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
@@ -381,6 +416,7 @@ void main() {
             dateTo: null,
             methodCode: null,
             verified: null,
+            search: null,
             skip: 0,
             limit: 20,
           ),
@@ -416,6 +452,7 @@ void main() {
           dateTo: null,
           methodCode: null,
           verified: null,
+          search: null,
           skip: 0,
           limit: 20,
         ),

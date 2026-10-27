@@ -8,6 +8,7 @@ import 'package:built_value/json_object.dart';
 import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
+import 'dart:typed_data';
 import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/amount_max.dart';
@@ -328,6 +329,7 @@ class CustomerPaymentsApi {
   ///
   /// Parameters:
   /// * [customer]
+  /// * [search] - Matches part of the customer's name.
   /// * [cashSession]
   /// * [facility]
   /// * [dateFrom]
@@ -348,6 +350,7 @@ class CustomerPaymentsApi {
   Future<Response<ListResponseCustomerPaymentResponse>>
   listCustomerPaymentsApiV1CustomerPaymentsGet({
     int? customer,
+    String? search,
     int? cashSession,
     int? facility,
     DateTime? dateFrom,
@@ -382,6 +385,12 @@ class CustomerPaymentsApi {
           _serializers,
           customer,
           const FullType(int),
+        ),
+      if (search != null)
+        r'search': encodeQueryParameter(
+          _serializers,
+          search,
+          const FullType(String),
         ),
       if (cashSession != null)
         r'cash_session': encodeQueryParameter(
@@ -805,6 +814,89 @@ class CustomerPaymentsApi {
     }
 
     return Response<ListResponseCustomerPaymentResponse>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// Print Customer Payment Ticket
+  /// The customer&#39;s proof of a credit payment or a payment in advance (#272).  Any other type is 409: a cash sale&#39;s proof is its order&#39;s ticket, and a credit note&#39;s ticket belongs to the credit note.
+  ///
+  /// Parameters:
+  /// * [customerPaymentId]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [Uint8List] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<Uint8List>>
+  printCustomerPaymentTicketApiV1CustomerPaymentsCustomerPaymentIdTicketGet({
+    required int customerPaymentId,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/customer-payments/{customer_payment_id}/ticket'
+        .replaceAll(
+          '{'
+          r'customer_payment_id'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            customerPaymentId,
+            const FullType(int),
+          ).toString(),
+        );
+    final _options = Options(
+      method: r'GET',
+      responseType: ResponseType.bytes,
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    Uint8List? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null ? null : rawResponse as Uint8List;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<Uint8List>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,

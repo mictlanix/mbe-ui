@@ -3019,5 +3019,15 @@
   "paymentsSearchReferenceHint": "Search reference…",
   "@paymentsSearchReferenceHint": {"description": "spec 054 FR-010: reference search box, all-facilities scope"},
   "paymentsColumnFacility": "Facility",
-  "@paymentsColumnFacility": {"description": "spec 054 FR-011: facility column, all-facilities scope"}
+  "@paymentsColumnFacility": {"description": "spec 054 FR-011: facility column, all-facilities scope"},
+  "paymentsSearchCustomerHint": "Search customer…",
+  "@paymentsSearchCustomerHint": {"description": "spec 055 FR-009: customer-name search box, facility scope"},
+  "paymentsListForbidden": "You aren't allowed to see these payments.",
+  "@paymentsListForbidden": {"description": "spec 055 FR-016: the server refused the payments list (403); no retry"},
+  "paymentViewTicketTooltip": "View ticket",
+  "@paymentViewTicketTooltip": {"description": "spec 055 FR-002: ticket icon on a payments list row"},
+  "paymentViewTicketAction": "View ticket",
+  "@paymentViewTicketAction": {"description": "spec 055 FR-001: ticket button on the payment view"},
+  "documentPaymentTicketTitle": "Payment ticket · #{id}",
+  "@documentPaymentTicketTitle": {"description": "spec 055: title of the payment ticket preview", "placeholders": {"id": {"type": "int"}}}
 }

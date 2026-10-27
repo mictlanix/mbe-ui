@@ -120,7 +120,7 @@ A user who can read the Payments Editor, typically head-office accounting, has a
 - **FR-006**: The user MUST be able to filter by customer, date range, payment method, verified state and cash session. Any combination of these can be active at once.
 - **FR-006a**: The cash-session filter MUST be a searchable picker over the user's facility's cash sessions. Each option is labelled "#id · cashier · date", and typing a session number finds that session. The filter is offered only to users who can read cash sessions; for anyone else it is absent, not disabled.
 - **FR-007**: The verified filter MUST be tri-state: any, verified or unverified. "Any" is the default.
-- **FR-008**: Filters MUST use the app's shared filter drawer and badged filter button. This mode has no free-text search, so no search box is shown in it.
+- **FR-008**: Filters MUST use the app's shared filter drawer and badged filter button. This mode has no free-text search, so no search box is shown in it. Superseded by spec 055 FR-009: the facility mode now has a customer-name search box.
 - **FR-009**: The facility-scoped mode MUST NOT offer a way to choose another facility.
 
 **Cross-facility search (Story 3)**

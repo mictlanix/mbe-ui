@@ -16,6 +16,7 @@ part 'customer_payment_response.g.dart';
 /// Properties:
 /// * [customerPaymentId]
 /// * [customer]
+/// * [customerDisplayName] - The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
 /// * [amount]
 /// * [currency]
 /// * [method]
@@ -35,6 +36,10 @@ abstract class CustomerPaymentResponse
 
   @BuiltValueField(wireName: r'customer')
   int get customer;
+
+  /// The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
+  @BuiltValueField(wireName: r'customer_display_name')
+  String? get customerDisplayName;
 
   @BuiltValueField(wireName: r'amount')
   String get amount;
@@ -113,6 +118,13 @@ class _$CustomerPaymentResponseSerializer
       object.customer,
       specifiedType: const FullType(int),
     );
+    if (object.customerDisplayName != null) {
+      yield r'customer_display_name';
+      yield serializers.serialize(
+        object.customerDisplayName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'amount';
     yield serializers.serialize(
       object.amount,
@@ -214,6 +226,16 @@ class _$CustomerPaymentResponseSerializer
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
           result.customer = valueDes;
+          break;
+        case r'customer_display_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.customerDisplayName = valueDes;
           break;
         case r'amount':
           final valueDes =

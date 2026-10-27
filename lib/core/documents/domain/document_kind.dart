@@ -4,7 +4,8 @@ import 'package:mbe_ui/core/access/system_object.dart';
 /// The documents mbe-api renders as PDF (mbe-api#231, issue #230), and the
 /// privilege each one is gated by. The gates are exactly what mbe-api enforces:
 /// the ticket and the pedido need the same read right as a sales order, and
-/// the cut the same as the point of sale (spec 044 FR-040, research R12).
+/// the cut the same as the point of sale (spec 044 FR-040, research R12), and
+/// a payment's ticket the same as the payments list (spec 055 R4).
 ///
 /// The page geometry is the server's, so nothing here (or anywhere in mbe-ui)
 /// branches on it (FR-021).
@@ -21,7 +22,12 @@ enum DocumentKind {
 
   /// `GET /sales-quotes/{id}/document` — the Letter-size quote, in any state
   /// (mbe-api spec 024).
-  salesQuote(SystemObject.salesQuotes);
+  salesQuote(SystemObject.salesQuotes),
+
+  /// `GET /customer-payments/{id}/ticket` — the 72 mm proof of a credit
+  /// payment or a payment in advance (mbe-api#272, spec 055). Any other type
+  /// is a 409 on the server, so call sites offer it only for those two.
+  customerPaymentTicket(SystemObject.customerPayments);
 
   const DocumentKind(this.gateObject);
 
@@ -39,6 +45,7 @@ enum DocumentKind {
     DocumentKind.salesOrder => 'pedido-${_pad(recordId, 8)}.pdf',
     DocumentKind.cashCut => 'corte-${_pad(recordId, 6)}.pdf',
     DocumentKind.salesQuote => 'cotizacion-${_pad(recordId, 8)}.pdf',
+    DocumentKind.customerPaymentTicket => 'pago-${_pad(recordId, 8)}.pdf',
   };
 
   static String _pad(int id, int width) => id.toString().padLeft(width, '0');

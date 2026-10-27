@@ -6,8 +6,8 @@ These contracts extend spec 054's ([../../054-payments-list-search/contracts/ui-
 
 | Scope | Search box | Hint (es) | Sends |
 |---|---|---|---|
-| This facility | `payments_search_field` | "Buscar por cliente" (`paymentsSearchCustomerHint`) | `search=<text>` on `GET /customer-payments` |
-| All facilities | `payments_search_field` | "Buscar por referencia" (existing `paymentsSearchReferenceHint`) | `reference=<text>` on `/customer-payments/search` (unchanged) |
+| This facility | `payments_search_field` | "Buscar cliente…" (`paymentsSearchCustomerHint`) | `search=<text>` on `GET /customer-payments` |
+| All facilities | `payments_search_field` | "Buscar referencia…" (existing `paymentsSearchReferenceHint`) | `reference=<text>` on `/customer-payments/search` (unchanged) |
 
 - The search text is stored in the URL as `?search=`.
 - Switching scope drops it.
@@ -17,7 +17,7 @@ These contracts extend spec 054's ([../../054-payments-list-search/contracts/ui-
 
 | State | Widget | Key | Retry |
 |---|---|---|---|
-| `ServerError(statusCode: 403)` | `_ListForbidden`: `ErrorBanner` with `paymentsListForbidden` | `payments_list_forbidden` | none |
+| `ServerError(statusCode: 403)` | `_ListForbidden`: centred text `paymentsListForbidden` (not an `ErrorBanner`, which would add a generic "server error" headline) | `payments_list_forbidden` | none |
 | any other error | `ListFailedView` (unchanged) | `list_state_failed` | yes |
 
 ## C3. "Ver ticket"
@@ -48,11 +48,11 @@ Used in the list's customer column and in the payment view.
 
 | Key | es | en |
 |---|---|---|
-| `paymentsSearchCustomerHint` | Buscar por cliente | Search by customer |
+| `paymentsSearchCustomerHint` | Buscar cliente… | Search customer… |
 | `paymentsListForbidden` | No tienes permiso para ver estos pagos. | You aren't allowed to see these payments. |
 | `paymentViewTicketTooltip` | Ver ticket | View ticket |
 | `paymentViewTicketAction` | Ver ticket | View ticket |
-| `documentPaymentTicketTitle` | Ticket de pago {id} | Payment ticket {id} |
+| `documentPaymentTicketTitle` | Ticket de pago · #{id} | Payment ticket · #{id} |
 
 ## C6. Server contract relied on
 

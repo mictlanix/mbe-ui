@@ -385,6 +385,12 @@ void main() {
       }
     }
 
+    // spec 055: a payment with a ticket (a credit payment or an advance) and
+    // one without, for the ticket step.
+    final ticketPayment = scanned.where((p) => p.type.hasTicket).firstOrNull;
+    final noTicketPayment = scanned.where((p) => !p.type.hasTicket).firstOrNull;
+    final nameSource = scanned.where((p) => p.customerName != null).firstOrNull;
+
     final withSession = scanned.where((p) => p.cashSessionId != null);
     final sessionPayment = withSession.isEmpty ? null : withSession.first;
 
@@ -462,22 +468,68 @@ void main() {
       expect(badgeCount(), 1);
     });
 
-    await step('2b date range narrows (set through the URL)', () async {
-      final day = first.date;
-      final d =
-          '${day.year}-${day.month.toString().padLeft(2, '0')}-'
-          '${day.day.toString().padLeft(2, '0')}';
-      await go('/sales/payments?date-from=$d&date-to=$d');
-      await expectRows(
-        (await payments.list(
-          facilityId: facilityId,
-          dateFrom: DateTime(day.year, day.month, day.day),
-          dateTo: DateTime(day.year, day.month, day.day),
-        )).items,
-        'date range',
-      );
-      expect(badgeCount(), 1);
-    });
+    await step(
+      '2b date range picked in the dialog narrows; "Cualquier fecha" clears it',
+      () async {
+        // spec 055 FR-020: through the chip's own picker, not the address.
+        // Days 1 and 2 of the current month are never after today, which the
+        // picker would reject.
+        final now = DateTime.now();
+        final endDay = now.day >= 2 ? 2 : 1;
+        String ymd(int day) =>
+            '${now.year.toString().padLeft(4, '0')}-'
+            '${now.month.toString().padLeft(2, '0')}-'
+            '${day.toString().padLeft(2, '0')}';
+
+        await go('/sales/payments');
+        await openDrawer();
+        await tapKey('date_range_filter_chip');
+        final dialog = find.byType(DateRangePickerDialog);
+        await pumpUntil(dialog);
+        await tester.tap(
+          find.descendant(of: dialog, matching: find.text('1')).first,
+        );
+        await pumpFor(const Duration(milliseconds: 400));
+        await tester.tap(
+          find.descendant(of: dialog, matching: find.text('$endDay')).first,
+        );
+        await pumpFor(const Duration(milliseconds: 400));
+        final save = MaterialLocalizations.of(
+          tester.element(dialog),
+        ).saveButtonLabel;
+        await tester.tap(find.text(save));
+        await pumpUntilGone(dialog);
+        await closeDrawer();
+
+        expect(uri().queryParameters['date-from'], ymd(1));
+        expect(uri().queryParameters['date-to'], ymd(endDay));
+        await expectRows(
+          (await payments.list(
+            facilityId: facilityId,
+            dateFrom: DateTime(now.year, now.month, 1),
+            dateTo: DateTime(now.year, now.month, endDay),
+          )).items,
+          'picked range',
+        );
+        expect(badgeCount(), 1);
+
+        await openDrawer();
+        await tapFinder(
+          find.descendant(
+            of: byKey('date_range_filter_chip'),
+            matching: find.byIcon(Icons.close),
+          ),
+        );
+        await closeDrawer();
+        expect(uri().queryParameters.containsKey('date-from'), isFalse);
+        expect(uri().queryParameters.containsKey('date-to'), isFalse);
+        expect(badgeCount(), 0);
+        await expectRows(
+          (await payments.list(facilityId: facilityId)).items,
+          'cleared range',
+        );
+      },
+    );
 
     await step('2c Transferencia narrows, badge 1', () async {
       await go('/sales/payments');
@@ -636,18 +688,106 @@ void main() {
         () => orderLink(posLink!, '/sales/pos'),
       );
     }
-    if (officeLink == null) {
-      softFinding(
-        '5b back-office order link',
-        'no payment on the tenant is applied to a back-office order '
-            '(covered by order_link_target_provider and widget tests)',
+    // spec 055 FR-019: a missing back-office application is a failure, not a
+    // skipped step — tool/seed_payment_fixtures.py creates it.
+    await step('5b a back-office order opens in /sales/orders/:id', () async {
+      if (officeLink == null) {
+        throw TestFailure(
+          'no payment on the tenant is applied to a back-office order — '
+          'run tool/seed_payment_fixtures.py',
+        );
+      }
+      await orderLink(officeLink, '/sales/orders');
+    });
+
+    // ---- 14 (spec 055 FR-021) ----
+    await step('14 the ticket opens from the payment view and from the row, '
+        'and is absent where the server has none', () async {
+      if (ticketPayment == null) {
+        throw TestFailure(
+          'no credit payment or advance in the facility — '
+          'run tool/seed_payment_fixtures.py',
+        );
+      }
+      final id = ticketPayment.customerPaymentId;
+
+      Future<void> previewShowsTicket() async {
+        await pumpUntil(byKey('document_preview_pages'));
+        // The title Text carries the key itself.
+        expect(
+          tester.widget<Text>(byKey('document_preview_title')).data,
+          'Ticket de pago · #$id',
+        );
+        expect(byKey('document_print'), findsOneWidget);
+        expect(byKey('document_download'), findsOneWidget);
+        await tapKey('document_preview_close');
+        await pumpUntilGone(byKey('document_preview_surface'));
+      }
+
+      // From the payment view.
+      await go('/sales/payments');
+      await openDetail(id);
+      await tapKey('payment_view_ticket_button');
+      await previewShowsTicket();
+      router().pop();
+      await pumpFor(const Duration(milliseconds: 500));
+
+      // From the list row.
+      await go('/sales/payments');
+      await expectRows(
+        (await payments.list(facilityId: facilityId)).items,
+        'list before the row ticket',
       );
-    } else {
-      await step(
-        '5b a back-office order opens in /sales/orders/:id',
-        () => orderLink(officeLink!, '/sales/orders'),
+      await tapKey('payment_view_ticket_$id');
+      await previewShowsTicket();
+
+      // A payment without a ticket offers neither control.
+      if (noTicketPayment == null) {
+        throw TestFailure('no payment without a ticket in the facility');
+      }
+      final other = noTicketPayment.customerPaymentId;
+      expect(byKey('payment_view_ticket_$other'), findsNothing);
+      await openDetail(other);
+      expect(byKey('payment_view_ticket_button'), findsNothing);
+      router().pop();
+      await pumpFor(const Duration(milliseconds: 500));
+    });
+
+    // ---- 15 (spec 055 FR-009) ----
+    await step('15 customer-name search narrows the facility list', () async {
+      final name = nameSource?.customerName;
+      if (name == null || name.length < 4) {
+        throw TestFailure('no payment with a customer name to search for');
+      }
+      // A fragment in a different letter case, from the middle of the name.
+      final part = name.substring(1, name.length - 1).toUpperCase();
+      await go('/sales/payments');
+      await tester.enterText(
+        find.descendant(
+          of: byKey('payments_search_field'),
+          matching: find.byType(TextField),
+        ),
+        part,
       );
-    }
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await pumpUntilTrue(
+        () => uri().queryParameters['search'] == part,
+        'search=$part',
+      );
+      final expected = (await payments.list(
+        facilityId: facilityId,
+        search: part,
+      )).items;
+      expect(expected, isNotEmpty, reason: 'the server finds "$part"');
+      await expectRows(expected, 'customer-name search');
+      for (final p in expected) {
+        expect(
+          p.customerName!.toLowerCase(),
+          contains(part.toLowerCase()),
+          reason: 'payment ${p.customerPaymentId}',
+        );
+      }
+    });
 
     // ---- 6 / 7 ----
     if (referenced == null) {
@@ -777,18 +917,25 @@ void main() {
       final qaFacility = container().read(userFacilityIdProvider);
 
       await step(
-        '8 non-editor: no mode switch or search; ?scope=all ignored',
+        '8 non-editor: no mode switch; customer search only; ?scope=all '
+        'ignored',
         () async {
           expect(qaFacility, isNotNull);
           await go('/sales/payments');
           final expected = (await payments.list(facilityId: qaFacility!)).items;
           await expectRows(expected, 'non-editor list');
           expect(byKey('payments_scope_switch'), findsNothing);
-          expect(byKey('payments_search_field'), findsNothing);
+          // spec 055 FR-009: every reader of Pagos has the customer-name
+          // search in the facility scope; the reference search stays an
+          // all-facilities, Payments Editor feature.
+          expect(byKey('payments_search_field'), findsOneWidget);
+          expect(find.text('Buscar cliente…'), findsOneWidget);
           await go('/sales/payments?scope=all');
           await expectRows(expected, 'scope=all typed');
           expect(byKey('payments_scope_switch'), findsNothing);
-          expect(byKey('payments_search_field'), findsNothing);
+          expect(byKey('payments_search_field'), findsOneWidget);
+          expect(find.text('Buscar cliente…'), findsOneWidget);
+          expect(find.text('Buscar referencia…'), findsNothing);
           expect(find.text('Sucursal'), findsNothing);
         },
       );
@@ -804,6 +951,47 @@ void main() {
           expect(find.text('El pago $id no existe.'), findsOneWidget);
           router().pop();
           await pumpFor(const Duration(milliseconds: 500));
+        });
+      }
+
+      if (otherFacility == null) {
+        softFinding(
+          '9b server refuses another facility',
+          'no payment outside the facility',
+        );
+      } else {
+        // spec 055 FR-017, mbe-api#273: the server itself refuses what the
+        // client already hides. By id it answers 404 (so the id's existence
+        // isn't revealed), and the list with another facility answers 403.
+        await step('9b the server refuses another facility\'s reads', () async {
+          final qaDio = Dio(BaseOptions(baseUrl: apiBaseUrl));
+          final qaToken = await AuthRepositoryImpl(
+            qaDio,
+          ).login(username: _qaUser, password: _qaPass);
+          qaDio.options.headers['Authorization'] = 'Bearer $qaToken';
+          Future<int?> statusOf(
+            String path, [
+            Map<String, dynamic>? query,
+          ]) async => (await qaDio.get<Object?>(
+            path,
+            queryParameters: query,
+            options: Options(validateStatus: (_) => true),
+          )).statusCode;
+
+          final id = otherFacility.customerPaymentId;
+          final base = '/api/v1/customer-payments';
+          expect(await statusOf('$base/$id'), 404, reason: 'payment by id');
+          expect(
+            await statusOf('$base/$id/applications'),
+            404,
+            reason: 'its applications',
+          );
+          expect(await statusOf('$base/$id/ticket'), 404, reason: 'its ticket');
+          expect(
+            await statusOf(base, {'facility': otherFacility.facilityId}),
+            403,
+            reason: 'the list of another facility',
+          );
         });
       }
 

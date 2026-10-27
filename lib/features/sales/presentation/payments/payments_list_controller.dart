@@ -77,6 +77,7 @@ class PaymentsListController extends _$PaymentsListController {
           dateTo: filter.dateTo,
           methodCode: filter.methodCode,
           verified: filter.verified,
+          search: filter.customerSearch,
           skip: pageIndex * _pageSize,
           limit: _pageSize,
         );

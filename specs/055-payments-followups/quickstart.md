@@ -34,7 +34,7 @@ The walkthrough must end with `==== RESULTS ====` showing every step `PASS`, wit
 2. **Search (US2):**
    - Type part of a customer's name, in another letter case, and press Enter. Only that customer's payments remain, and the URL has `?search=`.
    - Add a date range in the drawer. Both apply.
-   - Switch to "Todas las sucursales" (admin). The box is empty and its hint now says "Buscar por referencia".
+   - Switch to "Todas las sucursales" (admin). The box is empty and its hint now says "Buscar referencia…".
 3. **Ticket from the payment view (US1):** Open the seeded `QA055-SEED` payment and press "Ver ticket". The preview shows a 72 mm "Pago" ticket. Print and Descargar both work.
 4. **Ticket from a row (US1):** Back on the list, the same row has a receipt icon. It opens the same preview. A Contado row has no icon.
 5. **Back-office link (US4):** On the seeded payment, the application's order number opens `/sales/orders/<id>`.

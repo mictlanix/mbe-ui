@@ -127,7 +127,7 @@ test/
 ├── unit/features/sales/                            # payments_filter, customer_payment mapping, repository, payment_type
 ├── widget/features/sales/                          # payments_list_screen, payment_detail_screen
 └── integration/TEST_ACCOUNTS.md                    # + seed script line
-integration_test/payments_quickstart_test.dart      # steps 2b, 5b, 8, 9, + 12, 13 (R9)
+integration_test/payments_quickstart_test.dart      # steps 2b, 5b, 8, 9, + 9b, 14, 15 (R9)
 ```
 
 **Structure Decision**: the single Flutter project, feature-first. The work edits spec 054's payments files and spec 044's document module, and adds only one tool script.
@@ -135,6 +135,18 @@ integration_test/payments_quickstart_test.dart      # steps 2b, 5b, 8, 9, + 12, 
 ## Complexity Tracking
 
 There are no violations to justify.
+
+## Deviations found during implementation
+
+The behaviour in the spec is unchanged; these are mechanics.
+
+| Design said | Implemented | Why |
+|---|---|---|
+| "Not allowed" state is an `ErrorBanner` (C2, R7) | Centred text, keyed `payments_list_forbidden` | `ErrorBanner` prefixes a `ServerError` with the generic "server error" headline, which reads as a failure; the POS sale detail's 403 precedent is plain text too |
+| Folio column `fixedWidth: 90` (spec 054) | `size: ColumnSize.S` | The row-action column is a fixed 150 px. With the 90 px Folio and the 140 px Verificado also fixed, the table's fixed widths exceeded a 400 px phone and `data_table_2` asserted. Expanded width is unaffected (layout test passes) |
+| Search hint "Buscar por cliente" (C1, C5) | "Buscar cliente…" | Matches the existing reference hint, "Buscar referencia…" |
+| Walkthrough steps 12 and 13 (R9) | Steps 14 and 15; the server-refusal checks are their own step, 9b | 12 was already the phone-width step |
+| The regeneration might bring unrelated endpoint changes (R1) | Only `customer_payments_api.dart`, `customer_payment_response.dart` and the generated README changed | The previous regeneration was already current with every other endpoint |
 
 ## Follow-ups (not in this delivery)
 

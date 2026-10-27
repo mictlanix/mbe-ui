@@ -37,6 +37,15 @@ void main() {
     });
   });
 
+  group('PaymentType.hasTicket (spec 055 R5)', () {
+    test('only a credit payment and a payment in advance have a ticket', () {
+      expect(PaymentType.values.where((t) => t.hasTicket), [
+        PaymentType.creditPayment,
+        PaymentType.paymentInAdvance,
+      ]);
+    });
+  });
+
   group('paymentTypeLabel (FR-017)', () {
     test('uses the legacy system words in Spanish', () {
       final es = AppLocalizationsEs();

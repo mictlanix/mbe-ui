@@ -115,3 +115,23 @@ Each is recorded in `.env.template` next to the test that needs it:
   most dev datasets, which makes the POS sale/resume tests skip rather than
   fail.
 - An **open cash session** on the `MBE_POS_*` account's point of sale.
+
+## Payment data (spec 055)
+
+The Pagos walkthrough (`integration_test/payments_quickstart_test.dart`, step
+5b and the ticket step) needs a **credit payment applied to a completed
+back-office order**, and the app can't create one yet
+(mictlanix/mbe-roadmap#26). From the repository root, with the `MBE_ADMIN_*`
+account:
+
+```bash
+python3 tool/seed_payment_fixtures.py
+```
+
+It creates a `CREDIT_PAYMENT` of at most 1.00 with reference `QA055-SEED` and
+applies it to the first completed back-office order that still has a balance.
+It is idempotent: if any payment is already applied to a back-office order, it
+prints it and writes nothing. If the server refuses a call, it stops and
+prints the status and the server's message. **Run it after every database
+reset**, after `seed_test_accounts.py`. Without this data the walkthrough fails
+step 5b on purpose rather than skipping it.
