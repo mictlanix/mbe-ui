@@ -80,6 +80,7 @@ After confirming, the clerk prints a receipt for the customer. It lists what cam
 - **Every quantity is still zero.** Confirm is not available until at least one line has a quantity above zero.
 - **The clerk can edit refunds but can't confirm them.** They can prepare the refund. Confirm is hidden, and someone with confirm access finishes it.
 - **The return-to warehouse.** Each line starts with the warehouse the server proposes. The clerk can pick another warehouse that sells, and the server refuses one that doesn't.
+- **Units on a live invoice.** Units of a line that are on an invoice that hasn't been cancelled can't be returned. The app shows the server's reason, which names the invoice to cancel first.
 - **A refund of an order paid with a credit note.** Allowed. The money goes back as cash or a new credit note like any other refund.
 - **The refund total is more cash than the drawer holds.** The app does not check this. The server allows it and the session close shows it.
 - **Network failure while confirming.** The app reloads the refund before letting the clerk retry, so a refund that went through is not confirmed twice.
@@ -93,7 +94,7 @@ After confirming, the clerk prints a receipt for the customer. It lists what cam
 - **FR-001**: A completed, paid order's detail in Pedidos and in the POS sales list MUST offer "Devolver" to users who can create refunds. Orders in any other status MUST NOT offer it.
 - **FR-002**: "Devoluciones" MUST let users who can create refunds start one by entering a sales order number.
 - **FR-003**: Starting a refund for an order that already has an open refund MUST open that refund instead of creating another.
-- **FR-004**: When the server refuses to open a refund, the app MUST show its reason in words the clerk can act on, and tell "not paid" (cancel the order instead) apart from "not confirmed" and from "nothing left to return".
+- **FR-004**: When the server refuses to open a refund, the app MUST show its reason in words the clerk can act on, and tell "not paid" (cancel the order instead) apart from "not confirmed", from "nothing left to return", and from "units are on an invoice" (cancel the invoice first).
 
 **Editing a refund**
 
@@ -111,7 +112,7 @@ After confirming, the clerk prints a receipt for the customer. It lists what cam
 
 **Listing and tracing**
 
-- **FR-013**: Users who can read refunds MUST be able to open "Devoluciones", listing folio, date, customer, source order, status and total, open first and then newest first, paginated.
+- **FR-013**: Users who can read refunds MUST be able to open "Devoluciones", listing folio, date, customer, source order, status and total, open first and then newest first, paginated. Until mbe-api#285 ships, the server's order (newest first) is used.
 - **FR-014**: The list MUST filter by status, customer and order number.
 - **FR-015**: Each refund MUST have its own link, so other screens can open it directly. A refund's source order MUST link to that order. A refund that ended as a credit note MUST link to it in "Notas de crédito".
 - **FR-016**: The refund segment of a credit note's origin in "Notas de crédito" MUST link to the refund.
