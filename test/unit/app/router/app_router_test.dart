@@ -599,6 +599,7 @@ void main() {
     when(
       () => creditNoteRepository.list(
         customerId: any(named: 'customerId'),
+        openOnly: any(named: 'openOnly'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),

@@ -13,8 +13,8 @@ part 'credit_note.freezed.dart';
 /// redemption record of its own. [customerPaymentId] is also the number
 /// printed under the ticket's barcode.
 ///
-/// `cash_session` is deliberately not mapped: whether a note was paid out in
-/// cash is the server's call, reported through [remaining] (mbe-api#277).
+/// Whether a note was paid back in cash is the server's call, reported through
+/// [remaining], which is 0 for such a note (mbe-api spec 034 FR-002).
 @freezed
 abstract class CreditNote with _$CreditNote {
   const CreditNote._();
@@ -30,8 +30,8 @@ abstract class CreditNote with _$CreditNote {
     /// The backing payment; its id is the ticket number.
     required int customerPaymentId,
 
-    /// The server's `refunded` figure, shown as sent. It reads 0 on legacy
-    /// notes until mbe-api#277 ships.
+    /// What was issued: the backing payment's amount (mbe-api spec 034
+    /// FR-001), shown as sent.
     required String issued,
 
     /// What is left to spend, as the server reports it. Never recomputed
@@ -46,7 +46,7 @@ abstract class CreditNote with _$CreditNote {
     salesOrderId: r.salesOrder,
     customerRefundId: r.customerRefund,
     customerPaymentId: r.customerPayment,
-    issued: r.refunded,
+    issued: r.amount,
     remaining: r.remaining,
     date: r.date,
   );

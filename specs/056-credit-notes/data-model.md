@@ -13,11 +13,11 @@ A freezed class built by `CreditNote.fromResponse(api.CreditNoteResponse)`.
 | `salesOrderId` | `int` | `salesOrder` | The order the refund came from |
 | `customerRefundId` | `int` | `customerRefund` | |
 | `customerPaymentId` | `int` | `customerPayment` | The backing payment. Its id is the ticket number |
-| `issued` | `String` | `refunded` | Shown as-is (FR-015). Reads 0 on legacy notes until mbe-api#277 |
+| `issued` | `String` | `amount` | The backing payment's amount (mbe-api spec 034 FR-001), shown as-is (FR-015) |
 | `remaining` | `String` | `remaining` | The server's figure. Never recomputed |
 | `date` | `DateTime?` | `date` | |
 
-`cashSession` isn't mapped. The app applies no cash-session rule, because the server owns it (mbe-api#277).
+`cashSession`, `refunded`, `refundedToCustomer` and `facility` aren't mapped. The app applies no cash-session rule: the server reports 0 remaining for a note paid back in cash (spec 034 FR-002).
 
 Derived getter: `bool get isOpen => compareAmounts(remaining, '0') > 0`.
 
@@ -29,9 +29,9 @@ Derived getter: `bool get isOpen => compareAmounts(remaining, '0') > 0`.
 
 | Method | Calls | Returns |
 |---|---|---|
-| `list({int? customerId, required int skip, required int limit})` | `GET /credit-notes` (never `open_only`, R2/R8) | `CreditNoteListResult` |
-| `listForCustomer(int customerId)` | `list` repeated until `total` is reached, limit 100 | every note, ordered oldest first |
-| `findByPayment({required int customerPaymentId, required int customerId})` | `list(customerId:)` newest first, stopping at the first match (R4) | `CreditNote?` |
+| `list({int? customerId, bool openOnly = false, int skip, int limit})` | `GET /credit-notes`, in the caller's facility | `CreditNoteListResult` |
+| `listSpendable(int customerId)` | `list(openOnly: true)` repeated until `total` is reached, limit 100 | the customer's spendable notes, oldest first |
+| `findByPayment(int customerPaymentId)` | `GET /credit-notes?customer_payment=` (R4) | `CreditNote?` |
 
 The implementation (`data/credit_note_repository_impl.dart`) wraps `api.CreditNotesApi(dio, appSerializers)` and maps `DioException` with the shared `_toAppError` pattern. It's exposed as `creditNoteRepositoryProvider`.
 
@@ -56,7 +56,7 @@ The implementation (`data/credit_note_repository_impl.dart`) wraps `api.CreditNo
 `customerCreditProvider(saleId)`, a `FutureProvider.family<CustomerCredit, int>`. It reads:
 - the sale, from `posSaleControllerProvider`
 - the sale's applications, from `orderPaymentsControllerProvider(saleId)`
-- `listForCustomer(sale.customer)`
+- `listSpendable(sale.customer)`
 
 It returns `CustomerCredit(notes: open notes not already on the sale, oldest first; total: sum of their remaining)`. For the walk-in customer, or a user failing the R7 gates, it returns an empty value without any request. `tenderCreditNotes` invalidates it after every attempt (FR-008).
 

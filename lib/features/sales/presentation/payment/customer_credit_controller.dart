@@ -45,9 +45,10 @@ class CustomerCredit {
 ///
 /// Empty — with no request — for the walk-in customer (their notes are
 /// redeemed by ticket, never offered as a balance, FR-004) and whenever
-/// [creditTenderAllowed] is false. Otherwise it reads every note the customer
-/// holds, keeps the ones the server says have something left, and leaves out
-/// any already applied to this sale (FR-001). The figures are the server's;
+/// [creditTenderAllowed] is false. Otherwise it reads the notes mbe-api counts
+/// as spendable from the customer's balance (`open_only`: something left, not
+/// paid back in cash) and leaves out any already applied to this sale
+/// (FR-001). The figures are the server's;
 /// nothing here computes a remaining balance (FR-015).
 ///
 /// `PaymentController` invalidates this after every redemption attempt, so a
@@ -74,7 +75,7 @@ Future<CustomerCredit> customerCredit(Ref ref, int saleId) async {
 
   final all = await ref
       .watch(creditNoteRepositoryProvider)
-      .listForCustomer(sale.customer);
+      .listSpendable(sale.customer);
   final spendable = [
     for (final note in all)
       if (note.isOpen && !onThisSale.contains(note.customerPaymentId)) note,

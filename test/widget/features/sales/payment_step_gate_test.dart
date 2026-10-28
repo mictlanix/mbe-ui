@@ -303,7 +303,7 @@ void main() {
     Future<void> pumpCreditStep(WidgetTester tester) async {
       final sale = testSale(status: SaleStatus.completed, balance: '1000.00');
       when(
-        () => creditRepository.listForCustomer(any()),
+        () => creditRepository.listSpendable(any()),
       ).thenAnswer((_) async => [note(1, '300.00'), note(2, '700.00')]);
       when(() => salesOrders.getById(saleId: 42)).thenAnswer((_) async => sale);
       await pumpPos(

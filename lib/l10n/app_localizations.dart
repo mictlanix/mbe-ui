@@ -8017,10 +8017,10 @@ abstract class AppLocalizations {
   /// **'Refund #{refund} · Order #{order}'**
   String creditNotesOrigin(int refund, int order);
 
-  /// spec 056 FR-011: switch limiting the list to notes with something left
+  /// spec 056 FR-011: switch limiting the list to notes a customer can spend from their balance (mbe-api open_only: something left, not paid back in cash, not the walk-in customer's)
   ///
   /// In en, this message translates to:
-  /// **'Only with balance'**
+  /// **'Only spendable'**
   String get creditNotesOpenOnlyFilter;
 
   /// spec 056 FR-011: customer filter in the credit notes drawer

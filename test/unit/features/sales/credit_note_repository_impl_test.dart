@@ -15,7 +15,7 @@ Map<String, dynamic> _noteJson({
   required int id,
   int customer = 10653,
   int payment = 0,
-  String refunded = '27.000000',
+  String amount = '27.0000',
   String remaining = '3',
   String? date,
 }) => {
@@ -24,7 +24,10 @@ Map<String, dynamic> _noteJson({
   'sales_order': 343533,
   'customer_refund': 9605,
   'customer_payment': payment == 0 ? 300000 + id : payment,
-  'refunded': refunded,
+  'facility': 51,
+  'amount': amount,
+  'refunded': '0.000000',
+  'refunded_to_customer': false,
   'remaining': remaining,
   'cash_session': null,
   'date': date ?? '2026-09-29T12:55:20',
@@ -40,12 +43,12 @@ ResponseBody _page(List<Map<String, dynamic>> items, {int? total}) =>
 void main() {
   group('list', () {
     test(
-      'forwards customer, skip and limit, and never turns open_only on',
+      'forwards customer, skip and limit, with open_only off by default',
       () async {
         late RequestOptions seen;
         final repository = _repositoryWith((options) async {
           seen = options;
-          return _page([_noteJson(id: 990)], total: 984);
+          return _page([_noteJson(id: 990)], total: 103);
         });
 
         final page = await repository.list(
@@ -58,25 +61,40 @@ void main() {
         expect(seen.queryParameters['customer'], 10653);
         expect(seen.queryParameters['skip'], 40);
         expect(seen.queryParameters['limit'], 20);
-        // mbe-api#278: open_only pages before it filters, so it is never
-        // turned on. The generated client sends its default, false.
         expect(seen.queryParameters['open_only'], isNot(true));
-        expect(page.total, 984);
+        // The facility is the server's default, the caller's own (mbe-api
+        // spec 034 FR-013): never named here.
+        expect(seen.queryParameters.containsKey('facility'), isFalse);
+        expect(page.total, 103);
         expect(page.items.single.id, 990);
       },
     );
 
-    test('keeps the server\'s figures exactly as sent (FR-015)', () async {
+    test('openOnly asks the server for the spendable notes', () async {
+      late RequestOptions seen;
+      final repository = _repositoryWith((options) async {
+        seen = options;
+        return _page(const []);
+      });
+
+      await repository.list(openOnly: true);
+
+      expect(seen.queryParameters['open_only'], true);
+    });
+
+    test('keeps the server\'s figures exactly as sent: issued is the '
+        'amount (FR-015)', () async {
       final repository = _repositoryWith(
-        (options) async =>
-            _page([_noteJson(id: 1, refunded: '0.000000', remaining: '0')]),
+        (options) async => _page([
+          _noteJson(id: 1, amount: '9505.0000', remaining: '15.0000'),
+        ]),
       );
 
       final note = (await repository.list()).items.single;
 
-      expect(note.issued, '0.000000');
-      expect(note.remaining, '0');
-      expect(note.isOpen, isFalse);
+      expect(note.issued, '9505.0000');
+      expect(note.remaining, '15.0000');
+      expect(note.isOpen, isTrue);
     });
 
     test('a null body becomes AppError.server', () async {
@@ -103,11 +121,11 @@ void main() {
     });
   });
 
-  group('listForCustomer', () {
-    test('reads a second page when total exceeds one, oldest first', () async {
-      final skips = <Object?>[];
+  group('listSpendable', () {
+    test('asks for open notes only, reads every page, oldest first', () async {
+      final seen = <RequestOptions>[];
       final repository = _repositoryWith((options) async {
-        skips.add(options.queryParameters['skip']);
+        seen.add(options);
         return options.queryParameters['skip'] == 0
             ? _page([
                 _noteJson(id: 3, date: '2026-09-03T10:00:00'),
@@ -116,9 +134,11 @@ void main() {
             : _page([_noteJson(id: 1, date: '2026-09-01T10:00:00')], total: 3);
       });
 
-      final notes = await repository.listForCustomer(10653);
+      final notes = await repository.listSpendable(10653);
 
-      expect(skips, [0, 2]);
+      expect(seen.map((o) => o.queryParameters['skip']), [0, 2]);
+      expect(seen.every((o) => o.queryParameters['open_only'] == true), isTrue);
+      expect(seen.every((o) => o.queryParameters['customer'] == 10653), isTrue);
       expect(notes.map((n) => n.id), [1, 2, 3]);
     });
 
@@ -129,58 +149,31 @@ void main() {
         return _page(const [], total: 50);
       });
 
-      expect(await repository.listForCustomer(10653), isEmpty);
+      expect(await repository.listSpendable(10653), isEmpty);
       expect(calls, 1);
     });
   });
 
   group('findByPayment', () {
-    test('returns the match from page 1 without reading page 2', () async {
-      var calls = 0;
+    test('asks the server for that backing payment, in one request', () async {
+      final seen = <RequestOptions>[];
       final repository = _repositoryWith((options) async {
-        calls++;
-        return _page([
-          _noteJson(id: 5, payment: 300743),
-          _noteJson(id: 4, payment: 300700),
-        ], total: 250);
+        seen.add(options);
+        return _page([_noteJson(id: 5, payment: 300743)]);
       });
 
-      final note = await repository.findByPayment(
-        customerPaymentId: 300743,
-        customerId: 1,
-      );
+      final note = await repository.findByPayment(300743);
 
       expect(note?.id, 5);
-      expect(calls, 1);
+      expect(seen, hasLength(1));
+      expect(seen.single.queryParameters['customer_payment'], 300743);
+      expect(seen.single.queryParameters.containsKey('customer'), isFalse);
     });
 
-    test('reads page 2 when page 1 holds no match', () async {
-      final skips = <Object?>[];
-      final repository = _repositoryWith((options) async {
-        skips.add(options.queryParameters['skip']);
-        return options.queryParameters['skip'] == 0
-            ? _page([_noteJson(id: 5, payment: 1)], total: 2)
-            : _page([_noteJson(id: 4, payment: 300743)], total: 2);
-      });
+    test('is null when that payment backs no note', () async {
+      final repository = _repositoryWith((options) async => _page(const []));
 
-      final note = await repository.findByPayment(
-        customerPaymentId: 300743,
-        customerId: 1,
-      );
-
-      expect(note?.id, 4);
-      expect(skips, [0, 1]);
-    });
-
-    test('returns null when the customer holds no such note', () async {
-      final repository = _repositoryWith(
-        (options) async => _page([_noteJson(id: 5, payment: 1)], total: 1),
-      );
-
-      expect(
-        await repository.findByPayment(customerPaymentId: 9, customerId: 1),
-        isNull,
-      );
+      expect(await repository.findByPayment(9), isNull);
     });
   });
 }

@@ -4465,7 +4465,7 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get creditNotesOpenOnlyFilter => 'Solo con saldo';
+  String get creditNotesOpenOnlyFilter => 'Solo utilizables';
 
   @override
   String get creditNotesCustomerFilter => 'Cliente';

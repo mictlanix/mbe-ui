@@ -146,9 +146,9 @@ void main() {
   }
 
   void stubNotes(List<CreditNote> list) =>
-      when(() => notes.listForCustomer(any())).thenAnswer((_) async => list);
+      when(() => notes.listSpendable(any())).thenAnswer((_) async => list);
 
-  void expectNoRequest() => verifyNever(() => notes.listForCustomer(any()));
+  void expectNoRequest() => verifyNever(() => notes.listSpendable(any()));
 
   test('keeps the repository\'s oldest-first order and totals the server '
       'remaining (FR-001, FR-015)', () async {

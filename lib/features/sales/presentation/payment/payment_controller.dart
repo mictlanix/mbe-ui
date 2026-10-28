@@ -440,10 +440,7 @@ class PaymentController extends _$PaymentController {
 
     final note = await ref
         .read(creditNoteRepositoryProvider)
-        .findByPayment(
-          customerPaymentId: ticketNumber,
-          customerId: sale.customer,
-        );
+        .findByPayment(ticketNumber);
     if (note == null) return refuse(CreditNoteRefusal.notFound);
     if (!note.isOpen) return refuse(CreditNoteRefusal.usedUp);
     return (note: note, refusal: null, ownerName: null);

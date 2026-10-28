@@ -16,7 +16,8 @@ abstract class CreditNotesFilter with _$CreditNotesFilter {
   const factory CreditNotesFilter({
     int? customerId,
 
-    /// Only notes the server reports something remaining on (FR-011).
+    /// Only notes a customer can spend from their balance — mbe-api's
+    /// `open_only` (FR-011).
     @Default(false) bool openOnly,
     @Default(0) int pageIndex,
   }) = _CreditNotesFilter;

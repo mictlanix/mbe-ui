@@ -26,34 +26,24 @@ class CreditNoteRepositoryImpl implements CreditNoteRepository {
   @override
   Future<CreditNoteListResult> list({
     int? customerId,
+    bool openOnly = false,
     int skip = 0,
     int limit = 20,
-  }) async {
-    try {
-      // `openOnly` is left at its default (false) on purpose: mbe-api#278.
-      final response = await _api.listCreditNotesApiV1CreditNotesGet(
-        customer: customerId,
-        skip: skip,
-        limit: limit,
-      );
-      final result = response.data;
-      if (result == null) throw const AppError.server();
-      return CreditNoteListResult(
-        items: result.items.map(CreditNote.fromResponse).toList(),
-        total: result.total,
-      );
-    } on DioException catch (e) {
-      throw _toAppError(e);
-    }
-  }
+  }) => _page(
+    customerId: customerId,
+    openOnly: openOnly,
+    skip: skip,
+    limit: limit,
+  );
 
   @override
-  Future<List<CreditNote>> listForCustomer(int customerId) async {
+  Future<List<CreditNote>> listSpendable(int customerId) async {
     final notes = <CreditNote>[];
     var skip = 0;
     while (true) {
-      final page = await list(
+      final page = await _page(
         customerId: customerId,
+        openOnly: true,
         skip: skip,
         limit: _maxPage,
       );
@@ -72,25 +62,34 @@ class CreditNoteRepositoryImpl implements CreditNoteRepository {
   }
 
   @override
-  Future<CreditNote?> findByPayment({
-    required int customerPaymentId,
-    required int customerId,
+  Future<CreditNote?> findByPayment(int customerPaymentId) async {
+    final page = await _page(customerPaymentId: customerPaymentId, limit: 1);
+    return page.items.isEmpty ? null : page.items.first;
+  }
+
+  Future<CreditNoteListResult> _page({
+    int? customerId,
+    int? customerPaymentId,
+    bool openOnly = false,
+    int skip = 0,
+    required int limit,
   }) async {
-    // simplified: worst case reads every page of the customer's notes (512 for
-    // the walk-in customer on the dev tenant); switch to the `customer_payment`
-    // filter when mbe-api#280 ships.
-    var skip = 0;
-    while (true) {
-      final page = await list(
-        customerId: customerId,
+    try {
+      final response = await _api.listCreditNotesApiV1CreditNotesGet(
+        customer: customerId,
+        customerPayment: customerPaymentId,
+        openOnly: openOnly,
         skip: skip,
-        limit: _maxPage,
+        limit: limit,
       );
-      for (final note in page.items) {
-        if (note.customerPaymentId == customerPaymentId) return note;
-      }
-      skip += page.items.length;
-      if (page.items.isEmpty || skip >= page.total) return null;
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return CreditNoteListResult(
+        items: result.items.map(CreditNote.fromResponse).toList(),
+        total: result.total,
+      );
+    } on DioException catch (e) {
+      throw _toAppError(e);
     }
   }
 }

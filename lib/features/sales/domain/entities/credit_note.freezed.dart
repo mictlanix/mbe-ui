@@ -17,8 +17,8 @@ mixin _$CreditNote {
 
  int get id; int get customerId;/// The order the refund came from.
  int get salesOrderId; int get customerRefundId;/// The backing payment; its id is the ticket number.
- int get customerPaymentId;/// The server's `refunded` figure, shown as sent. It reads 0 on legacy
-/// notes until mbe-api#277 ships.
+ int get customerPaymentId;/// What was issued: the backing payment's amount (mbe-api spec 034
+/// FR-001), shown as sent.
  String get issued;/// What is left to spend, as the server reports it. Never recomputed
 /// client-side (spec 056 FR-015).
  String get remaining; DateTime? get date;
@@ -235,8 +235,8 @@ class _CreditNote extends CreditNote {
 @override final  int customerRefundId;
 /// The backing payment; its id is the ticket number.
 @override final  int customerPaymentId;
-/// The server's `refunded` figure, shown as sent. It reads 0 on legacy
-/// notes until mbe-api#277 ships.
+/// What was issued: the backing payment's amount (mbe-api spec 034
+/// FR-001), shown as sent.
 @override final  String issued;
 /// What is left to spend, as the server reports it. Never recomputed
 /// client-side (spec 056 FR-015).

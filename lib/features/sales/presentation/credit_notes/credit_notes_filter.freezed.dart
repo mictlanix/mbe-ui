@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CreditNotesFilter {
 
- int? get customerId;/// Only notes the server reports something remaining on (FR-011).
+ int? get customerId;/// Only notes a customer can spend from their balance — mbe-api's
+/// `open_only` (FR-011).
  bool get openOnly; int get pageIndex;
 /// Create a copy of CreditNotesFilter
 /// with the given fields replaced by the non-null parameter values.
@@ -219,7 +220,8 @@ class _CreditNotesFilter extends CreditNotesFilter {
   
 
 @override final  int? customerId;
-/// Only notes the server reports something remaining on (FR-011).
+/// Only notes a customer can spend from their balance — mbe-api's
+/// `open_only` (FR-011).
 @override@JsonKey() final  bool openOnly;
 @override@JsonKey() final  int pageIndex;
 

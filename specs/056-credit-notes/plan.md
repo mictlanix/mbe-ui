@@ -4,7 +4,7 @@
 
 **Input**: Feature specification from `/specs/056-credit-notes/spec.md`
 
-Roadmap: Closes mictlanix/mbe-roadmap#28 · Upstream: mbe-api#277, #278, #280
+Roadmap: Closes mictlanix/mbe-roadmap#28 · Upstream: mbe-api#277, #278, #280 (all shipped in mbe-api spec 034)
 
 ## Summary
 
@@ -16,10 +16,10 @@ Cashiers spend credit notes in the POS Cobro step, and staff get a read-only **N
 
 **Technical approach:**
 - **Redemption:** the existing `applyPayment` on each note's backing payment. No payment is created (R1). The new `PaymentController.tenderCreditNotes` keeps `tender`'s lock and refresh wiring.
-- **Data:** one new repository over the generated `CreditNotesApi`. It never sends `open_only`, so mbe-api#278 can't hide notes (R2, R8).
+- **Data:** one new repository over the generated `CreditNotesApi`. The list and the customer's credit use the server's `open_only`; a ticket is found with the `customer_payment` filter.
 - **Figures:** shown exactly as the server reports them (FR-015).
 
-**Not working until mbe-api#277 ships:** legacy notes read 0.00 and can't be spent. This is accepted and tracked upstream, not patched on the client.
+**Server figures:** since mbe-api spec 034, issued is the backing payment's amount and remaining its unapplied amount, so legacy notes read correctly.
 
 ## Technical Context
 
@@ -42,7 +42,7 @@ Cashiers spend credit notes in the POS Cobro step, and staff get a read-only **N
 
 **Constraints**:
 - The app never computes a remaining balance (FR-015).
-- The app never sends `open_only` (#278).
+- Lists keep to the caller's facility, the server's default (mbe-api spec 034 FR-013).
 - Applications run one at a time (R3).
 - Amounts go through `formattersProvider`. Spacing comes from tokens. All strings live in `.arb` files.
 - Format only the changed files.
@@ -141,9 +141,9 @@ There are no violations to justify.
 
 | Issue | Effect on this feature | Client stance |
 |---|---|---|
-| mbe-api#277 (+ addendum) | Legacy notes report 0 remaining, and the cashed-out note 158 reports 1,025.00 | Show the server's figures. Live redemption is tested only with notes issued through mbe-api. |
-| mbe-api#278 | `open_only` gives short or empty pages and a wrong total | Never send it. Filter locally (R2, R8), with a `// simplified` marker to remove when it ships. |
-| mbe-api#280 (`customer_payment` filter, R4) | A ticket lookup scans walk-in pages | Scan newest first and stop at the first match, with a `// simplified` marker. |
+| mbe-api#277 | Legacy notes reported 0 remaining | **Shipped** (spec 034): `amount` is issued, `remaining` the payment's unapplied amount. `issued` now maps from `amount`. |
+| mbe-api#278 | `open_only` paged before filtering | **Shipped**: the list and the customer's credit send `open_only`; the local full read and its marker are gone. |
+| mbe-api#280 (`customer_payment` filter, R4) | A ticket lookup scanned pages | **Shipped**: one request; the scan and its marker are gone. |
 
 ## Deviations found during implementation
 
@@ -151,14 +151,12 @@ Where the code differs from the design documents above. The behaviour in the spe
 
 | Design said | Implemented | Why |
 |---|---|---|
-| The app "never sends `open_only`" (R2, R8) | It never sends `open_only=true`; the generated client always sends its default, `false` | The default is what the server assumes anyway; the test asserts the value is never `true` |
+| Toggle "Solo con saldo": every note with something left (FR-011, R8) | "Solo utilizables": mbe-api's `open_only` | After spec 034, `open_only` is correct and means spendable from a customer's balance, which leaves out walk-in notes. The user chose the server's definition and the relabel (2026-10-27) |
 | The ticket dialog returns the note (T018) | It returns a `CreditNoteRedemption(note, amount)` | So what is applied is exactly the "Se aplicará" figure the cashier saw, not one recomputed afterwards |
 | Origin cell as text plus a link widget (C5) | One `Text.rich` with a `WidgetSpan` link | A `Row`/`Wrap` pushed the link outside the `DataTable2` cell's hit area at 1400 px; Fecha and Cliente went from `ColumnSize.L` to `M` to give Origen room |
-| Quickstart walked through by hand (T029) | `integration_test/credit_notes_quickstart_test.dart` automates steps 1–4 and 10 against the real app | Steps 5–9 need a spendable note, which the dev tenant lacks until mbe-api#277 ships; they stay covered by controller and widget tests |
+| Quickstart walked through by hand (T029) | `integration_test/credit_notes_quickstart_test.dart` automates steps 1–4 and 10 against the real app | Steps 5–9 write an application to a real order, so the walkthrough leaves them to a person; they are covered by controller and widget tests |
 | Shared test fixtures per file | `MockCreditNoteRepository`, `creditNoteOverride` and `creditAccessOverride` added to `pos_test_harness.dart` | Four widget test files need them |
 
 ## Follow-ups (not in this delivery)
 
-- **mbe-api#277 / #278** ship: re-check T030 — pass `open_only` and page on the server, and drop the full read in `credit_notes_list_controller.dart`.
-- **mbe-api#280** ships: replace the scan in `CreditNoteRepositoryImpl.findByPayment` with the `customer_payment` filter.
 - **Origin cell cost:** each row resolves its order through `orderLinkTargetProvider` (up to 20 order reads a page for a user who can read orders). Fine at today's volumes; lazy resolution on tap is the fallback if it is slow.

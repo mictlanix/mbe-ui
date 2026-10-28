@@ -56,7 +56,7 @@ A row whose `SalePayment.type == PaymentType.creditNote` leads with `paymentType
 
 **Filter row:** a `CatalogFilterBar` with no `search`, no `actions`, and `filters` holding the badged tune button. Its drawer holds:
 - a customer `CatalogEntityPicker` (key `credit_notes_customer_filter`)
-- a "Solo con saldo" `SwitchListTile` (key `credit_notes_open_only_filter`)
+- a "Solo utilizables" `SwitchListTile` (key `credit_notes_open_only_filter`), which sends mbe-api's `open_only`
 
 **List:** `CatalogListStateView` + `DataTableView`, 20 per page, page in the URL. Columns:
 

@@ -68,21 +68,26 @@ void main() {
   }
 
   /// A fake server holding [notes] (newest first, as the real one orders
-  /// them) that honours `skip`/`limit` and reports every note in `total`.
+  /// them) that honours `customer`, `open_only`, `skip` and `limit`, and counts
+  /// in `total` only what its filters keep — mbe-api spec 034 FR-007.
   void serve(List<CreditNote> notes) {
     when(
       () => repository.list(
         customerId: any(named: 'customerId'),
+        openOnly: any(named: 'openOnly'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
     ).thenAnswer((invocation) async {
       final customerId = invocation.namedArguments[#customerId] as int?;
+      final openOnly = invocation.namedArguments[#openOnly] as bool;
       final skip = invocation.namedArguments[#skip] as int;
       final limit = invocation.namedArguments[#limit] as int;
       final all = [
         for (final n in notes)
-          if (customerId == null || n.customerId == customerId) n,
+          if ((customerId == null || n.customerId == customerId) &&
+              (!openOnly || n.isOpen))
+            n,
       ];
       final end = (skip + limit).clamp(0, all.length);
       return CreditNoteListResult(
@@ -90,16 +95,9 @@ void main() {
         total: all.length,
       );
     });
-    when(() => repository.listForCustomer(any())).thenAnswer((i) async {
-      final customer = i.positionalArguments.single as int;
-      return [
-        for (final n in notes)
-          if (n.customerId == customer) n,
-      ].reversed.toList();
-    });
   }
 
-  group('the balance switch off — server paging (FR-010)', () {
+  group('the switch off — every note (FR-010)', () {
     test('asks for the first page and reports the server\'s total', () async {
       serve([for (var i = 50; i >= 1; i--) _note(i)]);
 
@@ -111,7 +109,12 @@ void main() {
       expect(page.total, 50);
       expect(page.pageIndex, 0);
       verify(
-        () => repository.list(customerId: null, skip: 0, limit: 20),
+        () => repository.list(
+          customerId: null,
+          openOnly: false,
+          skip: 0,
+          limit: 20,
+        ),
       ).called(1);
     });
 
@@ -126,7 +129,12 @@ void main() {
 
       expect(page.items, hasLength(10));
       verify(
-        () => repository.list(customerId: 7, skip: 40, limit: 20),
+        () => repository.list(
+          customerId: 7,
+          openOnly: false,
+          skip: 40,
+          limit: 20,
+        ),
       ).called(1);
     });
 
@@ -141,13 +149,10 @@ void main() {
     });
   });
 
-  group('the balance switch on — read everything, filter here (R8)', () {
-    test('finds an open note on page 3 when the first two hold none '
-        '(the mbe-api#278 case)', () async {
-      // 250 notes, newest first; only note 3 (the third-oldest) is open, so
-      // pages 1 and 2 of the server's own paging hold nothing to show.
+  group('the switch on — the server filters (FR-011, mbe-api spec 034)', () {
+    test('asks for open notes and pages on the server\'s own count', () async {
       serve([
-        for (var i = 250; i >= 1; i--) _note(i, remaining: i == 3 ? '5' : '0'),
+        for (var i = 250; i >= 1; i--) _note(i, remaining: i <= 25 ? '5' : '0'),
       ]);
 
       final page = await containerFor().read(
@@ -156,70 +161,33 @@ void main() {
         ).future,
       );
 
-      expect(page.items.map((n) => n.id), [3]);
-      // The count is the filtered set's own, not the server's 250.
-      expect(page.total, 1);
+      expect(page.items, hasLength(20));
+      expect(page.items.first.id, 25);
+      expect(page.total, 25);
       verify(
         () => repository.list(
           customerId: null,
-          skip: any(named: 'skip'),
-          limit: 100,
+          openOnly: true,
+          skip: 0,
+          limit: 20,
         ),
-      ).called(3);
+      ).called(1);
     });
 
-    test('pages the open notes locally, newest first', () async {
-      serve([for (var i = 45; i >= 1; i--) _note(i)]);
-      final container = containerFor();
-
-      final first = await container.read(
-        creditNotesListControllerProvider(
-          const CreditNotesFilter(openOnly: true),
-        ).future,
-      );
-      final third = await container.read(
-        creditNotesListControllerProvider(
-          const CreditNotesFilter(openOnly: true, pageIndex: 2),
-        ).future,
-      );
-
-      expect(first.items, hasLength(20));
-      expect(first.items.first.id, 45);
-      expect(first.total, 45);
-      expect(third.items.map((n) => n.id), [5, 4, 3, 2, 1]);
-    });
-
-    test('a page past the end clamps to the last one', () async {
-      serve([for (var i = 25; i >= 1; i--) _note(i)]);
+    test('forwards the customer and the page', () async {
+      serve([for (var i = 50; i >= 1; i--) _note(i)]);
 
       final page = await containerFor().read(
         creditNotesListControllerProvider(
-          const CreditNotesFilter(openOnly: true, pageIndex: 9),
+          const CreditNotesFilter(customerId: 7, openOnly: true, pageIndex: 2),
         ).future,
       );
 
-      expect(page.pageIndex, 1);
-      expect(page.items, hasLength(5));
-    });
-
-    test('with a customer it reads that customer\'s notes only', () async {
-      serve([_note(3, customer: 8), _note(2, remaining: '0'), _note(1)]);
-
-      final page = await containerFor().read(
-        creditNotesListControllerProvider(
-          const CreditNotesFilter(customerId: 7, openOnly: true),
-        ).future,
-      );
-
-      expect(page.items.map((n) => n.id), [1]);
-      verify(() => repository.listForCustomer(7)).called(1);
-      verifyNever(
-        () => repository.list(
-          customerId: any(named: 'customerId'),
-          skip: any(named: 'skip'),
-          limit: any(named: 'limit'),
-        ),
-      );
+      expect(page.items, hasLength(10));
+      verify(
+        () =>
+            repository.list(customerId: 7, openOnly: true, skip: 40, limit: 20),
+      ).called(1);
     });
 
     test('no open notes is an empty page, not an error', () async {
@@ -248,6 +216,7 @@ void main() {
     verifyNever(
       () => repository.list(
         customerId: any(named: 'customerId'),
+        openOnly: any(named: 'openOnly'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),

@@ -184,6 +184,7 @@ description: "Task list for 056-credit-notes"
   - SC-002: the time to redeem a walk-in ticket by scan or typed number, which must be under 30 seconds.
   SC-004 (no over-spend when two registers spend the same note) can't be staged by hand. It is verified by T014's failure-path test, plus the server's bound on every application. Record that in the verifications rather than claiming a live check.
 - [x] T030 Confirm the two `// simplified:` markers (T004, T023) are present and name the upstream issue they wait on. Re-check whether mbe-api#277 and #278 have shipped, and mbe-api#280 (the `customer_payment` filter): if one has, remove the matching workaround and its marker in the same change.
+  - **Done again 2026-10-27, after mbe-api spec 034 closed #277, #278 and #280:** both workarounds and their markers are removed (server `open_only`, `customer_payment` lookup), `issued` maps from the new `amount`, and the list's switch is "Solo utilizables" (research R12).
 
 ---
 

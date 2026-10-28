@@ -65,6 +65,7 @@ void main() {
     when(
       () => repository.list(
         customerId: any(named: 'customerId'),
+        openOnly: any(named: 'openOnly'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
@@ -72,9 +73,7 @@ void main() {
       (_) async =>
           CreditNoteListResult(items: notes, total: total ?? notes.length),
     );
-    when(
-      () => repository.listForCustomer(any()),
-    ).thenAnswer((_) async => notes);
+    when(() => repository.listSpendable(any())).thenAnswer((_) async => notes);
   }
 
   User user({bool creditRead = true, bool paymentsRead = true}) => User(
@@ -270,6 +269,7 @@ void main() {
     when(
       () => repository.list(
         customerId: any(named: 'customerId'),
+        openOnly: any(named: 'openOnly'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
@@ -283,6 +283,7 @@ void main() {
     when(
       () => repository.list(
         customerId: any(named: 'customerId'),
+        openOnly: any(named: 'openOnly'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),

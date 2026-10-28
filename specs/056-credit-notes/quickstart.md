@@ -6,7 +6,7 @@ How to prove the feature works end to end. Behaviour details are in [contracts/u
 
 - mbe-api running at `http://127.0.0.1:8000`, on the dev tenant.
 - `.env` with `MBE_POS_*` (admin) and `MBE_QA*` accounts. See `test/integration/TEST_ACCOUNTS.md`.
-- **Spendable fixture.** Until mbe-api#277 ships, no legacy note reports a real spendable balance. Note 158 reports 1,025.00 but was paid out in cash. To get a valid fixture, create a refund through mbe-api (`POST /customer-refunds`, set the return quantities with `PUT /customer-refunds/{id}/lines/{line_id}`, then `POST /customer-refunds/{id}/confirm` with `{"payout": "credit_note"}` while a cash session is open). Do this once for a named customer and once for the walk-in customer, then note the backing payment ids.
+- **Spendable fixture.** Facility 51 on the dev tenant has spendable notes (10 on 2026-10-27, found with `GET /credit-notes?open_only=true`) and three walk-in notes with a balance. To make a fresh one, create a refund through mbe-api (`POST /customer-refunds`, set the return quantities with `PUT /customer-refunds/{id}/lines/{line_id}`, then `POST /customer-refunds/{id}/confirm` with `{"payout": "credit_note"}` while a cash session is open). Do this once for a named customer and once for the walk-in customer, then note the backing payment ids.
 
 ## Automated
 
@@ -17,15 +17,21 @@ flutter test test/integration/credit_notes_live_test.dart -j 1 \
   --dart-define-from-file=.env
 ```
 
-Expected: all pass. The live test skips its redemption case when no spendable note exists (research R11).
+Expected: all pass. The live test is read-only and redeems nothing (research R11).
+
+The real-app walkthrough of steps 1–4 and 10 is automated:
+
+```bash
+flutter test integration_test/credit_notes_quickstart_test.dart -d macos --dart-define-from-file=.env
+```
 
 ## Manual walkthrough (real app, POS user with a cash session)
 
 | # | Step | Expected |
 |---|---|---|
 | 1 | Open Ventas → Notas de crédito | List newest first, 20 per page. Filter row shows no search box. |
-| 2 | Filter by customer 10653 | Notes 990 and others shown. Origin reads "Devolución #9605 · Pedido #343533". |
-| 3 | Turn on "Solo con saldo" with no customer | The full set is read once. Only notes with remaining > 0 are shown, and the count matches the rows (no empty pages). |
+| 2 | Filter by the customer of the newest note | Only that customer's notes in this facility are shown, each with "Devolución #… · Pedido #…". |
+| 3 | Turn on "Solo utilizables" with no customer | Only the notes mbe-api's `open_only` returns are shown, and the count matches the rows. |
 | 4 | Tap a row | Ver pago opens for the backing payment. Back returns to the list. |
 | 5 | POS sale for the named fixture customer, go to Cobro | "Nota de crédito · Saldo X" tile present. |
 | 6 | Tap it with a sale balance larger than X | X applied, the balance falls by X, and an applied row reads "Nota de crédito". The tile disappears. |

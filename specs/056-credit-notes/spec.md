@@ -55,7 +55,7 @@ A supervisor or cashier opens "Notas de crédito" to answer "does this customer 
 **Acceptance Scenarios**:
 
 1. **Given** a customer with three notes, one of them fully used, **When** the list is filtered to that customer, **Then** all three are shown, newest first, each with issued, remaining, date, refund and source order.
-2. **Given** the same customer, **When** "only with balance" is turned on, **Then** only the two notes with something left are shown, and the count matches.
+2. **Given** the same customer, **When** "only spendable" is turned on, **Then** only the two notes they can still spend are shown, and the count matches.
 3. **Given** a user without read access to credit notes, **When** they look for the screen, **Then** it isn't in their navigation, and a direct link redirects them to the home screen, as every other gated route does.
 
 ---
@@ -64,13 +64,13 @@ A supervisor or cashier opens "Notas de crédito" to answer "does this customer 
 
 - **Credit already on this sale.** A note already applied to the sale is left out of the balance offered in Story 1, and Story 2 refuses it. Legacy refused a second application of the same note to the same order.
 - **Sale cancelled or already fully paid.** Credit is not offered, and a note can't be redeemed against it.
-- **Note cashed out at a register.** An older legacy version could pay a note out in cash, and such a note is not spendable. The app doesn't detect this itself. The marker legacy used (a cash session on the note) is also written by mbe-api on every note it issues, so a client-side rule would hide every new note. The server's remaining figure must report 0 for a cashed-out note (mbe-api#277).
+- **Note cashed out at a register.** An older legacy version could pay a note out in cash, and such a note is not spendable. The app doesn't detect this itself. The marker legacy used (a cash session on the note) is also written by mbe-api on every note it issues, so a client-side rule would hide every new note. The server's remaining figure reports 0 for a cashed-out note (mbe-api spec 034 FR-002), so it is never offered.
 - **A ticket from another store.** A walk-in ticket issued at another facility can't be read by a cashier who isn't a payments editor: mbe-api answers "not found", the same as for a number that doesn't exist (mbe-api#273). The app can't tell the two apart, so one message covers both and names the store: no credit note with that number at this store. Legacy had no such limit. Lifting it is a server decision, not this feature's.
 - **Two registers spend the same note at once.** The server bounds every application by the note's remaining amount, so the second application fails. The app shows that failure and re-reads the sale's balance and the customer's credit. It never shows a balance it didn't read back.
 - **Spending several notes partly fails.** If the first notes apply and a later one is refused, the applied ones stay applied. They're ordinary payments the cashier can see on the sale. The app reports how much was applied and re-reads the remaining credit.
 - **A sale's customer changes after credit was applied.** Applied credit stays on the sale. Undoing it belongs to the payments editor (roadmap#26), not this feature.
-- **Legacy notes report nothing left (server defect).** Today mbe-api reports 0.00 remaining for 982 of the dev tenant's 984 notes, because legacy writes 0 in the field the server reads (mbe-api#277). Until #277 ships, the app shows what the server reports and offers no credit for those notes. It doesn't work out its own figure.
-- **The "only with balance" list misreports its count (server defect).** mbe-api#278 drops notes after paging, so pages come back short or empty while the count still includes every note. The screen must not stop at an empty page or show the server's count as the number of open notes until #278 ships.
+- **A walk-in note with a balance under "only spendable".** It is left out: mbe-api counts as spendable only what a customer can spend from their balance (spec 034 FR-004), and a walk-in note is redeemed by its ticket instead. It still shows with the switch off.
+- **Another facility's notes.** Lists keep to the caller's facility (mbe-api spec 034 FR-013), which is also the only facility whose notes a cashier may spend (FR-010).
 
 ## Requirements *(mandatory)*
 
@@ -87,7 +87,7 @@ A supervisor or cashier opens "Notas de crédito" to answer "does this customer 
 - **FR-008**: After every redemption attempt, whether it succeeded, partly succeeded or failed, the app MUST re-read the sale's balance, its applied payments, and the customer's remaining credit from the server before showing them.
 - **FR-009**: A redemption MUST appear among the sale's applied payments as a credit-note payment, with the amount applied.
 - **FR-010**: Users with read access to credit payments MUST be able to open a "Notas de crédito" list. Each row MUST show the customer, date, amount issued, amount remaining, and the refund and source order the note came from. Rows MUST be newest first.
-- **FR-011**: The list MUST filter by customer and offer an "only with balance" toggle that keeps only notes with something remaining.
+- **FR-011**: The list MUST filter by customer and offer an "only spendable" toggle that keeps the notes a customer can still spend from their balance, as mbe-api defines them (something left, not paid back in cash, not the walk-in customer's).
 - **FR-012**: Selecting a row MUST open the backing payment on the existing payment detail screen.
 - **FR-013**: The list MUST be hidden from navigation for users without read access to credit payments. A direct link MUST redirect them to the home screen, as every other gated route does.
 - **FR-014**: The credit-note option and redeem-by-number MUST be shown only to users who can both read credit payments and record customer payments. Redeem-by-number MUST also require read access to customer payments, because it looks up the ticket's payment.
@@ -107,15 +107,15 @@ A supervisor or cashier opens "Notas de crédito" to answer "does this customer 
 - **SC-002**: A cashier can redeem a walk-in ticket in under 30 seconds: scan or type the number, confirm.
 - **SC-003**: In every acceptance scenario, the sale's balance falls by exactly the amount the credit notes' remaining amounts fall. No scenario leaves the two out of step.
 - **SC-004**: No redemption ever exceeds the sale's balance or a note's remaining amount, including when two registers try to spend the same note.
-- **SC-005**: For notes issued through mbe-api, the list's issued and remaining figures match the backing payments' amounts and active applications in 100% of the notes checked. Legacy notes show whatever the server reports (FR-015), and match only once mbe-api#277 ships.
+- **SC-005**: For any customer, the list's issued figure matches the backing payment's amount, and an open note's remaining matches its payment's unapplied amount, in 100% of the notes checked.
 
 ## Assumptions
 
 - **Redemption is POS-only.** The scoping decision placed redemption in "the existing order payment dialogs". The back-office Pedidos workspace takes no payment (spec 029 kept it to capture and confirm), so the POS payment step is the only such dialog. Adding a payment step to Pedidos would be its own feature.
 - **Walk-in notes pay walk-in sales only.** Legacy let a ticket be redeemed on any order. mbe-api refuses applications across customers, and this spec follows the server rather than asking for a carve-out.
 - **Ticket number = backing payment id.** That is what legacy's credit-note ticket prints under its barcode and what legacy's redeem-by-number looks up.
-- **Remaining figures depend on mbe-api#277 and #278.** Until they ship, legacy notes show 0.00 remaining and can't be spent. The one note that reports a balance today (note 158, 1,025.00) was in fact paid out in cash, so it is not a valid redemption fixture. Until #277 ships, live redemption can only be tested against a note issued through mbe-api's refund endpoint.
-- **The server owns the cashed-out rule.** The app spends exactly what the server reports as remaining (FR-015). mbe-api#277 asks the server to report 0 for notes legacy paid out in cash.
+- **The figures are mbe-api's (spec 034, which closed mbe-api#277, #278 and #280).** Issued is the backing payment's amount; remaining is its unapplied amount, 0 once paid back in cash.
+- **The server owns the cashed-out rule.** The app spends exactly what the server reports as remaining (FR-015). mbe-api reports 0 for a note paid back in cash.
 - **No credit-note tickets are printed.** Printing is out of scope, so a walk-in redemption relies on tickets legacy already printed or notes issued by a future refunds screen.
 
 ### Out of scope

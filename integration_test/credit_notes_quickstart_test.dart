@@ -119,7 +119,8 @@ void main() {
     final ofAnchorCustomer = everyNote
         .where((n) => n.customerId == anchor.customerId)
         .toList();
-    final open = everyNote.where((n) => n.isOpen).toList();
+    // What "Solo utilizables" shows: mbe-api's own spendable set (spec 034).
+    final open = await notes.list(openOnly: true, limit: 20);
 
     // ------------------------------------------------------------------
     // App boot (mirrors lib/main.dart)
@@ -302,19 +303,17 @@ void main() {
     });
 
     await step(
-      '3. "Solo con saldo" lists exactly the notes with a balance',
+      '3. "Solo utilizables" lists exactly the spendable notes',
       () async {
         await go('/sales/credit-notes?open=1');
         await settled('open-only list');
-        if (open.isEmpty) {
+        if (open.items.isEmpty) {
           expect(find.text(l10n.clearFiltersButton), findsOneWidget);
         } else {
-          expect(originRows(), open.length.clamp(0, 20));
-          // The remaining column shows each open note's figure, none a zero.
-          expect(
-            tableTexts().where((t) => t.startsWith('\$')).length,
-            greaterThanOrEqualTo(open.length.clamp(0, 20)),
-          );
+          expect(originRows(), open.items.length);
+          for (final n in open.items) {
+            expect(originOf(n.customerRefundId), findsOneWidget);
+          }
         }
       },
     );

@@ -419,7 +419,7 @@ void main() {
       final target =
           onSale ?? testSale(status: SaleStatus.completed, balance: '1000.00');
       when(
-        () => creditRepository.listForCustomer(any()),
+        () => creditRepository.listSpendable(any()),
       ).thenAnswer((_) async => notes ?? [note(1, '300.00')]);
       when(
         () => salesOrders.getById(saleId: 42),
@@ -557,7 +557,7 @@ void main() {
     testWidgets('is inert while the grid is disabled', (tester) async {
       final target = testSale(status: SaleStatus.completed, balance: '1000.00');
       when(
-        () => creditRepository.listForCustomer(any()),
+        () => creditRepository.listSpendable(any()),
       ).thenAnswer((_) async => [note(1, '300.00')]);
       await pumpPos(
         tester,
@@ -605,7 +605,7 @@ void main() {
       salesOrders = MockSalesOrderRepository();
       stubOptions([testOption()]);
       when(
-        () => creditRepository.listForCustomer(any()),
+        () => creditRepository.listSpendable(any()),
       ).thenAnswer((_) async => const []);
       when(() => paymentRepository.get(customerPaymentId: 500)).thenAnswer(
         (_) async => CustomerPayment(
@@ -620,12 +620,7 @@ void main() {
           unapplied: '200.00',
         ),
       );
-      when(
-        () => creditRepository.findByPayment(
-          customerPaymentId: 500,
-          customerId: walkIn,
-        ),
-      ).thenAnswer(
+      when(() => creditRepository.findByPayment(500)).thenAnswer(
         (_) async => CreditNote(
           id: 990,
           customerId: walkIn,

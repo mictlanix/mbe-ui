@@ -823,7 +823,7 @@ void main() {
         () => payments.get(customerPaymentId: 500),
       ).thenAnswer((_) async => payment());
       when(
-        () => creditNotes.findByPayment(customerPaymentId: 500, customerId: 7),
+        () => creditNotes.findByPayment(500),
       ).thenAnswer((_) async => note());
       return (container.read(paymentControllerProvider.notifier), sale);
     }
@@ -858,19 +858,12 @@ void main() {
       final found = await notifier.lookupCreditNoteTicket(sale, 500);
 
       expect(found.refusal, CreditNoteRefusal.notFound);
-      verifyNever(
-        () => creditNotes.findByPayment(
-          customerPaymentId: any(named: 'customerPaymentId'),
-          customerId: any(named: 'customerId'),
-        ),
-      );
+      verifyNever(() => creditNotes.findByPayment(any()));
     });
 
     test('a payment with no credit note behind it is notFound', () async {
       final (notifier, sale) = await arrange();
-      when(
-        () => creditNotes.findByPayment(customerPaymentId: 500, customerId: 7),
-      ).thenAnswer((_) async => null);
+      when(() => creditNotes.findByPayment(500)).thenAnswer((_) async => null);
 
       final found = await notifier.lookupCreditNoteTicket(sale, 500);
 
@@ -953,7 +946,7 @@ void main() {
     test('a note with nothing remaining is usedUp', () async {
       final (notifier, sale) = await arrange();
       when(
-        () => creditNotes.findByPayment(customerPaymentId: 500, customerId: 7),
+        () => creditNotes.findByPayment(500),
       ).thenAnswer((_) async => note(remaining: '0.000000'));
 
       final found = await notifier.lookupCreditNoteTicket(sale, 500);

@@ -163,3 +163,12 @@ Anything a user can't use is hidden, not disabled (§IV).
 - **Live** (`test/integration/credit_notes_live_test.dart`): list paging against the dev tenant; customer lookup for note 990's customer (10653).
   - Redemption isn't tested live until mbe-api#277 ships. No legacy note reports a spendable balance that is real, and note 158 was cashed out.
   - The test calls `markTestSkipped` when no note with `remaining > 0` exists that isn't cashed out.
+
+## R12. After mbe-api spec 034 (2026-10-27)
+
+mbe-api closed #277, #278 and #280 with its spec 034, which changed the contract more than the issues asked:
+
+- **Figures.** `CreditNoteResponse` gained `amount` (what was issued, the payment's amount), `refunded_to_customer`, and `facility`. `refunded` now means cash handed back. `remaining` is the payment's unapplied amount, 0 once paid back in cash. **Decision:** `issued` maps from `amount`; the rest is not mapped.
+- **`open_only`** filters before paging and means spendable from a customer's balance: more than 0.01 left, not paid back in cash, not the walk-in customer's. **Decision:** R2 and R8's local filtering are replaced by it. The list's switch becomes "Solo utilizables" (the user chose the server's definition over keeping walk-in notes with a balance, which would have kept the full read).
+- **`customer_payment`** finds a note by its backing payment. **Decision:** R4's scan is replaced by one request. The payment read before it stays: it gives the "belongs to {name}" refusal its name.
+- **Facility rule.** Lists default to the caller's facility, and applying another facility's payment is refused without Payments Editor. Nothing in the UI names a facility, so this needs no code; another store's ticket reads "no credit note with that number at this store", as before.

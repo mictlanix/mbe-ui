@@ -156,7 +156,7 @@ void main() {
       useExtraLargeText(tester);
       final credit = MockCreditNoteRepository();
       final orders = MockSalesOrderRepository();
-      when(() => credit.listForCustomer(any())).thenAnswer(
+      when(() => credit.listSpendable(any())).thenAnswer(
         (_) async => [
           CreditNote(
             id: 1,

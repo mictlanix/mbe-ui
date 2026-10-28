@@ -76,10 +76,7 @@ void main() {
     when(
       () => payments.get(customerPaymentId: 500),
     ).thenAnswer((_) async => ticket());
-    when(
-      () =>
-          creditNotes.findByPayment(customerPaymentId: 500, customerId: walkIn),
-    ).thenAnswer((_) async => note());
+    when(() => creditNotes.findByPayment(500)).thenAnswer((_) async => note());
   });
 
   Future<void> pumpDialog(
@@ -226,10 +223,7 @@ void main() {
 
     testWidgets('a note with nothing left', (tester) async {
       when(
-        () => creditNotes.findByPayment(
-          customerPaymentId: 500,
-          customerId: walkIn,
-        ),
+        () => creditNotes.findByPayment(500),
       ).thenAnswer((_) async => note(remaining: '0.000000'));
       await pumpDialog(tester);
 
@@ -304,10 +298,7 @@ void main() {
       tester,
     ) async {
       when(
-        () => creditNotes.findByPayment(
-          customerPaymentId: 500,
-          customerId: walkIn,
-        ),
+        () => creditNotes.findByPayment(500),
       ).thenAnswer((_) async => note(remaining: '800.00'));
       await pumpDialog(tester);
 

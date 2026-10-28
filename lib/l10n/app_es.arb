@@ -1511,7 +1511,7 @@
   "creditNotesColumnIssued": "Emitido",
   "creditNotesColumnRemaining": "Saldo",
   "creditNotesOrigin": "Devolución #{refund} · Pedido #{order}",
-  "creditNotesOpenOnlyFilter": "Solo con saldo",
+  "creditNotesOpenOnlyFilter": "Solo utilizables",
   "creditNotesCustomerFilter": "Cliente",
   "creditNotesEmpty": "No hay notas de crédito.",
   "creditNotesForbidden": "No tienes acceso a las notas de crédito.",
