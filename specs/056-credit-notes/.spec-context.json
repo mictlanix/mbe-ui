@@ -3,7 +3,7 @@
   "specName": "Credit Notes",
   "branch": "056-credit-notes",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -397,7 +397,7 @@
     "upstream: mbe-api#277, #278"
   ],
   "intent": "Spend credit notes in the POS payment step and list them read-only",
-  "currentTask": "T030",
+  "currentTask": null,
   "task_summaries": {
     "T001": {
       "status": "DONE",
