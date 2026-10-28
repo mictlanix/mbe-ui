@@ -32,4 +32,4 @@
 ## Notes
 
 - mbe-api is named only under Input and Assumptions, as the dependency whose gaps this feature works around. Requirements describe behaviour, not endpoints.
-- User Story 3 (printing) depends on an mbe-api refund print template that doesn't exist yet. The mbe-api issues for it and for the other interim gaps still need filing (constitution §III).
+- User Story 3 (printing) depends on an mbe-api refund print template that doesn't exist yet. mbe-api issues filed 2026-10-28: #284 (customer names), #285 (search, own-refunds filter), #286 (payout and credit note on the refund), #287 (print template).

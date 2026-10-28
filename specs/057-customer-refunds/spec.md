@@ -12,6 +12,13 @@ A customer brings goods back from a sale they already paid for. The clerk takes 
 
 A refund is a document of its own. It is opened against one paid order and starts with every line that can still be returned, each at a return quantity of zero. The clerk enters what is coming back and where it goes, then confirms. Confirming restocks the goods, gives the refund its folio, and pays the full total back in the form the clerk picks. A confirmed refund is read-only. A refund that is not confirmed can be cancelled.
 
+## Clarifications
+
+### Session 2026-10-28
+
+- Q: What happens to printing while mbe-api has no refund receipt (mbe-api#287)? → A: Story 3 stays in this spec. The print action is built but hidden until the receipt exists. Meanwhile the refund detail shows the credit note's ticket number.
+- Q: Should the payout choice depend on how the order was paid? → A: No. Cash and credit note are always both offered, whatever the order was paid with, as on the server and in legacy.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Refund returned goods from a paid order (Priority: P1)
@@ -96,7 +103,7 @@ After confirming, the clerk prints a receipt for the customer. It lists what cam
 
 **Confirming and cancelling**
 
-- **FR-008**: Users with refund confirm access MUST be able to confirm an open refund that has at least one line above zero. Confirm MUST ask the clerk to choose cash or credit note, showing the total that will be returned. There is no default choice.
+- **FR-008**: Users with refund confirm access MUST be able to confirm an open refund that has at least one line above zero. Confirm MUST ask the clerk to choose cash or credit note, showing the total that will be returned. Both choices MUST always be offered, whatever the order was paid with. There is no default choice.
 - **FR-009**: When the clerk has no open cash session, the app MUST say so before sending the confirm and offer to open one.
 - **FR-010**: A confirmed refund MUST show its folio, date, final lines and total, and be read-only.
 - **FR-011**: When the confirmed lines differ from what the clerk entered, the app MUST say that quantities were adjusted because of another refund.
@@ -112,7 +119,7 @@ After confirming, the clerk prints a receipt for the customer. It lists what cam
 
 **Printing**
 
-- **FR-018**: A confirmed refund MUST offer print, following the document printing behaviour of spec 044. Open and cancelled refunds MUST NOT.
+- **FR-018**: A confirmed refund MUST offer print, following the document printing behaviour of spec 044. Open and cancelled refunds MUST NOT. Until mbe-api provides the refund receipt (mictlanix/mbe-api#287), the print action MUST stay hidden, and the rest of the feature ships without it.
 - **FR-019**: A printed credit-note refund MUST show the credit note's ticket number.
 
 **Access and copy**
@@ -141,11 +148,11 @@ After confirming, the clerk prints a receipt for the customer. It lists what cam
 
 - "Paid" means the order's status is paid. The server decides what can be refunded, and the app shows its answer rather than repeating the rules.
 - Refunds are back-office work with a POS entry point. Confirming still needs the clerk's own open cash session, as on the server.
-- The list shows what the server returns for the caller. There is no "my refunds" default and no text or folio search until mbe-api adds them.
-- **Interim, until mbe-api adds them** (issues to be filed as part of this feature):
-  - The refund list doesn't carry customer names, so the app looks each customer up per row.
-  - The refund doesn't record its payout or link its credit note. Until it does, the app finds the credit note by matching notes for the refund's customer against the refund. A completed refund with no matching note is shown as cash.
-  - mbe-api has no refund print template. Printing (User Story 3) waits for it, and the rest of the feature ships without it if needed.
+- The list shows what the server returns for the caller. There is no "my refunds" default and no text or folio search until mbe-api adds them (mictlanix/mbe-api#285).
+- **Interim, until mbe-api adds them**:
+  - The refund list doesn't carry customer names, so the app looks each customer up per row (mictlanix/mbe-api#284).
+  - The refund doesn't record its payout or link its credit note. Until it does, the app finds the credit note by matching notes for the refund's customer against the refund. A completed refund with no matching note is shown as cash (mictlanix/mbe-api#286).
+  - mbe-api has no refund print template (mictlanix/mbe-api#287). The print action is hidden until it exists (FR-018). Meanwhile a walk-in customer gets the credit note's ticket number from the refund detail (FR-017).
 - Sales orders' detail in Pedidos and the POS sale detail are where "Devolver" lives. A paid order is already read-only there, so the action adds to it without changing editing.
 
 ## Out of Scope
