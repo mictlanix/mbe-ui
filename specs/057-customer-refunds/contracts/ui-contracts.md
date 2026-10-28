@@ -110,3 +110,19 @@ In `_OriginCell`, the refund segment becomes a link (key `credit_note_refund_lin
 ## C7. Localization
 
 New keys go in both `app_es.arb` and `app_en.arb`, prefixed `refunds…` for the list and `refund…` for the detail, dialogs and refusals. The Spanish copy is above. The English copy reads the same: "Refunds", "New refund", "Refund", "Confirm refund", "Cancel refund", "Cash from the drawer", "Credit note", and so on (FR-021).
+
+## C8. Answers from the wireframes
+
+These are from [wireframes.md](../wireframes.md), Open Questions 1–6, as assumed there. Change them here if any is overruled.
+
+- **Compact detail lines:** below the compact breakpoint each line renders as a stacked block, local to `refund_detail_screen.dart`:
+  - product;
+  - price · Por devolver;
+  - stepper · warehouse · total.
+  It is built from `CompactField`s, not a new shared widget. Wider screens keep `DataTableView`.
+- **A draft's folio and date:** the header reads "Borrador" and the list shows "—", because a draft has neither.
+- **A completed refund's columns:** it shows only the lines the server returns, drops "Por devolver", and renames Devolver to "Devuelto".
+- **Edit without confirm:** a one-line hint reads "Otra persona con permiso de confirmar debe terminar esta devolución." (key `refund_needs_confirmer_hint`).
+- **The adjustment notice:** it is shown only right after the confirm call that caused it, and nothing about it is stored.
+- **The compact list:** columns are Folio · Pedido (with a status dot) · Total, and "Nueva devolución" is labelled "Nueva".
+- **The "Nueva devolución" button** sits in `CatalogFilterBar`'s trailing slot.
