@@ -1,0 +1,25 @@
+{
+  "workflow": "speckit",
+  "specName": "Customer Refunds (Devoluciones)",
+  "branch": "main",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-28T10:23:01.881Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-10-28T10:25:36.214Z"
+    }
+  ],
+  "telemetryInstanceId": "b309ddbb-c86a-421b-96ac-582567f30fbd",
+  "last_action": "living specs evaluated — skipped (not configured)"
+}
