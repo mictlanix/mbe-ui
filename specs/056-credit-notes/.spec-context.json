@@ -643,6 +643,11 @@
       "what": "unit+widget suites",
       "result": "3822 pass; goldens show the same 6 pre-existing failures",
       "command": "flutter test test/unit test/widget"
+    },
+    {
+      "what": "quickstart steps 5-9 in the real macOS app against live mbe-api (spend a named customer credit, redeem a walk-in ticket, already-on-sale and other-customer refusals)",
+      "result": "pass (5/5); SC-001 one tap; SC-002 ticket redeemed in 10.5 s; cleanup reversed both applications and cancelled both sales",
+      "command": "flutter test integration_test/credit_notes_redemption_quickstart_test.dart -d macos --dart-define-from-file=.env --dart-define=MBE_POS_PRODUCT_PATTERN=clavo"
     }
   ]
 }

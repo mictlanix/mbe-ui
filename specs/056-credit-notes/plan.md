@@ -154,9 +154,10 @@ Where the code differs from the design documents above. The behaviour in the spe
 | Toggle "Solo con saldo": every note with something left (FR-011, R8) | "Solo utilizables": mbe-api's `open_only` | After spec 034, `open_only` is correct and means spendable from a customer's balance, which leaves out walk-in notes. The user chose the server's definition and the relabel (2026-10-27) |
 | The ticket dialog returns the note (T018) | It returns a `CreditNoteRedemption(note, amount)` | So what is applied is exactly the "Se aplicará" figure the cashier saw, not one recomputed afterwards |
 | Origin cell as text plus a link widget (C5) | One `Text.rich` with a `WidgetSpan` link | A `Row`/`Wrap` pushed the link outside the `DataTable2` cell's hit area at 1400 px; Fecha and Cliente went from `ColumnSize.L` to `M` to give Origen room |
-| Quickstart walked through by hand (T029) | `integration_test/credit_notes_quickstart_test.dart` automates steps 1–4 and 10 against the real app | Steps 5–9 write an application to a real order, so the walkthrough leaves them to a person; they are covered by controller and widget tests |
+| Quickstart walked through by hand (T029) | Two real-app tests: `credit_notes_quickstart_test.dart` (steps 1–4, 10, read-only) and `credit_notes_redemption_quickstart_test.dart` (steps 5–9, writes and then undoes) | Repeatable after any change; the second reverses its applications and cancels its sales, so the notes stay spendable |
 | Shared test fixtures per file | `MockCreditNoteRepository`, `creditNoteOverride` and `creditAccessOverride` added to `pos_test_harness.dart` | Four widget test files need them |
 
 ## Follow-ups (not in this delivery)
 
+- **mbe-api#283** ships (`customer_display_name` on credit notes): map it on `CreditNote` and prefer it in the list's customer cell, keeping the per-customer lookup only for a missing name, as Pagos does after #270.
 - **Origin cell cost:** each row resolves its order through `orderLinkTargetProvider` (up to 20 order reads a page for a user who can read orders). Fine at today's volumes; lazy resolution on tap is the fallback if it is slow.

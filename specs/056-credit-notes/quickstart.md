@@ -25,6 +25,13 @@ The real-app walkthrough of steps 1–4 and 10 is automated:
 flutter test integration_test/credit_notes_quickstart_test.dart -d macos --dart-define-from-file=.env
 ```
 
+Steps 5–9 are automated too, but **they write to the tenant**: the test opens a cash session if there is none (and leaves it open), raises two POS sales, spends two real notes, then reverses both applications and cancels both sales:
+
+```bash
+flutter test integration_test/credit_notes_redemption_quickstart_test.dart -d macos \
+  --dart-define-from-file=.env --dart-define=MBE_POS_PRODUCT_PATTERN=clavo
+```
+
 ## Manual walkthrough (real app, POS user with a cash session)
 
 | # | Step | Expected |
