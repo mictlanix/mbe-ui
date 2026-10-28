@@ -8,7 +8,7 @@ import 'package:built_value/serializer.dart';
 
 part 'credit_note_response.g.dart';
 
-/// A credit note is a view over its backing payment (FR-070).  `refunded` is the amount *issued* and is never decremented; `remaining` is derived from the backing payment's non-cancelled applications, so there is no second balance to drift.
+/// A credit note is a view over its backing payment (FR-070, spec 034).  `amount` is what was issued, the payment's amount. `remaining` is the payment's unapplied amount, change handed back included, and 0 once the note was paid back in cash. `refunded` is what was handed back in cash then, the column's meaning in the current system: 0 otherwise.
 ///
 /// Properties:
 /// * [creditNoteId]
@@ -16,8 +16,11 @@ part 'credit_note_response.g.dart';
 /// * [salesOrder]
 /// * [customerRefund]
 /// * [customerPayment]
-/// * [refunded]
+/// * [facility]
+/// * [amount]
 /// * [remaining]
+/// * [refunded]
+/// * [refundedToCustomer]
 /// * [cashSession]
 /// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 @BuiltValue()
@@ -38,11 +41,20 @@ abstract class CreditNoteResponse
   @BuiltValueField(wireName: r'customer_payment')
   int get customerPayment;
 
-  @BuiltValueField(wireName: r'refunded')
-  String get refunded;
+  @BuiltValueField(wireName: r'facility')
+  int get facility;
+
+  @BuiltValueField(wireName: r'amount')
+  String get amount;
 
   @BuiltValueField(wireName: r'remaining')
   String get remaining;
+
+  @BuiltValueField(wireName: r'refunded')
+  String get refunded;
+
+  @BuiltValueField(wireName: r'refunded_to_customer')
+  bool get refundedToCustomer;
 
   @BuiltValueField(wireName: r'cash_session')
   int? get cashSession;
@@ -102,15 +114,30 @@ class _$CreditNoteResponseSerializer
       object.customerPayment,
       specifiedType: const FullType(int),
     );
-    yield r'refunded';
+    yield r'facility';
     yield serializers.serialize(
-      object.refunded,
+      object.facility,
+      specifiedType: const FullType(int),
+    );
+    yield r'amount';
+    yield serializers.serialize(
+      object.amount,
       specifiedType: const FullType(String),
     );
     yield r'remaining';
     yield serializers.serialize(
       object.remaining,
       specifiedType: const FullType(String),
+    );
+    yield r'refunded';
+    yield serializers.serialize(
+      object.refunded,
+      specifiedType: const FullType(String),
+    );
+    yield r'refunded_to_customer';
+    yield serializers.serialize(
+      object.refundedToCustomer,
+      specifiedType: const FullType(bool),
     );
     yield r'cash_session';
     yield object.cashSession == null
@@ -183,14 +210,20 @@ class _$CreditNoteResponseSerializer
                   as int;
           result.customerPayment = valueDes;
           break;
-        case r'refunded':
+        case r'facility':
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
+          result.facility = valueDes;
+          break;
+        case r'amount':
           final valueDes =
               serializers.deserialize(
                     value,
                     specifiedType: const FullType(String),
                   )
                   as String;
-          result.refunded = valueDes;
+          result.amount = valueDes;
           break;
         case r'remaining':
           final valueDes =
@@ -200,6 +233,24 @@ class _$CreditNoteResponseSerializer
                   )
                   as String;
           result.remaining = valueDes;
+          break;
+        case r'refunded':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
+          result.refunded = valueDes;
+          break;
+        case r'refunded_to_customer':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(bool),
+                  )
+                  as bool;
+          result.refundedToCustomer = valueDes;
           break;
         case r'cash_session':
           final valueDes =

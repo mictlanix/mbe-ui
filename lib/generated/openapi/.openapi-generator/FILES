@@ -2,6 +2,12 @@
 .openapi-generator-ignore
 README.md
 analysis_options.yaml
+doc/AccountPayment.md
+doc/AccountScope.md
+doc/AccountTotals.md
+doc/AccountsPayableApi.md
+doc/AccountsReceivableApi.md
+doc/AccountsSummaryResponse.md
 doc/AddRequestLines.md
 doc/AddressCreate.md
 doc/AddressResponse.md
@@ -28,6 +34,7 @@ doc/BankAccountUpdate.md
 doc/BankAccountsApi.md
 doc/BatchAccount.md
 doc/BatchTemplate.md
+doc/Buckets.md
 doc/BulkApprove.md
 doc/BulkApproveResponse.md
 doc/BulkApproveResult.md
@@ -215,6 +222,7 @@ doc/LabelUpdate.md
 doc/LabelsApi.md
 doc/LineAdd.md
 doc/LineUpdate.md
+doc/LinkedDocument.md
 doc/ListResponseAddressResponse.md
 doc/ListResponseBankAccountResponse.md
 doc/ListResponseCashDrawerResponse.md
@@ -265,6 +273,7 @@ doc/LowProfitMargin.md
 doc/LowProfitMargin1.md
 doc/MethodTotal.md
 doc/NegativeAvailable.md
+doc/OpenDocument.md
 doc/OpeningAmount.md
 doc/OrderApplicationResponse.md
 doc/OrderLineAdd.md
@@ -275,6 +284,8 @@ doc/PaidInvoiceAdd.md
 doc/PaidInvoiceResponse.md
 doc/PaidInvoiceUpdate.md
 doc/ParticipationRate.md
+doc/PartyDetail.md
+doc/PartySummary.md
 doc/PasswordPolicyResponse.md
 doc/PaymentAmount.md
 doc/PaymentMethod.md
@@ -389,6 +400,8 @@ doc/SatUnitOfMeasurementResponse.md
 doc/SessionState.md
 doc/ShortfallReason.md
 doc/SkippedLine.md
+doc/StatementEmailRequest.md
+doc/StatementEmailResponse.md
 doc/StockApi.md
 doc/StockRow.md
 doc/StopCreate.md
@@ -465,6 +478,8 @@ doc/WarehouseUpdate.md
 doc/WarehousesApi.md
 lib/mbe_api_client.dart
 lib/src/api.dart
+lib/src/api/accounts_payable_api.dart
+lib/src/api/accounts_receivable_api.dart
 lib/src/api/addresses_api.dart
 lib/src/api/auth_api.dart
 lib/src/api/bank_accounts_api.dart
@@ -519,6 +534,10 @@ lib/src/auth/basic_auth.dart
 lib/src/auth/bearer_auth.dart
 lib/src/auth/oauth.dart
 lib/src/date_serializer.dart
+lib/src/model/account_payment.dart
+lib/src/model/account_scope.dart
+lib/src/model/account_totals.dart
+lib/src/model/accounts_summary_response.dart
 lib/src/model/add_request_lines.dart
 lib/src/model/address_create.dart
 lib/src/model/address_response.dart
@@ -542,6 +561,7 @@ lib/src/model/bank_account_response.dart
 lib/src/model/bank_account_update.dart
 lib/src/model/batch_account.dart
 lib/src/model/batch_template.dart
+lib/src/model/buckets.dart
 lib/src/model/bulk_approve.dart
 lib/src/model/bulk_approve_response.dart
 lib/src/model/bulk_approve_result.dart
@@ -707,6 +727,7 @@ lib/src/model/label_response.dart
 lib/src/model/label_update.dart
 lib/src/model/line_add.dart
 lib/src/model/line_update.dart
+lib/src/model/linked_document.dart
 lib/src/model/list_response_address_response.dart
 lib/src/model/list_response_bank_account_response.dart
 lib/src/model/list_response_cash_drawer_response.dart
@@ -757,6 +778,7 @@ lib/src/model/low_profit_margin.dart
 lib/src/model/low_profit_margin1.dart
 lib/src/model/method_total.dart
 lib/src/model/negative_available.dart
+lib/src/model/open_document.dart
 lib/src/model/opening_amount.dart
 lib/src/model/order_application_response.dart
 lib/src/model/order_line_add.dart
@@ -767,6 +789,8 @@ lib/src/model/paid_invoice_add.dart
 lib/src/model/paid_invoice_response.dart
 lib/src/model/paid_invoice_update.dart
 lib/src/model/participation_rate.dart
+lib/src/model/party_detail.dart
+lib/src/model/party_summary.dart
 lib/src/model/password_policy_response.dart
 lib/src/model/payment_amount.dart
 lib/src/model/payment_method.dart
@@ -871,6 +895,8 @@ lib/src/model/sat_unit_of_measurement_response.dart
 lib/src/model/session_state.dart
 lib/src/model/shortfall_reason.dart
 lib/src/model/skipped_line.dart
+lib/src/model/statement_email_request.dart
+lib/src/model/statement_email_response.dart
 lib/src/model/stock_row.dart
 lib/src/model/stop_create.dart
 lib/src/model/stop_outcome.dart
