@@ -21,7 +21,7 @@ class CreditNotesApi {
   const CreditNotesApi(this._dio, this._serializers);
 
   /// Get Credit Note
-  ///
+  /// 404 rather than 403 for another facility&#39;s note, so its existence isn&#39;t revealed.
   ///
   /// Parameters:
   /// * [creditNoteId]
@@ -112,7 +112,9 @@ class CreditNotesApi {
   ///
   /// Parameters:
   /// * [customer]
-  /// * [openOnly]
+  /// * [customerPayment] - The backing payment, whose id a credit-note ticket prints under its barcode
+  /// * [facility] - Defaults to the caller's facility
+  /// * [openOnly] - Only notes with more than 0.01 left that were not paid back in cash, and not the walk-in customer's: the ones that can be spent
   /// * [skip]
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -127,6 +129,8 @@ class CreditNotesApi {
   Future<Response<ListResponseCreditNoteResponse>>
   listCreditNotesApiV1CreditNotesGet({
     int? customer,
+    int? customerPayment,
+    int? facility,
     bool? openOnly = false,
     int? skip = 0,
     int? limit = 20,
@@ -155,6 +159,18 @@ class CreditNotesApi {
         r'customer': encodeQueryParameter(
           _serializers,
           customer,
+          const FullType(int),
+        ),
+      if (customerPayment != null)
+        r'customer_payment': encodeQueryParameter(
+          _serializers,
+          customerPayment,
+          const FullType(int),
+        ),
+      if (facility != null)
+        r'facility': encodeQueryParameter(
+          _serializers,
+          facility,
           const FullType(int),
         ),
       if (openOnly != null)

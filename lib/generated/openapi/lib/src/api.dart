@@ -9,6 +9,8 @@ import 'package:mbe_api_client/src/auth/api_key_auth.dart';
 import 'package:mbe_api_client/src/auth/basic_auth.dart';
 import 'package:mbe_api_client/src/auth/bearer_auth.dart';
 import 'package:mbe_api_client/src/auth/oauth.dart';
+import 'package:mbe_api_client/src/api/accounts_payable_api.dart';
+import 'package:mbe_api_client/src/api/accounts_receivable_api.dart';
 import 'package:mbe_api_client/src/api/addresses_api.dart';
 import 'package:mbe_api_client/src/api/auth_api.dart';
 import 'package:mbe_api_client/src/api/bank_accounts_api.dart';
@@ -182,6 +184,18 @@ class MbeApiClient {
           .apiKeys
           .remove(name);
     }
+  }
+
+  /// Get AccountsPayableApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  AccountsPayableApi getAccountsPayableApi() {
+    return AccountsPayableApi(dio, serializers);
+  }
+
+  /// Get AccountsReceivableApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  AccountsReceivableApi getAccountsReceivableApi() {
+    return AccountsReceivableApi(dio, serializers);
   }
 
   /// Get AddressesApi instance, base route and serializer can be overridden by a given but be careful,

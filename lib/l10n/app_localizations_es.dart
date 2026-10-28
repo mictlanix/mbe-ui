@@ -4440,4 +4440,110 @@ class AppLocalizationsEs extends AppLocalizations {
   String documentPaymentTicketTitle(int id) {
     return 'Ticket de pago · #$id';
   }
+
+  @override
+  String get creditNotesMenuTitle => 'Notas de crédito';
+
+  @override
+  String get creditNotesColumnDate => 'Fecha';
+
+  @override
+  String get creditNotesColumnCustomer => 'Cliente';
+
+  @override
+  String get creditNotesColumnOrigin => 'Origen';
+
+  @override
+  String get creditNotesColumnIssued => 'Emitido';
+
+  @override
+  String get creditNotesColumnRemaining => 'Saldo';
+
+  @override
+  String creditNotesOrigin(int refund, int order) {
+    return 'Devolución #$refund · Pedido #$order';
+  }
+
+  @override
+  String get creditNotesOpenOnlyFilter => 'Solo utilizables';
+
+  @override
+  String get creditNotesCustomerFilter => 'Cliente';
+
+  @override
+  String get creditNotesEmpty => 'No hay notas de crédito.';
+
+  @override
+  String get creditNotesForbidden => 'No tienes acceso a las notas de crédito.';
+
+  @override
+  String get paymentCreditNoteTile => 'Nota de crédito';
+
+  @override
+  String paymentCreditNoteBalance(String amount) {
+    return 'Saldo $amount';
+  }
+
+  @override
+  String get paymentCreditNoteRedeemTile => 'Canjear nota de crédito';
+
+  @override
+  String get paymentCreditNoteRedeemHint => 'Escanea el ticket';
+
+  @override
+  String paymentCreditPartlyApplied(String amount) {
+    return 'Se aplicaron $amount de crédito; el resto no se pudo aplicar.';
+  }
+
+  @override
+  String appliedPaymentCreditNoteNumber(int number) {
+    return 'Nº $number';
+  }
+
+  @override
+  String get creditNoteTicketTitle => 'Canjear nota de crédito';
+
+  @override
+  String get creditNoteTicketInput => 'Número de ticket';
+
+  @override
+  String get creditNoteTicketHelp =>
+      'Escanea el código de barras del ticket o escríbelo.';
+
+  @override
+  String get creditNoteTicketSearching => 'Buscando…';
+
+  @override
+  String get creditNoteTicketConfirm => 'Aplicar';
+
+  @override
+  String creditNoteTicketHeading(int number, String date) {
+    return 'Nota de crédito Nº $number · $date';
+  }
+
+  @override
+  String creditNoteTicketAvailable(String amount) {
+    return 'Saldo disponible $amount';
+  }
+
+  @override
+  String creditNoteTicketWillApply(String amount) {
+    return 'Se aplicará $amount';
+  }
+
+  @override
+  String get creditNoteNotFound =>
+      'No hay una nota de crédito con ese número en esta sucursal.';
+
+  @override
+  String get creditNoteUsedUp => 'Esta nota de crédito ya se usó por completo.';
+
+  @override
+  String get creditNoteAlreadyOnSale =>
+      'Esta nota de crédito ya está aplicada a esta venta.';
+
+  @override
+  String creditNoteOtherCustomer(String name) {
+    return 'Esta nota de crédito es de $name. Haz la venta a su nombre para usarla.';
+  }
 }

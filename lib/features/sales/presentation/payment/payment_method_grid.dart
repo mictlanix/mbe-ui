@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/access/access_control.dart';
+import 'package:mbe_ui/core/access/access_right.dart';
+import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
+import 'package:mbe_ui/features/sales/domain/money.dart';
+import 'package:mbe_ui/features/sales/presentation/payment/credit_note_ticket_dialog.dart';
+import 'package:mbe_ui/features/sales/presentation/payment/customer_credit_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/facility_payment_options_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_reference_dialog.dart';
@@ -86,6 +94,32 @@ class PaymentMethodGrid extends ConsumerWidget {
     );
   }
 
+  /// spec 056 FR-002: spends the customer's credit notes on this sale. The
+  /// amount the cashier has in the field caps it, so typing less than the
+  /// balance spends only that much.
+  Future<void> _spendCredit(WidgetRef ref, CustomerCredit credit) => ref
+      .read(paymentControllerProvider.notifier)
+      .tenderCreditNotes(
+        sale,
+        credit.notes,
+        enteredAmount: ref.read(paymentControllerProvider).amount,
+      );
+
+  /// spec 056 FR-005: a walk-in ticket. The dialog finds the note and says what
+  /// will be applied; what it returns is applied exactly, so the cashier never
+  /// confirms one figure and has another booked.
+  Future<void> _redeemTicket(BuildContext context, WidgetRef ref) async {
+    final redemption = await showCreditNoteTicketDialog(
+      context,
+      sale: sale,
+      enteredAmount: ref.read(paymentControllerProvider).amount,
+    );
+    if (redemption == null) return;
+    await ref.read(paymentControllerProvider.notifier).tenderCreditNotes(sale, [
+      redemption.note,
+    ], enteredAmount: redemption.amount);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
@@ -96,6 +130,17 @@ class PaymentMethodGrid extends ConsumerWidget {
       paymentControllerProvider.select((d) => d.submitting),
     );
     final active = enabled && !submitting;
+    // spec 056 FR-001: hidden until the credit has loaded, and whenever there
+    // is none to spend. `.value` keeps the previous figure while it re-reads.
+    final credit = ref.watch(customerCreditProvider(sale.id)).value;
+    // A walk-in sale has no balance to offer, so it gets the ticket tile in
+    // its place — never both. Redeeming reads the ticket's payment, which
+    // needs customer-payments read on top of what spending needs (FR-014).
+    final access = ref.watch(accessControlProvider);
+    final offerTicket =
+        ref.watch(appSettingsProvider).isGenericCustomer(sale.customer) &&
+        creditTenderAllowed(sale, access) &&
+        access.can(SystemObject.customerPayments, AccessRight.read);
 
     return options.when(
       data: (list) {
@@ -130,6 +175,33 @@ class PaymentMethodGrid extends ConsumerWidget {
                         : null,
                   ),
               ];
+        if (credit != null && compareAmounts(credit.total, '0') > 0) {
+          final fmt = ref.watch(formattersProvider);
+          tiles.add(
+            _TileData(
+              key: const Key('payment_credit_note_tile'),
+              icon: Icons.receipt_long_outlined,
+              name: l10n.paymentCreditNoteTile,
+              requiresReference: false,
+              subtitle: l10n.paymentCreditNoteBalance(
+                fmt.display.currency(credit.total),
+              ),
+              onTap: active ? () => _spendCredit(ref, credit) : null,
+            ),
+          );
+        }
+        if (offerTicket) {
+          tiles.add(
+            _TileData(
+              key: const Key('payment_credit_note_redeem_tile'),
+              icon: Icons.receipt_long_outlined,
+              name: l10n.paymentCreditNoteRedeemTile,
+              requiresReference: false,
+              subtitle: l10n.paymentCreditNoteRedeemHint,
+              onTap: active ? () => _redeemTicket(context, ref) : null,
+            ),
+          );
+        }
 
         final gutter = Theme.of(context).spacing.xs;
         return LayoutBuilder(
@@ -167,6 +239,7 @@ class _TileData {
     required this.name,
     required this.requiresReference,
     required this.onTap,
+    this.subtitle,
   });
 
   final Key key;
@@ -174,6 +247,10 @@ class _TileData {
   final String name;
   final bool requiresReference;
   final VoidCallback? onTap;
+
+  /// Replaces the reference hint as the tile's second line — the credit-note
+  /// tiles (spec 056) have no reference to ask for.
+  final String? subtitle;
 }
 
 /// One tile: icon, name, and a secondary line stating whether it requires a
@@ -231,9 +308,10 @@ class _MethodTile extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                           Text(
-                            data.requiresReference
-                                ? l10n.posPaymentMethodRequiresReference
-                                : l10n.posPaymentMethodNoReference,
+                            data.subtitle ??
+                                (data.requiresReference
+                                    ? l10n.posPaymentMethodRequiresReference
+                                    : l10n.posPaymentMethodNoReference),
                             style: theme.typeRoles.metricLabel,
                           ),
                         ],

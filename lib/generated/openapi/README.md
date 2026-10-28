@@ -47,14 +47,15 @@ Please follow the [installation procedure](#installation--usage) and then run th
 import 'package:mbe_api_client/mbe_api_client.dart';
 
 
-final api = MbeApiClient().getAddressesApi();
-final AddressCreate addressCreate = ; // AddressCreate | 
+final api = MbeApiClient().getAccountsPayableApi();
+final int supplierId = 56; // int | 
+final StatementEmailRequest statementEmailRequest = ; // StatementEmailRequest | 
 
 try {
-    final response = await api.createAddressApiV1AddressesPost(addressCreate);
+    final response = await api.emailStatementApiV1AccountsPayableSupplierIdStatementEmailPost(supplierId, statementEmailRequest);
     print(response);
 } on DioException catch (e) {
-    print("Exception when calling AddressesApi->createAddressApiV1AddressesPost: $e\n");
+    print("Exception when calling AccountsPayableApi->emailStatementApiV1AccountsPayableSupplierIdStatementEmailPost: $e\n");
 }
 
 ```
@@ -65,6 +66,14 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+[*AccountsPayableApi*](doc/AccountsPayableApi.md) | [**emailStatementApiV1AccountsPayableSupplierIdStatementEmailPost**](doc/AccountsPayableApi.md#emailstatementapiv1accountspayablesupplieridstatementemailpost) | **POST** /api/v1/accounts-payable/{supplier_id}/statement/email | Email Statement
+[*AccountsPayableApi*](doc/AccountsPayableApi.md) | [**getAccountPayableApiV1AccountsPayableSupplierIdGet**](doc/AccountsPayableApi.md#getaccountpayableapiv1accountspayablesupplieridget) | **GET** /api/v1/accounts-payable/{supplier_id} | Get Account Payable
+[*AccountsPayableApi*](doc/AccountsPayableApi.md) | [**listAccountsPayableApiV1AccountsPayableGet**](doc/AccountsPayableApi.md#listaccountspayableapiv1accountspayableget) | **GET** /api/v1/accounts-payable | List Accounts Payable
+[*AccountsPayableApi*](doc/AccountsPayableApi.md) | [**printStatementApiV1AccountsPayableSupplierIdStatementGet**](doc/AccountsPayableApi.md#printstatementapiv1accountspayablesupplieridstatementget) | **GET** /api/v1/accounts-payable/{supplier_id}/statement | Print Statement
+[*AccountsReceivableApi*](doc/AccountsReceivableApi.md) | [**emailStatementApiV1AccountsReceivableCustomerIdStatementEmailPost**](doc/AccountsReceivableApi.md#emailstatementapiv1accountsreceivablecustomeridstatementemailpost) | **POST** /api/v1/accounts-receivable/{customer_id}/statement/email | Email Statement
+[*AccountsReceivableApi*](doc/AccountsReceivableApi.md) | [**getAccountReceivableApiV1AccountsReceivableCustomerIdGet**](doc/AccountsReceivableApi.md#getaccountreceivableapiv1accountsreceivablecustomeridget) | **GET** /api/v1/accounts-receivable/{customer_id} | Get Account Receivable
+[*AccountsReceivableApi*](doc/AccountsReceivableApi.md) | [**listAccountsReceivableApiV1AccountsReceivableGet**](doc/AccountsReceivableApi.md#listaccountsreceivableapiv1accountsreceivableget) | **GET** /api/v1/accounts-receivable | List Accounts Receivable
+[*AccountsReceivableApi*](doc/AccountsReceivableApi.md) | [**printStatementApiV1AccountsReceivableCustomerIdStatementGet**](doc/AccountsReceivableApi.md#printstatementapiv1accountsreceivablecustomeridstatementget) | **GET** /api/v1/accounts-receivable/{customer_id}/statement | Print Statement
 [*AddressesApi*](doc/AddressesApi.md) | [**createAddressApiV1AddressesPost**](doc/AddressesApi.md#createaddressapiv1addressespost) | **POST** /api/v1/addresses | Create Address
 [*AddressesApi*](doc/AddressesApi.md) | [**deleteAddressApiV1AddressesAddressIdDelete**](doc/AddressesApi.md#deleteaddressapiv1addressesaddressiddelete) | **DELETE** /api/v1/addresses/{address_id} | Delete Address
 [*AddressesApi*](doc/AddressesApi.md) | [**getAddressApiV1AddressesAddressIdGet**](doc/AddressesApi.md#getaddressapiv1addressesaddressidget) | **GET** /api/v1/addresses/{address_id} | Get Address
@@ -475,6 +484,10 @@ Class | Method | HTTP request | Description
 
 ## Documentation For Models
 
+ - [AccountPayment](doc/AccountPayment.md)
+ - [AccountScope](doc/AccountScope.md)
+ - [AccountTotals](doc/AccountTotals.md)
+ - [AccountsSummaryResponse](doc/AccountsSummaryResponse.md)
  - [AddRequestLines](doc/AddRequestLines.md)
  - [AddressCreate](doc/AddressCreate.md)
  - [AddressResponse](doc/AddressResponse.md)
@@ -498,6 +511,7 @@ Class | Method | HTTP request | Description
  - [BankAccountUpdate](doc/BankAccountUpdate.md)
  - [BatchAccount](doc/BatchAccount.md)
  - [BatchTemplate](doc/BatchTemplate.md)
+ - [Buckets](doc/Buckets.md)
  - [BulkApprove](doc/BulkApprove.md)
  - [BulkApproveResponse](doc/BulkApproveResponse.md)
  - [BulkApproveResult](doc/BulkApproveResult.md)
@@ -662,6 +676,7 @@ Class | Method | HTTP request | Description
  - [LabelUpdate](doc/LabelUpdate.md)
  - [LineAdd](doc/LineAdd.md)
  - [LineUpdate](doc/LineUpdate.md)
+ - [LinkedDocument](doc/LinkedDocument.md)
  - [ListResponseAddressResponse](doc/ListResponseAddressResponse.md)
  - [ListResponseBankAccountResponse](doc/ListResponseBankAccountResponse.md)
  - [ListResponseCashDrawerResponse](doc/ListResponseCashDrawerResponse.md)
@@ -712,6 +727,7 @@ Class | Method | HTTP request | Description
  - [LowProfitMargin1](doc/LowProfitMargin1.md)
  - [MethodTotal](doc/MethodTotal.md)
  - [NegativeAvailable](doc/NegativeAvailable.md)
+ - [OpenDocument](doc/OpenDocument.md)
  - [OpeningAmount](doc/OpeningAmount.md)
  - [OrderApplicationResponse](doc/OrderApplicationResponse.md)
  - [OrderLineAdd](doc/OrderLineAdd.md)
@@ -722,6 +738,8 @@ Class | Method | HTTP request | Description
  - [PaidInvoiceResponse](doc/PaidInvoiceResponse.md)
  - [PaidInvoiceUpdate](doc/PaidInvoiceUpdate.md)
  - [ParticipationRate](doc/ParticipationRate.md)
+ - [PartyDetail](doc/PartyDetail.md)
+ - [PartySummary](doc/PartySummary.md)
  - [PasswordPolicyResponse](doc/PasswordPolicyResponse.md)
  - [PaymentAmount](doc/PaymentAmount.md)
  - [PaymentMethod](doc/PaymentMethod.md)
@@ -826,6 +844,8 @@ Class | Method | HTTP request | Description
  - [SessionState](doc/SessionState.md)
  - [ShortfallReason](doc/ShortfallReason.md)
  - [SkippedLine](doc/SkippedLine.md)
+ - [StatementEmailRequest](doc/StatementEmailRequest.md)
+ - [StatementEmailResponse](doc/StatementEmailResponse.md)
  - [StockRow](doc/StockRow.md)
  - [StopCreate](doc/StopCreate.md)
  - [StopOutcome](doc/StopOutcome.md)

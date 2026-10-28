@@ -133,4 +133,78 @@ void main() {
       );
     });
   });
+
+  group('Notas de crédito destination (spec 056 FR-013)', () {
+    test('a user without Credit Payments read has no entry', () {
+      expect(
+        visibleIds(multiCurrency: false, administrator: false),
+        isNot(contains('credit-notes')),
+      );
+      // Customer Payments read alone is not enough: a credit note is
+      // permissioned separately, as Credit Payments (83).
+      expect(
+        visibleIds(
+          multiCurrency: false,
+          administrator: false,
+          privileges: const [
+            Privilege(systemObject: SystemObject.customerPayments, rawValue: 2),
+          ],
+        ),
+        isNot(contains('credit-notes')),
+      );
+    });
+
+    test('a user with Credit Payments read has the entry', () {
+      expect(
+        visibleIds(
+          multiCurrency: false,
+          administrator: false,
+          privileges: const [
+            Privilege(systemObject: SystemObject.creditPayments, rawValue: 2),
+          ],
+        ),
+        contains('credit-notes'),
+      );
+    });
+
+    test('an administrator has the entry', () {
+      expect(
+        visibleIds(multiCurrency: false, administrator: true),
+        contains('credit-notes'),
+      );
+    });
+
+    test('it sits right after Pagos', () {
+      final container = ProviderContainer(
+        overrides: [
+          multiCurrencyEnabledProvider.overrideWithValue(false),
+          accessControlProvider.overrideWithValue(
+            AccessControlService(
+              AuthState.authenticated(
+                token: 't',
+                user: const User(
+                  userId: 'u',
+                  email: 'u@example.com',
+                  administrator: true,
+                  status: EntityStatus.active,
+                  sessionVersion: 1,
+                  privileges: [],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      final ids = [
+        for (final item in container.read(navDestinationsProvider))
+          ...switch (item) {
+            NavDestination() => [item.id],
+            NavGroup() => item.children.map((d) => d.id),
+          },
+      ];
+
+      expect(ids.indexOf('credit-notes'), ids.indexOf('payments') + 1);
+    });
+  });
 }

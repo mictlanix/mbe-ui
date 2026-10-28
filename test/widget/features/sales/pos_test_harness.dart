@@ -6,8 +6,16 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:mbe_ui/core/access/access_control.dart';
+import 'package:mbe_ui/core/access/privilege.dart';
+import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/design/text_scale.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
+import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
+import 'package:mbe_ui/features/sales/data/credit_note_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/credit_note_repository.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/advanced_search_screen.dart';
@@ -44,6 +52,8 @@ class MockCustomerPaymentRepository extends Mock
     implements CustomerPaymentRepository {}
 
 class MockWarehouseRepository extends Mock implements WarehouseRepository {}
+
+class MockCreditNoteRepository extends Mock implements CreditNoteRepository {}
 
 Sale testSale({
   int id = 42,
@@ -637,3 +647,41 @@ Override customerPaymentOverride(CustomerPaymentRepository repository) =>
 
 Override warehouseOverride(WarehouseRepository repository) =>
     warehouseRepositoryProvider.overrideWithValue(repository);
+
+Override creditNoteOverride(CreditNoteRepository repository) =>
+    creditNoteRepositoryProvider.overrideWithValue(repository);
+
+/// spec 056: a non-administrator holding the two privileges the credit tiles
+/// need (FR-014) — credit-payments read and customer-payments create — plus,
+/// optionally, customer-payments read, which the walk-in ticket also needs.
+/// Pass `false` to drop one and test the tile's absence.
+Override creditAccessOverride({
+  bool creditRead = true,
+  bool paymentsCreate = true,
+  bool paymentsRead = false,
+}) => accessControlProvider.overrideWithValue(
+  AccessControlService(
+    AuthState.authenticated(
+      token: 't',
+      user: User(
+        userId: 'c',
+        email: 'c@example.com',
+        administrator: false,
+        status: EntityStatus.active,
+        sessionVersion: 1,
+        privileges: [
+          if (creditRead)
+            const Privilege(
+              systemObject: SystemObject.creditPayments,
+              rawValue: 2,
+            ),
+          if (paymentsCreate || paymentsRead)
+            Privilege(
+              systemObject: SystemObject.customerPayments,
+              rawValue: (paymentsCreate ? 1 : 0) | (paymentsRead ? 2 : 0),
+            ),
+        ],
+      ),
+    ),
+  ),
+);

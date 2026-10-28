@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -53,19 +54,37 @@ class PaymentStep extends ConsumerWidget {
       PaymentIssue.amountRequired => l10n.posPaymentAmountRequired,
       PaymentIssue.overpayNonCash => l10n.posPaymentOverpayNonCash,
       PaymentIssue.sessionInvalid => l10n.posPaymentSessionInvalid,
+      PaymentIssue.creditPartlyApplied => l10n.paymentCreditPartlyApplied(
+        ref
+            .watch(formattersProvider)
+            .display
+            .currency(draft.creditApplied ?? '0'),
+      ),
       null => null,
     };
-    final error = draft.error == null && issueMessage == null
+    final issueLine = issueMessage == null
+        ? null
+        : Text(
+            issueMessage,
+            key: const Key('payment_issue_message'),
+            style: TextStyle(color: theme.colorScheme.error),
+          );
+    // Usually only one of the two is set. spec 056: a partly applied credit
+    // spend sets both — what was applied, then the server's reason — so the
+    // issue line sits above the banner instead of being replaced by it.
+    final error = draft.error == null && issueLine == null
         ? null
         : Padding(
             padding: EdgeInsets.only(bottom: spacing.sm),
-            child: draft.error != null
-                ? ErrorBanner(error: draft.error!)
-                : Text(
-                    issueMessage!,
-                    key: const Key('payment_issue_message'),
-                    style: TextStyle(color: theme.colorScheme.error),
-                  ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ?issueLine,
+                if (issueLine != null && draft.error != null)
+                  SizedBox(height: spacing.xs),
+                if (draft.error != null) ErrorBanner(error: draft.error!),
+              ],
+            ),
           );
 
     final capturePane = PaymentCapturePane(

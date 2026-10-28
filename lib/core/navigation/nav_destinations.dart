@@ -65,6 +65,11 @@ class NavBranch {
   // above — display order comes from position within `kNavigationTree` (this
   // destination sits right after `cash-sessions` there).
   static const int salesPayments = 22;
+
+  // 056-credit-notes: appended last, same rationale as `cashSessions` above —
+  // display order comes from position within `kNavigationTree` (this
+  // destination sits right after `payments` there).
+  static const int creditNotes = 23;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -279,6 +284,18 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.salesPayments,
         gate: PrivilegeGate(SystemObject.customerPayments, AccessRight.read),
       ),
+      // Gated on `creditPayments` (83), matching the server's credit-notes
+      // read; the payment a note opens is gated separately, on
+      // `customerPayments`, when the user taps a row.
+      NavDestination(
+        id: 'credit-notes',
+        label: _creditNotesLabel,
+        icon: Icons.receipt_long_outlined,
+        selectedIcon: Icons.receipt_long,
+        route: '/sales/credit-notes',
+        branchIndex: NavBranch.creditNotes,
+        gate: PrivilegeGate(SystemObject.creditPayments, AccessRight.read),
+      ),
       NavDestination(
         id: 'pos',
         label: _posLabel,
@@ -348,6 +365,7 @@ String _posLabel(AppLocalizations l10n) => l10n.posMenuTitle;
 String _salesOrdersLabel(AppLocalizations l10n) => l10n.salesOrdersMenuTitle;
 String _salesQuotesLabel(AppLocalizations l10n) => l10n.salesQuotesMenuTitle;
 String _paymentsLabel(AppLocalizations l10n) => l10n.paymentsMenuTitle;
+String _creditNotesLabel(AppLocalizations l10n) => l10n.creditNotesMenuTitle;
 
 /// The navigation tree filtered by the current user's access (constitution
 /// §IV, FR-005/FR-006): destinations the user cannot read are removed, and a

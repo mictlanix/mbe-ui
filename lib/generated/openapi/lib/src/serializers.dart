@@ -14,6 +14,10 @@ import 'package:built_value/iso_8601_date_time_serializer.dart';
 import 'package:mbe_api_client/src/date_serializer.dart';
 import 'package:mbe_api_client/src/model/date.dart';
 
+import 'package:mbe_api_client/src/model/account_payment.dart';
+import 'package:mbe_api_client/src/model/account_scope.dart';
+import 'package:mbe_api_client/src/model/account_totals.dart';
+import 'package:mbe_api_client/src/model/accounts_summary_response.dart';
 import 'package:mbe_api_client/src/model/add_request_lines.dart';
 import 'package:mbe_api_client/src/model/address_create.dart';
 import 'package:mbe_api_client/src/model/address_response.dart';
@@ -37,6 +41,7 @@ import 'package:mbe_api_client/src/model/bank_account_response.dart';
 import 'package:mbe_api_client/src/model/bank_account_update.dart';
 import 'package:mbe_api_client/src/model/batch_account.dart';
 import 'package:mbe_api_client/src/model/batch_template.dart';
+import 'package:mbe_api_client/src/model/buckets.dart';
 import 'package:mbe_api_client/src/model/bulk_approve.dart';
 import 'package:mbe_api_client/src/model/bulk_approve_response.dart';
 import 'package:mbe_api_client/src/model/bulk_approve_result.dart';
@@ -201,6 +206,7 @@ import 'package:mbe_api_client/src/model/label_response.dart';
 import 'package:mbe_api_client/src/model/label_update.dart';
 import 'package:mbe_api_client/src/model/line_add.dart';
 import 'package:mbe_api_client/src/model/line_update.dart';
+import 'package:mbe_api_client/src/model/linked_document.dart';
 import 'package:mbe_api_client/src/model/list_response_address_response.dart';
 import 'package:mbe_api_client/src/model/list_response_bank_account_response.dart';
 import 'package:mbe_api_client/src/model/list_response_cash_drawer_response.dart';
@@ -251,6 +257,7 @@ import 'package:mbe_api_client/src/model/low_profit_margin.dart';
 import 'package:mbe_api_client/src/model/low_profit_margin1.dart';
 import 'package:mbe_api_client/src/model/method_total.dart';
 import 'package:mbe_api_client/src/model/negative_available.dart';
+import 'package:mbe_api_client/src/model/open_document.dart';
 import 'package:mbe_api_client/src/model/opening_amount.dart';
 import 'package:mbe_api_client/src/model/order_application_response.dart';
 import 'package:mbe_api_client/src/model/order_line_add.dart';
@@ -261,6 +268,8 @@ import 'package:mbe_api_client/src/model/paid_invoice_add.dart';
 import 'package:mbe_api_client/src/model/paid_invoice_response.dart';
 import 'package:mbe_api_client/src/model/paid_invoice_update.dart';
 import 'package:mbe_api_client/src/model/participation_rate.dart';
+import 'package:mbe_api_client/src/model/party_detail.dart';
+import 'package:mbe_api_client/src/model/party_summary.dart';
 import 'package:mbe_api_client/src/model/password_policy_response.dart';
 import 'package:mbe_api_client/src/model/payment_amount.dart';
 import 'package:mbe_api_client/src/model/payment_method.dart';
@@ -365,6 +374,8 @@ import 'package:mbe_api_client/src/model/sat_unit_of_measurement_response.dart';
 import 'package:mbe_api_client/src/model/session_state.dart';
 import 'package:mbe_api_client/src/model/shortfall_reason.dart';
 import 'package:mbe_api_client/src/model/skipped_line.dart';
+import 'package:mbe_api_client/src/model/statement_email_request.dart';
+import 'package:mbe_api_client/src/model/statement_email_response.dart';
 import 'package:mbe_api_client/src/model/stock_row.dart';
 import 'package:mbe_api_client/src/model/stop_create.dart';
 import 'package:mbe_api_client/src/model/stop_outcome.dart';
@@ -432,6 +443,10 @@ import 'package:mbe_api_client/src/model/warehouse_update.dart';
 part 'serializers.g.dart';
 
 @SerializersFor([
+  AccountPayment,
+  AccountScope,
+  AccountTotals,
+  AccountsSummaryResponse,
   AddRequestLines,
   AddressCreate,
   AddressResponse,
@@ -455,6 +470,7 @@ part 'serializers.g.dart';
   BankAccountUpdate,
   BatchAccount,
   BatchTemplate,
+  Buckets,
   BulkApprove,
   BulkApproveResponse,
   BulkApproveResult,
@@ -619,6 +635,7 @@ part 'serializers.g.dart';
   LabelUpdate,
   LineAdd,
   LineUpdate,
+  LinkedDocument,
   ListResponseAddressResponse,
   ListResponseBankAccountResponse,
   ListResponseCashDrawerResponse,
@@ -669,6 +686,7 @@ part 'serializers.g.dart';
   LowProfitMargin1,
   MethodTotal,
   NegativeAvailable,
+  OpenDocument,
   OpeningAmount,
   OrderApplicationResponse,
   OrderLineAdd,
@@ -679,6 +697,8 @@ part 'serializers.g.dart';
   PaidInvoiceResponse,
   PaidInvoiceUpdate,
   ParticipationRate,
+  PartyDetail,
+  PartySummary,
   PasswordPolicyResponse,
   PaymentAmount,
   PaymentMethod,
@@ -783,6 +803,8 @@ part 'serializers.g.dart';
   SessionState,
   ShortfallReason,
   SkippedLine,
+  StatementEmailRequest,
+  StatementEmailResponse,
   StockRow,
   StopCreate,
   StopOutcome,
@@ -1086,6 +1108,10 @@ Serializers serializers =
             () => ListBuilder<ContactResponse>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AccountPayment)]),
+            () => ListBuilder<AccountPayment>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(BatchAccount)]),
             () => ListBuilder<BatchAccount>(),
           )
@@ -1234,6 +1260,10 @@ Serializers serializers =
             () => ListBuilder<SupplierResponse>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(OpenDocument)]),
+            () => ListBuilder<OpenDocument>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(VehicleResponse)]),
             () => ListBuilder<VehicleResponse>(),
           )
@@ -1256,6 +1286,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(PurchaseOrderLine)]),
             () => ListBuilder<PurchaseOrderLine>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(PartySummary)]),
+            () => ListBuilder<PartySummary>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ProductPriceResponse)]),
@@ -1284,6 +1318,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ExpenseResponse)]),
             () => ListBuilder<ExpenseResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(LinkedDocument)]),
+            () => ListBuilder<LinkedDocument>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ProductMergePreviewItem)]),
