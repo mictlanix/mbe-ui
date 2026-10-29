@@ -53,7 +53,7 @@ Confirmed refunds show how the money went back. The credit-notes list links each
 
 | | Files |
 |---|---|
-| **New (≈11 source)** | `domain/entities/customer_refund.dart`, `domain/repositories/customer_refund_repository.dart`, `data/customer_refund_repository_impl.dart`, `presentation/refunds/{refunds_filter, refunds_list_controller, refunds_list_screen, refund_detail_screen, refund_editor_controller, refund_confirm_dialog, refund_open_or_resume, refund_outcome_provider}.dart` |
+| **New (≈12 source)** | `domain/entities/customer_refund.dart`, `domain/repositories/customer_refund_repository.dart`, `data/customer_refund_repository_impl.dart`, `presentation/refunds/{refunds_filter, refunds_list_controller, refunds_list_screen, refund_detail_screen, refund_editor_controller, refund_confirm_dialog, refund_open_or_resume, refund_outcome_provider, refund_line_block}.dart` |
 | **Edited (≈10 source)** | `data/wire_value_setters.dart` (Quantity3), `domain/repositories/credit_note_repository.dart` + `data/credit_note_repository_impl.dart` (`findByRefund`), `credit_notes/credit_notes_list_screen.dart` (refund link), `orders/order_header_panel.dart`, `pos_sale_detail_view.dart`, `app/router/app_router.dart`, `core/navigation/nav_destinations.dart`, both `.arb` files |
 
 ## Constitution Check
@@ -118,7 +118,8 @@ lib/
 │       │   ├── refund_editor_controller.dart      # writes, confirm, cancel, adjustment notice
 │       │   ├── refund_detail_screen.dart
 │       │   ├── refund_confirm_dialog.dart
-│       │   └── refund_outcome_provider.dart       # RefundOutcome (interim, #286)
+│       │   ├── refund_outcome_provider.dart       # RefundOutcome (interim, #286)
+│       │   └── refund_line_block.dart             # stacked line block for compact screens (C8)
 │       ├── orders/order_header_panel.dart         # + Devolver
 │       ├── pos_sale_detail_view.dart              # + Devolver
 │       └── credit_notes/credit_notes_list_screen.dart  # refund link (C6)

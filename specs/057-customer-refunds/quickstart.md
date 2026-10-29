@@ -23,7 +23,7 @@ flutter test integration_test/customer_refunds_quickstart_test.dart -d macos --d
 3. **Quantity cap.** Try to step a line above "Por devolver". The stepper stops at the max. Set it to 1, and the totals update from the server.
 4. **Refusal reasons.** In Devoluciones, use "Nueva devolución" with an unpaid order: you get the "no está pagado" message. Use a draft order: you get "no está confirmado".
 5. **Session gate.** With no open session, tap "Confirmar devolución". The session banner shows, and nothing is sent.
-6. **Confirm as cash.** With a session open, confirm and choose "Efectivo de la caja". The refund shows a folio and is read-only, with the payout line "Pagada en efectivo". The session's detail shows the payout.
+6. **Confirm as cash.** With a session open, confirm and choose "Efectivo de la caja". The refund shows a folio and is read-only, with the payout line "Pagada en efectivo". The cash session's detail shows its expected cash lower by the refund's total (SC-003).
 7. **Confirm as credit note.** Use another order and choose "Nota de crédito". The payout line shows the note number. In Notas de crédito, the note's origin links back to the refund.
 8. **Cancel.** Open a new draft refund and cancel it. It shows as cancelled, and no actions remain.
 9. **List filters.** Filter Devoluciones by Abiertas, by the customer, and by the order number. Only matching rows remain.

@@ -95,7 +95,7 @@ The confirmed refund then shows either "Pagada en efectivo" or "Nota de crédito
 
 **Cost:** one request in practice for a named customer, since they hold few notes. For the walk-in customer the scan stops at the refund's date, so a recent refund takes one or two pages.
 
-**Walk-in customer:** `CustomerRefundResponse.customer` is nullable. With no customer the lookup can't run, so the detail shows "Forma de pago no disponible" instead of guessing.
+**Walk-in customer:** the walk-in (generic) customer is a real customer (`posDefaultCustomerId`), so its refunds take the same scan as any other. Only a refund with no customer at all (`CustomerRefundResponse.customer` is null) can't be looked up, and the detail shows "Forma de pago no disponible" instead of guessing.
 
 ## R7. Customer names in the list (interim until mbe-api#284)
 

@@ -90,6 +90,8 @@ They are shown only when `sale.isPaid`, `can(customerRefunds, create)` and `can(
 | Cancelar devolución | `refund_cancel_button` | draft, `can(customerRefunds, update)`. Asks for confirmation first |
 | Imprimir | `refund_print_button` | completed. Built only after mbe-api#287 (R10) |
 
+**Failures:** a failed confirm or cancel shows an `ErrorBanner` above the actions with the server's detail, and leaves the refund as it was. This covers the server's 409s for units on a live invoice and for no returnable lines (R3).
+
 **Session pre-check:** if the cash session check fails, show an inline banner (key `refund_session_banner`) that reads "Abre una sesión de caja para confirmar la devolución." It has a button to `/sales/cash-sessions`, or to `/sales/cash-sessions/{id}` for a stale session. The dialog does not open.
 
 **Confirm dialog** (key `refund_confirm_dialog`):

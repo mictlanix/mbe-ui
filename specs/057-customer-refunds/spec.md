@@ -23,7 +23,7 @@ A refund is a document of its own. It is opened against one paid order and start
 
 ### User Story 1 - Refund returned goods from a paid order (Priority: P1)
 
-A customer returns two of the five units they bought. The clerk opens the paid order in Pedidos or in the POS sales list and taps "Devolver". A refund opens with the order's returnable lines, each at zero. The clerk enters 2 on the right line, keeps or changes the warehouse the goods go back to, and confirms. The app asks how the money goes back: cash from the drawer, or a credit note. The clerk picks one. The refund gets its folio, becomes read-only, and shows how the money was returned.
+A customer returns two of the five units they bought. The clerk opens the paid order in Pedidos, or the paid sale in the POS, and taps "Devolver". A refund opens with the order's returnable lines, each at zero. The clerk enters 2 on the right line, keeps or changes the warehouse the goods go back to, and confirms. The app asks how the money goes back: cash from the drawer, or a credit note. The clerk picks one. The refund gets its folio, becomes read-only, and shows how the money was returned.
 
 **Why this priority**: This is the whole point of the feature. Without it no return can be processed in the new app.
 
@@ -91,7 +91,7 @@ After confirming, the clerk prints a receipt for the customer. It lists what cam
 
 **Opening a refund**
 
-- **FR-001**: A completed, paid order's detail in Pedidos and in the POS sales list MUST offer "Devolver" to users who can create refunds. Orders in any other status MUST NOT offer it.
+- **FR-001**: A paid order's detail in Pedidos and a paid sale's detail in the POS MUST offer "Devolver" to users who can create refunds. Orders in any other status MUST NOT offer it.
 - **FR-002**: "Devoluciones" MUST let users who can create refunds start one by entering a sales order number.
 - **FR-003**: Starting a refund for an order that already has an open refund MUST open that refund instead of creating another.
 - **FR-004**: When the server refuses to open a refund, the app MUST show its reason in words the clerk can act on, and tell "not paid" (cancel the order instead) apart from "not confirmed", from "nothing left to return", and from "units are on an invoice" (cancel the invoice first).
@@ -114,7 +114,7 @@ After confirming, the clerk prints a receipt for the customer. It lists what cam
 
 - **FR-013**: Users who can read refunds MUST be able to open "Devoluciones", listing folio, date, customer, source order, status and total, open first and then newest first, paginated. Until mbe-api#285 ships, the server's order (newest first) is used.
 - **FR-014**: The list MUST filter by status, customer and order number.
-- **FR-015**: Each refund MUST have its own link, so other screens can open it directly. A refund's source order MUST link to that order. A refund that ended as a credit note MUST link to it in "Notas de crédito".
+- **FR-015**: Each refund MUST have its own link, so other screens can open it directly. A refund's source order MUST link to that order. A refund that ended as a credit note MUST link to its backing payment's detail, which is the credit note's record surface (spec 056).
 - **FR-016**: The refund segment of a credit note's origin in "Notas de crédito" MUST link to the refund.
 - **FR-017**: A confirmed refund MUST show whether it was paid as cash or as a credit note, and for a credit note its ticket number.
 
@@ -141,7 +141,7 @@ After confirming, the clerk prints a receipt for the customer. It lists what cam
 - **SC-001**: A clerk processes a one-line return from a paid order, from "Devolver" to a confirmed refund, in under one minute.
 - **SC-002**: No confirmed refund returns more of a line than was sold, minus earlier refunds.
 - **SC-003**: Every cash refund appears as cash out in the confirming clerk's session close, and every credit-note refund appears in "Notas de crédito" with its refund as origin.
-- **SC-004**: An order never has more than one open refund started from the app.
+- **SC-004**: Starting a refund from the app never creates a second open refund for an order that already has one. Two clerks starting at the same instant can still race, which only the server can prevent.
 - **SC-005**: A walk-in customer's credit note issued by a refund can be redeemed at the POS using the ticket number printed on the refund receipt.
 - **SC-006**: Each of the 7 legacy refund actions (list, open from order, view, edit line, confirm, cancel, print) has an equivalent in the app.
 
@@ -155,6 +155,7 @@ After confirming, the clerk prints a receipt for the customer. It lists what cam
   - The refund doesn't record its payout or link its credit note. Until it does, the app finds the credit note by matching notes for the refund's customer against the refund. A completed refund with no matching note is shown as cash (mictlanix/mbe-api#286).
   - mbe-api has no refund print template (mictlanix/mbe-api#287). The print action is hidden until it exists (FR-018). Meanwhile a walk-in customer gets the credit note's ticket number from the refund detail (FR-017).
 - Sales orders' detail in Pedidos and the POS sale detail are where "Devolver" lives. A paid order is already read-only there, so the action adds to it without changing editing.
+- A paid POS sale whose delivery is still pending opens the POS workspace, not the sale detail, so it has no "Devolver" there. Pedidos offers it for that sale, and that is deliberate.
 
 ## Out of Scope
 
