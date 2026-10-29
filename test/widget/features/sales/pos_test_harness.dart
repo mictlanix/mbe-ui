@@ -15,6 +15,9 @@ import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/sales/data/credit_note_repository_impl.dart';
+import 'package:mbe_ui/features/sales/data/customer_refund_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/entities/customer_refund.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/customer_refund_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/credit_note_repository.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
@@ -54,6 +57,9 @@ class MockCustomerPaymentRepository extends Mock
 class MockWarehouseRepository extends Mock implements WarehouseRepository {}
 
 class MockCreditNoteRepository extends Mock implements CreditNoteRepository {}
+
+class MockCustomerRefundRepository extends Mock
+    implements CustomerRefundRepository {}
 
 Sale testSale({
   int id = 42,
@@ -650,6 +656,59 @@ Override warehouseOverride(WarehouseRepository repository) =>
 
 Override creditNoteOverride(CreditNoteRepository repository) =>
     creditNoteRepositoryProvider.overrideWithValue(repository);
+
+Override customerRefundOverride(CustomerRefundRepository repository) =>
+    customerRefundRepositoryProvider.overrideWithValue(repository);
+
+/// spec 057: a refund line fixture. Quantities and amounts are the server's
+/// strings.
+RefundLine testRefundLine({
+  int id = 1,
+  String quantity = '0',
+  String refundableQuantity = '5',
+  int? warehouseId = 3,
+  String total = '0.00',
+}) => RefundLine(
+  id: id,
+  salesOrderLineId: 500 + id,
+  productId: 700 + id,
+  productCode: 'TOR-0$id',
+  productName: 'Tornillo $id',
+  quantity: quantity,
+  refundableQuantity: refundableQuantity,
+  price: '10.00',
+  discount: '0',
+  taxRate: '0.16',
+  taxIncluded: false,
+  warehouseId: warehouseId,
+  subtotal: total,
+  taxTotal: '0.00',
+  total: total,
+);
+
+/// spec 057: a refund fixture, a draft by default.
+CustomerRefund testRefund({
+  int id = 9,
+  RefundStatus status = RefundStatus.draft,
+  int? serial,
+  int? customerId = 7,
+  List<RefundLine>? lines,
+  String total = '0.00',
+}) => CustomerRefund(
+  id: id,
+  salesOrderId: 42,
+  customerId: customerId,
+  salesPersonId: 100,
+  facilityId: 9,
+  serial: serial,
+  date: serial == null ? null : DateTime(2026, 10, 28),
+  currency: Currency.mxn,
+  status: status,
+  lines: lines ?? [testRefundLine()],
+  subtotal: total,
+  taxTotal: '0.00',
+  total: total,
+);
 
 /// spec 056: a non-administrator holding the two privileges the credit tiles
 /// need (FR-014) — credit-payments read and customer-payments create — plus,

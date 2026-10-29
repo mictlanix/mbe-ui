@@ -76,7 +76,11 @@ void main() {
     when(() => repository.listSpendable(any())).thenAnswer((_) async => notes);
   }
 
-  User user({bool creditRead = true, bool paymentsRead = true}) => User(
+  User user({
+    bool creditRead = true,
+    bool paymentsRead = true,
+    bool refundsRead = false,
+  }) => User(
     userId: 'u',
     email: 'u@example.com',
     administrator: false,
@@ -88,6 +92,11 @@ void main() {
       if (paymentsRead)
         const Privilege(
           systemObject: SystemObject.customerPayments,
+          rawValue: 2,
+        ),
+      if (refundsRead)
+        const Privilege(
+          systemObject: SystemObject.customerRefunds,
           rawValue: 2,
         ),
     ],
@@ -138,6 +147,12 @@ void main() {
           path: '/sales/payments/:paymentId',
           builder: (context, state) => Scaffold(
             body: Text('payment-${state.pathParameters['paymentId']}'),
+          ),
+        ),
+        GoRoute(
+          path: '/sales/refunds/:refundId',
+          builder: (context, state) => Scaffold(
+            body: Text('refund-${state.pathParameters['refundId']}'),
           ),
         ),
         GoRoute(
@@ -342,6 +357,54 @@ void main() {
         findsNothing,
       );
       expect(find.text(l10n.creditNotesOrigin(4001, 3001)), findsOneWidget);
+    });
+  });
+
+  group('the origin\'s refund', () {
+    testWidgets('is a link with customer-refunds read, and a tap opens it', (
+      tester,
+    ) async {
+      serve([note(1)]);
+      final router = await pumpList(tester, who: user(refundsRead: true));
+
+      final link = find.byKey(const Key('credit_note_refund_link_4001'));
+      expect(link, findsOneWidget);
+      await tester.tap(link);
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.path, '/sales/refunds/4001');
+      expect(find.text('refund-4001'), findsOneWidget);
+    });
+
+    testWidgets('is plain text without customer-refunds read', (tester) async {
+      serve([note(1)]);
+      await pumpList(tester);
+
+      expect(
+        find.byKey(const Key('credit_note_refund_link_4001')),
+        findsNothing,
+      );
+      expect(find.text(l10n.creditNotesOrigin(4001, 3001)), findsOneWidget);
+    });
+
+    testWidgets('the order link still works beside the refund link', (
+      tester,
+    ) async {
+      serve([note(1)]);
+      final router = await pumpList(
+        tester,
+        who: user(refundsRead: true),
+        ordersOpenable: true,
+      );
+
+      expect(
+        find.byKey(const Key('credit_note_refund_link_4001')),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(const Key('credit_note_order_link_3001')));
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.path, '/sales/orders/3001');
     });
   });
 }

@@ -49,6 +49,8 @@ import 'package:mbe_ui/features/sales/presentation/orders/order_workspace_screen
 import 'package:mbe_ui/features/sales/presentation/payments/payment_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/credit_notes/credit_notes_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payments_list_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/refunds/refund_detail_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/refunds/refunds_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/quotes/quote_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/quotes/sales_quotes_list_screen.dart';
@@ -344,6 +346,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 057-customer-refunds: appended last (index 24), same rationale as
+          // `payments` above. A refund opens the top-level
+          // `/sales/refunds/:refundId` route.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/sales/refunds',
+                builder: (context, state) =>
+                    RefundsListScreen(query: ListQuery.fromUri(state.uri)),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -516,6 +530,14 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/sales/payments/:paymentId',
         builder: (context, state) => PaymentDetailScreen(
           paymentId: int.tryParse(state.pathParameters['paymentId'] ?? ''),
+        ),
+      ),
+      // 057-customer-refunds: a refund's own full screen. A non-numeric id
+      // parses to `null`, which the screen shows as not found.
+      GoRoute(
+        path: '/sales/refunds/:refundId',
+        builder: (context, state) => RefundDetailScreen(
+          refundId: int.tryParse(state.pathParameters['refundId'] ?? ''),
         ),
       ),
       // 038-advanced-product-search: a top-level sibling, not a shell branch
@@ -760,6 +782,11 @@ NavGate? _routeGate(String location) {
   // `paymentsEditor` (100).
   if (location.startsWith('/sales/payments')) {
     return PrivilegeGate(SystemObject.customerPayments, AccessRight.read);
+  }
+  // 057-customer-refunds: `customerRefunds` (22) read. The prefix covers
+  // `/sales/refunds/:refundId`; the list branch joins it in a later task.
+  if (location.startsWith('/sales/refunds')) {
+    return PrivilegeGate(SystemObject.customerRefunds, AccessRight.read);
   }
   // 056-credit-notes: `creditPayments` (83), matching the server's credit-notes
   // read. Opening a row goes to `/sales/payments/:id`, which is gated above.

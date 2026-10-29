@@ -18,11 +18,12 @@ Map<String, dynamic> _noteJson({
   String amount = '27.0000',
   String remaining = '3',
   String? date,
+  int refund = 9605,
 }) => {
   'credit_note_id': id,
   'customer': customer,
   'sales_order': 343533,
-  'customer_refund': 9605,
+  'customer_refund': refund,
   'customer_payment': payment == 0 ? 300000 + id : payment,
   'facility': 51,
   'amount': amount,
@@ -174,6 +175,98 @@ void main() {
       final repository = _repositoryWith((options) async => _page(const []));
 
       expect(await repository.findByPayment(9), isNull);
+    });
+  });
+
+  group('findByRefund', () {
+    final refundDate = DateTime(2026, 10, 1, 12);
+
+    test('a match on page 1 stops without reading page 2', () async {
+      final seen = <RequestOptions>[];
+      final repository = _repositoryWith((options) async {
+        seen.add(options);
+        return _page([
+          _noteJson(id: 2, refund: 11, date: '2026-10-02T10:00:00'),
+          _noteJson(id: 1, refund: 12, date: '2026-10-01T13:00:00'),
+        ], total: 150);
+      });
+
+      final note = await repository.findByRefund(
+        customerId: 10653,
+        refundId: 12,
+        refundDate: refundDate,
+      );
+
+      expect(note?.id, 1);
+      expect(seen, hasLength(1));
+      expect(seen.single.queryParameters['customer'], 10653);
+    });
+
+    test(
+      'a page ending before the refund\'s date stops and gives null',
+      () async {
+        final seen = <RequestOptions>[];
+        final repository = _repositoryWith((options) async {
+          seen.add(options);
+          return _page([
+            _noteJson(id: 2, refund: 11, date: '2026-10-02T10:00:00'),
+            _noteJson(id: 1, refund: 10, date: '2026-09-30T10:00:00'),
+          ], total: 150);
+        });
+
+        final note = await repository.findByRefund(
+          customerId: 10653,
+          refundId: 12,
+          refundDate: refundDate,
+        );
+
+        expect(note, isNull);
+        expect(seen, hasLength(1));
+      },
+    );
+
+    test('keeps paging while notes are newer, then finds the match', () async {
+      final skips = <Object?>[];
+      final repository = _repositoryWith((options) async {
+        skips.add(options.queryParameters['skip']);
+        return options.queryParameters['skip'] == 0
+            ? _page([
+                _noteJson(id: 3, refund: 31, date: '2026-10-03T10:00:00'),
+                _noteJson(id: 2, refund: 21, date: '2026-10-02T10:00:00'),
+              ], total: 3)
+            : _page([
+                _noteJson(id: 1, refund: 12, date: '2026-10-01T13:00:00'),
+              ], total: 3);
+      });
+
+      final note = await repository.findByRefund(
+        customerId: 10653,
+        refundId: 12,
+        refundDate: refundDate,
+      );
+
+      expect(note?.id, 1);
+      expect(skips, [0, 2]);
+    });
+
+    test('the end of the list gives null', () async {
+      var calls = 0;
+      final repository = _repositoryWith((options) async {
+        calls++;
+        return _page([
+          _noteJson(id: 2, refund: 11, date: '2026-10-02T10:00:00'),
+          _noteJson(id: 1, refund: 10, date: '2026-10-01T13:00:00'),
+        ]);
+      });
+
+      final note = await repository.findByRefund(
+        customerId: 10653,
+        refundId: 12,
+        refundDate: refundDate,
+      );
+
+      expect(note, isNull);
+      expect(calls, 1);
     });
   });
 }

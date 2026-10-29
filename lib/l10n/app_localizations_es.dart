@@ -4546,4 +4546,228 @@ class AppLocalizationsEs extends AppLocalizations {
   String creditNoteOtherCustomer(String name) {
     return 'Esta nota de crédito es de $name. Haz la venta a su nombre para usarla.';
   }
+
+  @override
+  String get refundsMenuTitle => 'Devoluciones';
+
+  @override
+  String get refundsColumnNumber => 'Folio';
+
+  @override
+  String get refundsColumnDate => 'Fecha';
+
+  @override
+  String get refundsColumnCustomer => 'Cliente';
+
+  @override
+  String get refundsColumnOrder => 'Pedido';
+
+  @override
+  String get refundsColumnStatus => 'Estado';
+
+  @override
+  String get refundsColumnTotal => 'Total';
+
+  @override
+  String get refundsFilterStatus => 'Estado';
+
+  @override
+  String get refundsFilterOrder => 'Pedido';
+
+  @override
+  String get refundsFilterAll => 'Todas';
+
+  @override
+  String get refundsFilterOpen => 'Abiertas';
+
+  @override
+  String get refundsFilterConfirmed => 'Confirmadas';
+
+  @override
+  String get refundsFilterCancelled => 'Canceladas';
+
+  @override
+  String get refundStatusDraft => 'Abierta';
+
+  @override
+  String get refundStatusCompleted => 'Confirmada';
+
+  @override
+  String get refundStatusCancelled => 'Cancelada';
+
+  @override
+  String get refundsNew => 'Nueva devolución';
+
+  @override
+  String get refundsNewShort => 'Nueva';
+
+  @override
+  String get refundsEmpty => 'No hay devoluciones.';
+
+  @override
+  String get refundsForbidden => 'No tienes permiso para ver devoluciones.';
+
+  @override
+  String get refundsLoadError => 'No se pudieron cargar las devoluciones.';
+
+  @override
+  String get refundNewOrderLabel => 'Número de pedido';
+
+  @override
+  String get refundNewContinue => 'Continuar';
+
+  @override
+  String refundRefusalOrderNotFound(int n) {
+    return 'No existe el pedido $n.';
+  }
+
+  @override
+  String refundRefusalNotCompleted(int n) {
+    return 'El pedido $n no está confirmado.';
+  }
+
+  @override
+  String refundRefusalNotPaid(int n) {
+    return 'El pedido $n no está pagado. Cancélalo en lugar de hacer una devolución.';
+  }
+
+  @override
+  String refundRefusalNothingToReturn(int n) {
+    return 'El pedido $n no tiene nada por devolver.';
+  }
+
+  @override
+  String get refundAction => 'Devolver';
+
+  @override
+  String get refundDetailTitle => 'Devolución';
+
+  @override
+  String refundDetailTitleWithNumber(int n) {
+    return 'Devolución $n';
+  }
+
+  @override
+  String get refundFieldNumber => 'Folio';
+
+  @override
+  String get refundFieldDate => 'Fecha';
+
+  @override
+  String get refundFieldCustomer => 'Cliente';
+
+  @override
+  String get refundFieldOrder => 'Pedido';
+
+  @override
+  String get refundFieldStatus => 'Estado';
+
+  @override
+  String get refundDraftNumber => 'Borrador';
+
+  @override
+  String get refundNoValue => '—';
+
+  @override
+  String get refundColumnProduct => 'Producto';
+
+  @override
+  String get refundColumnPrice => 'Precio';
+
+  @override
+  String get refundColumnDiscount => 'Desc.';
+
+  @override
+  String get refundColumnTax => 'IVA';
+
+  @override
+  String get refundColumnRefundable => 'Por devolver';
+
+  @override
+  String get refundColumnRefundableShort => 'Por dev.';
+
+  @override
+  String get refundColumnReturn => 'Devolver';
+
+  @override
+  String get refundColumnReturned => 'Devuelto';
+
+  @override
+  String get refundColumnWarehouse => 'Almacén';
+
+  @override
+  String get refundColumnTotal => 'Total';
+
+  @override
+  String get refundSubtotal => 'Subtotal';
+
+  @override
+  String get refundTax => 'IVA';
+
+  @override
+  String get refundTotal => 'Total';
+
+  @override
+  String refundNotFound(int id) {
+    return 'No existe la devolución $id.';
+  }
+
+  @override
+  String get refundConfirmAction => 'Confirmar devolución';
+
+  @override
+  String get refundCancelAction => 'Cancelar devolución';
+
+  @override
+  String get refundCancelPrompt =>
+      'La devolución se cancelará y no podrá editarse.';
+
+  @override
+  String refundConfirmDialogTotal(String total) {
+    return 'Se devolverán $total al cliente.';
+  }
+
+  @override
+  String get refundPayoutCash => 'Efectivo de la caja';
+
+  @override
+  String get refundPayoutCreditNote => 'Nota de crédito';
+
+  @override
+  String get refundConfirmBack => 'Volver';
+
+  @override
+  String get refundConfirmSubmit => 'Confirmar';
+
+  @override
+  String get refundSessionBanner =>
+      'Abre una sesión de caja para confirmar la devolución.';
+
+  @override
+  String get refundSessionOpenAction => 'Ir a sesiones de caja';
+
+  @override
+  String get refundSessionStaleAction => 'Cerrar sesión anterior';
+
+  @override
+  String get refundPayoutLineLabel => 'Forma de devolución';
+
+  @override
+  String get refundPayoutLineCash => 'Pagada en efectivo';
+
+  @override
+  String refundPayoutLineCreditNote(int n) {
+    return 'Nota de crédito Nº $n';
+  }
+
+  @override
+  String get refundPayoutLineUnknown => 'Forma de pago no disponible';
+
+  @override
+  String get refundAdjustedBanner =>
+      'Algunas cantidades se ajustaron porque otra devolución se confirmó antes.';
+
+  @override
+  String get refundNeedsConfirmerHint =>
+      'Otra persona con permiso de confirmar debe terminar esta devolución.';
 }

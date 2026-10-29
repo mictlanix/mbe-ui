@@ -67,6 +67,32 @@ class CreditNoteRepositoryImpl implements CreditNoteRepository {
     return page.items.isEmpty ? null : page.items.first;
   }
 
+  // simplified: scans the customer's notes; replace with the refund's own payout fields when mbe-api#286 ships
+  @override
+  Future<CreditNote?> findByRefund({
+    required int customerId,
+    required int refundId,
+    required DateTime refundDate,
+  }) async {
+    var skip = 0;
+    while (true) {
+      final page = await _page(
+        customerId: customerId,
+        skip: skip,
+        limit: _maxPage,
+      );
+      for (final note in page.items) {
+        if (note.customerRefundId == refundId) return note;
+      }
+      skip += page.items.length;
+      if (page.items.isEmpty || skip >= page.total) return null;
+      // Newest first: once a page reaches back past the refund, no later
+      // page can hold its note.
+      final oldest = page.items.last.date;
+      if (oldest != null && oldest.isBefore(refundDate)) return null;
+    }
+  }
+
   Future<CreditNoteListResult> _page({
     int? customerId,
     int? customerPaymentId,

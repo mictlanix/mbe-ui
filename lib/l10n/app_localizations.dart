@@ -8148,6 +8148,414 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This credit note belongs to {name}. Make the sale out to them to use it.'**
   String creditNoteOtherCustomer(String name);
+
+  /// spec 057: Sales navigation entry and list title for customer refunds
+  ///
+  /// In en, this message translates to:
+  /// **'Refunds'**
+  String get refundsMenuTitle;
+
+  /// spec 057: Refunds list: folio column
+  ///
+  /// In en, this message translates to:
+  /// **'No.'**
+  String get refundsColumnNumber;
+
+  /// spec 057: Refunds list: date column
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get refundsColumnDate;
+
+  /// spec 057: Refunds list: customer column
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get refundsColumnCustomer;
+
+  /// spec 057: Refunds list: order column
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get refundsColumnOrder;
+
+  /// spec 057: Refunds list: status column
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get refundsColumnStatus;
+
+  /// spec 057: Refunds list: total column
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get refundsColumnTotal;
+
+  /// spec 057: Refunds filter sheet: status facet label
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get refundsFilterStatus;
+
+  /// spec 057: Refunds filter sheet: order number field label
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get refundsFilterOrder;
+
+  /// spec 057: Refunds status filter: no filter
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get refundsFilterAll;
+
+  /// spec 057: Refunds status filter: drafts
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get refundsFilterOpen;
+
+  /// spec 057: Refunds status filter: completed
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get refundsFilterConfirmed;
+
+  /// spec 057: Refunds status filter: cancelled
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get refundsFilterCancelled;
+
+  /// spec 057: Refund status chip: draft
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get refundStatusDraft;
+
+  /// spec 057: Refund status chip: completed
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get refundStatusCompleted;
+
+  /// spec 057: Refund status chip: cancelled
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get refundStatusCancelled;
+
+  /// spec 057: Refunds list: new refund button and dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'New refund'**
+  String get refundsNew;
+
+  /// spec 057: Refunds list: new refund button label on compact screens
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get refundsNewShort;
+
+  /// spec 057: Refunds list: empty state
+  ///
+  /// In en, this message translates to:
+  /// **'There are no refunds.'**
+  String get refundsEmpty;
+
+  /// spec 057: Refunds list: 403 state
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have permission to view refunds.'**
+  String get refundsForbidden;
+
+  /// spec 057: Refunds list: load error
+  ///
+  /// In en, this message translates to:
+  /// **'The refunds could not be loaded.'**
+  String get refundsLoadError;
+
+  /// spec 057: New-refund dialog: order number field label
+  ///
+  /// In en, this message translates to:
+  /// **'Order number'**
+  String get refundNewOrderLabel;
+
+  /// spec 057: New-refund dialog: submit button
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get refundNewContinue;
+
+  /// spec 057: Refusal: order not found
+  ///
+  /// In en, this message translates to:
+  /// **'Order {n} does not exist.'**
+  String refundRefusalOrderNotFound(int n);
+
+  /// spec 057: Refusal: order is a draft or cancelled
+  ///
+  /// In en, this message translates to:
+  /// **'Order {n} is not confirmed.'**
+  String refundRefusalNotCompleted(int n);
+
+  /// spec 057: Refusal: order is not paid
+  ///
+  /// In en, this message translates to:
+  /// **'Order {n} is not paid. Cancel it instead of refunding it.'**
+  String refundRefusalNotPaid(int n);
+
+  /// spec 057: Refusal: nothing refundable remains; the server detail follows
+  ///
+  /// In en, this message translates to:
+  /// **'Order {n} has nothing left to return.'**
+  String refundRefusalNothingToReturn(int n);
+
+  /// spec 057: Button on a paid order that opens or resumes a refund
+  ///
+  /// In en, this message translates to:
+  /// **'Refund'**
+  String get refundAction;
+
+  /// spec 057: Refund detail: title
+  ///
+  /// In en, this message translates to:
+  /// **'Refund'**
+  String get refundDetailTitle;
+
+  /// spec 057: Refund detail: title once the refund has a folio
+  ///
+  /// In en, this message translates to:
+  /// **'Refund {n}'**
+  String refundDetailTitleWithNumber(int n);
+
+  /// spec 057: Refund detail: folio fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get refundFieldNumber;
+
+  /// spec 057: Refund detail: date fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get refundFieldDate;
+
+  /// spec 057: Refund detail: customer fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get refundFieldCustomer;
+
+  /// spec 057: Refund detail: order fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get refundFieldOrder;
+
+  /// spec 057: Refund detail: status fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get refundFieldStatus;
+
+  /// spec 057: Refund detail: folio of a refund that has none yet
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get refundDraftNumber;
+
+  /// spec 057: Placeholder for a folio, date or customer a refund does not have
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get refundNoValue;
+
+  /// spec 057: Refund lines: product column
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get refundColumnProduct;
+
+  /// spec 057: Refund lines: price column
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get refundColumnPrice;
+
+  /// spec 057: Refund lines: discount column
+  ///
+  /// In en, this message translates to:
+  /// **'Disc.'**
+  String get refundColumnDiscount;
+
+  /// spec 057: Refund lines: tax column
+  ///
+  /// In en, this message translates to:
+  /// **'VAT'**
+  String get refundColumnTax;
+
+  /// spec 057: Refund lines: refundable quantity column
+  ///
+  /// In en, this message translates to:
+  /// **'Refundable'**
+  String get refundColumnRefundable;
+
+  /// spec 057: Refund lines: refundable quantity, short label
+  ///
+  /// In en, this message translates to:
+  /// **'Refundable'**
+  String get refundColumnRefundableShort;
+
+  /// spec 057: Refund lines: return quantity column on a draft
+  ///
+  /// In en, this message translates to:
+  /// **'Return'**
+  String get refundColumnReturn;
+
+  /// spec 057: Refund lines: return quantity column once confirmed
+  ///
+  /// In en, this message translates to:
+  /// **'Returned'**
+  String get refundColumnReturned;
+
+  /// spec 057: Refund lines: return-to warehouse column
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get refundColumnWarehouse;
+
+  /// spec 057: Refund lines: total column
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get refundColumnTotal;
+
+  /// spec 057: Refund totals: subtotal
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal'**
+  String get refundSubtotal;
+
+  /// spec 057: Refund totals: tax
+  ///
+  /// In en, this message translates to:
+  /// **'VAT'**
+  String get refundTax;
+
+  /// spec 057: Refund totals: total
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get refundTotal;
+
+  /// spec 057: Refund detail: 404
+  ///
+  /// In en, this message translates to:
+  /// **'Refund {id} does not exist.'**
+  String refundNotFound(int id);
+
+  /// spec 057: Refund detail: confirm button and dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm refund'**
+  String get refundConfirmAction;
+
+  /// spec 057: Refund detail: cancel button and prompt title
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel refund'**
+  String get refundCancelAction;
+
+  /// spec 057: Cancel prompt body
+  ///
+  /// In en, this message translates to:
+  /// **'The refund will be cancelled and can no longer be edited.'**
+  String get refundCancelPrompt;
+
+  /// spec 057: Confirm dialog: amount owed back
+  ///
+  /// In en, this message translates to:
+  /// **'{total} will be returned to the customer.'**
+  String refundConfirmDialogTotal(String total);
+
+  /// spec 057: Confirm dialog: cash payout choice
+  ///
+  /// In en, this message translates to:
+  /// **'Cash from the drawer'**
+  String get refundPayoutCash;
+
+  /// spec 057: Confirm dialog: credit note payout choice
+  ///
+  /// In en, this message translates to:
+  /// **'Credit note'**
+  String get refundPayoutCreditNote;
+
+  /// spec 057: Confirm and cancel dialogs: dismiss button
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get refundConfirmBack;
+
+  /// spec 057: Confirm dialog: submit button
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get refundConfirmSubmit;
+
+  /// spec 057: Banner when no open cash session
+  ///
+  /// In en, this message translates to:
+  /// **'Open a cash session to confirm the refund.'**
+  String get refundSessionBanner;
+
+  /// spec 057: Session banner button: no session
+  ///
+  /// In en, this message translates to:
+  /// **'Go to cash sessions'**
+  String get refundSessionOpenAction;
+
+  /// spec 057: Session banner button: stale session
+  ///
+  /// In en, this message translates to:
+  /// **'Close previous session'**
+  String get refundSessionStaleAction;
+
+  /// spec 057: Completed refund: payout line label
+  ///
+  /// In en, this message translates to:
+  /// **'Refund method'**
+  String get refundPayoutLineLabel;
+
+  /// spec 057: Completed refund: cash payout
+  ///
+  /// In en, this message translates to:
+  /// **'Paid in cash'**
+  String get refundPayoutLineCash;
+
+  /// spec 057: Completed refund: credit note payout
+  ///
+  /// In en, this message translates to:
+  /// **'Credit note No. {n}'**
+  String refundPayoutLineCreditNote(int n);
+
+  /// spec 057: Completed refund: payout could not be determined
+  ///
+  /// In en, this message translates to:
+  /// **'Refund method not available'**
+  String get refundPayoutLineUnknown;
+
+  /// spec 057: Banner right after a confirm that changed quantities
+  ///
+  /// In en, this message translates to:
+  /// **'Some quantities were adjusted because another refund was confirmed first.'**
+  String get refundAdjustedBanner;
+
+  /// spec 057: Hint shown to users who can edit but not confirm a refund
+  ///
+  /// In en, this message translates to:
+  /// **'Someone with permission to confirm must finish this refund.'**
+  String get refundNeedsConfirmerHint;
 }
 
 class _AppLocalizationsDelegate

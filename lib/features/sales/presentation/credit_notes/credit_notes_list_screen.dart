@@ -23,6 +23,7 @@ import 'package:mbe_ui/features/sales/presentation/credit_notes/credit_notes_lis
 import 'package:mbe_ui/features/sales/presentation/payments/payment_link_providers.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_widgets.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payments_list_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/refunds/refunds_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const creditNotesPath = '/sales/credit-notes';
@@ -194,10 +195,10 @@ class _ListForbidden extends StatelessWidget {
 }
 
 /// Where a note came from: its refund, then the order the refund was for. The
-/// order is a link when [orderLinkTargetProvider] finds a destination the user
-/// can open, plain text otherwise (the same rule as an application's order on
-/// the payment screen). The refund has no screen yet (roadmap#29), so it is
-/// always plain text.
+/// refund is a link to its screen for a user who can read refunds, plain text
+/// otherwise. The order is a link when [orderLinkTargetProvider] finds a
+/// destination the user can open, plain text otherwise (the same rule as an
+/// application's order on the payment screen).
 class _OriginCell extends ConsumerWidget {
   const _OriginCell({required this.note});
 
@@ -206,42 +207,75 @@ class _OriginCell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final target = ref.watch(orderLinkTargetProvider(note.salesOrderId)).value;
+    final access = ref.watch(accessControlProvider);
+    final orderTarget = ref
+        .watch(orderLinkTargetProvider(note.salesOrderId))
+        .value;
+    final refundTarget =
+        access.can(SystemObject.customerRefunds, AccessRight.read)
+        ? '$refundsPath/${note.customerRefundId}'
+        : null;
     final text = l10n.creditNotesOrigin(
       note.customerRefundId,
       note.salesOrderId,
     );
-    if (target == null) return Text(text);
+    if (orderTarget == null && refundTarget == null) return Text(text);
 
-    // The label is one localized string, so it is split on the order's own
-    // text to make just that part tappable. One `Text.rich`, so the number
-    // flows with the words and wraps with them: a long pair of numbers goes
-    // onto a second line, never out of reach — origin is never truncated
-    // (constitution §VI).
+    // The label is one localized string, so it is split on the refund's and
+    // the order's own text to make just those parts tappable. One `Text.rich`,
+    // so the numbers flow with the words and wrap with them: a long pair of
+    // numbers goes onto a second line, never out of reach — origin is never
+    // truncated (constitution §VI). The refund and order labels are located
+    // independently, so a translation that orders them differently still works.
+    final refundLabel = '#${note.customerRefundId}';
     final orderLabel = '#${note.salesOrderId}';
-    final cut = text.lastIndexOf(orderLabel);
-    if (cut < 0) return Text(text);
+    final refundCut = text.indexOf(refundLabel);
+    final orderCut = text.lastIndexOf(orderLabel);
+    if (refundCut < 0 ||
+        orderCut < 0 ||
+        refundCut + refundLabel.length > orderCut) {
+      return Text(text);
+    }
     final theme = Theme.of(context);
+
+    InlineSpan link(Key key, String label, String? target) {
+      if (target == null) return TextSpan(text: label);
+      return WidgetSpan(
+        alignment: PlaceholderAlignment.baseline,
+        baseline: TextBaseline.alphabetic,
+        child: InkWell(
+          key: key,
+          onTap: () => context.push(target),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: theme.colorScheme.primary,
+              decoration: TextDecoration.underline,
+              decorationColor: theme.colorScheme.primary,
+            ),
+          ),
+        ),
+      );
+    }
+
     return Text.rich(
       TextSpan(
         children: [
-          TextSpan(text: text.substring(0, cut)),
-          WidgetSpan(
-            alignment: PlaceholderAlignment.baseline,
-            baseline: TextBaseline.alphabetic,
-            child: InkWell(
-              key: Key('credit_note_order_link_${note.salesOrderId}'),
-              onTap: () => context.push(target),
-              child: Text(
-                orderLabel,
-                style: TextStyle(
-                  color: theme.colorScheme.primary,
-                  decoration: TextDecoration.underline,
-                  decorationColor: theme.colorScheme.primary,
-                ),
-              ),
-            ),
+          TextSpan(text: text.substring(0, refundCut)),
+          link(
+            Key('credit_note_refund_link_${note.customerRefundId}'),
+            refundLabel,
+            refundTarget,
           ),
+          TextSpan(
+            text: text.substring(refundCut + refundLabel.length, orderCut),
+          ),
+          link(
+            Key('credit_note_order_link_${note.salesOrderId}'),
+            orderLabel,
+            orderTarget,
+          ),
+          TextSpan(text: text.substring(orderCut + orderLabel.length)),
         ],
       ),
     );

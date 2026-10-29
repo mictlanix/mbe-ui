@@ -23,6 +23,7 @@ import 'package:mbe_ui/features/sales/presentation/capture/stock_gate.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/applied_payments_panel.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/order_payments_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_sales_list_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/refunds/refund_open_or_resume.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// The read-only detail of a fully paid sale (spec 048 FR-010..FR-014,
@@ -204,6 +205,9 @@ class _Facts extends ConsumerWidget {
                   saleTicketRef(l10n, id: sale.id, serial: sale.serial),
                 ),
           ),
+        // spec 057 R9: absent — not disabled — unless the sale is paid and
+        // the user has Customer Refunds create and read.
+        if (canStartRefund(access, sale)) RefundOrderButton(orderId: sale.id),
       ],
     );
   }

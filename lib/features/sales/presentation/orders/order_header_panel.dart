@@ -25,6 +25,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart'
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient_list_item.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/refunds/refund_open_or_resume.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/unconfirmed_edits_resolver.dart';
 import 'package:mbe_ui/features/sales/presentation/sales_order_write_scope.dart';
@@ -422,6 +423,9 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
       ref.watch(accessControlProvider),
       DocumentKind.salesOrder,
     );
+    // spec 057 R9: "Devolver" on a paid order, absent — not disabled —
+    // without Customer Refunds create and read.
+    final canRefund = canStartRefund(ref.watch(accessControlProvider), sale);
     final writesPending =
         ref.watch(pendingWritesProvider(salesOrderWritesScope)) > 0;
 
@@ -511,27 +515,32 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
       // tier or a large text scale leaves it too little room (the row caps
       // this slot — `FactStripRow`). Absent — not disabled — without
       // sales-orders read.
-      trailing: canViewPedido
+      trailing: canViewPedido || canRefund
           ? Wrap(
               alignment: WrapAlignment.end,
               crossAxisAlignment: WrapCrossAlignment.center,
               spacing: spacing.sm,
               runSpacing: spacing.xs,
               children: [
-                // A click here must not count as a click outside the comment field: on
-                // desktop and web that takes the field's focus, and losing focus
-                // discards its typed text before this can ask about it (FR-009).
-                TextFieldTapRegion(
-                  child: OutlinedButton.icon(
-                    key: const Key('sales_order_view_pedido_button'),
-                    // Held while a write is in flight, so the document
-                    // cannot be fetched a moment before the edit it should
-                    // show has landed.
-                    onPressed: writesPending ? null : _viewPedido,
-                    icon: const Icon(Icons.description_outlined),
-                    label: Text(l10n.salesOrderViewDocumentAction),
+                if (canViewPedido)
+                  // A click here must not count as a click outside the comment field: on
+                  // desktop and web that takes the field's focus, and losing focus
+                  // discards its typed text before this can ask about it (FR-009).
+                  TextFieldTapRegion(
+                    child: OutlinedButton.icon(
+                      key: const Key('sales_order_view_pedido_button'),
+                      // Held while a write is in flight, so the document
+                      // cannot be fetched a moment before the edit it should
+                      // show has landed.
+                      onPressed: writesPending ? null : _viewPedido,
+                      icon: const Icon(Icons.description_outlined),
+                      label: Text(l10n.salesOrderViewDocumentAction),
+                    ),
                   ),
-                ),
+                if (canRefund)
+                  TextFieldTapRegion(
+                    child: RefundOrderButton(orderId: sale.id),
+                  ),
                 detailsToggle,
               ],
             )

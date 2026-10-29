@@ -4499,4 +4499,228 @@ class AppLocalizationsEn extends AppLocalizations {
   String creditNoteOtherCustomer(String name) {
     return 'This credit note belongs to $name. Make the sale out to them to use it.';
   }
+
+  @override
+  String get refundsMenuTitle => 'Refunds';
+
+  @override
+  String get refundsColumnNumber => 'No.';
+
+  @override
+  String get refundsColumnDate => 'Date';
+
+  @override
+  String get refundsColumnCustomer => 'Customer';
+
+  @override
+  String get refundsColumnOrder => 'Order';
+
+  @override
+  String get refundsColumnStatus => 'Status';
+
+  @override
+  String get refundsColumnTotal => 'Total';
+
+  @override
+  String get refundsFilterStatus => 'Status';
+
+  @override
+  String get refundsFilterOrder => 'Order';
+
+  @override
+  String get refundsFilterAll => 'All';
+
+  @override
+  String get refundsFilterOpen => 'Open';
+
+  @override
+  String get refundsFilterConfirmed => 'Confirmed';
+
+  @override
+  String get refundsFilterCancelled => 'Cancelled';
+
+  @override
+  String get refundStatusDraft => 'Open';
+
+  @override
+  String get refundStatusCompleted => 'Confirmed';
+
+  @override
+  String get refundStatusCancelled => 'Cancelled';
+
+  @override
+  String get refundsNew => 'New refund';
+
+  @override
+  String get refundsNewShort => 'New';
+
+  @override
+  String get refundsEmpty => 'There are no refunds.';
+
+  @override
+  String get refundsForbidden => 'You do not have permission to view refunds.';
+
+  @override
+  String get refundsLoadError => 'The refunds could not be loaded.';
+
+  @override
+  String get refundNewOrderLabel => 'Order number';
+
+  @override
+  String get refundNewContinue => 'Continue';
+
+  @override
+  String refundRefusalOrderNotFound(int n) {
+    return 'Order $n does not exist.';
+  }
+
+  @override
+  String refundRefusalNotCompleted(int n) {
+    return 'Order $n is not confirmed.';
+  }
+
+  @override
+  String refundRefusalNotPaid(int n) {
+    return 'Order $n is not paid. Cancel it instead of refunding it.';
+  }
+
+  @override
+  String refundRefusalNothingToReturn(int n) {
+    return 'Order $n has nothing left to return.';
+  }
+
+  @override
+  String get refundAction => 'Refund';
+
+  @override
+  String get refundDetailTitle => 'Refund';
+
+  @override
+  String refundDetailTitleWithNumber(int n) {
+    return 'Refund $n';
+  }
+
+  @override
+  String get refundFieldNumber => 'Folio';
+
+  @override
+  String get refundFieldDate => 'Date';
+
+  @override
+  String get refundFieldCustomer => 'Customer';
+
+  @override
+  String get refundFieldOrder => 'Order';
+
+  @override
+  String get refundFieldStatus => 'Status';
+
+  @override
+  String get refundDraftNumber => 'Draft';
+
+  @override
+  String get refundNoValue => '—';
+
+  @override
+  String get refundColumnProduct => 'Product';
+
+  @override
+  String get refundColumnPrice => 'Price';
+
+  @override
+  String get refundColumnDiscount => 'Disc.';
+
+  @override
+  String get refundColumnTax => 'VAT';
+
+  @override
+  String get refundColumnRefundable => 'Refundable';
+
+  @override
+  String get refundColumnRefundableShort => 'Refundable';
+
+  @override
+  String get refundColumnReturn => 'Return';
+
+  @override
+  String get refundColumnReturned => 'Returned';
+
+  @override
+  String get refundColumnWarehouse => 'Warehouse';
+
+  @override
+  String get refundColumnTotal => 'Total';
+
+  @override
+  String get refundSubtotal => 'Subtotal';
+
+  @override
+  String get refundTax => 'VAT';
+
+  @override
+  String get refundTotal => 'Total';
+
+  @override
+  String refundNotFound(int id) {
+    return 'Refund $id does not exist.';
+  }
+
+  @override
+  String get refundConfirmAction => 'Confirm refund';
+
+  @override
+  String get refundCancelAction => 'Cancel refund';
+
+  @override
+  String get refundCancelPrompt =>
+      'The refund will be cancelled and can no longer be edited.';
+
+  @override
+  String refundConfirmDialogTotal(String total) {
+    return '$total will be returned to the customer.';
+  }
+
+  @override
+  String get refundPayoutCash => 'Cash from the drawer';
+
+  @override
+  String get refundPayoutCreditNote => 'Credit note';
+
+  @override
+  String get refundConfirmBack => 'Back';
+
+  @override
+  String get refundConfirmSubmit => 'Confirm';
+
+  @override
+  String get refundSessionBanner =>
+      'Open a cash session to confirm the refund.';
+
+  @override
+  String get refundSessionOpenAction => 'Go to cash sessions';
+
+  @override
+  String get refundSessionStaleAction => 'Close previous session';
+
+  @override
+  String get refundPayoutLineLabel => 'Refund method';
+
+  @override
+  String get refundPayoutLineCash => 'Paid in cash';
+
+  @override
+  String refundPayoutLineCreditNote(int n) {
+    return 'Credit note No. $n';
+  }
+
+  @override
+  String get refundPayoutLineUnknown => 'Refund method not available';
+
+  @override
+  String get refundAdjustedBanner =>
+      'Some quantities were adjusted because another refund was confirmed first.';
+
+  @override
+  String get refundNeedsConfirmerHint =>
+      'Someone with permission to confirm must finish this refund.';
 }

@@ -26,6 +26,16 @@ abstract class CreditNoteRepository {
   /// under its barcode — or `null` when that payment backs none in the
   /// caller's facility.
   Future<CreditNote?> findByPayment(int customerPaymentId);
+
+  /// The credit note a confirmed customer refund issued, or `null` when it
+  /// was paid in cash (spec 057 R6). Scans [customerId]'s notes newest first
+  /// and stops at the first one whose `customerRefundId` is [refundId], at a
+  /// page whose oldest note predates [refundDate], or at the end of the list.
+  Future<CreditNote?> findByRefund({
+    required int customerId,
+    required int refundId,
+    required DateTime refundDate,
+  });
 }
 
 /// One page of [CreditNote]s and the total across all pages — the same shape

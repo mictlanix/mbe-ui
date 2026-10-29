@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Customer Refunds (Devoluciones)",
   "branch": "main",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implementing",
   "history": [
     {
       "step": "specify",
@@ -46,9 +46,624 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-10-28T15:30:58.263Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-10-29T02:07:13.808Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:07:48.335Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:09:42.856Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:09:42.938Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:09:43.022Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:09:43.109Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:10:33.934Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:10:34.016Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:10:34.103Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:12:14.153Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:12:31.308Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:12:44.988Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:13:26.670Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:13:42.569Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:13:57.192Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:16:47.670Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:17:07.409Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:17:36.585Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:17:36.667Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:19:18.304Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:19:42.919Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:20:20.637Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:22:50.911Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:23:41.901Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:24:14.655Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:43:03.063Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:49:41.310Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:49:41.423Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:50:41.103Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:51:05.128Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:51:05.212Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:51:05.294Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:51:20.388Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:53:09.840Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:54:48.440Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:55:03.069Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T02:55:32.140Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T03:32:17.925Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T03:35:00.424Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-10-29T03:35:24.266Z"
     }
   ],
   "telemetryInstanceId": "b309ddbb-c86a-421b-96ac-582567f30fbd",
   "last_action": "living specs evaluated — skipped (not configured)",
-  "workingBranch": "057-customer-refunds"
+  "workingBranch": "057-customer-refunds",
+  "currentTask": "T038",
+  "task_summaries": {
+    "T001": {
+      "status": "DONE",
+      "did": "baseline: flutter analyze clean, 197 touched tests pass",
+      "files": [
+        "none"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "Freezed refund entities and fromResponse mappers",
+      "files": [
+        "lib/features/sales/domain/entities/customer_refund.dart"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "Added refund l10n keys (en template + es) and ran gen-l10n",
+      "files": [
+        "lib/l10n/app_en.arb",
+        "lib/l10n/app_es.arb"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "Added setQuantity3 wire setter",
+      "files": [
+        "lib/features/sales/data/wire_value_setters.dart"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "CustomerRefundRepository, RefundListResult, impl and provider",
+      "files": [
+        "lib/features/sales/domain/repositories/customer_refund_repository.dart",
+        "lib/features/sales/data/customer_refund_repository_impl.dart"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "Harness: MockCustomerRefundRepository, customerRefundOverride, testRefund, testRefundLine",
+      "files": [
+        "test/widget/features/sales/pos_test_harness.dart"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "Repository unit tests",
+      "files": [
+        "test/unit/features/sales/customer_refund_repository_impl_test.dart"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "Entity unit tests",
+      "files": [
+        "test/unit/features/sales/customer_refund_entity_test.dart"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "openOrResume + startRefundFromOrder",
+      "files": [
+        "lib/features/sales/presentation/refunds/refund_open_or_resume.dart"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "refund confirm dialog",
+      "files": [
+        "lib/features/sales/presentation/refunds/refund_confirm_dialog.dart"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "findByRefund on credit note repo",
+      "files": [
+        "lib/features/sales/domain/repositories/credit_note_repository.dart",
+        "lib/features/sales/data/credit_note_repository_impl.dart"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "RefundEditorController",
+      "files": [
+        "lib/features/sales/presentation/refunds/refund_editor_controller.dart",
+        "lib/features/sales/presentation/refunds/refund_editor_controller.g.dart"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "refundOutcome provider",
+      "files": [
+        "lib/features/sales/presentation/refunds/refund_outcome_provider.dart",
+        "lib/features/sales/presentation/refunds/refund_outcome_provider.g.dart"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "RefundLineBlock",
+      "files": [
+        "lib/features/sales/presentation/refunds/refund_line_block.dart"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "Built RefundDetailScreen with all states, editable draft lines, confirm flow, payout line and banners",
+      "files": [
+        "lib/features/sales/presentation/refunds/refund_detail_screen.dart"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "Added /sales/refunds/:refundId route and customerRefunds read gate",
+      "files": [
+        "lib/app/router/app_router.dart",
+        "lib/features/sales/presentation/refunds/refund_detail_screen.dart"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "Added order_refund_button (RefundOrderButton) to OrderHeaderPanel trailing Wrap, gated by canStartRefund",
+      "files": [
+        "lib/features/sales/presentation/orders/order_header_panel.dart",
+        "lib/features/sales/presentation/refunds/refund_open_or_resume.dart"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "Added same button to PosSaleDetailView facts next to ticket button",
+      "files": [
+        "lib/features/sales/presentation/pos_sale_detail_view.dart",
+        "lib/features/sales/presentation/refunds/refund_open_or_resume.dart"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "openOrResume unit tests (7 cases)",
+      "files": [
+        "test/unit/features/sales/refund_open_or_resume_test.dart"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "RefundEditorController tests (9 cases)",
+      "files": [
+        "test/unit/features/sales/refund_editor_controller_test.dart"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "findByRefund (4) + refundOutcome provider (6) tests",
+      "files": [
+        "test/unit/features/sales/credit_note_repository_impl_test.dart",
+        "test/unit/features/sales/refund_outcome_provider_test.dart"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "refund detail screen (18 cases) + confirm dialog (5) widget tests; fixed compact line block stepper overflow (flex 3->5)",
+      "files": [
+        "test/widget/features/sales/refund_detail_screen_test.dart",
+        "test/widget/features/sales/refund_confirm_dialog_test.dart",
+        "lib/features/sales/presentation/refunds/refund_line_block.dart"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Devolver button tests: Pedidos header (7) + POS detail extension (5)",
+      "files": [
+        "test/widget/features/sales/order_header_refund_button_test.dart",
+        "test/widget/features/sales/pos_sale_detail_view_test.dart"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "router gate cases for /sales/refunds/:refundId (4)",
+      "files": [
+        "test/unit/app/router/app_router_test.dart"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "live quickstart test; ran on macOS vs dev API, steps 1,2,3,5 passed, 6-7 behind MBE_REFUND_CONFIRM (not run); draft cancelled in tearDown",
+      "files": [
+        "integration_test/customer_refunds_quickstart_test.dart"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "RefundsFilter freezed with fromQuery facets status/customer/order",
+      "files": [
+        "lib/features/sales/presentation/refunds/refunds_filter.dart"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "RefundsListController family, page 20, empty page without read",
+      "files": [
+        "lib/features/sales/presentation/refunds/refunds_list_controller.dart"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "Refunds list screen with filter sheet, compact tier, new-refund dialog; RefundStatusChip made public",
+      "files": [
+        "lib/features/sales/presentation/refunds/refunds_list_screen.dart",
+        "lib/features/sales/presentation/refunds/refund_detail_screen.dart"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "Nav entry refunds at branch 24 after credit-notes",
+      "files": [
+        "lib/core/navigation/nav_destinations.dart"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Credit-note origin cell links refund and order",
+      "files": [
+        "lib/features/sales/presentation/credit_notes/credit_notes_list_screen.dart"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "Shell branch /sales/refunds at index 24",
+      "files": [
+        "lib/app/router/app_router.dart"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "Cancel on editor + detail screen with confirm AlertDialog; 404 Back falls back to refundsPath",
+      "files": [
+        "lib/features/sales/presentation/refunds/refund_editor_controller.dart",
+        "lib/features/sales/presentation/refunds/refund_detail_screen.dart"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "Unit tests for RefundsFilter (6) and refunds list controller (5); order filter debounced (step 0)",
+      "files": [
+        "test/unit/features/sales/refunds_filter_test.dart",
+        "test/unit/features/sales/refunds_list_controller_test.dart",
+        "lib/features/sales/presentation/refunds/refunds_list_screen.dart"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "List screen widget tests (24 cases) and 7 cancel cases in refund_detail_screen_test; removed unused refundsEmptyFiltered l10n key",
+      "files": [
+        "test/widget/features/sales/refunds_list_screen_test.dart",
+        "test/widget/features/sales/refund_detail_screen_test.dart",
+        "lib/l10n/app_en.arb",
+        "lib/l10n/app_es.arb"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "Credit-notes list test: refund link with/without read, tap pushes refund, order link intact (3 cases)",
+      "files": [
+        "test/widget/features/sales/credit_notes_list_screen_test.dart"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "Router test: /sales/refunds gate + branch 24 + stubbed list (4 cases); nav test: Devoluciones entry gate/order/branch (4 cases)",
+      "files": [
+        "test/unit/app/router/app_router_test.dart",
+        "test/unit/core/navigation/nav_destinations_test.dart"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "Live quickstart steps 4, 8, 9, 10 added; full run passed (steps 1-5, 8-10; 6-7 skipped without MBE_REFUND_CONFIRM)",
+      "files": [
+        "integration_test/customer_refunds_quickstart_test.dart"
+      ]
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "analyze clean; 3945 unit+widget pass, 11 unrelated customer_payment failures from main's serial field; formatted touched files; no spacing/NumberFormat literals; largest-text pass not done",
+      "files": [
+        "lib/features/sales/presentation/refunds/refunds_filter.dart"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "PR description written; Part of roadmap#29 since printing is blocked",
+      "files": [
+        "specs/057-customer-refunds/pr-description.md"
+      ]
+    }
+  }
 }
