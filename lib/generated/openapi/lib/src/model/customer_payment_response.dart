@@ -24,6 +24,7 @@ part 'customer_payment_response.g.dart';
 /// * [reference]
 /// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [facility]
+/// * [serial]
 /// * [cashSession]
 /// * [paymentType]
 /// * [verifier]
@@ -64,6 +65,9 @@ abstract class CustomerPaymentResponse
 
   @BuiltValueField(wireName: r'facility')
   int get facility;
+
+  @BuiltValueField(wireName: r'serial')
+  int get serial;
 
   @BuiltValueField(wireName: r'cash_session')
   int? get cashSession;
@@ -162,6 +166,11 @@ class _$CustomerPaymentResponseSerializer
     yield r'facility';
     yield serializers.serialize(
       object.facility,
+      specifiedType: const FullType(int),
+    );
+    yield r'serial';
+    yield serializers.serialize(
+      object.serial,
       specifiedType: const FullType(int),
     );
     yield r'cash_session';
@@ -298,6 +307,12 @@ class _$CustomerPaymentResponseSerializer
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
           result.facility = valueDes;
+          break;
+        case r'serial':
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
+          result.serial = valueDes;
           break;
         case r'cash_session':
           final valueDes =

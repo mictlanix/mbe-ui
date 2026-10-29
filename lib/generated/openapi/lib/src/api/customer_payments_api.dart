@@ -329,7 +329,7 @@ class CustomerPaymentsApi {
   ///
   /// Parameters:
   /// * [customer]
-  /// * [search] - Matches part of the customer's name.
+  /// * [search] - All digits: the payment's id or its serial (the folio on its ticket). Otherwise, part of the customer's name.
   /// * [cashSession]
   /// * [facility]
   /// * [dateFrom]
