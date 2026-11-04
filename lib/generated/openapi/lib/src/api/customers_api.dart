@@ -17,8 +17,8 @@ import 'package:mbe_api_client/src/model/customer_discount_update.dart';
 import 'package:mbe_api_client/src/model/customer_response.dart';
 import 'package:mbe_api_client/src/model/customer_update.dart';
 import 'package:mbe_api_client/src/model/entity_status.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_customer_list_item.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class CustomersApi {
   final Dio _dio;

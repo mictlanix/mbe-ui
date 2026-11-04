@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/refund_payout.dart';
 import 'package:mbe_api_client/src/model/document_status.dart';
 import 'package:mbe_api_client/src/model/currency_code.dart';
 import 'package:built_value/built_value.dart';
@@ -16,10 +17,14 @@ part 'customer_refund_summary.g.dart';
 /// * [customerRefundId]
 /// * [salesOrder]
 /// * [customer]
+/// * [customerDisplayName] - The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
 /// * [serial]
 /// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [currency]
 /// * [status]
+/// * [payout]
+/// * [customerPayment]
+/// * [creditNote]
 /// * [total]
 @BuiltValue()
 abstract class CustomerRefundSummary
@@ -32,6 +37,10 @@ abstract class CustomerRefundSummary
 
   @BuiltValueField(wireName: r'customer')
   int? get customer;
+
+  /// The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
+  @BuiltValueField(wireName: r'customer_display_name')
+  String? get customerDisplayName;
 
   @BuiltValueField(wireName: r'serial')
   int? get serial;
@@ -47,6 +56,16 @@ abstract class CustomerRefundSummary
   @BuiltValueField(wireName: r'status')
   DocumentStatus get status;
   // enum statusEnum {  draft,  completed,  paid,  cancelled,  };
+
+  @BuiltValueField(wireName: r'payout')
+  RefundPayout? get payout;
+  // enum payoutEnum {  cash,  credit_note,  };
+
+  @BuiltValueField(wireName: r'customer_payment')
+  int? get customerPayment;
+
+  @BuiltValueField(wireName: r'credit_note')
+  int? get creditNote;
 
   @BuiltValueField(wireName: r'total')
   String get total;
@@ -98,6 +117,13 @@ class _$CustomerRefundSummarySerializer
             object.customer,
             specifiedType: const FullType.nullable(int),
           );
+    if (object.customerDisplayName != null) {
+      yield r'customer_display_name';
+      yield serializers.serialize(
+        object.customerDisplayName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'serial';
     yield object.serial == null
         ? null
@@ -122,6 +148,27 @@ class _$CustomerRefundSummarySerializer
       object.status,
       specifiedType: const FullType(DocumentStatus),
     );
+    if (object.payout != null) {
+      yield r'payout';
+      yield serializers.serialize(
+        object.payout,
+        specifiedType: const FullType.nullable(RefundPayout),
+      );
+    }
+    if (object.customerPayment != null) {
+      yield r'customer_payment';
+      yield serializers.serialize(
+        object.customerPayment,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
+    if (object.creditNote != null) {
+      yield r'credit_note';
+      yield serializers.serialize(
+        object.creditNote,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
     yield r'total';
     yield serializers.serialize(
       object.total,
@@ -176,6 +223,16 @@ class _$CustomerRefundSummarySerializer
           if (valueDes == null) continue;
           result.customer = valueDes;
           break;
+        case r'customer_display_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.customerDisplayName = valueDes;
+          break;
         case r'serial':
           final valueDes =
               serializers.deserialize(
@@ -213,6 +270,36 @@ class _$CustomerRefundSummarySerializer
                   )
                   as DocumentStatus;
           result.status = valueDes;
+          break;
+        case r'payout':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(RefundPayout),
+                  )
+                  as RefundPayout?;
+          if (valueDes == null) continue;
+          result.payout = valueDes;
+          break;
+        case r'customer_payment':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.customerPayment = valueDes;
+          break;
+        case r'credit_note':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.creditNote = valueDes;
           break;
         case r'total':
           final valueDes =

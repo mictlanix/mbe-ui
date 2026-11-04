@@ -13,8 +13,8 @@ import 'package:mbe_api_client/src/model/cash_drawer_create.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_response.dart';
 import 'package:mbe_api_client/src/model/cash_drawer_update.dart';
 import 'package:mbe_api_client/src/model/entity_status.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_cash_drawer_response.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class CashDrawersApi {
   final Dio _dio;

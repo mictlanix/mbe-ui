@@ -16,8 +16,8 @@ import 'package:mbe_api_client/src/model/cash_session_response.dart';
 import 'package:mbe_api_client/src/model/cash_session_sort.dart';
 import 'package:mbe_api_client/src/model/cash_session_status.dart';
 import 'package:mbe_api_client/src/model/current_session_response.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_cash_session_response.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class CashSessionsApi {
   final Dio _dio;

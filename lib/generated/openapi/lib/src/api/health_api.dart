@@ -9,6 +9,7 @@ import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
 import 'package:built_collection/built_collection.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class HealthApi {
   final Dio _dio;

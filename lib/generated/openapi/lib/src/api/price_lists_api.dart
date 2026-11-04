@@ -9,12 +9,12 @@ import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
 import 'package:mbe_api_client/src/api_util.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_price_list_response.dart';
 import 'package:mbe_api_client/src/model/price_list_create.dart';
 import 'package:mbe_api_client/src/model/price_list_delete_preview_response.dart';
 import 'package:mbe_api_client/src/model/price_list_response.dart';
 import 'package:mbe_api_client/src/model/price_list_update.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class PriceListsApi {
   final Dio _dio;

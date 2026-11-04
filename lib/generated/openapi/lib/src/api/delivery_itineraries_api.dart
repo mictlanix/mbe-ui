@@ -14,13 +14,13 @@ import 'package:mbe_api_client/src/model/commit_line_request.dart';
 import 'package:mbe_api_client/src/model/commit_line_update.dart';
 import 'package:mbe_api_client/src/model/commit_order_request.dart';
 import 'package:mbe_api_client/src/model/date.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/itinerary_create.dart';
 import 'package:mbe_api_client/src/model/itinerary_response.dart';
 import 'package:mbe_api_client/src/model/itinerary_status.dart';
 import 'package:mbe_api_client/src/model/itinerary_update.dart';
 import 'package:mbe_api_client/src/model/list_response_itinerary_summary.dart';
 import 'package:mbe_api_client/src/model/pending_deliveries_response.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 import 'package:mbe_api_client/src/model/stop_create.dart';
 
 class DeliveryItinerariesApi {

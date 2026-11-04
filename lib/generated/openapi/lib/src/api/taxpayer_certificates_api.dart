@@ -10,8 +10,8 @@ import 'package:dio/dio.dart';
 
 import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/entity_status.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_taxpayer_certificate_response.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 import 'package:mbe_api_client/src/model/taxpayer_certificate_response.dart';
 
 class TaxpayerCertificatesApi {

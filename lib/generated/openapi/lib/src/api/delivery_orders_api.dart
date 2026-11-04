@@ -19,8 +19,8 @@ import 'package:mbe_api_client/src/model/delivery_order_response.dart';
 import 'package:mbe_api_client/src/model/delivery_order_status.dart';
 import 'package:mbe_api_client/src/model/delivery_order_update.dart';
 import 'package:mbe_api_client/src/model/fulfillment_type.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_delivery_order_summary.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 import 'package:mbe_api_client/src/model/proof_of_delivery_response.dart';
 import 'package:mbe_api_client/src/model/reason_request.dart';
 

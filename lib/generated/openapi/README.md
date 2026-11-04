@@ -148,6 +148,7 @@ Class | Method | HTTP request | Description
 [*CustomerRefundsApi*](doc/CustomerRefundsApi.md) | [**getCustomerRefundApiV1CustomerRefundsCustomerRefundIdGet**](doc/CustomerRefundsApi.md#getcustomerrefundapiv1customerrefundscustomerrefundidget) | **GET** /api/v1/customer-refunds/{customer_refund_id} | Get Customer Refund
 [*CustomerRefundsApi*](doc/CustomerRefundsApi.md) | [**listCustomerRefundsApiV1CustomerRefundsGet**](doc/CustomerRefundsApi.md#listcustomerrefundsapiv1customerrefundsget) | **GET** /api/v1/customer-refunds | List Customer Refunds
 [*CustomerRefundsApi*](doc/CustomerRefundsApi.md) | [**openCustomerRefundApiV1CustomerRefundsPost**](doc/CustomerRefundsApi.md#opencustomerrefundapiv1customerrefundspost) | **POST** /api/v1/customer-refunds | Open Customer Refund
+[*CustomerRefundsApi*](doc/CustomerRefundsApi.md) | [**printCustomerRefundTicketApiV1CustomerRefundsCustomerRefundIdTicketGet**](doc/CustomerRefundsApi.md#printcustomerrefundticketapiv1customerrefundscustomerrefundidticketget) | **GET** /api/v1/customer-refunds/{customer_refund_id}/ticket | Print Customer Refund Ticket
 [*CustomerRefundsApi*](doc/CustomerRefundsApi.md) | [**updateCustomerRefundLineApiV1CustomerRefundsCustomerRefundIdLinesLineIdPut**](doc/CustomerRefundsApi.md#updatecustomerrefundlineapiv1customerrefundscustomerrefundidlineslineidput) | **PUT** /api/v1/customer-refunds/{customer_refund_id}/lines/{line_id} | Update Customer Refund Line
 [*CustomersApi*](doc/CustomersApi.md) | [**createCustomerApiV1CustomersPost**](doc/CustomersApi.md#createcustomerapiv1customerspost) | **POST** /api/v1/customers | Create Customer
 [*CustomersApi*](doc/CustomersApi.md) | [**createDiscountApiV1CustomersCustomerIdDiscountsPost**](doc/CustomersApi.md#creatediscountapiv1customerscustomeriddiscountspost) | **POST** /api/v1/customers/{customer_id}/discounts | Create Discount
@@ -595,6 +596,7 @@ Class | Method | HTTP request | Description
  - [DeliveryOrderUpdate](doc/DeliveryOrderUpdate.md)
  - [Denomination](doc/Denomination.md)
  - [DenominationCount](doc/DenominationCount.md)
+ - [Detail](doc/Detail.md)
  - [Discount](doc/Discount.md)
  - [Discount1](doc/Discount1.md)
  - [DiscountRate](doc/DiscountRate.md)
@@ -603,6 +605,7 @@ Class | Method | HTTP request | Description
  - [EmployeeResponse](doc/EmployeeResponse.md)
  - [EmployeeUpdate](doc/EmployeeUpdate.md)
  - [EntityStatus](doc/EntityStatus.md)
+ - [ErrorCode](doc/ErrorCode.md)
  - [ExchangeRateCreate](doc/ExchangeRateCreate.md)
  - [ExchangeRateResponse](doc/ExchangeRateResponse.md)
  - [ExchangeRateUpdate](doc/ExchangeRateUpdate.md)
@@ -631,7 +634,6 @@ Class | Method | HTTP request | Description
  - [FiscalEmailResponse](doc/FiscalEmailResponse.md)
  - [FulfillmentType](doc/FulfillmentType.md)
  - [GeneratedReceipt](doc/GeneratedReceipt.md)
- - [HTTPValidationError](doc/HTTPValidationError.md)
  - [HighProfit](doc/HighProfit.md)
  - [HighProfitMargin](doc/HighProfitMargin.md)
  - [HighProfitMargin1](doc/HighProfitMargin1.md)
@@ -721,7 +723,6 @@ Class | Method | HTTP request | Description
  - [ListResponseVehicleOperatorResponse](doc/ListResponseVehicleOperatorResponse.md)
  - [ListResponseVehicleResponse](doc/ListResponseVehicleResponse.md)
  - [ListResponseWarehouseResponse](doc/ListResponseWarehouseResponse.md)
- - [LocationInner](doc/LocationInner.md)
  - [LowProfit](doc/LowProfit.md)
  - [LowProfitMargin](doc/LowProfitMargin.md)
  - [LowProfitMargin1](doc/LowProfitMargin1.md)
@@ -769,6 +770,8 @@ Class | Method | HTTP request | Description
  - [Priority](doc/Priority.md)
  - [PrivilegeResponse](doc/PrivilegeResponse.md)
  - [PrivilegeUpdate](doc/PrivilegeUpdate.md)
+ - [Problem](doc/Problem.md)
+ - [ProblemPart](doc/ProblemPart.md)
  - [ProductCreate](doc/ProductCreate.md)
  - [ProductLabelFacet](doc/ProductLabelFacet.md)
  - [ProductListItem](doc/ProductListItem.md)
@@ -898,7 +901,6 @@ Class | Method | HTTP request | Description
  - [UserSettingsResponse](doc/UserSettingsResponse.md)
  - [UserSettingsUpdate](doc/UserSettingsUpdate.md)
  - [UserUpdate](doc/UserUpdate.md)
- - [ValidationError](doc/ValidationError.md)
  - [VehicleCreate](doc/VehicleCreate.md)
  - [VehicleOperatorCreate](doc/VehicleOperatorCreate.md)
  - [VehicleOperatorResponse](doc/VehicleOperatorResponse.md)

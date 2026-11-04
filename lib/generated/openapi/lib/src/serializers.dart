@@ -125,6 +125,7 @@ import 'package:mbe_api_client/src/model/delivery_order_summary.dart';
 import 'package:mbe_api_client/src/model/delivery_order_update.dart';
 import 'package:mbe_api_client/src/model/denomination.dart';
 import 'package:mbe_api_client/src/model/denomination_count.dart';
+import 'package:mbe_api_client/src/model/detail.dart';
 import 'package:mbe_api_client/src/model/discount.dart';
 import 'package:mbe_api_client/src/model/discount1.dart';
 import 'package:mbe_api_client/src/model/discount_rate.dart';
@@ -133,6 +134,7 @@ import 'package:mbe_api_client/src/model/employee_create.dart';
 import 'package:mbe_api_client/src/model/employee_response.dart';
 import 'package:mbe_api_client/src/model/employee_update.dart';
 import 'package:mbe_api_client/src/model/entity_status.dart';
+import 'package:mbe_api_client/src/model/error_code.dart';
 import 'package:mbe_api_client/src/model/exchange_rate_create.dart';
 import 'package:mbe_api_client/src/model/exchange_rate_response.dart';
 import 'package:mbe_api_client/src/model/exchange_rate_update.dart';
@@ -161,7 +163,6 @@ import 'package:mbe_api_client/src/model/fiscal_email_request.dart';
 import 'package:mbe_api_client/src/model/fiscal_email_response.dart';
 import 'package:mbe_api_client/src/model/fulfillment_type.dart';
 import 'package:mbe_api_client/src/model/generated_receipt.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/high_profit.dart';
 import 'package:mbe_api_client/src/model/high_profit_margin.dart';
 import 'package:mbe_api_client/src/model/high_profit_margin1.dart';
@@ -251,7 +252,6 @@ import 'package:mbe_api_client/src/model/list_response_taxpayer_recipient_respon
 import 'package:mbe_api_client/src/model/list_response_vehicle_operator_response.dart';
 import 'package:mbe_api_client/src/model/list_response_vehicle_response.dart';
 import 'package:mbe_api_client/src/model/list_response_warehouse_response.dart';
-import 'package:mbe_api_client/src/model/location_inner.dart';
 import 'package:mbe_api_client/src/model/low_profit.dart';
 import 'package:mbe_api_client/src/model/low_profit_margin.dart';
 import 'package:mbe_api_client/src/model/low_profit_margin1.dart';
@@ -299,6 +299,8 @@ import 'package:mbe_api_client/src/model/price_list_update.dart';
 import 'package:mbe_api_client/src/model/priority.dart';
 import 'package:mbe_api_client/src/model/privilege_response.dart';
 import 'package:mbe_api_client/src/model/privilege_update.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
+import 'package:mbe_api_client/src/model/problem_part.dart';
 import 'package:mbe_api_client/src/model/product_create.dart';
 import 'package:mbe_api_client/src/model/product_label_facet.dart';
 import 'package:mbe_api_client/src/model/product_list_item.dart';
@@ -428,7 +430,6 @@ import 'package:mbe_api_client/src/model/user_response.dart';
 import 'package:mbe_api_client/src/model/user_settings_response.dart';
 import 'package:mbe_api_client/src/model/user_settings_update.dart';
 import 'package:mbe_api_client/src/model/user_update.dart';
-import 'package:mbe_api_client/src/model/validation_error.dart';
 import 'package:mbe_api_client/src/model/vehicle_create.dart';
 import 'package:mbe_api_client/src/model/vehicle_operator_create.dart';
 import 'package:mbe_api_client/src/model/vehicle_operator_response.dart';
@@ -554,6 +555,7 @@ part 'serializers.g.dart';
   DeliveryOrderUpdate,
   Denomination,
   DenominationCount,
+  Detail,
   Discount,
   Discount1,
   DiscountRate,
@@ -562,6 +564,7 @@ part 'serializers.g.dart';
   EmployeeResponse,
   EmployeeUpdate,
   EntityStatus,
+  ErrorCode,
   ExchangeRateCreate,
   ExchangeRateResponse,
   ExchangeRateUpdate,
@@ -590,7 +593,6 @@ part 'serializers.g.dart';
   FiscalEmailResponse,
   FulfillmentType,
   GeneratedReceipt,
-  HTTPValidationError,
   HighProfit,
   HighProfitMargin,
   HighProfitMargin1,
@@ -680,7 +682,6 @@ part 'serializers.g.dart';
   ListResponseVehicleOperatorResponse,
   ListResponseVehicleResponse,
   ListResponseWarehouseResponse,
-  LocationInner,
   LowProfit,
   LowProfitMargin,
   LowProfitMargin1,
@@ -728,6 +729,8 @@ part 'serializers.g.dart';
   Priority,
   PrivilegeResponse,
   PrivilegeUpdate,
+  Problem,
+  ProblemPart,
   ProductCreate,
   ProductLabelFacet,
   ProductListItem,
@@ -857,7 +860,6 @@ part 'serializers.g.dart';
   UserSettingsResponse,
   UserSettingsUpdate,
   UserUpdate,
-  ValidationError,
   VehicleCreate,
   VehicleOperatorCreate,
   VehicleOperatorResponse,
@@ -884,6 +886,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(SalesQuoteSummary)]),
             () => ListBuilder<SalesQuoteSummary>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(ProblemPart)]),
+            () => ListBuilder<ProblemPart>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(DenominationCount)]),
@@ -1116,6 +1122,13 @@ Serializers serializers =
             () => ListBuilder<BatchAccount>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltMap, [
+              FullType(String),
+              FullType.nullable(JsonObject),
+            ]),
+            () => MapBuilder<String, JsonObject?>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(PriceListResponse)]),
             () => ListBuilder<PriceListResponse>(),
           )
@@ -1296,10 +1309,6 @@ Serializers serializers =
             () => ListBuilder<ProductPriceResponse>(),
           )
           ..addBuilderFactory(
-            const FullType(BuiltList, [FullType(LocationInner)]),
-            () => ListBuilder<LocationInner>(),
-          )
-          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ApplicationResponse)]),
             () => ListBuilder<ApplicationResponse>(),
           )
@@ -1338,10 +1347,6 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(int)]),
             () => ListBuilder<int>(),
-          )
-          ..addBuilderFactory(
-            const FullType(BuiltList, [FullType(ValidationError)]),
-            () => ListBuilder<ValidationError>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(PurchaseRequestSummary)]),

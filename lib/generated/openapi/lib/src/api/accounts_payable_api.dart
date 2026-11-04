@@ -11,8 +11,8 @@ import 'package:dio/dio.dart';
 import 'package:built_value/json_object.dart';
 import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/accounts_summary_response.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/party_detail.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 import 'package:mbe_api_client/src/model/statement_email_request.dart';
 import 'package:mbe_api_client/src/model/statement_email_response.dart';
 

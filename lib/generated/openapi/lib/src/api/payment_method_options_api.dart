@@ -10,11 +10,11 @@ import 'package:dio/dio.dart';
 
 import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/entity_status.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_payment_method_option_response.dart';
 import 'package:mbe_api_client/src/model/payment_method_option_create.dart';
 import 'package:mbe_api_client/src/model/payment_method_option_response.dart';
 import 'package:mbe_api_client/src/model/payment_method_option_update.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class PaymentMethodOptionsApi {
   final Dio _dio;

@@ -12,8 +12,8 @@ import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/contact_create.dart';
 import 'package:mbe_api_client/src/model/contact_response.dart';
 import 'package:mbe_api_client/src/model/contact_update.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_contact_response.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class ContactsApi {
   final Dio _dio;
