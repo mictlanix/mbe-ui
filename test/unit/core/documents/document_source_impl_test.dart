@@ -39,6 +39,7 @@ void main() {
       await source.fetch(_ref(DocumentKind.cashCut, 7));
       await source.fetch(_ref(DocumentKind.salesQuote, 42));
       await source.fetch(_ref(DocumentKind.customerPaymentTicket, 18342));
+      await source.fetch(_ref(DocumentKind.customerRefundReceipt, 9601));
 
       expect(paths, [
         '/api/v1/sales-orders/42/ticket',
@@ -46,6 +47,7 @@ void main() {
         '/api/v1/cash-sessions/7/ticket',
         '/api/v1/sales-quotes/42/document',
         '/api/v1/customer-payments/18342/ticket',
+        '/api/v1/customer-refunds/9601/ticket',
       ]);
     });
 
@@ -115,6 +117,16 @@ void main() {
       );
 
       expect(document.filename, 'pago-00018342.pdf');
+    });
+
+    test('a refund receipt falls back to its padded name', () async {
+      final source = _sourceWith((options) async => _pdfResponse(_pdf([1])));
+
+      final document = await source.fetch(
+        _ref(DocumentKind.customerRefundReceipt, 9601),
+      );
+
+      expect(document.filename, 'devolucion-00009601.pdf');
     });
 
     test('never lets a server-supplied name carry a path', () async {
@@ -270,6 +282,17 @@ void main() {
 
       await expectLater(
         () => source.fetch(_ref(DocumentKind.customerPaymentTicket, 18342)),
+        throwsA(isA<ServerError>()),
+      );
+    });
+
+    test('a refund receipt body that is not a PDF is a ServerError', () async {
+      final source = _sourceWith(
+        (options) async => _pdfResponse(Uint8List.fromList([0x3C, 0x68])),
+      );
+
+      await expectLater(
+        () => source.fetch(_ref(DocumentKind.customerRefundReceipt, 9601)),
         throwsA(isA<ServerError>()),
       );
     });

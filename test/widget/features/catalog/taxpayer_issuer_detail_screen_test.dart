@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mbe_api_client/mbe_api_client.dart'
-    hide EntityStatus, ValidationError;
+import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

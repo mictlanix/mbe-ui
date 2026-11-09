@@ -13,8 +13,8 @@ import 'package:mbe_api_client/src/model/entity_status.dart';
 import 'package:mbe_api_client/src/model/facility_create.dart';
 import 'package:mbe_api_client/src/model/facility_response.dart';
 import 'package:mbe_api_client/src/model/facility_update.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_facility_response.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class FacilitiesApi {
   final Dio _dio;

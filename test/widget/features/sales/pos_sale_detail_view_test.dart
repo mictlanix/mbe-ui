@@ -84,13 +84,15 @@ void main() {
     WidgetTester tester, {
     bool canReadPayments = true,
     bool canReadSalesOrders = true,
+    int refundRights = 0,
+    SaleStatus status = SaleStatus.paid,
     String? salespersonName = 'Luis Vendedor',
     Size surface = const Size(1440, 900),
   }) => pumpPos(
     tester,
     PosSaleDetailView(
       sale: testSale(
-        status: SaleStatus.paid,
+        status: status,
         balance: '0',
         serial: 1234,
         lines: [testLine()],
@@ -123,6 +125,11 @@ void main() {
                     systemObject: SystemObject.salesOrders,
                     rawValue: 2,
                   ),
+                if (refundRights != 0)
+                  Privilege(
+                    systemObject: SystemObject.customerRefunds,
+                    rawValue: refundRights,
+                  ),
               ],
             ),
           ),
@@ -131,6 +138,7 @@ void main() {
       customerRepositoryProvider.overrideWithValue(customers),
       customerPaymentOverride(payments),
       warehouseOverride(warehouses),
+      customerRefundOverride(MockCustomerRefundRepository()),
       employeeDisplayNameProvider.overrideWith(
         (ref, id) async => salespersonName,
       ),
@@ -275,4 +283,39 @@ void main() {
       expect(find.byKey(const Key('pos_sale_detail_payments')), findsOneWidget);
     },
   );
+
+  // Spec 057 T023 / contracts C3: "Devolver" on a paid sale.
+  group('Devolver', () {
+    final button = find.byKey(const Key('order_refund_button'));
+
+    testWidgets('shows with customer-refunds create and read', (tester) async {
+      await pumpDetail(tester, refundRights: 3);
+
+      expect(button, findsOneWidget);
+    });
+
+    testWidgets('is hidden without the create privilege', (tester) async {
+      await pumpDetail(tester, refundRights: 2);
+
+      expect(button, findsNothing);
+    });
+
+    testWidgets('is hidden without the read privilege', (tester) async {
+      await pumpDetail(tester, refundRights: 1);
+
+      expect(button, findsNothing);
+    });
+
+    testWidgets('is hidden for an unpaid sale', (tester) async {
+      await pumpDetail(tester, refundRights: 3, status: SaleStatus.completed);
+
+      expect(button, findsNothing);
+    });
+
+    testWidgets('is hidden with no refund privilege at all', (tester) async {
+      await pumpDetail(tester);
+
+      expect(button, findsNothing);
+    });
+  });
 }

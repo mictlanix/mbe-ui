@@ -26,8 +26,8 @@ import 'package:mbe_api_client/src/model/commission_period_response.dart';
 import 'package:mbe_api_client/src/model/commission_period_summary.dart';
 import 'package:mbe_api_client/src/model/commission_product_label_response.dart';
 import 'package:mbe_api_client/src/model/commission_product_label_set.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_commission_product_label_response.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class CommissionsApi {
   final Dio _dio;

@@ -50,9 +50,11 @@ void main() {
     String issued = '27.00',
     String remaining = '3.00',
     int customer = 7,
+    String? name,
   }) => CreditNote(
     id: id,
     customerId: customer,
+    customerName: name,
     salesOrderId: 3000 + id,
     customerRefundId: 4000 + id,
     customerPaymentId: 5000 + id,
@@ -76,7 +78,11 @@ void main() {
     when(() => repository.listSpendable(any())).thenAnswer((_) async => notes);
   }
 
-  User user({bool creditRead = true, bool paymentsRead = true}) => User(
+  User user({
+    bool creditRead = true,
+    bool paymentsRead = true,
+    bool refundsRead = false,
+  }) => User(
     userId: 'u',
     email: 'u@example.com',
     administrator: false,
@@ -88,6 +94,11 @@ void main() {
       if (paymentsRead)
         const Privilege(
           systemObject: SystemObject.customerPayments,
+          rawValue: 2,
+        ),
+      if (refundsRead)
+        const Privilege(
+          systemObject: SystemObject.customerRefunds,
           rawValue: 2,
         ),
     ],
@@ -141,6 +152,12 @@ void main() {
           ),
         ),
         GoRoute(
+          path: '/sales/refunds/:refundId',
+          builder: (context, state) => Scaffold(
+            body: Text('refund-${state.pathParameters['refundId']}'),
+          ),
+        ),
+        GoRoute(
           path: '/sales/orders/:id',
           builder: (context, state) =>
               Scaffold(body: Text('order-${state.pathParameters['id']}')),
@@ -187,6 +204,16 @@ void main() {
     expect(find.text('\$0.00'), findsNWidgets(2));
     expect(find.text(l10n.creditNotesOrigin(4001, 3001)), findsOneWidget);
     expect(find.text(l10n.creditNotesOrigin(4002, 3002)), findsOneWidget);
+  });
+
+  testWidgets('the server\'s customer name is shown; a note with none falls '
+      'back to the lookup', (tester) async {
+    serve([note(1, name: 'Ana López'), note(2, customer: 8)]);
+    await pumpList(tester);
+
+    expect(find.text('Ana López'), findsOneWidget);
+    expect(find.text('Cliente 7'), findsNothing);
+    expect(find.text('Cliente 8'), findsOneWidget);
   });
 
   testWidgets('amounts and origin are never ellipsized', (tester) async {
@@ -342,6 +369,54 @@ void main() {
         findsNothing,
       );
       expect(find.text(l10n.creditNotesOrigin(4001, 3001)), findsOneWidget);
+    });
+  });
+
+  group('the origin\'s refund', () {
+    testWidgets('is a link with customer-refunds read, and a tap opens it', (
+      tester,
+    ) async {
+      serve([note(1)]);
+      final router = await pumpList(tester, who: user(refundsRead: true));
+
+      final link = find.byKey(const Key('credit_note_refund_link_4001'));
+      expect(link, findsOneWidget);
+      await tester.tap(link);
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.path, '/sales/refunds/4001');
+      expect(find.text('refund-4001'), findsOneWidget);
+    });
+
+    testWidgets('is plain text without customer-refunds read', (tester) async {
+      serve([note(1)]);
+      await pumpList(tester);
+
+      expect(
+        find.byKey(const Key('credit_note_refund_link_4001')),
+        findsNothing,
+      );
+      expect(find.text(l10n.creditNotesOrigin(4001, 3001)), findsOneWidget);
+    });
+
+    testWidgets('the order link still works beside the refund link', (
+      tester,
+    ) async {
+      serve([note(1)]);
+      final router = await pumpList(
+        tester,
+        who: user(refundsRead: true),
+        ordersOpenable: true,
+      );
+
+      expect(
+        find.byKey(const Key('credit_note_refund_link_4001')),
+        findsOneWidget,
+      );
+      await tester.tap(find.byKey(const Key('credit_note_order_link_3001')));
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.path, '/sales/orders/3001');
     });
   });
 }

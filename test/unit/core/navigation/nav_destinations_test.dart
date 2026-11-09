@@ -207,4 +207,81 @@ void main() {
       expect(ids.indexOf('credit-notes'), ids.indexOf('payments') + 1);
     });
   });
+
+  group('Devoluciones destination (spec 057 FR-013)', () {
+    test('a user without Customer Refunds read has no entry', () {
+      expect(
+        visibleIds(multiCurrency: false, administrator: false),
+        isNot(contains('refunds')),
+      );
+      // Customer Payments and Credit Payments read are not enough: a refund
+      // is permissioned on its own.
+      expect(
+        visibleIds(
+          multiCurrency: false,
+          administrator: false,
+          privileges: const [
+            Privilege(systemObject: SystemObject.customerPayments, rawValue: 2),
+            Privilege(systemObject: SystemObject.creditPayments, rawValue: 2),
+          ],
+        ),
+        isNot(contains('refunds')),
+      );
+    });
+
+    test('a user with Customer Refunds read has the entry', () {
+      expect(
+        visibleIds(
+          multiCurrency: false,
+          administrator: false,
+          privileges: const [
+            Privilege(systemObject: SystemObject.customerRefunds, rawValue: 2),
+          ],
+        ),
+        contains('refunds'),
+      );
+    });
+
+    test('an administrator has the entry', () {
+      expect(
+        visibleIds(multiCurrency: false, administrator: true),
+        contains('refunds'),
+      );
+    });
+
+    test('it sits right after Notas de crédito, on branch 24', () {
+      final container = ProviderContainer(
+        overrides: [
+          multiCurrencyEnabledProvider.overrideWithValue(false),
+          accessControlProvider.overrideWithValue(
+            AccessControlService(
+              AuthState.authenticated(
+                token: 't',
+                user: const User(
+                  userId: 'u',
+                  email: 'u@example.com',
+                  administrator: true,
+                  status: EntityStatus.active,
+                  sessionVersion: 1,
+                  privileges: [],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      final destinations = [
+        for (final item in container.read(navDestinationsProvider))
+          ...switch (item) {
+            NavDestination() => [item],
+            NavGroup() => item.children,
+          },
+      ];
+      final ids = [for (final d in destinations) d.id];
+
+      expect(ids.indexOf('refunds'), ids.indexOf('credit-notes') + 1);
+      expect(destinations.firstWhere((d) => d.id == 'refunds').branchIndex, 24);
+    });
+  });
 }

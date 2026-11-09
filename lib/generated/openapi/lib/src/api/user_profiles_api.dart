@@ -10,7 +10,7 @@ import 'package:dio/dio.dart';
 
 import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/entity_status.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 import 'package:mbe_api_client/src/model/user_profile_create.dart';
 import 'package:mbe_api_client/src/model/user_profile_list_response.dart';
 import 'package:mbe_api_client/src/model/user_profile_response.dart';

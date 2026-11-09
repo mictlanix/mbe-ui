@@ -14,8 +14,8 @@ import 'package:mbe_api_client/src/model/address_response.dart';
 import 'package:mbe_api_client/src/model/address_type.dart';
 import 'package:mbe_api_client/src/model/address_update.dart';
 import 'package:mbe_api_client/src/model/entity_status.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_address_response.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class AddressesApi {
   final Dio _dio;

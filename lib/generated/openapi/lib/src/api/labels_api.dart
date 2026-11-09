@@ -9,11 +9,11 @@ import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
 import 'package:mbe_api_client/src/api_util.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/label_create.dart';
 import 'package:mbe_api_client/src/model/label_response.dart';
 import 'package:mbe_api_client/src/model/label_update.dart';
 import 'package:mbe_api_client/src/model/list_response_label_response.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class LabelsApi {
   final Dio _dio;

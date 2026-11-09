@@ -3,50 +3,49 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:built_collection/built_collection.dart';
+import 'package:built_value/json_object.dart';
 import 'dart:core';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 import 'package:one_of/any_of.dart';
 
-part 'location_inner.g.dart';
+part 'detail.g.dart';
 
-/// LocationInner
+/// Detail
 @BuiltValue()
-abstract class LocationInner
-    implements Built<LocationInner, LocationInnerBuilder> {
-  /// Any Of [String], [int]
+abstract class Detail implements Built<Detail, DetailBuilder> {
+  /// Any Of [BuiltMap<String, JsonObject>], [String]
   AnyOf get anyOf;
 
-  LocationInner._();
+  Detail._();
 
-  factory LocationInner([void updates(LocationInnerBuilder b)]) =
-      _$LocationInner;
+  factory Detail([void updates(DetailBuilder b)]) = _$Detail;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(LocationInnerBuilder b) => b;
+  static void _defaults(DetailBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<LocationInner> get serializer =>
-      _$LocationInnerSerializer();
+  static Serializer<Detail> get serializer => _$DetailSerializer();
 }
 
-class _$LocationInnerSerializer implements PrimitiveSerializer<LocationInner> {
+class _$DetailSerializer implements PrimitiveSerializer<Detail> {
   @override
-  final Iterable<Type> types = const [LocationInner, _$LocationInner];
+  final Iterable<Type> types = const [Detail, _$Detail];
 
   @override
-  final String wireName = r'LocationInner';
+  final String wireName = r'Detail';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    LocationInner object, {
+    Detail object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {}
 
   @override
   Object serialize(
     Serializers serializers,
-    LocationInner object, {
+    Detail object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     final anyOf = object.anyOf;
@@ -60,14 +59,17 @@ class _$LocationInnerSerializer implements PrimitiveSerializer<LocationInner> {
   }
 
   @override
-  LocationInner deserialize(
+  Detail deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = LocationInnerBuilder();
+    final result = DetailBuilder();
     Object? anyOfDataSrc;
-    final targetType = const FullType(AnyOf, [FullType(String), FullType(int)]);
+    final targetType = const FullType(AnyOf, [
+      FullType.nullable(String),
+      FullType(BuiltMap, [FullType(String), FullType.nullable(JsonObject)]),
+    ]);
     anyOfDataSrc = serialized;
     result.anyOf =
         serializers.deserialize(anyOfDataSrc, specifiedType: targetType)

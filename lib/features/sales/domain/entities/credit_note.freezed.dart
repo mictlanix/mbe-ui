@@ -15,7 +15,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CreditNote {
 
- int get id; int get customerId;/// The order the refund came from.
+ int get id; int get customerId;/// The customer's name as the server joins it on (mbe-api#283); `null`
+/// when the customer row is missing, and a blank name counts as missing.
+ String? get customerName;/// The order the refund came from.
  int get salesOrderId; int get customerRefundId;/// The backing payment; its id is the ticket number.
  int get customerPaymentId;/// What was issued: the backing payment's amount (mbe-api spec 034
 /// FR-001), shown as sent.
@@ -33,20 +35,20 @@ $CreditNoteCopyWith<CreditNote> get copyWith => _$CreditNoteCopyWithImpl<CreditN
 @override
 bool operator ==(Object other) {
   final _this = this as CreditNote;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CreditNote&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.salesOrderId, _this.salesOrderId) || other.salesOrderId == _this.salesOrderId)&&(identical(other.customerRefundId, _this.customerRefundId) || other.customerRefundId == _this.customerRefundId)&&(identical(other.customerPaymentId, _this.customerPaymentId) || other.customerPaymentId == _this.customerPaymentId)&&(identical(other.issued, _this.issued) || other.issued == _this.issued)&&(identical(other.remaining, _this.remaining) || other.remaining == _this.remaining)&&(identical(other.date, _this.date) || other.date == _this.date));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CreditNote&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.customerName, _this.customerName) || other.customerName == _this.customerName)&&(identical(other.salesOrderId, _this.salesOrderId) || other.salesOrderId == _this.salesOrderId)&&(identical(other.customerRefundId, _this.customerRefundId) || other.customerRefundId == _this.customerRefundId)&&(identical(other.customerPaymentId, _this.customerPaymentId) || other.customerPaymentId == _this.customerPaymentId)&&(identical(other.issued, _this.issued) || other.issued == _this.issued)&&(identical(other.remaining, _this.remaining) || other.remaining == _this.remaining)&&(identical(other.date, _this.date) || other.date == _this.date));
 }
 
 
 @override
 int get hashCode {
   final _this = this as CreditNote;
-  return Object.hash(runtimeType,_this.id,_this.customerId,_this.salesOrderId,_this.customerRefundId,_this.customerPaymentId,_this.issued,_this.remaining,_this.date);
+  return Object.hash(runtimeType,_this.id,_this.customerId,_this.customerName,_this.salesOrderId,_this.customerRefundId,_this.customerPaymentId,_this.issued,_this.remaining,_this.date);
 }
 
 @override
 String toString() {
   final _this = this as CreditNote;
-  return 'CreditNote(id: ${_this.id}, customerId: ${_this.customerId}, salesOrderId: ${_this.salesOrderId}, customerRefundId: ${_this.customerRefundId}, customerPaymentId: ${_this.customerPaymentId}, issued: ${_this.issued}, remaining: ${_this.remaining}, date: ${_this.date})';
+  return 'CreditNote(id: ${_this.id}, customerId: ${_this.customerId}, customerName: ${_this.customerName}, salesOrderId: ${_this.salesOrderId}, customerRefundId: ${_this.customerRefundId}, customerPaymentId: ${_this.customerPaymentId}, issued: ${_this.issued}, remaining: ${_this.remaining}, date: ${_this.date})';
 }
 
 
@@ -57,7 +59,7 @@ abstract mixin class $CreditNoteCopyWith<$Res>  {
   factory $CreditNoteCopyWith(CreditNote value, $Res Function(CreditNote) _then) = _$CreditNoteCopyWithImpl;
 @useResult
 $Res call({
- int id, int customerId, int salesOrderId, int customerRefundId, int customerPaymentId, String issued, String remaining, DateTime? date
+ int id, int customerId, String? customerName, int salesOrderId, int customerRefundId, int customerPaymentId, String issued, String remaining, DateTime? date
 });
 
 
@@ -74,11 +76,12 @@ class _$CreditNoteCopyWithImpl<$Res>
 
 /// Create a copy of CreditNote
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? customerId = null,Object? salesOrderId = null,Object? customerRefundId = null,Object? customerPaymentId = null,Object? issued = null,Object? remaining = null,Object? date = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? customerId = null,Object? customerName = freezed,Object? salesOrderId = null,Object? customerRefundId = null,Object? customerPaymentId = null,Object? issued = null,Object? remaining = null,Object? date = freezed,}) {
   return _then(CreditNote(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,customerId: null == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
-as int,salesOrderId: null == salesOrderId ? _self.salesOrderId : salesOrderId // ignore: cast_nullable_to_non_nullable
+as int,customerName: freezed == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
+as String?,salesOrderId: null == salesOrderId ? _self.salesOrderId : salesOrderId // ignore: cast_nullable_to_non_nullable
 as int,customerRefundId: null == customerRefundId ? _self.customerRefundId : customerRefundId // ignore: cast_nullable_to_non_nullable
 as int,customerPaymentId: null == customerPaymentId ? _self.customerPaymentId : customerPaymentId // ignore: cast_nullable_to_non_nullable
 as int,issued: null == issued ? _self.issued : issued // ignore: cast_nullable_to_non_nullable
@@ -169,10 +172,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int customerId,  int salesOrderId,  int customerRefundId,  int customerPaymentId,  String issued,  String remaining,  DateTime? date)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int customerId,  String? customerName,  int salesOrderId,  int customerRefundId,  int customerPaymentId,  String issued,  String remaining,  DateTime? date)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CreditNote() when $default != null:
-return $default(_that.id,_that.customerId,_that.salesOrderId,_that.customerRefundId,_that.customerPaymentId,_that.issued,_that.remaining,_that.date);case _:
+return $default(_that.id,_that.customerId,_that.customerName,_that.salesOrderId,_that.customerRefundId,_that.customerPaymentId,_that.issued,_that.remaining,_that.date);case _:
   return orElse();
 
 }
@@ -190,10 +193,10 @@ return $default(_that.id,_that.customerId,_that.salesOrderId,_that.customerRefun
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int customerId,  int salesOrderId,  int customerRefundId,  int customerPaymentId,  String issued,  String remaining,  DateTime? date)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int customerId,  String? customerName,  int salesOrderId,  int customerRefundId,  int customerPaymentId,  String issued,  String remaining,  DateTime? date)  $default,) {final _that = this;
 switch (_that) {
 case _CreditNote():
-return $default(_that.id,_that.customerId,_that.salesOrderId,_that.customerRefundId,_that.customerPaymentId,_that.issued,_that.remaining,_that.date);case _:
+return $default(_that.id,_that.customerId,_that.customerName,_that.salesOrderId,_that.customerRefundId,_that.customerPaymentId,_that.issued,_that.remaining,_that.date);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -210,10 +213,10 @@ return $default(_that.id,_that.customerId,_that.salesOrderId,_that.customerRefun
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int customerId,  int salesOrderId,  int customerRefundId,  int customerPaymentId,  String issued,  String remaining,  DateTime? date)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int customerId,  String? customerName,  int salesOrderId,  int customerRefundId,  int customerPaymentId,  String issued,  String remaining,  DateTime? date)?  $default,) {final _that = this;
 switch (_that) {
 case _CreditNote() when $default != null:
-return $default(_that.id,_that.customerId,_that.salesOrderId,_that.customerRefundId,_that.customerPaymentId,_that.issued,_that.remaining,_that.date);case _:
+return $default(_that.id,_that.customerId,_that.customerName,_that.salesOrderId,_that.customerRefundId,_that.customerPaymentId,_that.issued,_that.remaining,_that.date);case _:
   return null;
 
 }
@@ -225,11 +228,14 @@ return $default(_that.id,_that.customerId,_that.salesOrderId,_that.customerRefun
 
 
 class _CreditNote extends CreditNote {
-  const _CreditNote({required this.id, required this.customerId, required this.salesOrderId, required this.customerRefundId, required this.customerPaymentId, required this.issued, required this.remaining, this.date}): super._();
+  const _CreditNote({required this.id, required this.customerId, this.customerName, required this.salesOrderId, required this.customerRefundId, required this.customerPaymentId, required this.issued, required this.remaining, this.date}): super._();
   
 
 @override final  int id;
 @override final  int customerId;
+/// The customer's name as the server joins it on (mbe-api#283); `null`
+/// when the customer row is missing, and a blank name counts as missing.
+@override final  String? customerName;
 /// The order the refund came from.
 @override final  int salesOrderId;
 @override final  int customerRefundId;
@@ -253,18 +259,18 @@ _$CreditNoteCopyWith<_CreditNote> get copyWith => __$CreditNoteCopyWithImpl<_Cre
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreditNote&&(identical(other.id, id) || other.id == id)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.salesOrderId, salesOrderId) || other.salesOrderId == salesOrderId)&&(identical(other.customerRefundId, customerRefundId) || other.customerRefundId == customerRefundId)&&(identical(other.customerPaymentId, customerPaymentId) || other.customerPaymentId == customerPaymentId)&&(identical(other.issued, issued) || other.issued == issued)&&(identical(other.remaining, remaining) || other.remaining == remaining)&&(identical(other.date, date) || other.date == date));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreditNote&&(identical(other.id, id) || other.id == id)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.customerName, customerName) || other.customerName == customerName)&&(identical(other.salesOrderId, salesOrderId) || other.salesOrderId == salesOrderId)&&(identical(other.customerRefundId, customerRefundId) || other.customerRefundId == customerRefundId)&&(identical(other.customerPaymentId, customerPaymentId) || other.customerPaymentId == customerPaymentId)&&(identical(other.issued, issued) || other.issued == issued)&&(identical(other.remaining, remaining) || other.remaining == remaining)&&(identical(other.date, date) || other.date == date));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,customerId,salesOrderId,customerRefundId,customerPaymentId,issued,remaining,date);
+    return Object.hash(runtimeType,id,customerId,customerName,salesOrderId,customerRefundId,customerPaymentId,issued,remaining,date);
 }
 
 @override
 String toString() {
-    return 'CreditNote(id: $id, customerId: $customerId, salesOrderId: $salesOrderId, customerRefundId: $customerRefundId, customerPaymentId: $customerPaymentId, issued: $issued, remaining: $remaining, date: $date)';
+    return 'CreditNote(id: $id, customerId: $customerId, customerName: $customerName, salesOrderId: $salesOrderId, customerRefundId: $customerRefundId, customerPaymentId: $customerPaymentId, issued: $issued, remaining: $remaining, date: $date)';
 }
 
 
@@ -275,7 +281,7 @@ abstract mixin class _$CreditNoteCopyWith<$Res> implements $CreditNoteCopyWith<$
   factory _$CreditNoteCopyWith(_CreditNote value, $Res Function(_CreditNote) _then) = __$CreditNoteCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int customerId, int salesOrderId, int customerRefundId, int customerPaymentId, String issued, String remaining, DateTime? date
+ int id, int customerId, String? customerName, int salesOrderId, int customerRefundId, int customerPaymentId, String issued, String remaining, DateTime? date
 });
 
 
@@ -292,11 +298,12 @@ class __$CreditNoteCopyWithImpl<$Res>
 
 /// Create a copy of CreditNote
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? customerId = null,Object? salesOrderId = null,Object? customerRefundId = null,Object? customerPaymentId = null,Object? issued = null,Object? remaining = null,Object? date = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? customerId = null,Object? customerName = freezed,Object? salesOrderId = null,Object? customerRefundId = null,Object? customerPaymentId = null,Object? issued = null,Object? remaining = null,Object? date = freezed,}) {
   return _then(_CreditNote(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,customerId: null == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
-as int,salesOrderId: null == salesOrderId ? _self.salesOrderId : salesOrderId // ignore: cast_nullable_to_non_nullable
+as int,customerName: freezed == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
+as String?,salesOrderId: null == salesOrderId ? _self.salesOrderId : salesOrderId // ignore: cast_nullable_to_non_nullable
 as int,customerRefundId: null == customerRefundId ? _self.customerRefundId : customerRefundId // ignore: cast_nullable_to_non_nullable
 as int,customerPaymentId: null == customerPaymentId ? _self.customerPaymentId : customerPaymentId // ignore: cast_nullable_to_non_nullable
 as int,issued: null == issued ? _self.issued : issued // ignore: cast_nullable_to_non_nullable

@@ -54,6 +54,9 @@ import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_issuer_repo
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_repository.dart';
 import 'package:mbe_ui/features/sales/data/credit_note_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/credit_note_repository.dart';
+import 'package:mbe_ui/features/sales/data/customer_refund_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/customer_refund_repository.dart'
+    show RefundListResult;
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_quote_repository_impl.dart';
@@ -63,6 +66,9 @@ import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repositor
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_quote_repository.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+
+import '../../../widget/features/sales/pos_test_harness.dart'
+    show MockCustomerRefundRepository, testRefund;
 
 class MockProductRepository extends Mock implements ProductRepository {}
 
@@ -261,6 +267,20 @@ const _creditPaymentsReaderUser = User(
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.creditPayments, rawValue: 2),
+  ],
+);
+
+/// Holds read on `customerRefunds` (22) alone — the gate for spec 057's
+/// `/sales/refunds*` routes, its own privilege so it is not folded into
+/// Pagos or Pedidos.
+const _customerRefundsReaderUser = User(
+  userId: 'customer-refunds-reader',
+  email: 'customer-refunds-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.customerRefunds, rawValue: 2),
   ],
 );
 
@@ -605,6 +625,24 @@ void main() {
       ),
     ).thenAnswer((_) async => const CreditNoteListResult(items: [], total: 0));
 
+    // 057-customer-refunds: `RefundDetailScreen` reads the refund eagerly via
+    // `getById`; a real request would leave a timer pending. It has no lines,
+    // so no warehouse lookup follows either.
+    final customerRefundRepository = MockCustomerRefundRepository();
+    when(() => customerRefundRepository.getById(any())).thenAnswer(
+      (_) async => testRefund(id: 9, lines: const [], customerId: null),
+    );
+    // ...and `RefundsListScreen` pages the list eagerly.
+    when(
+      () => customerRefundRepository.list(
+        status: any(named: 'status'),
+        customerId: any(named: 'customerId'),
+        salesOrderId: any(named: 'salesOrderId'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const RefundListResult(items: [], total: 0));
+
     // 040-sales-quotes: `SalesQuotesListScreen` calls `listQuotes` eagerly,
     // and `QuoteEditorController.build` calls `getById` eagerly whenever
     // `/sales/quotes/:quoteId` names a quote — both need a mock, same
@@ -684,6 +722,9 @@ void main() {
         salesOrderRepositoryProvider.overrideWithValue(salesOrderRepository),
         salesQuoteRepositoryProvider.overrideWithValue(salesQuoteRepository),
         creditNoteRepositoryProvider.overrideWithValue(creditNoteRepository),
+        customerRefundRepositoryProvider.overrideWithValue(
+          customerRefundRepository,
+        ),
       ],
     );
     addTearDown(container.dispose);
@@ -1084,6 +1125,98 @@ void main() {
       await pumpAt(tester, _creditPaymentsReaderUser, '/sales/credit-notes');
       final shell = tester.widget<AppShell>(find.byType(AppShell));
       expect(shell.navigationShell.currentIndex, NavBranch.creditNotes);
+    });
+  });
+
+  group('057-customer-refunds — /sales/refunds gates on '
+      'customerRefunds/read', () {
+    testWidgets('a user with customerRefunds:read reaches the list', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _customerRefundsReaderUser,
+        '/sales/refunds',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/sales/refunds');
+      expect(find.byKey(const Key('refunds_filter_button')), findsOneWidget);
+    });
+
+    testWidgets('a user without customerRefunds:read is redirected home', (
+      tester,
+    ) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/sales/refunds');
+
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('customerPayments:read alone does not open the list', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _customerPaymentsReaderUser,
+        '/sales/refunds',
+      );
+
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('activates shell branch NavBranch.customerRefunds (24) — the '
+        'only guard against a silent branch-index mismatch', (tester) async {
+      await pumpAt(tester, _customerRefundsReaderUser, '/sales/refunds');
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.customerRefunds, 24);
+      expect(shell.navigationShell.currentIndex, NavBranch.customerRefunds);
+    });
+  });
+
+  group('057-customer-refunds — /sales/refunds/:refundId gates on '
+      'customerRefunds/read', () {
+    testWidgets('a user with customerRefunds:read reaches the refund', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _customerRefundsReaderUser,
+        '/sales/refunds/9',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/sales/refunds/9');
+      expect(find.byKey(const Key('refund_total')), findsOneWidget);
+    });
+
+    testWidgets('a user without customerRefunds:read is redirected home', (
+      tester,
+    ) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/sales/refunds/9');
+
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('customerPayments:read alone does not open it', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _customerPaymentsReaderUser,
+        '/sales/refunds/9',
+      );
+
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a non-numeric id gives the not-found state', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _customerRefundsReaderUser,
+        '/sales/refunds/abc',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/sales/refunds/abc');
+      expect(find.byKey(const Key('refund_not_found')), findsOneWidget);
     });
   });
 

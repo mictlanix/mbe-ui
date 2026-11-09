@@ -13,8 +13,8 @@ import 'package:mbe_api_client/src/model/employee_create.dart';
 import 'package:mbe_api_client/src/model/employee_response.dart';
 import 'package:mbe_api_client/src/model/employee_update.dart';
 import 'package:mbe_api_client/src/model/entity_status.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_employee_response.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class EmployeesApi {
   final Dio _dio;

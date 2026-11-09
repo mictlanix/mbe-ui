@@ -16,8 +16,8 @@ import 'package:mbe_api_client/src/model/expense_voucher_line_create.dart';
 import 'package:mbe_api_client/src/model/expense_voucher_line_update.dart';
 import 'package:mbe_api_client/src/model/expense_voucher_response.dart';
 import 'package:mbe_api_client/src/model/expense_voucher_update.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_expense_voucher_summary.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 import 'package:mbe_api_client/src/model/reversal_request.dart';
 
 class ExpenseVouchersApi {

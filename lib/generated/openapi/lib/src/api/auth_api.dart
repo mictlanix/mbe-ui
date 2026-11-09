@@ -11,8 +11,8 @@ import 'package:dio/dio.dart';
 import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/change_password_request.dart';
 import 'package:mbe_api_client/src/model/confirm_recovery_request.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/password_policy_response.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 import 'package:mbe_api_client/src/model/token_response.dart';
 import 'package:mbe_api_client/src/model/user_response.dart';
 

@@ -9,8 +9,8 @@ import 'package:built_value/serializer.dart';
 import 'package:dio/dio.dart';
 
 import 'package:mbe_api_client/src/api_util.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_taxpayer_recipient_response.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 import 'package:mbe_api_client/src/model/taxpayer_recipient_create.dart';
 import 'package:mbe_api_client/src/model/taxpayer_recipient_response.dart';
 import 'package:mbe_api_client/src/model/taxpayer_recipient_update.dart';

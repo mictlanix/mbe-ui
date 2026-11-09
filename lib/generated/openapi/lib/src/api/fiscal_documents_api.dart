@@ -14,7 +14,6 @@ import 'package:mbe_api_client/src/model/credit_note_create.dart';
 import 'package:mbe_api_client/src/model/fiscal_document_response.dart';
 import 'package:mbe_api_client/src/model/fiscal_email_request.dart';
 import 'package:mbe_api_client/src/model/fiscal_email_response.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/invoice_create.dart';
 import 'package:mbe_api_client/src/model/invoice_line_add.dart';
 import 'package:mbe_api_client/src/model/invoice_line_copy.dart';
@@ -26,6 +25,7 @@ import 'package:mbe_api_client/src/model/list_response_fiscal_document_summary.d
 import 'package:mbe_api_client/src/model/paid_invoice_add.dart';
 import 'package:mbe_api_client/src/model/paid_invoice_update.dart';
 import 'package:mbe_api_client/src/model/payment_receipt_create.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class FiscalDocumentsApi {
   final Dio _dio;

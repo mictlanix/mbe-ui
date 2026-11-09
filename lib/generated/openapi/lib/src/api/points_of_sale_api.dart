@@ -10,11 +10,11 @@ import 'package:dio/dio.dart';
 
 import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/entity_status.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_point_sale_response.dart';
 import 'package:mbe_api_client/src/model/point_sale_create.dart';
 import 'package:mbe_api_client/src/model/point_sale_response.dart';
 import 'package:mbe_api_client/src/model/point_sale_update.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class PointsOfSaleApi {
   final Dio _dio;

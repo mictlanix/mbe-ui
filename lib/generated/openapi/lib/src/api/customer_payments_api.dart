@@ -17,9 +17,9 @@ import 'package:mbe_api_client/src/model/application_create.dart';
 import 'package:mbe_api_client/src/model/application_response.dart';
 import 'package:mbe_api_client/src/model/customer_payment_create.dart';
 import 'package:mbe_api_client/src/model/customer_payment_response.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_customer_payment_response.dart';
 import 'package:mbe_api_client/src/model/list_response_outstanding_order_response.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 import 'package:mbe_api_client/src/model/rejection_request.dart';
 import 'package:mbe_api_client/src/model/reversal_request.dart';
 

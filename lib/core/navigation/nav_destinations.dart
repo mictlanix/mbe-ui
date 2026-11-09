@@ -70,6 +70,11 @@ class NavBranch {
   // display order comes from position within `kNavigationTree` (this
   // destination sits right after `payments` there).
   static const int creditNotes = 23;
+
+  // 057-customer-refunds: appended last, same rationale as `cashSessions`
+  // above — display order comes from position within `kNavigationTree` (this
+  // destination sits right after `credit-notes` there).
+  static const int customerRefunds = 24;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -297,6 +302,15 @@ const List<NavItem> kNavigationTree = [
         gate: PrivilegeGate(SystemObject.creditPayments, AccessRight.read),
       ),
       NavDestination(
+        id: 'refunds',
+        label: _refundsLabel,
+        icon: Icons.assignment_return_outlined,
+        selectedIcon: Icons.assignment_return,
+        route: '/sales/refunds',
+        branchIndex: NavBranch.customerRefunds,
+        gate: PrivilegeGate(SystemObject.customerRefunds, AccessRight.read),
+      ),
+      NavDestination(
         id: 'pos',
         label: _posLabel,
         icon: Icons.shopping_cart_outlined,
@@ -366,6 +380,7 @@ String _salesOrdersLabel(AppLocalizations l10n) => l10n.salesOrdersMenuTitle;
 String _salesQuotesLabel(AppLocalizations l10n) => l10n.salesQuotesMenuTitle;
 String _paymentsLabel(AppLocalizations l10n) => l10n.paymentsMenuTitle;
 String _creditNotesLabel(AppLocalizations l10n) => l10n.creditNotesMenuTitle;
+String _refundsLabel(AppLocalizations l10n) => l10n.refundsMenuTitle;
 
 /// The navigation tree filtered by the current user's access (constitution
 /// §IV, FR-005/FR-006): destinations the user cannot read are removed, and a

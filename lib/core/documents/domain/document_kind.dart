@@ -27,7 +27,12 @@ enum DocumentKind {
   /// `GET /customer-payments/{id}/ticket` — the 72 mm proof of a credit
   /// payment or a payment in advance (mbe-api#272, spec 055). Any other type
   /// is a 409 on the server, so call sites offer it only for those two.
-  customerPaymentTicket(SystemObject.customerPayments);
+  customerPaymentTicket(SystemObject.customerPayments),
+
+  /// `GET /customer-refunds/{id}/ticket` — the receipt of a confirmed refund
+  /// (mbe-api#287, spec 057). An open or cancelled refund is a 409 on the
+  /// server, so call sites offer it only for a completed one.
+  customerRefundReceipt(SystemObject.customerRefunds);
 
   const DocumentKind(this.gateObject);
 
@@ -46,6 +51,7 @@ enum DocumentKind {
     DocumentKind.cashCut => 'corte-${_pad(recordId, 6)}.pdf',
     DocumentKind.salesQuote => 'cotizacion-${_pad(recordId, 8)}.pdf',
     DocumentKind.customerPaymentTicket => 'pago-${_pad(recordId, 8)}.pdf',
+    DocumentKind.customerRefundReceipt => 'devolucion-${_pad(recordId, 8)}.pdf',
   };
 
   static String _pad(int id, int width) => id.toString().padLeft(width, '0');

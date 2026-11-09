@@ -14,10 +14,10 @@ import 'package:mbe_api_client/src/model/count_create.dart';
 import 'package:mbe_api_client/src/model/count_line_update.dart';
 import 'package:mbe_api_client/src/model/count_lines_set.dart';
 import 'package:mbe_api_client/src/model/count_update.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/inventory_count_confirm_response.dart';
 import 'package:mbe_api_client/src/model/inventory_count_response.dart';
 import 'package:mbe_api_client/src/model/list_response_inventory_count_summary.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class InventoryCountsApi {
   final Dio _dio;

@@ -10,8 +10,8 @@ import 'package:dio/dio.dart';
 
 import 'package:mbe_api_client/src/api_util.dart';
 import 'package:mbe_api_client/src/model/date.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/kardex.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class KardexApi {
   final Dio _dio;

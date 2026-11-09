@@ -6,10 +6,12 @@ import 'package:mbe_ui/features/sales/domain/entities/credit_note.dart';
 api.CreditNoteResponse _response({
   String amount = '27.0000',
   String remaining = '3',
+  String? customerDisplayName,
 }) => api.CreditNoteResponse(
   (b) => b
     ..creditNoteId = 990
     ..customer = 10653
+    ..customerDisplayName = customerDisplayName
     ..salesOrder = 343533
     ..customerRefund = 9605
     ..customerPayment = 300743
@@ -37,6 +39,20 @@ void main() {
     expect(note.issued, '27.0000');
     expect(note.remaining, '3');
     expect(note.date, DateTime(2026, 9, 29, 12, 55, 20));
+  });
+
+  test('the customer name is the server\'s, and a blank one is null', () {
+    expect(
+      CreditNote.fromResponse(
+        _response(customerDisplayName: 'Ana Pérez'),
+      ).customerName,
+      'Ana Pérez',
+    );
+    expect(CreditNote.fromResponse(_response()).customerName, isNull);
+    expect(
+      CreditNote.fromResponse(_response(customerDisplayName: ' ')).customerName,
+      isNull,
+    );
   });
 
   group('isOpen', () {

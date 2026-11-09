@@ -18,11 +18,12 @@ Map<String, dynamic> _noteJson({
   String amount = '27.0000',
   String remaining = '3',
   String? date,
+  int refund = 9605,
 }) => {
   'credit_note_id': id,
   'customer': customer,
   'sales_order': 343533,
-  'customer_refund': 9605,
+  'customer_refund': refund,
   'customer_payment': payment == 0 ? 300000 + id : payment,
   'facility': 51,
   'amount': amount,

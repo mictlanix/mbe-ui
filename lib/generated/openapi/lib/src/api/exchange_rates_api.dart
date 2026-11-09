@@ -13,8 +13,8 @@ import 'package:mbe_api_client/src/model/date.dart';
 import 'package:mbe_api_client/src/model/exchange_rate_create.dart';
 import 'package:mbe_api_client/src/model/exchange_rate_response.dart';
 import 'package:mbe_api_client/src/model/exchange_rate_update.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_exchange_rate_response.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 
 class ExchangeRatesApi {
   final Dio _dio;

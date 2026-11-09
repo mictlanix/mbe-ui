@@ -128,6 +128,7 @@ doc/DeliveryOrderUpdate.md
 doc/DeliveryOrdersApi.md
 doc/Denomination.md
 doc/DenominationCount.md
+doc/Detail.md
 doc/Discount.md
 doc/Discount1.md
 doc/DiscountRate.md
@@ -137,6 +138,7 @@ doc/EmployeeResponse.md
 doc/EmployeeUpdate.md
 doc/EmployeesApi.md
 doc/EntityStatus.md
+doc/ErrorCode.md
 doc/ExchangeRateCreate.md
 doc/ExchangeRateResponse.md
 doc/ExchangeRateUpdate.md
@@ -170,7 +172,6 @@ doc/FiscalEmailRequest.md
 doc/FiscalEmailResponse.md
 doc/FulfillmentType.md
 doc/GeneratedReceipt.md
-doc/HTTPValidationError.md
 doc/HealthApi.md
 doc/HighProfit.md
 doc/HighProfitMargin.md
@@ -267,7 +268,6 @@ doc/ListResponseTaxpayerRecipientResponse.md
 doc/ListResponseVehicleOperatorResponse.md
 doc/ListResponseVehicleResponse.md
 doc/ListResponseWarehouseResponse.md
-doc/LocationInner.md
 doc/LowProfit.md
 doc/LowProfitMargin.md
 doc/LowProfitMargin1.md
@@ -318,6 +318,8 @@ doc/PriceListsApi.md
 doc/Priority.md
 doc/PrivilegeResponse.md
 doc/PrivilegeUpdate.md
+doc/Problem.md
+doc/ProblemPart.md
 doc/ProductCreate.md
 doc/ProductLabelFacet.md
 doc/ProductListItem.md
@@ -462,7 +464,6 @@ doc/UserSettingsResponse.md
 doc/UserSettingsUpdate.md
 doc/UserUpdate.md
 doc/UsersApi.md
-doc/ValidationError.md
 doc/VehicleCreate.md
 doc/VehicleOperatorCreate.md
 doc/VehicleOperatorResponse.md
@@ -646,6 +647,7 @@ lib/src/model/delivery_order_summary.dart
 lib/src/model/delivery_order_update.dart
 lib/src/model/denomination.dart
 lib/src/model/denomination_count.dart
+lib/src/model/detail.dart
 lib/src/model/discount.dart
 lib/src/model/discount1.dart
 lib/src/model/discount_rate.dart
@@ -654,6 +656,7 @@ lib/src/model/employee_create.dart
 lib/src/model/employee_response.dart
 lib/src/model/employee_update.dart
 lib/src/model/entity_status.dart
+lib/src/model/error_code.dart
 lib/src/model/exchange_rate_create.dart
 lib/src/model/exchange_rate_response.dart
 lib/src/model/exchange_rate_update.dart
@@ -685,7 +688,6 @@ lib/src/model/generated_receipt.dart
 lib/src/model/high_profit.dart
 lib/src/model/high_profit_margin.dart
 lib/src/model/high_profit_margin1.dart
-lib/src/model/http_validation_error.dart
 lib/src/model/in_transit_line.dart
 lib/src/model/in_transit_product.dart
 lib/src/model/in_transit_response.dart
@@ -772,7 +774,6 @@ lib/src/model/list_response_taxpayer_recipient_response.dart
 lib/src/model/list_response_vehicle_operator_response.dart
 lib/src/model/list_response_vehicle_response.dart
 lib/src/model/list_response_warehouse_response.dart
-lib/src/model/location_inner.dart
 lib/src/model/low_profit.dart
 lib/src/model/low_profit_margin.dart
 lib/src/model/low_profit_margin1.dart
@@ -820,6 +821,8 @@ lib/src/model/price_list_update.dart
 lib/src/model/priority.dart
 lib/src/model/privilege_response.dart
 lib/src/model/privilege_update.dart
+lib/src/model/problem.dart
+lib/src/model/problem_part.dart
 lib/src/model/product_create.dart
 lib/src/model/product_label_facet.dart
 lib/src/model/product_list_item.dart
@@ -949,7 +952,6 @@ lib/src/model/user_response.dart
 lib/src/model/user_settings_response.dart
 lib/src/model/user_settings_update.dart
 lib/src/model/user_update.dart
-lib/src/model/validation_error.dart
 lib/src/model/vehicle_create.dart
 lib/src/model/vehicle_operator_create.dart
 lib/src/model/vehicle_operator_response.dart

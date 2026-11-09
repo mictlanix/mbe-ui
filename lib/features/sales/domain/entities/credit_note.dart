@@ -23,6 +23,10 @@ abstract class CreditNote with _$CreditNote {
     required int id,
     required int customerId,
 
+    /// The customer's name as the server joins it on (mbe-api#283); `null`
+    /// when the customer row is missing, and a blank name counts as missing.
+    String? customerName,
+
     /// The order the refund came from.
     required int salesOrderId,
     required int customerRefundId,
@@ -43,6 +47,7 @@ abstract class CreditNote with _$CreditNote {
   factory CreditNote.fromResponse(api.CreditNoteResponse r) => CreditNote(
     id: r.creditNoteId,
     customerId: r.customer,
+    customerName: _nonBlank(r.customerDisplayName),
     salesOrderId: r.salesOrder,
     customerRefundId: r.customerRefund,
     customerPaymentId: r.customerPayment,
@@ -54,3 +59,6 @@ abstract class CreditNote with _$CreditNote {
   /// Whether there is anything left to spend.
   bool get isOpen => compareAmounts(remaining, '0') > 0;
 }
+
+String? _nonBlank(String? value) =>
+    value == null || value.trim().isEmpty ? null : value;

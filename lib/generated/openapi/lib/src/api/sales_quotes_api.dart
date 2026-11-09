@@ -10,8 +10,8 @@ import 'package:dio/dio.dart';
 
 import 'dart:typed_data';
 import 'package:mbe_api_client/src/api_util.dart';
-import 'package:mbe_api_client/src/model/http_validation_error.dart';
 import 'package:mbe_api_client/src/model/list_response_sales_quote_summary.dart';
+import 'package:mbe_api_client/src/model/problem.dart';
 import 'package:mbe_api_client/src/model/quote_email_request.dart';
 import 'package:mbe_api_client/src/model/quote_email_response.dart';
 import 'package:mbe_api_client/src/model/sales_order_response.dart';
