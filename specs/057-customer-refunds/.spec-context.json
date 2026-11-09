@@ -3,7 +3,7 @@
   "specName": "Customer Refunds (Devoluciones)",
   "branch": "main",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -465,7 +465,7 @@
   "telemetryInstanceId": "b309ddbb-c86a-421b-96ac-582567f30fbd",
   "last_action": "living specs evaluated — skipped (not configured)",
   "workingBranch": "057-customer-refunds",
-  "currentTask": "T042",
+  "currentTask": null,
   "task_summaries": {
     "T001": {
       "status": "DONE",
@@ -866,5 +866,35 @@
         "specs/057-customer-refunds/quickstart.md"
       ]
     }
-  }
+  },
+  "verified": [
+    {
+      "what": "flutter analyze",
+      "command": "flutter analyze",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 5.1,
+      "result": "Analyzing mbe-ui...                                              · No issues found! (ran in 3.9s)"
+    },
+    {
+      "what": "refund, credit-note, document, router and nav tests",
+      "command": "flutter test test/unit/features/sales/customer_refund_entity_test.dart test/unit/features/sales/customer_refund_repository_impl_test.dart test/unit/features/sales/refund_open_or_resume_test.dart test/unit/features/sales/refund_editor_controller_test.dart test/unit/features/sales/refunds_filter_test.dart test/unit/features/sales/refunds_list_controller_test.dart test/unit/features/sales/credit_note_repository_impl_test.dart test/unit/core/documents test/unit/app/router/app_router_test.dart test/unit/core/navigation/nav_destinations_test.dart test/widget/features/sales/refund_detail_screen_test.dart test/widget/features/sales/refunds_list_screen_test.dart test/widget/features/sales/refund_confirm_dialog_test.dart test/widget/features/sales/order_header_refund_button_test.dart test/widget/features/sales/pos_sale_detail_view_test.dart test/widget/features/sales/credit_notes_list_screen_test.dart",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 11.5,
+      "result": "[BrandConfig] BRAND_DISPLAY_NAME=Mictlanix Business Essentials BRAND_WELCOME_ASSET=null BRAND_SEED_COLOR= BRAND_LOCKUP_ASSET=assets/brand/login_lockup.png BRAND_MARK_ASSET=assets/brand/nav_lockup.png · [FormattingSettings] DATE_FORMAT=yyyy-MM-dd DATE_TIME_FORMAT=yyyy-MM-dd HH:mm CURRENCY_SYMBOL=$ CURRENCY_CODE=MXN CURRENCY_DECIMAL_DIGITS=2 PERCENT_DECIMAL_DIGITS=2 QUANTITY_DECIMAL_DIGITS=0 · 00:08 +433: All tests passed!"
+    },
+    {
+      "what": "Live walkthrough integration_test/customer_refunds_quickstart_test.dart on macOS against the dev API with MBE_REFUND_CONFIRM=1: every step passed (open, resume, quantity cap, refusals, filters and search, cancel, confirm as cash, confirm as credit note, payout lines, receipt preview, no-access account). Run by hand 2026-11-05, not re-run by this command.",
+      "result": "passed"
+    }
+  ],
+  "concerns": [
+    {
+      "note": "Not checked: golden and screenshot tests, the new screens at the largest text size, and the walk-in redemption by the printed ticket number (quickstart step 13, a manual check)."
+    },
+    {
+      "note": "The live confirm runs wrote real data to the dev tenant: refunds 9665, 9669, 9674 (cash) and 9675 (credit note, ticket 300911), and cash session 10445 left open."
+    }
+  ]
 }
