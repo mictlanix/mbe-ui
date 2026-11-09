@@ -1,0 +1,387 @@
+kind	name	status	params	verdict	example_routes	note
+code	analytics.dimension_not_applicable	422	measure: str, dimension: str	OUT		
+code	analytics.export_expired	410	expiry_time: datetime	OUT		
+code	analytics.export_not_ready	409	status: enum:ExportStatus	OUT		
+code	analytics.export_source_invalid	422	—	OUT		
+code	analytics.pdf_too_large	422	rows: int, max_rows: int	OUT		
+code	analytics.period_invalid	422	start: date, end: date, max_days: int	OUT		
+code	analytics.sort_invalid	422	sort: str	OUT		
+code	analytics.too_many_dimensions	422	max: int, given: int	OUT		
+code	auth.administrator_required	403	—	IN	DELETE /user-profiles/{}; DELETE /users/{}	reachable from 12 UI route(s)
+code	auth.forbidden	403	required: list[{system_object: int, right: int}]	IN	every route except login/recover (privilege-gated)	generic/framework; also in call graph of 161 UI routes
+code	auth.incorrect_current_password	400	—	IN	POST /auth/change-password	reachable from 1 UI route(s)
+code	auth.invalid_credentials	401	—	IN	POST /auth/login	reachable from 1 UI route(s)
+code	auth.not_authenticated	401	—	IN	every route	generic/framework; also in call graph of 179 UI routes
+code	auth.password_change_required	403	—	IN	every authenticated route except change-password/me	generic/framework; also in call graph of 177 UI routes
+code	auth.recovery_token_invalid	400	—	IN	POST /auth/recover	reachable from 1 UI route(s)
+code	cash_session.already_closed	409	—	IN	POST /cash-sessions/{}/close	reachable from 1 UI route(s)
+code	cash_session.closed	409	—	IN	POST /customer-payments; POST /customer-refunds/{}/confirm	reachable from 2 UI route(s)
+code	cash_session.drawer_busy	409	cash_drawer_id: int	IN	POST /cash-sessions	reachable from 1 UI route(s)
+code	cash_session.not_closed	409	—	IN	GET /cash-sessions/{}/ticket	reachable from 1 UI route(s)
+code	cash_session.not_open	409	—	IN	POST /customer-refunds/{}/confirm	reachable from 1 UI route(s)
+code	cash_session.user_busy	409	cash_session_id: int	IN	POST /cash-sessions	reachable from 1 UI route(s)
+code	commission_agent.salesperson_not_agent	422	salesperson_id: int	OUT		
+code	commission_period.already_closed	409	year: int, month: int	OUT		
+code	commission_period.already_paid	409	year: int, month: int	OUT		
+code	commission_period.later_closed	409	year: int, month: int	OUT		
+code	commission_period.not_closed	409	year: int, month: int	OUT		
+code	commission_period.not_ended	409	year: int, month: int	OUT		
+code	commission_period.paid_cannot_reopen	409	year: int, month: int	OUT		
+code	commission_period.previous_not_closed	409	year: int, month: int	OUT		
+code	csd.certificate_not_rsa	422	—	IN	POST /taxpayer-certificates	reachable from 1 UI route(s)
+code	csd.certificate_unreadable	422	—	IN	POST /taxpayer-certificates	reachable from 1 UI route(s)
+code	csd.key_mismatch	422	—	IN	POST /taxpayer-certificates	reachable from 1 UI route(s)
+code	csd.key_not_encrypted	422	—	IN	POST /taxpayer-certificates	reachable from 1 UI route(s)
+code	csd.key_not_rsa	422	—	IN	POST /taxpayer-certificates	reachable from 1 UI route(s)
+code	csd.key_unreadable	422	—	IN	POST /taxpayer-certificates	reachable from 1 UI route(s)
+code	customer.credit_hold	422	customer_id: int, overdue_count: int, action: confirm or raise	IN	POST /sales-orders; POST /sales-orders/{}/confirm	reachable from 4 UI route(s)
+code	customer.credit_limit_exceeded	422	customer_id: int, outstanding: decimal, limit: decimal	IN	POST /sales-orders; POST /sales-orders/{}/confirm	reachable from 4 UI route(s)
+code	customer.credit_limit_reached	422	customer_id: int, outstanding: decimal, limit: decimal	IN	POST /sales-orders; POST /sales-orders/{}/confirm	reachable from 4 UI route(s)
+code	customer.default_not_deletable	409	—	IN	DELETE /customers/{}	reachable from 1 UI route(s)
+code	customer.no_credit_limit	422	customer_id: int	IN	POST /sales-orders; POST /sales-quotes/{}/convert	reachable from 3 UI route(s)
+code	customer.walk_in_no_credit	422	—	IN	POST /sales-orders; POST /sales-quotes/{}/convert	reachable from 3 UI route(s)
+code	customer_discount.product_not_found	422	product_id: int	IN	POST /customers/{}/discounts	reachable from 1 UI route(s)
+code	delivery_order.insufficient_notice	422	min_hours: int, earliest: datetime	OUT		
+code	delivery_order.line_already_present	409	sales_order_line_id: int, delivery_order_line_id: int	IN	POST /delivery-orders/{}/lines	reachable from 1 UI route(s)
+code	delivery_order.line_not_deliverable	422	sales_order_line_id: int	IN	POST /delivery-orders; POST /delivery-orders/{}/lines	reachable from 2 UI route(s)
+code	delivery_order.line_repeated	422	sales_order_line_id: int	IN	POST /delivery-orders	reachable from 1 UI route(s)
+code	delivery_order.mixed_not_allowed	422	—	IN	POST /delivery-orders	reachable from 1 UI route(s)
+code	delivery_order.no_lines	409	—	OUT		
+code	delivery_order.no_lines_from_warehouse	422	warehouse_id: int	OUT		
+code	delivery_order.not_approved	409	status: enum:DeliveryOrderStatus	OUT		
+code	delivery_order.not_editable	409	status: enum:DeliveryOrderStatus	IN	DELETE /delivery-orders/{}/lines/{}; POST /delivery-orders/{}/lines	reachable from 4 UI route(s)
+code	delivery_order.not_failed	409	status: enum:DeliveryOrderStatus	OUT		
+code	delivery_order.not_in_preparation	409	status: enum:DeliveryOrderStatus	OUT		
+code	delivery_order.not_pending_approval	409	status: enum:DeliveryOrderStatus, action: str (`approve` or `reject`)	OUT		
+code	delivery_order.pickup_not_loadable	409	—	OUT		
+code	delivery_order.proof_incomplete	422	—	OUT		
+code	delivery_order.quantity_exceeds_remaining	422	sales_order_line_id: int, remaining: decimal, requested: decimal	IN	POST /delivery-orders; POST /delivery-orders/{}/lines	reachable from 3 UI route(s)
+code	delivery_order.reason_required	422	to: enum:DeliveryOrderStatus	IN	POST /delivery-orders/{}/cancel	reachable from 1 UI route(s)
+code	delivery_order.sales_order_fully_delivered	409	—	IN	POST /delivery-orders	reachable from 1 UI route(s)
+code	delivery_order.sales_order_not_deliverable	409	—	IN	POST /delivery-orders	reachable from 1 UI route(s)
+code	delivery_order.sales_order_unpaid	422	—	IN	POST /delivery-orders	reachable from 1 UI route(s)
+code	delivery_order.unknown_warehouse	422	warehouse_id: int	OUT		
+code	delivery_order_line.nothing_to_load	422	—	OUT		
+code	delivery_order_line.quantity_unavailable	422	available: decimal, requested: decimal	OUT		
+code	document.not_editable	409	status: enum:DocumentStatus	IN	DELETE /sales-orders/{}/lines/{}; DELETE /sales-quotes/{}/lines/{}	reachable from 11 UI route(s)
+code	email.contact_no_address	422	contact_id: int	OUT		
+code	email.contact_not_of_party	422	contact_id: int	OUT		
+code	email.no_recipients	422	—	OUT		
+code	email.not_configured	503	—	IN	POST /sales-quotes/{}/email	reachable from 1 UI route(s)
+code	email.send_failed	502	—	IN	POST /sales-quotes/{}/email	reachable from 1 UI route(s)
+code	email.too_many_recipients	422	max: int	OUT		
+code	expense_voucher.not_cashier	403	—	OUT		
+code	expense_voucher.not_confirmed	409	status: enum:DocumentStatus, action: str='print', action: str='void'	OUT		
+code	expense_voucher.total_not_positive	409	—	OUT		
+code	expense_voucher.unknown_category	422	expense_id: int	OUT		
+code	facility.no_dispatch_warehouse	422	facility_id: int	IN	POST /delivery-orders; POST /delivery-orders/{}/lines	reachable from 2 UI route(s)
+code	facility.no_in_transit_location	422	facility_ids: list[int]	OUT		
+code	facility.other_facility	403	resource: str, required?: list[{system_object: int, right: int}]	IN	GET /credit-notes; GET /customer-payments	reachable from 4 UI route(s)
+code	facility.required	422	—	IN	POST /customer-refunds	reachable from 1 UI route(s)
+code	fiscal_document.already_related	409	relation_id: int	OUT		
+code	fiscal_document.amount_exceeds_balance	422	balance: decimal	OUT		
+code	fiscal_document.amounts_exceed_payment	422	—	OUT		
+code	fiscal_document.amounts_not_equal_payment	422	—	OUT		
+code	fiscal_document.certificate_cannot_sign	422	—	OUT		
+code	fiscal_document.credit_exceeds_invoice	422	invoice_id: int, remaining: decimal	OUT		
+code	fiscal_document.credit_quantity_exceeds_line	422	max: decimal	OUT		
+code	fiscal_document.field_not_for_type	422	fields: list[str], type: enum:FiscalDocumentType	OUT		
+code	fiscal_document.invoice_already_on_receipt	409	invoice_id: int	OUT		
+code	fiscal_document.invoice_not_creditable	422	invoice_id: int	OUT		
+code	fiscal_document.invoice_not_payable	422	invoice_id: int	OUT		
+code	fiscal_document.issue_date_out_of_range	422	—	OUT		
+code	fiscal_document.issuer_has_no_series	422	type: enum:FiscalDocumentType	OUT		
+code	fiscal_document.line_missing_sat_key	422	line: int	OUT		
+code	fiscal_document.line_quantity_not_positive	422	line: int	OUT		
+code	fiscal_document.no_invoiceable_lines	422	—	OUT		
+code	fiscal_document.no_lines	422	—	OUT		
+code	fiscal_document.no_valid_certificate	422	—	OUT		
+code	fiscal_document.not_draft	409	—	OUT		
+code	fiscal_document.not_emailable	409	—	OUT		
+code	fiscal_document.not_issued	409	—	OUT		
+code	fiscal_document.not_sealed	409	—	OUT		
+code	fiscal_document.not_stamped	409	—	OUT		
+code	fiscal_document.order_not_invoiceable	422	sales_order_id: int	OUT		
+code	fiscal_document.payment_already_receipted	409	fiscal_document_id: int	OUT		
+code	fiscal_document.payment_date_out_of_range	422	—	OUT		
+code	fiscal_document.payment_form_required	422	type: enum:FiscalDocumentType	OUT		
+code	fiscal_document.payment_other_customer	422	customer_payment_id: int	OUT		
+code	fiscal_document.product_unpriced	422	product_id: int	OUT		
+code	fiscal_document.quantity_exceeds_invoiceable	422	remaining: decimal, line?: int	OUT		
+code	fiscal_document.receipt_needs_payment_data	422	—	OUT		
+code	fiscal_document.receipt_pays_no_invoice	422	—	OUT		
+code	fiscal_document.recipient_incomplete	422	—	OUT		
+code	fiscal_document.recipient_not_linked	422	customer_id: int, recipient: str	OUT		
+code	fiscal_document.relation_not_allowed	422	relation_type: str	OUT		
+code	fiscal_document.relation_types_mixed	422	—	OUT		
+code	fiscal_document.series_locked	409	—	OUT		
+code	fiscal_document.series_missing	422	batch: str	OUT		
+code	fiscal_document.series_not_of_type	422	batch: str, type: enum:FiscalDocumentType	OUT		
+code	fiscal_document.type_not_supported	409	type: enum:FiscalDocumentType	OUT		
+code	fiscal_document.unknown_facility	422	facility_id: int	OUT		
+code	fiscal_document.unknown_usage	422	usage: str	OUT		
+code	fiscal_document.version_not_printable	409	version: str	OUT		
+code	fiscal_document.xml_unavailable	409	—	OUT		
+code	image.too_large	422	max_bytes: int	IN	POST /facilities/{}/logo; POST /products/{}/image	reachable from 2 UI route(s)
+code	image.unsupported_format	422	—	IN	POST /facilities/{}/logo; POST /products/{}/image	reachable from 2 UI route(s)
+code	incidence.reason_required	422	—	IN	DELETE /facilities/{}; DELETE /products/{}	reachable from 10 UI route(s)
+code	inventory_count.batch_invalid	422	— (`errors[]`: index, product or product_code, reason, code)	OUT		
+code	inventory_count.confirmed_cannot_cancel	409	—	OUT		
+code	inventory_count_line.not_stockable	422	— (an `errors[]` item)	OUT		
+code	inventory_count_line.product_reference	422	— (an `errors[]` item)	OUT		
+code	inventory_count_line.product_unknown	422	— (an `errors[]` item)	OUT		
+code	inventory_count_line.repeated	422	— (an `errors[]` item)	OUT		
+code	inventory_document.already_cancelled	409	resource: str (`inventory_receipt`, `inventory_issue`, `inventory_transfer` or `inventory_count`)	OUT		
+code	inventory_document.insufficient_stock	409	product_id: int, warehouse_id: int, requested: decimal, available: decimal	OUT		
+code	inventory_document.line_without_quantity	422	product_code: str	OUT		
+code	inventory_document.no_lines	409	resource: str (`inventory_receipt`, `inventory_issue`, `inventory_transfer` or `inventory_count`)	OUT		
+code	inventory_receipt.warehouse_fixed	409	—	OUT		
+code	inventory_receipt.complementary_unavailable	409	reason: str enum (no_purchase_order, purchase_order_cancelled, purchase_order_not_completed, purchase_order_fully_received)	OUT		
+code	inventory_transfer.line_repeated	422	line_id: int	OUT		
+code	inventory_transfer.not_in_transit	409	—	OUT		
+code	inventory_transfer.over_received	409	product_code: str, received: decimal, outstanding: decimal	OUT		
+code	inventory_transfer.same_warehouse	422	—	OUT		
+code	itinerary.cancelled	409	—	OUT		
+code	itinerary.lines_overcommitted	422	— (dict `detail` kept: message, lines)	OUT		
+code	itinerary.not_departed	409	status: enum:ItineraryStatus	OUT		
+code	itinerary.not_open	409	status: enum:ItineraryStatus	OUT		
+code	itinerary.nothing_committed	409	—	OUT		
+code	itinerary.stop_already_resolved	409	—	OUT		
+code	itinerary.stop_delivered_exceeds_sent	422	line_id: int, sent: decimal, delivered: decimal	OUT		
+code	itinerary.stop_lines_incomplete	422	—	OUT		
+code	itinerary.stop_lines_malformed	422	—	OUT		
+code	itinerary.stop_shortfall_needs_reason	422	line_id: int	OUT		
+code	kardex.range_reversed	422	—	OUT		
+code	kardex.range_too_long	422	max_days: int	OUT		
+code	lock.busy	409	resource: str (`warehouse`, `facility` or `sales_order`)	IN	POST /customer-payments; POST /customer-refunds/{}/confirm	reachable from 4 UI route(s)
+code	payment.already_verified	409	—	OUT		
+code	payment.application_reversed	409	—	OUT		
+code	payment.currency_mismatch	422	payment_currency: enum:CurrencyCode, order_currency: enum:CurrencyCode	OUT		
+code	payment.customer_mismatch	422	payment_customer_id: int, order_customer_id: int	OUT		
+code	payment.exceeds_order_balance	422	amount: decimal, balance: decimal	OUT		
+code	payment.exceeds_unapplied	422	amount: decimal, unapplied: decimal	OUT		
+code	payment.no_ticket	409	payment_type: enum:PaymentType	IN	GET /customer-payments/{}/ticket	reachable from 1 UI route(s)
+code	payment.order_cancelled	409	—	OUT		
+code	payment.order_not_completed	409	—	OUT		
+code	payment.order_settled	409	—	OUT		
+code	point_of_sale.warehouse_facility_mismatch	422	warehouse_id: int, facility_id: int	IN	POST /points-of-sale; PUT /points-of-sale/{}	reachable from 2 UI route(s)
+code	price_list.cost_not_assignable	400	—	IN	DELETE /price-lists/{}; POST /customers	reachable from 6 UI route(s)
+code	price_list.cost_not_deletable	400	—	IN	DELETE /price-lists/{}	reachable from 1 UI route(s)
+code	price_list.cost_read_only	400	—	IN	POST /product-prices; PUT /product-prices	reachable from 3 UI route(s)
+code	price_list.replace_with_itself	400	—	IN	DELETE /price-lists/{}	reachable from 1 UI route(s)
+code	product.lookup_criteria_required	422	—	IN	GET /sales-orders/product-lookup	reachable from 1 UI route(s)
+code	product.lookup_too_many	422	max: int	IN	GET /sales-orders/product-lookup	reachable from 1 UI route(s)
+code	product.merge_with_itself	400	—	IN	GET /products/merge/preview; POST /products/merge	reachable from 2 UI route(s)
+code	product.not_purchasable	422	product_id: int, product_code: str	OUT		
+code	product.not_stockable	422	product_code: str	OUT		
+code	product_price.duplicate_entry	400	product_id: int, price_list_id: int	IN	PUT /product-prices	reachable from 1 UI route(s)
+code	product_price.references_not_found	404	resource: str (product	IN	PUT /product-prices	reachable from 1 UI route(s)
+code	purchase_order.already_cancelled	409	—	OUT		
+code	purchase_order.confirmed_cannot_cancel	409	—	OUT		
+code	purchase_order.line_without_quantity	409	product_code: str	OUT		
+code	purchase_order.no_lines	409	—	OUT		
+code	purchase_order.no_supplier	409	—	OUT		
+code	purchase_order.not_confirmed	409	purchase_order_id: int	OUT		
+code	purchase_order.nothing_pending	409	supplier_id: int, facility_id: int	OUT		
+code	purchase_order.nothing_to_add	409	purchase_request_id: int	OUT		
+code	purchase_order.request_not_approved	409	purchase_request_id: int	OUT		
+code	purchase_request.already_cancelled	409	—	OUT		
+code	purchase_request.facility_locked	409	—	OUT		
+code	purchase_request.line_on_live_order	409	line_id: int	OUT		
+code	purchase_request.line_without_quantity	422	line_id: int	OUT		
+code	purchase_request.lines_not_markable	409	status: enum:RequestStatus	OUT		
+code	purchase_request.lines_on_live_order	409	count: int	OUT		
+code	purchase_request.no_lines	409	—	OUT		
+code	purchase_request.not_draft	409	status: enum:RequestStatus	OUT		
+code	purchase_request.not_submitted	409	status: enum:RequestStatus	OUT		
+code	purchase_request.warehouse_facility_changed	409	—	OUT		
+code	quote.already_cancelled	409	—	IN	POST /sales-quotes/{}/cancel	reachable from 1 UI route(s)
+code	quote.cancelled	409	—	IN	POST /sales-quotes/{}/convert	reachable from 1 UI route(s)
+code	quote.expired	409	—	IN	POST /sales-quotes/{}/convert	reachable from 1 UI route(s)
+code	quote.not_confirmed	409	—	IN	POST /sales-quotes/{}/convert; POST /sales-quotes/{}/email	reachable from 2 UI route(s)
+code	refund.already_cancelled	409	—	IN	POST /customer-refunds/{}/cancel	reachable from 1 UI route(s)
+code	refund.completed_cannot_cancel	409	—	IN	POST /customer-refunds/{}/cancel	reachable from 1 UI route(s)
+code	refund.line_invoiced	409	product_code: str, invoice?: str	IN	POST /customer-refunds; POST /customer-refunds/{}/confirm	reachable from 2 UI route(s)
+code	refund.no_returnable_lines	409	—	IN	POST /customer-refunds/{}/confirm	reachable from 1 UI route(s)
+code	refund.not_confirmed	409	—	IN	GET /customer-refunds/{}/ticket	reachable from 1 UI route(s)
+code	refund.nothing_refundable	409	—	IN	POST /customer-refunds	reachable from 1 UI route(s)
+code	refund.order_not_completed	409	—	IN	POST /customer-refunds	reachable from 1 UI route(s)
+code	refund.order_not_paid	409	—	IN	POST /customer-refunds	reachable from 1 UI route(s)
+code	refund.quantity_exceeds_refundable	422	requested: decimal, refundable: decimal	OUT		
+code	refund.warehouse_other_facility	422	warehouse_id: int, facility_id: int	OUT		
+code	request.malformed	400	—	IN	any route with a body	generic/framework
+code	request.method_not_allowed	405	—	IN	framework (any)	generic/framework
+code	request.route_not_found	404	—	IN	framework (any; only on path/version mismatch)	generic/framework
+code	resource.already_exists	409	resource: str, field: str	IN	POST /cash-drawers; POST /customers/{}/discounts	reachable from 20 UI route(s)
+code	resource.conflict	409	—	IN	every writing route (IntegrityError backstop)	generic/framework
+code	resource.not_found	404	resource: str, id?: int or str	IN	DELETE /cash-drawers/{}; DELETE /customers/{}	reachable from 118 UI route(s)
+code	resource.still_referenced	409	references: list[{resource: str, count: int}], more: int	IN	DELETE /cash-drawers/{}; DELETE /customers/{}	reachable from 17 UI route(s)
+code	sales_order.already_cancelled	409	—	IN	POST /sales-orders/{}/cancel	reachable from 1 UI route(s)
+code	sales_order.below_min_quantity	422	product_id: int, min_order_qty: int	IN	POST /sales-orders/{}/lines; POST /sales-quotes/{}/lines	reachable from 4 UI route(s)
+code	sales_order.has_payment_applications	409	application_ids: list[int]	IN	POST /sales-orders/{}/cancel	reachable from 1 UI route(s)
+code	sales_order.insufficient_stock	409	— (dict `detail` kept: message, lines)	IN	POST /sales-orders/{}/confirm	reachable from 1 UI route(s)
+code	sales_order.missing_delivery_details	409	— (dict `detail` kept: message, missing)	IN	POST /sales-orders/{}/confirm	reachable from 1 UI route(s)
+code	sales_order.no_lines	409	—	IN	POST /sales-orders/{}/confirm	reachable from 1 UI route(s)
+code	sales_order.not_confirmed	409	sales_order_id: int	OUT		
+code	sales_order.paid_cannot_cancel	409	—	IN	POST /sales-orders/{}/cancel	reachable from 1 UI route(s)
+code	sales_order.zero_priced_lines	409	— (dict `detail` kept: message, lines)	IN	POST /sales-orders/{}/confirm	reachable from 1 UI route(s)
+code	server.error	500	—	IN	every route (unhandled exception)	generic/framework
+code	state.transition_invalid	409	resource: str, from: enum, to: enum, required?: enum	IN	POST /delivery-orders/{}/cancel	reachable from 1 UI route(s)
+code	status_filter.unsupported	422	allowed: list[str]	OUT		
+code	supplier_agreement.end_before_start	422	start: date, end: date	IN	POST /suppliers/{}/agreements	reachable from 1 UI route(s)
+code	supplier_payment.already_cancelled	409	—	OUT		
+code	supplier_payment.amount_exceeds_balance	409	purchase_order_id: int, balance: decimal	OUT		
+code	supplier_payment.amounts_exceed_credit	409	credit: decimal	OUT		
+code	supplier_payment.application_already_reversed	409	application_id: int	OUT		
+code	supplier_payment.cancelled	409	—	OUT		
+code	supplier_payment.cutoff_not_set	409	—	OUT		
+code	supplier_payment.facility_not_nameable	422	—	OUT		
+code	supplier_payment.legacy_not_applicable	409	—	OUT		
+code	supplier_payment.order_before_cutoff	409	purchase_order_id: int	OUT		
+code	supplier_payment.order_other_supplier	409	purchase_order_id: int	OUT		
+code	taxpayer_batch.in_use	409	action: str (`update` or `delete`)	OUT		
+code	taxpayer_certificate.holder_mismatch	422	certificate_taxpayer: str, taxpayer: str	IN	POST /taxpayer-certificates	reachable from 1 UI route(s)
+code	taxpayer_issuer.unknown	422	taxpayer: str	IN	POST /taxpayer-certificates	reachable from 1 UI route(s)
+code	user.no_cash_drawer	422	—	IN	POST /cash-sessions	reachable from 1 UI route(s)
+code	user.no_facility	422	—	IN	POST /sales-orders; POST /sales-quotes	reachable from 2 UI route(s)
+code	user.no_point_of_sale	422	—	IN	POST /sales-orders; POST /sales-quotes/{}/convert	reachable from 2 UI route(s)
+code	user_profile.not_active	409	profile_id: int	IN	POST /user-profiles/{}/apply/{}; POST /users	reachable from 2 UI route(s)
+code	vehicle.open_itinerary_exists	409	vehicle_id: int, itinerary_id: int	OUT		
+code	warehouse.in_transit_location	422	warehouse_id: int	IN	POST /sales-orders/{}/lines; PUT /sales-orders/{}/lines/{}	reachable from 2 UI route(s)
+code	warehouse.in_transit_managed	403	—	IN	DELETE /warehouses/{}; GET /warehouses/{}	reachable from 3 UI route(s)
+code	warehouse.required	422	resource: str (`purchase_order`, `purchase_request` or `customer_refund`)	IN	POST /customer-refunds/{}/confirm	reachable from 1 UI route(s)
+validation_type	password_policy	422	failed: list[str]	IN	POST /auth/change-password [_enforce]; POST /auth/recover [_enforce]	app/core/password_policy.py ; reachable via request body
+validation_type	contact_name_blank	422	—	IN	POST /contacts [ContactCreate.validate_name]; POST /contacts [ContactCreate]	app/schemas/core.py ; reachable via request body
+validation_type	email_address_invalid	422	value: str (the rejected address as sent)	IN	POST /sales-quotes/{}/email [QuoteEmailRequest._valid_and_distinct]; POST /sales-quotes/{}/email [QuoteEmailRequest]	app/schemas/sales_quote.py ; reachable via request body
+validation_type	fiscal_document_payment_date_in_future	422	date: date	OUT		app/schemas/fiscal.py
+validation_type	fiscal_document_payment_form_unknown	422	payment_form: int	OUT		app/schemas/fiscal.py
+validation_type	fiscal_document_tax_rate_invalid	422	tax_rate: decimal	OUT		app/schemas/fiscal.py
+validation_type	inventory_count_product_reference	422	—	OUT		app/schemas/inventory.py
+validation_type	inventory_transfer_duplicate_line	422	—	OUT		app/schemas/inventory.py
+validation_type	product_barcode_invalid	422	—	IN	POST /products [_validate_bar_code]; PUT /products/{} [_validate_bar_code]	app/schemas/product.py ; reachable via request body
+validation_type	product_code_has_whitespace	422	—	IN	POST /products [_validate_code]; PUT /products/{} [_validate_code]	app/schemas/product.py ; reachable via request body
+validation_type	profile_duplicate_system_object	422	—	IN	POST /user-profiles [_reject_duplicate_objects]; PUT /user-profiles/{} [_reject_duplicate_objects]	app/schemas/user.py ; reachable via request body
+validation_type	profile_unknown_system_object	422	system_object: int	IN	POST /user-profiles [ProfilePrivilegeUpdate.validate_system_object]; POST /user-profiles [ProfilePrivilegeUpdate]	app/schemas/user.py ; reachable via request body
+validation_type	purchase_receipt_date_in_past	422	date: date (the value sent), today: date	OUT		app/schemas/purchases.py
+validation_type	purchase_request_reason_blank	422	—	OUT		app/schemas/purchases.py
+validation_type	statement_email_no_recipient	422	—	OUT		app/schemas/accounts.py
+validation_type	supplier_agreement_end_before_start	422	start: date, end: date	IN	POST /suppliers/{}/agreements [SupplierAgreementCreate.validate_period]; POST /suppliers/{}/agreements [SupplierAgreementCreate]	app/schemas/supplier.py ; reachable via request body
+validation_type	supplier_payment_cash_has_date	422	—	OUT		app/schemas/supplier_payments.py
+validation_type	supplier_payment_cash_has_facility	422	—	OUT		app/schemas/supplier_payments.py
+validation_type	supplier_payment_date_in_future	422	date: datetime	OUT		app/schemas/supplier_payments.py
+validation_type	supplier_payment_duplicate_order	422	—	OUT		app/schemas/supplier_payments.py
+validation_type	taxpayer_batch_series_blank	422	—	OUT		app/schemas/fiscal.py
+validation_type	user_id_not_alphanumeric	422	—	IN	POST /users [UserCreate.validate_username]; POST /users [UserCreate]	app/schemas/user.py ; reachable via request body
+resource	cash_drawer		resource.not_found	IN	DELETE /cash-drawers/{}; GET /cash-drawers/{}	
+resource	cash_session		resource.not_found	IN	GET /cash-sessions/{}; GET /cash-sessions/{}/ticket	
+resource	customer		resource.not_found	IN	DELETE /customers/{}; GET /customers/{}	
+resource	customer_payment		resource.not_found	IN	GET /customer-payments/{}; GET /customer-payments/{}/ticket	
+resource	customer_refund		resource.not_found	IN	GET /customer-refunds/{}; GET /customer-refunds/{}/ticket	
+resource	delivery_order		resource.not_found	IN	DELETE /delivery-orders/{}/lines/{}; GET /delivery-orders/{}	
+resource	delivery_order_line		resource.not_found	IN	DELETE /delivery-orders/{}/lines/{}; PUT /delivery-orders/{}/lines/{}	
+resource	employee		resource.not_found	IN	DELETE /employees/{}; GET /employees/{}	
+resource	exchange_rate		resource.not_found	IN	DELETE /exchange-rates/{}; GET /exchange-rates/{}	
+resource	expense		resource.not_found	IN	DELETE /expenses/{}; GET /expenses/{}	
+resource	facility		resource.not_found	IN	DELETE /facilities/{}; GET /facilities/{}	
+resource	label		resource.not_found	IN	DELETE /labels/{}; GET /labels/{}	
+resource	payment_method_option		resource.not_found	IN	DELETE /payment-method-options/{}; GET /payment-method-options/{}	
+resource	point_of_sale		resource.not_found	IN	DELETE /points-of-sale/{}; GET /points-of-sale/{}	
+resource	price_list		resource.not_found	IN	DELETE /price-lists/{}; GET /price-lists/{}	
+resource	product		resource.not_found	IN	DELETE /products/{}; GET /products/merge/preview	
+resource	product_price		resource.not_found	IN	POST /product-prices; PUT /product-prices/{}	
+resource	sales_order		resource.not_found	IN	DELETE /sales-orders/{}/lines/{}; GET /sales-orders/{}	
+resource	sales_order_line		resource.not_found	IN	DELETE /sales-orders/{}/lines/{}; PUT /sales-orders/{}/lines/{}	
+resource	sales_quote		resource.not_found	IN	DELETE /sales-quotes/{}/lines/{}; GET /sales-quotes/{}	
+resource	sales_quote_line		resource.not_found	IN	DELETE /sales-quotes/{}/lines/{}; PUT /sales-quotes/{}/lines/{}	
+resource	supplier		resource.not_found	IN	DELETE /suppliers/{}; GET /suppliers/{}	
+resource	taxpayer_issuer		resource.not_found	IN	DELETE /taxpayer-issuers/{}; GET /taxpayer-issuers/{}	
+resource	taxpayer_recipient		resource.not_found	IN	DELETE /taxpayer-recipients/{}; GET /taxpayer-recipients/{}	
+resource	user		resource.not_found	IN	DELETE /users/{}; GET /auth/me	
+resource	user_profile		resource.not_found	IN	DELETE /user-profiles/{}; GET /user-profiles/{}	
+resource	vehicle		resource.not_found	IN	DELETE /vehicles/{}; GET /vehicles/{}	
+resource	vehicle_operator		resource.not_found	IN	DELETE /vehicle-operators/{}; GET /vehicle-operators/{}	
+resource	warehouse		resource.not_found	IN	DELETE /warehouses/{}; GET /warehouses/{}	
+resource	cash_drawer		resource.already_exists	IN	POST /cash-drawers; PUT /cash-drawers/{}	
+resource	customer_discount		resource.already_exists	IN	POST /customers/{}/discounts	
+resource	exchange_rate		resource.already_exists	IN	POST /exchange-rates	
+resource	point_of_sale		resource.already_exists	IN	POST /points-of-sale; PUT /points-of-sale/{}	
+resource	product		resource.already_exists	IN	POST /products; POST /products/{}/image	
+resource	product_price		resource.already_exists	IN	POST /product-prices	
+resource	supplier		resource.already_exists	IN	POST /suppliers; PUT /suppliers/{}	
+resource	taxpayer_certificate		resource.already_exists	IN	POST /taxpayer-certificates	
+resource	user		resource.already_exists	IN	POST /users	
+resource	user_profile		resource.already_exists	IN	POST /user-profiles; PUT /user-profiles/{}	
+resource	vehicle		resource.already_exists	IN	POST /vehicles; PUT /vehicles/{}	
+resource	warehouse		resource.already_exists	IN	POST /warehouses; PUT /warehouses/{}	
+resource	facility		lock.busy	IN	POST /customer-payments; POST /sales-quotes/{}/confirm	
+resource	warehouse		lock.busy	IN	POST /customer-refunds/{}/confirm; POST /sales-orders/{}/confirm	
+resource	credit_note		facility.other_facility	IN	GET /credit-notes	
+resource	customer_payment		facility.other_facility	IN	GET /customer-payments	
+resource	customer_refund		facility.other_facility	IN	GET /customer-refunds	
+resource	sales_order		facility.other_facility	IN	GET /sales-orders	
+resource	cash_drawer		resource.still_referenced (references[].resource)	IN	DELETE /facilities/{}	blocker name, computed from FK metadata of the deleted model
+resource	cash_session		resource.still_referenced (references[].resource)	IN	DELETE /cash-drawers/{}; DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	commission_agent		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	commission_history		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	commission_period		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	commission_period_line		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	commission_product		resource.still_referenced (references[].resource)	IN	DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	credit_note		resource.still_referenced (references[].resource)	IN	DELETE /customers/{}	blocker name, computed from FK metadata of the deleted model
+resource	customer		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /price-lists/{}	blocker name, computed from FK metadata of the deleted model
+resource	customer_address		resource.still_referenced (references[].resource)	IN	DELETE /customers/{}	blocker name, computed from FK metadata of the deleted model
+resource	customer_contact		resource.still_referenced (references[].resource)	IN	DELETE /customers/{}	blocker name, computed from FK metadata of the deleted model
+resource	customer_discount		resource.still_referenced (references[].resource)	IN	DELETE /customers/{}; DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	customer_payment		resource.still_referenced (references[].resource)	IN	DELETE /customers/{}; DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	customer_refund		resource.still_referenced (references[].resource)	IN	DELETE /customers/{}; DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	customer_refund_line		resource.still_referenced (references[].resource)	IN	DELETE /facilities/{}; DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	customer_taxpayer		resource.still_referenced (references[].resource)	IN	DELETE /customers/{}; DELETE /taxpayer-recipients/{}	blocker name, computed from FK metadata of the deleted model
+resource	delivery_itinerary		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /facilities/{}	blocker name, computed from FK metadata of the deleted model
+resource	delivery_order		resource.still_referenced (references[].resource)	IN	DELETE /customers/{}; DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	delivery_order_event		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	delivery_order_line		resource.still_referenced (references[].resource)	IN	DELETE /facilities/{}; DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	expense_voucher		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /facilities/{}	blocker name, computed from FK metadata of the deleted model
+resource	facility		resource.still_referenced (references[].resource)	IN	DELETE /taxpayer-issuers/{}	blocker name, computed from FK metadata of the deleted model
+resource	fiscal_document		resource.still_referenced (references[].resource)	IN	DELETE /customers/{}; DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	fiscal_document_line		resource.still_referenced (references[].resource)	IN	DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	incidence		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	inventory_count		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /facilities/{}	blocker name, computed from FK metadata of the deleted model
+resource	inventory_count_line		resource.still_referenced (references[].resource)	IN	DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	inventory_issue		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /facilities/{}	blocker name, computed from FK metadata of the deleted model
+resource	inventory_issue_line		resource.still_referenced (references[].resource)	IN	DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	inventory_receipt		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /facilities/{}	blocker name, computed from FK metadata of the deleted model
+resource	inventory_receipt_line		resource.still_referenced (references[].resource)	IN	DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	inventory_transfer		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /facilities/{}	blocker name, computed from FK metadata of the deleted model
+resource	inventory_transfer_line		resource.still_referenced (references[].resource)	IN	DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	notarization		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	payment_method_option		resource.still_referenced (references[].resource)	IN	DELETE /facilities/{}; DELETE /warehouses/{}	blocker name, computed from FK metadata of the deleted model
+resource	point_of_sale		resource.still_referenced (references[].resource)	IN	DELETE /facilities/{}; DELETE /warehouses/{}	blocker name, computed from FK metadata of the deleted model
+resource	product		resource.still_referenced (references[].resource)	IN	DELETE /suppliers/{}	blocker name, computed from FK metadata of the deleted model
+resource	product_cost_change		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	product_label		resource.still_referenced (references[].resource)	IN	DELETE /labels/{}; DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	proof_of_delivery		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	purchase_order		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /suppliers/{}	blocker name, computed from FK metadata of the deleted model
+resource	purchase_order_line		resource.still_referenced (references[].resource)	IN	DELETE /facilities/{}; DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	purchase_order_payment		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	purchase_request		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /facilities/{}	blocker name, computed from FK metadata of the deleted model
+resource	purchase_request_line		resource.still_referenced (references[].resource)	IN	DELETE /customers/{}; DELETE /facilities/{}	blocker name, computed from FK metadata of the deleted model
+resource	sales_order		resource.still_referenced (references[].resource)	IN	DELETE /customers/{}; DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	sales_order_line		resource.still_referenced (references[].resource)	IN	DELETE /facilities/{}; DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	sales_order_payment		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	sales_quote		resource.still_referenced (references[].resource)	IN	DELETE /customers/{}; DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	sales_quote_line		resource.still_referenced (references[].resource)	IN	DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	stock_movement		resource.still_referenced (references[].resource)	IN	DELETE /facilities/{}; DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	stock_reservation		resource.still_referenced (references[].resource)	IN	DELETE /facilities/{}; DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	supplier_address		resource.still_referenced (references[].resource)	IN	DELETE /suppliers/{}	blocker name, computed from FK metadata of the deleted model
+resource	supplier_agreement		resource.still_referenced (references[].resource)	IN	DELETE /suppliers/{}	blocker name, computed from FK metadata of the deleted model
+resource	supplier_bank_account		resource.still_referenced (references[].resource)	IN	DELETE /suppliers/{}	blocker name, computed from FK metadata of the deleted model
+resource	supplier_contact		resource.still_referenced (references[].resource)	IN	DELETE /suppliers/{}	blocker name, computed from FK metadata of the deleted model
+resource	supplier_payment		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /facilities/{}	blocker name, computed from FK metadata of the deleted model
+resource	supplier_return		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /suppliers/{}	blocker name, computed from FK metadata of the deleted model
+resource	supplier_return_line		resource.still_referenced (references[].resource)	IN	DELETE /facilities/{}; DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
+resource	taxpayer_batch		resource.still_referenced (references[].resource)	IN	DELETE /taxpayer-issuers/{}	blocker name, computed from FK metadata of the deleted model
+resource	taxpayer_certificate		resource.still_referenced (references[].resource)	IN	DELETE /taxpayer-issuers/{}	blocker name, computed from FK metadata of the deleted model
+resource	translation_request		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	user		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /user-profiles/{}	blocker name, computed from FK metadata of the deleted model
+resource	user_settings		resource.still_referenced (references[].resource)	IN	DELETE /cash-drawers/{}; DELETE /facilities/{}	blocker name, computed from FK metadata of the deleted model
+resource	vehicle_operator		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
+resource	warehouse		resource.still_referenced (references[].resource)	IN	DELETE /facilities/{}	blocker name, computed from FK metadata of the deleted model
