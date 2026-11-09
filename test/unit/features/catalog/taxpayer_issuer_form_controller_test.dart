@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mbe_api_client/mbe_api_client.dart'
-    hide EntityStatus, ValidationError;
+import 'package:mbe_api_client/mbe_api_client.dart' hide EntityStatus;
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';

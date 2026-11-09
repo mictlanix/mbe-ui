@@ -28,6 +28,8 @@ class CustomerRefundRepositoryImpl implements CustomerRefundRepository {
     RefundStatus? status,
     int? customerId,
     int? salesOrderId,
+    String? search,
+    bool mine = false,
     required int skip,
     required int limit,
   }) => _call(() async {
@@ -35,6 +37,8 @@ class CustomerRefundRepositoryImpl implements CustomerRefundRepository {
       customer: customerId,
       salesOrder: salesOrderId,
       status: status?.wireName,
+      search: search == null || search.isEmpty ? null : search,
+      mine: mine ? true : null,
       skip: skip,
       limit: limit,
     );

@@ -13,7 +13,8 @@ part 'refunds_list_controller.g.dart';
 const _pageSize = 20;
 
 /// Fetches and holds the "Devoluciones" page (spec 057 FR-013, research R8):
-/// server paging, filtered by status, customer and order.
+/// server paging, filtered by status, customer, order, search text and
+/// own refunds.
 ///
 /// A user without customer-refunds read gets an empty page and no request; the
 /// route and the navigation are what actually keep them out.
@@ -51,6 +52,8 @@ class RefundsListController extends _$RefundsListController {
           status: filter.status,
           customerId: filter.customerId,
           salesOrderId: filter.salesOrderId,
+          search: filter.query,
+          mine: filter.mine,
           skip: pageIndex * _pageSize,
           limit: _pageSize,
         );

@@ -4442,6 +4442,11 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String documentRefundReceiptTitle(int id) {
+    return 'Comprobante de devolución · #$id';
+  }
+
+  @override
   String get creditNotesMenuTitle => 'Notas de crédito';
 
   @override
@@ -4573,6 +4578,12 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get refundsFilterOrder => 'Pedido';
+
+  @override
+  String get refundsSearchHint => 'Folio, pedido o cliente…';
+
+  @override
+  String get refundsFilterMine => 'Solo mis devoluciones';
 
   @override
   String get refundsFilterAll => 'Todas';

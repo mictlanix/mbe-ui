@@ -17,7 +17,6 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
-import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
@@ -41,7 +40,16 @@ void main() {
   late MockSalesOrderRepository salesOrders;
   late _MockCustomerRepository customers;
   late AppLocalizations l10n;
-  var requests = <({RefundStatus? status, int? customer, int? order})>[];
+  var requests =
+      <
+        ({
+          RefundStatus? status,
+          int? customer,
+          int? order,
+          String? search,
+          bool mine,
+        })
+      >[];
 
   setUpAll(() async {
     l10n = await AppLocalizations.delegate.load(const Locale('es'));
@@ -60,11 +68,13 @@ void main() {
     int? customer = 7,
     int order = 42,
     int? serial,
+    String? name,
     String total = '10.00',
   }) => CustomerRefundSummary(
     id: id,
     salesOrderId: order,
     customerId: customer,
+    customerName: name,
     serial: serial,
     date: serial == null ? null : DateTime(2026, 10, 28, 9, 30),
     currency: Currency.mxn,
@@ -79,6 +89,8 @@ void main() {
         status: any(named: 'status'),
         customerId: any(named: 'customerId'),
         salesOrderId: any(named: 'salesOrderId'),
+        search: any(named: 'search'),
+        mine: any(named: 'mine'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
@@ -86,14 +98,31 @@ void main() {
       final status = i.namedArguments[#status] as RefundStatus?;
       final customer = i.namedArguments[#customerId] as int?;
       final order = i.namedArguments[#salesOrderId] as int?;
+      final search = i.namedArguments[#search] as String?;
+      final mine = i.namedArguments[#mine] as bool;
       final skip = i.namedArguments[#skip] as int;
       final limit = i.namedArguments[#limit] as int;
-      requests.add((status: status, customer: customer, order: order));
+      requests.add((
+        status: status,
+        customer: customer,
+        order: order,
+        search: search,
+        mine: mine,
+      ));
+      final number = int.tryParse(search ?? '');
       final kept = [
         for (final r in all)
           if ((status == null || r.status == status) &&
               (customer == null || r.customerId == customer) &&
-              (order == null || r.salesOrderId == order))
+              (order == null || r.salesOrderId == order) &&
+              (search == null ||
+                  search.isEmpty ||
+                  (number != null
+                      ? r.id == number ||
+                            r.serial == number ||
+                            r.salesOrderId == number
+                      : (r.customerName ?? '').contains(search))) &&
+              (!mine || r.id.isEven))
             r,
       ];
       final end = (skip + limit).clamp(0, kept.length);
@@ -241,11 +270,11 @@ void main() {
       expect(find.text(emptyValuePlaceholder), findsNWidgets(1));
     });
 
-    testWidgets('has no search box and no row edit icon', (tester) async {
+    testWidgets('has a search box and no row edit icon', (tester) async {
       serve([row(1)]);
       await pumpList(tester);
 
-      expect(find.byType(CatalogSearchBar), findsNothing);
+      expect(key('refunds_search_field'), findsOneWidget);
       expect(find.byIcon(Icons.edit_outlined), findsNothing);
       expect(key('refunds_table'), findsOneWidget);
     });
@@ -271,6 +300,108 @@ void main() {
 
       expect(router.state.uri.path, '/sales/refunds/5');
       expect(find.text('refund-5'), findsOneWidget);
+    });
+  });
+
+  group('customer names', () {
+    testWidgets('the server\'s name is shown with no customer lookup', (
+      tester,
+    ) async {
+      serve([row(1, name: 'Ana López', customer: 7)]);
+      await pumpList(tester);
+
+      expect(find.text('Ana López'), findsOneWidget);
+      expect(find.text('Cliente 7'), findsNothing);
+    });
+
+    testWidgets('a refund with no name falls back to the customer lookup', (
+      tester,
+    ) async {
+      serve([row(1, name: 'Ana López', customer: 7), row(2, customer: 8)]);
+      await pumpList(tester);
+
+      expect(find.text('Ana López'), findsOneWidget);
+      expect(find.text('Cliente 8'), findsOneWidget);
+    });
+  });
+
+  group('search and own refunds', () {
+    final data = [
+      row(4, name: 'Ana López', order: 50, serial: 9),
+      row(3, name: 'Luis Reyes', order: 51),
+      row(2, name: 'Ana Gómez', order: 52),
+    ];
+
+    Finder searchField() => find.descendant(
+      of: key('refunds_search_field'),
+      matching: find.byType(TextField),
+    );
+
+    testWidgets('searching writes the address, resets the page and narrows the '
+        'list', (tester) async {
+      serve(data);
+      final router = await pumpList(tester, location: '/sales/refunds?page=1');
+
+      await tester.enterText(searchField(), 'Ana');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.queryParameters['search'], 'Ana');
+      expect(router.state.uri.queryParameters.containsKey('page'), isFalse);
+      expect(requests.last.search, 'Ana');
+      expect(find.text('Ana López'), findsOneWidget);
+      expect(find.text('Ana Gómez'), findsOneWidget);
+      expect(find.text('Luis Reyes'), findsNothing);
+    });
+
+    testWidgets('a number searches by folio or order', (tester) async {
+      serve(data);
+      await pumpList(tester);
+
+      await tester.enterText(searchField(), '51');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+
+      expect(requests.last.search, '51');
+      expect(find.text('Luis Reyes'), findsOneWidget);
+      expect(find.text('Ana López'), findsNothing);
+    });
+
+    testWidgets('the search text in the address fills the box', (tester) async {
+      serve(data);
+      await pumpList(tester, location: '/sales/refunds?search=Luis');
+
+      expect(find.text('Luis'), findsOneWidget);
+      expect(find.text('Luis Reyes'), findsOneWidget);
+      expect(find.text('Ana López'), findsNothing);
+    });
+
+    testWidgets('the drawer has the mine switch, off by default', (
+      tester,
+    ) async {
+      serve(data);
+      await pumpList(tester);
+      await openFilters(tester);
+
+      final tile = tester.widget<SwitchListTile>(key('refunds_mine_filter'));
+      expect(tile.value, isFalse);
+      expect(find.text(l10n.refundsFilterMine), findsOneWidget);
+      expect(requests.every((r) => !r.mine), isTrue);
+    });
+
+    testWidgets('turning it on writes mine=1, resets the page and asks for '
+        'own refunds; the badge counts it', (tester) async {
+      serve(data);
+      final router = await pumpList(tester, location: '/sales/refunds?page=1');
+      await openFilters(tester);
+
+      await tester.tap(key('refunds_mine_filter'));
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.queryParameters['mine'], '1');
+      expect(router.state.uri.queryParameters.containsKey('page'), isFalse);
+      expect(requests.last.mine, isTrue);
+      expect(find.text('1'), findsWidgets);
     });
   });
 
@@ -443,6 +574,8 @@ void main() {
           status: any(named: 'status'),
           customerId: any(named: 'customerId'),
           salesOrderId: any(named: 'salesOrderId'),
+          search: any(named: 'search'),
+          mine: any(named: 'mine'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
@@ -466,6 +599,8 @@ void main() {
           status: any(named: 'status'),
           customerId: any(named: 'customerId'),
           salesOrderId: any(named: 'salesOrderId'),
+          search: any(named: 'search'),
+          mine: any(named: 'mine'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),

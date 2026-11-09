@@ -31,12 +31,17 @@ api.CustomerRefundResponse _response({
   api.DocumentStatus status = api.DocumentStatus.draft,
   int? customer = 7,
   int? serial,
+  String? customerDisplayName,
+  api.RefundPayout? payout,
+  int? customerPayment,
+  int? creditNote,
   List<api.CustomerRefundLineResponse>? lines,
 }) => api.CustomerRefundResponse(
   (b) => b
     ..customerRefundId = 9
     ..salesOrder = 42
     ..customer = customer
+    ..customerDisplayName = customerDisplayName
     ..salesPerson = 100
     ..facility = 8
     ..serial = serial
@@ -47,7 +52,10 @@ api.CustomerRefundResponse _response({
     ..lines.replace(lines ?? [_line()])
     ..subtotal = '25.0000'
     ..taxTotal = '4.0000'
-    ..total = '29.0000',
+    ..total = '29.0000'
+    ..payout = payout
+    ..customerPayment = customerPayment
+    ..creditNote = creditNote,
 );
 
 void main() {
@@ -127,6 +135,97 @@ void main() {
     expect(refund.date, DateTime(2026, 10, 28, 9, 30));
   });
 
+  group('customer name', () {
+    test('comes from customerDisplayName', () {
+      final refund = CustomerRefund.fromResponse(
+        _response(customerDisplayName: 'Ana Pérez'),
+      );
+      expect(refund.customerName, 'Ana Pérez');
+    });
+
+    test('a missing or blank name is null', () {
+      expect(CustomerRefund.fromResponse(_response()).customerName, isNull);
+      expect(
+        CustomerRefund.fromResponse(
+          _response(customerDisplayName: '  '),
+        ).customerName,
+        isNull,
+      );
+    });
+  });
+
+  group('payout fields and outcome', () {
+    CustomerRefund refund({
+      api.DocumentStatus status = api.DocumentStatus.completed,
+      api.RefundPayout? payout,
+      int? customerPayment,
+      int? creditNote,
+    }) => CustomerRefund.fromResponse(
+      _response(
+        status: status,
+        serial: 412,
+        payout: payout,
+        customerPayment: customerPayment,
+        creditNote: creditNote,
+      ),
+    );
+
+    test('payout, payment and note ids are mapped', () {
+      final r = refund(
+        payout: api.RefundPayout.creditNote,
+        customerPayment: 903,
+        creditNote: 17,
+      );
+      expect(r.payout, RefundPayout.creditNote);
+      expect(r.customerPaymentId, 903);
+      expect(r.creditNoteId, 17);
+      expect(refund(payout: api.RefundPayout.cash).payout, RefundPayout.cash);
+      expect(refund().payout, isNull);
+    });
+
+    test('a draft has no outcome', () {
+      expect(refund(status: api.DocumentStatus.draft).outcome, isNull);
+    });
+
+    test('a cancelled refund has no outcome', () {
+      expect(
+        refund(
+          status: api.DocumentStatus.cancelled,
+          payout: api.RefundPayout.cash,
+        ).outcome,
+        isNull,
+      );
+    });
+
+    test('cash is cash, even though it carries a negative payment id', () {
+      expect(
+        refund(payout: api.RefundPayout.cash, customerPayment: -5).outcome,
+        const RefundOutcome.cash(),
+      );
+    });
+
+    test('a credit note carries the backing payment id', () {
+      expect(
+        refund(
+          payout: api.RefundPayout.creditNote,
+          customerPayment: 903,
+        ).outcome,
+        const RefundOutcome.creditNote(903),
+      );
+    });
+
+    test('a credit note with no payment id is unknown', () {
+      expect(
+        refund(payout: api.RefundPayout.creditNote).outcome,
+        const RefundOutcome.unknown(),
+      );
+    });
+
+    test('a completed refund with no payout is unknown', () {
+      expect(refund().outcome, const RefundOutcome.unknown());
+    });
+  });
+
   test('CustomerRefundSummary maps a list row', () {
     final row = CustomerRefundSummary.fromResponse(
       api.CustomerRefundSummary(
@@ -134,6 +233,7 @@ void main() {
           ..customerRefundId = 9
           ..salesOrder = 42
           ..customer = null
+          ..customerDisplayName = '  '
           ..serial = null
           ..date = null
           ..currency = api.CurrencyCode.number0
@@ -145,8 +245,26 @@ void main() {
     expect(row.id, 9);
     expect(row.salesOrderId, 42);
     expect(row.customerId, isNull);
+    expect(row.customerName, isNull);
     expect(row.serial, isNull);
     expect(row.status, RefundStatus.completed);
     expect(row.total, '120.0000');
+  });
+
+  test('CustomerRefundSummary keeps the server customer name', () {
+    final row = CustomerRefundSummary.fromResponse(
+      api.CustomerRefundSummary(
+        (b) => b
+          ..customerRefundId = 9
+          ..salesOrder = 42
+          ..customer = 7
+          ..customerDisplayName = 'Ana Pérez'
+          ..currency = api.CurrencyCode.number0
+          ..status = api.DocumentStatus.draft
+          ..total = '1.0000',
+      ),
+    );
+
+    expect(row.customerName, 'Ana Pérez');
   });
 }

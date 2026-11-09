@@ -7975,6 +7975,12 @@ abstract class AppLocalizations {
   /// **'Payment ticket · #{id}'**
   String documentPaymentTicketTitle(int id);
 
+  /// spec 057: title of the refund receipt preview
+  ///
+  /// In en, this message translates to:
+  /// **'Refund receipt · #{id}'**
+  String documentRefundReceiptTitle(int id);
+
   /// spec 056: Sales navigation entry and list title for credit notes
   ///
   /// In en, this message translates to:
@@ -8202,6 +8208,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Order'**
   String get refundsFilterOrder;
+
+  /// spec 057 mbe-api#285: hint of the Refunds list search box (matches refund folio, order number or customer name)
+  ///
+  /// In en, this message translates to:
+  /// **'Folio, order or customer…'**
+  String get refundsSearchHint;
+
+  /// spec 057 mbe-api#285: switch limiting the Refunds list to refunds the user created or last updated
+  ///
+  /// In en, this message translates to:
+  /// **'Only my refunds'**
+  String get refundsFilterMine;
 
   /// spec 057: Refunds status filter: no filter
   ///

@@ -114,10 +114,12 @@ class CreditNotesListScreen extends ConsumerWidget {
                       DataTableColumn(
                         label: l10n.creditNotesColumnCustomer,
                         size: ColumnSize.M,
-                        // No name arrives with a credit note, so each row
-                        // resolves its customer once (spec 056 R9).
-                        cellBuilder: (context, n) =>
-                            PaymentCustomerName(customerId: n.customerId),
+                        // The server's name; only a note with none falls back
+                        // to a per-customer lookup, as on Pagos.
+                        cellBuilder: (context, n) => PaymentCustomerName(
+                          customerId: n.customerId,
+                          name: n.customerName,
+                        ),
                       ),
                       DataTableColumn(
                         label: l10n.creditNotesColumnOrigin,

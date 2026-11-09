@@ -16,9 +16,11 @@ import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
+import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
+import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
@@ -44,8 +46,8 @@ const refundsPath = '/sales/refunds';
 /// devolución" button starts a refund from an order number and exists only
 /// for a user who can create one.
 ///
-/// There is no search box: `GET /customer-refunds` has no free-text
-/// parameter (constitution §VI).
+/// The search box matches a refund's folio, its order number or the
+/// customer's name (mbe-api#285).
 class RefundsListScreen extends ConsumerWidget {
   const RefundsListScreen({super.key, required this.query});
 
@@ -71,6 +73,21 @@ class RefundsListScreen extends ConsumerWidget {
       spacing: spacing.fieldGapVertical,
       children: [
         CatalogFilterBar(
+          search: CatalogSearchBar(
+            key: const Key('refunds_search_field'),
+            label: l10n.refundsSearchHint,
+            searchTooltip: l10n.searchButtonTooltip,
+            initialValue: filter.query,
+            onSubmitted: (value) => submitCatalogSearch(
+              context: context,
+              query: query,
+              path: refundsPath,
+              submitted: value,
+              current: filter.query,
+              refresh: () =>
+                  ref.invalidate(refundsListControllerProvider(filter)),
+            ),
+          ),
           actions: [
             if (canCreate)
               FilledButton.icon(
@@ -143,10 +160,11 @@ class RefundsListScreen extends ConsumerWidget {
                           size: ColumnSize.L,
                           cellBuilder: (context, r) => r.customerId == null
                               ? const Text(emptyValuePlaceholder)
-                              // simplified: one lookup per distinct customer; map customer_display_name when mbe-api#284 ships
+                              // The server's name; only a refund with none falls
+                              // back to a per-customer lookup, as on Pagos.
                               : PaymentCustomerName(
                                   customerId: r.customerId!,
-                                  name: null,
+                                  name: r.customerName,
                                 ),
                         ),
                       DataTableColumn(
@@ -276,7 +294,7 @@ class _OrderCell extends ConsumerWidget {
   }
 }
 
-/// The drawer's facets: status, customer and order number. Each change writes
+/// The drawer's facets: status, customer, order number and own refunds. Each change writes
 /// the URL and returns to the first page.
 class _RefundsFiltersPanel extends ConsumerWidget {
   const _RefundsFiltersPanel({required this.query});
@@ -351,6 +369,13 @@ class _RefundsFiltersPanel extends ConsumerWidget {
               goTo(query.withFacet('order', order?.toString()));
             }
           },
+        ),
+        SwitchListTile(
+          key: const Key('refunds_mine_filter'),
+          contentPadding: EdgeInsets.zero,
+          title: Text(l10n.refundsFilterMine),
+          value: filter.mine,
+          onChanged: (on) => goTo(query.withFacet('mine', on ? '1' : null)),
         ),
       ],
     );

@@ -27,12 +27,12 @@ These were drawn **after** the plan, as spec 056's were. The answers are folded 
 - **Filter row:** `CatalogFilterBar` shows the badge and the active facet chips. "Nueva devolución" is a `FilledButton.icon` in the bar's trailing slot, shown only with `can(customerRefunds, create)` (FR-002). There is no search slot until mbe-api#285.
 - **Table:** `DataTableView<CustomerRefundSummary>` with `CatalogPagination` (FR-013).
   - **Folio and Fecha:** "—" for a draft.
-  - **Cliente:** `PaymentCustomerName`. It shows "…" while the name loads and `#id` if the lookup fails (R7, interim #284).
+  - **Cliente:** `PaymentCustomerName`. It shows the server's name, and falls back to a lookup ("…" while loading, `#id` if it fails) only for a missing name (R7).
   - **Pedido:** a link through `orderLinkTargetProvider` (FR-015).
   - **Estado:** a `StatusChip<RefundStatus>`.
   - **Total:** right-aligned and never truncated.
 - **Interaction:** a row tap opens `/sales/refunds/{id}`. There is no row Edit icon.
-- **Order:** newest first, the server's order, until #285.
+- **Order:** the server's order, open refunds first and then newest (#285).
 
 ### State: filter sheet
 
@@ -184,12 +184,12 @@ These were drawn **after** the plan, as spec 056's were. The answers are folded 
 
 - **Read-only:** "Por dev." is dropped because it no longer means anything on a completed refund, and the quantity column is renamed "Devuelto" (FR-010).
 - **Adjustment banner:** shown only right after a confirm that changed quantities (FR-011).
-- **Payout line** (FR-017, R6 interim #286):
+- **Payout line** (FR-017, R6, from the refund's `payout`):
   - "Pagada en efectivo";
   - "Nota de crédito Nº {n}", which links to the payment detail;
   - "Forma de pago no disponible" when the refund has no customer.
   - It shows "…" while the lookup runs.
-- **Print:** there is no print action until mbe-api#287. Once it ships, an `OutlinedButton.icon` "Imprimir" sits right-aligned on the payout row (FR-018).
+- **Print:** an `OutlinedButton.icon` "Imprimir" sits right-aligned on the payout row (FR-018; mbe-api#287 shipped).
 
 ### State: cancelled
 

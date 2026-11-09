@@ -88,7 +88,7 @@ They are shown only when `sale.isPaid`, `can(customerRefunds, create)` and `can(
 |---|---|---|
 | Confirmar devolución | `refund_confirm_button` | draft, `can(customerRefundConfirm, update)`, `hasReturn` |
 | Cancelar devolución | `refund_cancel_button` | draft, `can(customerRefunds, update)`. Asks for confirmation first |
-| Imprimir | `refund_print_button` | completed. Built only after mbe-api#287 (R10) |
+| Imprimir | `refund_print_button` | completed, with `can(customerRefunds, read)` (R10). Opens the receipt preview |
 
 **Failures:** a failed confirm or cancel shows an `ErrorBanner` above the actions with the server's detail, and leaves the refund as it was. This covers the server's 409s for units on a live invoice and for no returnable lines (R3).
 

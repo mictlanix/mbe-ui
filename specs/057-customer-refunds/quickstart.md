@@ -28,9 +28,8 @@ flutter test integration_test/customer_refunds_quickstart_test.dart -d macos --d
 8. **Cancel.** Open a new draft refund and cancel it. It shows as cancelled, and no actions remain.
 9. **List filters.** Filter Devoluciones by Abiertas, by the customer, and by the order number. Only matching rows remain.
 10. **Access.** Sign in as `qanoaccess`. Devoluciones is not in the nav, `/sales/refunds` redirects, and no "Devolver" shows on orders.
+11. **Payout line.** A completed refund shows the payout the server reports: cash, a credit note number (linked to its payment with Customer Payments read), or "no disponible" for a legacy refund.
+12. **Print the receipt.** Open a completed refund (prefer one paid as a credit note) and tap "Imprimir" on the payout row. The preview opens a PDF titled with the refund. Open and cancelled refunds, and users without Customer Refunds read, show no button. The live test checks this read-only on an existing refund; with `MBE_REFUND_CONFIRM=1` it also prints the refund it just confirmed (step 12b).
+13. **Walk-in redemption (manual).** For a credit-note refund, take the printed ticket number (or scan its barcode) to the point of sale and redeem the note as a payment. This is a manual check; the live test does not cover it.
 
-Without the opt-in, the live test runs steps 1 to 4 and 8 to 10, then cancels the draft it opened, so the tenant is left as it was.
-
-## Not covered yet
-
-Printing (User Story 3) waits for mbe-api#287.
+Without the opt-in, the live test runs steps 1 to 4, 8 to 9, 11, 12 and 10, then cancels the draft it opened, so the tenant is left as it was.

@@ -20,6 +20,7 @@ import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/data/customer_refund_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/customer_refund.dart';
@@ -46,7 +47,11 @@ const _adminUser = String.fromEnvironment('MBE_POS_USERNAME');
 const _adminPass = String.fromEnvironment('MBE_POS_PASSWORD');
 const _noAccessUser = String.fromEnvironment('MBE_TEST_USERNAME');
 const _noAccessPass = String.fromEnvironment('MBE_TEST_PASSWORD');
-const _confirmSteps = bool.fromEnvironment('MBE_REFUND_CONFIRM');
+// `bool.fromEnvironment` is only true for the value `true`, and the docs say
+// `MBE_REFUND_CONFIRM=1`, so accept both.
+const _confirmSteps =
+    bool.fromEnvironment('MBE_REFUND_CONFIRM') ||
+    String.fromEnvironment('MBE_REFUND_CONFIRM') == '1';
 
 const _wide = Size(1400, 1000);
 
@@ -200,7 +205,15 @@ void main() {
       'QS: fixture order ${fx.orderId}, order line ${fx.orderLineId}, '
       'refundable ${fx.refundable}',
     );
-    final session = await cashSessions.getCurrent();
+    var session = await cashSessions.getCurrent();
+    if (_confirmSteps && session.state == SessionState.none) {
+      // Confirming a refund needs the admin's own open session. It is left
+      // open afterwards, as the credit-notes redemption walkthrough does.
+      final opened = await cashSessions.open(openingAmount: '0');
+      // ignore: avoid_print
+      print('QS: opened cash session ${opened.cashSessionId} (left open)');
+      session = await cashSessions.getCurrent();
+    }
     // ignore: avoid_print
     print('QS: cash session valid=${session.isValid}');
 
@@ -297,6 +310,10 @@ void main() {
       // mbe-api#209) is read as a register sale, so it opens in the POS
       // detail view instead of Pedidos; both carry the same button.
       final origin = (await orders.getById(saleId: orderId)).origin;
+      // `/sales/pos/:saleId` has no page key, so going straight from one sale
+      // to another keeps the old sale loaded (mbe-ui#231): hop via the list.
+      await go('/sales/pos');
+      await pumpFor(const Duration(seconds: 1));
       await go(
         origin == SaleOrigin.backOffice
             ? '/sales/orders/$orderId'
@@ -327,10 +344,23 @@ void main() {
         );
       }
       await tester.tap(byKey('order_refund_button').hitTestable());
-      await pumpUntilTrue(
-        () => refundIdAtLocation() != null,
-        'the refund screen',
-      );
+      try {
+        await pumpUntilTrue(
+          () => refundIdAtLocation() != null,
+          'the refund screen',
+          timeout: const Duration(seconds: 40),
+        );
+      } on TestFailure {
+        final messages = find
+            .descendant(of: find.byType(SnackBar), matching: find.byType(Text))
+            .evaluate()
+            .map((e) => (e.widget as Text).data ?? '')
+            .toList();
+        throw TestFailure(
+          'Devolver on order $orderId did not open a refund at '
+          '${location()}; snackbar: $messages',
+        );
+      }
       await pumpUntilTrue(
         () => byKey('refund_lines_table').evaluate().isNotEmpty && !spinning(),
         'refund lines',
@@ -344,6 +374,29 @@ void main() {
       await tester.enterText(byKey('refund_line_qty_$lineId'), value);
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await pumpFor(const Duration(milliseconds: 1500));
+    }
+
+    /// Sets a quantity and waits until the server has it and the confirm
+    /// button is on screen: the write waits out the commit debounce and a
+    /// slow dev backend, so a fixed pause is not enough.
+    Future<void> setQuantityAndWait(
+      int refundId,
+      int lineId,
+      String value,
+    ) async {
+      await setQuantity(lineId, value);
+      final want = qty(value);
+      final end = DateTime.now().add(const Duration(seconds: 20));
+      do {
+        final refund = await refunds.getById(refundId);
+        final line = refund.lines.firstWhere((l) => l.id == lineId);
+        if (qty(line.quantity) == want) break;
+        await pumpFor(const Duration(milliseconds: 500));
+      } while (DateTime.now().isBefore(end));
+      await pumpUntilTrue(
+        () => byKey('refund_confirm_button').evaluate().isNotEmpty,
+        'the confirm button',
+      );
     }
 
     Future<void> confirmAs(String payoutKey) async {
@@ -431,6 +484,41 @@ void main() {
     await login(_adminUser, _adminPass);
 
     int? draftId;
+
+    /// On a completed refund's screen: tap Imprimir and check the preview
+    /// rasterized a PDF (`document_preview_pages` only builds from a body the
+    /// document source accepted as `%PDF-`), then close it.
+    Future<void> printReceiptFromDetail(int refundId) async {
+      await pumpUntilTrue(
+        () =>
+            byKey('refund_print_button').hitTestable().evaluate().isNotEmpty &&
+            !spinning(),
+        'the Imprimir button of refund $refundId',
+      );
+      await tester.tap(byKey('refund_print_button').hitTestable());
+      await pumpUntilTrue(
+        () =>
+            byKey('document_preview_pages').evaluate().isNotEmpty ||
+            byKey('document_preview_retry').evaluate().isNotEmpty,
+        'the receipt preview',
+        timeout: const Duration(seconds: 40),
+      );
+      expect(
+        byKey('document_preview_retry'),
+        findsNothing,
+        reason: 'the receipt of refund $refundId failed to load',
+      );
+      expect(
+        tester.widget<Text>(byKey('document_preview_title')).data,
+        l10n.documentRefundReceiptTitle(refundId),
+      );
+      expect(byKey('document_print'), findsOneWidget);
+      await tester.tap(byKey('document_preview_close'));
+      await pumpUntilTrue(
+        () => byKey('document_preview_surface').evaluate().isEmpty,
+        'the preview to close',
+      );
+    }
 
     await step('1. Devolver opens a draft refund, lines at 0', () async {
       draftId = await tapDevolver(fx.orderId);
@@ -665,6 +753,42 @@ void main() {
       expect(find.text('#${fx.orderId}'), findsWidgets);
       expect(byOrder.items.every((r) => r.salesOrderId == fx.orderId), isTrue);
       await closeFilterSheet();
+
+      // The search box, by the same order number: only rows the server says
+      // match remain (a number matches refund id, folio or source order id).
+      await go('/sales/refunds');
+      await pumpUntilTrue(
+        () => byKey('refunds_table').evaluate().isNotEmpty && !spinning(),
+        'the refunds table',
+      );
+      await tester.enterText(
+        find.descendant(
+          of: byKey('refunds_search_field'),
+          matching: find.byType(TextField),
+        ),
+        '${fx.orderId}',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await pumpFor(const Duration(seconds: 1));
+      expect(router().state.uri.queryParameters['search'], '${fx.orderId}');
+      final bySearch = await refunds.list(
+        search: '${fx.orderId}',
+        skip: 0,
+        limit: 20,
+      );
+      expect(
+        bySearch.items.every(
+          (r) =>
+              r.salesOrderId == fx.orderId ||
+              r.id == fx.orderId ||
+              r.serial == fx.orderId,
+        ),
+        isTrue,
+        reason: 'the server returned a row that does not match the number',
+      );
+      expect(bySearch.items.map((r) => r.id), contains(draftId));
+      await waitForList(bySearch.items.length, 'search ${fx.orderId}');
+      expect(find.text('#${fx.orderId}'), findsWidgets);
     });
 
     await step('8. cancel a draft through the UI', () async {
@@ -691,7 +815,7 @@ void main() {
         // Step 8 cancelled the first draft: open another and fill it.
         draftId = await tapDevolver(fx.orderId);
         final lineId = fx.lineOf(await refunds.getById(draftId!)).id;
-        await setQuantity(lineId, '1');
+        await setQuantityAndWait(draftId!, lineId, '1');
         await confirmAs('refund_payout_cash');
         await pumpUntilTrue(
           () => byKey('refund_status_chip_completed').evaluate().isNotEmpty,
@@ -716,12 +840,20 @@ void main() {
         }
         final second = fixtures[1];
         final id = await tapDevolver(second.orderId);
-        final secondLine = second.lineOf(await refunds.getById(id)).id;
+        final opened = await refunds.getById(id);
+        expect(
+          opened.salesOrderId,
+          second.orderId,
+          reason:
+              'Devolver on order ${second.orderId} opened refund $id of '
+              'order ${opened.salesOrderId}',
+        );
+        final secondLine = second.lineOf(opened).id;
         await pumpUntilTrue(
           () => byKey('refund_line_qty_$secondLine').evaluate().isNotEmpty,
           'the stepper',
         );
-        await setQuantity(secondLine, '1');
+        await setQuantityAndWait(id, secondLine, '1');
         await confirmAs('refund_payout_credit_note');
         await pumpUntilTrue(
           () => byKey('refund_status_chip_completed').evaluate().isNotEmpty,
@@ -740,10 +872,107 @@ void main() {
         final refund = await refunds.getById(id);
         expect(refund.status, RefundStatus.completed);
       });
+
+      await step('12b. print the refund just confirmed', () async {
+        final id = refundIdAtLocation();
+        if (id == null) {
+          // ignore: avoid_print
+          print('QS-STEP SKIP 12b. step 6 or 7 left no refund on screen');
+          return;
+        }
+        expect((await refunds.getById(id)).status, RefundStatus.completed);
+        await printReceiptFromDetail(id);
+      });
     } else {
       // ignore: avoid_print
-      print('QS-STEP SKIP 6-7. pass --dart-define=MBE_REFUND_CONFIRM=1');
+      print('QS-STEP SKIP 6-7, 12b. pass --dart-define=MBE_REFUND_CONFIRM=1');
     }
+
+    await step(
+      '11. a completed refund shows the payout the server reports',
+      () async {
+        final completed = await refunds.list(
+          status: RefundStatus.completed,
+          skip: 0,
+          limit: 50,
+        );
+        // One refund per kind of payout: the screen reads `payout` as it comes.
+        final byKind = <String, CustomerRefund>{};
+        for (final row in completed.items) {
+          final refund = await refunds.getById(row.id);
+          final kind = switch (refund.outcome) {
+            RefundOutcomeCash() => 'cash',
+            RefundOutcomeCreditNote() => 'credit note',
+            _ => 'no disponible',
+          };
+          byKind.putIfAbsent(kind, () => refund);
+          if (byKind.length == 3) break;
+        }
+        if (byKind.isEmpty) {
+          // ignore: avoid_print
+          print('QS-STEP SKIP 11. no completed refund at this tenant');
+          return;
+        }
+        for (final MapEntry(key: kind, value: refund) in byKind.entries) {
+          // ignore: avoid_print
+          print('QS: refund ${refund.id} is $kind (payout=${refund.payout})');
+          await go('/sales/refunds/${refund.id}');
+          await pumpUntilTrue(
+            () =>
+                byKey('refund_payout_line').evaluate().isNotEmpty &&
+                !spinning(),
+            'the payout line of refund ${refund.id}',
+          );
+          Finder inLine(String text) => find.descendant(
+            of: byKey('refund_payout_line'),
+            matching: find.text(text),
+          );
+          switch (refund.outcome) {
+            case RefundOutcomeCash():
+              expect(inLine(l10n.refundPayoutLineCash), findsOneWidget);
+              expect(byKey('refund_payout_link'), findsNothing);
+            case RefundOutcomeCreditNote(:final customerPaymentId):
+              expect(
+                inLine(l10n.refundPayoutLineCreditNote(customerPaymentId)),
+                findsOneWidget,
+              );
+              expect(byKey('refund_payout_link'), findsOneWidget);
+            default:
+              expect(inLine(l10n.refundPayoutLineUnknown), findsOneWidget);
+              expect(byKey('refund_payout_link'), findsNothing);
+          }
+        }
+      },
+    );
+
+    await step(
+      '12. a completed refund prints its receipt (read-only)',
+      () async {
+        final completed = await refunds.list(
+          status: RefundStatus.completed,
+          skip: 0,
+          limit: 50,
+        );
+        CustomerRefund? target;
+        for (final row in completed.items) {
+          final refund = await refunds.getById(row.id);
+          if (refund.outcome is RefundOutcomeCreditNote) {
+            target = refund;
+            break;
+          }
+          target ??= refund;
+        }
+        if (target == null) {
+          // ignore: avoid_print
+          print('QS-STEP SKIP 12. no completed refund at this tenant');
+          return;
+        }
+        // ignore: avoid_print
+        print('QS: printing refund ${target.id} (outcome=${target.outcome})');
+        await go('/sales/refunds/${target.id}');
+        await printReceiptFromDetail(target.id);
+      },
+    );
 
     await step('10. the no-access account sees no Devoluciones and no '
         'Devolver', () async {

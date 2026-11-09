@@ -9,6 +9,9 @@ import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/documents/domain/document_kind.dart';
+import 'package:mbe_ui/core/documents/domain/document_ref.dart';
+import 'package:mbe_ui/core/documents/presentation/document_actions.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
@@ -27,7 +30,6 @@ import 'package:mbe_ui/features/sales/presentation/payments/payment_widgets.dart
 import 'package:mbe_ui/features/sales/presentation/refunds/refund_confirm_dialog.dart';
 import 'package:mbe_ui/features/sales/presentation/refunds/refund_editor_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/refunds/refund_line_block.dart';
-import 'package:mbe_ui/features/sales/presentation/refunds/refund_outcome_provider.dart';
 import 'package:mbe_ui/features/sales/presentation/refunds/refunds_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/widgets/quantity_stepper.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -360,7 +362,7 @@ class _RefundBodyState extends ConsumerState<_RefundBody> {
                     ? Text(l10n.refundNoValue)
                     : PaymentCustomerName(
                         customerId: refund.customerId!,
-                        name: null,
+                        name: refund.customerName,
                       ),
               ),
               CompactField(
@@ -734,33 +736,28 @@ class _PayoutLine extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final access = ref.watch(accessControlProvider);
-    final outcome = ref.watch(refundOutcomeProvider(refund));
 
-    final Widget value = outcome.when(
-      loading: () => const Text('…'),
-      error: (_, _) => Text(l10n.refundPayoutLineUnknown),
-      data: (o) => switch (o) {
-        RefundOutcomeCash() => Text(l10n.refundPayoutLineCash),
-        RefundOutcomeUnknown() || null => Text(l10n.refundPayoutLineUnknown),
-        RefundOutcomeCreditNote(:final note) =>
-          access.can(SystemObject.customerPayments, AccessRight.read)
-              ? TextButton(
-                  key: const Key('refund_payout_link'),
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-                  onPressed: () =>
-                      context.push('/sales/payments/${note.customerPaymentId}'),
-                  child: Text(
-                    l10n.refundPayoutLineCreditNote(note.customerPaymentId),
-                  ),
-                )
-              : Text(l10n.refundPayoutLineCreditNote(note.customerPaymentId)),
-      },
-    );
+    final Widget value = switch (refund.outcome) {
+      RefundOutcomeCash() => Text(l10n.refundPayoutLineCash),
+      RefundOutcomeUnknown() || null => Text(l10n.refundPayoutLineUnknown),
+      RefundOutcomeCreditNote(:final customerPaymentId) =>
+        access.can(SystemObject.customerPayments, AccessRight.read)
+            ? TextButton(
+                key: const Key('refund_payout_link'),
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                onPressed: () =>
+                    context.push('/sales/payments/$customerPaymentId'),
+                child: Text(l10n.refundPayoutLineCreditNote(customerPaymentId)),
+              )
+            : Text(l10n.refundPayoutLineCreditNote(customerPaymentId)),
+    };
 
+    // spec 057 FR-018: the receipt, right-aligned on this row, only for a
+    // completed refund and only with Customer Refunds read.
     return Row(
       key: const Key('refund_payout_line'),
       children: [
@@ -769,6 +766,24 @@ class _PayoutLine extends ConsumerWidget {
           style: theme.textTheme.bodyMedium,
         ),
         Flexible(child: value),
+        if (canOpenDocument(access, DocumentKind.customerRefundReceipt)) ...[
+          const Spacer(),
+          OutlinedButton.icon(
+            key: const Key('refund_print_button'),
+            onPressed: () => ref
+                .read(documentActionsProvider)
+                .preview(
+                  context,
+                  DocumentRef(
+                    kind: DocumentKind.customerRefundReceipt,
+                    recordId: refund.id,
+                    title: l10n.documentRefundReceiptTitle(refund.id),
+                  ),
+                ),
+            icon: const Icon(Icons.print_outlined),
+            label: Text(l10n.documentPrintAction),
+          ),
+        ],
       ],
     );
   }

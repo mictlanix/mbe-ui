@@ -42,7 +42,7 @@ From `CustomerRefundLineResponse`.
 
 ## CustomerRefundSummary (list row)
 
-From `CustomerRefundSummary`: `id`, `salesOrderId`, `customerId?`, `serial?`, `date?`, `currency`, `status`, `total`. When mbe-api#284 ships it gains `customerName?`.
+From `CustomerRefundSummary`: `id`, `salesOrderId`, `customerId?`, `serial?`, `date?`, `currency`, `status`, `total`. It also has `customerName?`, from the server's `customer_display_name`.
 
 ## RefundStatus (enum)
 
@@ -60,13 +60,13 @@ draft ──confirm(payout)──▶ completed   (folio, date assigned; read-onl
 
 ## RefundOutcome (presentation state, freezed)
 
-What a completed refund shows about its payout (R6). It is interim until mbe-api#286.
+What a completed refund shows about its payout (R6), read from the refund's `payout` and `customerPaymentId` through `CustomerRefund.outcome`. `creditNote` carries the backing payment's id, which is the ticket number.
 
 | Variant | Shown as |
 |---|---|
 | `cash` | "Pagada en efectivo" |
-| `creditNote(CreditNote note)` | "Nota de crédito Nº {note.customerPaymentId}", linked to the note |
-| `unknown` | "Forma de pago no disponible" (refund has no customer, or the lookup failed) |
+| `creditNote(int customerPaymentId)` | "Nota de crédito Nº {customerPaymentId}", linked to that payment |
+| `unknown` | "Forma de pago no disponible" (the refund has no payout, such as a legacy one that only reduced an unpaid order) |
 
 ## RefundRefusal (enum, presentation)
 

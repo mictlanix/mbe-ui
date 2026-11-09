@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:mbe_api_client/mbe_api_client.dart' hide ValidationError;
+import 'package:mbe_api_client/mbe_api_client.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';

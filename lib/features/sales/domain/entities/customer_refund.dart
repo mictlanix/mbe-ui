@@ -2,7 +2,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/domain/currency.dart';
-import 'package:mbe_ui/features/sales/domain/entities/credit_note.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 
@@ -39,17 +38,23 @@ enum RefundPayout {
     RefundPayout.cash => api.RefundPayout.cash,
     RefundPayout.creditNote => api.RefundPayout.creditNote,
   };
+
+  static RefundPayout fromApi(api.RefundPayout value) => switch (value) {
+    api.RefundPayout.cash => RefundPayout.cash,
+    _ => RefundPayout.creditNote,
+  };
 }
 
 /// Why a refund cannot be opened, derived on the client (spec 057 R3).
 enum RefundRefusal { orderNotFound, notCompleted, notPaid, nothingToReturn }
 
-/// What a completed refund shows about its payout (spec 057 R6). Interim
-/// until mbe-api#286.
+/// What a completed refund shows about its payout (spec 057 R6), read from the
+/// refund's own `payout` field. [creditNote] carries the backing payment's id,
+/// which is the ticket number.
 @freezed
 sealed class RefundOutcome with _$RefundOutcome {
   const factory RefundOutcome.cash() = RefundOutcomeCash;
-  const factory RefundOutcome.creditNote(CreditNote note) =
+  const factory RefundOutcome.creditNote(int customerPaymentId) =
       RefundOutcomeCreditNote;
   const factory RefundOutcome.unknown() = RefundOutcomeUnknown;
 }
@@ -112,8 +117,12 @@ abstract class CustomerRefund with _$CustomerRefund {
     required int id,
     required int salesOrderId,
 
-    /// Null means no customer; the payout lookup is not possible then (R6).
     int? customerId,
+
+    /// The customer's name as the server joins it on, so no per-customer
+    /// lookup is needed (mbe-api#284). `null` only when the customer row is
+    /// missing; a blank name is treated the same way.
+    String? customerName,
     required int salesPersonId,
     required int facilityId,
 
@@ -128,6 +137,16 @@ abstract class CustomerRefund with _$CustomerRefund {
     required String subtotal,
     required String taxTotal,
     required String total,
+
+    /// How the refund was paid out. `null` until confirmed, and for a legacy
+    /// refund that only reduced an unpaid order's balance (mbe-api#286).
+    RefundPayout? payout,
+
+    /// For a credit-note payout, the note's backing payment: the ticket
+    /// number. For a cash payout it is the negative cash payment, which is
+    /// not a ticket and must never be linked.
+    int? customerPaymentId,
+    int? creditNoteId,
   }) = _CustomerRefund;
 
   factory CustomerRefund.fromResponse(api.CustomerRefundResponse r) =>
@@ -135,6 +154,7 @@ abstract class CustomerRefund with _$CustomerRefund {
         id: r.customerRefundId,
         salesOrderId: r.salesOrder,
         customerId: r.customer,
+        customerName: _nonBlank(r.customerDisplayName),
         salesPersonId: r.salesPerson,
         facilityId: r.facility,
         serial: r.serial,
@@ -147,13 +167,32 @@ abstract class CustomerRefund with _$CustomerRefund {
         subtotal: r.subtotal,
         taxTotal: r.taxTotal,
         total: r.total,
+        payout: r.payout == null ? null : RefundPayout.fromApi(r.payout!),
+        customerPaymentId: r.customerPayment,
+        creditNoteId: r.creditNote,
       );
 
   bool get isDraft => status == RefundStatus.draft;
 
   /// Whether any line's return quantity is above zero. Gates confirm (FR-008).
   bool get hasReturn => lines.any((l) => !isZeroAmount(l.quantity));
+
+  /// How a completed refund was paid out, or `null` for a draft or cancelled
+  /// one. [RefundOutcome.unknown] for a completed refund with no payout, or a
+  /// credit-note payout with no backing payment id.
+  RefundOutcome? get outcome {
+    if (status != RefundStatus.completed) return null;
+    return switch (payout) {
+      RefundPayout.cash => const RefundOutcome.cash(),
+      RefundPayout.creditNote when customerPaymentId != null =>
+        RefundOutcome.creditNote(customerPaymentId!),
+      _ => const RefundOutcome.unknown(),
+    };
+  }
 }
+
+String? _nonBlank(String? value) =>
+    value == null || value.trim().isEmpty ? null : value;
 
 /// One row of the refunds list, mapped from `CustomerRefundSummary`.
 @freezed
@@ -162,6 +201,9 @@ abstract class CustomerRefundSummary with _$CustomerRefundSummary {
     required int id,
     required int salesOrderId,
     int? customerId,
+
+    /// The customer's name as the server joins it on (mbe-api#284).
+    String? customerName,
     int? serial,
     DateTime? date,
     required Currency currency,
@@ -174,6 +216,7 @@ abstract class CustomerRefundSummary with _$CustomerRefundSummary {
         id: r.customerRefundId,
         salesOrderId: r.salesOrder,
         customerId: r.customer,
+        customerName: _nonBlank(r.customerDisplayName),
         serial: r.serial,
         date: r.date,
         currency: currencyFromApi(r.currency),

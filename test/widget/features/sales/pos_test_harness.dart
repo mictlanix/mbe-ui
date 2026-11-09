@@ -692,12 +692,16 @@ CustomerRefund testRefund({
   RefundStatus status = RefundStatus.draft,
   int? serial,
   int? customerId = 7,
+  String? customerName,
   List<RefundLine>? lines,
   String total = '0.00',
+  RefundPayout? payout,
+  int? customerPaymentId,
 }) => CustomerRefund(
   id: id,
   salesOrderId: 42,
   customerId: customerId,
+  customerName: customerName,
   salesPersonId: 100,
   facilityId: 9,
   serial: serial,
@@ -708,6 +712,8 @@ CustomerRefund testRefund({
   subtotal: total,
   taxTotal: '0.00',
   total: total,
+  payout: payout,
+  customerPaymentId: customerPaymentId,
 );
 
 /// spec 056: a non-administrator holding the two privileges the credit tiles

@@ -106,6 +106,25 @@ void main() {
       expect(seen.queryParameters.containsKey('sales_order'), isFalse);
     });
 
+    test('sends search and mine only when set', () async {
+      final seen = <RequestOptions>[];
+      final repository = _repositoryWith((options) async {
+        seen.add(options);
+        return _json({'items': <Object>[], 'total': 0});
+      });
+
+      await repository.list(skip: 0, limit: 20);
+      await repository.list(search: '', skip: 0, limit: 20);
+      await repository.list(search: 'ana', mine: true, skip: 0, limit: 20);
+
+      for (final plain in seen.take(2)) {
+        expect(plain.queryParameters.containsKey('search'), isFalse);
+        expect(plain.queryParameters.containsKey('mine'), isFalse);
+      }
+      expect(seen.last.queryParameters['search'], 'ana');
+      expect(seen.last.queryParameters['mine'], true);
+    });
+
     test('each status filter sends its wire name', () async {
       final sent = <Object?>[];
       final repository = _repositoryWith((options) async {

@@ -4,7 +4,7 @@
 
 **Input**: Feature specification from `/specs/057-customer-refunds/spec.md`
 
-Roadmap: Closes mictlanix/mbe-roadmap#29 · Upstream: mbe-api#284, #285, #286, #287 (filed 2026-10-28, open)
+Roadmap: Closes mictlanix/mbe-roadmap#29 · Upstream: mbe-api#283 to #287 (filed 2026-10-28, all shipped 2026-11-04; the client was regenerated in `675ca26`)
 
 ## Summary
 
@@ -15,14 +15,14 @@ Clerks refund returned goods from a paid order. A refund can be started from "De
 - They set return quantities and warehouses. Each change is saved to the server, and totals come back from it.
 - They confirm, choosing cash or a credit note.
 
-Confirmed refunds show how the money went back. The credit-notes list links each note to its refund. Printing waits for mbe-api#287.
+Confirmed refunds show how the money went back. The credit-notes list links each note to its refund. Printing uses the receipt mbe-api#287 shipped.
 
 **Technical approach:**
 - **Data:** a new `CustomerRefundRepository` over the generated `CustomerRefundsApi`, mapped to freezed entities.
 - **Starting a refund:** a shared `openOrResume` lists the order's drafts, then checks the order, then opens one (R2). Refusals are classified from the order's own status, not from server prose (R3).
 - **Editing:** the detail screen reuses the stepper, warehouse picker, and `tracked()` write patterns from the sale editor (R4).
 - **Confirming:** a cash-session pre-check, then a dialog with no default payout (R5).
-- **Interim workarounds**, each marked `// simplified`: per-row customer names (R7, #284), and a credit-note lookup by refund (R6, #286).
+- **Server fields:** customer names, the payout, the payment and the credit note, the list's search and own-refunds filter, and the receipt all come from mbe-api (#283 to #287). The interim per-row name lookup and credit-note scan were removed (Phase 7).
 
 ## Technical Context
 
@@ -66,10 +66,10 @@ These verdicts are against **v1.14.0**.
 |---|---|---|
 | **I. Feature-first layering** | Pass | Everything is in `features/sales/{domain,data,presentation}`. Presentation reaches data only through `customerRefundRepositoryProvider` and `creditNoteRepositoryProvider`. |
 | **II. Riverpod** | Pass | The list controller is a family keyed by `RefundsFilter`, and the URL is its state. `RefundEditor` is an `AsyncNotifier` with the mutations. `refundOutcomeProvider` is a read-only `FutureProvider.family`, the deviation spec 054 recorded for providers with no mutation method. |
-| **III. Contract-driven API** | Pass | Only generated operations, mapped to freezed entities. Each server gap is filed upstream (mbe-api#284 to #287), not patched. The two interim workarounds carry `// simplified` markers. Printing is not hand-written against a missing endpoint (R10). |
+| **III. Contract-driven API** | Pass | Only generated operations, mapped to freezed entities. Each server gap is filed upstream (mbe-api#284 to #287), not patched. Every gap shipped upstream and is consumed through the regenerated client, with no interim code left. |
 | **IV. Deny-by-default RBAC** | Pass | Routes and nav are gated by CustomerRefunds (22) read. Devolver and Nueva devolución need create and read. Line edits and cancel need update. Confirm needs CustomerRefundConfirm (110) update. Anything a user can't use is hidden. Routes document their objects (C1). |
 | **V. Material 3 / one formatting surface** | Pass | `fmt.display.*` only. Shared components only: `CatalogFilterBar`, `CatalogListStateView`, `DataTableView`, `QuantityStepper`, `showWarehousePicker`, `ResponsiveDialog`, `ErrorBanner`. |
-| **VI. List and record-surface rules** | Pass | The list has a filter row, the table and pagination. The search slot is omitted because the endpoint has none until #285. **Record surface:** a full screen with a per-record URL, because the refund has child lines and is linked from other screens (R1). Actions sit in the body, not the app bar. |
+| **VI. List and record-surface rules** | Pass | The list has a filter row, the table and pagination. The search slot holds a `CatalogSearchBar` (mbe-api#285). **Record surface:** a full screen with a per-record URL, because the refund has child lines and is linked from other screens (R1). Actions sit in the body, not the app bar. |
 | **VII. Online-only** | Pass | Nothing is persisted locally. A receipt, once available, is rendered by the server. |
 | **Quality gates** | Pass | Unit, widget, router and live tests are listed in R12. `flutter analyze` must be clean. |
 
@@ -107,7 +107,7 @@ lib/
 │   │       └── credit_note_repository.dart        # + findByRefund (R6)
 │   ├── data/
 │   │   ├── customer_refund_repository_impl.dart   # NEW
-│   │   ├── credit_note_repository_impl.dart       # + findByRefund (interim, #286)
+│   │   ├── credit_note_repository_impl.dart       # unchanged (findByRefund was removed, Phase 7)
 │   │   └── wire_value_setters.dart                # + Quantity3 setter
 │   └── presentation/
 │       ├── refunds/                               # NEW
@@ -118,7 +118,7 @@ lib/
 │       │   ├── refund_editor_controller.dart      # writes, confirm, cancel, adjustment notice
 │       │   ├── refund_detail_screen.dart
 │       │   ├── refund_confirm_dialog.dart
-│       │   ├── refund_outcome_provider.dart       # RefundOutcome (interim, #286)
+│       │   ├── refund_outcome_provider.dart       # removed in Phase 7: `CustomerRefund.outcome` is synchronous
 │       │   └── refund_line_block.dart             # stacked line block for compact screens (C8)
 │       ├── orders/order_header_panel.dart         # + Devolver
 │       ├── pos_sale_detail_view.dart              # + Devolver
@@ -146,9 +146,9 @@ There are no violations to justify.
 
 | Issue | Effect on this feature | Client stance until it ships |
 |---|---|---|
-| mbe-api#284 (customer names) | The list resolves each customer per row | `PaymentCustomerName` with no name. Map `customer_display_name` when it ships (R7) |
-| mbe-api#285 (search, own filter, ordering) | No search box. No "my refunds". Newest first, not open first | Status, customer and order facets only (R8) |
-| mbe-api#286 (payout on the refund) | The payout is inferred by scanning the customer's credit notes | `findByRefund`, marked `// simplified`. Remove it when the fields ship (R6) |
-| mbe-api#287 (refund receipt) | User Story 3 can't be built | Print tasks gated on it. No hand-written call (R10) |
+| mbe-api#283, #284 (customer names) | **Shipped** | Mapped on refunds and credit notes. `PaymentCustomerName` keeps its lookup only as the fallback for a missing name (R7) |
+| mbe-api#285 (search, own filter, ordering) | **Shipped** | The list has a search box and a "Solo mis devoluciones" switch (off by default), and the server orders open refunds first (R8) |
+| mbe-api#286 (payout on the refund) | **Shipped** | `payout`, `customerPaymentId` and `creditNoteId` are mapped, and the credit-note scan is gone (R6) |
+| mbe-api#287 (refund receipt) | **Shipped** | `DocumentKind.customerRefundReceipt`, printed through the shared document actions (R10) |
 
 **Known gap, not filed**: the server doesn't stop a second draft refund being opened for an order. The client resumes an existing draft (R2), so only a true race leaves a duplicate.

@@ -77,6 +77,8 @@ void main() {
         status: any(named: 'status'),
         customerId: any(named: 'customerId'),
         salesOrderId: any(named: 'salesOrderId'),
+        search: any(named: 'search'),
+        mine: any(named: 'mine'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
@@ -116,6 +118,8 @@ void main() {
         status: null,
         customerId: null,
         salesOrderId: null,
+        search: '',
+        mine: false,
         skip: 0,
         limit: 20,
       ),
@@ -143,7 +147,31 @@ void main() {
         status: RefundStatus.draft,
         customerId: 7,
         salesOrderId: 42,
+        search: '',
+        mine: false,
         skip: 40,
+        limit: 20,
+      ),
+    ).called(1);
+  });
+
+  test('the search text and the mine switch reach the repository', () async {
+    serve([_refund(1)]);
+
+    await containerFor().read(
+      refundsListControllerProvider(
+        const RefundsFilter(query: 'ana', mine: true),
+      ).future,
+    );
+
+    verify(
+      () => repository.list(
+        status: null,
+        customerId: null,
+        salesOrderId: null,
+        search: 'ana',
+        mine: true,
+        skip: 0,
         limit: 20,
       ),
     ).called(1);
@@ -192,6 +220,8 @@ void main() {
         status: any(named: 'status'),
         customerId: any(named: 'customerId'),
         salesOrderId: any(named: 'salesOrderId'),
+        search: any(named: 'search'),
+        mine: any(named: 'mine'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),

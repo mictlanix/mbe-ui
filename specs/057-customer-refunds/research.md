@@ -80,7 +80,9 @@ Any 409/422 that still reaches the screen is shown through the shared `ErrorBann
 
 **Network failure:** after a network error the controller re-reads the refund before re-enabling confirm. If the re-read says completed, it shows the completed refund instead of letting the clerk confirm again (Edge Cases).
 
-## R6. Payout and credit note on a confirmed refund (interim until mbe-api#286)
+## R6. Payout and credit note on a confirmed refund
+
+> **Superseded 2026-11-04.** mbe-api#286 shipped `payout`, `customer_payment` and `credit_note` on the refund, so `findByRefund` and the credit-note scan below were removed. `CustomerRefund.outcome` maps `payout`: cash gives "Pagada en efectivo" and is never linked, a credit note gives its ticket number (`customer_payment`) with a link, and no payout gives "Forma de pago no disponible". A cash payout now also writes a credit note that is already paid back. What follows is the original interim design.
 
 **Decision**: add `CreditNoteRepository.findByRefund({customerId, refundId, refundDate})`. It pages `GET /credit-notes?customer=<id>` newest first and stops at the first of:
 - a note whose `customerRefundId == refundId`, which is a credit-note payout;
@@ -97,7 +99,9 @@ The confirmed refund then shows either "Pagada en efectivo" or "Nota de crédito
 
 **Walk-in customer:** the walk-in (generic) customer is a real customer (`posDefaultCustomerId`), so its refunds take the same scan as any other. Only a refund with no customer at all (`CustomerRefundResponse.customer` is null) can't be looked up, and the detail shows "Forma de pago no disponible" instead of guessing.
 
-## R7. Customer names in the list (interim until mbe-api#284)
+## R7. Customer names in the list
+
+> **Superseded 2026-11-04.** mbe-api#283 and #284 shipped `customer_display_name`. The list and the detail pass it to `PaymentCustomerName(name:)`, which keeps its lookup only as the fallback for a missing name.
 
 **Decision**: reuse `PaymentCustomerName(customerId:, name: null)`, which resolves each customer through `customerDisplayNameProvider`. A null customer shows "—". When #284 ships, map `customerDisplayName` and pass it as `name`, as spec 056 plans to do for #283.
 
@@ -116,7 +120,7 @@ The confirmed refund then shows either "Pagada en efectivo" or "Nota de crédito
 - There is no row Edit icon. A refund opens in its record surface, following the Pagos precedent.
 
 **Order and scope:**
-- Rows come in server order, newest id first, until mbe-api#285 (FR-013).
+- Rows come in the server's order, open refunds first and then newest (mbe-api#285). The list also has a search box and a "Solo mis devoluciones" switch, off by default.
 - The server scopes the list to the caller's facility.
 
 ## R9. Where "Devolver" goes
@@ -127,7 +131,9 @@ The confirmed refund then shows either "Pagada en efectivo" or "Nota de crédito
 
 Both are shown only when `sale.isPaid && can(customerRefunds, create) && can(customerRefunds, read)`, and hidden otherwise (§IV). Read is needed because `openOrResume` lists first.
 
-## R10. Printing (blocked on mbe-api#287)
+## R10. Printing
+
+> **Superseded 2026-11-04.** mbe-api#287 shipped `GET /customer-refunds/{id}/ticket` and the client has it, so printing is built (tasks T038 to T042). The fallback filename is `devolucion-{id padded to 8}.pdf`, the server's own pattern. A refund that isn't confirmed answers 409 `refund.not_confirmed`, so the button stays hidden. What follows is the original plan.
 
 **Decision**: nothing is built until the regenerated client has the refund ticket method. After that ships:
 - add `DocumentKind.customerRefundReceipt(SystemObject.customerRefunds)` with its `DocumentSourceImpl` switch arm and fallback filename `devolucion-{serial}.pdf`;

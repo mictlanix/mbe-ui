@@ -50,9 +50,11 @@ void main() {
     String issued = '27.00',
     String remaining = '3.00',
     int customer = 7,
+    String? name,
   }) => CreditNote(
     id: id,
     customerId: customer,
+    customerName: name,
     salesOrderId: 3000 + id,
     customerRefundId: 4000 + id,
     customerPaymentId: 5000 + id,
@@ -202,6 +204,16 @@ void main() {
     expect(find.text('\$0.00'), findsNWidgets(2));
     expect(find.text(l10n.creditNotesOrigin(4001, 3001)), findsOneWidget);
     expect(find.text(l10n.creditNotesOrigin(4002, 3002)), findsOneWidget);
+  });
+
+  testWidgets('the server\'s customer name is shown; a note with none falls '
+      'back to the lookup', (tester) async {
+    serve([note(1, name: 'Ana López'), note(2, customer: 8)]);
+    await pumpList(tester);
+
+    expect(find.text('Ana López'), findsOneWidget);
+    expect(find.text('Cliente 7'), findsNothing);
+    expect(find.text('Cliente 8'), findsOneWidget);
   });
 
   testWidgets('amounts and origin are never ellipsized', (tester) async {

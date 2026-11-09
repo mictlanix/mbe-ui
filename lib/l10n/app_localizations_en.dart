@@ -4395,6 +4395,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String documentRefundReceiptTitle(int id) {
+    return 'Refund receipt · #$id';
+  }
+
+  @override
   String get creditNotesMenuTitle => 'Credit notes';
 
   @override
@@ -4526,6 +4531,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get refundsFilterOrder => 'Order';
+
+  @override
+  String get refundsSearchHint => 'Folio, order or customer…';
+
+  @override
+  String get refundsFilterMine => 'Only my refunds';
 
   @override
   String get refundsFilterAll => 'All';

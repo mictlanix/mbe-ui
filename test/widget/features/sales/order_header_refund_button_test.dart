@@ -95,6 +95,8 @@ void main() {
     when(
       () => refunds.list(
         salesOrderId: any(named: 'salesOrderId'),
+        search: any(named: 'search'),
+        mine: any(named: 'mine'),
         status: any(named: 'status'),
         customerId: any(named: 'customerId'),
         skip: any(named: 'skip'),

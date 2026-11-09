@@ -11,6 +11,10 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/config/app_settings_provider.dart';
+import 'package:mbe_ui/core/documents/data/document_source_impl.dart';
+import 'package:mbe_ui/core/documents/data/printing_document_output.dart';
+import 'package:mbe_ui/core/documents/domain/document_kind.dart';
+import 'package:mbe_ui/core/documents/presentation/document_preview_dialog.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
@@ -18,7 +22,6 @@ import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/sales/domain/entities/cash_session.dart';
-import 'package:mbe_ui/features/sales/domain/entities/credit_note.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
 import 'package:mbe_ui/features/sales/domain/entities/customer_refund.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/facility_warehouses_controller.dart';
@@ -26,18 +29,9 @@ import 'package:mbe_ui/features/sales/presentation/payments/payment_link_provide
 import 'package:mbe_ui/features/sales/presentation/refunds/refund_detail_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
+import '../../../unit/core/documents/document_fakes.dart';
 import 'pos_test_harness.dart';
 import 'session_override.dart';
-
-const _creditNote = CreditNote(
-  id: 1,
-  customerId: 7,
-  salesOrderId: 42,
-  customerRefundId: 9,
-  customerPaymentId: 300001,
-  issued: '20.00',
-  remaining: '20.00',
-);
 
 CashSession _staleSession() => CashSession(
   cashSessionId: 77,
@@ -54,6 +48,7 @@ Override _access({
   bool update = true,
   bool confirm = true,
   bool paymentsRead = false,
+  bool refundsRead = true,
 }) => accessControlProvider.overrideWithValue(
   AccessControlService(
     AuthState.authenticated(
@@ -67,7 +62,7 @@ Override _access({
         privileges: [
           Privilege(
             systemObject: SystemObject.customerRefunds,
-            rawValue: update ? 6 : 2,
+            rawValue: update ? 6 : (refundsRead ? 2 : 0),
           ),
           if (confirm)
             const Privilege(
@@ -88,7 +83,6 @@ Override _access({
 /// Spec 057 US1 (T022), contracts C5: the refund detail screen.
 void main() {
   late MockCustomerRefundRepository refunds;
-  late MockCreditNoteRepository notes;
   late AppLocalizations l10n;
 
   setUpAll(() async {
@@ -98,7 +92,6 @@ void main() {
 
   setUp(() {
     refunds = MockCustomerRefundRepository();
-    notes = MockCreditNoteRepository();
   });
 
   void stubGet(CustomerRefund refund) =>
@@ -115,14 +108,22 @@ void main() {
     ],
   );
 
-  CustomerRefund completed({int? customerId = 7, String quantity = '2'}) =>
-      testRefund(
-        status: RefundStatus.completed,
-        serial: 5,
-        customerId: customerId,
-        total: '20.00',
-        lines: [testRefundLine(quantity: quantity, total: '20.00')],
-      );
+  CustomerRefund completed({
+    int? customerId = 7,
+    String quantity = '2',
+    RefundPayout? payout,
+    int? customerPaymentId,
+    String? customerName,
+  }) => testRefund(
+    status: RefundStatus.completed,
+    serial: 5,
+    customerId: customerId,
+    customerName: customerName,
+    payout: payout,
+    customerPaymentId: customerPaymentId,
+    total: '20.00',
+    lines: [testRefundLine(quantity: quantity, total: '20.00')],
+  );
 
   Future<GoRouter> pumpDetail(
     WidgetTester tester, {
@@ -130,6 +131,7 @@ void main() {
     CurrentSession session = const CurrentSession(state: SessionState.open),
     String location = '/sales/refunds/9',
     Size surface = const Size(1400, 1400),
+    List<Override> extraOverrides = const [],
   }) async {
     tester.view.physicalSize = surface;
     tester.view.devicePixelRatio = 1;
@@ -140,9 +142,9 @@ void main() {
       retry: (_, _) => null,
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
+        ...extraOverrides,
         access ?? _access(),
         customerRefundOverride(refunds),
-        creditNoteOverride(notes),
         sessionOverride(session),
         quantityCommitDebounceProvider.overrideWithValue(
           const Duration(milliseconds: 400),
@@ -372,13 +374,6 @@ void main() {
           lines: [testRefundLine(quantity: '1', total: '10.00')],
         ),
       );
-      when(
-        () => notes.findByRefund(
-          customerId: any(named: 'customerId'),
-          refundId: any(named: 'refundId'),
-          refundDate: any(named: 'refundDate'),
-        ),
-      ).thenAnswer((_) async => null);
       await pumpDetail(tester);
 
       await confirmThrough(tester, 'refund_payout_cash');
@@ -451,13 +446,6 @@ void main() {
 
     testWidgets('is absent on a completed refund', (tester) async {
       stubGet(completed());
-      when(
-        () => notes.findByRefund(
-          customerId: any(named: 'customerId'),
-          refundId: any(named: 'refundId'),
-          refundDate: any(named: 'refundDate'),
-        ),
-      ).thenAnswer((_) async => null);
       await pumpDetail(tester);
 
       expect(key('refund_cancel_button'), findsNothing);
@@ -491,19 +479,10 @@ void main() {
   });
 
   group('a completed refund', () {
-    void stubNote(CreditNote? note) => when(
-      () => notes.findByRefund(
-        customerId: any(named: 'customerId'),
-        refundId: any(named: 'refundId'),
-        refundDate: any(named: 'refundDate'),
-      ),
-    ).thenAnswer((_) async => note);
-
     testWidgets('paid in cash: the cash payout line, read-only, no adjustment '
-        'banner', (tester) async {
-      stubGet(completed());
-      stubNote(null);
-      await pumpDetail(tester);
+        'banner, nothing linked', (tester) async {
+      stubGet(completed(payout: RefundPayout.cash, customerPaymentId: -300002));
+      await pumpDetail(tester, access: _access(paymentsRead: true));
 
       expect(
         find.descendant(
@@ -512,6 +491,7 @@ void main() {
         ),
         findsOneWidget,
       );
+      expect(key('refund_payout_link'), findsNothing);
       expect(key('refund_adjusted_banner'), findsNothing);
       expect(key('refund_line_qty_1'), findsNothing);
       expect(key('refund_confirm_button'), findsNothing);
@@ -521,8 +501,9 @@ void main() {
 
     testWidgets('paid with a credit note: the number links to its payment '
         'when the user can read payments', (tester) async {
-      stubGet(completed());
-      stubNote(_creditNote);
+      stubGet(
+        completed(payout: RefundPayout.creditNote, customerPaymentId: 300001),
+      );
       await pumpDetail(tester, access: _access(paymentsRead: true));
 
       expect(key('refund_payout_link'), findsOneWidget);
@@ -539,8 +520,9 @@ void main() {
     testWidgets(
       'paid with a credit note, without payments access: plain text',
       (tester) async {
-        stubGet(completed());
-        stubNote(_creditNote);
+        stubGet(
+          completed(payout: RefundPayout.creditNote, customerPaymentId: 300001),
+        );
         await pumpDetail(tester);
 
         expect(key('refund_payout_link'), findsNothing);
@@ -551,32 +533,119 @@ void main() {
       },
     );
 
-    testWidgets('no customer: the payout is unknown', (tester) async {
-      stubGet(completed(customerId: null));
+    testWidgets('no payout (a legacy refund): the payout is unknown', (
+      tester,
+    ) async {
+      stubGet(completed());
       await pumpDetail(tester);
 
       expect(find.text(l10n.refundPayoutLineUnknown), findsOneWidget);
-      verifyNever(
-        () => notes.findByRefund(
-          customerId: any(named: 'customerId'),
-          refundId: any(named: 'refundId'),
-          refundDate: any(named: 'refundDate'),
+    });
+
+    testWidgets('a credit note with no payment id is unknown, not linked', (
+      tester,
+    ) async {
+      stubGet(completed(payout: RefundPayout.creditNote));
+      await pumpDetail(tester, access: _access(paymentsRead: true));
+
+      expect(find.text(l10n.refundPayoutLineUnknown), findsOneWidget);
+      expect(key('refund_payout_link'), findsNothing);
+    });
+
+    testWidgets('the payout line is there at once, with no loading state', (
+      tester,
+    ) async {
+      stubGet(completed(payout: RefundPayout.cash));
+      await pumpDetail(tester);
+
+      expect(find.text('…'), findsNothing);
+      expect(find.text(l10n.refundPayoutLineCash), findsOneWidget);
+    });
+  });
+
+  group('print receipt (spec 057 FR-018)', () {
+    late FakeDocumentSource source;
+    late FakeDocumentOutput output;
+
+    setUp(() {
+      source = FakeDocumentSource();
+      output = FakeDocumentOutput();
+    });
+
+    List<Override> documents() => [
+      documentSourceProvider.overrideWithValue(source),
+      documentOutputProvider.overrideWithValue(output),
+    ];
+
+    testWidgets('shows on a completed refund and opens the receipt preview', (
+      tester,
+    ) async {
+      stubGet(completed(payout: RefundPayout.cash, customerPaymentId: -1));
+      await pumpDetail(tester, extraOverrides: documents());
+
+      expect(
+        find.descendant(
+          of: key('refund_payout_line'),
+          matching: key('refund_print_button'),
         ),
+        findsOneWidget,
+      );
+
+      await tester.tap(key('refund_print_button'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DocumentPreviewDialog), findsOneWidget);
+      expect(source.fetched, hasLength(1));
+      expect(source.fetched.single.kind, DocumentKind.customerRefundReceipt);
+      expect(
+        source.fetched.single.title,
+        l10n.documentRefundReceiptTitle(source.fetched.single.recordId),
       );
     });
 
-    testWidgets('a failed lookup shows the payout as unknown', (tester) async {
+    testWidgets('is absent without Customer Refunds read', (tester) async {
       stubGet(completed());
-      when(
-        () => notes.findByRefund(
-          customerId: any(named: 'customerId'),
-          refundId: any(named: 'refundId'),
-          refundDate: any(named: 'refundDate'),
-        ),
-      ).thenThrow(const AppError.network());
+      await pumpDetail(
+        tester,
+        access: _access(update: false, confirm: false, refundsRead: false),
+        extraOverrides: documents(),
+      );
+
+      expect(key('refund_payout_line'), findsOneWidget);
+      expect(key('refund_print_button'), findsNothing);
+    });
+
+    testWidgets('is absent on a draft', (tester) async {
+      stubGet(testRefund());
+      await pumpDetail(tester, extraOverrides: documents());
+
+      expect(key('refund_print_button'), findsNothing);
+    });
+
+    testWidgets('is absent on a cancelled refund', (tester) async {
+      stubGet(testRefund(status: RefundStatus.cancelled));
+      await pumpDetail(tester, extraOverrides: documents());
+
+      expect(key('refund_print_button'), findsNothing);
+    });
+  });
+
+  group('customer name', () {
+    testWidgets('the server\'s name is shown with no lookup', (tester) async {
+      stubGet(completed(customerName: 'Ana López'));
       await pumpDetail(tester);
 
-      expect(find.text(l10n.refundPayoutLineUnknown), findsOneWidget);
+      expect(find.text('Ana López'), findsOneWidget);
+      expect(find.text('Ana'), findsNothing);
+    });
+
+    testWidgets('a refund with no name falls back to the lookup', (
+      tester,
+    ) async {
+      stubGet(completed());
+      await pumpDetail(tester);
+
+      expect(find.text('Ana'), findsOneWidget);
     });
   });
 

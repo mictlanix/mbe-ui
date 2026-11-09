@@ -3,11 +3,14 @@ import 'package:mbe_ui/features/sales/domain/entities/customer_refund.dart';
 /// Reading and writing customer refunds (spec 057 contracts C2). Every write
 /// returns the whole refund as the server now holds it.
 abstract interface class CustomerRefundRepository {
-  /// `GET /customer-refunds` — one page, in the server's order.
+  /// `GET /customer-refunds` — one page, in the server's order (open refunds first, then newest).
+  /// [search] and [mine] are sent only when set.
   Future<RefundListResult> list({
     RefundStatus? status,
     int? customerId,
     int? salesOrderId,
+    String? search,
+    bool mine = false,
     required int skip,
     required int limit,
   });

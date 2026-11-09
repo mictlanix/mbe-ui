@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RefundsFilter {
 
- RefundStatus? get status; int? get customerId; int? get salesOrderId; int get pageIndex;
+ RefundStatus? get status; int? get customerId; int? get salesOrderId; String get query;/// Only refunds the caller created or last updated.
+ bool get mine; int get pageIndex;
 /// Create a copy of RefundsFilter
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +28,20 @@ $RefundsFilterCopyWith<RefundsFilter> get copyWith => _$RefundsFilterCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as RefundsFilter;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RefundsFilter&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.salesOrderId, _this.salesOrderId) || other.salesOrderId == _this.salesOrderId)&&(identical(other.pageIndex, _this.pageIndex) || other.pageIndex == _this.pageIndex));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RefundsFilter&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.salesOrderId, _this.salesOrderId) || other.salesOrderId == _this.salesOrderId)&&(identical(other.query, _this.query) || other.query == _this.query)&&(identical(other.mine, _this.mine) || other.mine == _this.mine)&&(identical(other.pageIndex, _this.pageIndex) || other.pageIndex == _this.pageIndex));
 }
 
 
 @override
 int get hashCode {
   final _this = this as RefundsFilter;
-  return Object.hash(runtimeType,_this.status,_this.customerId,_this.salesOrderId,_this.pageIndex);
+  return Object.hash(runtimeType,_this.status,_this.customerId,_this.salesOrderId,_this.query,_this.mine,_this.pageIndex);
 }
 
 @override
 String toString() {
   final _this = this as RefundsFilter;
-  return 'RefundsFilter(status: ${_this.status}, customerId: ${_this.customerId}, salesOrderId: ${_this.salesOrderId}, pageIndex: ${_this.pageIndex})';
+  return 'RefundsFilter(status: ${_this.status}, customerId: ${_this.customerId}, salesOrderId: ${_this.salesOrderId}, query: ${_this.query}, mine: ${_this.mine}, pageIndex: ${_this.pageIndex})';
 }
 
 
@@ -51,7 +52,7 @@ abstract mixin class $RefundsFilterCopyWith<$Res>  {
   factory $RefundsFilterCopyWith(RefundsFilter value, $Res Function(RefundsFilter) _then) = _$RefundsFilterCopyWithImpl;
 @useResult
 $Res call({
- RefundStatus? status, int? customerId, int? salesOrderId, int pageIndex
+ RefundStatus? status, int? customerId, int? salesOrderId, String query, bool mine, int pageIndex
 });
 
 
@@ -68,12 +69,14 @@ class _$RefundsFilterCopyWithImpl<$Res>
 
 /// Create a copy of RefundsFilter
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? status = freezed,Object? customerId = freezed,Object? salesOrderId = freezed,Object? pageIndex = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? status = freezed,Object? customerId = freezed,Object? salesOrderId = freezed,Object? query = null,Object? mine = null,Object? pageIndex = null,}) {
   return _then(RefundsFilter(
 status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as RefundStatus?,customerId: freezed == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
 as int?,salesOrderId: freezed == salesOrderId ? _self.salesOrderId : salesOrderId // ignore: cast_nullable_to_non_nullable
-as int?,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
+as int?,query: null == query ? _self.query : query // ignore: cast_nullable_to_non_nullable
+as String,mine: null == mine ? _self.mine : mine // ignore: cast_nullable_to_non_nullable
+as bool,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }
@@ -159,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( RefundStatus? status,  int? customerId,  int? salesOrderId,  int pageIndex)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( RefundStatus? status,  int? customerId,  int? salesOrderId,  String query,  bool mine,  int pageIndex)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RefundsFilter() when $default != null:
-return $default(_that.status,_that.customerId,_that.salesOrderId,_that.pageIndex);case _:
+return $default(_that.status,_that.customerId,_that.salesOrderId,_that.query,_that.mine,_that.pageIndex);case _:
   return orElse();
 
 }
@@ -180,10 +183,10 @@ return $default(_that.status,_that.customerId,_that.salesOrderId,_that.pageIndex
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( RefundStatus? status,  int? customerId,  int? salesOrderId,  int pageIndex)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( RefundStatus? status,  int? customerId,  int? salesOrderId,  String query,  bool mine,  int pageIndex)  $default,) {final _that = this;
 switch (_that) {
 case _RefundsFilter():
-return $default(_that.status,_that.customerId,_that.salesOrderId,_that.pageIndex);case _:
+return $default(_that.status,_that.customerId,_that.salesOrderId,_that.query,_that.mine,_that.pageIndex);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -200,10 +203,10 @@ return $default(_that.status,_that.customerId,_that.salesOrderId,_that.pageIndex
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( RefundStatus? status,  int? customerId,  int? salesOrderId,  int pageIndex)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( RefundStatus? status,  int? customerId,  int? salesOrderId,  String query,  bool mine,  int pageIndex)?  $default,) {final _that = this;
 switch (_that) {
 case _RefundsFilter() when $default != null:
-return $default(_that.status,_that.customerId,_that.salesOrderId,_that.pageIndex);case _:
+return $default(_that.status,_that.customerId,_that.salesOrderId,_that.query,_that.mine,_that.pageIndex);case _:
   return null;
 
 }
@@ -215,12 +218,15 @@ return $default(_that.status,_that.customerId,_that.salesOrderId,_that.pageIndex
 
 
 class _RefundsFilter extends RefundsFilter {
-  const _RefundsFilter({this.status, this.customerId, this.salesOrderId, this.pageIndex = 0}): super._();
+  const _RefundsFilter({this.status, this.customerId, this.salesOrderId, this.query = '', this.mine = false, this.pageIndex = 0}): super._();
   
 
 @override final  RefundStatus? status;
 @override final  int? customerId;
 @override final  int? salesOrderId;
+@override@JsonKey() final  String query;
+/// Only refunds the caller created or last updated.
+@override@JsonKey() final  bool mine;
 @override@JsonKey() final  int pageIndex;
 
 /// Create a copy of RefundsFilter
@@ -233,18 +239,18 @@ _$RefundsFilterCopyWith<_RefundsFilter> get copyWith => __$RefundsFilterCopyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RefundsFilter&&(identical(other.status, status) || other.status == status)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.salesOrderId, salesOrderId) || other.salesOrderId == salesOrderId)&&(identical(other.pageIndex, pageIndex) || other.pageIndex == pageIndex));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RefundsFilter&&(identical(other.status, status) || other.status == status)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.salesOrderId, salesOrderId) || other.salesOrderId == salesOrderId)&&(identical(other.query, query) || other.query == query)&&(identical(other.mine, mine) || other.mine == mine)&&(identical(other.pageIndex, pageIndex) || other.pageIndex == pageIndex));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,status,customerId,salesOrderId,pageIndex);
+    return Object.hash(runtimeType,status,customerId,salesOrderId,query,mine,pageIndex);
 }
 
 @override
 String toString() {
-    return 'RefundsFilter(status: $status, customerId: $customerId, salesOrderId: $salesOrderId, pageIndex: $pageIndex)';
+    return 'RefundsFilter(status: $status, customerId: $customerId, salesOrderId: $salesOrderId, query: $query, mine: $mine, pageIndex: $pageIndex)';
 }
 
 
@@ -255,7 +261,7 @@ abstract mixin class _$RefundsFilterCopyWith<$Res> implements $RefundsFilterCopy
   factory _$RefundsFilterCopyWith(_RefundsFilter value, $Res Function(_RefundsFilter) _then) = __$RefundsFilterCopyWithImpl;
 @override @useResult
 $Res call({
- RefundStatus? status, int? customerId, int? salesOrderId, int pageIndex
+ RefundStatus? status, int? customerId, int? salesOrderId, String query, bool mine, int pageIndex
 });
 
 
@@ -272,12 +278,14 @@ class __$RefundsFilterCopyWithImpl<$Res>
 
 /// Create a copy of RefundsFilter
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? status = freezed,Object? customerId = freezed,Object? salesOrderId = freezed,Object? pageIndex = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? status = freezed,Object? customerId = freezed,Object? salesOrderId = freezed,Object? query = null,Object? mine = null,Object? pageIndex = null,}) {
   return _then(_RefundsFilter(
 status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as RefundStatus?,customerId: freezed == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
 as int?,salesOrderId: freezed == salesOrderId ? _self.salesOrderId : salesOrderId // ignore: cast_nullable_to_non_nullable
-as int?,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
+as int?,query: null == query ? _self.query : query // ignore: cast_nullable_to_non_nullable
+as String,mine: null == mine ? _self.mine : mine // ignore: cast_nullable_to_non_nullable
+as bool,pageIndex: null == pageIndex ? _self.pageIndex : pageIndex // ignore: cast_nullable_to_non_nullable
 as int,
   ));
 }

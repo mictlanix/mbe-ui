@@ -17,6 +17,7 @@ A refund is a document of its own. It is opened against one paid order and start
 ### Session 2026-10-28
 
 - Q: What happens to printing while mbe-api has no refund receipt (mbe-api#287)? → A: Story 3 stays in this spec. The print action is built but hidden until the receipt exists. Meanwhile the refund detail shows the credit note's ticket number.
+  - *Superseded 2026-11-04:* mbe-api#287 shipped, so the print action is built and shown.
 - Q: Should the payout choice depend on how the order was paid? → A: No. Cash and credit note are always both offered, whatever the order was paid with, as on the server and in legacy.
 
 ## User Scenarios & Testing *(mandatory)*
@@ -112,7 +113,7 @@ After confirming, the clerk prints a receipt for the customer. It lists what cam
 
 **Listing and tracing**
 
-- **FR-013**: Users who can read refunds MUST be able to open "Devoluciones", listing folio, date, customer, source order, status and total, open first and then newest first, paginated. Until mbe-api#285 ships, the server's order (newest first) is used.
+- **FR-013**: Users who can read refunds MUST be able to open "Devoluciones", listing folio, date, customer, source order, status and total, open first and then newest first, paginated.
 - **FR-014**: The list MUST filter by status, customer and order number.
 - **FR-015**: Each refund MUST have its own link, so other screens can open it directly. A refund's source order MUST link to that order. A refund that ended as a credit note MUST link to its backing payment's detail, which is the credit note's record surface (spec 056).
 - **FR-016**: The refund segment of a credit note's origin in "Notas de crédito" MUST link to the refund.
@@ -120,7 +121,7 @@ After confirming, the clerk prints a receipt for the customer. It lists what cam
 
 **Printing**
 
-- **FR-018**: A confirmed refund MUST offer print, following the document printing behaviour of spec 044. Open and cancelled refunds MUST NOT. Until mbe-api provides the refund receipt (mictlanix/mbe-api#287), the print action MUST stay hidden, and the rest of the feature ships without it.
+- **FR-018**: A confirmed refund MUST offer print, following the document printing behaviour of spec 044. Open and cancelled refunds MUST NOT.
 - **FR-019**: A printed credit-note refund MUST show the credit note's ticket number.
 
 **Access and copy**
@@ -149,11 +150,10 @@ After confirming, the clerk prints a receipt for the customer. It lists what cam
 
 - "Paid" means the order's status is paid. The server decides what can be refunded, and the app shows its answer rather than repeating the rules.
 - Refunds are back-office work with a POS entry point. Confirming still needs the clerk's own open cash session, as on the server.
-- The list shows what the server returns for the caller. There is no "my refunds" default and no text or folio search until mbe-api adds them (mictlanix/mbe-api#285).
-- **Interim, until mbe-api adds them**:
-  - The refund list doesn't carry customer names, so the app looks each customer up per row (mictlanix/mbe-api#284).
-  - The refund doesn't record its payout or link its credit note. Until it does, the app finds the credit note by matching notes for the refund's customer against the refund. A completed refund with no matching note is shown as cash (mictlanix/mbe-api#286).
-  - mbe-api has no refund print template (mictlanix/mbe-api#287). The print action is hidden until it exists (FR-018). Meanwhile a walk-in customer gets the credit note's ticket number from the refund detail (FR-017).
+- The list shows what the server returns for the caller's store, open refunds first and then newest. It has a search box (a number matches the folio, the refund id or the order, text matches the customer's name) and a "Solo mis devoluciones" switch, which starts off.
+- **mbe-api shipped what this feature asked for (2026-11-04, mictlanix/mbe-api#283 to #287):** customer names on refunds and credit notes, the search and own-refunds filter, the payout and the credit note on the refund, and the receipt. The app uses the server's fields and no longer infers anything.
+- A refund belongs to the store that processes it, not the order's store. Another store's refund opens only for a user with SearchCreditsFromAllStores read, and otherwise shows as not found.
+- A cash payout also leaves a credit note, already paid back and never spendable. Only a credit-note payout links to its payment, because that payment's number is the ticket number. A refund with no payout, such as a legacy one that only reduced an unpaid order, shows "Forma de pago no disponible".
 - Sales orders' detail in Pedidos and the POS sale detail are where "Devolver" lives. A paid order is already read-only there, so the action adds to it without changing editing.
 - A paid POS sale whose delivery is still pending opens the POS workspace, not the sale detail, so it has no "Devolver" there. Pedidos offers it for that sale, and that is deliberate.
 

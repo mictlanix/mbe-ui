@@ -8,8 +8,9 @@ part 'refunds_filter.freezed.dart';
 /// Every field lives in the URL, so Back from a refund returns to the same
 /// page and filters.
 ///
-/// There is no search box: `GET /customer-refunds` has no free-text
-/// parameter, so the status, customer and order facets are the whole filter.
+/// [query] is the search box (`ListQuery.search`): a number matches the refund
+/// id, folio or source order id, text matches the customer's name
+/// (mbe-api#285). It is not counted in the drawer badge.
 @freezed
 abstract class RefundsFilter with _$RefundsFilter {
   const RefundsFilter._();
@@ -18,6 +19,10 @@ abstract class RefundsFilter with _$RefundsFilter {
     RefundStatus? status,
     int? customerId,
     int? salesOrderId,
+    @Default('') String query,
+
+    /// Only refunds the caller created or last updated.
+    @Default(false) bool mine,
     @Default(0) int pageIndex,
   }) = _RefundsFilter;
 
@@ -31,6 +36,8 @@ abstract class RefundsFilter with _$RefundsFilter {
           .firstOrNull,
       customerId: customer == null ? null : int.tryParse(customer),
       salesOrderId: order == null ? null : int.tryParse(order),
+      query: query.search.trim(),
+      mine: query.facet('mine') == '1',
       pageIndex: query.pageIndex,
     );
   }
@@ -39,7 +46,8 @@ abstract class RefundsFilter with _$RefundsFilter {
   int get activeFilterCount =>
       (status != null ? 1 : 0) +
       (customerId != null ? 1 : 0) +
-      (salesOrderId != null ? 1 : 0);
+      (salesOrderId != null ? 1 : 0) +
+      (mine ? 1 : 0);
 
-  bool get isNarrowed => activeFilterCount > 0;
+  bool get isNarrowed => activeFilterCount > 0 || query.isNotEmpty;
 }

@@ -30,9 +30,7 @@ description: "Task list for 057-customer-refunds"
 - **Amounts and dates** go through `formattersProvider` (constitution §V). No `NumberFormat`, no `toStringAsFixed`. Amount arithmetic goes only through `features/sales/domain/money.dart`.
 - **Spacing tokens, not literals** (`Theme.of(context).spacing`). No automated guard catches a literal, so check it in review.
 - **The app never computes a total or a refundable quantity (FR-006).** Every write replaces the whole refund with the server's response.
-- **Interim code carries a marker.** Each gets a comment `// simplified: <ceiling>, <what to do when it binds>`:
-  - the per-row customer name in the list (T027, until mbe-api#284);
-  - `findByRefund` (T011, until mbe-api#286).
+- **Interim code was removed in Phase 7** (mbe-api#283 to #287 shipped on 2026-11-04), so T011, T013 and the per-row name lookup in T028 describe the first design. Any new shortcut still carries a comment `// simplified: <ceiling>, <what to do when it binds>`.
 - **Never match server prose** (R3). Classify refusals from the order's own status. A server detail may be shown, never parsed.
 - **Mirror, don't copy blindly.** Closest precedents:
   - Detail screen with its own route: `payment_detail_screen.dart`.
@@ -153,15 +151,15 @@ description: "Task list for 057-customer-refunds"
 
 **Story goal**: a confirmed refund prints a receipt, which for a credit note shows the note's ticket number.
 
-**Blocked on mbe-api#287.** Do not start until the receipt endpoint ships. No code is written against an endpoint that doesn't exist (R10, Clarifications).
+**Unblocked 2026-11-04**: mbe-api#287 shipped and the client has the ticket method. A refund that isn't confirmed answers 409 `refund.not_confirmed`, so the button stays hidden on open and cancelled refunds. The server names the file `devolucion-{id:08d}.pdf`.
 
 **Independent test**: confirm a refund as a credit note for the walk-in customer, print it, and redeem the note at the POS payment step with the number on the receipt (quickstart, once added).
 
-- [ ] T038 [US3] Gate check. Confirm mbe-api#287 is closed and its endpoint is in the running API's OpenAPI. If not, stop here and leave T039–T044 unchecked. Then regenerate the client with `tool/generate_api_client.sh`, and confirm `CustomerRefundsApi` now has a ticket method. Commit the regenerated client on its own, as past specs did (`Generated api client code updated`).
-- [ ] T039 [US3] Add `DocumentKind.customerRefundReceipt(SystemObject.customerRefunds)` in `lib/core/documents/domain/document_kind.dart`, its switch arm in `lib/core/documents/data/document_source_impl.dart` calling the new generated method, and the fallback filename `devolucion-{serial}.pdf` (R10). Depends on T038.
-- [ ] T040 [US3] In `refund_detail_screen.dart`, add the "Imprimir" `OutlinedButton.icon` (key `refund_print_button`), right-aligned on the payout row, on a completed refund only, through `documentActionsProvider` and gated by `canOpenDocument` (FR-018). Follow `payment_detail_screen.dart:281-299`. Open and cancelled refunds show no print action. Depends on T039 and T015.
-- [ ] T041 [P] [US3] Tests: extend the documents tests for the new kind (the switch arm, the fallback filename, the `%PDF-` check), and extend `refund_detail_screen_test.dart` so the print button shows on a completed refund with the right access and not on open, cancelled or access-less views. Depends on T040.
-- [ ] T042 [US3] Add a step to `integration_test/customer_refunds_quickstart_test.dart`, behind `MBE_REFUND_CONFIRM=1`: after confirming, open the receipt through the document actions and check that it is a PDF. Add the matching step to `quickstart.md` ("Not covered yet" becomes a numbered step), and confirm the walk-in redemption by the printed number in a manual pass. FR-019 (the receipt shows the credit note's ticket number) is a property of mbe-api's template (mbe-api#287), so this manual check is its only verification here. Depends on T040.
+- [x] T038 [US3] Gate check, passed on 2026-11-04: mbe-api#283 to #287 are closed, the running API's OpenAPI has `GET /customer-refunds/{id}/ticket`, and the client was regenerated in `675ca26` with the ticket method (`printCustomerRefundTicketApiV1CustomerRefundsCustomerRefundIdTicketGet`). Nothing to regenerate. Confirm that once more with `grep -c printCustomerRefundTicket lib/generated/openapi/lib/src/api/customer_refunds_api.dart`.
+- [x] T039 [US3] Add `DocumentKind.customerRefundReceipt(SystemObject.customerRefunds)` in `lib/core/documents/domain/document_kind.dart`, its switch arm in `lib/core/documents/data/document_source_impl.dart` calling the new generated method, and the fallback filename `devolucion-{serial}.pdf` (R10). Depends on T038.
+- [x] T040 [US3] In `refund_detail_screen.dart`, add the "Imprimir" `OutlinedButton.icon` (key `refund_print_button`), right-aligned on the payout row, on a completed refund only, through `documentActionsProvider` and gated by `canOpenDocument` (FR-018). Follow `payment_detail_screen.dart:281-299`. Open and cancelled refunds show no print action. Depends on T039 and T015.
+- [x] T041 [P] [US3] Tests: extend the documents tests for the new kind (the switch arm, the fallback filename, the `%PDF-` check), and extend `refund_detail_screen_test.dart` so the print button shows on a completed refund with the right access and not on open, cancelled or access-less views. Depends on T040.
+- [x] T042 [US3] Add a step to `integration_test/customer_refunds_quickstart_test.dart`, read-only: on a completed refund discovered at runtime (prefer one paid as a credit note; skip with a printed SKIP when none exists), open it, tap `refund_print_button`, and check the preview is a PDF through the document actions. Behind `MBE_REFUND_CONFIRM=1`, also confirm a new refund and print it. Add the matching step to `quickstart.md` ("Not covered yet" becomes a numbered step), and do the walk-in redemption by the printed ticket number in a manual pass. Depends on T040 and T050.
 
 **Checkpoint**: US3 works end to end (printing).
 
@@ -174,16 +172,29 @@ description: "Task list for 057-customer-refunds"
 
 ---
 
+## Phase 7: Adopt the shipped mbe-api contract (2026-11-04)
+
+**Purpose**: mbe-api#283 to #287 shipped on 2026-11-04 and the client is regenerated (`675ca26`). Remove the interim code and use the server's own fields. Do this before US3, which builds on the new `payout` and `customerPaymentId`.
+
+- [x] T045 [US1] Adopt the refund fields (mbe-api#284, #286) in `lib/features/sales/domain/entities/customer_refund.dart`. `CustomerRefund` and `CustomerRefundSummary` gain `customerName` (from `customerDisplayName`, a blank name is null, as `CustomerPayment` does). `CustomerRefund` also gains `payout` (`RefundPayout?`), `customerPaymentId` and `creditNoteId` (both `int?`). `RefundOutcome.creditNote` carries the backing payment's id instead of a `CreditNote`. Add `RefundOutcome? get outcome` on `CustomerRefund`: null for a draft or cancelled refund; for a completed one, `cash` when `payout` is cash, `creditNote(customerPaymentId)` when it is a credit note and the id is set, otherwise `unknown` (a legacy refund that only reduced an unpaid order has no payout). Run build_runner.
+- [x] T046 [US1] Remove the interim payout scan (mbe-api#286): delete `findByRefund` from `lib/features/sales/domain/repositories/credit_note_repository.dart` and `lib/features/sales/data/credit_note_repository_impl.dart`, delete `presentation/refunds/refund_outcome_provider.dart` and its `.g.dart`, and make `refund_detail_screen.dart` read `refund.outcome` synchronously (no loading "…" state). The payout line keeps its keys and copy, and the credit-note variant still links to `/sales/payments/{customerPaymentId}` when the user has `customerPayments` read. A cash payout is not linked. Depends on T045.
+- [x] T047 [US2] Use the server's customer names (mbe-api#283, #284). The list and the detail header pass `customerName` to `PaymentCustomerName(name:)`, which keeps its per-customer lookup only as the fallback for a missing name, as Pagos does; remove the `// simplified` marker for #284. `CreditNote` in `lib/features/sales/domain/entities/credit_note.dart` maps `customerDisplayName` the same way and `credit_notes_list_screen.dart` passes it, which closes spec 056's follow-up. Depends on T045.
+- [x] T048 [US2] Add the list's search and own-refunds filter (mbe-api#285). `CustomerRefundRepository.list` gains `search` (sent only when non-empty) and `mine` (sent only when true). `RefundsFilter` gains `query` and `mine`, round-tripped through `ListQuery` (`search` and `mine=1`). `refunds_list_controller.dart` forwards them. In `refunds_list_screen.dart` the search slot of `CatalogFilterBar` takes a `CatalogSearchBar` (hint: folio, order or customer name; follow the Pagos list), and the filter sheet gets a "Solo mis devoluciones" `SwitchListTile`. The count badge includes `mine`. Add the l10n keys to both `.arb` files and run `flutter gen-l10n`. No default: `mine` starts off. Depends on T045.
+- [x] T049 Update and add tests for T045 to T048: `customer_refund_entity_test.dart` (the new fields; `outcome` for draft, cancelled, cash, credit note, credit note with no payment id, completed with no payout); `customer_refund_repository_impl_test.dart` (`search` and `mine` are sent only when set); `refunds_filter_test.dart` and `refunds_list_controller_test.dart` (the two new facets); `refunds_list_screen_test.dart` (search narrows and resets the page, the switch, names shown without a lookup, fallback for a missing name); `refund_detail_screen_test.dart` (the payout line from `outcome`, with no loading state); `credit_note_entity_test.dart` and `credit_notes_list_screen_test.dart` (the name). Delete `refund_outcome_provider_test.dart` and the `findByRefund` cases in `credit_note_repository_impl_test.dart`. Depends on T046 to T048.
+- [x] T050 Update `integration_test/customer_refunds_quickstart_test.dart`: step 9 also searches by the discovered order number and checks only matching rows remain. Add a read-only check on a completed refund discovered at runtime (skip with a printed SKIP when none exists): its payout line reads cash, credit note, or "no disponible" to match the server's `payout`, and a credit-note refund links to the payment. Run it against the dev API and report each step. Depends on T049.
+
+---
+
 ## Dependencies and order
 
 ```text
-Phase 1 (T001) ─▶ Phase 2 (T002–T008) ─▶ US1 (T009–T025) ─▶ US2 (T026–T037) ─▶ Phase 6
-                                                              └──▶ US3 (T038–T042, blocked on mbe-api#287) ─▶ T043–T044
+Phase 1 (T001) ─▶ Phase 2 (T002–T008) ─▶ US1 (T009–T025) ─▶ US2 (T026–T037) ─▶ Phase 7 (T045–T050) ─▶ US3 (T038–T042) ─▶ T043–T044 (rerun)
 ```
 
 - **US1 before US2.** The list opens the detail screen and uses `openOrResume`, and cancel is an edit to the US1 controller and screen.
 - **US2's tasks T026, T030 and T033** don't depend on each other and can start together once Phase 2 is done.
-- **US3** is independent of US2, and only needs the detail screen from US1.
+- **Phase 7 before US3.** Printing builds on the `payout` and `customerPaymentId` fields and on the detail screen's payout line, which T046 changes.
+- **US3** needs only the detail screen from US1, plus Phase 7.
 - **Within US1,** T010, T011 and T014 are independent files, and can be done in parallel after T002. T012 needs T005. T013 needs T011.
 
 ### Parallel examples
