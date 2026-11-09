@@ -86,9 +86,9 @@ specs/058-localized-api-errors/
 
 ```text
 lib/core/errors/
-├── app_error.dart              # + ApiProblem? problem on validation/auth/notFound/server/creditHold; FieldError + ctx
+├── app_error.dart              # + ApiProblem? problem on validation/auth/notFound/server/creditHold
 ├── api_problem.dart            # NEW: ApiProblem, ApiProblemPart, typed param accessors
-├── localize_problem.dart       # NEW: localizeProblem, localizeFieldError, resourceNoun, userMessage extension
+├── localize_problem.dart       # NEW: localizeProblem, localizeValidationType, serverFieldValue, resourceNoun, userMessage extension
 lib/core/network/
 ├── auth_interceptor.dart       # mapDioException parses code/params/errors; password change + credit codes; logs
 lib/core/widgets/
@@ -102,7 +102,7 @@ lib/features/sales/presentation/open_session_form_controller.dart        # busy 
 lib/features/sales/presentation/refunds/refund_open_or_resume.dart       # nothing-to-return by code; no English append
 lib/features/sales/presentation/refunds/refund_detail_screen.dart        # line errors via userMessage
 lib/features/sales/presentation/delivery/destination_card.dart          # userMessage inside its template
-lib/features/pricing/presentation/{price_cell,pricing_grid_controller,pricing_controller,price_list_form_controller,exchange_rate_form_controller}.dart  # field msg via localizeFieldError
+lib/features/pricing/presentation/{price_cell,pricing_grid_controller}.dart   # RejectedEdit.cause; tooltip via userMessage
 
 test/unit/core/errors/          # api_problem_test, localize_problem_test (every in-scope code, en + es), catalog_coverage_test
 test/unit/core/network/         # auth_interceptor_test: new groups; existing groups unchanged

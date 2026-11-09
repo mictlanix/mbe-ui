@@ -12,7 +12,7 @@ The server side is mbe-api spec 036, `contracts/api.md`. This document is the cl
    - each entry of `body['errors']` that is a `Map` becomes an `ApiProblemPart`. Its `code` is read the same way, its `params` from `entry['params']`, and its `extra` from the remaining keys;
    - `detail` uses today's `_detailFrom` rule: a string `detail`, or `detail.message`.
 3. Otherwise there is no problem, and everything below behaves exactly as today (FR-001).
-4. A request-validation 422 (`detail` is a list) never has a top-level `code`. Its `FieldError`s gain `ctx` (data-model).
+4. A request-validation 422 (`detail` is a list) never has a top-level `code`. It maps to `validation` with today's `FieldError`s.
 
 ## 2. Choosing the variant
 

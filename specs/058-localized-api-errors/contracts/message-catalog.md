@@ -148,19 +148,21 @@ Notes:
 
 ## 3. Validation types (9)
 
-| Type | Shown ctx | en | es |
-|---|---|---|---|
-| `password_policy` | failed | existing `localizePasswordRule` messages | (existing) |
-| `contact_name_blank` | — | The name can't be blank. | El nombre no puede estar vacío. |
-| `email_address_invalid` | value: text | {value} isn't a valid email address. | {value} no es un correo electrónico válido. |
-| `product_barcode_invalid` | — | The barcode must be empty or exactly 13 digits (EAN-13). | El código de barras debe estar vacío o tener exactamente 13 dígitos (EAN-13). |
-| `product_code_has_whitespace` | — | The code can't contain spaces. | El código no puede contener espacios. |
-| `profile_duplicate_system_object` | — | A permission appears twice in this profile. | Un permiso aparece dos veces en este perfil. |
-| `profile_unknown_system_object` | — | The profile has a permission the server doesn't recognize. | El perfil tiene un permiso que el servidor no reconoce. |
-| `supplier_agreement_end_before_start` | start: date, end: date | The end date ({end}) is before the start date ({start}). | La fecha de fin ({end}) es anterior a la de inicio ({start}). |
-| `user_id_not_alphanumeric` | — | The username can only have letters and numbers. | El nombre de usuario solo puede tener letras y números. |
+| Type | en | es |
+|---|---|---|
+| `password_policy` | existing `localizePasswordRule` messages | (existing) |
+| `contact_name_blank` | The name can't be blank. | El nombre no puede estar vacío. |
+| `email_address_invalid` | That isn't a valid email address. | Ese no es un correo electrónico válido. |
+| `product_barcode_invalid` | The barcode must be empty or exactly 13 digits (EAN-13). | El código de barras debe estar vacío o tener exactamente 13 dígitos (EAN-13). |
+| `product_code_has_whitespace` | The code can't contain spaces. | El código no puede contener espacios. |
+| `profile_duplicate_system_object` | A permission appears twice in this profile. | Un permiso aparece dos veces en este perfil. |
+| `profile_unknown_system_object` | The profile has a permission the server doesn't recognize. | El perfil tiene un permiso que el servidor no reconoce. |
+| `supplier_agreement_end_before_start` | The end date can't be before the start date. | La fecha de fin no puede ser anterior a la de inicio. |
+| `user_id_not_alphanumeric` | The username can only have letters and numbers. | El nombre de usuario solo puede tener letras y números. |
 
-The ARB key is `apiValidation` + the type in PascalCase. `password_policy` adds no key.
+`password_policy` has no key here: its per-rule messages stay in `localizePasswordRule`, which lives in the auth feature, and `localizeValidationType` returns `null` for it.
+
+The ARB key is `apiValidation` + the type in PascalCase.
 
 ## 4. Record nouns (42)
 

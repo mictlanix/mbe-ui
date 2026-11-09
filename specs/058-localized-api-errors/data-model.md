@@ -54,12 +54,11 @@ network([String? message])            // unchanged: no response, no problem
 
 **Variant selection** (contracts/error-mapping.md §2) keeps today's status rules. The one change is that these codes select `creditHold` whatever the status: `customer.credit_hold`, `customer.credit_limit_exceeded`, `customer.credit_limit_reached`, `customer.no_credit_limit` and `customer.walk_in_no_credit` (R8).
 
-## FieldError (changed)
+## FieldError (unchanged)
 
 | Field | Type | Notes |
 |---|---|---|
 | `loc`, `msg`, `type`, `failedRules` | unchanged | |
-| `ctx` | `Map<String, Object?>` | New. The raw `ctx` of a 422 validation entry, or empty. `input` is still never read. |
 
 ## Form state (changed, per controller)
 

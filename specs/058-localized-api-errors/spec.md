@@ -60,7 +60,7 @@ A manager saves a facility, a price list, a vehicle operator, or opens a cash se
 2. **Given** that error on screen, **When** the user changes the app language, **Then** the message re-renders in the new language without resubmitting.
 3. **Given** a form refusal with an unknown code, **When** it is shown, **Then** the form shows what it shows today: its own headline plus the server's English text.
 4. **Given** a form error the app raises itself, without the server (a required field, an invalid quantity), **When** it is shown, **Then** it is unchanged by this feature.
-5. **Given** a field-level validation refusal from the server whose `type` the app knows, **When** it is shown, **Then** the field shows the localized message for that type, with any values from its context formatted. Password rules keep today's per-rule messages.
+5. **Given** a field-level validation refusal from the server whose `type` the app knows, **When** it is shown, **Then** the field shows the localized message for that type. Password rules keep today's per-rule messages.
 
 ---
 
@@ -120,7 +120,7 @@ The structured line refusals also accept both the shape the server sends today a
   - every generic code: record not found, already exists, still referenced, conflict; server error; invalid state transition; document not editable; record locked; unsupported status filter; malformed request; the authentication and permission codes;
   - every code that an endpoint the app calls today can return, per the server's error catalog and raise map.
 - **FR-010**: Codes that only endpoints the app does not call can return are out of scope. They fall back as in FR-002 until the spec that builds their screens adds them.
-- **FR-011**: Field-level validation types that the in-scope endpoints can return MUST have localized messages, using the values in their context. Password rules keep their existing messages.
+- **FR-011**: Field-level validation types that the in-scope endpoints can return MUST have localized messages. These messages carry no values from the refusal's context, because the field already shows the value. Password rules keep their existing messages.
 
 **Where messages show**
 

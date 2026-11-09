@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Localized API Messages from Error Codes",
   "branch": "058-localized-api-errors",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -32,6 +32,20 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-09T19:38:54.508Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-09T19:43:05.912Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-09T19:48:15.458Z"
     }
   ],
   "telemetryInstanceId": "453bd56a-d8db-4d4c-934a-89eff1183bb9"

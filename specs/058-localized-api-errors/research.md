@@ -127,9 +127,13 @@ One controller sets it from a validation entry rather than `serverMessage` (`use
 
 ## R7. Validation types
 
-**Decision**: `FieldError` gains `ctx`. `localizeFieldError` switches on `type` for the in-scope validation types (R1), with values from `ctx` formatted as in R4. `password_policy` keeps `localizePasswordRule`. An unknown `type` returns `null`, and the display shows `msg` as today.
+**Decision**: `FieldError` is unchanged. `localizeValidationType(type, l10n)` switches on `type` for the in-scope validation types (R1), with messages that carry no `ctx` values: the field already shows the value, and dropping them keeps forms from storing anything but a string. `password_policy` keeps `localizePasswordRule`. An unknown `type` returns `null`, and the display shows `msg` as today.
 
-**Rationale**: spec FR-011. The four pricing controllers and `ErrorBanner` show `FieldError.msg` today, which is English server text.
+**Rationale**: spec FR-011. `ErrorBanner` shows `FieldError.msg` today, which is English server text.
+
+**Where the nine types can arrive** (from code-scope.tsv): product form (`product_barcode_invalid`, `product_code_has_whitespace`), the user and user-profile admin forms, the inline contact form, the supplier agreement dialog, and the quote email dialog. No pricing endpoint returns one, so the pricing field messages stay as they are (standard validator text, with no custom type).
+
+**How forms localize them without storing text**: the 28 form controllers keep a `Map<String, String>` of server field messages in state, and each screen's `_localizeFieldError(l10n, code)` already turns stored codes into text. For the places above, the controller stores the entry's `type` when it is a known validation type, else its `msg`. The screen's default branch calls `localizeValidationType`, which returns the message for a known type and the stored string otherwise. Type names don't collide with client-side codes (`driverRequired`, …), so no marker is needed.
 
 ## R8. Special paths by code
 
