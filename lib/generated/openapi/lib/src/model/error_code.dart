@@ -10,6 +10,30 @@ import 'package:built_value/serializer.dart';
 part 'error_code.g.dart';
 
 class ErrorCode extends EnumClass {
+  @BuiltValueEnumConst(wireName: r'analytics.dimension_not_applicable')
+  static const ErrorCode analyticsPeriodDimensionNotApplicable =
+      _$analyticsPeriodDimensionNotApplicable;
+  @BuiltValueEnumConst(wireName: r'analytics.export_expired')
+  static const ErrorCode analyticsPeriodExportExpired =
+      _$analyticsPeriodExportExpired;
+  @BuiltValueEnumConst(wireName: r'analytics.export_not_ready')
+  static const ErrorCode analyticsPeriodExportNotReady =
+      _$analyticsPeriodExportNotReady;
+  @BuiltValueEnumConst(wireName: r'analytics.export_source_invalid')
+  static const ErrorCode analyticsPeriodExportSourceInvalid =
+      _$analyticsPeriodExportSourceInvalid;
+  @BuiltValueEnumConst(wireName: r'analytics.pdf_too_large')
+  static const ErrorCode analyticsPeriodPdfTooLarge =
+      _$analyticsPeriodPdfTooLarge;
+  @BuiltValueEnumConst(wireName: r'analytics.period_invalid')
+  static const ErrorCode analyticsPeriodPeriodInvalid =
+      _$analyticsPeriodPeriodInvalid;
+  @BuiltValueEnumConst(wireName: r'analytics.sort_invalid')
+  static const ErrorCode analyticsPeriodSortInvalid =
+      _$analyticsPeriodSortInvalid;
+  @BuiltValueEnumConst(wireName: r'analytics.too_many_dimensions')
+  static const ErrorCode analyticsPeriodTooManyDimensions =
+      _$analyticsPeriodTooManyDimensions;
   @BuiltValueEnumConst(wireName: r'auth.administrator_required')
   static const ErrorCode authPeriodAdministratorRequired =
       _$authPeriodAdministratorRequired;

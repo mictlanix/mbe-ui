@@ -79,6 +79,13 @@ Class | Method | HTTP request | Description
 [*AddressesApi*](doc/AddressesApi.md) | [**getAddressApiV1AddressesAddressIdGet**](doc/AddressesApi.md#getaddressapiv1addressesaddressidget) | **GET** /api/v1/addresses/{address_id} | Get Address
 [*AddressesApi*](doc/AddressesApi.md) | [**listAddressesApiV1AddressesGet**](doc/AddressesApi.md#listaddressesapiv1addressesget) | **GET** /api/v1/addresses | List Addresses
 [*AddressesApi*](doc/AddressesApi.md) | [**updateAddressApiV1AddressesAddressIdPut**](doc/AddressesApi.md#updateaddressapiv1addressesaddressidput) | **PUT** /api/v1/addresses/{address_id} | Update Address
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**createExportApiV1AnalyticsExportsPost**](doc/AnalyticsApi.md#createexportapiv1analyticsexportspost) | **POST** /api/v1/analytics/exports | Create Export
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**downloadExportApiV1AnalyticsExportsAnalyticsExportIdFileGet**](doc/AnalyticsApi.md#downloadexportapiv1analyticsexportsanalyticsexportidfileget) | **GET** /api/v1/analytics/exports/{analytics_export_id}/file | Download Export
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**queryApiV1AnalyticsQueryPost**](doc/AnalyticsApi.md#queryapiv1analyticsquerypost) | **POST** /api/v1/analytics/query | Query
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**readCatalogApiV1AnalyticsCatalogGet**](doc/AnalyticsApi.md#readcatalogapiv1analyticscatalogget) | **GET** /api/v1/analytics/catalog | Read Catalog
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**readDashboardApiV1AnalyticsDashboardGet**](doc/AnalyticsApi.md#readdashboardapiv1analyticsdashboardget) | **GET** /api/v1/analytics/dashboard | Read Dashboard
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**readDetailApiV1AnalyticsDetailPost**](doc/AnalyticsApi.md#readdetailapiv1analyticsdetailpost) | **POST** /api/v1/analytics/detail | Read Detail
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**readExportApiV1AnalyticsExportsAnalyticsExportIdGet**](doc/AnalyticsApi.md#readexportapiv1analyticsexportsanalyticsexportidget) | **GET** /api/v1/analytics/exports/{analytics_export_id} | Read Export
 [*AuthApi*](doc/AuthApi.md) | [**changePasswordApiV1AuthChangePasswordPost**](doc/AuthApi.md#changepasswordapiv1authchangepasswordpost) | **POST** /api/v1/auth/change-password | Change Password
 [*AuthApi*](doc/AuthApi.md) | [**confirmRecoveryApiV1AuthRecoverPost**](doc/AuthApi.md#confirmrecoveryapiv1authrecoverpost) | **POST** /api/v1/auth/recover | Confirm Recovery
 [*AuthApi*](doc/AuthApi.md) | [**getMeApiV1AuthMeGet**](doc/AuthApi.md#getmeapiv1authmeget) | **GET** /api/v1/auth/me | Get Me
@@ -502,6 +509,25 @@ Class | Method | HTTP request | Description
  - [AmountChange](doc/AmountChange.md)
  - [AmountMax](doc/AmountMax.md)
  - [AmountMin](doc/AmountMin.md)
+ - [AnalyticsAlert](doc/AnalyticsAlert.md)
+ - [AnalyticsCatalogResponse](doc/AnalyticsCatalogResponse.md)
+ - [AnalyticsDashboardRequest](doc/AnalyticsDashboardRequest.md)
+ - [AnalyticsDashboardResponse](doc/AnalyticsDashboardResponse.md)
+ - [AnalyticsDetailItem](doc/AnalyticsDetailItem.md)
+ - [AnalyticsDetailRequest](doc/AnalyticsDetailRequest.md)
+ - [AnalyticsDetailResponse](doc/AnalyticsDetailResponse.md)
+ - [AnalyticsDimension](doc/AnalyticsDimension.md)
+ - [AnalyticsExportRequest](doc/AnalyticsExportRequest.md)
+ - [AnalyticsExportResponse](doc/AnalyticsExportResponse.md)
+ - [AnalyticsFilter](doc/AnalyticsFilter.md)
+ - [AnalyticsKey](doc/AnalyticsKey.md)
+ - [AnalyticsKpi](doc/AnalyticsKpi.md)
+ - [AnalyticsMeasure](doc/AnalyticsMeasure.md)
+ - [AnalyticsPoint](doc/AnalyticsPoint.md)
+ - [AnalyticsQueryRequest](doc/AnalyticsQueryRequest.md)
+ - [AnalyticsQueryResponse](doc/AnalyticsQueryResponse.md)
+ - [AnalyticsRow](doc/AnalyticsRow.md)
+ - [AnalyticsSeries](doc/AnalyticsSeries.md)
  - [Application](doc/Application.md)
  - [ApplicationCreate](doc/ApplicationCreate.md)
  - [ApplicationItem](doc/ApplicationItem.md)
@@ -552,6 +578,7 @@ Class | Method | HTTP request | Description
  - [CommitLineRequest](doc/CommitLineRequest.md)
  - [CommitLineUpdate](doc/CommitLineUpdate.md)
  - [CommitOrderRequest](doc/CommitOrderRequest.md)
+ - [Comparison](doc/Comparison.md)
  - [ConfirmRecoveryRequest](doc/ConfirmRecoveryRequest.md)
  - [ContactCreate](doc/ContactCreate.md)
  - [ContactResponse](doc/ContactResponse.md)
@@ -597,6 +624,9 @@ Class | Method | HTTP request | Description
  - [Denomination](doc/Denomination.md)
  - [DenominationCount](doc/DenominationCount.md)
  - [Detail](doc/Detail.md)
+ - [DetailFlag](doc/DetailFlag.md)
+ - [DetailKind](doc/DetailKind.md)
+ - [DimensionKey](doc/DimensionKey.md)
  - [Discount](doc/Discount.md)
  - [Discount1](doc/Discount1.md)
  - [DiscountRate](doc/DiscountRate.md)
@@ -619,6 +649,9 @@ Class | Method | HTTP request | Description
  - [ExpenseVoucherResponse](doc/ExpenseVoucherResponse.md)
  - [ExpenseVoucherSummary](doc/ExpenseVoucherSummary.md)
  - [ExpenseVoucherUpdate](doc/ExpenseVoucherUpdate.md)
+ - [ExportFormat](doc/ExportFormat.md)
+ - [ExportSource](doc/ExportSource.md)
+ - [ExportStatus](doc/ExportStatus.md)
  - [FacilityCreate](doc/FacilityCreate.md)
  - [FacilityResponse](doc/FacilityResponse.md)
  - [FacilitySummary](doc/FacilitySummary.md)
@@ -634,6 +667,7 @@ Class | Method | HTTP request | Description
  - [FiscalEmailResponse](doc/FiscalEmailResponse.md)
  - [FulfillmentType](doc/FulfillmentType.md)
  - [GeneratedReceipt](doc/GeneratedReceipt.md)
+ - [Grain](doc/Grain.md)
  - [HighProfit](doc/HighProfit.md)
  - [HighProfitMargin](doc/HighProfitMargin.md)
  - [HighProfitMargin1](doc/HighProfitMargin1.md)
@@ -726,6 +760,7 @@ Class | Method | HTTP request | Description
  - [LowProfit](doc/LowProfit.md)
  - [LowProfitMargin](doc/LowProfitMargin.md)
  - [LowProfitMargin1](doc/LowProfitMargin1.md)
+ - [MeasureKey](doc/MeasureKey.md)
  - [MethodTotal](doc/MethodTotal.md)
  - [NegativeAvailable](doc/NegativeAvailable.md)
  - [OpenDocument](doc/OpenDocument.md)
@@ -901,6 +936,7 @@ Class | Method | HTTP request | Description
  - [UserSettingsResponse](doc/UserSettingsResponse.md)
  - [UserSettingsUpdate](doc/UserSettingsUpdate.md)
  - [UserUpdate](doc/UserUpdate.md)
+ - [VatTreatment](doc/VatTreatment.md)
  - [VehicleCreate](doc/VehicleCreate.md)
  - [VehicleOperatorCreate](doc/VehicleOperatorCreate.md)
  - [VehicleOperatorResponse](doc/VehicleOperatorResponse.md)

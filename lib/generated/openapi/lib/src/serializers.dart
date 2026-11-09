@@ -31,6 +31,25 @@ import 'package:mbe_api_client/src/model/amount4.dart';
 import 'package:mbe_api_client/src/model/amount_change.dart';
 import 'package:mbe_api_client/src/model/amount_max.dart';
 import 'package:mbe_api_client/src/model/amount_min.dart';
+import 'package:mbe_api_client/src/model/analytics_alert.dart';
+import 'package:mbe_api_client/src/model/analytics_catalog_response.dart';
+import 'package:mbe_api_client/src/model/analytics_dashboard_request.dart';
+import 'package:mbe_api_client/src/model/analytics_dashboard_response.dart';
+import 'package:mbe_api_client/src/model/analytics_detail_item.dart';
+import 'package:mbe_api_client/src/model/analytics_detail_request.dart';
+import 'package:mbe_api_client/src/model/analytics_detail_response.dart';
+import 'package:mbe_api_client/src/model/analytics_dimension.dart';
+import 'package:mbe_api_client/src/model/analytics_export_request.dart';
+import 'package:mbe_api_client/src/model/analytics_export_response.dart';
+import 'package:mbe_api_client/src/model/analytics_filter.dart';
+import 'package:mbe_api_client/src/model/analytics_key.dart';
+import 'package:mbe_api_client/src/model/analytics_kpi.dart';
+import 'package:mbe_api_client/src/model/analytics_measure.dart';
+import 'package:mbe_api_client/src/model/analytics_point.dart';
+import 'package:mbe_api_client/src/model/analytics_query_request.dart';
+import 'package:mbe_api_client/src/model/analytics_query_response.dart';
+import 'package:mbe_api_client/src/model/analytics_row.dart';
+import 'package:mbe_api_client/src/model/analytics_series.dart';
 import 'package:mbe_api_client/src/model/application.dart';
 import 'package:mbe_api_client/src/model/application_create.dart';
 import 'package:mbe_api_client/src/model/application_item.dart';
@@ -81,6 +100,7 @@ import 'package:mbe_api_client/src/model/commission_total_response.dart';
 import 'package:mbe_api_client/src/model/commit_line_request.dart';
 import 'package:mbe_api_client/src/model/commit_line_update.dart';
 import 'package:mbe_api_client/src/model/commit_order_request.dart';
+import 'package:mbe_api_client/src/model/comparison.dart';
 import 'package:mbe_api_client/src/model/confirm_recovery_request.dart';
 import 'package:mbe_api_client/src/model/contact_create.dart';
 import 'package:mbe_api_client/src/model/contact_response.dart';
@@ -126,6 +146,9 @@ import 'package:mbe_api_client/src/model/delivery_order_update.dart';
 import 'package:mbe_api_client/src/model/denomination.dart';
 import 'package:mbe_api_client/src/model/denomination_count.dart';
 import 'package:mbe_api_client/src/model/detail.dart';
+import 'package:mbe_api_client/src/model/detail_flag.dart';
+import 'package:mbe_api_client/src/model/detail_kind.dart';
+import 'package:mbe_api_client/src/model/dimension_key.dart';
 import 'package:mbe_api_client/src/model/discount.dart';
 import 'package:mbe_api_client/src/model/discount1.dart';
 import 'package:mbe_api_client/src/model/discount_rate.dart';
@@ -148,6 +171,9 @@ import 'package:mbe_api_client/src/model/expense_voucher_line_update.dart';
 import 'package:mbe_api_client/src/model/expense_voucher_response.dart';
 import 'package:mbe_api_client/src/model/expense_voucher_summary.dart';
 import 'package:mbe_api_client/src/model/expense_voucher_update.dart';
+import 'package:mbe_api_client/src/model/export_format.dart';
+import 'package:mbe_api_client/src/model/export_source.dart';
+import 'package:mbe_api_client/src/model/export_status.dart';
 import 'package:mbe_api_client/src/model/facility_create.dart';
 import 'package:mbe_api_client/src/model/facility_response.dart';
 import 'package:mbe_api_client/src/model/facility_summary.dart';
@@ -163,6 +189,7 @@ import 'package:mbe_api_client/src/model/fiscal_email_request.dart';
 import 'package:mbe_api_client/src/model/fiscal_email_response.dart';
 import 'package:mbe_api_client/src/model/fulfillment_type.dart';
 import 'package:mbe_api_client/src/model/generated_receipt.dart';
+import 'package:mbe_api_client/src/model/grain.dart';
 import 'package:mbe_api_client/src/model/high_profit.dart';
 import 'package:mbe_api_client/src/model/high_profit_margin.dart';
 import 'package:mbe_api_client/src/model/high_profit_margin1.dart';
@@ -255,6 +282,7 @@ import 'package:mbe_api_client/src/model/list_response_warehouse_response.dart';
 import 'package:mbe_api_client/src/model/low_profit.dart';
 import 'package:mbe_api_client/src/model/low_profit_margin.dart';
 import 'package:mbe_api_client/src/model/low_profit_margin1.dart';
+import 'package:mbe_api_client/src/model/measure_key.dart';
 import 'package:mbe_api_client/src/model/method_total.dart';
 import 'package:mbe_api_client/src/model/negative_available.dart';
 import 'package:mbe_api_client/src/model/open_document.dart';
@@ -430,6 +458,7 @@ import 'package:mbe_api_client/src/model/user_response.dart';
 import 'package:mbe_api_client/src/model/user_settings_response.dart';
 import 'package:mbe_api_client/src/model/user_settings_update.dart';
 import 'package:mbe_api_client/src/model/user_update.dart';
+import 'package:mbe_api_client/src/model/vat_treatment.dart';
 import 'package:mbe_api_client/src/model/vehicle_create.dart';
 import 'package:mbe_api_client/src/model/vehicle_operator_create.dart';
 import 'package:mbe_api_client/src/model/vehicle_operator_response.dart';
@@ -461,6 +490,25 @@ part 'serializers.g.dart';
   AmountChange,
   AmountMax,
   AmountMin,
+  AnalyticsAlert,
+  AnalyticsCatalogResponse,
+  AnalyticsDashboardRequest,
+  AnalyticsDashboardResponse,
+  AnalyticsDetailItem,
+  AnalyticsDetailRequest,
+  AnalyticsDetailResponse,
+  AnalyticsDimension,
+  AnalyticsExportRequest,
+  AnalyticsExportResponse,
+  AnalyticsFilter,
+  AnalyticsKey,
+  AnalyticsKpi,
+  AnalyticsMeasure,
+  AnalyticsPoint,
+  AnalyticsQueryRequest,
+  AnalyticsQueryResponse,
+  AnalyticsRow,
+  AnalyticsSeries,
   Application,
   ApplicationCreate,
   ApplicationItem,
@@ -511,6 +559,7 @@ part 'serializers.g.dart';
   CommitLineRequest,
   CommitLineUpdate,
   CommitOrderRequest,
+  Comparison,
   ConfirmRecoveryRequest,
   ContactCreate,
   ContactResponse,
@@ -556,6 +605,9 @@ part 'serializers.g.dart';
   Denomination,
   DenominationCount,
   Detail,
+  DetailFlag,
+  DetailKind,
+  DimensionKey,
   Discount,
   Discount1,
   DiscountRate,
@@ -578,6 +630,9 @@ part 'serializers.g.dart';
   ExpenseVoucherResponse,
   ExpenseVoucherSummary,
   ExpenseVoucherUpdate,
+  ExportFormat,
+  ExportSource,
+  ExportStatus,
   FacilityCreate,
   FacilityResponse,
   FacilitySummary,
@@ -593,6 +648,7 @@ part 'serializers.g.dart';
   FiscalEmailResponse,
   FulfillmentType,
   GeneratedReceipt,
+  Grain,
   HighProfit,
   HighProfitMargin,
   HighProfitMargin1,
@@ -685,6 +741,7 @@ part 'serializers.g.dart';
   LowProfit,
   LowProfitMargin,
   LowProfitMargin1,
+  MeasureKey,
   MethodTotal,
   NegativeAvailable,
   OpenDocument,
@@ -860,6 +917,7 @@ part 'serializers.g.dart';
   UserSettingsResponse,
   UserSettingsUpdate,
   UserUpdate,
+  VatTreatment,
   VehicleCreate,
   VehicleOperatorCreate,
   VehicleOperatorResponse,
@@ -920,6 +978,10 @@ Serializers serializers =
             () => ListBuilder<PurchaseOrderApplication>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AnalyticsKey)]),
+            () => ListBuilder<AnalyticsKey>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(CommissionLineResponse)]),
             () => ListBuilder<CommissionLineResponse>(),
           )
@@ -938,6 +1000,13 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(UserProfileListItem)]),
             () => ListBuilder<UserProfileListItem>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltMap, [
+              FullType(String),
+              FullType.nullable(String),
+            ]),
+            () => MapBuilder<String, String?>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(CustomerRefundSummary)]),
@@ -968,12 +1037,24 @@ Serializers serializers =
             () => ListBuilder<int>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(MeasureKey)]),
+            () => ListBuilder<MeasureKey>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ToPurchaseGroup)]),
             () => ListBuilder<ToPurchaseGroup>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AnalyticsPoint)]),
+            () => ListBuilder<AnalyticsPoint>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ProfilePrivilegeUpdate)]),
             () => ListBuilder<ProfilePrivilegeUpdate>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(DimensionKey)]),
+            () => ListBuilder<DimensionKey>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(SatCatalogResponse)]),
@@ -1072,6 +1153,10 @@ Serializers serializers =
             () => ListBuilder<ExpenseVoucherLine>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AnalyticsFilter)]),
+            () => ListBuilder<AnalyticsFilter>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [
               FullType(InventoryTransferLineResponse),
             ]),
@@ -1102,6 +1187,10 @@ Serializers serializers =
             () => ListBuilder<PendingDeliveryBucket>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(Grain)]),
+            () => ListBuilder<Grain>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(PaymentMethodOptionResponse)]),
             () => ListBuilder<PaymentMethodOptionResponse>(),
           )
@@ -1116,6 +1205,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(AccountPayment)]),
             () => ListBuilder<AccountPayment>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AnalyticsSeries)]),
+            () => ListBuilder<AnalyticsSeries>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(BatchAccount)]),
@@ -1169,6 +1262,10 @@ Serializers serializers =
             () => ListBuilder<CommissionLabelResponse>(),
           )
           ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AnalyticsRow)]),
+            () => ListBuilder<AnalyticsRow>(),
+          )
+          ..addBuilderFactory(
             const FullType(BuiltList, [FullType(PendingDeliveryLine)]),
             () => ListBuilder<PendingDeliveryLine>(),
           )
@@ -1183,6 +1280,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(InventoryReceiptSummary)]),
             () => ListBuilder<InventoryReceiptSummary>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AnalyticsDetailItem)]),
+            () => ListBuilder<AnalyticsDetailItem>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(SupplierBalanceOrder)]),
@@ -1207,6 +1308,14 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ProductLookupResponse)]),
             () => ListBuilder<ProductLookupResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AnalyticsMeasure)]),
+            () => ListBuilder<AnalyticsMeasure>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AnalyticsAlert)]),
+            () => ListBuilder<AnalyticsAlert>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(TaxpayerRecipientResponse)]),
@@ -1239,6 +1348,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ProfilePrivilegeResponse)]),
             () => ListBuilder<ProfilePrivilegeResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AnalyticsDimension)]),
+            () => ListBuilder<AnalyticsDimension>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(DeliveryOrderLineRequest)]),
@@ -1291,6 +1404,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ProductPriceBulkItem)]),
             () => ListBuilder<ProductPriceBulkItem>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(AnalyticsKpi)]),
+            () => ListBuilder<AnalyticsKpi>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(DeliveryOrderLineResponse)]),

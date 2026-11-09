@@ -29,6 +29,7 @@ part 'sales_order_response.g.dart';
 /// * [salesQuote]
 /// * [paymentTerms]
 /// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
+/// * [confirmationTime] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [promiseDate] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [dueDate] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [contact]
@@ -81,6 +82,10 @@ abstract class SalesOrderResponse
   /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'date')
   DateTime get date;
+
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
+  @BuiltValueField(wireName: r'confirmation_time')
+  DateTime? get confirmationTime;
 
   /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'promise_date')
@@ -228,6 +233,13 @@ class _$SalesOrderResponseSerializer
       object.date,
       specifiedType: const FullType(DateTime),
     );
+    if (object.confirmationTime != null) {
+      yield r'confirmation_time';
+      yield serializers.serialize(
+        object.confirmationTime,
+        specifiedType: const FullType.nullable(DateTime),
+      );
+    }
     yield r'promise_date';
     yield serializers.serialize(
       object.promiseDate,
@@ -440,6 +452,16 @@ class _$SalesOrderResponseSerializer
                   )
                   as DateTime;
           result.date = valueDes;
+          break;
+        case r'confirmation_time':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(DateTime),
+                  )
+                  as DateTime?;
+          if (valueDes == null) continue;
+          result.confirmationTime = valueDes;
           break;
         case r'promise_date':
           final valueDes =
