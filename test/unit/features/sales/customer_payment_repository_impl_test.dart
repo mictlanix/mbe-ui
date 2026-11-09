@@ -14,6 +14,7 @@ const _jsonHeaders = {
 
 Map<String, dynamic> _paymentJson({int id = 1, int? verifier}) => {
   'customer_payment_id': id,
+  'serial': id,
   'customer': 77,
   'customer_display_name': 'Ana López',
   'amount': '100.00',

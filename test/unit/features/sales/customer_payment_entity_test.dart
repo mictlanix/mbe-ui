@@ -17,6 +17,7 @@ api.CustomerPaymentResponse _payment({
   String? customerDisplayName,
 }) => appSerializers.deserializeWith(api.CustomerPaymentResponse.serializer, {
   'customer_payment_id': 18342,
+  'serial': 4521,
   'customer': 77,
   'customer_display_name': customerDisplayName,
   'amount': '1250.00',
