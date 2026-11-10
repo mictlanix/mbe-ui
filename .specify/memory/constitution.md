@@ -1,7 +1,26 @@
 <!--
 Sync Impact Report
-Version change: 1.0.0 → 1.14.0
+Version change: 1.0.0 → 1.15.0
 Modified principles:
+  - III. Contract-Driven API Integration — materially expanded with an
+    **API error text** rule [1.15.0, MINOR]. What the user reads about a
+    server refusal comes from the app's own translations, built from the
+    error's `code` and `params`, with four criteria: display (server text
+    only through the shared message path, which falls back to `detail`
+    for an unknown code; state keeps the error, not its text);
+    recognition (refusal-specific behaviour keyed on the code, prose or
+    status only as a fallback); coverage (a feature that starts calling an
+    endpoint adds messages for every code it can return, measured from
+    mbe-api's error catalog); resilience (an unknown code or a bad param
+    falls back, never fails). The shared-types bullet gains
+    `CreditHoldError`, which the code has had since spec 039. Development
+    Workflow & Quality Gates gains a matching plan rule. Requested by the
+    product owner, 2026-11-09, after specs/058-localized-api-errors (mbe-ui
+    PR #236). The spec already complies, and its guard tests back the
+    display and coverage criteria. DESIGN.md §3.4 was updated first, per
+    Governance. Templates: plan-template.md's Constitution Check reads
+    this file and needs no change; spec-template.md and tasks-template.md
+    restate no §III rule.
   - VI. Desktop/Web-First, Compact-Ready Layout — the record-surface rule
     now states its criteria instead of enumerating entities [1.14.0, MINOR:
     the binding rule is materially re-expressed]. An entity uses a full
@@ -292,8 +311,28 @@ DTOs for a resource that already has a published schema are NOT permitted.
   DESIGN.md §7 regarding refresh tokens).
 - API errors (validation, 4xx/5xx, network) MUST be mapped to the shared
   domain error types (`ValidationError`, `NotFoundError`, `AuthError`,
-  `ServerError`, `NetworkError`) and surfaced via the shared error-display
-  widget rather than handled ad hoc per screen.
+  `ServerError`, `NetworkError`, `CreditHoldError`) and surfaced via the
+  shared error-display widget rather than handled ad hoc per screen.
+- **API error text.** What the user reads about a server refusal MUST come
+  from the app's own translations, built from the error's `code` and
+  `params` (mbe-api's localizable error contract), not from the server's
+  English `detail`:
+  - **Display**: server text MUST reach a screen only through the shared
+    message path, which falls back to the server's `detail` only for a code
+    the app has no message for. State MUST keep the error itself, never its
+    text, so the message is built when shown and follows the current
+    language.
+  - **Recognition**: behaviour that depends on which refusal it was (a
+    redirect, a special error variant, telling two refusals apart) MUST be
+    keyed on the `code`. Matching the server's prose, or a bare status
+    code, is allowed only as a fallback for a response that carries no code.
+  - **Coverage**: a feature that starts calling an endpoint MUST add
+    messages, in every supported locale, for every code that endpoint can
+    return, measured from mbe-api's error catalog. Codes returned only by
+    endpoints the app does not call are added by the feature that first
+    calls them.
+  - **Resilience**: an unknown code, or a missing or mistyped param, MUST
+    fall back to the generic display and MUST NOT fail.
 - Codegen MUST be re-run whenever mbe-api's OpenAPI spec changes; generated
   files MUST NOT be hand-edited.
 - For any endpoint accepting a binary file (`multipart/form-data`), the
@@ -327,6 +366,10 @@ DTOs for a resource that already has a published schema are NOT permitted.
 
 **Rationale**: keeps client models in sync with a backend under active
 development and gives consistent error UX across modules (DESIGN.md §3.1-§3.4).
+The error-text rule exists because in the `es-MX` default an English
+sentence is no explanation, and because a code is stable while the
+server's prose can change without notice; specs/058-localized-api-errors
+established it and backs it with guard tests.
 The repo-boundary rule keeps mbe-api's own review/release process intact —
 a cross-repo edit made from an mbe-ui session bypasses whatever process
 mbe-api's own maintainers use to accept changes, and generated files edited
@@ -679,6 +722,10 @@ document representation (DESIGN.md §3.5-§3.6).
 - Whenever a feature *needs* an mbe-api change that doesn't exist yet, file
   an mbe-api issue and record it as a plan dependency — never patch
   mbe-api's source directly from an mbe-ui session (§III).
+- Whenever a feature's plan lists endpoints the app starts calling, it MUST
+  also list the error codes those endpoints can return and the messages it
+  adds for them (§III, API error text), the same way it lists re-running
+  codegen.
 
 ## Governance
 
@@ -697,4 +744,4 @@ was made and MAY be updated independently for rationale/context.
   MUST be recorded in the plan's Complexity Tracking table with a
   justification and a note on why a simpler alternative was rejected.
 
-**Version**: 1.14.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-10-22
+**Version**: 1.15.0 | **Ratified**: 2026-06-14 | **Last Amended**: 2026-11-09
