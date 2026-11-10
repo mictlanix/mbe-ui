@@ -26,6 +26,9 @@ import 'package:mbe_ui/features/auth/presentation/widgets/new_password_fields.da
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/errors/localize_problem.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
+import 'package:mbe_ui/core/formatting/app_formatters.dart';
 
 /// Create / edit screen for a single user account (FR-012/FR-013/FR-014).
 /// [userId] is null in create mode; non-null in edit mode.
@@ -74,6 +77,10 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
     final l10n = AppLocalizations.of(context)!;
     final employeeRepo = ref.read(employeeRepositoryProvider);
     final passwordPolicy = ref.watch(passwordPolicyProvider);
+    // Only a coded refusal needs the formatters (its amounts and dates).
+    final errorFormatters = formState.errorCause?.problem == null
+        ? null
+        : ref.watch(formattersProvider);
     // Applying a profile is administrator-only server-side, matching the
     // profile catalog itself (024-user-profiles research.md §2) — neither
     // the create-form picker nor the apply action is a per-object
@@ -123,14 +130,12 @@ class _UserDetailScreenState extends ConsumerState<UserDetailScreen> {
                     // supplementary detail under the localized heading above.
                     // A policy rejection's detail is its raw message, which
                     // the per-rule messages replace.
-                    if (formState.errorDetail != null &&
-                        !(formState.error == UserFormErrorCode.passwordPolicy &&
+                    if (_causeText(formState.errorCause, l10n, errorFormatters)
+                        case final reason?
+                        when !(formState.error ==
+                                UserFormErrorCode.passwordPolicy &&
                             passwordPolicy.hasValue))
-                      FieldError(
-                        loc: const [],
-                        msg: formState.errorDetail!,
-                        type: 'error',
-                      ),
+                      FieldError(loc: const [], msg: reason, type: 'error'),
                   ]),
                 ),
                 const SizedBox(height: 16),
@@ -459,9 +464,22 @@ List<FieldError> _localizedFormErrors(
   ];
 }
 
-/// Localizes a [UserFormErrorCode] for [UserFormState.error]. Falls back to
-/// the raw value for a [ValidationError]'s server-provided message, which
-/// is stored directly in `error` instead of being one of these codes.
+/// The reason the server gave, under the form's own headline: its message in
+/// the user's language when the app has one for its code, else its English
+/// text. A field-level refusal (a rejected password) shows its first field's
+/// message, which the per-rule messages replace once the policy is loaded.
+String? _causeText(AppError? cause, AppLocalizations l10n, AppFormatters? fmt) {
+  if (cause == null) return null;
+  if (cause is ValidationError && cause.errors.isNotEmpty) {
+    return cause.errors.first.msg;
+  }
+  return cause.userMessage(l10n, fmt);
+}
+
+/// Localizes a [UserFormErrorCode] for [UserFormState.error]. A server field
+/// message is stored directly in `error` instead of being one of these
+/// codes: a known validation type is resolved to text here, anything else
+/// passes through.
 String _localizeFormError(AppLocalizations l10n, String code) {
   switch (code) {
     case UserFormErrorCode.emailRequired:
@@ -481,6 +499,6 @@ String _localizeFormError(AppLocalizations l10n, String code) {
     case UserFormErrorCode.recoveryFailed:
       return l10n.userRecoveryFailedError;
     default:
-      return code;
+      return localizeValidationType(code, l10n) ?? code;
   }
 }

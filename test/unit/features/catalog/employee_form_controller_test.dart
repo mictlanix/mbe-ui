@@ -224,7 +224,7 @@ void main() {
         expect(state.deleted, isFalse);
         expect(state.error, EmployeeFormErrorCode.deleteFailed);
         expect(
-          state.errorDetail,
+          state.errorCause?.serverMessage,
           "Employee is assigned as a customer's salesperson",
         );
       },

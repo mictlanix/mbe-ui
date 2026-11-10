@@ -278,7 +278,7 @@ void main() {
       await notifier().submit();
 
       expect(state().error, CustomerDiscountDialogErrorCode.saveFailed);
-      expect(state().errorDetail, 'boom');
+      expect(state().errorCause?.serverMessage, 'boom');
       expect(state().done, isFalse);
     });
 
@@ -447,7 +447,7 @@ void main() {
         await edit().submit();
 
         expect(editState().error, CustomerDiscountDialogErrorCode.saveFailed);
-        expect(editState().errorDetail, 'boom');
+        expect(editState().errorCause?.serverMessage, 'boom');
         expect(editState().done, isFalse);
       },
     );
@@ -460,7 +460,7 @@ void main() {
       await edit().submit();
 
       expect(editState().error, CustomerDiscountDialogErrorCode.saveFailed);
-      expect(editState().errorDetail, 'Nope');
+      expect(editState().errorCause?.serverMessage, 'Nope');
     });
 
     test('delete calls the repository once, refreshes the list and '
@@ -506,7 +506,7 @@ void main() {
         await edit().delete();
 
         expect(editState().error, CustomerDiscountDialogErrorCode.deleteFailed);
-        expect(editState().errorDetail, 'boom');
+        expect(editState().errorCause?.serverMessage, 'boom');
         expect(editState().done, isFalse);
       },
     );

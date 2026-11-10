@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/errors/localize_problem.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/sales/data/customer_refund_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/customer_refund.dart';
@@ -35,7 +38,8 @@ class RefundRefused extends RefundStart {
 
 /// Resumes the order's draft refund, or opens a new one (spec 057 R2, R3).
 /// Refusals are classified from the order's own status, never from the
-/// server's prose; any error other than a `409` on the open is rethrown.
+/// server's prose; a `409` on the open is classified by its code when it has
+/// one. Any other error is rethrown.
 Future<RefundStart> openOrResume(WidgetRef ref, int salesOrderId) async {
   final refunds = ref.read(customerRefundRepositoryProvider);
 
@@ -71,10 +75,25 @@ Future<RefundStart> openOrResume(WidgetRef ref, int salesOrderId) async {
     final refund = await refunds.open(salesOrderId);
     return RefundOpened(refund.id, resumed: false);
   } on ServerError catch (e) {
-    if (e.statusCode == 409) {
+    if (e.statusCode != 409) rethrow;
+    if (e.problem == null) {
+      // A server that sends no code: any 409 on the open means nothing is
+      // left to return, and its detail is shown with it (R3).
       return RefundRefused(RefundRefusal.nothingToReturn, e.message);
     }
-    rethrow;
+    // The server said why (spec 058): the refusal needs no English appended,
+    // and any other coded refusal is shown as itself by the caller.
+    switch (e.problem!.code) {
+      case api.ErrorCode.refundPeriodNothingRefundable ||
+          api.ErrorCode.refundPeriodNoReturnableLines:
+        return const RefundRefused(RefundRefusal.nothingToReturn);
+      case api.ErrorCode.refundPeriodOrderNotPaid:
+        return const RefundRefused(RefundRefusal.notPaid);
+      case api.ErrorCode.refundPeriodOrderNotCompleted:
+        return const RefundRefused(RefundRefusal.notCompleted);
+      default:
+        rethrow;
+    }
   }
 }
 
@@ -110,7 +129,9 @@ Future<void> startRefundFromOrder(
         }
     }
   } on AppError catch (e) {
-    message = e.serverMessage ?? l10n.refundsLoadError;
+    message =
+        e.userMessage(l10n, ref.read(formattersProvider)) ??
+        l10n.refundsLoadError;
   }
   messenger.showSnackBar(SnackBar(content: Text(message)));
 }

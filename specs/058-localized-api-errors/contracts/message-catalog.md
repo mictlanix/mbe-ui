@@ -32,27 +32,27 @@ The per-code evidence is in [code-scope.tsv](code-scope.tsv): verdict, example r
 | `request.malformed` | — | The app sent a request the server couldn't read. Try again. | La app envió una solicitud que el servidor no pudo leer. Inténtalo de nuevo. |
 | `request.method_not_allowed` | — | The server doesn't allow this operation here. | El servidor no permite esta operación aquí. |
 | `request.route_not_found` | — | The server doesn't offer this function. The app may need an update. | El servidor no ofrece esta función. Puede que la app necesite actualizarse. |
-| `resource.already_exists` | resource: noun | A {resource} with that value already exists. | Ya existe un {resource} con ese valor. |
+| `resource.already_exists` | resource: noun | That value is already in use. Another {resource} has it. | Ese valor ya está en uso en otro {resource}. (feminine nouns: "otra") |
 | `resource.conflict` | — | The change conflicts with existing data. Reload and try again. | El cambio entra en conflicto con datos existentes. Recarga e inténtalo de nuevo. |
-| `resource.not_found` | resource: noun | {resource} not found. It may have been deleted. | No se encontró el {resource}. Puede que se haya eliminado. |
+| `resource.not_found` | resource: noun | Couldn't find the {resource}. It may have been deleted. | No se encontró el {resource}. Puede que se haya eliminado. (feminine nouns: "la") |
 | `resource.still_referenced` | references: list (noun + count), more: count | This record is still in use by {list} and can't be deleted. | Este registro todavía está en uso por {list} y no se puede eliminar. |
 | `server.error` | — | Something went wrong on the server. Try again later. | Ocurrió un error en el servidor. Inténtalo de nuevo más tarde. |
 | `state.transition_invalid` | — | This record can't change from its current status to the one requested. | Este registro no puede pasar de su estado actual al solicitado. |
 
 **`resource.still_referenced` list**:
 - `{list}` is built by the case.
-- Each reference with a known noun renders through `apiReferenceCount(count, noun)`: en "{count} {noun}", es "{count} {noun}", with the plural noun.
+- Each reference renders as its count and the noun in the right plural (`12 orders`, `1 transfer`), with the count formatted by `fmt.display.count`. A kind the app has no noun for renders with the generic noun (`2 records`).
 - The items are joined with ", ".
-- References without a known noun, plus `more`, add an `apiReferenceMore(more)` tail: en "and {more, plural, one{1 other} other{{more} others}}", es "y {more, plural, one{1 más} other{{more} más}}".
+- When `more` is above zero, an `apiReferenceMore(more)` tail follows the items: en "and {more, plural, one{1 other} other{{more} others}}", es "y {more, plural, one{1 más} other{{more} más}}".
 - An empty list falls back to `apiErrorResourceStillReferencedGeneric`: en "This record is still in use and can't be deleted." / es "Este registro todavía está en uso y no se puede eliminar."
 
 **`resource.not_found` / `already_exists` without a known noun** use `resourceNoun`'s generic "registro" / "record" (R4).
 
-**Gender**: Spanish nouns differ in gender ("el pedido", "la factura"). The two templates that take `{resource}` therefore use ICU `select` on a gender returned with the noun, `apiResourceGender*`: `masculine` | `feminine`. The es templates become:
+**Gender**: Spanish nouns differ in gender ("el pedido", "la factura"). The templates that take `{resource}` (`not_found`, `already_exists`, `facility.other_facility`, `product_price.references_not_found`) therefore use ICU `select` on a gender returned with the noun, `apiResourceGender*`: `masculine` | `feminine`. The es templates become:
 - `{gender, select, feminine{No se encontró la {resource}.} other{No se encontró el {resource}.}} Puede que se haya eliminado.`
-- `{gender, select, feminine{Ya existe una {resource} con ese valor.} other{Ya existe un {resource} con ese valor.}}`
+- `{gender, select, feminine{Ese valor ya está en uso en otra {resource}.} other{Ese valor ya está en uso en otro {resource}.}}`
 
-en ignores `gender`.
+The English template carries the same `select` with identical branches, because every placeholder a translation uses must be declared by the template; English ignores `gender`.
 
 ## 2. Area codes (80)
 
@@ -123,11 +123,11 @@ en ignores `gender`.
 | `sales_order.already_cancelled` | — | This order is already cancelled. | Este pedido ya está cancelado. |
 | `sales_order.below_min_quantity` | min_order_qty: count | A product is below its minimum order of {min}. | Un producto está por debajo de su pedido mínimo de {min}. |
 | `sales_order.has_payment_applications` | — | This order has payments applied. Reverse them first. | Este pedido tiene pagos aplicados. Revírtelos primero. |
-| `sales_order.insufficient_stock` | lines (error-mapping §5) | Some lines don't have enough stock: + one line each | Algunas partidas no tienen existencia suficiente: + una línea por partida |
-| `sales_order.missing_delivery_details` | missing (error-mapping §5) | Delivery details are missing: + one line each | Faltan datos de entrega: + una línea por dato |
+| `sales_order.insufficient_stock` | lines (error-mapping §5) | Some lines don't have enough stock | Algunas partidas no tienen existencia suficiente |
+| `sales_order.missing_delivery_details` | missing (error-mapping §5) | Delivery details are missing | Faltan datos de entrega |
 | `sales_order.no_lines` | — | Add at least one line before confirming. | Agrega al menos una partida antes de confirmar. |
 | `sales_order.paid_cannot_cancel` | — | A paid order can't be cancelled. Refund it instead. | Un pedido pagado no se puede cancelar. Haz una devolución. |
-| `sales_order.zero_priced_lines` | lines (error-mapping §5) | Some lines have no price: + one line each | Algunas partidas no tienen precio: + una línea por partida |
+| `sales_order.zero_priced_lines` | lines (error-mapping §5) | Some lines have no price | Algunas partidas no tienen precio |
 | `supplier_agreement.end_before_start` | start: date, end: date | The end date ({end}) is before the start date ({start}). | La fecha de fin ({end}) es anterior a la de inicio ({start}). |
 | `taxpayer_certificate.holder_mismatch` | certificate_taxpayer: text, taxpayer: text | The certificate belongs to {certificateTaxpayer}, not to {taxpayer}. | El certificado es de {certificateTaxpayer}, no de {taxpayer}. |
 | `taxpayer_issuer.unknown` | taxpayer: text | The issuer {taxpayer} isn't registered. | El emisor {taxpayer} no está registrado. |
@@ -144,7 +144,7 @@ Notes:
 - `refund.line_invoiced` is two keys, `apiErrorRefundLineInvoiced(product, invoice)` and `apiErrorRefundLineInvoicedNoFolio(product)`. `invoice` is optional per the contract.
 - `facility.other_facility`'s Spanish uses the gender `select`, like §1.
 - `product_price.references_not_found` uses the noun's plural, `count: 2`.
-- The headline-plus-lines codes (`insufficient_stock`, `missing_delivery_details`, `zero_priced_lines`) render the headline key followed by the lines (error-mapping.md §5).
+- The headline-plus-lines codes (`insufficient_stock`, `missing_delivery_details`, `zero_priced_lines`) render the headline, a colon, and then one line per item (error-mapping.md §5); with no items they render the headline alone.
 
 ## 3. Validation types (9)
 

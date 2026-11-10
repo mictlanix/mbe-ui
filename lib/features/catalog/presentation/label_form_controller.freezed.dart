@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$LabelFormState {
 
- int? get labelId; String get name; String get comment; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
+ int? get labelId; String get name; String get comment; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; AppError? get errorCause; Map<String, String> get fieldErrors;
 /// Create a copy of LabelFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $LabelFormStateCopyWith<LabelFormState> get copyWith => _$LabelFormStateCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as LabelFormState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LabelFormState&&(identical(other.labelId, _this.labelId) || other.labelId == _this.labelId)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LabelFormState&&(identical(other.labelId, _this.labelId) || other.labelId == _this.labelId)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorCause, _this.errorCause) || other.errorCause == _this.errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as LabelFormState;
-  return Object.hash(runtimeType,_this.labelId,_this.name,_this.comment,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors));
+  return Object.hash(runtimeType,_this.labelId,_this.name,_this.comment,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorCause,const DeepCollectionEquality().hash(_this.fieldErrors));
 }
 
 @override
 String toString() {
   final _this = this as LabelFormState;
-  return 'LabelFormState(labelId: ${_this.labelId}, name: ${_this.name}, comment: ${_this.comment}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
+  return 'LabelFormState(labelId: ${_this.labelId}, name: ${_this.name}, comment: ${_this.comment}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorCause: ${_this.errorCause}, fieldErrors: ${_this.fieldErrors})';
 }
 
 
@@ -51,11 +51,11 @@ abstract mixin class $LabelFormStateCopyWith<$Res>  {
   factory $LabelFormStateCopyWith(LabelFormState value, $Res Function(LabelFormState) _then) = _$LabelFormStateCopyWithImpl;
 @useResult
 $Res call({
- int? labelId, String name, String comment, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? labelId, String name, String comment, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+$AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -68,7 +68,7 @@ class _$LabelFormStateCopyWithImpl<$Res>
 
 /// Create a copy of LabelFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? labelId = freezed,Object? name = null,Object? comment = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? labelId = freezed,Object? name = null,Object? comment = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(LabelFormState(
 labelId: freezed == labelId ? _self.labelId : labelId // ignore: cast_nullable_to_non_nullable
 as int?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -78,12 +78,24 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
+/// Create a copy of LabelFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 
@@ -165,10 +177,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? labelId,  String name,  String comment,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? labelId,  String name,  String comment,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LabelFormState() when $default != null:
-return $default(_that.labelId,_that.name,_that.comment,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.labelId,_that.name,_that.comment,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return orElse();
 
 }
@@ -186,10 +198,10 @@ return $default(_that.labelId,_that.name,_that.comment,_that.loading,_that.submi
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? labelId,  String name,  String comment,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? labelId,  String name,  String comment,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)  $default,) {final _that = this;
 switch (_that) {
 case _LabelFormState():
-return $default(_that.labelId,_that.name,_that.comment,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.labelId,_that.name,_that.comment,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -206,10 +218,10 @@ return $default(_that.labelId,_that.name,_that.comment,_that.loading,_that.submi
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? labelId,  String name,  String comment,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? labelId,  String name,  String comment,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _LabelFormState() when $default != null:
-return $default(_that.labelId,_that.name,_that.comment,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.labelId,_that.name,_that.comment,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return null;
 
 }
@@ -221,7 +233,7 @@ return $default(_that.labelId,_that.name,_that.comment,_that.loading,_that.submi
 
 
 class _LabelFormState implements LabelFormState {
-  const _LabelFormState({this.labelId, this.name = '', this.comment = '', this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
+  const _LabelFormState({this.labelId, this.name = '', this.comment = '', this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorCause,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
   
 
 @override final  int? labelId;
@@ -232,7 +244,7 @@ class _LabelFormState implements LabelFormState {
 @override@JsonKey() final  bool saved;
 @override@JsonKey() final  bool deleted;
 @override final  String? error;
-@override final  String? errorDetail;
+@override final  AppError? errorCause;
  final  Map<String, String> _fieldErrors;
 @override@JsonKey() Map<String, String> get fieldErrors {
   if (_fieldErrors is EqualUnmodifiableMapView) return _fieldErrors;
@@ -251,18 +263,18 @@ _$LabelFormStateCopyWith<_LabelFormState> get copyWith => __$LabelFormStateCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LabelFormState&&(identical(other.labelId, labelId) || other.labelId == labelId)&&(identical(other.name, name) || other.name == name)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _LabelFormState&&(identical(other.labelId, labelId) || other.labelId == labelId)&&(identical(other.name, name) || other.name == name)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorCause, errorCause) || other.errorCause == errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,labelId,name,comment,loading,submitting,saved,deleted,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors));
+    return Object.hash(runtimeType,labelId,name,comment,loading,submitting,saved,deleted,error,errorCause,const DeepCollectionEquality().hash(_fieldErrors));
 }
 
 @override
 String toString() {
-    return 'LabelFormState(labelId: $labelId, name: $name, comment: $comment, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'LabelFormState(labelId: $labelId, name: $name, comment: $comment, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorCause: $errorCause, fieldErrors: $fieldErrors)';
 }
 
 
@@ -273,11 +285,11 @@ abstract mixin class _$LabelFormStateCopyWith<$Res> implements $LabelFormStateCo
   factory _$LabelFormStateCopyWith(_LabelFormState value, $Res Function(_LabelFormState) _then) = __$LabelFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- int? labelId, String name, String comment, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? labelId, String name, String comment, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+@override $AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -290,7 +302,7 @@ class __$LabelFormStateCopyWithImpl<$Res>
 
 /// Create a copy of LabelFormState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? labelId = freezed,Object? name = null,Object? comment = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? labelId = freezed,Object? name = null,Object? comment = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(_LabelFormState(
 labelId: freezed == labelId ? _self.labelId : labelId // ignore: cast_nullable_to_non_nullable
 as int?,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -300,13 +312,25 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
 
+/// Create a copy of LabelFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 // dart format on

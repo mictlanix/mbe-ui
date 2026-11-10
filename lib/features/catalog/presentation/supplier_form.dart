@@ -5,9 +5,7 @@ import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
-import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
-import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/address_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/bank_account_repository_impl.dart';
@@ -22,6 +20,7 @@ import 'package:mbe_ui/features/catalog/presentation/supplier_agreements_section
 import 'package:mbe_ui/features/catalog/presentation/supplier_form_controller.dart';
 import 'package:mbe_ui/features/catalog/presentation/widgets/linked_records_section.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 
 /// Create / view / edit form for a single supplier, hosted by
 /// `SupplierDetailScreen` on the `/suppliers/new` and
@@ -183,21 +182,10 @@ class SupplierFormPanelState extends ConsumerState<SupplierForm> {
         if (formState.error != null)
           FormGridChild(
             span: FormGridSpan.full,
-            ErrorBanner(
+            FormErrorBanner(
               key: _errorBannerKey(formState.error!),
-              error: AppError.validation([
-                FieldError(
-                  loc: const [],
-                  msg: _localizeFormError(l10n, formState.error!),
-                  type: 'error',
-                ),
-                if (formState.errorDetail != null)
-                  FieldError(
-                    loc: const [],
-                    msg: formState.errorDetail!,
-                    type: 'error',
-                  ),
-              ]),
+              headline: _localizeFormError(l10n, formState.error!),
+              cause: formState.errorCause,
             ),
           ),
         FormGridChild(

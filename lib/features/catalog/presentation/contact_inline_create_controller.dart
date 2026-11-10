@@ -4,6 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/contact_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/contact.dart';
+import 'package:mbe_ui/core/errors/localize_problem.dart';
 
 part 'contact_inline_create_controller.freezed.dart';
 part 'contact_inline_create_controller.g.dart';
@@ -30,7 +31,7 @@ abstract class ContactInlineCreateState with _$ContactInlineCreateState {
     @Default(false) bool submitting,
     Contact? created,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _ContactInlineCreateState;
 }
@@ -53,7 +54,7 @@ class ContactInlineCreateController extends _$ContactInlineCreateController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -80,7 +81,7 @@ class ContactInlineCreateController extends _$ContactInlineCreateController {
         state = state.copyWith(
           submitting: false,
           error: ContactInlineCreateErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -103,11 +104,11 @@ class ContactInlineCreateController extends _$ContactInlineCreateController {
     final errors = <String, String>{};
     for (final fieldError in error.errors) {
       final field = fieldError.loc.isEmpty ? null : fieldError.loc.last;
-      if (field != null) errors[field] = fieldError.msg;
+      if (field != null) errors[field] = serverFieldValue(fieldError);
     }
     return errors;
   }
 
   ContactInlineCreateState _clearErrors(ContactInlineCreateState next) =>
-      next.copyWith(error: null, errorDetail: null, fieldErrors: const {});
+      next.copyWith(error: null, errorCause: null, fieldErrors: const {});
 }

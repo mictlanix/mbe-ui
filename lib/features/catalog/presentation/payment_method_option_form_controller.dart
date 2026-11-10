@@ -54,7 +54,7 @@ abstract class PaymentMethodOptionFormState
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _PaymentMethodOptionFormState;
 }
@@ -100,12 +100,12 @@ class PaymentMethodOptionFormController
   void statusChanged(EntityStatus v) => state = state.copyWith(status: v);
 
   PaymentMethodOptionFormState _clearErrors(PaymentMethodOptionFormState s) =>
-      s.copyWith(error: null, errorDetail: null, fieldErrors: const {});
+      s.copyWith(error: null, errorCause: null, fieldErrors: const {});
 
   /// Loads an existing payment method option into the form for
   /// viewing/editing.
   Future<void> loadForEdit(int paymentMethodOptionId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final option = await ref
           .read(paymentMethodOptionRepositoryProvider)
@@ -127,7 +127,7 @@ class PaymentMethodOptionFormController
       state = state.copyWith(
         loading: false,
         error: PaymentMethodOptionFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -169,7 +169,7 @@ class PaymentMethodOptionFormController
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -179,7 +179,7 @@ class PaymentMethodOptionFormController
         .can(SystemObject.paymentMethodOptions, AccessRight.create)) {
       state = state.copyWith(
         error: PaymentMethodOptionFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -187,7 +187,7 @@ class PaymentMethodOptionFormController
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -215,7 +215,7 @@ class PaymentMethodOptionFormController
         state = state.copyWith(
           submitting: false,
           error: PaymentMethodOptionFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -232,7 +232,7 @@ class PaymentMethodOptionFormController
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -242,7 +242,7 @@ class PaymentMethodOptionFormController
         .can(SystemObject.paymentMethodOptions, AccessRight.update)) {
       state = state.copyWith(
         error: PaymentMethodOptionFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -250,7 +250,7 @@ class PaymentMethodOptionFormController
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -279,14 +279,14 @@ class PaymentMethodOptionFormController
         state = state.copyWith(
           submitting: false,
           error: PaymentMethodOptionFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
   }
 
   /// Deletes the loaded payment method option (FR-007). No-ops if none has
-  /// been loaded. A server rejection is surfaced via `error`/`errorDetail`,
+  /// been loaded. A server rejection is surfaced via `error`/`errorCause`,
   /// leaving the record in place.
   Future<void> delete() async {
     final paymentMethodOptionId = state.paymentMethodOptionId;
@@ -297,12 +297,12 @@ class PaymentMethodOptionFormController
         .can(SystemObject.paymentMethodOptions, AccessRight.delete)) {
       state = state.copyWith(
         error: PaymentMethodOptionFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref
           .read(paymentMethodOptionRepositoryProvider)
@@ -313,7 +313,7 @@ class PaymentMethodOptionFormController
       state = state.copyWith(
         submitting: false,
         error: PaymentMethodOptionFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }

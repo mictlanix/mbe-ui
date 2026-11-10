@@ -1,22 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/errors/localize_problem.dart';
+import 'package:mbe_ui/core/formatting/app_formatters.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-/// Renders an [AppError] as a dismissible banner. `ValidationError` lists
-/// each field-level message; other variants show a generic message
-/// (FR-008 — never exposes which field/credential was wrong for auth
-/// errors).
-class ErrorBanner extends StatelessWidget {
+/// Renders an [AppError] as a dismissible banner. When the server sent a
+/// `code` the app has a message for, the banner shows that message in the
+/// user's language and nothing else (spec 058 FR-012). Otherwise
+/// `ValidationError` lists each field-level message and other variants show a
+/// generic message (FR-008 — never exposes which field/credential was wrong
+/// for auth errors) followed by the server's English detail where it sent one.
+class ErrorBanner extends ConsumerWidget {
   const ErrorBanner({super.key, required this.error, this.onDismiss});
 
   final AppError error;
   final VoidCallback? onDismiss;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final messages = _messagesFor(context, error);
+    // The formatters are only needed to render a coded problem's amounts and
+    // dates, so an error without one (a network failure, an older server) does
+    // not depend on them.
+    final fmt = error.problem == null ? null : ref.watch(formattersProvider);
+    final messages = _messagesFor(context, error, fmt);
 
     return Material(
       color: theme.colorScheme.errorContainer,
@@ -60,11 +70,23 @@ class ErrorBanner extends StatelessWidget {
     );
   }
 
-  List<String> _messagesFor(BuildContext context, AppError error) {
+  List<String> _messagesFor(
+    BuildContext context,
+    AppError error,
+    AppFormatters? fmt,
+  ) {
     final l10n = AppLocalizations.of(context)!;
+
+    // A message built from the server's code and params replaces the generic
+    // headline and the English line alike (spec 058).
+    final localized = error.localizedMessage(l10n, fmt);
+    if (localized != null) return [localized];
+
     final generic = switch (error) {
       ValidationError(errors: final errors) when errors.isNotEmpty =>
-        errors.map((e) => e.msg).toList(),
+        errors
+            .map((e) => localizeValidationType(e.type, l10n) ?? e.msg)
+            .toList(),
       ValidationError() => [l10n.errorValidationGeneric],
       AuthError() => [l10n.errorAuthGeneric],
       NotFoundError() => [l10n.errorNotFoundGeneric],

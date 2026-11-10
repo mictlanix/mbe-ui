@@ -184,7 +184,10 @@ void main() {
         expect(success, isFalse);
         final state = container.read(priceListFormControllerProvider);
         expect(state.error, PriceListFormErrorCode.deleteFailed);
-        expect(state.errorDetail, 'Price list is assigned to a customer');
+        expect(
+          state.errorCause?.serverMessage,
+          'Price list is assigned to a customer',
+        );
       },
     );
 

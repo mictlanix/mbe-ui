@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/domain/currency.dart';
+import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/sales/domain/entities/customer_refund.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -142,6 +144,76 @@ void main() {
 
     expect(result.reason, RefundRefusal.nothingToReturn);
     expect(result.serverDetail, 'No refundable items');
+  });
+
+  group('a 409 on the POST with a code (spec 058)', () {
+    AppError coded(api.ErrorCode code, String wire) => AppError.server(
+      statusCode: 409,
+      message: 'English that must not be shown or parsed',
+      problem: ApiProblem(codeName: wire, code: code),
+    );
+
+    testWidgets('nothing_refundable and no_returnable_lines are '
+        'nothingToReturn, with no English appended', (tester) async {
+      for (final (code, wire) in [
+        (
+          api.ErrorCode.refundPeriodNothingRefundable,
+          'refund.nothing_refundable',
+        ),
+        (
+          api.ErrorCode.refundPeriodNoReturnableLines,
+          'refund.no_returnable_lines',
+        ),
+      ]) {
+        stubOrder(SaleStatus.paid);
+        when(() => refunds.open(42)).thenThrow(coded(code, wire));
+
+        final result = await run(tester, 42) as RefundRefused;
+
+        expect(result.reason, RefundRefusal.nothingToReturn, reason: wire);
+        expect(result.serverDetail, isNull, reason: wire);
+      }
+    });
+
+    testWidgets('order_not_paid and order_not_completed are the order '
+        'refusals the screen already words', (tester) async {
+      stubOrder(SaleStatus.paid);
+      when(() => refunds.open(42)).thenThrow(
+        coded(api.ErrorCode.refundPeriodOrderNotPaid, 'refund.order_not_paid'),
+      );
+      expect(
+        (await run(tester, 42) as RefundRefused).reason,
+        RefundRefusal.notPaid,
+      );
+
+      when(() => refunds.open(42)).thenThrow(
+        coded(
+          api.ErrorCode.refundPeriodOrderNotCompleted,
+          'refund.order_not_completed',
+        ),
+      );
+      expect(
+        (await run(tester, 42) as RefundRefused).reason,
+        RefundRefusal.notCompleted,
+      );
+    });
+
+    testWidgets('any other coded 409 is rethrown, to be shown as itself', (
+      tester,
+    ) async {
+      stubOrder(SaleStatus.paid);
+      when(
+        () => refunds.open(42),
+      ).thenThrow(coded(api.ErrorCode.lockPeriodBusy, 'lock.busy'));
+
+      final ref = await pump(tester);
+      await expectLater(
+        openOrResume(ref, 42),
+        throwsA(
+          isA<ServerError>().having((e) => e.problem, 'problem', isNotNull),
+        ),
+      );
+    });
   });
 
   testWidgets('any other error is rethrown', (tester) async {

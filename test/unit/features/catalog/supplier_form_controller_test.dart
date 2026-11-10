@@ -334,7 +334,10 @@ void main() {
         final state = container.read(supplierFormControllerProvider(null));
         expect(state.deleted, isFalse);
         expect(state.error, SupplierFormErrorCode.deleteFailed);
-        expect(state.errorDetail, 'Supplier is referenced by a product');
+        expect(
+          state.errorCause?.serverMessage,
+          'Supplier is referenced by a product',
+        );
       },
     );
   });
@@ -565,7 +568,7 @@ void main() {
       await notifierOf().submitCreate();
 
       expect(stateOf().error, SupplierFormErrorCode.saveConflict);
-      expect(stateOf().errorDetail, isNull);
+      expect(stateOf().errorCause?.serverMessage, isNull);
       expect(stateOf().submitting, isFalse);
       expect(stateOf().saved, isFalse);
       expect(stateOf().code, 'SUP-001');
@@ -584,7 +587,7 @@ void main() {
       await notifierOf().submitUpdate();
 
       expect(stateOf().error, SupplierFormErrorCode.saveConflict);
-      expect(stateOf().errorDetail, isNull);
+      expect(stateOf().errorCause?.serverMessage, isNull);
       expect(stateOf().submitting, isFalse);
       expect(stateOf().saved, isFalse);
       expect(stateOf().name, 'Renamed');
@@ -599,7 +602,7 @@ void main() {
         ..nameChanged('Acme Corp');
       await notifierOf().submitCreate();
       expect(stateOf().error, SupplierFormErrorCode.createFailed);
-      expect(stateOf().errorDetail, 'boom');
+      expect(stateOf().errorCause?.serverMessage, 'boom');
 
       when(() => repository.get(supplierId: 1)).thenAnswer((_) async => linked);
       stubUpdate(failure);
@@ -616,7 +619,7 @@ void main() {
       await notifierOf().delete();
 
       expect(stateOf().error, SupplierFormErrorCode.deleteConflict);
-      expect(stateOf().errorDetail, isNull);
+      expect(stateOf().errorCause?.serverMessage, isNull);
       expect(stateOf().submitting, isFalse);
       expect(stateOf().deleted, isFalse);
       expect(stateOf().name, 'Acme Corp');

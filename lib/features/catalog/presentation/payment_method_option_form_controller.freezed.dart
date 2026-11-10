@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PaymentMethodOptionFormState {
 
- int? get paymentMethodOptionId; int? get facilityId; String get facilityDisplayText; int? get warehouseId; String get warehouseDisplayText; String get name; int get numberOfPayments; bool get displayOnTicket; int? get paymentMethod; String get commission; EntityStatus get status; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
+ int? get paymentMethodOptionId; int? get facilityId; String get facilityDisplayText; int? get warehouseId; String get warehouseDisplayText; String get name; int get numberOfPayments; bool get displayOnTicket; int? get paymentMethod; String get commission; EntityStatus get status; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; AppError? get errorCause; Map<String, String> get fieldErrors;
 /// Create a copy of PaymentMethodOptionFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $PaymentMethodOptionFormStateCopyWith<PaymentMethodOptionFormState> get copyWith
 @override
 bool operator ==(Object other) {
   final _this = this as PaymentMethodOptionFormState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentMethodOptionFormState&&(identical(other.paymentMethodOptionId, _this.paymentMethodOptionId) || other.paymentMethodOptionId == _this.paymentMethodOptionId)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.facilityDisplayText, _this.facilityDisplayText) || other.facilityDisplayText == _this.facilityDisplayText)&&(identical(other.warehouseId, _this.warehouseId) || other.warehouseId == _this.warehouseId)&&(identical(other.warehouseDisplayText, _this.warehouseDisplayText) || other.warehouseDisplayText == _this.warehouseDisplayText)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.numberOfPayments, _this.numberOfPayments) || other.numberOfPayments == _this.numberOfPayments)&&(identical(other.displayOnTicket, _this.displayOnTicket) || other.displayOnTicket == _this.displayOnTicket)&&(identical(other.paymentMethod, _this.paymentMethod) || other.paymentMethod == _this.paymentMethod)&&(identical(other.commission, _this.commission) || other.commission == _this.commission)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentMethodOptionFormState&&(identical(other.paymentMethodOptionId, _this.paymentMethodOptionId) || other.paymentMethodOptionId == _this.paymentMethodOptionId)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.facilityDisplayText, _this.facilityDisplayText) || other.facilityDisplayText == _this.facilityDisplayText)&&(identical(other.warehouseId, _this.warehouseId) || other.warehouseId == _this.warehouseId)&&(identical(other.warehouseDisplayText, _this.warehouseDisplayText) || other.warehouseDisplayText == _this.warehouseDisplayText)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.numberOfPayments, _this.numberOfPayments) || other.numberOfPayments == _this.numberOfPayments)&&(identical(other.displayOnTicket, _this.displayOnTicket) || other.displayOnTicket == _this.displayOnTicket)&&(identical(other.paymentMethod, _this.paymentMethod) || other.paymentMethod == _this.paymentMethod)&&(identical(other.commission, _this.commission) || other.commission == _this.commission)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorCause, _this.errorCause) || other.errorCause == _this.errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as PaymentMethodOptionFormState;
-  return Object.hash(runtimeType,_this.paymentMethodOptionId,_this.facilityId,_this.facilityDisplayText,_this.warehouseId,_this.warehouseDisplayText,_this.name,_this.numberOfPayments,_this.displayOnTicket,_this.paymentMethod,_this.commission,_this.status,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors));
+  return Object.hash(runtimeType,_this.paymentMethodOptionId,_this.facilityId,_this.facilityDisplayText,_this.warehouseId,_this.warehouseDisplayText,_this.name,_this.numberOfPayments,_this.displayOnTicket,_this.paymentMethod,_this.commission,_this.status,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorCause,const DeepCollectionEquality().hash(_this.fieldErrors));
 }
 
 @override
 String toString() {
   final _this = this as PaymentMethodOptionFormState;
-  return 'PaymentMethodOptionFormState(paymentMethodOptionId: ${_this.paymentMethodOptionId}, facilityId: ${_this.facilityId}, facilityDisplayText: ${_this.facilityDisplayText}, warehouseId: ${_this.warehouseId}, warehouseDisplayText: ${_this.warehouseDisplayText}, name: ${_this.name}, numberOfPayments: ${_this.numberOfPayments}, displayOnTicket: ${_this.displayOnTicket}, paymentMethod: ${_this.paymentMethod}, commission: ${_this.commission}, status: ${_this.status}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
+  return 'PaymentMethodOptionFormState(paymentMethodOptionId: ${_this.paymentMethodOptionId}, facilityId: ${_this.facilityId}, facilityDisplayText: ${_this.facilityDisplayText}, warehouseId: ${_this.warehouseId}, warehouseDisplayText: ${_this.warehouseDisplayText}, name: ${_this.name}, numberOfPayments: ${_this.numberOfPayments}, displayOnTicket: ${_this.displayOnTicket}, paymentMethod: ${_this.paymentMethod}, commission: ${_this.commission}, status: ${_this.status}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorCause: ${_this.errorCause}, fieldErrors: ${_this.fieldErrors})';
 }
 
 
@@ -51,11 +51,11 @@ abstract mixin class $PaymentMethodOptionFormStateCopyWith<$Res>  {
   factory $PaymentMethodOptionFormStateCopyWith(PaymentMethodOptionFormState value, $Res Function(PaymentMethodOptionFormState) _then) = _$PaymentMethodOptionFormStateCopyWithImpl;
 @useResult
 $Res call({
- int? paymentMethodOptionId, int? facilityId, String facilityDisplayText, int? warehouseId, String warehouseDisplayText, String name, int numberOfPayments, bool displayOnTicket, int? paymentMethod, String commission, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? paymentMethodOptionId, int? facilityId, String facilityDisplayText, int? warehouseId, String warehouseDisplayText, String name, int numberOfPayments, bool displayOnTicket, int? paymentMethod, String commission, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+$AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -68,7 +68,7 @@ class _$PaymentMethodOptionFormStateCopyWithImpl<$Res>
 
 /// Create a copy of PaymentMethodOptionFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? paymentMethodOptionId = freezed,Object? facilityId = freezed,Object? facilityDisplayText = null,Object? warehouseId = freezed,Object? warehouseDisplayText = null,Object? name = null,Object? numberOfPayments = null,Object? displayOnTicket = null,Object? paymentMethod = freezed,Object? commission = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? paymentMethodOptionId = freezed,Object? facilityId = freezed,Object? facilityDisplayText = null,Object? warehouseId = freezed,Object? warehouseDisplayText = null,Object? name = null,Object? numberOfPayments = null,Object? displayOnTicket = null,Object? paymentMethod = freezed,Object? commission = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(PaymentMethodOptionFormState(
 paymentMethodOptionId: freezed == paymentMethodOptionId ? _self.paymentMethodOptionId : paymentMethodOptionId // ignore: cast_nullable_to_non_nullable
 as int?,facilityId: freezed == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -86,12 +86,24 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
+/// Create a copy of PaymentMethodOptionFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 
@@ -173,10 +185,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? paymentMethodOptionId,  int? facilityId,  String facilityDisplayText,  int? warehouseId,  String warehouseDisplayText,  String name,  int numberOfPayments,  bool displayOnTicket,  int? paymentMethod,  String commission,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? paymentMethodOptionId,  int? facilityId,  String facilityDisplayText,  int? warehouseId,  String warehouseDisplayText,  String name,  int numberOfPayments,  bool displayOnTicket,  int? paymentMethod,  String commission,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PaymentMethodOptionFormState() when $default != null:
-return $default(_that.paymentMethodOptionId,_that.facilityId,_that.facilityDisplayText,_that.warehouseId,_that.warehouseDisplayText,_that.name,_that.numberOfPayments,_that.displayOnTicket,_that.paymentMethod,_that.commission,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.paymentMethodOptionId,_that.facilityId,_that.facilityDisplayText,_that.warehouseId,_that.warehouseDisplayText,_that.name,_that.numberOfPayments,_that.displayOnTicket,_that.paymentMethod,_that.commission,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return orElse();
 
 }
@@ -194,10 +206,10 @@ return $default(_that.paymentMethodOptionId,_that.facilityId,_that.facilityDispl
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? paymentMethodOptionId,  int? facilityId,  String facilityDisplayText,  int? warehouseId,  String warehouseDisplayText,  String name,  int numberOfPayments,  bool displayOnTicket,  int? paymentMethod,  String commission,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? paymentMethodOptionId,  int? facilityId,  String facilityDisplayText,  int? warehouseId,  String warehouseDisplayText,  String name,  int numberOfPayments,  bool displayOnTicket,  int? paymentMethod,  String commission,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)  $default,) {final _that = this;
 switch (_that) {
 case _PaymentMethodOptionFormState():
-return $default(_that.paymentMethodOptionId,_that.facilityId,_that.facilityDisplayText,_that.warehouseId,_that.warehouseDisplayText,_that.name,_that.numberOfPayments,_that.displayOnTicket,_that.paymentMethod,_that.commission,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.paymentMethodOptionId,_that.facilityId,_that.facilityDisplayText,_that.warehouseId,_that.warehouseDisplayText,_that.name,_that.numberOfPayments,_that.displayOnTicket,_that.paymentMethod,_that.commission,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -214,10 +226,10 @@ return $default(_that.paymentMethodOptionId,_that.facilityId,_that.facilityDispl
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? paymentMethodOptionId,  int? facilityId,  String facilityDisplayText,  int? warehouseId,  String warehouseDisplayText,  String name,  int numberOfPayments,  bool displayOnTicket,  int? paymentMethod,  String commission,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? paymentMethodOptionId,  int? facilityId,  String facilityDisplayText,  int? warehouseId,  String warehouseDisplayText,  String name,  int numberOfPayments,  bool displayOnTicket,  int? paymentMethod,  String commission,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _PaymentMethodOptionFormState() when $default != null:
-return $default(_that.paymentMethodOptionId,_that.facilityId,_that.facilityDisplayText,_that.warehouseId,_that.warehouseDisplayText,_that.name,_that.numberOfPayments,_that.displayOnTicket,_that.paymentMethod,_that.commission,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.paymentMethodOptionId,_that.facilityId,_that.facilityDisplayText,_that.warehouseId,_that.warehouseDisplayText,_that.name,_that.numberOfPayments,_that.displayOnTicket,_that.paymentMethod,_that.commission,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return null;
 
 }
@@ -229,7 +241,7 @@ return $default(_that.paymentMethodOptionId,_that.facilityId,_that.facilityDispl
 
 
 class _PaymentMethodOptionFormState implements PaymentMethodOptionFormState {
-  const _PaymentMethodOptionFormState({this.paymentMethodOptionId, this.facilityId, this.facilityDisplayText = '', this.warehouseId, this.warehouseDisplayText = '', this.name = '', this.numberOfPayments = 1, this.displayOnTicket = true, this.paymentMethod, this.commission = '', this.status = EntityStatus.active, this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
+  const _PaymentMethodOptionFormState({this.paymentMethodOptionId, this.facilityId, this.facilityDisplayText = '', this.warehouseId, this.warehouseDisplayText = '', this.name = '', this.numberOfPayments = 1, this.displayOnTicket = true, this.paymentMethod, this.commission = '', this.status = EntityStatus.active, this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorCause,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
   
 
 @override final  int? paymentMethodOptionId;
@@ -248,7 +260,7 @@ class _PaymentMethodOptionFormState implements PaymentMethodOptionFormState {
 @override@JsonKey() final  bool saved;
 @override@JsonKey() final  bool deleted;
 @override final  String? error;
-@override final  String? errorDetail;
+@override final  AppError? errorCause;
  final  Map<String, String> _fieldErrors;
 @override@JsonKey() Map<String, String> get fieldErrors {
   if (_fieldErrors is EqualUnmodifiableMapView) return _fieldErrors;
@@ -267,18 +279,18 @@ _$PaymentMethodOptionFormStateCopyWith<_PaymentMethodOptionFormState> get copyWi
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PaymentMethodOptionFormState&&(identical(other.paymentMethodOptionId, paymentMethodOptionId) || other.paymentMethodOptionId == paymentMethodOptionId)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.facilityDisplayText, facilityDisplayText) || other.facilityDisplayText == facilityDisplayText)&&(identical(other.warehouseId, warehouseId) || other.warehouseId == warehouseId)&&(identical(other.warehouseDisplayText, warehouseDisplayText) || other.warehouseDisplayText == warehouseDisplayText)&&(identical(other.name, name) || other.name == name)&&(identical(other.numberOfPayments, numberOfPayments) || other.numberOfPayments == numberOfPayments)&&(identical(other.displayOnTicket, displayOnTicket) || other.displayOnTicket == displayOnTicket)&&(identical(other.paymentMethod, paymentMethod) || other.paymentMethod == paymentMethod)&&(identical(other.commission, commission) || other.commission == commission)&&(identical(other.status, status) || other.status == status)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PaymentMethodOptionFormState&&(identical(other.paymentMethodOptionId, paymentMethodOptionId) || other.paymentMethodOptionId == paymentMethodOptionId)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.facilityDisplayText, facilityDisplayText) || other.facilityDisplayText == facilityDisplayText)&&(identical(other.warehouseId, warehouseId) || other.warehouseId == warehouseId)&&(identical(other.warehouseDisplayText, warehouseDisplayText) || other.warehouseDisplayText == warehouseDisplayText)&&(identical(other.name, name) || other.name == name)&&(identical(other.numberOfPayments, numberOfPayments) || other.numberOfPayments == numberOfPayments)&&(identical(other.displayOnTicket, displayOnTicket) || other.displayOnTicket == displayOnTicket)&&(identical(other.paymentMethod, paymentMethod) || other.paymentMethod == paymentMethod)&&(identical(other.commission, commission) || other.commission == commission)&&(identical(other.status, status) || other.status == status)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorCause, errorCause) || other.errorCause == errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,paymentMethodOptionId,facilityId,facilityDisplayText,warehouseId,warehouseDisplayText,name,numberOfPayments,displayOnTicket,paymentMethod,commission,status,loading,submitting,saved,deleted,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors));
+    return Object.hash(runtimeType,paymentMethodOptionId,facilityId,facilityDisplayText,warehouseId,warehouseDisplayText,name,numberOfPayments,displayOnTicket,paymentMethod,commission,status,loading,submitting,saved,deleted,error,errorCause,const DeepCollectionEquality().hash(_fieldErrors));
 }
 
 @override
 String toString() {
-    return 'PaymentMethodOptionFormState(paymentMethodOptionId: $paymentMethodOptionId, facilityId: $facilityId, facilityDisplayText: $facilityDisplayText, warehouseId: $warehouseId, warehouseDisplayText: $warehouseDisplayText, name: $name, numberOfPayments: $numberOfPayments, displayOnTicket: $displayOnTicket, paymentMethod: $paymentMethod, commission: $commission, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'PaymentMethodOptionFormState(paymentMethodOptionId: $paymentMethodOptionId, facilityId: $facilityId, facilityDisplayText: $facilityDisplayText, warehouseId: $warehouseId, warehouseDisplayText: $warehouseDisplayText, name: $name, numberOfPayments: $numberOfPayments, displayOnTicket: $displayOnTicket, paymentMethod: $paymentMethod, commission: $commission, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorCause: $errorCause, fieldErrors: $fieldErrors)';
 }
 
 
@@ -289,11 +301,11 @@ abstract mixin class _$PaymentMethodOptionFormStateCopyWith<$Res> implements $Pa
   factory _$PaymentMethodOptionFormStateCopyWith(_PaymentMethodOptionFormState value, $Res Function(_PaymentMethodOptionFormState) _then) = __$PaymentMethodOptionFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- int? paymentMethodOptionId, int? facilityId, String facilityDisplayText, int? warehouseId, String warehouseDisplayText, String name, int numberOfPayments, bool displayOnTicket, int? paymentMethod, String commission, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? paymentMethodOptionId, int? facilityId, String facilityDisplayText, int? warehouseId, String warehouseDisplayText, String name, int numberOfPayments, bool displayOnTicket, int? paymentMethod, String commission, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+@override $AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -306,7 +318,7 @@ class __$PaymentMethodOptionFormStateCopyWithImpl<$Res>
 
 /// Create a copy of PaymentMethodOptionFormState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? paymentMethodOptionId = freezed,Object? facilityId = freezed,Object? facilityDisplayText = null,Object? warehouseId = freezed,Object? warehouseDisplayText = null,Object? name = null,Object? numberOfPayments = null,Object? displayOnTicket = null,Object? paymentMethod = freezed,Object? commission = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? paymentMethodOptionId = freezed,Object? facilityId = freezed,Object? facilityDisplayText = null,Object? warehouseId = freezed,Object? warehouseDisplayText = null,Object? name = null,Object? numberOfPayments = null,Object? displayOnTicket = null,Object? paymentMethod = freezed,Object? commission = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(_PaymentMethodOptionFormState(
 paymentMethodOptionId: freezed == paymentMethodOptionId ? _self.paymentMethodOptionId : paymentMethodOptionId // ignore: cast_nullable_to_non_nullable
 as int?,facilityId: freezed == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -324,13 +336,25 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
 
+/// Create a copy of PaymentMethodOptionFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 // dart format on

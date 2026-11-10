@@ -324,10 +324,16 @@ AppError _toAppError(DioException error) {
 /// is most likely to hit renders as a bare "validation failed" with no
 /// explanation at all (contracts/sales-quote-repository.md §2).
 AppError _toQuoteError(DioException error) {
+  final mapped = _toAppError(error);
+  // A refusal the server coded (spec 058) was already classified by
+  // `mapDioException`: a credit code is a `creditHold`, any other code keeps
+  // its own variant. The string-detail guess below is only for a server that
+  // sends no code.
+  if (mapped.problem != null) return mapped;
   final data = error.response?.data;
   if (error.response?.statusCode == 422 && data is Map) {
     final detail = data['detail'];
     if (detail is String) return AppError.creditHold(detail);
   }
-  return _toAppError(error);
+  return mapped;
 }

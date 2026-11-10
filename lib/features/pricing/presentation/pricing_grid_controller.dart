@@ -104,10 +104,17 @@ abstract class PricingGridFilter with _$PricingGridFilter {
 /// on screen (FR-009), and why it was refused. Presence in
 /// [PricingGridState.rejected] is itself the "show the rejected badge"
 /// signal; the stored price in [PricingGridState.rows] is untouched.
+///
+/// [cause] is the server's own refusal, kept so the tooltip can build its text
+/// in the user's language when the cell is shown (spec 058); [reason] is
+/// `saveFailed` whenever the server refused.
 @freezed
 abstract class RejectedEdit with _$RejectedEdit {
-  const factory RejectedEdit({required String typed, required String reason}) =
-      _RejectedEdit;
+  const factory RejectedEdit({
+    required String typed,
+    required String reason,
+    AppError? cause,
+  }) = _RejectedEdit;
 }
 
 /// What kind of change a [PriceChange] represents — the summary bar's
@@ -936,17 +943,16 @@ class PricingGridController extends _$PricingGridController {
     } on AppError catch (e) {
       final latest = state.value;
       if (latest == null) return;
-      final reason = switch (e) {
-        ValidationError(errors: final errors) when errors.isNotEmpty =>
-          errors.first.msg,
-        _ => PricingGridErrorCode.saveFailed,
-      };
       state = AsyncData(
         latest.copyWith(
           inFlight: {...latest.inFlight}..remove(key),
           rejected: {
             ...latest.rejected,
-            key: RejectedEdit(typed: typed, reason: reason),
+            key: RejectedEdit(
+              typed: typed,
+              reason: PricingGridErrorCode.saveFailed,
+              cause: e,
+            ),
           },
         ),
       );

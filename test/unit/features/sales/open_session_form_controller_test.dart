@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -7,6 +8,7 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
@@ -337,6 +339,77 @@ void main() {
       });
     },
   );
+
+  group('OpenSessionFormController.submit — 409 by code (spec 058)', () {
+    Future<OpenSessionFormState> submitRefusedWith(AppError error) async {
+      when(
+        () => repository.open(cashDrawerId: 1, openingAmount: '0'),
+      ).thenThrow(error);
+      final controller = container.read(
+        openSessionFormControllerProvider.notifier,
+      );
+      controller.drawerSelected(1, 'Caja 1');
+      await controller.submit();
+      return container.read(openSessionFormControllerProvider);
+    }
+
+    test('cash_session.user_busy is cashierBusy, with the blocking session '
+        'from the params and no second request', () async {
+      final state = await submitRefusedWith(
+        const AppError.server(
+          statusCode: 409,
+          message: 'English that must not be parsed',
+          problem: ApiProblem(
+            codeName: 'cash_session.user_busy',
+            code: api.ErrorCode.cashSessionPeriodUserBusy,
+            params: {'cash_session_id': 41},
+          ),
+        ),
+      );
+
+      expect(state.error, OpenSessionFormErrorCode.cashierBusy);
+      expect(state.blockingSessionId, 41);
+      verifyNever(() => repository.getCurrent());
+    });
+
+    test(
+      'cash_session.drawer_busy is drawerBusy, with no second request',
+      () async {
+        final state = await submitRefusedWith(
+          const AppError.server(
+            statusCode: 409,
+            message: 'English that must not be parsed',
+            problem: ApiProblem(
+              codeName: 'cash_session.drawer_busy',
+              code: api.ErrorCode.cashSessionPeriodDrawerBusy,
+              params: {'cash_drawer_id': 1},
+            ),
+          ),
+        );
+
+        expect(state.error, OpenSessionFormErrorCode.drawerBusy);
+        expect(state.blockingSessionId, isNull);
+        verifyNever(() => repository.getCurrent());
+      },
+    );
+
+    test('another coded 409 is a failure to open, not a busy refusal, and '
+        'keeps its cause', () async {
+      const refusal = AppError.server(
+        statusCode: 409,
+        message: 'The cash session was closed',
+        problem: ApiProblem(
+          codeName: 'cash_session.closed',
+          code: api.ErrorCode.cashSessionPeriodClosed,
+        ),
+      );
+      final state = await submitRefusedWith(refusal);
+
+      expect(state.error, OpenSessionFormErrorCode.openFailed);
+      expect(state.errorCause, refusal);
+      verifyNever(() => repository.getCurrent());
+    });
+  });
 
   group('OpenSessionFormController.submit — other failures', () {
     test('404 (drawer vanished) maps to drawerNotFound', () async {

@@ -42,7 +42,7 @@ abstract class CloseSessionFormState with _$CloseSessionFormState {
     @Default(false) bool submitting,
     @Default(false) bool closed,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _CloseSessionFormState;
 }
@@ -96,7 +96,7 @@ class CloseSessionFormController extends _$CloseSessionFormController {
         difference(counted: counted, expected: expected),
       ),
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
   }
@@ -119,7 +119,7 @@ class CloseSessionFormController extends _$CloseSessionFormController {
         .can(SystemObject.cashSessionClose, AccessRight.update)) {
       state = state.copyWith(
         error: CloseSessionFormErrorCode.closePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -127,7 +127,7 @@ class CloseSessionFormController extends _$CloseSessionFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     final counts = [
@@ -159,23 +159,23 @@ class CloseSessionFormController extends _$CloseSessionFormController {
         );
       } else if (e is ServerError && e.statusCode == 409) {
         // FR-024: entered quantities are NOT cleared — the state above this
-        // catch block is untouched except for submitting/error/errorDetail.
+        // catch block is untouched except for submitting/error/errorCause.
         state = state.copyWith(
           submitting: false,
           error: CloseSessionFormErrorCode.alreadyClosed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       } else if (e is NotFoundError) {
         state = state.copyWith(
           submitting: false,
           error: CloseSessionFormErrorCode.sessionNotFound,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       } else {
         state = state.copyWith(
           submitting: false,
           error: CloseSessionFormErrorCode.closeFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     } finally {

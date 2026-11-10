@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/errors/localize_problem.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
@@ -186,7 +187,8 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
       final l10n = AppLocalizations.of(context)!;
       setState(() {
         _lineErrors[saleLineId] = l10n.posDeliveryAssignmentRefused(
-          e.serverMessage ?? l10n.errorServerGeneric,
+          e.userMessage(l10n, ref.read(formattersProvider)) ??
+              l10n.errorServerGeneric,
         );
       });
       return false;

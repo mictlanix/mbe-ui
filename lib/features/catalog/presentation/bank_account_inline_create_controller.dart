@@ -49,7 +49,7 @@ abstract class BankAccountInlineCreateState
     @Default(false) bool submitting,
     BankAccount? created,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _BankAccountInlineCreateState;
 }
@@ -77,7 +77,7 @@ class BankAccountInlineCreateController
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -104,7 +104,7 @@ class BankAccountInlineCreateController
         state = state.copyWith(
           submitting: false,
           error: BankAccountInlineCreateErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -145,5 +145,5 @@ class BankAccountInlineCreateController
 
   BankAccountInlineCreateState _clearErrors(
     BankAccountInlineCreateState next,
-  ) => next.copyWith(error: null, errorDetail: null, fieldErrors: const {});
+  ) => next.copyWith(error: null, errorCause: null, fieldErrors: const {});
 }

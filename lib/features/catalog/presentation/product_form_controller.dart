@@ -12,6 +12,7 @@ import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/sat_catalog_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/supplier_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/products_list_controller.dart';
+import 'package:mbe_ui/core/errors/localize_problem.dart';
 
 part 'product_form_controller.freezed.dart';
 part 'product_form_controller.g.dart';
@@ -105,7 +106,7 @@ abstract class ProductFormState with _$ProductFormState {
     /// string on a `404`/`5xx`), shown alongside the localized [error]
     /// message since it can't be localized client-side. `null` for
     /// client-side-only errors (validation, permission checks).
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _ProductFormState;
 }
@@ -120,14 +121,14 @@ class ProductFormController extends _$ProductFormController {
   void codeChanged(String v) => state = state.copyWith(
     code: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void nameChanged(String v) => state = state.copyWith(
     name: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -139,7 +140,7 @@ class ProductFormController extends _$ProductFormController {
   void barCodeChanged(String v) => state = state.copyWith(
     barCode: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -157,7 +158,7 @@ class ProductFormController extends _$ProductFormController {
         : item.code,
     fieldErrors: Map.of(state.fieldErrors)..remove('unitOfMeasurementCode'),
     error: null,
-    errorDetail: null,
+    errorCause: null,
   );
 
   void satKeySelected(SatCatalogItem? item) => state = state.copyWith(
@@ -246,7 +247,7 @@ class ProductFormController extends _$ProductFormController {
   /// here — `ref.read` at this one-shot async call site could race with
   /// `authProvider`'s own async session restore.
   Future<void> loadForEdit(int productId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final product = await ref
           .read(productRepositoryProvider)
@@ -286,7 +287,7 @@ class ProductFormController extends _$ProductFormController {
       state = state.copyWith(
         loading: false,
         error: ProductFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -333,7 +334,7 @@ class ProductFormController extends _$ProductFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
         saved: false,
       );
       return;
@@ -344,7 +345,7 @@ class ProductFormController extends _$ProductFormController {
         .can(SystemObject.products, AccessRight.create)) {
       state = state.copyWith(
         error: ProductFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -353,7 +354,7 @@ class ProductFormController extends _$ProductFormController {
       submitting: true,
       saved: false,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -409,7 +410,7 @@ class ProductFormController extends _$ProductFormController {
             submitting: false,
             saved: true,
             error: ProductFormErrorCode.photoUploadFailed,
-            errorDetail: e.serverMessage,
+            errorCause: e,
           );
         }
       } else {
@@ -425,7 +426,7 @@ class ProductFormController extends _$ProductFormController {
         state = state.copyWith(
           submitting: false,
           error: ProductFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -444,7 +445,7 @@ class ProductFormController extends _$ProductFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
         saved: false,
       );
       return;
@@ -455,7 +456,7 @@ class ProductFormController extends _$ProductFormController {
         .can(SystemObject.products, AccessRight.update)) {
       state = state.copyWith(
         error: ProductFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -464,7 +465,7 @@ class ProductFormController extends _$ProductFormController {
       submitting: true,
       saved: false,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -518,7 +519,7 @@ class ProductFormController extends _$ProductFormController {
             submitting: false,
             saved: true,
             error: ProductFormErrorCode.photoUploadFailed,
-            errorDetail: e.serverMessage,
+            errorCause: e,
           );
         }
       } else if (state.photoMarkedForRemoval) {
@@ -545,7 +546,7 @@ class ProductFormController extends _$ProductFormController {
         state = state.copyWith(
           submitting: false,
           error: ProductFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -558,7 +559,7 @@ class ProductFormController extends _$ProductFormController {
   /// (FR-015 — an inactive product can still be deleted). Re-checks
   /// the caller's `products` delete privilege immediately before submitting
   /// (spec.md Edge Cases). A server rejection (e.g. referential integrity)
-  /// is surfaced via `error`/`errorDetail`, leaving the product in place
+  /// is surfaced via `error`/`errorCause`, leaving the product in place
   /// (FR-016b).
   Future<void> delete() async {
     final productId = state.productId;
@@ -569,19 +570,19 @@ class ProductFormController extends _$ProductFormController {
         .can(SystemObject.products, AccessRight.delete)) {
       state = state.copyWith(
         error: ProductFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref.read(productRepositoryProvider).delete(productId: productId);
       ref.invalidate(productsListControllerProvider);
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {
       state = state.copyWith(
-        errorDetail: e.serverMessage,
+        errorCause: e,
         submitting: false,
         error: ProductFormErrorCode.deleteFailed,
       );
@@ -604,7 +605,7 @@ Map<String, String> _fieldErrorsFromServer(ValidationError error) {
   final result = <String, String>{};
   for (final fieldError in error.errors) {
     final locKey = fieldError.loc.isNotEmpty ? fieldError.loc.last : 'error';
-    result[keyMap[locKey] ?? locKey] = fieldError.msg;
+    result[keyMap[locKey] ?? locKey] = serverFieldValue(fieldError);
   }
   return result;
 }

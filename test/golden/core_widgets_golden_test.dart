@@ -2,9 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/nav_destination.dart';
 import 'package:mbe_ui/core/navigation/nav_destinations.dart';
@@ -21,6 +23,7 @@ import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/date_range_filter_chip.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 import 'package:mbe_ui/core/widgets/fact_strip_row.dart';
 import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
@@ -76,6 +79,7 @@ const _coveredFiles = {
   'date_range_filter_chip.dart', // spec 023 T023 — the sales list's date filter
   'entity_status_controls.dart',
   'error_banner.dart',
+  'form_error_banner.dart', // spec 058 — a form's headline plus the localized reason
   'fact_strip_row.dart', // spec 049 — the quote and order headers' strip
   'label_multi_picker.dart',
   'list_state_views.dart',
@@ -388,6 +392,48 @@ void main() {
         (brightness, width) => SizedBox(
           width: width - 32,
           child: const ErrorBanner(error: AppError.network('Connection lost')),
+        ),
+      );
+    });
+
+    testWidgets('ErrorBanner (localized server code)', (tester) async {
+      await expectGoldenMatrix(
+        tester,
+        'error_banner_localized',
+        (brightness, width) => SizedBox(
+          width: width - 32,
+          child: ErrorBanner(
+            error: AppError.creditHold(
+              'Customer is on credit hold: 4 overdue credit order(s)',
+              ApiProblem(
+                codeName: 'customer.credit_hold',
+                code: api.ErrorCode.customerPeriodCreditHold,
+                params: const {'customer_id': 812, 'overdue_count': 4},
+              ),
+            ),
+          ),
+        ),
+      );
+    });
+
+    testWidgets('FormErrorBanner', (tester) async {
+      await expectGoldenMatrix(
+        tester,
+        'form_error_banner',
+        (brightness, width) => SizedBox(
+          width: width - 32,
+          child: const FormErrorBanner(
+            headline: 'No se pudo guardar el almacén.',
+            cause: AppError.server(
+              statusCode: 409,
+              message: 'A warehouse with that code already exists',
+              problem: ApiProblem(
+                codeName: 'resource.already_exists',
+                code: api.ErrorCode.resourcePeriodAlreadyExists,
+                params: {'resource': 'warehouse', 'field': 'code'},
+              ),
+            ),
+          ),
         ),
       );
     });

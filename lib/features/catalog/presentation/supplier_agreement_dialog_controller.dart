@@ -5,6 +5,7 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/supplier_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/supplier_agreement.dart';
 import 'package:mbe_ui/features/catalog/presentation/supplier_agreements_controller.dart';
+import 'package:mbe_ui/core/errors/localize_problem.dart';
 
 part 'supplier_agreement_dialog_controller.freezed.dart';
 part 'supplier_agreement_dialog_controller.g.dart';
@@ -34,7 +35,7 @@ abstract class SupplierAgreementDialogState
     @Default(false) bool submitting,
     @Default(false) bool done,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _SupplierAgreementDialogState;
 
@@ -125,19 +126,15 @@ class SupplierAgreementDialogController
       final errors = <String, String>{};
       for (final fieldError in e.errors) {
         final field = fieldError.loc.isEmpty ? null : fieldError.loc.last;
-        if (field != null) errors[field] = fieldError.msg;
+        if (field != null) errors[field] = serverFieldValue(fieldError);
       }
       state = state.copyWith(submitting: false, fieldErrors: errors);
     } else {
-      state = state.copyWith(
-        submitting: false,
-        error: code,
-        errorDetail: e.serverMessage,
-      );
+      state = state.copyWith(submitting: false, error: code, errorCause: e);
     }
   }
 
   SupplierAgreementDialogState _clearErrors(
     SupplierAgreementDialogState next,
-  ) => next.copyWith(error: null, errorDetail: null, fieldErrors: const {});
+  ) => next.copyWith(error: null, errorCause: null, fieldErrors: const {});
 }

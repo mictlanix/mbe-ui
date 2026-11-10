@@ -20,13 +20,13 @@ extension AppErrorText on AppError {
 2. Otherwise, for a `ValidationError` with field errors, `localizeValidationType(entry.type)` applies to each one. Text is returned only when every entry localizes; the entries are joined with a newline.
 3. Otherwise `null`.
 
-`userMessage` is `localizedMessage`, else `serverMessage`, else, for a field-level `ValidationError`, each entry's `localizeValidationType(type) ?? msg` joined by a newline. Single-line consumers such as tooltips and snackbars use it.
+`userMessage` is `localizedMessage`, else `serverMessage` (never for an `AuthError`, whose detail FR-008 hides, nor a `NetworkError`, whose raw exception text SC-008 forbids), else, for a field-level `ValidationError`, each entry's `localizeValidationType(type) ?? msg` joined by a newline. Single-line consumers such as tooltips and snackbars use it.
 
 `serverMessage` (existing) keeps its meaning and stays public, for logs and tests. After this feature the only code that reads it is the fallback inside `userMessage`; SC-004's search enforces this.
 
 ## 2. `ErrorBanner` (`lib/core/widgets/error_banner.dart`)
 
-The widget becomes a `ConsumerWidget`, because it reads `formattersProvider`. Its constructor is unchanged, so the 62 call sites compile as they are. Its message list:
+The widget becomes a `ConsumerWidget`, because it reads `formattersProvider`, **only when the error carries a coded problem** (the only case that formats amounts or dates), so every existing test and screen that shows an uncoded error needs no `SharedPreferences` override. Its constructor is unchanged, so the 62 call sites compile as they are. Its message list:
 
 | Error | Lines shown |
 |---|---|
@@ -45,6 +45,7 @@ FormErrorBanner({required String headline, AppError? cause})
 | `cause` | Lines shown |
 |---|---|
 | null | `headline` |
+| a field-level `ValidationError` | `headline` only: the fields carry the rest, as forms have always done |
 | otherwise | `headline` + `cause.userMessage(l10n, fmt)` when not empty: the localized reason, or the English text when there is none (today's output) |
 
 This replaces the hand-built `ErrorBanner(error: AppError.validation([FieldError(msg: _localizeFormError(...)), FieldError(msg: errorDetail)]))` in the form screens. The form's `_localizeFormError` still supplies `headline`: what failed, such as "Couldn't save the operator". The cause supplies why.

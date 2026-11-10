@@ -53,7 +53,7 @@ abstract class SupplierFormState with _$SupplierFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _SupplierFormState;
 }
@@ -72,14 +72,14 @@ class SupplierFormController extends _$SupplierFormController {
   void codeChanged(String v) => state = state.copyWith(
     code: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void nameChanged(String v) => state = state.copyWith(
     name: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -88,14 +88,14 @@ class SupplierFormController extends _$SupplierFormController {
   void creditLimitChanged(String v) => state = state.copyWith(
     creditLimit: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void creditDaysChanged(String v) => state = state.copyWith(
     creditDays: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -150,11 +150,11 @@ class SupplierFormController extends _$SupplierFormController {
   );
 
   SupplierFormState _clear(SupplierFormState s) =>
-      s.copyWith(error: null, errorDetail: null, fieldErrors: const {});
+      s.copyWith(error: null, errorCause: null, fieldErrors: const {});
 
   /// Loads an existing supplier into the form for viewing/editing.
   Future<void> loadForEdit(int supplierId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final supplier = await ref
           .read(supplierRepositoryProvider)
@@ -175,7 +175,7 @@ class SupplierFormController extends _$SupplierFormController {
       state = state.copyWith(
         loading: false,
         error: SupplierFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -211,7 +211,7 @@ class SupplierFormController extends _$SupplierFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -221,7 +221,7 @@ class SupplierFormController extends _$SupplierFormController {
         .can(SystemObject.suppliers, AccessRight.create)) {
       state = state.copyWith(
         error: SupplierFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -229,7 +229,7 @@ class SupplierFormController extends _$SupplierFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -271,13 +271,13 @@ class SupplierFormController extends _$SupplierFormController {
         state = state.copyWith(
           submitting: false,
           error: SupplierFormErrorCode.saveConflict,
-          errorDetail: null,
+          errorCause: null,
         );
       } else {
         state = state.copyWith(
           submitting: false,
           error: SupplierFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -294,7 +294,7 @@ class SupplierFormController extends _$SupplierFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -304,7 +304,7 @@ class SupplierFormController extends _$SupplierFormController {
         .can(SystemObject.suppliers, AccessRight.update)) {
       state = state.copyWith(
         error: SupplierFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -312,7 +312,7 @@ class SupplierFormController extends _$SupplierFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -345,13 +345,13 @@ class SupplierFormController extends _$SupplierFormController {
         state = state.copyWith(
           submitting: false,
           error: SupplierFormErrorCode.saveConflict,
-          errorDetail: null,
+          errorCause: null,
         );
       } else {
         state = state.copyWith(
           submitting: false,
           error: SupplierFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -359,7 +359,7 @@ class SupplierFormController extends _$SupplierFormController {
 
   /// Deletes the loaded supplier (FR-006). No-ops if no supplier has been
   /// loaded. A server rejection (e.g. still referenced by a product) is
-  /// surfaced via `error`/`errorDetail`, leaving the supplier in place.
+  /// surfaced via `error`/`errorCause`, leaving the supplier in place.
   Future<void> delete() async {
     final supplierId = state.supplierId;
     if (supplierId == null) return;
@@ -369,12 +369,12 @@ class SupplierFormController extends _$SupplierFormController {
         .can(SystemObject.suppliers, AccessRight.delete)) {
       state = state.copyWith(
         error: SupplierFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref.read(supplierRepositoryProvider).delete(supplierId: supplierId);
       ref.invalidate(suppliersListControllerProvider);
@@ -384,14 +384,14 @@ class SupplierFormController extends _$SupplierFormController {
         state = state.copyWith(
           submitting: false,
           error: SupplierFormErrorCode.deleteConflict,
-          errorDetail: null,
+          errorCause: null,
         );
         return;
       }
       state = state.copyWith(
         submitting: false,
         error: SupplierFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }

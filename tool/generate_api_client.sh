@@ -13,6 +13,11 @@
 # filters), even though the param is optional and the guard is needed to
 # omit it from the request when unset. See openapi-generator's
 # dart/libraries/dio/api.mustache for the original logic.
+#
+# The same override also drops the client-side default of a query param whose
+# schema is a $ref to an enum (`Comparison? comparison = previous_period`):
+# upstream emits the raw wire value as a bare identifier, which does not
+# compile. The server applies the same default when the param is omitted.
 set -euo pipefail
 
 SPEC_SOURCE="${1:-http://127.0.0.1:8000/openapi.json}"

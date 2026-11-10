@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
-import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/presentation/customer_form.dart'
     show localizeCustomerFieldError, localizeCustomerFormError;
@@ -103,20 +102,9 @@ class _CustomerInlineCreateFormState
         if (form.error != null)
           FormGridChild(
             span: FormGridSpan.full,
-            ErrorBanner(
-              error: AppError.validation([
-                FieldError(
-                  loc: const [],
-                  msg: localizeCustomerFormError(l10n, form.error!),
-                  type: 'error',
-                ),
-                if (form.errorDetail != null)
-                  FieldError(
-                    loc: const [],
-                    msg: form.errorDetail!,
-                    type: 'error',
-                  ),
-              ]),
+            FormErrorBanner(
+              headline: localizeCustomerFormError(l10n, form.error!),
+              cause: form.errorCause,
             ),
           ),
         FormGridChild(

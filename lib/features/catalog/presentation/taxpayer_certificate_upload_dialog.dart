@@ -2,8 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:mbe_ui/core/errors/app_error.dart';
-import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_certificate.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_certificate_upload_controller.dart';
@@ -65,20 +64,9 @@ class _TaxpayerCertificateUploadDialog extends ConsumerWidget {
                   if (state.error != null)
                     FormGridChild(
                       span: FormGridSpan.full,
-                      ErrorBanner(
-                        error: AppError.validation([
-                          FieldError(
-                            loc: const [],
-                            msg: _localizeFormError(l10n, state.error!),
-                            type: 'error',
-                          ),
-                          if (state.errorDetail != null)
-                            FieldError(
-                              loc: const [],
-                              msg: state.errorDetail!,
-                              type: 'error',
-                            ),
-                        ]),
+                      FormErrorBanner(
+                        headline: _localizeFormError(l10n, state.error!),
+                        cause: state.errorCause,
                       ),
                     ),
                   FormGridChild(

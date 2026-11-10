@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TaxpayerIssuerFormState {
 
- bool get isEdit; String get rfc; String get name; String get regime; String get regimeDisplayText; FiscalCertificationProvider get provider; String get postalCode; String get postalCodeDisplayText; String get comment; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
+ bool get isEdit; String get rfc; String get name; String get regime; String get regimeDisplayText; FiscalCertificationProvider get provider; String get postalCode; String get postalCodeDisplayText; String get comment; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; AppError? get errorCause; Map<String, String> get fieldErrors;
 /// Create a copy of TaxpayerIssuerFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $TaxpayerIssuerFormStateCopyWith<TaxpayerIssuerFormState> get copyWith => _$Taxp
 @override
 bool operator ==(Object other) {
   final _this = this as TaxpayerIssuerFormState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TaxpayerIssuerFormState&&(identical(other.isEdit, _this.isEdit) || other.isEdit == _this.isEdit)&&(identical(other.rfc, _this.rfc) || other.rfc == _this.rfc)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.regime, _this.regime) || other.regime == _this.regime)&&(identical(other.regimeDisplayText, _this.regimeDisplayText) || other.regimeDisplayText == _this.regimeDisplayText)&&(identical(other.provider, _this.provider) || other.provider == _this.provider)&&(identical(other.postalCode, _this.postalCode) || other.postalCode == _this.postalCode)&&(identical(other.postalCodeDisplayText, _this.postalCodeDisplayText) || other.postalCodeDisplayText == _this.postalCodeDisplayText)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TaxpayerIssuerFormState&&(identical(other.isEdit, _this.isEdit) || other.isEdit == _this.isEdit)&&(identical(other.rfc, _this.rfc) || other.rfc == _this.rfc)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.regime, _this.regime) || other.regime == _this.regime)&&(identical(other.regimeDisplayText, _this.regimeDisplayText) || other.regimeDisplayText == _this.regimeDisplayText)&&(identical(other.provider, _this.provider) || other.provider == _this.provider)&&(identical(other.postalCode, _this.postalCode) || other.postalCode == _this.postalCode)&&(identical(other.postalCodeDisplayText, _this.postalCodeDisplayText) || other.postalCodeDisplayText == _this.postalCodeDisplayText)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorCause, _this.errorCause) || other.errorCause == _this.errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as TaxpayerIssuerFormState;
-  return Object.hash(runtimeType,_this.isEdit,_this.rfc,_this.name,_this.regime,_this.regimeDisplayText,_this.provider,_this.postalCode,_this.postalCodeDisplayText,_this.comment,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors));
+  return Object.hash(runtimeType,_this.isEdit,_this.rfc,_this.name,_this.regime,_this.regimeDisplayText,_this.provider,_this.postalCode,_this.postalCodeDisplayText,_this.comment,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorCause,const DeepCollectionEquality().hash(_this.fieldErrors));
 }
 
 @override
 String toString() {
   final _this = this as TaxpayerIssuerFormState;
-  return 'TaxpayerIssuerFormState(isEdit: ${_this.isEdit}, rfc: ${_this.rfc}, name: ${_this.name}, regime: ${_this.regime}, regimeDisplayText: ${_this.regimeDisplayText}, provider: ${_this.provider}, postalCode: ${_this.postalCode}, postalCodeDisplayText: ${_this.postalCodeDisplayText}, comment: ${_this.comment}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
+  return 'TaxpayerIssuerFormState(isEdit: ${_this.isEdit}, rfc: ${_this.rfc}, name: ${_this.name}, regime: ${_this.regime}, regimeDisplayText: ${_this.regimeDisplayText}, provider: ${_this.provider}, postalCode: ${_this.postalCode}, postalCodeDisplayText: ${_this.postalCodeDisplayText}, comment: ${_this.comment}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorCause: ${_this.errorCause}, fieldErrors: ${_this.fieldErrors})';
 }
 
 
@@ -51,11 +51,11 @@ abstract mixin class $TaxpayerIssuerFormStateCopyWith<$Res>  {
   factory $TaxpayerIssuerFormStateCopyWith(TaxpayerIssuerFormState value, $Res Function(TaxpayerIssuerFormState) _then) = _$TaxpayerIssuerFormStateCopyWithImpl;
 @useResult
 $Res call({
- bool isEdit, String rfc, String name, String regime, String regimeDisplayText, FiscalCertificationProvider provider, String postalCode, String postalCodeDisplayText, String comment, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ bool isEdit, String rfc, String name, String regime, String regimeDisplayText, FiscalCertificationProvider provider, String postalCode, String postalCodeDisplayText, String comment, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+$AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -68,7 +68,7 @@ class _$TaxpayerIssuerFormStateCopyWithImpl<$Res>
 
 /// Create a copy of TaxpayerIssuerFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isEdit = null,Object? rfc = null,Object? name = null,Object? regime = null,Object? regimeDisplayText = null,Object? provider = null,Object? postalCode = null,Object? postalCodeDisplayText = null,Object? comment = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isEdit = null,Object? rfc = null,Object? name = null,Object? regime = null,Object? regimeDisplayText = null,Object? provider = null,Object? postalCode = null,Object? postalCodeDisplayText = null,Object? comment = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(TaxpayerIssuerFormState(
 isEdit: null == isEdit ? _self.isEdit : isEdit // ignore: cast_nullable_to_non_nullable
 as bool,rfc: null == rfc ? _self.rfc : rfc // ignore: cast_nullable_to_non_nullable
@@ -84,12 +84,24 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
+/// Create a copy of TaxpayerIssuerFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 
@@ -171,10 +183,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isEdit,  String rfc,  String name,  String regime,  String regimeDisplayText,  FiscalCertificationProvider provider,  String postalCode,  String postalCodeDisplayText,  String comment,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isEdit,  String rfc,  String name,  String regime,  String regimeDisplayText,  FiscalCertificationProvider provider,  String postalCode,  String postalCodeDisplayText,  String comment,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TaxpayerIssuerFormState() when $default != null:
-return $default(_that.isEdit,_that.rfc,_that.name,_that.regime,_that.regimeDisplayText,_that.provider,_that.postalCode,_that.postalCodeDisplayText,_that.comment,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.isEdit,_that.rfc,_that.name,_that.regime,_that.regimeDisplayText,_that.provider,_that.postalCode,_that.postalCodeDisplayText,_that.comment,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return orElse();
 
 }
@@ -192,10 +204,10 @@ return $default(_that.isEdit,_that.rfc,_that.name,_that.regime,_that.regimeDispl
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isEdit,  String rfc,  String name,  String regime,  String regimeDisplayText,  FiscalCertificationProvider provider,  String postalCode,  String postalCodeDisplayText,  String comment,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isEdit,  String rfc,  String name,  String regime,  String regimeDisplayText,  FiscalCertificationProvider provider,  String postalCode,  String postalCodeDisplayText,  String comment,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)  $default,) {final _that = this;
 switch (_that) {
 case _TaxpayerIssuerFormState():
-return $default(_that.isEdit,_that.rfc,_that.name,_that.regime,_that.regimeDisplayText,_that.provider,_that.postalCode,_that.postalCodeDisplayText,_that.comment,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.isEdit,_that.rfc,_that.name,_that.regime,_that.regimeDisplayText,_that.provider,_that.postalCode,_that.postalCodeDisplayText,_that.comment,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -212,10 +224,10 @@ return $default(_that.isEdit,_that.rfc,_that.name,_that.regime,_that.regimeDispl
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isEdit,  String rfc,  String name,  String regime,  String regimeDisplayText,  FiscalCertificationProvider provider,  String postalCode,  String postalCodeDisplayText,  String comment,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isEdit,  String rfc,  String name,  String regime,  String regimeDisplayText,  FiscalCertificationProvider provider,  String postalCode,  String postalCodeDisplayText,  String comment,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _TaxpayerIssuerFormState() when $default != null:
-return $default(_that.isEdit,_that.rfc,_that.name,_that.regime,_that.regimeDisplayText,_that.provider,_that.postalCode,_that.postalCodeDisplayText,_that.comment,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.isEdit,_that.rfc,_that.name,_that.regime,_that.regimeDisplayText,_that.provider,_that.postalCode,_that.postalCodeDisplayText,_that.comment,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return null;
 
 }
@@ -227,7 +239,7 @@ return $default(_that.isEdit,_that.rfc,_that.name,_that.regime,_that.regimeDispl
 
 
 class _TaxpayerIssuerFormState implements TaxpayerIssuerFormState {
-  const _TaxpayerIssuerFormState({this.isEdit = false, this.rfc = '', this.name = '', this.regime = '', this.regimeDisplayText = '', this.provider = FiscalCertificationProvider.number0, this.postalCode = '', this.postalCodeDisplayText = '', this.comment = '', this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
+  const _TaxpayerIssuerFormState({this.isEdit = false, this.rfc = '', this.name = '', this.regime = '', this.regimeDisplayText = '', this.provider = FiscalCertificationProvider.number0, this.postalCode = '', this.postalCodeDisplayText = '', this.comment = '', this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorCause,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
   
 
 @override@JsonKey() final  bool isEdit;
@@ -244,7 +256,7 @@ class _TaxpayerIssuerFormState implements TaxpayerIssuerFormState {
 @override@JsonKey() final  bool saved;
 @override@JsonKey() final  bool deleted;
 @override final  String? error;
-@override final  String? errorDetail;
+@override final  AppError? errorCause;
  final  Map<String, String> _fieldErrors;
 @override@JsonKey() Map<String, String> get fieldErrors {
   if (_fieldErrors is EqualUnmodifiableMapView) return _fieldErrors;
@@ -263,18 +275,18 @@ _$TaxpayerIssuerFormStateCopyWith<_TaxpayerIssuerFormState> get copyWith => __$T
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TaxpayerIssuerFormState&&(identical(other.isEdit, isEdit) || other.isEdit == isEdit)&&(identical(other.rfc, rfc) || other.rfc == rfc)&&(identical(other.name, name) || other.name == name)&&(identical(other.regime, regime) || other.regime == regime)&&(identical(other.regimeDisplayText, regimeDisplayText) || other.regimeDisplayText == regimeDisplayText)&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.postalCode, postalCode) || other.postalCode == postalCode)&&(identical(other.postalCodeDisplayText, postalCodeDisplayText) || other.postalCodeDisplayText == postalCodeDisplayText)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TaxpayerIssuerFormState&&(identical(other.isEdit, isEdit) || other.isEdit == isEdit)&&(identical(other.rfc, rfc) || other.rfc == rfc)&&(identical(other.name, name) || other.name == name)&&(identical(other.regime, regime) || other.regime == regime)&&(identical(other.regimeDisplayText, regimeDisplayText) || other.regimeDisplayText == regimeDisplayText)&&(identical(other.provider, provider) || other.provider == provider)&&(identical(other.postalCode, postalCode) || other.postalCode == postalCode)&&(identical(other.postalCodeDisplayText, postalCodeDisplayText) || other.postalCodeDisplayText == postalCodeDisplayText)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorCause, errorCause) || other.errorCause == errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,isEdit,rfc,name,regime,regimeDisplayText,provider,postalCode,postalCodeDisplayText,comment,loading,submitting,saved,deleted,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors));
+    return Object.hash(runtimeType,isEdit,rfc,name,regime,regimeDisplayText,provider,postalCode,postalCodeDisplayText,comment,loading,submitting,saved,deleted,error,errorCause,const DeepCollectionEquality().hash(_fieldErrors));
 }
 
 @override
 String toString() {
-    return 'TaxpayerIssuerFormState(isEdit: $isEdit, rfc: $rfc, name: $name, regime: $regime, regimeDisplayText: $regimeDisplayText, provider: $provider, postalCode: $postalCode, postalCodeDisplayText: $postalCodeDisplayText, comment: $comment, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'TaxpayerIssuerFormState(isEdit: $isEdit, rfc: $rfc, name: $name, regime: $regime, regimeDisplayText: $regimeDisplayText, provider: $provider, postalCode: $postalCode, postalCodeDisplayText: $postalCodeDisplayText, comment: $comment, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorCause: $errorCause, fieldErrors: $fieldErrors)';
 }
 
 
@@ -285,11 +297,11 @@ abstract mixin class _$TaxpayerIssuerFormStateCopyWith<$Res> implements $Taxpaye
   factory _$TaxpayerIssuerFormStateCopyWith(_TaxpayerIssuerFormState value, $Res Function(_TaxpayerIssuerFormState) _then) = __$TaxpayerIssuerFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isEdit, String rfc, String name, String regime, String regimeDisplayText, FiscalCertificationProvider provider, String postalCode, String postalCodeDisplayText, String comment, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ bool isEdit, String rfc, String name, String regime, String regimeDisplayText, FiscalCertificationProvider provider, String postalCode, String postalCodeDisplayText, String comment, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+@override $AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -302,7 +314,7 @@ class __$TaxpayerIssuerFormStateCopyWithImpl<$Res>
 
 /// Create a copy of TaxpayerIssuerFormState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isEdit = null,Object? rfc = null,Object? name = null,Object? regime = null,Object? regimeDisplayText = null,Object? provider = null,Object? postalCode = null,Object? postalCodeDisplayText = null,Object? comment = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isEdit = null,Object? rfc = null,Object? name = null,Object? regime = null,Object? regimeDisplayText = null,Object? provider = null,Object? postalCode = null,Object? postalCodeDisplayText = null,Object? comment = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(_TaxpayerIssuerFormState(
 isEdit: null == isEdit ? _self.isEdit : isEdit // ignore: cast_nullable_to_non_nullable
 as bool,rfc: null == rfc ? _self.rfc : rfc // ignore: cast_nullable_to_non_nullable
@@ -318,13 +330,25 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
 
+/// Create a copy of TaxpayerIssuerFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 // dart format on

@@ -36,7 +36,7 @@ abstract class TaxpayerCertificateUploadState
     @Default(false) bool submitting,
     TaxpayerCertificate? uploaded,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _TaxpayerCertificateUploadState;
 }
@@ -51,7 +51,7 @@ class TaxpayerCertificateUploadController
 
   TaxpayerCertificateUploadState _clearErrors(
     TaxpayerCertificateUploadState s,
-  ) => s.copyWith(error: null, errorDetail: null, fieldErrors: const {});
+  ) => s.copyWith(error: null, errorCause: null, fieldErrors: const {});
 
   void certificateFilePicked(List<int> bytes, String fileName) =>
       state = _clearErrors(
@@ -92,7 +92,7 @@ class TaxpayerCertificateUploadController
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -119,7 +119,7 @@ class TaxpayerCertificateUploadController
         state = state.copyWith(
           submitting: false,
           error: TaxpayerCertificateUploadErrorCode.uploadFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }

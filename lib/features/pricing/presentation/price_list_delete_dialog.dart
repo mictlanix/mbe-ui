@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
-import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/pricing/data/price_list_repository_impl.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_list.dart';
 import 'package:mbe_ui/features/pricing/presentation/price_list_delete_preview_provider.dart';
 import 'package:mbe_ui/features/pricing/presentation/price_list_form_controller.dart';
 import 'package:mbe_ui/features/pricing/presentation/widgets/price_list_delete_summary.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 
 /// What the delete review dialog reports back on success
 /// (specs/034-price-list-retirement-ui data-model.md §4.3): how many
@@ -161,7 +160,10 @@ class _PriceListDeleteDialogState extends ConsumerState<PriceListDeleteDialog> {
                   const SizedBox(height: 16),
                 ],
                 if (formState.error != null) ...[
-                  ErrorBanner(error: _refusalError(l10n, formState)),
+                  FormErrorBanner(
+                    headline: _localizeDeleteError(l10n, formState.error!),
+                    cause: formState.errorCause,
+                  ),
                   const SizedBox(height: 16),
                 ],
                 if (isBlocked) ...[
@@ -249,24 +251,6 @@ class _PriceListDeleteDialogState extends ConsumerState<PriceListDeleteDialog> {
       ),
     );
   }
-}
-
-/// Wraps the controller's error code/detail into an [AppError] `ErrorBanner`
-/// can render, mirroring `PriceListDetailScreen`'s own composition
-/// (research.md R10) — a localized generic line, then the server's own
-/// sentence via `errorDetail`/`serverMessage`, exactly as `409`'s
-/// "Still referenced by customer.price_list (12) — remove those records
-/// first" reaches the operator verbatim (FR-019).
-AppError _refusalError(AppLocalizations l10n, PriceListFormState formState) {
-  return AppError.validation([
-    FieldError(
-      loc: const [],
-      msg: _localizeDeleteError(l10n, formState.error!),
-      type: 'error',
-    ),
-    if (formState.errorDetail != null)
-      FieldError(loc: const [], msg: formState.errorDetail!, type: 'error'),
-  ]);
 }
 
 String _localizeDeleteError(AppLocalizations l10n, String code) {

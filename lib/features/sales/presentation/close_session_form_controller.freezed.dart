@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CloseSessionFormState {
 
- int? get cashSessionId; Map<String, int> get quantities; String get countedTotal; String get expectedCash; String get difference; bool get submitting; bool get closed; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
+ int? get cashSessionId; Map<String, int> get quantities; String get countedTotal; String get expectedCash; String get difference; bool get submitting; bool get closed; String? get error; AppError? get errorCause; Map<String, String> get fieldErrors;
 /// Create a copy of CloseSessionFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $CloseSessionFormStateCopyWith<CloseSessionFormState> get copyWith => _$CloseSes
 @override
 bool operator ==(Object other) {
   final _this = this as CloseSessionFormState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloseSessionFormState&&(identical(other.cashSessionId, _this.cashSessionId) || other.cashSessionId == _this.cashSessionId)&&const DeepCollectionEquality().equals(other.quantities, _this.quantities)&&(identical(other.countedTotal, _this.countedTotal) || other.countedTotal == _this.countedTotal)&&(identical(other.expectedCash, _this.expectedCash) || other.expectedCash == _this.expectedCash)&&(identical(other.difference, _this.difference) || other.difference == _this.difference)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.closed, _this.closed) || other.closed == _this.closed)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CloseSessionFormState&&(identical(other.cashSessionId, _this.cashSessionId) || other.cashSessionId == _this.cashSessionId)&&const DeepCollectionEquality().equals(other.quantities, _this.quantities)&&(identical(other.countedTotal, _this.countedTotal) || other.countedTotal == _this.countedTotal)&&(identical(other.expectedCash, _this.expectedCash) || other.expectedCash == _this.expectedCash)&&(identical(other.difference, _this.difference) || other.difference == _this.difference)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.closed, _this.closed) || other.closed == _this.closed)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorCause, _this.errorCause) || other.errorCause == _this.errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as CloseSessionFormState;
-  return Object.hash(runtimeType,_this.cashSessionId,const DeepCollectionEquality().hash(_this.quantities),_this.countedTotal,_this.expectedCash,_this.difference,_this.submitting,_this.closed,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors));
+  return Object.hash(runtimeType,_this.cashSessionId,const DeepCollectionEquality().hash(_this.quantities),_this.countedTotal,_this.expectedCash,_this.difference,_this.submitting,_this.closed,_this.error,_this.errorCause,const DeepCollectionEquality().hash(_this.fieldErrors));
 }
 
 @override
 String toString() {
   final _this = this as CloseSessionFormState;
-  return 'CloseSessionFormState(cashSessionId: ${_this.cashSessionId}, quantities: ${_this.quantities}, countedTotal: ${_this.countedTotal}, expectedCash: ${_this.expectedCash}, difference: ${_this.difference}, submitting: ${_this.submitting}, closed: ${_this.closed}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
+  return 'CloseSessionFormState(cashSessionId: ${_this.cashSessionId}, quantities: ${_this.quantities}, countedTotal: ${_this.countedTotal}, expectedCash: ${_this.expectedCash}, difference: ${_this.difference}, submitting: ${_this.submitting}, closed: ${_this.closed}, error: ${_this.error}, errorCause: ${_this.errorCause}, fieldErrors: ${_this.fieldErrors})';
 }
 
 
@@ -51,11 +51,11 @@ abstract mixin class $CloseSessionFormStateCopyWith<$Res>  {
   factory $CloseSessionFormStateCopyWith(CloseSessionFormState value, $Res Function(CloseSessionFormState) _then) = _$CloseSessionFormStateCopyWithImpl;
 @useResult
 $Res call({
- int? cashSessionId, Map<String, int> quantities, String countedTotal, String expectedCash, String difference, bool submitting, bool closed, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? cashSessionId, Map<String, int> quantities, String countedTotal, String expectedCash, String difference, bool submitting, bool closed, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+$AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -68,7 +68,7 @@ class _$CloseSessionFormStateCopyWithImpl<$Res>
 
 /// Create a copy of CloseSessionFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? cashSessionId = freezed,Object? quantities = null,Object? countedTotal = null,Object? expectedCash = null,Object? difference = null,Object? submitting = null,Object? closed = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? cashSessionId = freezed,Object? quantities = null,Object? countedTotal = null,Object? expectedCash = null,Object? difference = null,Object? submitting = null,Object? closed = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(CloseSessionFormState(
 cashSessionId: freezed == cashSessionId ? _self.cashSessionId : cashSessionId // ignore: cast_nullable_to_non_nullable
 as int?,quantities: null == quantities ? _self.quantities : quantities // ignore: cast_nullable_to_non_nullable
@@ -78,12 +78,24 @@ as String,difference: null == difference ? _self.difference : difference // igno
 as String,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
 as bool,closed: null == closed ? _self.closed : closed // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
+/// Create a copy of CloseSessionFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 
@@ -165,10 +177,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? cashSessionId,  Map<String, int> quantities,  String countedTotal,  String expectedCash,  String difference,  bool submitting,  bool closed,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? cashSessionId,  Map<String, int> quantities,  String countedTotal,  String expectedCash,  String difference,  bool submitting,  bool closed,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CloseSessionFormState() when $default != null:
-return $default(_that.cashSessionId,_that.quantities,_that.countedTotal,_that.expectedCash,_that.difference,_that.submitting,_that.closed,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.cashSessionId,_that.quantities,_that.countedTotal,_that.expectedCash,_that.difference,_that.submitting,_that.closed,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return orElse();
 
 }
@@ -186,10 +198,10 @@ return $default(_that.cashSessionId,_that.quantities,_that.countedTotal,_that.ex
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? cashSessionId,  Map<String, int> quantities,  String countedTotal,  String expectedCash,  String difference,  bool submitting,  bool closed,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? cashSessionId,  Map<String, int> quantities,  String countedTotal,  String expectedCash,  String difference,  bool submitting,  bool closed,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)  $default,) {final _that = this;
 switch (_that) {
 case _CloseSessionFormState():
-return $default(_that.cashSessionId,_that.quantities,_that.countedTotal,_that.expectedCash,_that.difference,_that.submitting,_that.closed,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.cashSessionId,_that.quantities,_that.countedTotal,_that.expectedCash,_that.difference,_that.submitting,_that.closed,_that.error,_that.errorCause,_that.fieldErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -206,10 +218,10 @@ return $default(_that.cashSessionId,_that.quantities,_that.countedTotal,_that.ex
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? cashSessionId,  Map<String, int> quantities,  String countedTotal,  String expectedCash,  String difference,  bool submitting,  bool closed,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? cashSessionId,  Map<String, int> quantities,  String countedTotal,  String expectedCash,  String difference,  bool submitting,  bool closed,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _CloseSessionFormState() when $default != null:
-return $default(_that.cashSessionId,_that.quantities,_that.countedTotal,_that.expectedCash,_that.difference,_that.submitting,_that.closed,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.cashSessionId,_that.quantities,_that.countedTotal,_that.expectedCash,_that.difference,_that.submitting,_that.closed,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return null;
 
 }
@@ -221,7 +233,7 @@ return $default(_that.cashSessionId,_that.quantities,_that.countedTotal,_that.ex
 
 
 class _CloseSessionFormState implements CloseSessionFormState {
-  const _CloseSessionFormState({this.cashSessionId,  Map<String, int> quantities = const <String, int>{}, this.countedTotal = '0', this.expectedCash = '0', this.difference = '0', this.submitting = false, this.closed = false, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _quantities = quantities,_fieldErrors = fieldErrors;
+  const _CloseSessionFormState({this.cashSessionId,  Map<String, int> quantities = const <String, int>{}, this.countedTotal = '0', this.expectedCash = '0', this.difference = '0', this.submitting = false, this.closed = false, this.error, this.errorCause,  Map<String, String> fieldErrors = const <String, String>{}}): _quantities = quantities,_fieldErrors = fieldErrors;
   
 
 @override final  int? cashSessionId;
@@ -238,7 +250,7 @@ class _CloseSessionFormState implements CloseSessionFormState {
 @override@JsonKey() final  bool submitting;
 @override@JsonKey() final  bool closed;
 @override final  String? error;
-@override final  String? errorDetail;
+@override final  AppError? errorCause;
  final  Map<String, String> _fieldErrors;
 @override@JsonKey() Map<String, String> get fieldErrors {
   if (_fieldErrors is EqualUnmodifiableMapView) return _fieldErrors;
@@ -257,18 +269,18 @@ _$CloseSessionFormStateCopyWith<_CloseSessionFormState> get copyWith => __$Close
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloseSessionFormState&&(identical(other.cashSessionId, cashSessionId) || other.cashSessionId == cashSessionId)&&const DeepCollectionEquality().equals(other.quantities, _quantities)&&(identical(other.countedTotal, countedTotal) || other.countedTotal == countedTotal)&&(identical(other.expectedCash, expectedCash) || other.expectedCash == expectedCash)&&(identical(other.difference, difference) || other.difference == difference)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.closed, closed) || other.closed == closed)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CloseSessionFormState&&(identical(other.cashSessionId, cashSessionId) || other.cashSessionId == cashSessionId)&&const DeepCollectionEquality().equals(other.quantities, _quantities)&&(identical(other.countedTotal, countedTotal) || other.countedTotal == countedTotal)&&(identical(other.expectedCash, expectedCash) || other.expectedCash == expectedCash)&&(identical(other.difference, difference) || other.difference == difference)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.closed, closed) || other.closed == closed)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorCause, errorCause) || other.errorCause == errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,cashSessionId,const DeepCollectionEquality().hash(_quantities),countedTotal,expectedCash,difference,submitting,closed,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors));
+    return Object.hash(runtimeType,cashSessionId,const DeepCollectionEquality().hash(_quantities),countedTotal,expectedCash,difference,submitting,closed,error,errorCause,const DeepCollectionEquality().hash(_fieldErrors));
 }
 
 @override
 String toString() {
-    return 'CloseSessionFormState(cashSessionId: $cashSessionId, quantities: $quantities, countedTotal: $countedTotal, expectedCash: $expectedCash, difference: $difference, submitting: $submitting, closed: $closed, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'CloseSessionFormState(cashSessionId: $cashSessionId, quantities: $quantities, countedTotal: $countedTotal, expectedCash: $expectedCash, difference: $difference, submitting: $submitting, closed: $closed, error: $error, errorCause: $errorCause, fieldErrors: $fieldErrors)';
 }
 
 
@@ -279,11 +291,11 @@ abstract mixin class _$CloseSessionFormStateCopyWith<$Res> implements $CloseSess
   factory _$CloseSessionFormStateCopyWith(_CloseSessionFormState value, $Res Function(_CloseSessionFormState) _then) = __$CloseSessionFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- int? cashSessionId, Map<String, int> quantities, String countedTotal, String expectedCash, String difference, bool submitting, bool closed, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? cashSessionId, Map<String, int> quantities, String countedTotal, String expectedCash, String difference, bool submitting, bool closed, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+@override $AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -296,7 +308,7 @@ class __$CloseSessionFormStateCopyWithImpl<$Res>
 
 /// Create a copy of CloseSessionFormState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? cashSessionId = freezed,Object? quantities = null,Object? countedTotal = null,Object? expectedCash = null,Object? difference = null,Object? submitting = null,Object? closed = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? cashSessionId = freezed,Object? quantities = null,Object? countedTotal = null,Object? expectedCash = null,Object? difference = null,Object? submitting = null,Object? closed = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(_CloseSessionFormState(
 cashSessionId: freezed == cashSessionId ? _self.cashSessionId : cashSessionId // ignore: cast_nullable_to_non_nullable
 as int?,quantities: null == quantities ? _self._quantities : quantities // ignore: cast_nullable_to_non_nullable
@@ -306,13 +318,25 @@ as String,difference: null == difference ? _self.difference : difference // igno
 as String,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
 as bool,closed: null == closed ? _self.closed : closed // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
 
+/// Create a copy of CloseSessionFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 // dart format on

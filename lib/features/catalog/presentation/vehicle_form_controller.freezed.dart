@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$VehicleFormState {
 
- int? get vehicleId; String get licensePlate; String get name; String get nickname; String get tonsCapacity; EntityStatus get status; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
+ int? get vehicleId; String get licensePlate; String get name; String get nickname; String get tonsCapacity; EntityStatus get status; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; AppError? get errorCause; Map<String, String> get fieldErrors;
 /// Create a copy of VehicleFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $VehicleFormStateCopyWith<VehicleFormState> get copyWith => _$VehicleFormStateCo
 @override
 bool operator ==(Object other) {
   final _this = this as VehicleFormState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VehicleFormState&&(identical(other.vehicleId, _this.vehicleId) || other.vehicleId == _this.vehicleId)&&(identical(other.licensePlate, _this.licensePlate) || other.licensePlate == _this.licensePlate)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.nickname, _this.nickname) || other.nickname == _this.nickname)&&(identical(other.tonsCapacity, _this.tonsCapacity) || other.tonsCapacity == _this.tonsCapacity)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VehicleFormState&&(identical(other.vehicleId, _this.vehicleId) || other.vehicleId == _this.vehicleId)&&(identical(other.licensePlate, _this.licensePlate) || other.licensePlate == _this.licensePlate)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.nickname, _this.nickname) || other.nickname == _this.nickname)&&(identical(other.tonsCapacity, _this.tonsCapacity) || other.tonsCapacity == _this.tonsCapacity)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorCause, _this.errorCause) || other.errorCause == _this.errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as VehicleFormState;
-  return Object.hash(runtimeType,_this.vehicleId,_this.licensePlate,_this.name,_this.nickname,_this.tonsCapacity,_this.status,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors));
+  return Object.hash(runtimeType,_this.vehicleId,_this.licensePlate,_this.name,_this.nickname,_this.tonsCapacity,_this.status,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorCause,const DeepCollectionEquality().hash(_this.fieldErrors));
 }
 
 @override
 String toString() {
   final _this = this as VehicleFormState;
-  return 'VehicleFormState(vehicleId: ${_this.vehicleId}, licensePlate: ${_this.licensePlate}, name: ${_this.name}, nickname: ${_this.nickname}, tonsCapacity: ${_this.tonsCapacity}, status: ${_this.status}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
+  return 'VehicleFormState(vehicleId: ${_this.vehicleId}, licensePlate: ${_this.licensePlate}, name: ${_this.name}, nickname: ${_this.nickname}, tonsCapacity: ${_this.tonsCapacity}, status: ${_this.status}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorCause: ${_this.errorCause}, fieldErrors: ${_this.fieldErrors})';
 }
 
 
@@ -51,11 +51,11 @@ abstract mixin class $VehicleFormStateCopyWith<$Res>  {
   factory $VehicleFormStateCopyWith(VehicleFormState value, $Res Function(VehicleFormState) _then) = _$VehicleFormStateCopyWithImpl;
 @useResult
 $Res call({
- int? vehicleId, String licensePlate, String name, String nickname, String tonsCapacity, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? vehicleId, String licensePlate, String name, String nickname, String tonsCapacity, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+$AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -68,7 +68,7 @@ class _$VehicleFormStateCopyWithImpl<$Res>
 
 /// Create a copy of VehicleFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? vehicleId = freezed,Object? licensePlate = null,Object? name = null,Object? nickname = null,Object? tonsCapacity = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? vehicleId = freezed,Object? licensePlate = null,Object? name = null,Object? nickname = null,Object? tonsCapacity = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(VehicleFormState(
 vehicleId: freezed == vehicleId ? _self.vehicleId : vehicleId // ignore: cast_nullable_to_non_nullable
 as int?,licensePlate: null == licensePlate ? _self.licensePlate : licensePlate // ignore: cast_nullable_to_non_nullable
@@ -81,12 +81,24 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
+/// Create a copy of VehicleFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 
@@ -168,10 +180,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? vehicleId,  String licensePlate,  String name,  String nickname,  String tonsCapacity,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? vehicleId,  String licensePlate,  String name,  String nickname,  String tonsCapacity,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VehicleFormState() when $default != null:
-return $default(_that.vehicleId,_that.licensePlate,_that.name,_that.nickname,_that.tonsCapacity,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.vehicleId,_that.licensePlate,_that.name,_that.nickname,_that.tonsCapacity,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return orElse();
 
 }
@@ -189,10 +201,10 @@ return $default(_that.vehicleId,_that.licensePlate,_that.name,_that.nickname,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? vehicleId,  String licensePlate,  String name,  String nickname,  String tonsCapacity,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? vehicleId,  String licensePlate,  String name,  String nickname,  String tonsCapacity,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)  $default,) {final _that = this;
 switch (_that) {
 case _VehicleFormState():
-return $default(_that.vehicleId,_that.licensePlate,_that.name,_that.nickname,_that.tonsCapacity,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.vehicleId,_that.licensePlate,_that.name,_that.nickname,_that.tonsCapacity,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -209,10 +221,10 @@ return $default(_that.vehicleId,_that.licensePlate,_that.name,_that.nickname,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? vehicleId,  String licensePlate,  String name,  String nickname,  String tonsCapacity,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? vehicleId,  String licensePlate,  String name,  String nickname,  String tonsCapacity,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _VehicleFormState() when $default != null:
-return $default(_that.vehicleId,_that.licensePlate,_that.name,_that.nickname,_that.tonsCapacity,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.vehicleId,_that.licensePlate,_that.name,_that.nickname,_that.tonsCapacity,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return null;
 
 }
@@ -224,7 +236,7 @@ return $default(_that.vehicleId,_that.licensePlate,_that.name,_that.nickname,_th
 
 
 class _VehicleFormState implements VehicleFormState {
-  const _VehicleFormState({this.vehicleId, this.licensePlate = '', this.name = '', this.nickname = '', this.tonsCapacity = '', this.status = EntityStatus.active, this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
+  const _VehicleFormState({this.vehicleId, this.licensePlate = '', this.name = '', this.nickname = '', this.tonsCapacity = '', this.status = EntityStatus.active, this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorCause,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
   
 
 @override final  int? vehicleId;
@@ -238,7 +250,7 @@ class _VehicleFormState implements VehicleFormState {
 @override@JsonKey() final  bool saved;
 @override@JsonKey() final  bool deleted;
 @override final  String? error;
-@override final  String? errorDetail;
+@override final  AppError? errorCause;
  final  Map<String, String> _fieldErrors;
 @override@JsonKey() Map<String, String> get fieldErrors {
   if (_fieldErrors is EqualUnmodifiableMapView) return _fieldErrors;
@@ -257,18 +269,18 @@ _$VehicleFormStateCopyWith<_VehicleFormState> get copyWith => __$VehicleFormStat
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _VehicleFormState&&(identical(other.vehicleId, vehicleId) || other.vehicleId == vehicleId)&&(identical(other.licensePlate, licensePlate) || other.licensePlate == licensePlate)&&(identical(other.name, name) || other.name == name)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.tonsCapacity, tonsCapacity) || other.tonsCapacity == tonsCapacity)&&(identical(other.status, status) || other.status == status)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _VehicleFormState&&(identical(other.vehicleId, vehicleId) || other.vehicleId == vehicleId)&&(identical(other.licensePlate, licensePlate) || other.licensePlate == licensePlate)&&(identical(other.name, name) || other.name == name)&&(identical(other.nickname, nickname) || other.nickname == nickname)&&(identical(other.tonsCapacity, tonsCapacity) || other.tonsCapacity == tonsCapacity)&&(identical(other.status, status) || other.status == status)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorCause, errorCause) || other.errorCause == errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,vehicleId,licensePlate,name,nickname,tonsCapacity,status,loading,submitting,saved,deleted,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors));
+    return Object.hash(runtimeType,vehicleId,licensePlate,name,nickname,tonsCapacity,status,loading,submitting,saved,deleted,error,errorCause,const DeepCollectionEquality().hash(_fieldErrors));
 }
 
 @override
 String toString() {
-    return 'VehicleFormState(vehicleId: $vehicleId, licensePlate: $licensePlate, name: $name, nickname: $nickname, tonsCapacity: $tonsCapacity, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'VehicleFormState(vehicleId: $vehicleId, licensePlate: $licensePlate, name: $name, nickname: $nickname, tonsCapacity: $tonsCapacity, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorCause: $errorCause, fieldErrors: $fieldErrors)';
 }
 
 
@@ -279,11 +291,11 @@ abstract mixin class _$VehicleFormStateCopyWith<$Res> implements $VehicleFormSta
   factory _$VehicleFormStateCopyWith(_VehicleFormState value, $Res Function(_VehicleFormState) _then) = __$VehicleFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- int? vehicleId, String licensePlate, String name, String nickname, String tonsCapacity, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? vehicleId, String licensePlate, String name, String nickname, String tonsCapacity, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+@override $AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -296,7 +308,7 @@ class __$VehicleFormStateCopyWithImpl<$Res>
 
 /// Create a copy of VehicleFormState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? vehicleId = freezed,Object? licensePlate = null,Object? name = null,Object? nickname = null,Object? tonsCapacity = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? vehicleId = freezed,Object? licensePlate = null,Object? name = null,Object? nickname = null,Object? tonsCapacity = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(_VehicleFormState(
 vehicleId: freezed == vehicleId ? _self.vehicleId : vehicleId // ignore: cast_nullable_to_non_nullable
 as int?,licensePlate: null == licensePlate ? _self.licensePlate : licensePlate // ignore: cast_nullable_to_non_nullable
@@ -309,13 +321,25 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
 
+/// Create a copy of VehicleFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 // dart format on

@@ -234,7 +234,10 @@ void main() {
         final state = container.read(vehicleFormControllerProvider);
         expect(state.deleted, isFalse);
         expect(state.error, VehicleFormErrorCode.deleteFailed);
-        expect(state.errorDetail, 'Vehicle is assigned to a route');
+        expect(
+          state.errorCause?.serverMessage,
+          'Vehicle is assigned to a route',
+        );
       },
     );
   });

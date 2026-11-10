@@ -71,7 +71,7 @@ abstract class CustomerDiscountDialogState with _$CustomerDiscountDialogState {
     @Default(false) bool submitting,
     @Default(false) bool done,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _CustomerDiscountDialogState;
 
@@ -198,11 +198,11 @@ class CustomerDiscountDialogController
       state = state.copyWith(
         submitting: false,
         error: genericCode,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
 
   CustomerDiscountDialogState _clearErrors(CustomerDiscountDialogState next) =>
-      next.copyWith(error: null, errorDetail: null, fieldErrors: const {});
+      next.copyWith(error: null, errorCause: null, fieldErrors: const {});
 }

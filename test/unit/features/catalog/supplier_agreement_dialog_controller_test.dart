@@ -200,7 +200,7 @@ void main() {
       await notifierOf().submit();
 
       expect(stateOf().error, SupplierAgreementDialogErrorCode.saveFailed);
-      expect(stateOf().errorDetail, 'boom');
+      expect(stateOf().errorCause?.serverMessage, 'boom');
       expect(stateOf().start, DateTime(2026, 1, 1));
       expect(stateOf().done, isFalse);
     });
@@ -235,7 +235,7 @@ void main() {
         stateOf(_existing).error,
         SupplierAgreementDialogErrorCode.deleteFailed,
       );
-      expect(stateOf(_existing).errorDetail, 'conflict');
+      expect(stateOf(_existing).errorCause?.serverMessage, 'conflict');
       expect(stateOf(_existing).done, isFalse);
     });
   });

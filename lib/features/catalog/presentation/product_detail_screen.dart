@@ -9,11 +9,9 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/design/design_theme_extensions.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
-import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
-import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/core/widgets/product_photo_preview.dart';
@@ -26,6 +24,8 @@ import 'package:mbe_ui/features/catalog/domain/entities/sat_catalog_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/supplier_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/errors/localize_problem.dart';
+import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 
 /// Create / view / edit screen for a single product (FR-003..FR-009,
 /// FR-013, FR-014, FR-015). [productId] is `null` in create mode.
@@ -123,23 +123,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             if (formState.error != null)
               FormGridChild(
                 span: FormGridSpan.full,
-                ErrorBanner(
-                  error: AppError.validation([
-                    FieldError(
-                      loc: const [],
-                      msg: _localizeFormError(l10n, formState.error!),
-                      type: 'error',
-                    ),
-                    // The server's own message (e.g. "Product not found")
-                    // can't be localized client-side, so it's shown as
-                    // supplementary detail under the localized heading above.
-                    if (formState.errorDetail != null)
-                      FieldError(
-                        loc: const [],
-                        msg: formState.errorDetail!,
-                        type: 'error',
-                      ),
-                  ]),
+                FormErrorBanner(
+                  headline: _localizeFormError(l10n, formState.error!),
+                  cause: formState.errorCause,
                 ),
               ),
             FormGridChild(
@@ -723,6 +709,6 @@ String? _localizeFieldError(AppLocalizations l10n, String? code) {
     case ProductFormErrorCode.photoTooLarge:
       return l10n.productPhotoTooLargeError;
     default:
-      return code;
+      return localizeValidationType(code, l10n) ?? code;
   }
 }

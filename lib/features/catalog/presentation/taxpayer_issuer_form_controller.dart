@@ -49,7 +49,7 @@ abstract class TaxpayerIssuerFormState with _$TaxpayerIssuerFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _TaxpayerIssuerFormState;
 }
@@ -78,11 +78,11 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
   void commentChanged(String v) => state = state.copyWith(comment: v);
 
   TaxpayerIssuerFormState _clearErrors(TaxpayerIssuerFormState s) =>
-      s.copyWith(error: null, errorDetail: null, fieldErrors: const {});
+      s.copyWith(error: null, errorCause: null, fieldErrors: const {});
 
   /// Loads an existing issuer into the form for viewing/editing.
   Future<void> loadForEdit(String rfc) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final issuer = await ref
           .read(taxpayerIssuerRepositoryProvider)
@@ -104,7 +104,7 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
       state = state.copyWith(
         loading: false,
         error: TaxpayerIssuerFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -136,7 +136,7 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -146,7 +146,7 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
         .can(SystemObject.taxpayers, AccessRight.create)) {
       state = state.copyWith(
         error: TaxpayerIssuerFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -154,7 +154,7 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -180,7 +180,7 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
         state = state.copyWith(
           submitting: false,
           error: TaxpayerIssuerFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -196,7 +196,7 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -206,7 +206,7 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
         .can(SystemObject.taxpayers, AccessRight.update)) {
       state = state.copyWith(
         error: TaxpayerIssuerFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -214,7 +214,7 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -240,7 +240,7 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
         state = state.copyWith(
           submitting: false,
           error: TaxpayerIssuerFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -248,7 +248,7 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
 
   /// Deletes the loaded issuer (FR-016). No-ops if none has been loaded. A
   /// server rejection (e.g. still referenced by a certificate) is surfaced
-  /// via `error`/`errorDetail`, leaving the record in place.
+  /// via `error`/`errorCause`, leaving the record in place.
   Future<void> delete() async {
     if (!state.isEdit) return;
 
@@ -257,12 +257,12 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
         .can(SystemObject.taxpayers, AccessRight.delete)) {
       state = state.copyWith(
         error: TaxpayerIssuerFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref.read(taxpayerIssuerRepositoryProvider).delete(state.rfc);
       _invalidateCaches();
@@ -271,7 +271,7 @@ class TaxpayerIssuerFormController extends _$TaxpayerIssuerFormController {
       state = state.copyWith(
         submitting: false,
         error: TaxpayerIssuerFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }

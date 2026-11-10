@@ -1,10 +1,18 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'package:mbe_ui/core/errors/api_problem.dart';
+
 part 'app_error.freezed.dart';
 
 /// Domain error hierarchy returned/thrown by repository methods (constitution
 /// §III, data-model.md "Domain error types"). `core/network/` maps non-2xx
 /// dio responses to these variants.
+///
+/// Every variant that comes from a server response carries the English
+/// `message` (for the fallback and the log) and, when the server sent a
+/// `code`, the [ApiProblem] a localizer turns into text in the user's
+/// language (spec 058). `problem` is an optional last parameter so existing
+/// constructor calls and patterns compile unchanged.
 @freezed
 sealed class AppError with _$AppError {
   /// `422` (`HTTPValidationError`) — field-level validation messages, or
@@ -13,17 +21,23 @@ sealed class AppError with _$AppError {
   const factory AppError.validation(
     List<FieldError> errors, [
     String? message,
+    ApiProblem? problem,
   ]) = ValidationError;
 
   /// `401` from any endpoint, or `400` from `/auth/login`.
-  const factory AppError.auth([String? message]) = AuthError;
+  const factory AppError.auth([String? message, ApiProblem? problem]) =
+      AuthError;
 
   /// `404` (e.g. unknown `user_id`).
-  const factory AppError.notFound([String? message]) = NotFoundError;
+  const factory AppError.notFound([String? message, ApiProblem? problem]) =
+      NotFoundError;
 
   /// `5xx`.
-  const factory AppError.server({int? statusCode, String? message}) =
-      ServerError;
+  const factory AppError.server({
+    int? statusCode,
+    String? message,
+    ApiProblem? problem,
+  }) = ServerError;
 
   /// Connection/timeout failure before a response is received.
   const factory AppError.network([String? message]) = NetworkError;
@@ -35,7 +49,8 @@ sealed class AppError with _$AppError {
   /// rather than folded into [ServerError] so a caller can tell "this
   /// customer cannot take credit" apart from any other server refusal by
   /// type, not by matching the server's own prose (spec 039 FR-055/FR-056).
-  const factory AppError.creditHold([String? message]) = CreditHoldError;
+  const factory AppError.creditHold([String? message, ApiProblem? problem]) =
+      CreditHoldError;
 }
 
 /// A single `loc`/`msg`/`type` entry from mbe-api's `ValidationError` schema.
@@ -52,6 +67,17 @@ abstract class FieldError with _$FieldError {
 }
 
 extension AppErrorServerMessage on AppError {
+  /// The coded problem the server sent (spec 058), if any: `null` for a
+  /// network failure and for a response without a `code`.
+  ApiProblem? get problem => switch (this) {
+    ValidationError(:final problem) => problem,
+    AuthError(:final problem) => problem,
+    NotFoundError(:final problem) => problem,
+    ServerError(:final problem) => problem,
+    CreditHoldError(:final problem) => problem,
+    NetworkError() => null,
+  };
+
   /// The server-provided detail behind this error (e.g. mbe-api's `detail`
   /// string on a `404`/`5xx`), for display alongside a localized generic
   /// message since it can't be localized client-side. `null` for a

@@ -52,7 +52,7 @@ abstract class WarehouseFormState with _$WarehouseFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _WarehouseFormState;
 }
@@ -68,21 +68,21 @@ class WarehouseFormController extends _$WarehouseFormController {
         facilityId: facilityId,
         facilityDisplayText: facilityName,
         error: null,
-        errorDetail: null,
+        errorCause: null,
         fieldErrors: const {},
       );
 
   void codeChanged(String v) => state = state.copyWith(
     code: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void nameChanged(String v) => state = state.copyWith(
     name: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -92,7 +92,7 @@ class WarehouseFormController extends _$WarehouseFormController {
 
   /// Loads an existing warehouse into the form for viewing/editing.
   Future<void> loadForEdit(int warehouseId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final warehouse = await ref
           .read(warehouseRepositoryProvider)
@@ -111,7 +111,7 @@ class WarehouseFormController extends _$WarehouseFormController {
       state = state.copyWith(
         loading: false,
         error: WarehouseFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -171,7 +171,7 @@ class WarehouseFormController extends _$WarehouseFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -181,7 +181,7 @@ class WarehouseFormController extends _$WarehouseFormController {
         .can(SystemObject.warehouses, AccessRight.create)) {
       state = state.copyWith(
         error: WarehouseFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -189,7 +189,7 @@ class WarehouseFormController extends _$WarehouseFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -214,7 +214,7 @@ class WarehouseFormController extends _$WarehouseFormController {
         state = state.copyWith(
           submitting: false,
           error: WarehouseFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -230,7 +230,7 @@ class WarehouseFormController extends _$WarehouseFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -240,7 +240,7 @@ class WarehouseFormController extends _$WarehouseFormController {
         .can(SystemObject.warehouses, AccessRight.update)) {
       state = state.copyWith(
         error: WarehouseFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -248,7 +248,7 @@ class WarehouseFormController extends _$WarehouseFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -274,14 +274,14 @@ class WarehouseFormController extends _$WarehouseFormController {
         state = state.copyWith(
           submitting: false,
           error: WarehouseFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
   }
 
   /// Deletes the loaded warehouse (FR-007). No-ops if none has been loaded.
-  /// A server rejection is surfaced via `error`/`errorDetail`, leaving the
+  /// A server rejection is surfaced via `error`/`errorCause`, leaving the
   /// record in place.
   Future<void> delete() async {
     final warehouseId = state.warehouseId;
@@ -292,12 +292,12 @@ class WarehouseFormController extends _$WarehouseFormController {
         .can(SystemObject.warehouses, AccessRight.delete)) {
       state = state.copyWith(
         error: WarehouseFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref
           .read(warehouseRepositoryProvider)
@@ -308,7 +308,7 @@ class WarehouseFormController extends _$WarehouseFormController {
       state = state.copyWith(
         submitting: false,
         error: WarehouseFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }

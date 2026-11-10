@@ -36,7 +36,7 @@ abstract class PriceListFormState with _$PriceListFormState {
     @Default(false) bool submitting,
     @Default(false) bool saved,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _PriceListFormState;
 }
@@ -50,13 +50,13 @@ class PriceListFormController extends _$PriceListFormController {
   void nameChanged(String v) => state = state.copyWith(
     name: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   /// Loads an existing price list into the form for viewing/editing.
   Future<void> loadForEdit(int priceListId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final priceList = await ref
           .read(priceListRepositoryProvider)
@@ -69,7 +69,7 @@ class PriceListFormController extends _$PriceListFormController {
       state = state.copyWith(
         loading: false,
         error: PriceListFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -92,7 +92,7 @@ class PriceListFormController extends _$PriceListFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -102,7 +102,7 @@ class PriceListFormController extends _$PriceListFormController {
         .can(SystemObject.priceLists, AccessRight.create)) {
       state = state.copyWith(
         error: PriceListFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -110,7 +110,7 @@ class PriceListFormController extends _$PriceListFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -131,7 +131,7 @@ class PriceListFormController extends _$PriceListFormController {
         state = state.copyWith(
           submitting: false,
           error: PriceListFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -148,7 +148,7 @@ class PriceListFormController extends _$PriceListFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -158,7 +158,7 @@ class PriceListFormController extends _$PriceListFormController {
         .can(SystemObject.priceLists, AccessRight.update)) {
       state = state.copyWith(
         error: PriceListFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -166,7 +166,7 @@ class PriceListFormController extends _$PriceListFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -187,7 +187,7 @@ class PriceListFormController extends _$PriceListFormController {
         state = state.copyWith(
           submitting: false,
           error: PriceListFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -203,7 +203,7 @@ class PriceListFormController extends _$PriceListFormController {
   ///
   /// No-ops (returns `false`) if no price list has been loaded. A server
   /// refusal (blocked, or a race the preview couldn't see, US1 §6) is
-  /// surfaced via `error`/`errorDetail`, leaving the list in place.
+  /// surfaced via `error`/`errorCause`, leaving the list in place.
   Future<bool> delete({int? replacement}) async {
     final priceListId = state.priceListId;
     if (priceListId == null) return false;
@@ -213,12 +213,12 @@ class PriceListFormController extends _$PriceListFormController {
         .can(SystemObject.priceLists, AccessRight.delete)) {
       state = state.copyWith(
         error: PriceListFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return false;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref
           .read(priceListRepositoryProvider)
@@ -230,7 +230,7 @@ class PriceListFormController extends _$PriceListFormController {
       state = state.copyWith(
         submitting: false,
         error: PriceListFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
       return false;
     }

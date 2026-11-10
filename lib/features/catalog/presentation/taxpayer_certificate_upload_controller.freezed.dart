@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TaxpayerCertificateUploadState {
 
- String get taxpayer; List<int>? get certificateBytes; String get certificateFileName; List<int>? get keyBytes; String get keyFileName; String get keyPassword; bool get submitting; TaxpayerCertificate? get uploaded; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
+ String get taxpayer; List<int>? get certificateBytes; String get certificateFileName; List<int>? get keyBytes; String get keyFileName; String get keyPassword; bool get submitting; TaxpayerCertificate? get uploaded; String? get error; AppError? get errorCause; Map<String, String> get fieldErrors;
 /// Create a copy of TaxpayerCertificateUploadState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $TaxpayerCertificateUploadStateCopyWith<TaxpayerCertificateUploadState> get copy
 @override
 bool operator ==(Object other) {
   final _this = this as TaxpayerCertificateUploadState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TaxpayerCertificateUploadState&&(identical(other.taxpayer, _this.taxpayer) || other.taxpayer == _this.taxpayer)&&const DeepCollectionEquality().equals(other.certificateBytes, _this.certificateBytes)&&(identical(other.certificateFileName, _this.certificateFileName) || other.certificateFileName == _this.certificateFileName)&&const DeepCollectionEquality().equals(other.keyBytes, _this.keyBytes)&&(identical(other.keyFileName, _this.keyFileName) || other.keyFileName == _this.keyFileName)&&(identical(other.keyPassword, _this.keyPassword) || other.keyPassword == _this.keyPassword)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.uploaded, _this.uploaded) || other.uploaded == _this.uploaded)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TaxpayerCertificateUploadState&&(identical(other.taxpayer, _this.taxpayer) || other.taxpayer == _this.taxpayer)&&const DeepCollectionEquality().equals(other.certificateBytes, _this.certificateBytes)&&(identical(other.certificateFileName, _this.certificateFileName) || other.certificateFileName == _this.certificateFileName)&&const DeepCollectionEquality().equals(other.keyBytes, _this.keyBytes)&&(identical(other.keyFileName, _this.keyFileName) || other.keyFileName == _this.keyFileName)&&(identical(other.keyPassword, _this.keyPassword) || other.keyPassword == _this.keyPassword)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.uploaded, _this.uploaded) || other.uploaded == _this.uploaded)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorCause, _this.errorCause) || other.errorCause == _this.errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as TaxpayerCertificateUploadState;
-  return Object.hash(runtimeType,_this.taxpayer,const DeepCollectionEquality().hash(_this.certificateBytes),_this.certificateFileName,const DeepCollectionEquality().hash(_this.keyBytes),_this.keyFileName,_this.keyPassword,_this.submitting,_this.uploaded,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors));
+  return Object.hash(runtimeType,_this.taxpayer,const DeepCollectionEquality().hash(_this.certificateBytes),_this.certificateFileName,const DeepCollectionEquality().hash(_this.keyBytes),_this.keyFileName,_this.keyPassword,_this.submitting,_this.uploaded,_this.error,_this.errorCause,const DeepCollectionEquality().hash(_this.fieldErrors));
 }
 
 @override
 String toString() {
   final _this = this as TaxpayerCertificateUploadState;
-  return 'TaxpayerCertificateUploadState(taxpayer: ${_this.taxpayer}, certificateBytes: ${_this.certificateBytes}, certificateFileName: ${_this.certificateFileName}, keyBytes: ${_this.keyBytes}, keyFileName: ${_this.keyFileName}, keyPassword: ${_this.keyPassword}, submitting: ${_this.submitting}, uploaded: ${_this.uploaded}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
+  return 'TaxpayerCertificateUploadState(taxpayer: ${_this.taxpayer}, certificateBytes: ${_this.certificateBytes}, certificateFileName: ${_this.certificateFileName}, keyBytes: ${_this.keyBytes}, keyFileName: ${_this.keyFileName}, keyPassword: ${_this.keyPassword}, submitting: ${_this.submitting}, uploaded: ${_this.uploaded}, error: ${_this.error}, errorCause: ${_this.errorCause}, fieldErrors: ${_this.fieldErrors})';
 }
 
 
@@ -51,11 +51,11 @@ abstract mixin class $TaxpayerCertificateUploadStateCopyWith<$Res>  {
   factory $TaxpayerCertificateUploadStateCopyWith(TaxpayerCertificateUploadState value, $Res Function(TaxpayerCertificateUploadState) _then) = _$TaxpayerCertificateUploadStateCopyWithImpl;
 @useResult
 $Res call({
- String taxpayer, List<int>? certificateBytes, String certificateFileName, List<int>? keyBytes, String keyFileName, String keyPassword, bool submitting, TaxpayerCertificate? uploaded, String? error, String? errorDetail, Map<String, String> fieldErrors
+ String taxpayer, List<int>? certificateBytes, String certificateFileName, List<int>? keyBytes, String keyFileName, String keyPassword, bool submitting, TaxpayerCertificate? uploaded, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-$TaxpayerCertificateCopyWith<$Res>? get uploaded;
+$TaxpayerCertificateCopyWith<$Res>? get uploaded;$AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -68,7 +68,7 @@ class _$TaxpayerCertificateUploadStateCopyWithImpl<$Res>
 
 /// Create a copy of TaxpayerCertificateUploadState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? taxpayer = null,Object? certificateBytes = freezed,Object? certificateFileName = null,Object? keyBytes = freezed,Object? keyFileName = null,Object? keyPassword = null,Object? submitting = null,Object? uploaded = freezed,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? taxpayer = null,Object? certificateBytes = freezed,Object? certificateFileName = null,Object? keyBytes = freezed,Object? keyFileName = null,Object? keyPassword = null,Object? submitting = null,Object? uploaded = freezed,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(TaxpayerCertificateUploadState(
 taxpayer: null == taxpayer ? _self.taxpayer : taxpayer // ignore: cast_nullable_to_non_nullable
 as String,certificateBytes: freezed == certificateBytes ? _self.certificateBytes : certificateBytes // ignore: cast_nullable_to_non_nullable
@@ -79,8 +79,8 @@ as String,keyPassword: null == keyPassword ? _self.keyPassword : keyPassword // 
 as String,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
 as bool,uploaded: freezed == uploaded ? _self.uploaded : uploaded // ignore: cast_nullable_to_non_nullable
 as TaxpayerCertificate?,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
@@ -95,6 +95,18 @@ $TaxpayerCertificateCopyWith<$Res>? get uploaded {
 
   return $TaxpayerCertificateCopyWith<$Res>(_self.uploaded!, (value) {
     return _then(_self.copyWith(uploaded: value));
+  });
+}/// Create a copy of TaxpayerCertificateUploadState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
+
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
   });
 }
 }
@@ -178,10 +190,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String taxpayer,  List<int>? certificateBytes,  String certificateFileName,  List<int>? keyBytes,  String keyFileName,  String keyPassword,  bool submitting,  TaxpayerCertificate? uploaded,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String taxpayer,  List<int>? certificateBytes,  String certificateFileName,  List<int>? keyBytes,  String keyFileName,  String keyPassword,  bool submitting,  TaxpayerCertificate? uploaded,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TaxpayerCertificateUploadState() when $default != null:
-return $default(_that.taxpayer,_that.certificateBytes,_that.certificateFileName,_that.keyBytes,_that.keyFileName,_that.keyPassword,_that.submitting,_that.uploaded,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.taxpayer,_that.certificateBytes,_that.certificateFileName,_that.keyBytes,_that.keyFileName,_that.keyPassword,_that.submitting,_that.uploaded,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return orElse();
 
 }
@@ -199,10 +211,10 @@ return $default(_that.taxpayer,_that.certificateBytes,_that.certificateFileName,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String taxpayer,  List<int>? certificateBytes,  String certificateFileName,  List<int>? keyBytes,  String keyFileName,  String keyPassword,  bool submitting,  TaxpayerCertificate? uploaded,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String taxpayer,  List<int>? certificateBytes,  String certificateFileName,  List<int>? keyBytes,  String keyFileName,  String keyPassword,  bool submitting,  TaxpayerCertificate? uploaded,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)  $default,) {final _that = this;
 switch (_that) {
 case _TaxpayerCertificateUploadState():
-return $default(_that.taxpayer,_that.certificateBytes,_that.certificateFileName,_that.keyBytes,_that.keyFileName,_that.keyPassword,_that.submitting,_that.uploaded,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.taxpayer,_that.certificateBytes,_that.certificateFileName,_that.keyBytes,_that.keyFileName,_that.keyPassword,_that.submitting,_that.uploaded,_that.error,_that.errorCause,_that.fieldErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -219,10 +231,10 @@ return $default(_that.taxpayer,_that.certificateBytes,_that.certificateFileName,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String taxpayer,  List<int>? certificateBytes,  String certificateFileName,  List<int>? keyBytes,  String keyFileName,  String keyPassword,  bool submitting,  TaxpayerCertificate? uploaded,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String taxpayer,  List<int>? certificateBytes,  String certificateFileName,  List<int>? keyBytes,  String keyFileName,  String keyPassword,  bool submitting,  TaxpayerCertificate? uploaded,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _TaxpayerCertificateUploadState() when $default != null:
-return $default(_that.taxpayer,_that.certificateBytes,_that.certificateFileName,_that.keyBytes,_that.keyFileName,_that.keyPassword,_that.submitting,_that.uploaded,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.taxpayer,_that.certificateBytes,_that.certificateFileName,_that.keyBytes,_that.keyFileName,_that.keyPassword,_that.submitting,_that.uploaded,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return null;
 
 }
@@ -234,7 +246,7 @@ return $default(_that.taxpayer,_that.certificateBytes,_that.certificateFileName,
 
 
 class _TaxpayerCertificateUploadState implements TaxpayerCertificateUploadState {
-  const _TaxpayerCertificateUploadState({required this.taxpayer,  List<int>? certificateBytes, this.certificateFileName = '',  List<int>? keyBytes, this.keyFileName = '', this.keyPassword = '', this.submitting = false, this.uploaded, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _certificateBytes = certificateBytes,_keyBytes = keyBytes,_fieldErrors = fieldErrors;
+  const _TaxpayerCertificateUploadState({required this.taxpayer,  List<int>? certificateBytes, this.certificateFileName = '',  List<int>? keyBytes, this.keyFileName = '', this.keyPassword = '', this.submitting = false, this.uploaded, this.error, this.errorCause,  Map<String, String> fieldErrors = const <String, String>{}}): _certificateBytes = certificateBytes,_keyBytes = keyBytes,_fieldErrors = fieldErrors;
   
 
 @override final  String taxpayer;
@@ -262,7 +274,7 @@ class _TaxpayerCertificateUploadState implements TaxpayerCertificateUploadState 
 @override@JsonKey() final  bool submitting;
 @override final  TaxpayerCertificate? uploaded;
 @override final  String? error;
-@override final  String? errorDetail;
+@override final  AppError? errorCause;
  final  Map<String, String> _fieldErrors;
 @override@JsonKey() Map<String, String> get fieldErrors {
   if (_fieldErrors is EqualUnmodifiableMapView) return _fieldErrors;
@@ -281,18 +293,18 @@ _$TaxpayerCertificateUploadStateCopyWith<_TaxpayerCertificateUploadState> get co
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TaxpayerCertificateUploadState&&(identical(other.taxpayer, taxpayer) || other.taxpayer == taxpayer)&&const DeepCollectionEquality().equals(other.certificateBytes, _certificateBytes)&&(identical(other.certificateFileName, certificateFileName) || other.certificateFileName == certificateFileName)&&const DeepCollectionEquality().equals(other.keyBytes, _keyBytes)&&(identical(other.keyFileName, keyFileName) || other.keyFileName == keyFileName)&&(identical(other.keyPassword, keyPassword) || other.keyPassword == keyPassword)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.uploaded, uploaded) || other.uploaded == uploaded)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _TaxpayerCertificateUploadState&&(identical(other.taxpayer, taxpayer) || other.taxpayer == taxpayer)&&const DeepCollectionEquality().equals(other.certificateBytes, _certificateBytes)&&(identical(other.certificateFileName, certificateFileName) || other.certificateFileName == certificateFileName)&&const DeepCollectionEquality().equals(other.keyBytes, _keyBytes)&&(identical(other.keyFileName, keyFileName) || other.keyFileName == keyFileName)&&(identical(other.keyPassword, keyPassword) || other.keyPassword == keyPassword)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.uploaded, uploaded) || other.uploaded == uploaded)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorCause, errorCause) || other.errorCause == errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,taxpayer,const DeepCollectionEquality().hash(_certificateBytes),certificateFileName,const DeepCollectionEquality().hash(_keyBytes),keyFileName,keyPassword,submitting,uploaded,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors));
+    return Object.hash(runtimeType,taxpayer,const DeepCollectionEquality().hash(_certificateBytes),certificateFileName,const DeepCollectionEquality().hash(_keyBytes),keyFileName,keyPassword,submitting,uploaded,error,errorCause,const DeepCollectionEquality().hash(_fieldErrors));
 }
 
 @override
 String toString() {
-    return 'TaxpayerCertificateUploadState(taxpayer: $taxpayer, certificateBytes: $certificateBytes, certificateFileName: $certificateFileName, keyBytes: $keyBytes, keyFileName: $keyFileName, keyPassword: $keyPassword, submitting: $submitting, uploaded: $uploaded, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'TaxpayerCertificateUploadState(taxpayer: $taxpayer, certificateBytes: $certificateBytes, certificateFileName: $certificateFileName, keyBytes: $keyBytes, keyFileName: $keyFileName, keyPassword: $keyPassword, submitting: $submitting, uploaded: $uploaded, error: $error, errorCause: $errorCause, fieldErrors: $fieldErrors)';
 }
 
 
@@ -303,11 +315,11 @@ abstract mixin class _$TaxpayerCertificateUploadStateCopyWith<$Res> implements $
   factory _$TaxpayerCertificateUploadStateCopyWith(_TaxpayerCertificateUploadState value, $Res Function(_TaxpayerCertificateUploadState) _then) = __$TaxpayerCertificateUploadStateCopyWithImpl;
 @override @useResult
 $Res call({
- String taxpayer, List<int>? certificateBytes, String certificateFileName, List<int>? keyBytes, String keyFileName, String keyPassword, bool submitting, TaxpayerCertificate? uploaded, String? error, String? errorDetail, Map<String, String> fieldErrors
+ String taxpayer, List<int>? certificateBytes, String certificateFileName, List<int>? keyBytes, String keyFileName, String keyPassword, bool submitting, TaxpayerCertificate? uploaded, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-@override $TaxpayerCertificateCopyWith<$Res>? get uploaded;
+@override $TaxpayerCertificateCopyWith<$Res>? get uploaded;@override $AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -320,7 +332,7 @@ class __$TaxpayerCertificateUploadStateCopyWithImpl<$Res>
 
 /// Create a copy of TaxpayerCertificateUploadState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? taxpayer = null,Object? certificateBytes = freezed,Object? certificateFileName = null,Object? keyBytes = freezed,Object? keyFileName = null,Object? keyPassword = null,Object? submitting = null,Object? uploaded = freezed,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? taxpayer = null,Object? certificateBytes = freezed,Object? certificateFileName = null,Object? keyBytes = freezed,Object? keyFileName = null,Object? keyPassword = null,Object? submitting = null,Object? uploaded = freezed,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(_TaxpayerCertificateUploadState(
 taxpayer: null == taxpayer ? _self.taxpayer : taxpayer // ignore: cast_nullable_to_non_nullable
 as String,certificateBytes: freezed == certificateBytes ? _self._certificateBytes : certificateBytes // ignore: cast_nullable_to_non_nullable
@@ -331,8 +343,8 @@ as String,keyPassword: null == keyPassword ? _self.keyPassword : keyPassword // 
 as String,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
 as bool,uploaded: freezed == uploaded ? _self.uploaded : uploaded // ignore: cast_nullable_to_non_nullable
 as TaxpayerCertificate?,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
@@ -348,6 +360,18 @@ $TaxpayerCertificateCopyWith<$Res>? get uploaded {
 
   return $TaxpayerCertificateCopyWith<$Res>(_self.uploaded!, (value) {
     return _then(_self.copyWith(uploaded: value));
+  });
+}/// Create a copy of TaxpayerCertificateUploadState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
+
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
   });
 }
 }

@@ -4,9 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design_theme_extensions.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
-import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
-import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
@@ -16,6 +14,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/customer_discount_dialog_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 
 /// How many product suggestions the picker asks for.
 const _suggestionLimit = 20;
@@ -92,10 +91,9 @@ class _CustomerDiscountDialog extends ConsumerWidget {
               // Outside the grid: inserting a child there would shift the
               // fields' positions and drop what the user entered.
               if (state.error != null) ...[
-                ErrorBanner(
-                  error: AppError.server(
-                    message: _errorMessage(l10n, state.error!, state),
-                  ),
+                FormErrorBanner(
+                  headline: _errorMessage(l10n, state.error!),
+                  cause: state.errorCause,
                 ),
                 SizedBox(height: spacing.md),
               ],
@@ -302,11 +300,7 @@ String? _percentError(AppLocalizations l10n, String? code) => switch (code) {
   _ => null,
 };
 
-String _errorMessage(
-  AppLocalizations l10n,
-  String code,
-  CustomerDiscountDialogState state,
-) => switch (code) {
+String _errorMessage(AppLocalizations l10n, String code) => switch (code) {
   CustomerDiscountDialogErrorCode.duplicateProduct =>
     l10n.customerDiscountDuplicateError,
   CustomerDiscountDialogErrorCode.productMissing =>
@@ -314,6 +308,6 @@ String _errorMessage(
   CustomerDiscountDialogErrorCode.discountMissing =>
     l10n.customerDiscountMissingError,
   CustomerDiscountDialogErrorCode.deleteFailed =>
-    state.errorDetail ?? l10n.customerDiscountDeleteFailedError,
-  _ => state.errorDetail ?? l10n.customerDiscountSaveFailedError,
+    l10n.customerDiscountDeleteFailedError,
+  _ => l10n.customerDiscountSaveFailedError,
 };

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/domain/address_type.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/address_list_item.dart';
@@ -540,6 +542,50 @@ void main() {
 
       expect(find.textContaining('Ya existe'), findsOneWidget);
       expect(find.text('0'), findsWidgets);
+    });
+
+    testWidgets('a refusal with a known code reads in Spanish inside the '
+        "line's own sentence, not as the server's English (spec 058)", (
+      tester,
+    ) async {
+      when(
+        () => deliveries.listForSale(salesOrder: any(named: 'salesOrder')),
+      ).thenAnswer((_) async => [existingDestination()]);
+      when(
+        () => deliveries.addLine(
+          destinationId: any(named: 'destinationId'),
+          salesOrderDetail: any(named: 'salesOrderDetail'),
+          quantity: any(named: 'quantity'),
+        ),
+      ).thenThrow(
+        const AppError.validation(
+          [],
+          'Requested quantity is more than the sales line still owes',
+          ApiProblem(
+            codeName: 'delivery_order.quantity_exceeds_remaining',
+            code: api.ErrorCode.deliveryOrderPeriodQuantityExceedsRemaining,
+            params: {
+              'sales_order_line_id': 5,
+              'remaining': '2',
+              'requested': '3',
+            },
+          ),
+        ),
+      );
+
+      await pumpStep(tester);
+      await expand(tester);
+      await tester.tap(find.byIcon(Icons.add).first);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          'No se pudo asignar: Pediste 3, pero en esa partida solo quedan 2 '
+          'por entregar.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Requested quantity'), findsNothing);
     });
   });
 

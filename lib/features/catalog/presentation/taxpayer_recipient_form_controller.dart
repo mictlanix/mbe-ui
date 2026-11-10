@@ -55,7 +55,7 @@ abstract class TaxpayerRecipientFormState with _$TaxpayerRecipientFormState {
     /// 046-catalog-improvements research R7) receives it. `null` otherwise.
     TaxpayerRecipient? created,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _TaxpayerRecipientFormState;
 }
@@ -70,21 +70,21 @@ class TaxpayerRecipientFormController
   void taxpayerRecipientIdChanged(String v) => state = state.copyWith(
     taxpayerRecipientId: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void nameChanged(String v) => state = state.copyWith(
     name: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void emailChanged(String v) => state = state.copyWith(
     email: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -96,7 +96,7 @@ class TaxpayerRecipientFormController
 
   /// Loads an existing taxpayer recipient into the form for viewing/editing.
   Future<void> loadForEdit(String taxpayerRecipientId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final taxpayerRecipient = await ref
           .read(taxpayerRecipientRepositoryProvider)
@@ -115,7 +115,7 @@ class TaxpayerRecipientFormController
       state = state.copyWith(
         loading: false,
         error: TaxpayerRecipientFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -146,7 +146,7 @@ class TaxpayerRecipientFormController
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -156,7 +156,7 @@ class TaxpayerRecipientFormController
         .can(SystemObject.taxpayerRecipients, AccessRight.create)) {
       state = state.copyWith(
         error: TaxpayerRecipientFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -164,7 +164,7 @@ class TaxpayerRecipientFormController
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -189,7 +189,7 @@ class TaxpayerRecipientFormController
         state = state.copyWith(
           submitting: false,
           error: TaxpayerRecipientFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -206,7 +206,7 @@ class TaxpayerRecipientFormController
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -216,7 +216,7 @@ class TaxpayerRecipientFormController
         .can(SystemObject.taxpayerRecipients, AccessRight.update)) {
       state = state.copyWith(
         error: TaxpayerRecipientFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -224,7 +224,7 @@ class TaxpayerRecipientFormController
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -249,7 +249,7 @@ class TaxpayerRecipientFormController
         state = state.copyWith(
           submitting: false,
           error: TaxpayerRecipientFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -265,12 +265,12 @@ class TaxpayerRecipientFormController
         .can(SystemObject.taxpayerRecipients, AccessRight.delete)) {
       state = state.copyWith(
         error: TaxpayerRecipientFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref
           .read(taxpayerRecipientRepositoryProvider)
@@ -281,7 +281,7 @@ class TaxpayerRecipientFormController
       state = state.copyWith(
         submitting: false,
         error: TaxpayerRecipientFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }

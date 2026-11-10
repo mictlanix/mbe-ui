@@ -188,7 +188,10 @@ void main() {
         final state = container.read(expenseFormControllerProvider);
         expect(state.deleted, isFalse);
         expect(state.error, ExpenseFormErrorCode.deleteFailed);
-        expect(state.errorDetail, 'Expense is used by an expense ticket');
+        expect(
+          state.errorCause?.serverMessage,
+          'Expense is used by an expense ticket',
+        );
       },
     );
   });

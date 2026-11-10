@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SupplierAgreementDialogState {
 
- DateTime? get start; DateTime? get end; String get comment; bool get submitting; bool get done; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
+ DateTime? get start; DateTime? get end; String get comment; bool get submitting; bool get done; String? get error; AppError? get errorCause; Map<String, String> get fieldErrors;
 /// Create a copy of SupplierAgreementDialogState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $SupplierAgreementDialogStateCopyWith<SupplierAgreementDialogState> get copyWith
 @override
 bool operator ==(Object other) {
   final _this = this as SupplierAgreementDialogState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SupplierAgreementDialogState&&(identical(other.start, _this.start) || other.start == _this.start)&&(identical(other.end, _this.end) || other.end == _this.end)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.done, _this.done) || other.done == _this.done)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SupplierAgreementDialogState&&(identical(other.start, _this.start) || other.start == _this.start)&&(identical(other.end, _this.end) || other.end == _this.end)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.done, _this.done) || other.done == _this.done)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorCause, _this.errorCause) || other.errorCause == _this.errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as SupplierAgreementDialogState;
-  return Object.hash(runtimeType,_this.start,_this.end,_this.comment,_this.submitting,_this.done,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors));
+  return Object.hash(runtimeType,_this.start,_this.end,_this.comment,_this.submitting,_this.done,_this.error,_this.errorCause,const DeepCollectionEquality().hash(_this.fieldErrors));
 }
 
 @override
 String toString() {
   final _this = this as SupplierAgreementDialogState;
-  return 'SupplierAgreementDialogState(start: ${_this.start}, end: ${_this.end}, comment: ${_this.comment}, submitting: ${_this.submitting}, done: ${_this.done}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
+  return 'SupplierAgreementDialogState(start: ${_this.start}, end: ${_this.end}, comment: ${_this.comment}, submitting: ${_this.submitting}, done: ${_this.done}, error: ${_this.error}, errorCause: ${_this.errorCause}, fieldErrors: ${_this.fieldErrors})';
 }
 
 
@@ -51,11 +51,11 @@ abstract mixin class $SupplierAgreementDialogStateCopyWith<$Res>  {
   factory $SupplierAgreementDialogStateCopyWith(SupplierAgreementDialogState value, $Res Function(SupplierAgreementDialogState) _then) = _$SupplierAgreementDialogStateCopyWithImpl;
 @useResult
 $Res call({
- DateTime? start, DateTime? end, String comment, bool submitting, bool done, String? error, String? errorDetail, Map<String, String> fieldErrors
+ DateTime? start, DateTime? end, String comment, bool submitting, bool done, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+$AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -68,7 +68,7 @@ class _$SupplierAgreementDialogStateCopyWithImpl<$Res>
 
 /// Create a copy of SupplierAgreementDialogState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? start = freezed,Object? end = freezed,Object? comment = null,Object? submitting = null,Object? done = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? start = freezed,Object? end = freezed,Object? comment = null,Object? submitting = null,Object? done = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(SupplierAgreementDialogState(
 start: freezed == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as DateTime?,end: freezed == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
@@ -76,12 +76,24 @@ as DateTime?,comment: null == comment ? _self.comment : comment // ignore: cast_
 as String,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
 as bool,done: null == done ? _self.done : done // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
+/// Create a copy of SupplierAgreementDialogState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 
@@ -163,10 +175,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime? start,  DateTime? end,  String comment,  bool submitting,  bool done,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime? start,  DateTime? end,  String comment,  bool submitting,  bool done,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SupplierAgreementDialogState() when $default != null:
-return $default(_that.start,_that.end,_that.comment,_that.submitting,_that.done,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.start,_that.end,_that.comment,_that.submitting,_that.done,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return orElse();
 
 }
@@ -184,10 +196,10 @@ return $default(_that.start,_that.end,_that.comment,_that.submitting,_that.done,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime? start,  DateTime? end,  String comment,  bool submitting,  bool done,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime? start,  DateTime? end,  String comment,  bool submitting,  bool done,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)  $default,) {final _that = this;
 switch (_that) {
 case _SupplierAgreementDialogState():
-return $default(_that.start,_that.end,_that.comment,_that.submitting,_that.done,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.start,_that.end,_that.comment,_that.submitting,_that.done,_that.error,_that.errorCause,_that.fieldErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +216,10 @@ return $default(_that.start,_that.end,_that.comment,_that.submitting,_that.done,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime? start,  DateTime? end,  String comment,  bool submitting,  bool done,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime? start,  DateTime? end,  String comment,  bool submitting,  bool done,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _SupplierAgreementDialogState() when $default != null:
-return $default(_that.start,_that.end,_that.comment,_that.submitting,_that.done,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.start,_that.end,_that.comment,_that.submitting,_that.done,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return null;
 
 }
@@ -219,7 +231,7 @@ return $default(_that.start,_that.end,_that.comment,_that.submitting,_that.done,
 
 
 class _SupplierAgreementDialogState extends SupplierAgreementDialogState {
-  const _SupplierAgreementDialogState({this.start, this.end, this.comment = '', this.submitting = false, this.done = false, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors,super._();
+  const _SupplierAgreementDialogState({this.start, this.end, this.comment = '', this.submitting = false, this.done = false, this.error, this.errorCause,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors,super._();
   
 
 @override final  DateTime? start;
@@ -228,7 +240,7 @@ class _SupplierAgreementDialogState extends SupplierAgreementDialogState {
 @override@JsonKey() final  bool submitting;
 @override@JsonKey() final  bool done;
 @override final  String? error;
-@override final  String? errorDetail;
+@override final  AppError? errorCause;
  final  Map<String, String> _fieldErrors;
 @override@JsonKey() Map<String, String> get fieldErrors {
   if (_fieldErrors is EqualUnmodifiableMapView) return _fieldErrors;
@@ -247,18 +259,18 @@ _$SupplierAgreementDialogStateCopyWith<_SupplierAgreementDialogState> get copyWi
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SupplierAgreementDialogState&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.done, done) || other.done == done)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _SupplierAgreementDialogState&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.done, done) || other.done == done)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorCause, errorCause) || other.errorCause == errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,start,end,comment,submitting,done,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors));
+    return Object.hash(runtimeType,start,end,comment,submitting,done,error,errorCause,const DeepCollectionEquality().hash(_fieldErrors));
 }
 
 @override
 String toString() {
-    return 'SupplierAgreementDialogState(start: $start, end: $end, comment: $comment, submitting: $submitting, done: $done, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'SupplierAgreementDialogState(start: $start, end: $end, comment: $comment, submitting: $submitting, done: $done, error: $error, errorCause: $errorCause, fieldErrors: $fieldErrors)';
 }
 
 
@@ -269,11 +281,11 @@ abstract mixin class _$SupplierAgreementDialogStateCopyWith<$Res> implements $Su
   factory _$SupplierAgreementDialogStateCopyWith(_SupplierAgreementDialogState value, $Res Function(_SupplierAgreementDialogState) _then) = __$SupplierAgreementDialogStateCopyWithImpl;
 @override @useResult
 $Res call({
- DateTime? start, DateTime? end, String comment, bool submitting, bool done, String? error, String? errorDetail, Map<String, String> fieldErrors
+ DateTime? start, DateTime? end, String comment, bool submitting, bool done, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+@override $AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -286,7 +298,7 @@ class __$SupplierAgreementDialogStateCopyWithImpl<$Res>
 
 /// Create a copy of SupplierAgreementDialogState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? start = freezed,Object? end = freezed,Object? comment = null,Object? submitting = null,Object? done = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? start = freezed,Object? end = freezed,Object? comment = null,Object? submitting = null,Object? done = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(_SupplierAgreementDialogState(
 start: freezed == start ? _self.start : start // ignore: cast_nullable_to_non_nullable
 as DateTime?,end: freezed == end ? _self.end : end // ignore: cast_nullable_to_non_nullable
@@ -294,13 +306,25 @@ as DateTime?,comment: null == comment ? _self.comment : comment // ignore: cast_
 as String,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
 as bool,done: null == done ? _self.done : done // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
 
+/// Create a copy of SupplierAgreementDialogState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 // dart format on

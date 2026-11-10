@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,6 +17,7 @@ import 'package:mbe_ui/core/documents/data/printing_document_output.dart';
 import 'package:mbe_ui/core/documents/domain/document_kind.dart';
 import 'package:mbe_ui/core/documents/presentation/document_preview_dialog.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
@@ -360,6 +362,34 @@ void main() {
       // The refund is as it was: still a draft with its confirm button.
       expect(key('refund_status_chip_draft'), findsOneWidget);
       expect(key('refund_confirm_button'), findsOneWidget);
+    });
+
+    testWidgets('a failed confirm with a known code shows only the localized '
+        'reason, not the server English (spec 058)', (tester) async {
+      stubGet(draft(quantity: '2'));
+      when(() => refunds.confirm(9, any())).thenThrow(
+        const AppError.server(
+          statusCode: 409,
+          message: 'Units of line TOR-01 are on invoice F-1',
+          problem: ApiProblem(
+            codeName: 'refund.line_invoiced',
+            code: api.ErrorCode.refundPeriodLineInvoiced,
+            params: {'product_code': 'TOR-01', 'invoice': 'F-1'},
+          ),
+        ),
+      );
+      await pumpDetail(tester);
+
+      await confirmThrough(tester, 'refund_payout_cash');
+
+      expect(
+        find.text(
+          'TOR-01 está en la factura F-1. Cancela o ajusta esa factura antes '
+          'de devolverlo.',
+        ),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Units of line'), findsNothing);
     });
 
     testWidgets('a confirm that lowered a line shows the adjustment banner', (

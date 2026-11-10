@@ -13,6 +13,7 @@ import 'package:mbe_ui/core/documents/domain/document_kind.dart';
 import 'package:mbe_ui/core/documents/domain/document_ref.dart';
 import 'package:mbe_ui/core/documents/presentation/document_actions.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/errors/localize_problem.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/compact_field.dart';
@@ -203,7 +204,9 @@ class _RefundBodyState extends ConsumerState<_RefundBody> {
       if (!mounted) return false;
       final l10n = AppLocalizations.of(context)!;
       setState(
-        () => _lineErrors[lineId] = e.serverMessage ?? l10n.errorServerGeneric,
+        () => _lineErrors[lineId] =
+            e.userMessage(l10n, ref.read(formattersProvider)) ??
+            l10n.errorServerGeneric,
       );
       return false;
     }
@@ -230,7 +233,9 @@ class _RefundBodyState extends ConsumerState<_RefundBody> {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
       setState(
-        () => _lineErrors[line.id] = e.serverMessage ?? l10n.errorServerGeneric,
+        () => _lineErrors[line.id] =
+            e.userMessage(l10n, ref.read(formattersProvider)) ??
+            l10n.errorServerGeneric,
       );
     }
   }

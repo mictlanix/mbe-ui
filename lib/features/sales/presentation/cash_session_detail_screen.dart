@@ -8,10 +8,10 @@ import 'package:mbe_ui/core/documents/domain/document_kind.dart';
 import 'package:mbe_ui/core/documents/domain/document_ref.dart';
 import 'package:mbe_ui/core/documents/presentation/document_actions.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
-import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/sales/domain/cash_session_status.dart';
@@ -249,20 +249,9 @@ class _CloseSection extends ConsumerWidget {
         if (formState.error != null)
           Padding(
             padding: const EdgeInsets.only(bottom: 16),
-            child: ErrorBanner(
-              error: AppError.validation([
-                FieldError(
-                  loc: const [],
-                  msg: _localizeCloseFormError(l10n, formState.error!),
-                  type: 'error',
-                ),
-                if (formState.errorDetail != null)
-                  FieldError(
-                    loc: const [],
-                    msg: formState.errorDetail!,
-                    type: 'error',
-                  ),
-              ]),
+            child: FormErrorBanner(
+              headline: _localizeCloseFormError(l10n, formState.error!),
+              cause: formState.errorCause,
             ),
           ),
         DenominationCountTable(

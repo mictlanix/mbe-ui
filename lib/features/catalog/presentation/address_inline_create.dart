@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:mbe_ui/core/errors/app_error.dart';
-import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/address_list_item.dart';
 import 'package:mbe_ui/features/catalog/presentation/address_inline_create_controller.dart';
@@ -53,20 +52,9 @@ class _AddressInlineCreateDialog extends ConsumerWidget {
               // Outside the grid: inserting a child there would shift the
               // fields' positions and drop what the user typed.
               if (state.error != null)
-                ErrorBanner(
-                  error: AppError.validation([
-                    FieldError(
-                      loc: const [],
-                      msg: _localizeFormError(l10n, state.error!),
-                      type: 'error',
-                    ),
-                    if (state.errorDetail != null)
-                      FieldError(
-                        loc: const [],
-                        msg: state.errorDetail!,
-                        type: 'error',
-                      ),
-                  ]),
+                FormErrorBanner(
+                  headline: _localizeFormError(l10n, state.error!),
+                  cause: state.errorCause,
                 ),
               ResponsiveFormGrid(
                 maxColumns: 2,

@@ -42,7 +42,7 @@ abstract class ExchangeRateFormState with _$ExchangeRateFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _ExchangeRateFormState;
 }
@@ -56,33 +56,33 @@ class ExchangeRateFormController extends _$ExchangeRateFormController {
   void dateChanged(DateTime v) => state = state.copyWith(
     date: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void rateChanged(String v) => state = state.copyWith(
     rate: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void baseChanged(Currency v) => state = state.copyWith(
     base: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void targetChanged(Currency v) => state = state.copyWith(
     target: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   Future<void> loadForEdit(int exchangeRateId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final rate = await ref
           .read(exchangeRateRepositoryProvider)
@@ -98,7 +98,7 @@ class ExchangeRateFormController extends _$ExchangeRateFormController {
       state = state.copyWith(
         loading: false,
         error: ExchangeRateFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -128,7 +128,7 @@ class ExchangeRateFormController extends _$ExchangeRateFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -138,7 +138,7 @@ class ExchangeRateFormController extends _$ExchangeRateFormController {
         .can(SystemObject.exchangeRates, AccessRight.create)) {
       state = state.copyWith(
         error: ExchangeRateFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -146,7 +146,7 @@ class ExchangeRateFormController extends _$ExchangeRateFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -170,7 +170,7 @@ class ExchangeRateFormController extends _$ExchangeRateFormController {
         state = state.copyWith(
           submitting: false,
           error: ExchangeRateFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -185,7 +185,7 @@ class ExchangeRateFormController extends _$ExchangeRateFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -195,7 +195,7 @@ class ExchangeRateFormController extends _$ExchangeRateFormController {
         .can(SystemObject.exchangeRates, AccessRight.update)) {
       state = state.copyWith(
         error: ExchangeRateFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -203,7 +203,7 @@ class ExchangeRateFormController extends _$ExchangeRateFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -228,7 +228,7 @@ class ExchangeRateFormController extends _$ExchangeRateFormController {
         state = state.copyWith(
           submitting: false,
           error: ExchangeRateFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -243,12 +243,12 @@ class ExchangeRateFormController extends _$ExchangeRateFormController {
         .can(SystemObject.exchangeRates, AccessRight.delete)) {
       state = state.copyWith(
         error: ExchangeRateFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref
           .read(exchangeRateRepositoryProvider)
@@ -259,7 +259,7 @@ class ExchangeRateFormController extends _$ExchangeRateFormController {
       state = state.copyWith(
         submitting: false,
         error: ExchangeRateFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
