@@ -1,6 +1,6 @@
 # Contract: Message catalog
 
-The exact scope of spec FR-009 and FR-011: 96 codes, 9 validation types and 42 record nouns. It was measured on 2026-11-09 against mbe-api `227c334` (research R1).
+The exact scope of spec FR-009 and FR-011: 96 codes, 9 validation types and 49 record nouns. It was measured on 2026-11-09 against mbe-api `227c334` (research R1).
 
 **How the scope was measured**:
 1. Load mbe-api's FastAPI route table.
@@ -35,7 +35,7 @@ The per-code evidence is in [code-scope.tsv](code-scope.tsv): verdict, example r
 | `resource.already_exists` | resource: noun | That value is already in use. Another {resource} has it. | Ese valor ya está en uso en otro {resource}. (feminine nouns: "otra") |
 | `resource.conflict` | — | The change conflicts with existing data. Reload and try again. | El cambio entra en conflicto con datos existentes. Recarga e inténtalo de nuevo. |
 | `resource.not_found` | resource: noun | Couldn't find the {resource}. It may have been deleted. | No se encontró el {resource}. Puede que se haya eliminado. (feminine nouns: "la") |
-| `resource.still_referenced` | references: list (noun + count), more: count | This record is still in use by {list} and can't be deleted. | Este registro todavía está en uso por {list} y no se puede eliminar. |
+| `resource.still_referenced` | references: list (noun + count), more: count | This record can't be deleted because it's still in use: {list}. | Este registro no se puede eliminar porque todavía está en uso: {list}. |
 | `server.error` | — | Something went wrong on the server. Try again later. | Ocurrió un error en el servidor. Inténtalo de nuevo más tarde. |
 | `state.transition_invalid` | — | This record can't change from its current status to the one requested. | Este registro no puede pasar de su estado actual al solicitado. |
 
@@ -70,7 +70,7 @@ The English template carries the same `select` with identical branches, because 
 | `csd.key_not_encrypted` | — | The key has no password, so it isn't a SAT CSD key. | La llave no tiene contraseña, así que no es una llave de CSD del SAT. |
 | `csd.key_not_rsa` | — | The key file doesn't hold an RSA key. | El archivo de llave no contiene una llave RSA. |
 | `csd.key_unreadable` | — | The key couldn't be opened. Check the password and the .key file. | No se pudo abrir la llave. Revisa la contraseña y el archivo .key. |
-| `customer.credit_hold` | overdue_count: count | This customer has {count, plural, one{1 overdue credit order} other{{count} overdue credit orders}}. Settle them before creating a new credit order. | Este cliente tiene {count, plural, one{1 pedido a crédito vencido} other{{count} pedidos a crédito vencidos}}. Liquídalos antes de crear un nuevo pedido a crédito. |
+| `customer.credit_hold` | overdue_count: count | This customer has {count, plural, one{1 overdue credit order. Settle it} other{{count} overdue credit orders. Settle them}} before creating a new credit order. | Este cliente tiene {count, plural, one{1 pedido a crédito vencido. Liquídalo} other{{count} pedidos a crédito vencidos. Liquídalos}} antes de crear un nuevo pedido a crédito. |
 | `customer.credit_limit_exceeded` | outstanding: money, limit: money | This order would bring the customer's balance to {outstanding}, over their credit limit of {limit}. | Con este pedido el saldo del cliente llegaría a {outstanding}, arriba de su límite de crédito de {limit}. |
 | `customer.credit_limit_reached` | outstanding: money, limit: money | The customer owes {outstanding}, which reaches their credit limit of {limit}. They must pay before buying again. | El cliente debe {outstanding} y ya alcanzó su límite de crédito de {limit}. Debe pagar antes de volver a comprar. |
 | `customer.default_not_deletable` | — | The general public customer can't be deleted. | El cliente público en general no se puede eliminar. |
@@ -164,13 +164,13 @@ Notes:
 
 The ARB key is `apiValidation` + the type in PascalCase.
 
-## 4. Record nouns (42)
+## 4. Record nouns (49)
 
 Each noun is one plural-aware key, `apiResource<Name>(int count)` → `{count, plural, one{…} other{…}}`. The Spanish gender comes from a parallel key, `apiResourceGender<Name>`, holding `masculine` or `feminine`.
 
 The set:
 - every `resource` value that in-scope codes can carry (not found, already exists, other facility, lock, product-price references);
-- plus the blockers of in-scope deletes that a user can recognize.
+- plus the blockers of in-scope deletes that a user can recognize, including the customer and supplier link records (addresses, contacts, tax recipients, bank accounts, agreements), added after live check 6 showed them counted as "registros".
 
 Any other name renders as the generic noun, and `still_referenced` counts it in the "and N more" tail.
 
@@ -218,6 +218,13 @@ Any other name renders as the generic noun, and `still_referenced` counts it in 
 | `vehicle` | vehicle / vehicles | vehículo / vehículos | m |
 | `vehicle_operator` | vehicle operator / vehicle operators | operador de vehículo / operadores de vehículo | m |
 | `warehouse` | warehouse / warehouses | almacén / almacenes | m |
+| `customer_address` | address / addresses | dirección / direcciones | f |
+| `customer_contact` | contact / contacts | contacto / contactos | m |
+| `customer_taxpayer` | tax recipient / tax recipients | receptor fiscal / receptores fiscales | m |
+| `supplier_address` | address / addresses | dirección / direcciones | f |
+| `supplier_agreement` | agreement / agreements | convenio / convenios | m |
+| `supplier_bank_account` | bank account / bank accounts | cuenta bancaria / cuentas bancarias | f |
+| `supplier_contact` | contact / contacts | contacto / contactos | m |
 
 Generic noun: `apiResourceGeneric(count)`: en record / records, es registro / registros, m.
 

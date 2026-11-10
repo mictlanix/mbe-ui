@@ -33,7 +33,7 @@ void main() {
       );
       expect(
         es(api.ErrorCode.customerPeriodCreditHold, {'overdue_count': 1}),
-        'Este cliente tiene 1 pedido a crédito vencido. Liquídalos antes de '
+        'Este cliente tiene 1 pedido a crédito vencido. Liquídalo antes de '
         'crear un nuevo pedido a crédito.',
       );
       expect(
@@ -43,7 +43,7 @@ void main() {
       );
       expect(
         en(api.ErrorCode.customerPeriodCreditHold, {'overdue_count': 1}),
-        'This customer has 1 overdue credit order. Settle them before '
+        'This customer has 1 overdue credit order. Settle it before '
         'creating a new credit order.',
       );
     });

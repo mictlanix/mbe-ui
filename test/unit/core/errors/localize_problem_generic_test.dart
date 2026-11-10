@@ -134,11 +134,11 @@ void main() {
     test('lists the blockers with their counts, in the right plural', () {
       expect(
         en(api.ErrorCode.resourcePeriodStillReferenced, params),
-        "This record is still in use by 12 orders, 1 transfer and can't be deleted.",
+        "This record can't be deleted because it's still in use: 12 orders, 1 transfer.",
       );
       expect(
         es(api.ErrorCode.resourcePeriodStillReferenced, params),
-        'Este registro todavía está en uso por 12 pedidos, 1 traspaso y no se puede eliminar.',
+        'Este registro no se puede eliminar porque todavía está en uso: 12 pedidos, 1 traspaso.',
       );
     });
 
@@ -146,11 +146,26 @@ void main() {
       final more = {...params, 'more': 3};
       expect(
         es(api.ErrorCode.resourcePeriodStillReferenced, more),
-        'Este registro todavía está en uso por 12 pedidos, 1 traspaso y 3 más y no se puede eliminar.',
+        'Este registro no se puede eliminar porque todavía está en uso: 12 pedidos, 1 traspaso y 3 más.',
       );
       expect(
         en(api.ErrorCode.resourcePeriodStillReferenced, {...params, 'more': 1}),
-        "This record is still in use by 12 orders, 1 transfer and 1 other and can't be deleted.",
+        "This record can't be deleted because it's still in use: 12 orders, 1 transfer and 1 other.",
+      );
+    });
+
+    test("a customer's own link records are named, not counted as records", () {
+      expect(
+        es(api.ErrorCode.resourcePeriodStillReferenced, {
+          'references': [
+            {'resource': 'sales_order', 'count': 11},
+            {'resource': 'customer_address', 'count': 2},
+            {'resource': 'customer_contact', 'count': 1},
+          ],
+          'more': 0,
+        }),
+        'Este registro no se puede eliminar porque todavía está en uso: '
+        '11 pedidos, 2 direcciones, 1 contacto.',
       );
     });
 
@@ -161,7 +176,7 @@ void main() {
             {'resource': 'future_table', 'count': 2},
           ],
         }),
-        "This record is still in use by 2 records and can't be deleted.",
+        "This record can't be deleted because it's still in use: 2 records.",
       );
     });
 

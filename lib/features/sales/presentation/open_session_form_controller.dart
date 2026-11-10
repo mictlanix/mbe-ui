@@ -183,13 +183,15 @@ class OpenSessionFormController extends _$OpenSessionFormController {
         return;
       }
       // The server told us which one it is (spec 058), so there is nothing to
-      // re-read. Any other code is not a busy refusal: it falls through to
-      // the generic failure below, with the cause kept.
+      // re-read. The form's own message for each says everything the server's
+      // would, so no cause is kept to repeat it under the headline. Any other
+      // code is not a busy refusal: it falls through to the generic failure
+      // below, with the cause kept.
       if (code == api.ErrorCode.cashSessionPeriodUserBusy) {
         state = state.copyWith(
           submitting: false,
           error: OpenSessionFormErrorCode.cashierBusy,
-          errorCause: e,
+          errorCause: null,
           blockingSessionId: e.problem!.intParam('cash_session_id'),
         );
         return;
@@ -198,7 +200,7 @@ class OpenSessionFormController extends _$OpenSessionFormController {
         state = state.copyWith(
           submitting: false,
           error: OpenSessionFormErrorCode.drawerBusy,
-          errorCause: e,
+          errorCause: null,
         );
         return;
       }

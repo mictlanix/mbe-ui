@@ -5455,7 +5455,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String apiErrorResourceStillReferenced(String list) {
-    return 'Este registro todavía está en uso por $list y no se puede eliminar.';
+    return 'Este registro no se puede eliminar porque todavía está en uso: $list.';
   }
 
   @override
@@ -5526,10 +5526,10 @@ class AppLocalizationsEs extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: '$count pedidos a crédito vencidos',
-      one: '1 pedido a crédito vencido',
+      other: '$count pedidos a crédito vencidos. Liquídalos',
+      one: '1 pedido a crédito vencido. Liquídalo',
     );
-    return 'Este cliente tiene $_temp0. Liquídalos antes de crear un nuevo pedido a crédito.';
+    return 'Este cliente tiene $_temp0 antes de crear un nuevo pedido a crédito.';
   }
 
   @override
@@ -5865,4 +5865,102 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get apiValidationUserIdNotAlphanumeric =>
       'El nombre de usuario solo puede tener letras y números.';
+
+  @override
+  String apiResourceCustomerAddress(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'direcciones',
+      one: 'dirección',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCustomerAddress => 'feminine';
+
+  @override
+  String apiResourceCustomerContact(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'contactos',
+      one: 'contacto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCustomerContact => 'masculine';
+
+  @override
+  String apiResourceCustomerTaxpayer(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'receptores fiscales',
+      one: 'receptor fiscal',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCustomerTaxpayer => 'masculine';
+
+  @override
+  String apiResourceSupplierAddress(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'direcciones',
+      one: 'dirección',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSupplierAddress => 'feminine';
+
+  @override
+  String apiResourceSupplierAgreement(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'convenios',
+      one: 'convenio',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSupplierAgreement => 'masculine';
+
+  @override
+  String apiResourceSupplierBankAccount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'cuentas bancarias',
+      one: 'cuenta bancaria',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSupplierBankAccount => 'feminine';
+
+  @override
+  String apiResourceSupplierContact(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'contactos',
+      one: 'contacto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSupplierContact => 'masculine';
 }

@@ -448,6 +448,13 @@ String resourceNoun(String? resource, AppLocalizations l10n, {int count = 1}) =>
       'vehicle' => l10n.apiResourceVehicle(count),
       'vehicle_operator' => l10n.apiResourceVehicleOperator(count),
       'warehouse' => l10n.apiResourceWarehouse(count),
+      'customer_address' => l10n.apiResourceCustomerAddress(count),
+      'customer_contact' => l10n.apiResourceCustomerContact(count),
+      'customer_taxpayer' => l10n.apiResourceCustomerTaxpayer(count),
+      'supplier_address' => l10n.apiResourceSupplierAddress(count),
+      'supplier_agreement' => l10n.apiResourceSupplierAgreement(count),
+      'supplier_bank_account' => l10n.apiResourceSupplierBankAccount(count),
+      'supplier_contact' => l10n.apiResourceSupplierContact(count),
       _ => l10n.apiResourceGeneric(count),
     };
 
@@ -497,6 +504,13 @@ String resourceGender(String? resource, AppLocalizations l10n) =>
       'vehicle' => l10n.apiResourceGenderVehicle,
       'vehicle_operator' => l10n.apiResourceGenderVehicleOperator,
       'warehouse' => l10n.apiResourceGenderWarehouse,
+      'customer_address' => l10n.apiResourceGenderCustomerAddress,
+      'customer_contact' => l10n.apiResourceGenderCustomerContact,
+      'customer_taxpayer' => l10n.apiResourceGenderCustomerTaxpayer,
+      'supplier_address' => l10n.apiResourceGenderSupplierAddress,
+      'supplier_agreement' => l10n.apiResourceGenderSupplierAgreement,
+      'supplier_bank_account' => l10n.apiResourceGenderSupplierBankAccount,
+      'supplier_contact' => l10n.apiResourceGenderSupplierContact,
       _ => l10n.apiResourceGenderGeneric,
     };
 

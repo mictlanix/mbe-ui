@@ -370,6 +370,8 @@ void main() {
       expect(state.error, OpenSessionFormErrorCode.cashierBusy);
       expect(state.blockingSessionId, 41);
       verifyNever(() => repository.getCurrent());
+
+      expect(state.errorCause, isNull);
     });
 
     test(
@@ -390,6 +392,8 @@ void main() {
         expect(state.error, OpenSessionFormErrorCode.drawerBusy);
         expect(state.blockingSessionId, isNull);
         verifyNever(() => repository.getCurrent());
+
+        expect(state.errorCause, isNull);
       },
     );
 

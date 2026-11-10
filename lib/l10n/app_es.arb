@@ -1708,7 +1708,7 @@
   "apiErrorStateTransitionInvalid": "Este registro no puede pasar de su estado actual al solicitado.",
   "apiErrorResourceNotFound": "{gender, select, feminine{No se encontró la {resource}. Puede que se haya eliminado.} other{No se encontró el {resource}. Puede que se haya eliminado.}}",
   "apiErrorResourceAlreadyExists": "{gender, select, feminine{Ese valor ya está en uso en otra {resource}.} other{Ese valor ya está en uso en otro {resource}.}}",
-  "apiErrorResourceStillReferenced": "Este registro todavía está en uso por {list} y no se puede eliminar.",
+  "apiErrorResourceStillReferenced": "Este registro no se puede eliminar porque todavía está en uso: {list}.",
   "apiErrorResourceStillReferencedGeneric": "Este registro todavía está en uso y no se puede eliminar.",
   "apiReferenceMore": "{more, plural, one{y 1 más} other{y {more} más}}",
 
@@ -1724,7 +1724,7 @@
   "apiErrorCsdKeyNotEncrypted": "La llave no tiene contraseña, así que no es una llave de CSD del SAT.",
   "apiErrorCsdKeyNotRsa": "El archivo de llave no contiene una llave RSA.",
   "apiErrorCsdKeyUnreadable": "No se pudo abrir la llave. Revisa la contraseña y el archivo .key.",
-  "apiErrorCustomerCreditHold": "Este cliente tiene {count, plural, one{1 pedido a crédito vencido} other{{count} pedidos a crédito vencidos}}. Liquídalos antes de crear un nuevo pedido a crédito.",
+  "apiErrorCustomerCreditHold": "Este cliente tiene {count, plural, one{1 pedido a crédito vencido. Liquídalo} other{{count} pedidos a crédito vencidos. Liquídalos}} antes de crear un nuevo pedido a crédito.",
   "apiErrorCustomerCreditLimitExceeded": "Con este pedido el saldo del cliente llegaría a {outstanding}, arriba de su límite de crédito de {limit}.",
   "apiErrorCustomerCreditLimitReached": "El cliente debe {outstanding} y ya alcanzó su límite de crédito de {limit}. Debe pagar antes de volver a comprar.",
   "apiErrorCustomerDefaultNotDeletable": "El cliente público en general no se puede eliminar.",
@@ -1804,5 +1804,20 @@
   "apiValidationProfileDuplicateSystemObject": "Un permiso aparece dos veces en este perfil.",
   "apiValidationProfileUnknownSystemObject": "El perfil tiene un permiso que el servidor no reconoce.",
   "apiValidationSupplierAgreementEndBeforeStart": "La fecha de fin no puede ser anterior a la de inicio.",
-  "apiValidationUserIdNotAlphanumeric": "El nombre de usuario solo puede tener letras y números."
+  "apiValidationUserIdNotAlphanumeric": "El nombre de usuario solo puede tener letras y números.",
+
+  "apiResourceCustomerAddress": "{count, plural, one{dirección} other{direcciones}}",
+  "apiResourceGenderCustomerAddress": "feminine",
+  "apiResourceCustomerContact": "{count, plural, one{contacto} other{contactos}}",
+  "apiResourceGenderCustomerContact": "masculine",
+  "apiResourceCustomerTaxpayer": "{count, plural, one{receptor fiscal} other{receptores fiscales}}",
+  "apiResourceGenderCustomerTaxpayer": "masculine",
+  "apiResourceSupplierAddress": "{count, plural, one{dirección} other{direcciones}}",
+  "apiResourceGenderSupplierAddress": "feminine",
+  "apiResourceSupplierAgreement": "{count, plural, one{convenio} other{convenios}}",
+  "apiResourceGenderSupplierAgreement": "masculine",
+  "apiResourceSupplierBankAccount": "{count, plural, one{cuenta bancaria} other{cuentas bancarias}}",
+  "apiResourceGenderSupplierBankAccount": "feminine",
+  "apiResourceSupplierContact": "{count, plural, one{contacto} other{contactos}}",
+  "apiResourceGenderSupplierContact": "masculine"
 }

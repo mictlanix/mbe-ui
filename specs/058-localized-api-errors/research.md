@@ -23,7 +23,7 @@ Over-inclusion is accepted; a missed code only falls back. The list, with params
 | Routes the app calls | 182: 178 generated client, 4 raw `dio` (facility logo removal, product image upload and removal, CSD upload) | — |
 | Error codes | 96 (16 generic, 80 area) | 155 |
 | Validation types | 9 | 13 |
-| Record nouns | 42 | the rest map to the generic noun |
+| Record nouns | 49 | the rest map to the generic noun |
 
 Findings that change the earlier guesses:
 - **`delivery_order` is partly in.** The POS delivery step creates, edits and cancels delivery orders and their lines, so 10 delivery codes are reachable. Approve and transition codes are not.

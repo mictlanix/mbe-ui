@@ -20,6 +20,12 @@ void main() {
         resourceNoun('cash_session', env.es, count: 2),
         'sesiones de caja',
       );
+      expect(resourceNoun('supplier_bank_account', env.es), 'cuenta bancaria');
+      expect(
+        resourceNoun('supplier_agreement', env.en, count: 2),
+        'agreements',
+      );
+      expect(resourceGender('customer_address', env.es), 'feminine');
     });
 
     test('a kind the app has no noun for is the generic noun, never the '

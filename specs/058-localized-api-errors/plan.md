@@ -17,7 +17,7 @@ Special paths move to codes, with today's checks kept as fallbacks:
 
 The confirm refusals read both the current dict and the announced phase-3 parts (R9).
 
-The scope is 96 codes, 9 validation types and 42 record nouns. It was measured by following a call graph from the 182 routes the app calls (R1); the list is in [contracts/message-catalog.md](contracts/message-catalog.md).
+The scope is 96 codes, 9 validation types and 49 record nouns. It was measured by following a call graph from the 182 routes the app calls (R1); the list is in [contracts/message-catalog.md](contracts/message-catalog.md).
 
 ## Technical Context
 
@@ -42,7 +42,7 @@ The scope is 96 codes, 9 validation types and 42 record nouns. It was measured b
 - Format only the files the change touches; never run `dart format` repo-wide.
 
 **Scale/Scope**:
-- 96 codes, 9 validation types and 42 record nouns (contracts/message-catalog.md), which is about 200 new ARB entries per locale, counting the noun gender keys and list helpers;
+- 96 codes, 9 validation types and 49 record nouns (contracts/message-catalog.md), which is about 200 new ARB entries per locale, counting the noun gender keys and list helpers;
 - 24 form controllers, with 442 `errorDetail` references across 55 files;
 - 62 `ErrorBanner` call sites;
 - 7 non-form `serverMessage` displays.

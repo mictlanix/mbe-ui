@@ -9184,7 +9184,7 @@ abstract class AppLocalizations {
   /// mbe-api error code `resource.still_referenced` (spec 058)
   ///
   /// In en, this message translates to:
-  /// **'This record is still in use by {list} and can\'t be deleted.'**
+  /// **'This record can\'t be deleted because it\'s still in use: {list}.'**
   String apiErrorResourceStillReferenced(String list);
 
   /// mbe-api error code `resource.still_referenced` (spec 058), when the blockers are not readable
@@ -9274,7 +9274,7 @@ abstract class AppLocalizations {
   /// mbe-api error code `customer.credit_hold` (spec 058)
   ///
   /// In en, this message translates to:
-  /// **'This customer has {count, plural, one{1 overdue credit order} other{{count} overdue credit orders}}. Settle them before creating a new credit order.'**
+  /// **'This customer has {count, plural, one{1 overdue credit order. Settle it} other{{count} overdue credit orders. Settle them}} before creating a new credit order.'**
   String apiErrorCustomerCreditHold(int count);
 
   /// mbe-api error code `customer.credit_limit_exceeded` (spec 058)
@@ -9738,6 +9738,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The username can only have letters and numbers.'**
   String get apiValidationUserIdNotAlphanumeric;
+
+  /// Record noun for the API resource name `customer_address` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{address} other{addresses}}'**
+  String apiResourceCustomerAddress(int count);
+
+  /// Grammatical gender of the noun for `customer_address` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderCustomerAddress;
+
+  /// Record noun for the API resource name `customer_contact` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{contact} other{contacts}}'**
+  String apiResourceCustomerContact(int count);
+
+  /// Grammatical gender of the noun for `customer_contact` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderCustomerContact;
+
+  /// Record noun for the API resource name `customer_taxpayer` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{tax recipient} other{tax recipients}}'**
+  String apiResourceCustomerTaxpayer(int count);
+
+  /// Grammatical gender of the noun for `customer_taxpayer` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderCustomerTaxpayer;
+
+  /// Record noun for the API resource name `supplier_address` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{address} other{addresses}}'**
+  String apiResourceSupplierAddress(int count);
+
+  /// Grammatical gender of the noun for `supplier_address` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderSupplierAddress;
+
+  /// Record noun for the API resource name `supplier_agreement` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{agreement} other{agreements}}'**
+  String apiResourceSupplierAgreement(int count);
+
+  /// Grammatical gender of the noun for `supplier_agreement` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderSupplierAgreement;
+
+  /// Record noun for the API resource name `supplier_bank_account` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{bank account} other{bank accounts}}'**
+  String apiResourceSupplierBankAccount(int count);
+
+  /// Grammatical gender of the noun for `supplier_bank_account` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderSupplierBankAccount;
+
+  /// Record noun for the API resource name `supplier_contact` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{contact} other{contacts}}'**
+  String apiResourceSupplierContact(int count);
+
+  /// Grammatical gender of the noun for `supplier_contact` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderSupplierContact;
 }
 
 class _AppLocalizationsDelegate
