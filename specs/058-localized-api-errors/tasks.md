@@ -191,7 +191,8 @@ For each pair: in the controller state replace `String? errorDetail` with `AppEr
   - **Earlier, before the user's checks:** A throwaway live test against `http://127.0.0.1:8000` covered the non-mutating refusals: `auth.not_authenticated`, `resource.not_found` for a customer, an order and a refund, `request.route_not_found`, and `auth.forbidden` for the read-only account on a write route. Each carried its code and params and rendered in both languages. **Not run**, because each changes data on the shared dev server: credit hold on an order, password change landing on its screen, zero-priced confirm, busy drawer, a duplicate record on a catalog form, and delete with references (quickstart §2 checks 1–6).
 - [X] T065 mbe-api issue for phase-3 part codes (research R9): **ask the user for a go-ahead first**, then file the drafted issue against `mictlanix/mbe-api` with `gh issue create`. mbe-ui must not edit mbe-api (constitution §III).
   - **Filed 2026-11-09 as mictlanix/mbe-api#299**, with the live example from check 3 added.
-- [ ] T066 Open the PR with "Roadmap" section lines `Closes mictlanix/mbe-roadmap#148` and `Closes #232`, listing the 96 / 9 / 42 scope and noting the two measured limits of the scope check (research R1).
+- [X] T066 Open the PR with "Roadmap" section lines `Closes mictlanix/mbe-roadmap#148` and `Closes #232`, listing the 96 / 9 / 42 scope and noting the two measured limits of the scope check (research R1).
+  - **Opened 2026-11-09 as mictlanix/mbe-ui#236.**
 
 ---
 

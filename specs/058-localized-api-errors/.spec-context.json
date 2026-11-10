@@ -3,7 +3,7 @@
   "specName": "Localized API Messages from Error Codes",
   "branch": "058-localized-api-errors",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -573,8 +573,23 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-10T01:11:44.792Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T066",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-10T01:13:14.128Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-10T01:13:14.128Z"
     }
   ],
   "telemetryInstanceId": "453bd56a-d8db-4d4c-934a-89eff1183bb9",
-  "currentTask": "T066"
+  "currentTask": "T065"
 }
