@@ -156,7 +156,7 @@ One controller sets it from a validation entry rather than `serverMessage` (`use
 
 **External dependency**: ask mbe-api, before phase 3 ships, either to publish the per-line codes and params in `error-codes.md`, so this catalog can add them first, or to give each part a `detail`.
 
-Draft issue, to file with the user's go-ahead (§III):
+Filed 2026-11-09 as [mictlanix/mbe-api#299](https://github.com/mictlanix/mbe-api/issues/299), from this draft plus the live example from check 3:
 
 > **Phase 3: publish per-line part codes before switching the dict details**
 >
