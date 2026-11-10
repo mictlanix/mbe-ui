@@ -207,9 +207,20 @@ mictlanix/mbe-ui#176).
 
 - Map API errors (validation errors, 4xx/5xx) to a small set of domain error
   types (`ValidationError`, `NotFoundError`, `AuthError`, `ServerError`,
-  `NetworkError`).
+  `NetworkError`, `CreditHoldError`).
 - Surface these consistently in the UI via a shared error-display widget
   (snackbar/banner), rather than each screen handling raw exceptions.
+- Show the user a message from the app's own translations, not the server's
+  text. Since mbe-api spec 036, every error carries a stable `code` and raw
+  `params` beside its English `detail`; the app keeps them on the error and
+  builds the message in the current language when it is shown, formatting
+  amounts and dates as everywhere else. An English sentence is no
+  explanation in the `es-MX` default, and the server's prose can change
+  without notice while a code cannot. The server's `detail` remains the
+  fallback for a code the app has no message for, so a newer server never
+  breaks an older app. Behaviour that depends on which refusal it was (a
+  redirect, telling two refusals apart) reads the code too. Established by
+  specs/058-localized-api-errors.
 
 ### 3.5 Offline / caching
 
