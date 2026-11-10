@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/sales/data/sales_quote_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_quote_repository.dart';
@@ -274,6 +275,61 @@ void main() {
             'message',
             'No point of sale is configured for your user',
           ),
+        ),
+      );
+    });
+
+    test('a coded credit refusal is a CreditHoldError carrying its problem '
+        '(spec 058)', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'status': 422,
+            'code': 'customer.credit_hold',
+            'detail': 'Customer is on credit hold',
+            'params': {'customer_id': 7, 'overdue_count': 2, 'action': 'raise'},
+          }),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.convert(quoteId: 30),
+        throwsA(
+          isA<CreditHoldError>().having(
+            (e) => e.problem?.intParam('overdue_count'),
+            'overdue_count',
+            2,
+          ),
+        ),
+      );
+    });
+
+    test('a coded refusal that is not about credit keeps its own variant, '
+        'not the credit-hold guess (spec 058)', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'status': 422,
+            'code': 'user.no_point_of_sale',
+            'detail': 'No point of sale is configured for your user',
+          }),
+          422,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.convert(quoteId: 30),
+        throwsA(
+          isA<ValidationError>()
+              .having((e) => e.problem, 'problem', isNotNull)
+              .having(
+                (e) => e.serverMessage,
+                'serverMessage',
+                'No point of sale is configured for your user',
+              ),
         ),
       );
     });

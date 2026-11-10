@@ -269,7 +269,7 @@ void main() {
         expect(state.deleted, isFalse);
         expect(state.error, VehicleOperatorFormErrorCode.deleteFailed);
         expect(
-          state.errorDetail,
+          state.errorCause?.serverMessage,
           'Vehicle operator is referenced by a service order',
         );
       },
@@ -526,7 +526,7 @@ void main() {
       expect(state.pendingLicensePhotoFilename, 'license.png');
       expect(state.hasLicensePhoto, isFalse);
       expect(state.error, VehicleOperatorFormErrorCode.licensePhotoSaveFailed);
-      expect(state.errorDetail, 'Image could not be read');
+      expect(state.errorCause?.serverMessage, 'Image could not be read');
     });
 
     test('saving again after that failure updates the operator instead of '
@@ -735,7 +735,7 @@ void main() {
             state.error,
             VehicleOperatorFormErrorCode.licensePhotoSaveFailed,
           );
-          expect(state.errorDetail, 'disk error');
+          expect(state.errorCause?.serverMessage, 'disk error');
         },
       );
     });

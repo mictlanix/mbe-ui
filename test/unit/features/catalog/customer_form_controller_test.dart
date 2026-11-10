@@ -287,7 +287,10 @@ void main() {
         final state = container.read(customerFormControllerProvider(null));
         expect(state.deleted, isFalse);
         expect(state.error, CustomerFormErrorCode.deleteFailed);
-        expect(state.errorDetail, 'Customer has existing sales orders');
+        expect(
+          state.errorCause?.serverMessage,
+          'Customer has existing sales orders',
+        );
       },
     );
   });

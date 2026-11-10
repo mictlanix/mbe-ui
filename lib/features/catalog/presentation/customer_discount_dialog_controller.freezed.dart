@@ -20,7 +20,7 @@ mixin _$CustomerDiscountDialogState {
  String get percent;/// `false` until the user edits the field, so a blank new dialog doesn't
 /// open already showing an error, and so an untouched edit sends the
 /// stored rate back exactly as it was.
- bool get percentDirty; bool get submitting; bool get done; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
+ bool get percentDirty; bool get submitting; bool get done; String? get error; AppError? get errorCause; Map<String, String> get fieldErrors;
 /// Create a copy of CustomerDiscountDialogState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -32,20 +32,20 @@ $CustomerDiscountDialogStateCopyWith<CustomerDiscountDialogState> get copyWith =
 @override
 bool operator ==(Object other) {
   final _this = this as CustomerDiscountDialogState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CustomerDiscountDialogState&&(identical(other.product, _this.product) || other.product == _this.product)&&(identical(other.percent, _this.percent) || other.percent == _this.percent)&&(identical(other.percentDirty, _this.percentDirty) || other.percentDirty == _this.percentDirty)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.done, _this.done) || other.done == _this.done)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CustomerDiscountDialogState&&(identical(other.product, _this.product) || other.product == _this.product)&&(identical(other.percent, _this.percent) || other.percent == _this.percent)&&(identical(other.percentDirty, _this.percentDirty) || other.percentDirty == _this.percentDirty)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.done, _this.done) || other.done == _this.done)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorCause, _this.errorCause) || other.errorCause == _this.errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as CustomerDiscountDialogState;
-  return Object.hash(runtimeType,_this.product,_this.percent,_this.percentDirty,_this.submitting,_this.done,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors));
+  return Object.hash(runtimeType,_this.product,_this.percent,_this.percentDirty,_this.submitting,_this.done,_this.error,_this.errorCause,const DeepCollectionEquality().hash(_this.fieldErrors));
 }
 
 @override
 String toString() {
   final _this = this as CustomerDiscountDialogState;
-  return 'CustomerDiscountDialogState(product: ${_this.product}, percent: ${_this.percent}, percentDirty: ${_this.percentDirty}, submitting: ${_this.submitting}, done: ${_this.done}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
+  return 'CustomerDiscountDialogState(product: ${_this.product}, percent: ${_this.percent}, percentDirty: ${_this.percentDirty}, submitting: ${_this.submitting}, done: ${_this.done}, error: ${_this.error}, errorCause: ${_this.errorCause}, fieldErrors: ${_this.fieldErrors})';
 }
 
 
@@ -56,11 +56,11 @@ abstract mixin class $CustomerDiscountDialogStateCopyWith<$Res>  {
   factory $CustomerDiscountDialogStateCopyWith(CustomerDiscountDialogState value, $Res Function(CustomerDiscountDialogState) _then) = _$CustomerDiscountDialogStateCopyWithImpl;
 @useResult
 $Res call({
- ProductListItem? product, String percent, bool percentDirty, bool submitting, bool done, String? error, String? errorDetail, Map<String, String> fieldErrors
+ ProductListItem? product, String percent, bool percentDirty, bool submitting, bool done, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-$ProductListItemCopyWith<$Res>? get product;
+$ProductListItemCopyWith<$Res>? get product;$AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -73,7 +73,7 @@ class _$CustomerDiscountDialogStateCopyWithImpl<$Res>
 
 /// Create a copy of CustomerDiscountDialogState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? product = freezed,Object? percent = null,Object? percentDirty = null,Object? submitting = null,Object? done = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? product = freezed,Object? percent = null,Object? percentDirty = null,Object? submitting = null,Object? done = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(CustomerDiscountDialogState(
 product: freezed == product ? _self.product : product // ignore: cast_nullable_to_non_nullable
 as ProductListItem?,percent: null == percent ? _self.percent : percent // ignore: cast_nullable_to_non_nullable
@@ -81,8 +81,8 @@ as String,percentDirty: null == percentDirty ? _self.percentDirty : percentDirty
 as bool,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
 as bool,done: null == done ? _self.done : done // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
@@ -97,6 +97,18 @@ $ProductListItemCopyWith<$Res>? get product {
 
   return $ProductListItemCopyWith<$Res>(_self.product!, (value) {
     return _then(_self.copyWith(product: value));
+  });
+}/// Create a copy of CustomerDiscountDialogState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
+
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
   });
 }
 }
@@ -180,10 +192,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ProductListItem? product,  String percent,  bool percentDirty,  bool submitting,  bool done,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ProductListItem? product,  String percent,  bool percentDirty,  bool submitting,  bool done,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CustomerDiscountDialogState() when $default != null:
-return $default(_that.product,_that.percent,_that.percentDirty,_that.submitting,_that.done,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.product,_that.percent,_that.percentDirty,_that.submitting,_that.done,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return orElse();
 
 }
@@ -201,10 +213,10 @@ return $default(_that.product,_that.percent,_that.percentDirty,_that.submitting,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ProductListItem? product,  String percent,  bool percentDirty,  bool submitting,  bool done,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ProductListItem? product,  String percent,  bool percentDirty,  bool submitting,  bool done,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)  $default,) {final _that = this;
 switch (_that) {
 case _CustomerDiscountDialogState():
-return $default(_that.product,_that.percent,_that.percentDirty,_that.submitting,_that.done,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.product,_that.percent,_that.percentDirty,_that.submitting,_that.done,_that.error,_that.errorCause,_that.fieldErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -221,10 +233,10 @@ return $default(_that.product,_that.percent,_that.percentDirty,_that.submitting,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ProductListItem? product,  String percent,  bool percentDirty,  bool submitting,  bool done,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ProductListItem? product,  String percent,  bool percentDirty,  bool submitting,  bool done,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _CustomerDiscountDialogState() when $default != null:
-return $default(_that.product,_that.percent,_that.percentDirty,_that.submitting,_that.done,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.product,_that.percent,_that.percentDirty,_that.submitting,_that.done,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return null;
 
 }
@@ -236,7 +248,7 @@ return $default(_that.product,_that.percent,_that.percentDirty,_that.submitting,
 
 
 class _CustomerDiscountDialogState extends CustomerDiscountDialogState {
-  const _CustomerDiscountDialogState({this.product, this.percent = '', this.percentDirty = false, this.submitting = false, this.done = false, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors,super._();
+  const _CustomerDiscountDialogState({this.product, this.percent = '', this.percentDirty = false, this.submitting = false, this.done = false, this.error, this.errorCause,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors,super._();
   
 
 /// The product picked in add mode. Edit mode never changes the product.
@@ -250,7 +262,7 @@ class _CustomerDiscountDialogState extends CustomerDiscountDialogState {
 @override@JsonKey() final  bool submitting;
 @override@JsonKey() final  bool done;
 @override final  String? error;
-@override final  String? errorDetail;
+@override final  AppError? errorCause;
  final  Map<String, String> _fieldErrors;
 @override@JsonKey() Map<String, String> get fieldErrors {
   if (_fieldErrors is EqualUnmodifiableMapView) return _fieldErrors;
@@ -269,18 +281,18 @@ _$CustomerDiscountDialogStateCopyWith<_CustomerDiscountDialogState> get copyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CustomerDiscountDialogState&&(identical(other.product, product) || other.product == product)&&(identical(other.percent, percent) || other.percent == percent)&&(identical(other.percentDirty, percentDirty) || other.percentDirty == percentDirty)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.done, done) || other.done == done)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CustomerDiscountDialogState&&(identical(other.product, product) || other.product == product)&&(identical(other.percent, percent) || other.percent == percent)&&(identical(other.percentDirty, percentDirty) || other.percentDirty == percentDirty)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.done, done) || other.done == done)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorCause, errorCause) || other.errorCause == errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,product,percent,percentDirty,submitting,done,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors));
+    return Object.hash(runtimeType,product,percent,percentDirty,submitting,done,error,errorCause,const DeepCollectionEquality().hash(_fieldErrors));
 }
 
 @override
 String toString() {
-    return 'CustomerDiscountDialogState(product: $product, percent: $percent, percentDirty: $percentDirty, submitting: $submitting, done: $done, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'CustomerDiscountDialogState(product: $product, percent: $percent, percentDirty: $percentDirty, submitting: $submitting, done: $done, error: $error, errorCause: $errorCause, fieldErrors: $fieldErrors)';
 }
 
 
@@ -291,11 +303,11 @@ abstract mixin class _$CustomerDiscountDialogStateCopyWith<$Res> implements $Cus
   factory _$CustomerDiscountDialogStateCopyWith(_CustomerDiscountDialogState value, $Res Function(_CustomerDiscountDialogState) _then) = __$CustomerDiscountDialogStateCopyWithImpl;
 @override @useResult
 $Res call({
- ProductListItem? product, String percent, bool percentDirty, bool submitting, bool done, String? error, String? errorDetail, Map<String, String> fieldErrors
+ ProductListItem? product, String percent, bool percentDirty, bool submitting, bool done, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-@override $ProductListItemCopyWith<$Res>? get product;
+@override $ProductListItemCopyWith<$Res>? get product;@override $AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -308,7 +320,7 @@ class __$CustomerDiscountDialogStateCopyWithImpl<$Res>
 
 /// Create a copy of CustomerDiscountDialogState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? product = freezed,Object? percent = null,Object? percentDirty = null,Object? submitting = null,Object? done = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? product = freezed,Object? percent = null,Object? percentDirty = null,Object? submitting = null,Object? done = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(_CustomerDiscountDialogState(
 product: freezed == product ? _self.product : product // ignore: cast_nullable_to_non_nullable
 as ProductListItem?,percent: null == percent ? _self.percent : percent // ignore: cast_nullable_to_non_nullable
@@ -316,8 +328,8 @@ as String,percentDirty: null == percentDirty ? _self.percentDirty : percentDirty
 as bool,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
 as bool,done: null == done ? _self.done : done // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
@@ -333,6 +345,18 @@ $ProductListItemCopyWith<$Res>? get product {
 
   return $ProductListItemCopyWith<$Res>(_self.product!, (value) {
     return _then(_self.copyWith(product: value));
+  });
+}/// Create a copy of CustomerDiscountDialogState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
+
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
   });
 }
 }

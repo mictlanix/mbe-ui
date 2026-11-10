@@ -168,15 +168,15 @@ return creditHold(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( List<FieldError> errors,  String? message)?  validation,TResult Function( String? message)?  auth,TResult Function( String? message)?  notFound,TResult Function( int? statusCode,  String? message)?  server,TResult Function( String? message)?  network,TResult Function( String? message)?  creditHold,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( List<FieldError> errors,  String? message,  ApiProblem? problem)?  validation,TResult Function( String? message,  ApiProblem? problem)?  auth,TResult Function( String? message,  ApiProblem? problem)?  notFound,TResult Function( int? statusCode,  String? message,  ApiProblem? problem)?  server,TResult Function( String? message)?  network,TResult Function( String? message,  ApiProblem? problem)?  creditHold,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case ValidationError() when validation != null:
-return validation(_that.errors,_that.message);case AuthError() when auth != null:
-return auth(_that.message);case NotFoundError() when notFound != null:
-return notFound(_that.message);case ServerError() when server != null:
-return server(_that.statusCode,_that.message);case NetworkError() when network != null:
+return validation(_that.errors,_that.message,_that.problem);case AuthError() when auth != null:
+return auth(_that.message,_that.problem);case NotFoundError() when notFound != null:
+return notFound(_that.message,_that.problem);case ServerError() when server != null:
+return server(_that.statusCode,_that.message,_that.problem);case NetworkError() when network != null:
 return network(_that.message);case CreditHoldError() when creditHold != null:
-return creditHold(_that.message);case _:
+return creditHold(_that.message,_that.problem);case _:
   return orElse();
 
 }
@@ -194,15 +194,15 @@ return creditHold(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( List<FieldError> errors,  String? message)  validation,required TResult Function( String? message)  auth,required TResult Function( String? message)  notFound,required TResult Function( int? statusCode,  String? message)  server,required TResult Function( String? message)  network,required TResult Function( String? message)  creditHold,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( List<FieldError> errors,  String? message,  ApiProblem? problem)  validation,required TResult Function( String? message,  ApiProblem? problem)  auth,required TResult Function( String? message,  ApiProblem? problem)  notFound,required TResult Function( int? statusCode,  String? message,  ApiProblem? problem)  server,required TResult Function( String? message)  network,required TResult Function( String? message,  ApiProblem? problem)  creditHold,}) {final _that = this;
 switch (_that) {
 case ValidationError():
-return validation(_that.errors,_that.message);case AuthError():
-return auth(_that.message);case NotFoundError():
-return notFound(_that.message);case ServerError():
-return server(_that.statusCode,_that.message);case NetworkError():
+return validation(_that.errors,_that.message,_that.problem);case AuthError():
+return auth(_that.message,_that.problem);case NotFoundError():
+return notFound(_that.message,_that.problem);case ServerError():
+return server(_that.statusCode,_that.message,_that.problem);case NetworkError():
 return network(_that.message);case CreditHoldError():
-return creditHold(_that.message);}
+return creditHold(_that.message,_that.problem);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -216,15 +216,15 @@ return creditHold(_that.message);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( List<FieldError> errors,  String? message)?  validation,TResult? Function( String? message)?  auth,TResult? Function( String? message)?  notFound,TResult? Function( int? statusCode,  String? message)?  server,TResult? Function( String? message)?  network,TResult? Function( String? message)?  creditHold,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( List<FieldError> errors,  String? message,  ApiProblem? problem)?  validation,TResult? Function( String? message,  ApiProblem? problem)?  auth,TResult? Function( String? message,  ApiProblem? problem)?  notFound,TResult? Function( int? statusCode,  String? message,  ApiProblem? problem)?  server,TResult? Function( String? message)?  network,TResult? Function( String? message,  ApiProblem? problem)?  creditHold,}) {final _that = this;
 switch (_that) {
 case ValidationError() when validation != null:
-return validation(_that.errors,_that.message);case AuthError() when auth != null:
-return auth(_that.message);case NotFoundError() when notFound != null:
-return notFound(_that.message);case ServerError() when server != null:
-return server(_that.statusCode,_that.message);case NetworkError() when network != null:
+return validation(_that.errors,_that.message,_that.problem);case AuthError() when auth != null:
+return auth(_that.message,_that.problem);case NotFoundError() when notFound != null:
+return notFound(_that.message,_that.problem);case ServerError() when server != null:
+return server(_that.statusCode,_that.message,_that.problem);case NetworkError() when network != null:
 return network(_that.message);case CreditHoldError() when creditHold != null:
-return creditHold(_that.message);case _:
+return creditHold(_that.message,_that.problem);case _:
   return null;
 
 }
@@ -236,7 +236,7 @@ return creditHold(_that.message);case _:
 
 
 class ValidationError implements AppError {
-  const ValidationError( List<FieldError> errors, [this.message]): _errors = errors;
+  const ValidationError( List<FieldError> errors, [this.message, this.problem]): _errors = errors;
   
 
  final  List<FieldError> _errors;
@@ -247,6 +247,7 @@ class ValidationError implements AppError {
 }
 
 @override final  String? message;
+ final  ApiProblem? problem;
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
@@ -258,18 +259,18 @@ $ValidationErrorCopyWith<ValidationError> get copyWith => _$ValidationErrorCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is ValidationError&&const DeepCollectionEquality().equals(other.errors, _errors)&&(identical(other.message, message) || other.message == message));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is ValidationError&&const DeepCollectionEquality().equals(other.errors, _errors)&&(identical(other.message, message) || other.message == message)&&(identical(other.problem, problem) || other.problem == problem));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_errors),message);
+    return Object.hash(runtimeType,const DeepCollectionEquality().hash(_errors),message,problem);
 }
 
 @override
 String toString() {
-    return 'AppError.validation(errors: $errors, message: $message)';
+    return 'AppError.validation(errors: $errors, message: $message, problem: $problem)';
 }
 
 
@@ -280,11 +281,11 @@ abstract mixin class $ValidationErrorCopyWith<$Res> implements $AppErrorCopyWith
   factory $ValidationErrorCopyWith(ValidationError value, $Res Function(ValidationError) _then) = _$ValidationErrorCopyWithImpl;
 @override @useResult
 $Res call({
- List<FieldError> errors, String? message
+ List<FieldError> errors, String? message, ApiProblem? problem
 });
 
 
-
+$ApiProblemCopyWith<$Res>? get problem;
 
 }
 /// @nodoc
@@ -297,25 +298,39 @@ class _$ValidationErrorCopyWithImpl<$Res>
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? errors = null,Object? message = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? errors = null,Object? message = freezed,Object? problem = freezed,}) {
   return _then(ValidationError(
 null == errors ? _self._errors : errors // ignore: cast_nullable_to_non_nullable
 as List<FieldError>,freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,freezed == problem ? _self.problem : problem // ignore: cast_nullable_to_non_nullable
+as ApiProblem?,
   ));
 }
 
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ApiProblemCopyWith<$Res>? get problem {
+    if (_self.problem == null) {
+    return null;
+  }
 
+  return $ApiProblemCopyWith<$Res>(_self.problem!, (value) {
+    return _then(_self.copyWith(problem: value));
+  });
+}
 }
 
 /// @nodoc
 
 
 class AuthError implements AppError {
-  const AuthError([this.message]);
+  const AuthError([this.message, this.problem]);
   
 
 @override final  String? message;
+ final  ApiProblem? problem;
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
@@ -327,18 +342,18 @@ $AuthErrorCopyWith<AuthError> get copyWith => _$AuthErrorCopyWithImpl<AuthError>
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthError&&(identical(other.message, message) || other.message == message));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthError&&(identical(other.message, message) || other.message == message)&&(identical(other.problem, problem) || other.problem == problem));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,message);
+    return Object.hash(runtimeType,message,problem);
 }
 
 @override
 String toString() {
-    return 'AppError.auth(message: $message)';
+    return 'AppError.auth(message: $message, problem: $problem)';
 }
 
 
@@ -349,11 +364,11 @@ abstract mixin class $AuthErrorCopyWith<$Res> implements $AppErrorCopyWith<$Res>
   factory $AuthErrorCopyWith(AuthError value, $Res Function(AuthError) _then) = _$AuthErrorCopyWithImpl;
 @override @useResult
 $Res call({
- String? message
+ String? message, ApiProblem? problem
 });
 
 
-
+$ApiProblemCopyWith<$Res>? get problem;
 
 }
 /// @nodoc
@@ -366,24 +381,38 @@ class _$AuthErrorCopyWithImpl<$Res>
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? message = freezed,Object? problem = freezed,}) {
   return _then(AuthError(
 freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,freezed == problem ? _self.problem : problem // ignore: cast_nullable_to_non_nullable
+as ApiProblem?,
   ));
 }
 
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ApiProblemCopyWith<$Res>? get problem {
+    if (_self.problem == null) {
+    return null;
+  }
 
+  return $ApiProblemCopyWith<$Res>(_self.problem!, (value) {
+    return _then(_self.copyWith(problem: value));
+  });
+}
 }
 
 /// @nodoc
 
 
 class NotFoundError implements AppError {
-  const NotFoundError([this.message]);
+  const NotFoundError([this.message, this.problem]);
   
 
 @override final  String? message;
+ final  ApiProblem? problem;
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
@@ -395,18 +424,18 @@ $NotFoundErrorCopyWith<NotFoundError> get copyWith => _$NotFoundErrorCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is NotFoundError&&(identical(other.message, message) || other.message == message));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is NotFoundError&&(identical(other.message, message) || other.message == message)&&(identical(other.problem, problem) || other.problem == problem));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,message);
+    return Object.hash(runtimeType,message,problem);
 }
 
 @override
 String toString() {
-    return 'AppError.notFound(message: $message)';
+    return 'AppError.notFound(message: $message, problem: $problem)';
 }
 
 
@@ -417,11 +446,11 @@ abstract mixin class $NotFoundErrorCopyWith<$Res> implements $AppErrorCopyWith<$
   factory $NotFoundErrorCopyWith(NotFoundError value, $Res Function(NotFoundError) _then) = _$NotFoundErrorCopyWithImpl;
 @override @useResult
 $Res call({
- String? message
+ String? message, ApiProblem? problem
 });
 
 
-
+$ApiProblemCopyWith<$Res>? get problem;
 
 }
 /// @nodoc
@@ -434,25 +463,39 @@ class _$NotFoundErrorCopyWithImpl<$Res>
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? message = freezed,Object? problem = freezed,}) {
   return _then(NotFoundError(
 freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,freezed == problem ? _self.problem : problem // ignore: cast_nullable_to_non_nullable
+as ApiProblem?,
   ));
 }
 
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ApiProblemCopyWith<$Res>? get problem {
+    if (_self.problem == null) {
+    return null;
+  }
 
+  return $ApiProblemCopyWith<$Res>(_self.problem!, (value) {
+    return _then(_self.copyWith(problem: value));
+  });
+}
 }
 
 /// @nodoc
 
 
 class ServerError implements AppError {
-  const ServerError({this.statusCode, this.message});
+  const ServerError({this.statusCode, this.message, this.problem});
   
 
  final  int? statusCode;
 @override final  String? message;
+ final  ApiProblem? problem;
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
@@ -464,18 +507,18 @@ $ServerErrorCopyWith<ServerError> get copyWith => _$ServerErrorCopyWithImpl<Serv
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is ServerError&&(identical(other.statusCode, statusCode) || other.statusCode == statusCode)&&(identical(other.message, message) || other.message == message));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is ServerError&&(identical(other.statusCode, statusCode) || other.statusCode == statusCode)&&(identical(other.message, message) || other.message == message)&&(identical(other.problem, problem) || other.problem == problem));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,statusCode,message);
+    return Object.hash(runtimeType,statusCode,message,problem);
 }
 
 @override
 String toString() {
-    return 'AppError.server(statusCode: $statusCode, message: $message)';
+    return 'AppError.server(statusCode: $statusCode, message: $message, problem: $problem)';
 }
 
 
@@ -486,11 +529,11 @@ abstract mixin class $ServerErrorCopyWith<$Res> implements $AppErrorCopyWith<$Re
   factory $ServerErrorCopyWith(ServerError value, $Res Function(ServerError) _then) = _$ServerErrorCopyWithImpl;
 @override @useResult
 $Res call({
- int? statusCode, String? message
+ int? statusCode, String? message, ApiProblem? problem
 });
 
 
-
+$ApiProblemCopyWith<$Res>? get problem;
 
 }
 /// @nodoc
@@ -503,15 +546,28 @@ class _$ServerErrorCopyWithImpl<$Res>
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? statusCode = freezed,Object? message = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? statusCode = freezed,Object? message = freezed,Object? problem = freezed,}) {
   return _then(ServerError(
 statusCode: freezed == statusCode ? _self.statusCode : statusCode // ignore: cast_nullable_to_non_nullable
 as int?,message: freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,problem: freezed == problem ? _self.problem : problem // ignore: cast_nullable_to_non_nullable
+as ApiProblem?,
   ));
 }
 
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ApiProblemCopyWith<$Res>? get problem {
+    if (_self.problem == null) {
+    return null;
+  }
 
+  return $ApiProblemCopyWith<$Res>(_self.problem!, (value) {
+    return _then(_self.copyWith(problem: value));
+  });
+}
 }
 
 /// @nodoc
@@ -586,10 +642,11 @@ as String?,
 
 
 class CreditHoldError implements AppError {
-  const CreditHoldError([this.message]);
+  const CreditHoldError([this.message, this.problem]);
   
 
 @override final  String? message;
+ final  ApiProblem? problem;
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
@@ -601,18 +658,18 @@ $CreditHoldErrorCopyWith<CreditHoldError> get copyWith => _$CreditHoldErrorCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is CreditHoldError&&(identical(other.message, message) || other.message == message));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is CreditHoldError&&(identical(other.message, message) || other.message == message)&&(identical(other.problem, problem) || other.problem == problem));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,message);
+    return Object.hash(runtimeType,message,problem);
 }
 
 @override
 String toString() {
-    return 'AppError.creditHold(message: $message)';
+    return 'AppError.creditHold(message: $message, problem: $problem)';
 }
 
 
@@ -623,11 +680,11 @@ abstract mixin class $CreditHoldErrorCopyWith<$Res> implements $AppErrorCopyWith
   factory $CreditHoldErrorCopyWith(CreditHoldError value, $Res Function(CreditHoldError) _then) = _$CreditHoldErrorCopyWithImpl;
 @override @useResult
 $Res call({
- String? message
+ String? message, ApiProblem? problem
 });
 
 
-
+$ApiProblemCopyWith<$Res>? get problem;
 
 }
 /// @nodoc
@@ -640,14 +697,27 @@ class _$CreditHoldErrorCopyWithImpl<$Res>
 
 /// Create a copy of AppError
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? message = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? message = freezed,Object? problem = freezed,}) {
   return _then(CreditHoldError(
 freezed == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,freezed == problem ? _self.problem : problem // ignore: cast_nullable_to_non_nullable
+as ApiProblem?,
   ));
 }
 
+/// Create a copy of AppError
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ApiProblemCopyWith<$Res>? get problem {
+    if (_self.problem == null) {
+    return null;
+  }
 
+  return $ApiProblemCopyWith<$Res>(_self.problem!, (value) {
+    return _then(_self.copyWith(problem: value));
+  });
+}
 }
 
 /// @nodoc

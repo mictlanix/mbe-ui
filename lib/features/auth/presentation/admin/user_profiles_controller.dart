@@ -10,6 +10,7 @@ import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/features/auth/data/user_profile_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/entities/user_profile.dart';
+import 'package:mbe_ui/core/errors/localize_problem.dart';
 
 part 'user_profiles_controller.freezed.dart';
 part 'user_profiles_controller.g.dart';
@@ -77,7 +78,7 @@ abstract class UserProfileFormState with _$UserProfileFormState {
     /// message since it can't be localized client-side. `null` for a
     /// [ValidationError]'s message (already raw server text stored directly
     /// in `error`).
-    String? errorDetail,
+    AppError? errorCause,
   }) = _UserProfileFormState;
 }
 
@@ -137,7 +138,7 @@ class UserProfileFormController extends _$UserProfileFormController {
 
   /// Populates the form from an existing profile (edit mode).
   Future<void> loadProfile(int profileId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final profile = await ref
           .read(userProfileRepositoryProvider)
@@ -152,19 +153,19 @@ class UserProfileFormController extends _$UserProfileFormController {
       state = state.copyWith(
         loading: false,
         error: UserProfileFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
 
   void nameChanged(String v) =>
-      state = state.copyWith(name: v, error: null, errorDetail: null);
+      state = state.copyWith(name: v, error: null, errorCause: null);
 
   void descriptionChanged(String v) =>
-      state = state.copyWith(description: v, error: null, errorDetail: null);
+      state = state.copyWith(description: v, error: null, errorCause: null);
 
   void statusChanged(EntityStatus v) =>
-      state = state.copyWith(status: v, error: null, errorDetail: null);
+      state = state.copyWith(status: v, error: null, errorCause: null);
 
   /// Updates the `rawValue` bitmask for one [SystemObject] in the form's
   /// privileges list. Removes the entry when [rawValue] is 0 — a profile
@@ -177,7 +178,7 @@ class UserProfileFormController extends _$UserProfileFormController {
     if (rawValue != 0) {
       updated.add(Privilege(systemObject: obj, rawValue: rawValue));
     }
-    state = state.copyWith(privileges: updated, error: null, errorDetail: null);
+    state = state.copyWith(privileges: updated, error: null, errorCause: null);
   }
 
   /// Drops every cached page of the catalog list so a create/update/delete
@@ -198,7 +199,7 @@ class UserProfileFormController extends _$UserProfileFormController {
     if (state.name.trim().isEmpty) {
       state = state.copyWith(
         error: UserProfileFormErrorCode.nameRequired,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -206,7 +207,7 @@ class UserProfileFormController extends _$UserProfileFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       saved: false,
     );
     try {
@@ -231,19 +232,22 @@ class UserProfileFormController extends _$UserProfileFormController {
       state = state.copyWith(submitting: false, saved: true);
     } on AppError catch (e) {
       if (e is ValidationError && e.errors.isNotEmpty) {
-        state = state.copyWith(submitting: false, error: e.errors.first.msg);
+        state = state.copyWith(
+          submitting: false,
+          error: serverFieldValue(e.errors.first),
+        );
       } else {
         state = state.copyWith(
           submitting: false,
           error: UserProfileFormErrorCode.saveFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
   }
 
   Future<void> deleteProfile(int profileId) async {
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref
           .read(userProfileRepositoryProvider)
@@ -252,12 +256,15 @@ class UserProfileFormController extends _$UserProfileFormController {
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {
       if (e is ValidationError && e.errors.isNotEmpty) {
-        state = state.copyWith(submitting: false, error: e.errors.first.msg);
+        state = state.copyWith(
+          submitting: false,
+          error: serverFieldValue(e.errors.first),
+        );
       } else {
         state = state.copyWith(
           submitting: false,
           error: UserProfileFormErrorCode.deleteFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }

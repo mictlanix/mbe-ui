@@ -72,7 +72,7 @@ abstract class CustomerFormState with _$CustomerFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _CustomerFormState;
 }
@@ -90,14 +90,14 @@ class CustomerFormController extends _$CustomerFormController {
   void codeChanged(String v) => state = state.copyWith(
     code: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void nameChanged(String v) => state = state.copyWith(
     name: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -106,14 +106,14 @@ class CustomerFormController extends _$CustomerFormController {
   void creditLimitChanged(String v) => state = state.copyWith(
     creditLimit: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void creditDaysChanged(String v) => state = state.copyWith(
     creditDays: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -121,7 +121,7 @@ class CustomerFormController extends _$CustomerFormController {
     priceListId: id,
     priceListDisplayText: displayText,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -201,7 +201,7 @@ class CustomerFormController extends _$CustomerFormController {
   }
 
   CustomerFormState _clear(CustomerFormState s) =>
-      s.copyWith(error: null, errorDetail: null, fieldErrors: const {});
+      s.copyWith(error: null, errorCause: null, fieldErrors: const {});
 
   void statusChanged(EntityStatus v) => state = state.copyWith(status: v);
 
@@ -209,7 +209,7 @@ class CustomerFormController extends _$CustomerFormController {
 
   /// Loads an existing customer into the form for viewing/editing.
   Future<void> loadForEdit(int customerId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final customer = await ref
           .read(customerRepositoryProvider)
@@ -238,7 +238,7 @@ class CustomerFormController extends _$CustomerFormController {
       state = state.copyWith(
         loading: false,
         error: CustomerFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -275,7 +275,7 @@ class CustomerFormController extends _$CustomerFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -285,7 +285,7 @@ class CustomerFormController extends _$CustomerFormController {
         .can(SystemObject.customers, AccessRight.create)) {
       state = state.copyWith(
         error: CustomerFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -293,7 +293,7 @@ class CustomerFormController extends _$CustomerFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -334,7 +334,7 @@ class CustomerFormController extends _$CustomerFormController {
         state = state.copyWith(
           submitting: false,
           error: CustomerFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -351,7 +351,7 @@ class CustomerFormController extends _$CustomerFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -361,7 +361,7 @@ class CustomerFormController extends _$CustomerFormController {
         .can(SystemObject.customers, AccessRight.update)) {
       state = state.copyWith(
         error: CustomerFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -369,7 +369,7 @@ class CustomerFormController extends _$CustomerFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -409,7 +409,7 @@ class CustomerFormController extends _$CustomerFormController {
         state = state.copyWith(
           submitting: false,
           error: CustomerFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -417,7 +417,7 @@ class CustomerFormController extends _$CustomerFormController {
 
   /// Deletes the loaded customer. No-ops if no customer has been loaded. A
   /// server rejection (e.g. existing sales orders) is surfaced via
-  /// `error`/`errorDetail`, leaving the customer in place.
+  /// `error`/`errorCause`, leaving the customer in place.
   Future<void> delete() async {
     final customerId = state.customerId;
     if (customerId == null) return;
@@ -427,12 +427,12 @@ class CustomerFormController extends _$CustomerFormController {
         .can(SystemObject.customers, AccessRight.delete)) {
       state = state.copyWith(
         error: CustomerFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref.read(customerRepositoryProvider).delete(customerId: customerId);
       ref.invalidate(customersListControllerProvider);
@@ -441,7 +441,7 @@ class CustomerFormController extends _$CustomerFormController {
       state = state.copyWith(
         submitting: false,
         error: CustomerFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }

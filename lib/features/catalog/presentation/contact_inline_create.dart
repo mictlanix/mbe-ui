@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:mbe_ui/core/errors/app_error.dart';
-import 'package:mbe_ui/core/widgets/error_banner.dart';
+import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/contact.dart';
 import 'package:mbe_ui/features/catalog/presentation/contact_inline_create_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/errors/localize_problem.dart';
 
 /// Opens the "new contact" dialog (FR-031) and returns the created [Contact],
 /// or `null` if the user cancelled. Mirrors
@@ -53,7 +53,10 @@ class _ContactInlineCreateDialog extends ConsumerWidget {
               // Outside the grid: inserting a child there would shift the
               // fields' positions and drop what the user typed.
               if (state.error != null) ...[
-                ErrorBanner(error: AppError.server(message: state.errorDetail)),
+                FormErrorBanner(
+                  headline: l10n.errorServerGeneric,
+                  cause: state.errorCause,
+                ),
                 const SizedBox(height: 16),
               ],
               ResponsiveFormGrid(
@@ -170,6 +173,6 @@ class _ContactInlineCreateDialog extends ConsumerWidget {
         ContactInlineCreateErrorCode.nameRequired => l10n.fieldRequired,
         ContactInlineCreateErrorCode.contactMethodRequired =>
           l10n.contactMethodRequired,
-        _ => code,
+        _ => localizeValidationType(code, l10n) ?? code,
       };
 }

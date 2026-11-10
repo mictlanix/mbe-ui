@@ -163,6 +163,6 @@ void main() {
     expect(state.privileges, hasLength(1));
     expect(state.privileges.single.systemObject, SystemObject.products);
     expect(state.error, UserFormErrorCode.applyFailed);
-    expect(state.errorDetail, 'Profile is inactive');
+    expect(state.errorCause?.serverMessage, 'Profile is inactive');
   });
 }

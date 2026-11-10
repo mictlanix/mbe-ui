@@ -17,6 +17,7 @@ import 'package:mbe_ui/features/auth/domain/entities/password_policy.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
 import 'package:mbe_ui/features/auth/presentation/session/auth_notifier.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
+import 'package:mbe_ui/core/errors/localize_problem.dart';
 
 part 'users_controller.freezed.dart';
 part 'users_controller.g.dart';
@@ -121,7 +122,7 @@ abstract class UserFormState with _$UserFormState {
     /// message since it can't be localized client-side. `null` for
     /// client-side-only errors and for a [ValidationError]'s message
     /// (already raw server text stored directly in `error`).
-    String? errorDetail,
+    AppError? errorCause,
 
     /// The rules behind a [UserFormErrorCode.passwordPolicy] error.
     @Default(<PasswordRule>{}) Set<PasswordRule> failedPasswordRules,
@@ -210,7 +211,7 @@ class UserFormController extends _$UserFormController {
   /// longer exists) falls back to a raw `#id` label rather than failing the
   /// whole load.
   Future<void> loadUser(String userId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final user = await ref.read(userRepositoryProvider).get(userId: userId);
       var employeeDisplayText = '';
@@ -239,27 +240,27 @@ class UserFormController extends _$UserFormController {
       state = state.copyWith(
         loading: false,
         error: UserFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
 
   void userIdChanged(String v) =>
-      state = state.copyWith(userId: v, error: null, errorDetail: null);
+      state = state.copyWith(userId: v, error: null, errorCause: null);
   void passwordChanged(String v) => state = state.copyWith(
     password: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     failedPasswordRules: const {},
   );
   void passwordConfirmChanged(String v) => state = state.copyWith(
     confirmPassword: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     failedPasswordRules: const {},
   );
   void emailChanged(String v) =>
-      state = state.copyWith(email: v, error: null, errorDetail: null);
+      state = state.copyWith(email: v, error: null, errorCause: null);
 
   /// Sets the employee picked from the `CatalogEntityPicker` (or clears the
   /// assignment when [id] is `null`).
@@ -268,7 +269,7 @@ class UserFormController extends _$UserFormController {
       employeeId: id,
       employeeDisplayText: displayText,
       error: null,
-      errorDetail: null,
+      errorCause: null,
     );
   }
 
@@ -280,15 +281,15 @@ class UserFormController extends _$UserFormController {
       profileId: id,
       profileName: displayText,
       error: null,
-      errorDetail: null,
+      errorCause: null,
     );
   }
 
   void administratorChanged(bool v) =>
-      state = state.copyWith(administrator: v, error: null, errorDetail: null);
+      state = state.copyWith(administrator: v, error: null, errorCause: null);
 
   void statusChanged(EntityStatus v) =>
-      state = state.copyWith(status: v, error: null, errorDetail: null);
+      state = state.copyWith(status: v, error: null, errorCause: null);
 
   /// Updates the `rawValue` bitmask for one [SystemObject] in the form's
   /// privileges list. Removes the entry when [rawValue] is 0.
@@ -299,7 +300,7 @@ class UserFormController extends _$UserFormController {
     if (rawValue != 0) {
       updated.add(Privilege(systemObject: obj, rawValue: rawValue));
     }
-    state = state.copyWith(privileges: updated, error: null, errorDetail: null);
+    state = state.copyWith(privileges: updated, error: null, errorCause: null);
   }
 
   /// Drops every cached page of the users list so a create/update/delete is
@@ -320,7 +321,7 @@ class UserFormController extends _$UserFormController {
     if (state.email.isEmpty) {
       state = state.copyWith(
         error: UserFormErrorCode.emailRequired,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -328,7 +329,7 @@ class UserFormController extends _$UserFormController {
       if (state.userId.isEmpty) {
         state = state.copyWith(
           error: UserFormErrorCode.usernameRequired,
-          errorDetail: null,
+          errorCause: null,
         );
         return;
       }
@@ -339,7 +340,7 @@ class UserFormController extends _$UserFormController {
       if (unmet.isNotEmpty) {
         state = state.copyWith(
           error: UserFormErrorCode.passwordPolicy,
-          errorDetail: null,
+          errorCause: null,
           failedPasswordRules: unmet,
         );
         return;
@@ -347,14 +348,14 @@ class UserFormController extends _$UserFormController {
       if (state.password != state.confirmPassword) {
         state = state.copyWith(
           error: UserFormErrorCode.passwordMismatch,
-          errorDetail: null,
+          errorCause: null,
         );
         return;
       }
       if (state.employeeId == null) {
         state = state.copyWith(
           error: UserFormErrorCode.employeeRequired,
-          errorDetail: null,
+          errorCause: null,
         );
         return;
       }
@@ -363,7 +364,7 @@ class UserFormController extends _$UserFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       failedPasswordRules: const {},
       saved: false,
     );
@@ -413,16 +414,19 @@ class UserFormController extends _$UserFormController {
         state = state.copyWith(
           submitting: false,
           error: UserFormErrorCode.passwordPolicy,
-          errorDetail: (e as ValidationError).errors.first.msg,
+          errorCause: e,
           failedPasswordRules: rules,
         );
       } else if (e is ValidationError && e.errors.isNotEmpty) {
-        state = state.copyWith(submitting: false, error: e.errors.first.msg);
+        state = state.copyWith(
+          submitting: false,
+          error: serverFieldValue(e.errors.first),
+        );
       } else {
         state = state.copyWith(
           submitting: false,
           error: UserFormErrorCode.saveFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -434,7 +438,7 @@ class UserFormController extends _$UserFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       recoveryToken: null,
       recoveryExpiresAt: null,
     );
@@ -451,25 +455,28 @@ class UserFormController extends _$UserFormController {
       state = state.copyWith(
         submitting: false,
         error: UserFormErrorCode.recoveryFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
 
   Future<void> deleteUser(String userId) async {
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref.read(userRepositoryProvider).delete(userId: userId);
       _invalidateCaches();
       state = state.copyWith(submitting: false, deleted: true);
     } on AppError catch (e) {
       if (e is ValidationError && e.errors.isNotEmpty) {
-        state = state.copyWith(submitting: false, error: e.errors.first.msg);
+        state = state.copyWith(
+          submitting: false,
+          error: serverFieldValue(e.errors.first),
+        );
       } else {
         state = state.copyWith(
           submitting: false,
           error: UserFormErrorCode.deleteFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -490,7 +497,7 @@ class UserFormController extends _$UserFormController {
     required String userId,
     required int profileId,
   }) async {
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       final updated = await ref
           .read(userProfileRepositoryProvider)
@@ -512,7 +519,7 @@ class UserFormController extends _$UserFormController {
       state = state.copyWith(
         submitting: false,
         error: UserFormErrorCode.applyFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }

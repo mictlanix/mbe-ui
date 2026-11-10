@@ -400,7 +400,7 @@ class AnalyticsApi {
     required Date start,
     required Date end,
     int? facility,
-    Comparison? comparison = previous_period,
+    Comparison? comparison,
     String? ifNoneMatch,
     CancelToken? cancelToken,
     Map<String, dynamic>? headers,

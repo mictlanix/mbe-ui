@@ -85,7 +85,7 @@ abstract class FacilityFormState with _$FacilityFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _FacilityFormState;
 }
@@ -171,7 +171,7 @@ class FacilityFormController extends _$FacilityFormController {
   FacilityFormState _clear(FacilityFormState s) => s.copyWith(
     saved: false,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -181,7 +181,7 @@ class FacilityFormController extends _$FacilityFormController {
   /// Falls back to the bare RFC when the read is denied or the issuer is
   /// unresolvable, so the field is never blank.
   Future<void> loadForEdit(int facilityId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final facility = await ref
           .read(facilityRepositoryProvider)
@@ -226,7 +226,7 @@ class FacilityFormController extends _$FacilityFormController {
       state = state.copyWith(
         loading: false,
         error: FacilityFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -390,7 +390,7 @@ class FacilityFormController extends _$FacilityFormController {
         submitting: false,
         saved: true,
         error: FacilityFormErrorCode.logoUploadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -412,7 +412,7 @@ class FacilityFormController extends _$FacilityFormController {
         submitting: false,
         saved: true,
         error: FacilityFormErrorCode.logoRemoveFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -424,11 +424,7 @@ class FacilityFormController extends _$FacilityFormController {
         fieldErrors: _fieldErrorsFromServer(e),
       );
     } else {
-      state = state.copyWith(
-        submitting: false,
-        error: failCode,
-        errorDetail: e.serverMessage,
-      );
+      state = state.copyWith(submitting: false, error: failCode, errorCause: e);
     }
   }
 
@@ -448,7 +444,7 @@ class FacilityFormController extends _$FacilityFormController {
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref.read(facilityRepositoryProvider).delete(facilityId: facilityId);
       _invalidateCaches();
@@ -458,7 +454,7 @@ class FacilityFormController extends _$FacilityFormController {
       state = state.copyWith(
         submitting: false,
         error: FacilityFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }

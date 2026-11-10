@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
-import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/privileges_grid.dart';
 import 'package:mbe_ui/features/auth/presentation/admin/user_profiles_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/errors/localize_problem.dart';
+import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 
 /// Create / edit screen for a single user profile (024-user-profiles
 /// FR-005–FR-008, contracts/user-profile-screens.md §2). [profileId] is null
@@ -91,25 +91,9 @@ class _UserProfileDetailScreenState
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (formState.error != null) ...[
-                ErrorBanner(
-                  error: AppError.validation([
-                    FieldError(
-                      loc: const [],
-                      msg: _localizeFormError(l10n, formState.error!),
-                      type: 'error',
-                    ),
-                    // The server's own message (e.g. a delete conflict
-                    // naming how many users reference this profile) can't
-                    // be localized client-side, so it's shown as
-                    // supplementary detail under the localized heading
-                    // above (same convention as UserDetailScreen).
-                    if (formState.errorDetail != null)
-                      FieldError(
-                        loc: const [],
-                        msg: formState.errorDetail!,
-                        type: 'error',
-                      ),
-                  ]),
+                FormErrorBanner(
+                  headline: _localizeFormError(l10n, formState.error!),
+                  cause: formState.errorCause,
                 ),
                 const SizedBox(height: 16),
               ],
@@ -213,6 +197,6 @@ String _localizeFormError(AppLocalizations l10n, String code) {
     case UserProfileFormErrorCode.deleteFailed:
       return l10n.userProfileDeleteFailedError;
     default:
-      return code;
+      return localizeValidationType(code, l10n) ?? code;
   }
 }

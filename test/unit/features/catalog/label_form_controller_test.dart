@@ -188,7 +188,10 @@ void main() {
         final state = container.read(labelFormControllerProvider);
         expect(state.deleted, isFalse);
         expect(state.error, LabelFormErrorCode.deleteFailed);
-        expect(state.errorDetail, 'Label is assigned to a product');
+        expect(
+          state.errorCause?.serverMessage,
+          'Label is assigned to a product',
+        );
       },
     );
   });

@@ -554,7 +554,10 @@ void main() {
       final state = container.read(userProfileFormControllerProvider);
       expect(state.deleted, isFalse);
       expect(state.error, UserProfileFormErrorCode.deleteFailed);
-      expect(state.errorDetail, '3 users still reference this profile');
+      expect(
+        state.errorCause?.serverMessage,
+        '3 users still reference this profile',
+      );
     });
 
     test('a successful delete sets deleted', () async {

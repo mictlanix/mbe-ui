@@ -19,7 +19,7 @@ mixin _$OpenSessionFormState {
 /// (research.md §4) — the screen uses it to link straight to that
 /// session's detail (FR-010) instead of leaving the open form as the
 /// only path forward.
- int? get blockingSessionId; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
+ int? get blockingSessionId; String? get error; AppError? get errorCause; Map<String, String> get fieldErrors;
 /// Create a copy of OpenSessionFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -31,20 +31,20 @@ $OpenSessionFormStateCopyWith<OpenSessionFormState> get copyWith => _$OpenSessio
 @override
 bool operator ==(Object other) {
   final _this = this as OpenSessionFormState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OpenSessionFormState&&(identical(other.cashDrawerId, _this.cashDrawerId) || other.cashDrawerId == _this.cashDrawerId)&&(identical(other.cashDrawerDisplayText, _this.cashDrawerDisplayText) || other.cashDrawerDisplayText == _this.cashDrawerDisplayText)&&(identical(other.openingAmount, _this.openingAmount) || other.openingAmount == _this.openingAmount)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.blockingSessionId, _this.blockingSessionId) || other.blockingSessionId == _this.blockingSessionId)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OpenSessionFormState&&(identical(other.cashDrawerId, _this.cashDrawerId) || other.cashDrawerId == _this.cashDrawerId)&&(identical(other.cashDrawerDisplayText, _this.cashDrawerDisplayText) || other.cashDrawerDisplayText == _this.cashDrawerDisplayText)&&(identical(other.openingAmount, _this.openingAmount) || other.openingAmount == _this.openingAmount)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.blockingSessionId, _this.blockingSessionId) || other.blockingSessionId == _this.blockingSessionId)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorCause, _this.errorCause) || other.errorCause == _this.errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as OpenSessionFormState;
-  return Object.hash(runtimeType,_this.cashDrawerId,_this.cashDrawerDisplayText,_this.openingAmount,_this.submitting,_this.saved,_this.blockingSessionId,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors));
+  return Object.hash(runtimeType,_this.cashDrawerId,_this.cashDrawerDisplayText,_this.openingAmount,_this.submitting,_this.saved,_this.blockingSessionId,_this.error,_this.errorCause,const DeepCollectionEquality().hash(_this.fieldErrors));
 }
 
 @override
 String toString() {
   final _this = this as OpenSessionFormState;
-  return 'OpenSessionFormState(cashDrawerId: ${_this.cashDrawerId}, cashDrawerDisplayText: ${_this.cashDrawerDisplayText}, openingAmount: ${_this.openingAmount}, submitting: ${_this.submitting}, saved: ${_this.saved}, blockingSessionId: ${_this.blockingSessionId}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
+  return 'OpenSessionFormState(cashDrawerId: ${_this.cashDrawerId}, cashDrawerDisplayText: ${_this.cashDrawerDisplayText}, openingAmount: ${_this.openingAmount}, submitting: ${_this.submitting}, saved: ${_this.saved}, blockingSessionId: ${_this.blockingSessionId}, error: ${_this.error}, errorCause: ${_this.errorCause}, fieldErrors: ${_this.fieldErrors})';
 }
 
 
@@ -55,11 +55,11 @@ abstract mixin class $OpenSessionFormStateCopyWith<$Res>  {
   factory $OpenSessionFormStateCopyWith(OpenSessionFormState value, $Res Function(OpenSessionFormState) _then) = _$OpenSessionFormStateCopyWithImpl;
 @useResult
 $Res call({
- int? cashDrawerId, String cashDrawerDisplayText, String openingAmount, bool submitting, bool saved, int? blockingSessionId, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? cashDrawerId, String cashDrawerDisplayText, String openingAmount, bool submitting, bool saved, int? blockingSessionId, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+$AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -72,7 +72,7 @@ class _$OpenSessionFormStateCopyWithImpl<$Res>
 
 /// Create a copy of OpenSessionFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? cashDrawerId = freezed,Object? cashDrawerDisplayText = null,Object? openingAmount = null,Object? submitting = null,Object? saved = null,Object? blockingSessionId = freezed,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? cashDrawerId = freezed,Object? cashDrawerDisplayText = null,Object? openingAmount = null,Object? submitting = null,Object? saved = null,Object? blockingSessionId = freezed,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(OpenSessionFormState(
 cashDrawerId: freezed == cashDrawerId ? _self.cashDrawerId : cashDrawerId // ignore: cast_nullable_to_non_nullable
 as int?,cashDrawerDisplayText: null == cashDrawerDisplayText ? _self.cashDrawerDisplayText : cashDrawerDisplayText // ignore: cast_nullable_to_non_nullable
@@ -81,12 +81,24 @@ as String,submitting: null == submitting ? _self.submitting : submitting // igno
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,blockingSessionId: freezed == blockingSessionId ? _self.blockingSessionId : blockingSessionId // ignore: cast_nullable_to_non_nullable
 as int?,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
+/// Create a copy of OpenSessionFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 
@@ -168,10 +180,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? cashDrawerId,  String cashDrawerDisplayText,  String openingAmount,  bool submitting,  bool saved,  int? blockingSessionId,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? cashDrawerId,  String cashDrawerDisplayText,  String openingAmount,  bool submitting,  bool saved,  int? blockingSessionId,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OpenSessionFormState() when $default != null:
-return $default(_that.cashDrawerId,_that.cashDrawerDisplayText,_that.openingAmount,_that.submitting,_that.saved,_that.blockingSessionId,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.cashDrawerId,_that.cashDrawerDisplayText,_that.openingAmount,_that.submitting,_that.saved,_that.blockingSessionId,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return orElse();
 
 }
@@ -189,10 +201,10 @@ return $default(_that.cashDrawerId,_that.cashDrawerDisplayText,_that.openingAmou
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? cashDrawerId,  String cashDrawerDisplayText,  String openingAmount,  bool submitting,  bool saved,  int? blockingSessionId,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? cashDrawerId,  String cashDrawerDisplayText,  String openingAmount,  bool submitting,  bool saved,  int? blockingSessionId,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)  $default,) {final _that = this;
 switch (_that) {
 case _OpenSessionFormState():
-return $default(_that.cashDrawerId,_that.cashDrawerDisplayText,_that.openingAmount,_that.submitting,_that.saved,_that.blockingSessionId,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.cashDrawerId,_that.cashDrawerDisplayText,_that.openingAmount,_that.submitting,_that.saved,_that.blockingSessionId,_that.error,_that.errorCause,_that.fieldErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -209,10 +221,10 @@ return $default(_that.cashDrawerId,_that.cashDrawerDisplayText,_that.openingAmou
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? cashDrawerId,  String cashDrawerDisplayText,  String openingAmount,  bool submitting,  bool saved,  int? blockingSessionId,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? cashDrawerId,  String cashDrawerDisplayText,  String openingAmount,  bool submitting,  bool saved,  int? blockingSessionId,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _OpenSessionFormState() when $default != null:
-return $default(_that.cashDrawerId,_that.cashDrawerDisplayText,_that.openingAmount,_that.submitting,_that.saved,_that.blockingSessionId,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.cashDrawerId,_that.cashDrawerDisplayText,_that.openingAmount,_that.submitting,_that.saved,_that.blockingSessionId,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return null;
 
 }
@@ -224,7 +236,7 @@ return $default(_that.cashDrawerId,_that.cashDrawerDisplayText,_that.openingAmou
 
 
 class _OpenSessionFormState implements OpenSessionFormState {
-  const _OpenSessionFormState({this.cashDrawerId, this.cashDrawerDisplayText = '', this.openingAmount = '0', this.submitting = false, this.saved = false, this.blockingSessionId, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
+  const _OpenSessionFormState({this.cashDrawerId, this.cashDrawerDisplayText = '', this.openingAmount = '0', this.submitting = false, this.saved = false, this.blockingSessionId, this.error, this.errorCause,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
   
 
 @override final  int? cashDrawerId;
@@ -238,7 +250,7 @@ class _OpenSessionFormState implements OpenSessionFormState {
 /// only path forward.
 @override final  int? blockingSessionId;
 @override final  String? error;
-@override final  String? errorDetail;
+@override final  AppError? errorCause;
  final  Map<String, String> _fieldErrors;
 @override@JsonKey() Map<String, String> get fieldErrors {
   if (_fieldErrors is EqualUnmodifiableMapView) return _fieldErrors;
@@ -257,18 +269,18 @@ _$OpenSessionFormStateCopyWith<_OpenSessionFormState> get copyWith => __$OpenSes
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OpenSessionFormState&&(identical(other.cashDrawerId, cashDrawerId) || other.cashDrawerId == cashDrawerId)&&(identical(other.cashDrawerDisplayText, cashDrawerDisplayText) || other.cashDrawerDisplayText == cashDrawerDisplayText)&&(identical(other.openingAmount, openingAmount) || other.openingAmount == openingAmount)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.blockingSessionId, blockingSessionId) || other.blockingSessionId == blockingSessionId)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _OpenSessionFormState&&(identical(other.cashDrawerId, cashDrawerId) || other.cashDrawerId == cashDrawerId)&&(identical(other.cashDrawerDisplayText, cashDrawerDisplayText) || other.cashDrawerDisplayText == cashDrawerDisplayText)&&(identical(other.openingAmount, openingAmount) || other.openingAmount == openingAmount)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.blockingSessionId, blockingSessionId) || other.blockingSessionId == blockingSessionId)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorCause, errorCause) || other.errorCause == errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,cashDrawerId,cashDrawerDisplayText,openingAmount,submitting,saved,blockingSessionId,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors));
+    return Object.hash(runtimeType,cashDrawerId,cashDrawerDisplayText,openingAmount,submitting,saved,blockingSessionId,error,errorCause,const DeepCollectionEquality().hash(_fieldErrors));
 }
 
 @override
 String toString() {
-    return 'OpenSessionFormState(cashDrawerId: $cashDrawerId, cashDrawerDisplayText: $cashDrawerDisplayText, openingAmount: $openingAmount, submitting: $submitting, saved: $saved, blockingSessionId: $blockingSessionId, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'OpenSessionFormState(cashDrawerId: $cashDrawerId, cashDrawerDisplayText: $cashDrawerDisplayText, openingAmount: $openingAmount, submitting: $submitting, saved: $saved, blockingSessionId: $blockingSessionId, error: $error, errorCause: $errorCause, fieldErrors: $fieldErrors)';
 }
 
 
@@ -279,11 +291,11 @@ abstract mixin class _$OpenSessionFormStateCopyWith<$Res> implements $OpenSessio
   factory _$OpenSessionFormStateCopyWith(_OpenSessionFormState value, $Res Function(_OpenSessionFormState) _then) = __$OpenSessionFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- int? cashDrawerId, String cashDrawerDisplayText, String openingAmount, bool submitting, bool saved, int? blockingSessionId, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? cashDrawerId, String cashDrawerDisplayText, String openingAmount, bool submitting, bool saved, int? blockingSessionId, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+@override $AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -296,7 +308,7 @@ class __$OpenSessionFormStateCopyWithImpl<$Res>
 
 /// Create a copy of OpenSessionFormState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? cashDrawerId = freezed,Object? cashDrawerDisplayText = null,Object? openingAmount = null,Object? submitting = null,Object? saved = null,Object? blockingSessionId = freezed,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? cashDrawerId = freezed,Object? cashDrawerDisplayText = null,Object? openingAmount = null,Object? submitting = null,Object? saved = null,Object? blockingSessionId = freezed,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(_OpenSessionFormState(
 cashDrawerId: freezed == cashDrawerId ? _self.cashDrawerId : cashDrawerId // ignore: cast_nullable_to_non_nullable
 as int?,cashDrawerDisplayText: null == cashDrawerDisplayText ? _self.cashDrawerDisplayText : cashDrawerDisplayText // ignore: cast_nullable_to_non_nullable
@@ -305,13 +317,25 @@ as String,submitting: null == submitting ? _self.submitting : submitting // igno
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,blockingSessionId: freezed == blockingSessionId ? _self.blockingSessionId : blockingSessionId // ignore: cast_nullable_to_non_nullable
 as int?,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
 
+/// Create a copy of OpenSessionFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 // dart format on

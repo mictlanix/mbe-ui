@@ -55,7 +55,7 @@ abstract class PointSaleFormState with _$PointSaleFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _PointSaleFormState;
 }
@@ -87,7 +87,7 @@ class PointSaleFormController extends _$PointSaleFormController {
       warehouseId: facilityChanged ? null : state.warehouseId,
       warehouseDisplayText: facilityChanged ? '' : state.warehouseDisplayText,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
   }
@@ -97,7 +97,7 @@ class PointSaleFormController extends _$PointSaleFormController {
       warehouseId: warehouseId,
       warehouseDisplayText: warehouseName,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
   }
@@ -105,14 +105,14 @@ class PointSaleFormController extends _$PointSaleFormController {
   void codeChanged(String v) => state = state.copyWith(
     code: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void nameChanged(String v) => state = state.copyWith(
     name: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -124,7 +124,7 @@ class PointSaleFormController extends _$PointSaleFormController {
   /// legacy cross-facility pairing (FR-022) still loads and displays as-is —
   /// only a change made in this session forces reselection.
   Future<void> loadForEdit(int pointSaleId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final pointSale = await ref
           .read(pointSaleRepositoryProvider)
@@ -145,7 +145,7 @@ class PointSaleFormController extends _$PointSaleFormController {
       state = state.copyWith(
         loading: false,
         error: PointSaleFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -194,7 +194,7 @@ class PointSaleFormController extends _$PointSaleFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -204,7 +204,7 @@ class PointSaleFormController extends _$PointSaleFormController {
         .can(SystemObject.pointsOfSale, AccessRight.create)) {
       state = state.copyWith(
         error: PointSaleFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -212,7 +212,7 @@ class PointSaleFormController extends _$PointSaleFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -238,7 +238,7 @@ class PointSaleFormController extends _$PointSaleFormController {
         state = state.copyWith(
           submitting: false,
           error: PointSaleFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -255,7 +255,7 @@ class PointSaleFormController extends _$PointSaleFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -265,7 +265,7 @@ class PointSaleFormController extends _$PointSaleFormController {
         .can(SystemObject.pointsOfSale, AccessRight.update)) {
       state = state.copyWith(
         error: PointSaleFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -273,7 +273,7 @@ class PointSaleFormController extends _$PointSaleFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -300,14 +300,14 @@ class PointSaleFormController extends _$PointSaleFormController {
         state = state.copyWith(
           submitting: false,
           error: PointSaleFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
   }
 
   /// Deletes the loaded point of sale (FR-007). No-ops if none has been
-  /// loaded. A server rejection is surfaced via `error`/`errorDetail`,
+  /// loaded. A server rejection is surfaced via `error`/`errorCause`,
   /// leaving the record in place.
   Future<void> delete() async {
     final pointSaleId = state.pointSaleId;
@@ -318,12 +318,12 @@ class PointSaleFormController extends _$PointSaleFormController {
         .can(SystemObject.pointsOfSale, AccessRight.delete)) {
       state = state.copyWith(
         error: PointSaleFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref
           .read(pointSaleRepositoryProvider)
@@ -334,7 +334,7 @@ class PointSaleFormController extends _$PointSaleFormController {
       state = state.copyWith(
         submitting: false,
         error: PointSaleFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }

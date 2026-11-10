@@ -568,7 +568,7 @@ void main() {
     });
 
     test(
-      'a server 422 rejects the cell with the server\'s own message',
+      'a server 422 rejects the cell and keeps the server\'s refusal',
       () async {
         await primeWith(
           priceLists: [_priceList(5)],
@@ -600,7 +600,17 @@ void main() {
             .requireValue;
         final rejection = state.rejected.values.single;
         expect(rejection.typed, '25.00');
-        expect(rejection.reason, 'Out of range');
+        // The server's refusal is kept whole, so the tooltip builds its text in
+        // the user's language when the cell is shown (spec 058).
+        expect(rejection.reason, PricingGridErrorCode.saveFailed);
+        expect(
+          rejection.cause,
+          isA<ValidationError>().having(
+            (e) => e.errors.single.msg,
+            'msg',
+            'Out of range',
+          ),
+        );
       },
     );
   });

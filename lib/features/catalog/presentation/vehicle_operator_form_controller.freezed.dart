@@ -23,7 +23,7 @@ mixin _$VehicleOperatorFormState {
 /// filename.
  String? get pendingLicensePhotoFilename;/// The user chose "remove photo" and has not picked a new one since.
 /// Mutually exclusive with [pendingLicensePhotoBytes].
- bool get licensePhotoMarkedForRemoval; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
+ bool get licensePhotoMarkedForRemoval; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; AppError? get errorCause; Map<String, String> get fieldErrors;
 /// Create a copy of VehicleOperatorFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -35,20 +35,20 @@ $VehicleOperatorFormStateCopyWith<VehicleOperatorFormState> get copyWith => _$Ve
 @override
 bool operator ==(Object other) {
   final _this = this as VehicleOperatorFormState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is VehicleOperatorFormState&&(identical(other.vehicleOperatorId, _this.vehicleOperatorId) || other.vehicleOperatorId == _this.vehicleOperatorId)&&(identical(other.driverId, _this.driverId) || other.driverId == _this.driverId)&&(identical(other.driverDisplayText, _this.driverDisplayText) || other.driverDisplayText == _this.driverDisplayText)&&(identical(other.licenseType, _this.licenseType) || other.licenseType == _this.licenseType)&&(identical(other.driverLicenseNumber, _this.driverLicenseNumber) || other.driverLicenseNumber == _this.driverLicenseNumber)&&(identical(other.issueDate, _this.issueDate) || other.issueDate == _this.issueDate)&&(identical(other.expirationDate, _this.expirationDate) || other.expirationDate == _this.expirationDate)&&(identical(other.issuingLocation, _this.issuingLocation) || other.issuingLocation == _this.issuingLocation)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.hasLicensePhoto, _this.hasLicensePhoto) || other.hasLicensePhoto == _this.hasLicensePhoto)&&const DeepCollectionEquality().equals(other.pendingLicensePhotoBytes, _this.pendingLicensePhotoBytes)&&(identical(other.pendingLicensePhotoFilename, _this.pendingLicensePhotoFilename) || other.pendingLicensePhotoFilename == _this.pendingLicensePhotoFilename)&&(identical(other.licensePhotoMarkedForRemoval, _this.licensePhotoMarkedForRemoval) || other.licensePhotoMarkedForRemoval == _this.licensePhotoMarkedForRemoval)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is VehicleOperatorFormState&&(identical(other.vehicleOperatorId, _this.vehicleOperatorId) || other.vehicleOperatorId == _this.vehicleOperatorId)&&(identical(other.driverId, _this.driverId) || other.driverId == _this.driverId)&&(identical(other.driverDisplayText, _this.driverDisplayText) || other.driverDisplayText == _this.driverDisplayText)&&(identical(other.licenseType, _this.licenseType) || other.licenseType == _this.licenseType)&&(identical(other.driverLicenseNumber, _this.driverLicenseNumber) || other.driverLicenseNumber == _this.driverLicenseNumber)&&(identical(other.issueDate, _this.issueDate) || other.issueDate == _this.issueDate)&&(identical(other.expirationDate, _this.expirationDate) || other.expirationDate == _this.expirationDate)&&(identical(other.issuingLocation, _this.issuingLocation) || other.issuingLocation == _this.issuingLocation)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.hasLicensePhoto, _this.hasLicensePhoto) || other.hasLicensePhoto == _this.hasLicensePhoto)&&const DeepCollectionEquality().equals(other.pendingLicensePhotoBytes, _this.pendingLicensePhotoBytes)&&(identical(other.pendingLicensePhotoFilename, _this.pendingLicensePhotoFilename) || other.pendingLicensePhotoFilename == _this.pendingLicensePhotoFilename)&&(identical(other.licensePhotoMarkedForRemoval, _this.licensePhotoMarkedForRemoval) || other.licensePhotoMarkedForRemoval == _this.licensePhotoMarkedForRemoval)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorCause, _this.errorCause) || other.errorCause == _this.errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as VehicleOperatorFormState;
-  return Object.hashAll([runtimeType,_this.vehicleOperatorId,_this.driverId,_this.driverDisplayText,_this.licenseType,_this.driverLicenseNumber,_this.issueDate,_this.expirationDate,_this.issuingLocation,_this.status,_this.hasLicensePhoto,const DeepCollectionEquality().hash(_this.pendingLicensePhotoBytes),_this.pendingLicensePhotoFilename,_this.licensePhotoMarkedForRemoval,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors)]);
+  return Object.hashAll([runtimeType,_this.vehicleOperatorId,_this.driverId,_this.driverDisplayText,_this.licenseType,_this.driverLicenseNumber,_this.issueDate,_this.expirationDate,_this.issuingLocation,_this.status,_this.hasLicensePhoto,const DeepCollectionEquality().hash(_this.pendingLicensePhotoBytes),_this.pendingLicensePhotoFilename,_this.licensePhotoMarkedForRemoval,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorCause,const DeepCollectionEquality().hash(_this.fieldErrors)]);
 }
 
 @override
 String toString() {
   final _this = this as VehicleOperatorFormState;
-  return 'VehicleOperatorFormState(vehicleOperatorId: ${_this.vehicleOperatorId}, driverId: ${_this.driverId}, driverDisplayText: ${_this.driverDisplayText}, licenseType: ${_this.licenseType}, driverLicenseNumber: ${_this.driverLicenseNumber}, issueDate: ${_this.issueDate}, expirationDate: ${_this.expirationDate}, issuingLocation: ${_this.issuingLocation}, status: ${_this.status}, hasLicensePhoto: ${_this.hasLicensePhoto}, pendingLicensePhotoBytes: ${_this.pendingLicensePhotoBytes}, pendingLicensePhotoFilename: ${_this.pendingLicensePhotoFilename}, licensePhotoMarkedForRemoval: ${_this.licensePhotoMarkedForRemoval}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
+  return 'VehicleOperatorFormState(vehicleOperatorId: ${_this.vehicleOperatorId}, driverId: ${_this.driverId}, driverDisplayText: ${_this.driverDisplayText}, licenseType: ${_this.licenseType}, driverLicenseNumber: ${_this.driverLicenseNumber}, issueDate: ${_this.issueDate}, expirationDate: ${_this.expirationDate}, issuingLocation: ${_this.issuingLocation}, status: ${_this.status}, hasLicensePhoto: ${_this.hasLicensePhoto}, pendingLicensePhotoBytes: ${_this.pendingLicensePhotoBytes}, pendingLicensePhotoFilename: ${_this.pendingLicensePhotoFilename}, licensePhotoMarkedForRemoval: ${_this.licensePhotoMarkedForRemoval}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorCause: ${_this.errorCause}, fieldErrors: ${_this.fieldErrors})';
 }
 
 
@@ -59,11 +59,11 @@ abstract mixin class $VehicleOperatorFormStateCopyWith<$Res>  {
   factory $VehicleOperatorFormStateCopyWith(VehicleOperatorFormState value, $Res Function(VehicleOperatorFormState) _then) = _$VehicleOperatorFormStateCopyWithImpl;
 @useResult
 $Res call({
- int? vehicleOperatorId, int? driverId, String driverDisplayText, String licenseType, String driverLicenseNumber, DateTime? issueDate, DateTime? expirationDate, String issuingLocation, EntityStatus status, bool hasLicensePhoto, Uint8List? pendingLicensePhotoBytes, String? pendingLicensePhotoFilename, bool licensePhotoMarkedForRemoval, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? vehicleOperatorId, int? driverId, String driverDisplayText, String licenseType, String driverLicenseNumber, DateTime? issueDate, DateTime? expirationDate, String issuingLocation, EntityStatus status, bool hasLicensePhoto, Uint8List? pendingLicensePhotoBytes, String? pendingLicensePhotoFilename, bool licensePhotoMarkedForRemoval, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+$AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -76,7 +76,7 @@ class _$VehicleOperatorFormStateCopyWithImpl<$Res>
 
 /// Create a copy of VehicleOperatorFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? vehicleOperatorId = freezed,Object? driverId = freezed,Object? driverDisplayText = null,Object? licenseType = null,Object? driverLicenseNumber = null,Object? issueDate = freezed,Object? expirationDate = freezed,Object? issuingLocation = null,Object? status = null,Object? hasLicensePhoto = null,Object? pendingLicensePhotoBytes = freezed,Object? pendingLicensePhotoFilename = freezed,Object? licensePhotoMarkedForRemoval = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? vehicleOperatorId = freezed,Object? driverId = freezed,Object? driverDisplayText = null,Object? licenseType = null,Object? driverLicenseNumber = null,Object? issueDate = freezed,Object? expirationDate = freezed,Object? issuingLocation = null,Object? status = null,Object? hasLicensePhoto = null,Object? pendingLicensePhotoBytes = freezed,Object? pendingLicensePhotoFilename = freezed,Object? licensePhotoMarkedForRemoval = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(VehicleOperatorFormState(
 vehicleOperatorId: freezed == vehicleOperatorId ? _self.vehicleOperatorId : vehicleOperatorId // ignore: cast_nullable_to_non_nullable
 as int?,driverId: freezed == driverId ? _self.driverId : driverId // ignore: cast_nullable_to_non_nullable
@@ -96,12 +96,24 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
+/// Create a copy of VehicleOperatorFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 
@@ -183,10 +195,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? vehicleOperatorId,  int? driverId,  String driverDisplayText,  String licenseType,  String driverLicenseNumber,  DateTime? issueDate,  DateTime? expirationDate,  String issuingLocation,  EntityStatus status,  bool hasLicensePhoto,  Uint8List? pendingLicensePhotoBytes,  String? pendingLicensePhotoFilename,  bool licensePhotoMarkedForRemoval,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? vehicleOperatorId,  int? driverId,  String driverDisplayText,  String licenseType,  String driverLicenseNumber,  DateTime? issueDate,  DateTime? expirationDate,  String issuingLocation,  EntityStatus status,  bool hasLicensePhoto,  Uint8List? pendingLicensePhotoBytes,  String? pendingLicensePhotoFilename,  bool licensePhotoMarkedForRemoval,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _VehicleOperatorFormState() when $default != null:
-return $default(_that.vehicleOperatorId,_that.driverId,_that.driverDisplayText,_that.licenseType,_that.driverLicenseNumber,_that.issueDate,_that.expirationDate,_that.issuingLocation,_that.status,_that.hasLicensePhoto,_that.pendingLicensePhotoBytes,_that.pendingLicensePhotoFilename,_that.licensePhotoMarkedForRemoval,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.vehicleOperatorId,_that.driverId,_that.driverDisplayText,_that.licenseType,_that.driverLicenseNumber,_that.issueDate,_that.expirationDate,_that.issuingLocation,_that.status,_that.hasLicensePhoto,_that.pendingLicensePhotoBytes,_that.pendingLicensePhotoFilename,_that.licensePhotoMarkedForRemoval,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return orElse();
 
 }
@@ -204,10 +216,10 @@ return $default(_that.vehicleOperatorId,_that.driverId,_that.driverDisplayText,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? vehicleOperatorId,  int? driverId,  String driverDisplayText,  String licenseType,  String driverLicenseNumber,  DateTime? issueDate,  DateTime? expirationDate,  String issuingLocation,  EntityStatus status,  bool hasLicensePhoto,  Uint8List? pendingLicensePhotoBytes,  String? pendingLicensePhotoFilename,  bool licensePhotoMarkedForRemoval,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? vehicleOperatorId,  int? driverId,  String driverDisplayText,  String licenseType,  String driverLicenseNumber,  DateTime? issueDate,  DateTime? expirationDate,  String issuingLocation,  EntityStatus status,  bool hasLicensePhoto,  Uint8List? pendingLicensePhotoBytes,  String? pendingLicensePhotoFilename,  bool licensePhotoMarkedForRemoval,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)  $default,) {final _that = this;
 switch (_that) {
 case _VehicleOperatorFormState():
-return $default(_that.vehicleOperatorId,_that.driverId,_that.driverDisplayText,_that.licenseType,_that.driverLicenseNumber,_that.issueDate,_that.expirationDate,_that.issuingLocation,_that.status,_that.hasLicensePhoto,_that.pendingLicensePhotoBytes,_that.pendingLicensePhotoFilename,_that.licensePhotoMarkedForRemoval,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.vehicleOperatorId,_that.driverId,_that.driverDisplayText,_that.licenseType,_that.driverLicenseNumber,_that.issueDate,_that.expirationDate,_that.issuingLocation,_that.status,_that.hasLicensePhoto,_that.pendingLicensePhotoBytes,_that.pendingLicensePhotoFilename,_that.licensePhotoMarkedForRemoval,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -224,10 +236,10 @@ return $default(_that.vehicleOperatorId,_that.driverId,_that.driverDisplayText,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? vehicleOperatorId,  int? driverId,  String driverDisplayText,  String licenseType,  String driverLicenseNumber,  DateTime? issueDate,  DateTime? expirationDate,  String issuingLocation,  EntityStatus status,  bool hasLicensePhoto,  Uint8List? pendingLicensePhotoBytes,  String? pendingLicensePhotoFilename,  bool licensePhotoMarkedForRemoval,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? vehicleOperatorId,  int? driverId,  String driverDisplayText,  String licenseType,  String driverLicenseNumber,  DateTime? issueDate,  DateTime? expirationDate,  String issuingLocation,  EntityStatus status,  bool hasLicensePhoto,  Uint8List? pendingLicensePhotoBytes,  String? pendingLicensePhotoFilename,  bool licensePhotoMarkedForRemoval,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _VehicleOperatorFormState() when $default != null:
-return $default(_that.vehicleOperatorId,_that.driverId,_that.driverDisplayText,_that.licenseType,_that.driverLicenseNumber,_that.issueDate,_that.expirationDate,_that.issuingLocation,_that.status,_that.hasLicensePhoto,_that.pendingLicensePhotoBytes,_that.pendingLicensePhotoFilename,_that.licensePhotoMarkedForRemoval,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.vehicleOperatorId,_that.driverId,_that.driverDisplayText,_that.licenseType,_that.driverLicenseNumber,_that.issueDate,_that.expirationDate,_that.issuingLocation,_that.status,_that.hasLicensePhoto,_that.pendingLicensePhotoBytes,_that.pendingLicensePhotoFilename,_that.licensePhotoMarkedForRemoval,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return null;
 
 }
@@ -239,7 +251,7 @@ return $default(_that.vehicleOperatorId,_that.driverId,_that.driverDisplayText,_
 
 
 class _VehicleOperatorFormState implements VehicleOperatorFormState {
-  const _VehicleOperatorFormState({this.vehicleOperatorId, this.driverId, this.driverDisplayText = '', this.licenseType = '', this.driverLicenseNumber = '', this.issueDate, this.expirationDate, this.issuingLocation = '', this.status = EntityStatus.active, this.hasLicensePhoto = false, this.pendingLicensePhotoBytes, this.pendingLicensePhotoFilename, this.licensePhotoMarkedForRemoval = false, this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
+  const _VehicleOperatorFormState({this.vehicleOperatorId, this.driverId, this.driverDisplayText = '', this.licenseType = '', this.driverLicenseNumber = '', this.issueDate, this.expirationDate, this.issuingLocation = '', this.status = EntityStatus.active, this.hasLicensePhoto = false, this.pendingLicensePhotoBytes, this.pendingLicensePhotoFilename, this.licensePhotoMarkedForRemoval = false, this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorCause,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
   
 
 @override final  int? vehicleOperatorId;
@@ -268,7 +280,7 @@ class _VehicleOperatorFormState implements VehicleOperatorFormState {
 @override@JsonKey() final  bool saved;
 @override@JsonKey() final  bool deleted;
 @override final  String? error;
-@override final  String? errorDetail;
+@override final  AppError? errorCause;
  final  Map<String, String> _fieldErrors;
 @override@JsonKey() Map<String, String> get fieldErrors {
   if (_fieldErrors is EqualUnmodifiableMapView) return _fieldErrors;
@@ -287,18 +299,18 @@ _$VehicleOperatorFormStateCopyWith<_VehicleOperatorFormState> get copyWith => __
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _VehicleOperatorFormState&&(identical(other.vehicleOperatorId, vehicleOperatorId) || other.vehicleOperatorId == vehicleOperatorId)&&(identical(other.driverId, driverId) || other.driverId == driverId)&&(identical(other.driverDisplayText, driverDisplayText) || other.driverDisplayText == driverDisplayText)&&(identical(other.licenseType, licenseType) || other.licenseType == licenseType)&&(identical(other.driverLicenseNumber, driverLicenseNumber) || other.driverLicenseNumber == driverLicenseNumber)&&(identical(other.issueDate, issueDate) || other.issueDate == issueDate)&&(identical(other.expirationDate, expirationDate) || other.expirationDate == expirationDate)&&(identical(other.issuingLocation, issuingLocation) || other.issuingLocation == issuingLocation)&&(identical(other.status, status) || other.status == status)&&(identical(other.hasLicensePhoto, hasLicensePhoto) || other.hasLicensePhoto == hasLicensePhoto)&&const DeepCollectionEquality().equals(other.pendingLicensePhotoBytes, pendingLicensePhotoBytes)&&(identical(other.pendingLicensePhotoFilename, pendingLicensePhotoFilename) || other.pendingLicensePhotoFilename == pendingLicensePhotoFilename)&&(identical(other.licensePhotoMarkedForRemoval, licensePhotoMarkedForRemoval) || other.licensePhotoMarkedForRemoval == licensePhotoMarkedForRemoval)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _VehicleOperatorFormState&&(identical(other.vehicleOperatorId, vehicleOperatorId) || other.vehicleOperatorId == vehicleOperatorId)&&(identical(other.driverId, driverId) || other.driverId == driverId)&&(identical(other.driverDisplayText, driverDisplayText) || other.driverDisplayText == driverDisplayText)&&(identical(other.licenseType, licenseType) || other.licenseType == licenseType)&&(identical(other.driverLicenseNumber, driverLicenseNumber) || other.driverLicenseNumber == driverLicenseNumber)&&(identical(other.issueDate, issueDate) || other.issueDate == issueDate)&&(identical(other.expirationDate, expirationDate) || other.expirationDate == expirationDate)&&(identical(other.issuingLocation, issuingLocation) || other.issuingLocation == issuingLocation)&&(identical(other.status, status) || other.status == status)&&(identical(other.hasLicensePhoto, hasLicensePhoto) || other.hasLicensePhoto == hasLicensePhoto)&&const DeepCollectionEquality().equals(other.pendingLicensePhotoBytes, pendingLicensePhotoBytes)&&(identical(other.pendingLicensePhotoFilename, pendingLicensePhotoFilename) || other.pendingLicensePhotoFilename == pendingLicensePhotoFilename)&&(identical(other.licensePhotoMarkedForRemoval, licensePhotoMarkedForRemoval) || other.licensePhotoMarkedForRemoval == licensePhotoMarkedForRemoval)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorCause, errorCause) || other.errorCause == errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hashAll([runtimeType,vehicleOperatorId,driverId,driverDisplayText,licenseType,driverLicenseNumber,issueDate,expirationDate,issuingLocation,status,hasLicensePhoto,const DeepCollectionEquality().hash(pendingLicensePhotoBytes),pendingLicensePhotoFilename,licensePhotoMarkedForRemoval,loading,submitting,saved,deleted,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors)]);
+    return Object.hashAll([runtimeType,vehicleOperatorId,driverId,driverDisplayText,licenseType,driverLicenseNumber,issueDate,expirationDate,issuingLocation,status,hasLicensePhoto,const DeepCollectionEquality().hash(pendingLicensePhotoBytes),pendingLicensePhotoFilename,licensePhotoMarkedForRemoval,loading,submitting,saved,deleted,error,errorCause,const DeepCollectionEquality().hash(_fieldErrors)]);
 }
 
 @override
 String toString() {
-    return 'VehicleOperatorFormState(vehicleOperatorId: $vehicleOperatorId, driverId: $driverId, driverDisplayText: $driverDisplayText, licenseType: $licenseType, driverLicenseNumber: $driverLicenseNumber, issueDate: $issueDate, expirationDate: $expirationDate, issuingLocation: $issuingLocation, status: $status, hasLicensePhoto: $hasLicensePhoto, pendingLicensePhotoBytes: $pendingLicensePhotoBytes, pendingLicensePhotoFilename: $pendingLicensePhotoFilename, licensePhotoMarkedForRemoval: $licensePhotoMarkedForRemoval, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'VehicleOperatorFormState(vehicleOperatorId: $vehicleOperatorId, driverId: $driverId, driverDisplayText: $driverDisplayText, licenseType: $licenseType, driverLicenseNumber: $driverLicenseNumber, issueDate: $issueDate, expirationDate: $expirationDate, issuingLocation: $issuingLocation, status: $status, hasLicensePhoto: $hasLicensePhoto, pendingLicensePhotoBytes: $pendingLicensePhotoBytes, pendingLicensePhotoFilename: $pendingLicensePhotoFilename, licensePhotoMarkedForRemoval: $licensePhotoMarkedForRemoval, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorCause: $errorCause, fieldErrors: $fieldErrors)';
 }
 
 
@@ -309,11 +321,11 @@ abstract mixin class _$VehicleOperatorFormStateCopyWith<$Res> implements $Vehicl
   factory _$VehicleOperatorFormStateCopyWith(_VehicleOperatorFormState value, $Res Function(_VehicleOperatorFormState) _then) = __$VehicleOperatorFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- int? vehicleOperatorId, int? driverId, String driverDisplayText, String licenseType, String driverLicenseNumber, DateTime? issueDate, DateTime? expirationDate, String issuingLocation, EntityStatus status, bool hasLicensePhoto, Uint8List? pendingLicensePhotoBytes, String? pendingLicensePhotoFilename, bool licensePhotoMarkedForRemoval, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? vehicleOperatorId, int? driverId, String driverDisplayText, String licenseType, String driverLicenseNumber, DateTime? issueDate, DateTime? expirationDate, String issuingLocation, EntityStatus status, bool hasLicensePhoto, Uint8List? pendingLicensePhotoBytes, String? pendingLicensePhotoFilename, bool licensePhotoMarkedForRemoval, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+@override $AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -326,7 +338,7 @@ class __$VehicleOperatorFormStateCopyWithImpl<$Res>
 
 /// Create a copy of VehicleOperatorFormState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? vehicleOperatorId = freezed,Object? driverId = freezed,Object? driverDisplayText = null,Object? licenseType = null,Object? driverLicenseNumber = null,Object? issueDate = freezed,Object? expirationDate = freezed,Object? issuingLocation = null,Object? status = null,Object? hasLicensePhoto = null,Object? pendingLicensePhotoBytes = freezed,Object? pendingLicensePhotoFilename = freezed,Object? licensePhotoMarkedForRemoval = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? vehicleOperatorId = freezed,Object? driverId = freezed,Object? driverDisplayText = null,Object? licenseType = null,Object? driverLicenseNumber = null,Object? issueDate = freezed,Object? expirationDate = freezed,Object? issuingLocation = null,Object? status = null,Object? hasLicensePhoto = null,Object? pendingLicensePhotoBytes = freezed,Object? pendingLicensePhotoFilename = freezed,Object? licensePhotoMarkedForRemoval = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(_VehicleOperatorFormState(
 vehicleOperatorId: freezed == vehicleOperatorId ? _self.vehicleOperatorId : vehicleOperatorId // ignore: cast_nullable_to_non_nullable
 as int?,driverId: freezed == driverId ? _self.driverId : driverId // ignore: cast_nullable_to_non_nullable
@@ -346,13 +358,25 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
 
+/// Create a copy of VehicleOperatorFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 // dart format on

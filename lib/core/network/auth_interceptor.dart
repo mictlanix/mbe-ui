@@ -1,7 +1,10 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
+import '../errors/api_problem.dart';
 import '../errors/app_error.dart';
 import '../storage/token_storage.dart';
 
@@ -41,9 +44,7 @@ class AuthInterceptor extends Interceptor {
     final appError = mapDioException(err);
     if (appError is AuthError) {
       onUnauthorized?.call();
-    } else if (appError is ServerError &&
-        appError.statusCode == 403 &&
-        appError.message == _passwordChangeRequired) {
+    } else if (_isPasswordChangeRequired(appError)) {
       onPasswordChangeRequired?.call();
     }
     handler.next(err.copyWith(error: appError));
@@ -51,6 +52,28 @@ class AuthInterceptor extends Interceptor {
 }
 
 const _passwordChangeRequired = 'password_change_required';
+
+/// A refusal asking the user to change their password first: recognized by
+/// the server's `auth.password_change_required` code (spec 058), or, for a
+/// server that sends no code, by a 403 whose `detail` is exactly
+/// `password_change_required`.
+bool _isPasswordChangeRequired(AppError error) =>
+    error.problem?.code == api.ErrorCode.authPeriodPasswordChangeRequired ||
+    (error is ServerError &&
+        error.statusCode == 403 &&
+        error.message == _passwordChangeRequired);
+
+/// The customer-credit refusals (`customer.credit_hold` and its siblings).
+/// They are `AppError.creditHold` whatever status they arrive with, so a
+/// caller can tell "this customer cannot take credit" apart by type, not by
+/// matching the server's prose (spec 039 FR-055/FR-056).
+const _creditCodes = {
+  api.ErrorCode.customerPeriodCreditHold,
+  api.ErrorCode.customerPeriodCreditLimitExceeded,
+  api.ErrorCode.customerPeriodCreditLimitReached,
+  api.ErrorCode.customerPeriodNoCreditLimit,
+  api.ErrorCode.customerPeriodWalkInNoCredit,
+};
 
 /// Maps a [DioException] to an [AppError] subtype.
 AppError mapDioException(DioException error) {
@@ -61,17 +84,40 @@ AppError mapDioException(DioException error) {
 
   final statusCode = response.statusCode ?? 0;
   final body = _jsonBodyOf(response);
+  // The server's own `code` and `params` (mbe-api spec 036), kept beside the
+  // English `detail` so the UI can show a message in the user's language
+  // (spec 058). `null` for a body without a string `code`, which then maps
+  // exactly as it always has.
+  final problem = ApiProblem.fromBody(body);
+  if (problem != null) {
+    // The server's own account of the refusal stays in the log even when the
+    // user sees a localized message instead of its English `detail` (spec 058
+    // FR-020). Written here, once per failed request, and never the request,
+    // its headers, or a rejected value.
+    debugPrint(
+      'api-error $statusCode ${problem.codeName} '
+      'params=${jsonEncode(problem.params)} detail=${problem.detail}',
+    );
+  }
+  if (_creditCodes.contains(problem?.code)) {
+    return AppError.creditHold(_detailFrom(body), problem);
+  }
   switch (statusCode) {
     case 401:
-      return AppError.auth(_detailFrom(body));
+      return AppError.auth(_detailFrom(body), problem);
     case 404:
-      return AppError.notFound(_detailFrom(body));
+      return AppError.notFound(_detailFrom(body), problem);
     case 422:
-      return AppError.validation(_fieldErrorsFrom(body), _detailFrom(body));
+      return AppError.validation(
+        _fieldErrorsFrom(body),
+        _detailFrom(body),
+        problem,
+      );
     default:
       return AppError.server(
         statusCode: statusCode,
         message: _detailFrom(body),
+        problem: problem,
       );
   }
 }

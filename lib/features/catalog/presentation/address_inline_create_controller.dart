@@ -45,7 +45,7 @@ abstract class AddressInlineCreateState with _$AddressInlineCreateState {
     @Default(false) bool submitting,
     AddressListItem? created,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _AddressInlineCreateState;
 }
@@ -79,7 +79,7 @@ class AddressInlineCreateController extends _$AddressInlineCreateController {
   void commentChanged(String v) => state = state.copyWith(comment: v);
 
   AddressInlineCreateState _clearErrors(AddressInlineCreateState s) =>
-      s.copyWith(error: null, errorDetail: null, fieldErrors: const {});
+      s.copyWith(error: null, errorCause: null, fieldErrors: const {});
 
   Map<String, String> _validate() {
     final errors = <String, String>{};
@@ -119,7 +119,7 @@ class AddressInlineCreateController extends _$AddressInlineCreateController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -158,7 +158,7 @@ class AddressInlineCreateController extends _$AddressInlineCreateController {
         state = state.copyWith(
           submitting: false,
           error: AddressInlineCreateErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }

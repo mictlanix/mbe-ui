@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
-import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/supplier_agreement.dart';
 import 'package:mbe_ui/features/catalog/presentation/supplier_agreement_dialog_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/errors/localize_problem.dart';
+import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 
 /// Opens the agreement dialog (spec 050 FR-013): add when [existing] is
 /// `null`, edit otherwise (with Delete). Saving or deleting invalidates the
@@ -86,15 +86,13 @@ class _SupplierAgreementDialog extends ConsumerWidget {
               // Outside the grid: inserting a child there would shift the
               // fields' positions and drop what the user entered.
               if (state.error != null) ...[
-                ErrorBanner(
-                  error: AppError.server(
-                    message:
-                        state.errorDetail ??
-                        (state.error ==
-                                SupplierAgreementDialogErrorCode.deleteFailed
-                            ? l10n.agreementDeleteFailedError
-                            : l10n.agreementSaveFailedError),
-                  ),
+                FormErrorBanner(
+                  headline:
+                      state.error ==
+                          SupplierAgreementDialogErrorCode.deleteFailed
+                      ? l10n.agreementDeleteFailedError
+                      : l10n.agreementSaveFailedError,
+                  cause: state.errorCause,
                 ),
                 const SizedBox(height: 16),
               ],
@@ -110,7 +108,10 @@ class _SupplierAgreementDialog extends ConsumerWidget {
                       child: InputDecorator(
                         decoration: InputDecoration(
                           labelText: l10n.supplierAgreementColumnStart,
-                          errorText: state.fieldErrors['start'],
+                          errorText: _serverField(
+                            l10n,
+                            state.fieldErrors['start'],
+                          ),
                         ),
                         child: Text(fmt.display.date(state.start)),
                       ),
@@ -130,7 +131,7 @@ class _SupplierAgreementDialog extends ConsumerWidget {
                           labelText: l10n.supplierAgreementColumnEnd,
                           errorText: state.endBeforeStart
                               ? l10n.supplierAgreementEndBeforeStartError
-                              : state.fieldErrors['end'],
+                              : _serverField(l10n, state.fieldErrors['end']),
                         ),
                         child: Text(fmt.display.date(state.end)),
                       ),
@@ -151,7 +152,7 @@ class _SupplierAgreementDialog extends ConsumerWidget {
                             ? l10n.agreementCommentTooLongError(
                                 supplierAgreementCommentMaxLength,
                               )
-                            : state.fieldErrors['comment'],
+                            : _serverField(l10n, state.fieldErrors['comment']),
                       ),
                       onChanged: controller.commentChanged,
                     ),
@@ -224,3 +225,9 @@ class _SupplierAgreementDialog extends ConsumerWidget {
     );
   }
 }
+
+/// A server field message stored by the controller: a known validation type
+/// is resolved to text here, in the current language; anything else is the
+/// server's own message and passes through.
+String? _serverField(AppLocalizations l10n, String? stored) =>
+    stored == null ? null : localizeValidationType(stored, l10n) ?? stored;

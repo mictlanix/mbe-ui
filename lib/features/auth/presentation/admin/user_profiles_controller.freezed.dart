@@ -290,7 +290,7 @@ mixin _$UserProfileFormState {
 /// message since it can't be localized client-side. `null` for a
 /// [ValidationError]'s message (already raw server text stored directly
 /// in `error`).
- String? get errorDetail;
+ AppError? get errorCause;
 /// Create a copy of UserProfileFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -302,20 +302,20 @@ $UserProfileFormStateCopyWith<UserProfileFormState> get copyWith => _$UserProfil
 @override
 bool operator ==(Object other) {
   final _this = this as UserProfileFormState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfileFormState&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.description, _this.description) || other.description == _this.description)&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.privileges, _this.privileges)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfileFormState&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.description, _this.description) || other.description == _this.description)&&(identical(other.status, _this.status) || other.status == _this.status)&&const DeepCollectionEquality().equals(other.privileges, _this.privileges)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorCause, _this.errorCause) || other.errorCause == _this.errorCause));
 }
 
 
 @override
 int get hashCode {
   final _this = this as UserProfileFormState;
-  return Object.hash(runtimeType,_this.name,_this.description,_this.status,const DeepCollectionEquality().hash(_this.privileges),_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorDetail);
+  return Object.hash(runtimeType,_this.name,_this.description,_this.status,const DeepCollectionEquality().hash(_this.privileges),_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorCause);
 }
 
 @override
 String toString() {
   final _this = this as UserProfileFormState;
-  return 'UserProfileFormState(name: ${_this.name}, description: ${_this.description}, status: ${_this.status}, privileges: ${_this.privileges}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorDetail: ${_this.errorDetail})';
+  return 'UserProfileFormState(name: ${_this.name}, description: ${_this.description}, status: ${_this.status}, privileges: ${_this.privileges}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorCause: ${_this.errorCause})';
 }
 
 
@@ -326,11 +326,11 @@ abstract mixin class $UserProfileFormStateCopyWith<$Res>  {
   factory $UserProfileFormStateCopyWith(UserProfileFormState value, $Res Function(UserProfileFormState) _then) = _$UserProfileFormStateCopyWithImpl;
 @useResult
 $Res call({
- String name, String description, EntityStatus status, List<Privilege> privileges, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail
+ String name, String description, EntityStatus status, List<Privilege> privileges, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause
 });
 
 
-
+$AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -343,7 +343,7 @@ class _$UserProfileFormStateCopyWithImpl<$Res>
 
 /// Create a copy of UserProfileFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? description = null,Object? status = null,Object? privileges = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? description = null,Object? status = null,Object? privileges = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,}) {
   return _then(UserProfileFormState(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
@@ -354,11 +354,23 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,
   ));
 }
+/// Create a copy of UserProfileFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 
@@ -440,10 +452,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String description,  EntityStatus status,  List<Privilege> privileges,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  String description,  EntityStatus status,  List<Privilege> privileges,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserProfileFormState() when $default != null:
-return $default(_that.name,_that.description,_that.status,_that.privileges,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail);case _:
+return $default(_that.name,_that.description,_that.status,_that.privileges,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause);case _:
   return orElse();
 
 }
@@ -461,10 +473,10 @@ return $default(_that.name,_that.description,_that.status,_that.privileges,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String description,  EntityStatus status,  List<Privilege> privileges,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  String description,  EntityStatus status,  List<Privilege> privileges,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause)  $default,) {final _that = this;
 switch (_that) {
 case _UserProfileFormState():
-return $default(_that.name,_that.description,_that.status,_that.privileges,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail);case _:
+return $default(_that.name,_that.description,_that.status,_that.privileges,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -481,10 +493,10 @@ return $default(_that.name,_that.description,_that.status,_that.privileges,_that
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String description,  EntityStatus status,  List<Privilege> privileges,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  String description,  EntityStatus status,  List<Privilege> privileges,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause)?  $default,) {final _that = this;
 switch (_that) {
 case _UserProfileFormState() when $default != null:
-return $default(_that.name,_that.description,_that.status,_that.privileges,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail);case _:
+return $default(_that.name,_that.description,_that.status,_that.privileges,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause);case _:
   return null;
 
 }
@@ -496,7 +508,7 @@ return $default(_that.name,_that.description,_that.status,_that.privileges,_that
 
 
 class _UserProfileFormState implements UserProfileFormState {
-  const _UserProfileFormState({this.name = '', this.description = '', this.status = EntityStatus.active,  List<Privilege> privileges = const <Privilege>[], this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorDetail}): _privileges = privileges;
+  const _UserProfileFormState({this.name = '', this.description = '', this.status = EntityStatus.active,  List<Privilege> privileges = const <Privilege>[], this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorCause}): _privileges = privileges;
   
 
 @override@JsonKey() final  String name;
@@ -519,7 +531,7 @@ class _UserProfileFormState implements UserProfileFormState {
 /// message since it can't be localized client-side. `null` for a
 /// [ValidationError]'s message (already raw server text stored directly
 /// in `error`).
-@override final  String? errorDetail;
+@override final  AppError? errorCause;
 
 /// Create a copy of UserProfileFormState
 /// with the given fields replaced by the non-null parameter values.
@@ -531,18 +543,18 @@ _$UserProfileFormStateCopyWith<_UserProfileFormState> get copyWith => __$UserPro
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfileFormState&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.privileges, _privileges)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfileFormState&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.privileges, _privileges)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorCause, errorCause) || other.errorCause == errorCause));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,name,description,status,const DeepCollectionEquality().hash(_privileges),loading,submitting,saved,deleted,error,errorDetail);
+    return Object.hash(runtimeType,name,description,status,const DeepCollectionEquality().hash(_privileges),loading,submitting,saved,deleted,error,errorCause);
 }
 
 @override
 String toString() {
-    return 'UserProfileFormState(name: $name, description: $description, status: $status, privileges: $privileges, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail)';
+    return 'UserProfileFormState(name: $name, description: $description, status: $status, privileges: $privileges, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorCause: $errorCause)';
 }
 
 
@@ -553,11 +565,11 @@ abstract mixin class _$UserProfileFormStateCopyWith<$Res> implements $UserProfil
   factory _$UserProfileFormStateCopyWith(_UserProfileFormState value, $Res Function(_UserProfileFormState) _then) = __$UserProfileFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- String name, String description, EntityStatus status, List<Privilege> privileges, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail
+ String name, String description, EntityStatus status, List<Privilege> privileges, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause
 });
 
 
-
+@override $AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -570,7 +582,7 @@ class __$UserProfileFormStateCopyWithImpl<$Res>
 
 /// Create a copy of UserProfileFormState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? description = null,Object? status = null,Object? privileges = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? description = null,Object? status = null,Object? privileges = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,}) {
   return _then(_UserProfileFormState(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
@@ -581,12 +593,24 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,
   ));
 }
 
+/// Create a copy of UserProfileFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 // dart format on

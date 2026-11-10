@@ -76,7 +76,7 @@ abstract class VehicleOperatorFormState with _$VehicleOperatorFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _VehicleOperatorFormState;
 }
@@ -92,42 +92,42 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
         driverId: driverId,
         driverDisplayText: driverName,
         error: null,
-        errorDetail: null,
+        errorCause: null,
         fieldErrors: const {},
       );
 
   void licenseTypeChanged(String v) => state = state.copyWith(
     licenseType: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void driverLicenseNumberChanged(String v) => state = state.copyWith(
     driverLicenseNumber: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void issueDateChanged(DateTime v) => state = state.copyWith(
     issueDate: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void expirationDateChanged(DateTime v) => state = state.copyWith(
     expirationDate: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void issuingLocationChanged(String v) => state = state.copyWith(
     issuingLocation: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -183,7 +183,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
 
   /// Loads an existing vehicle operator into the form for viewing/editing.
   Future<void> loadForEdit(int vehicleOperatorId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final operator = await ref
           .read(vehicleOperatorRepositoryProvider)
@@ -204,7 +204,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
       state = state.copyWith(
         loading: false,
         error: VehicleOperatorFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -285,7 +285,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
       state = state.copyWith(
         submitting: false,
         error: VehicleOperatorFormErrorCode.licensePhotoSaveFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -306,7 +306,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
       state = state.copyWith(
         submitting: false,
         error: VehicleOperatorFormErrorCode.licensePhotoSaveFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -320,7 +320,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -330,7 +330,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
         .can(SystemObject.vehicleOperators, AccessRight.create)) {
       state = state.copyWith(
         error: VehicleOperatorFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -338,7 +338,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -368,7 +368,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
         state = state.copyWith(
           submitting: false,
           error: VehicleOperatorFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -385,7 +385,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -395,7 +395,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
         .can(SystemObject.vehicleOperators, AccessRight.update)) {
       state = state.copyWith(
         error: VehicleOperatorFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -403,7 +403,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -431,14 +431,14 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
         state = state.copyWith(
           submitting: false,
           error: VehicleOperatorFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
   }
 
   /// Deletes the loaded vehicle operator (FR-006). No-ops if none has been
-  /// loaded. A server rejection is surfaced via `error`/`errorDetail`,
+  /// loaded. A server rejection is surfaced via `error`/`errorCause`,
   /// leaving the record in place.
   Future<void> delete() async {
     final vehicleOperatorId = state.vehicleOperatorId;
@@ -449,12 +449,12 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
         .can(SystemObject.vehicleOperators, AccessRight.delete)) {
       state = state.copyWith(
         error: VehicleOperatorFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref
           .read(vehicleOperatorRepositoryProvider)
@@ -465,7 +465,7 @@ class VehicleOperatorFormController extends _$VehicleOperatorFormController {
       state = state.copyWith(
         submitting: false,
         error: VehicleOperatorFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }

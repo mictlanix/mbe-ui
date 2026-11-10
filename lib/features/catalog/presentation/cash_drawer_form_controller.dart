@@ -52,7 +52,7 @@ abstract class CashDrawerFormState with _$CashDrawerFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _CashDrawerFormState;
 }
@@ -68,21 +68,21 @@ class CashDrawerFormController extends _$CashDrawerFormController {
         facilityId: facilityId,
         facilityDisplayText: facilityName,
         error: null,
-        errorDetail: null,
+        errorCause: null,
         fieldErrors: const {},
       );
 
   void codeChanged(String v) => state = state.copyWith(
     code: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void nameChanged(String v) => state = state.copyWith(
     name: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -92,7 +92,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
 
   /// Loads an existing cash drawer into the form for viewing/editing.
   Future<void> loadForEdit(int cashDrawerId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final cashDrawer = await ref
           .read(cashDrawerRepositoryProvider)
@@ -111,7 +111,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
       state = state.copyWith(
         loading: false,
         error: CashDrawerFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -157,7 +157,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -167,7 +167,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
         .can(SystemObject.cashDrawers, AccessRight.create)) {
       state = state.copyWith(
         error: CashDrawerFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -175,7 +175,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -200,7 +200,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
         state = state.copyWith(
           submitting: false,
           error: CashDrawerFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -216,7 +216,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -226,7 +226,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
         .can(SystemObject.cashDrawers, AccessRight.update)) {
       state = state.copyWith(
         error: CashDrawerFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -234,7 +234,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -260,14 +260,14 @@ class CashDrawerFormController extends _$CashDrawerFormController {
         state = state.copyWith(
           submitting: false,
           error: CashDrawerFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
   }
 
   /// Deletes the loaded cash drawer (FR-007). No-ops if none has been loaded.
-  /// A server rejection is surfaced via `error`/`errorDetail`, leaving the
+  /// A server rejection is surfaced via `error`/`errorCause`, leaving the
   /// record in place.
   Future<void> delete() async {
     final cashDrawerId = state.cashDrawerId;
@@ -278,12 +278,12 @@ class CashDrawerFormController extends _$CashDrawerFormController {
         .can(SystemObject.cashDrawers, AccessRight.delete)) {
       state = state.copyWith(
         error: CashDrawerFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref
           .read(cashDrawerRepositoryProvider)
@@ -294,7 +294,7 @@ class CashDrawerFormController extends _$CashDrawerFormController {
       state = state.copyWith(
         submitting: false,
         error: CashDrawerFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }

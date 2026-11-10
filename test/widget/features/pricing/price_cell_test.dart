@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,6 +11,8 @@ import 'package:mbe_ui/core/config/app_settings.dart';
 import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/config/formatting_settings.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/errors/api_problem.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
@@ -543,4 +546,47 @@ void main() {
       expect(find.byKey(const Key('price_cell_badge_1_5')), findsOneWidget);
     },
   );
+
+  testWidgets('a refusal with a known code explains itself in the tooltip, in '
+      'the current language, instead of a bare "could not save" (spec 058)', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      price: null,
+      rejected: const RejectedEdit(
+        typed: '25.00',
+        reason: PricingGridErrorCode.saveFailed,
+        cause: AppError.server(
+          statusCode: 400,
+          message: 'The cost price list is read-only for price writes',
+          problem: ApiProblem(
+            codeName: 'price_list.cost_read_only',
+            code: api.ErrorCode.priceListPeriodCostReadOnly,
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      find.byTooltip("Prices on the cost list can't be edited here."),
+      findsOneWidget,
+    );
+    expect(find.byTooltip('The cost price list is read-only'), findsNothing);
+  });
+
+  testWidgets('a refusal with no known code keeps the server message as the '
+      'tooltip', (tester) async {
+    await pump(
+      tester,
+      price: null,
+      rejected: const RejectedEdit(
+        typed: '25.00',
+        reason: PricingGridErrorCode.saveFailed,
+        cause: AppError.server(statusCode: 409, message: 'Some new refusal'),
+      ),
+    );
+
+    expect(find.byTooltip('Some new refusal'), findsOneWidget);
+  });
 }

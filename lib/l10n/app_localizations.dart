@@ -8574,6 +8574,1254 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Someone with permission to confirm must finish this refund.'**
   String get refundNeedsConfirmerHint;
+
+  /// Record noun for the API resource name `cash_drawer` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{cash drawer} other{cash drawers}}'**
+  String apiResourceCashDrawer(int count);
+
+  /// Grammatical gender of the noun for `cash_drawer` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderCashDrawer;
+
+  /// Record noun for the API resource name `cash_session` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{cash session} other{cash sessions}}'**
+  String apiResourceCashSession(int count);
+
+  /// Grammatical gender of the noun for `cash_session` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderCashSession;
+
+  /// Record noun for the API resource name `credit_note` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{credit note} other{credit notes}}'**
+  String apiResourceCreditNote(int count);
+
+  /// Grammatical gender of the noun for `credit_note` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderCreditNote;
+
+  /// Record noun for the API resource name `customer` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{customer} other{customers}}'**
+  String apiResourceCustomer(int count);
+
+  /// Grammatical gender of the noun for `customer` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderCustomer;
+
+  /// Record noun for the API resource name `customer_discount` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{customer discount} other{customer discounts}}'**
+  String apiResourceCustomerDiscount(int count);
+
+  /// Grammatical gender of the noun for `customer_discount` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderCustomerDiscount;
+
+  /// Record noun for the API resource name `customer_payment` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{payment} other{payments}}'**
+  String apiResourceCustomerPayment(int count);
+
+  /// Grammatical gender of the noun for `customer_payment` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderCustomerPayment;
+
+  /// Record noun for the API resource name `customer_refund` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{refund} other{refunds}}'**
+  String apiResourceCustomerRefund(int count);
+
+  /// Grammatical gender of the noun for `customer_refund` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderCustomerRefund;
+
+  /// Record noun for the API resource name `delivery_itinerary` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{delivery route} other{delivery routes}}'**
+  String apiResourceDeliveryItinerary(int count);
+
+  /// Grammatical gender of the noun for `delivery_itinerary` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderDeliveryItinerary;
+
+  /// Record noun for the API resource name `delivery_order` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{delivery order} other{delivery orders}}'**
+  String apiResourceDeliveryOrder(int count);
+
+  /// Grammatical gender of the noun for `delivery_order` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderDeliveryOrder;
+
+  /// Record noun for the API resource name `delivery_order_line` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{delivery line} other{delivery lines}}'**
+  String apiResourceDeliveryOrderLine(int count);
+
+  /// Grammatical gender of the noun for `delivery_order_line` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderDeliveryOrderLine;
+
+  /// Record noun for the API resource name `employee` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{employee} other{employees}}'**
+  String apiResourceEmployee(int count);
+
+  /// Grammatical gender of the noun for `employee` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderEmployee;
+
+  /// Record noun for the API resource name `exchange_rate` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{exchange rate} other{exchange rates}}'**
+  String apiResourceExchangeRate(int count);
+
+  /// Grammatical gender of the noun for `exchange_rate` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderExchangeRate;
+
+  /// Record noun for the API resource name `expense` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{expense} other{expenses}}'**
+  String apiResourceExpense(int count);
+
+  /// Grammatical gender of the noun for `expense` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderExpense;
+
+  /// Record noun for the API resource name `expense_voucher` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{expense voucher} other{expense vouchers}}'**
+  String apiResourceExpenseVoucher(int count);
+
+  /// Grammatical gender of the noun for `expense_voucher` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderExpenseVoucher;
+
+  /// Record noun for the API resource name `facility` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{facility} other{facilities}}'**
+  String apiResourceFacility(int count);
+
+  /// Grammatical gender of the noun for `facility` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderFacility;
+
+  /// Record noun for the API resource name `fiscal_document` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{invoice} other{invoices}}'**
+  String apiResourceFiscalDocument(int count);
+
+  /// Grammatical gender of the noun for `fiscal_document` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderFiscalDocument;
+
+  /// Record noun for the API resource name `inventory_issue` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{warehouse issue} other{warehouse issues}}'**
+  String apiResourceInventoryIssue(int count);
+
+  /// Grammatical gender of the noun for `inventory_issue` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderInventoryIssue;
+
+  /// Record noun for the API resource name `inventory_receipt` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{warehouse receipt} other{warehouse receipts}}'**
+  String apiResourceInventoryReceipt(int count);
+
+  /// Grammatical gender of the noun for `inventory_receipt` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderInventoryReceipt;
+
+  /// Record noun for the API resource name `inventory_transfer` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{transfer} other{transfers}}'**
+  String apiResourceInventoryTransfer(int count);
+
+  /// Grammatical gender of the noun for `inventory_transfer` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderInventoryTransfer;
+
+  /// Record noun for the API resource name `label` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{label} other{labels}}'**
+  String apiResourceLabel(int count);
+
+  /// Grammatical gender of the noun for `label` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderLabel;
+
+  /// Record noun for the API resource name `payment_method_option` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{payment method} other{payment methods}}'**
+  String apiResourcePaymentMethodOption(int count);
+
+  /// Grammatical gender of the noun for `payment_method_option` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderPaymentMethodOption;
+
+  /// Record noun for the API resource name `point_of_sale` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{point of sale} other{points of sale}}'**
+  String apiResourcePointOfSale(int count);
+
+  /// Grammatical gender of the noun for `point_of_sale` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderPointOfSale;
+
+  /// Record noun for the API resource name `price_list` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{price list} other{price lists}}'**
+  String apiResourcePriceList(int count);
+
+  /// Grammatical gender of the noun for `price_list` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderPriceList;
+
+  /// Record noun for the API resource name `product` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{product} other{products}}'**
+  String apiResourceProduct(int count);
+
+  /// Grammatical gender of the noun for `product` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderProduct;
+
+  /// Record noun for the API resource name `product_price` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{price} other{prices}}'**
+  String apiResourceProductPrice(int count);
+
+  /// Grammatical gender of the noun for `product_price` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderProductPrice;
+
+  /// Record noun for the API resource name `purchase_order` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{purchase order} other{purchase orders}}'**
+  String apiResourcePurchaseOrder(int count);
+
+  /// Grammatical gender of the noun for `purchase_order` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderPurchaseOrder;
+
+  /// Record noun for the API resource name `sales_order` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{order} other{orders}}'**
+  String apiResourceSalesOrder(int count);
+
+  /// Grammatical gender of the noun for `sales_order` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderSalesOrder;
+
+  /// Record noun for the API resource name `sales_order_line` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{order line} other{order lines}}'**
+  String apiResourceSalesOrderLine(int count);
+
+  /// Grammatical gender of the noun for `sales_order_line` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderSalesOrderLine;
+
+  /// Record noun for the API resource name `sales_order_payment` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{order payment} other{order payments}}'**
+  String apiResourceSalesOrderPayment(int count);
+
+  /// Grammatical gender of the noun for `sales_order_payment` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderSalesOrderPayment;
+
+  /// Record noun for the API resource name `sales_quote` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{quote} other{quotes}}'**
+  String apiResourceSalesQuote(int count);
+
+  /// Grammatical gender of the noun for `sales_quote` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderSalesQuote;
+
+  /// Record noun for the API resource name `sales_quote_line` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{quote line} other{quote lines}}'**
+  String apiResourceSalesQuoteLine(int count);
+
+  /// Grammatical gender of the noun for `sales_quote_line` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderSalesQuoteLine;
+
+  /// Record noun for the API resource name `stock_movement` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{stock movement} other{stock movements}}'**
+  String apiResourceStockMovement(int count);
+
+  /// Grammatical gender of the noun for `stock_movement` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderStockMovement;
+
+  /// Record noun for the API resource name `supplier` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{supplier} other{suppliers}}'**
+  String apiResourceSupplier(int count);
+
+  /// Grammatical gender of the noun for `supplier` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderSupplier;
+
+  /// Record noun for the API resource name `supplier_payment` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{supplier payment} other{supplier payments}}'**
+  String apiResourceSupplierPayment(int count);
+
+  /// Grammatical gender of the noun for `supplier_payment` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderSupplierPayment;
+
+  /// Record noun for the API resource name `taxpayer_certificate` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{certificate} other{certificates}}'**
+  String apiResourceTaxpayerCertificate(int count);
+
+  /// Grammatical gender of the noun for `taxpayer_certificate` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderTaxpayerCertificate;
+
+  /// Record noun for the API resource name `taxpayer_issuer` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{issuer} other{issuers}}'**
+  String apiResourceTaxpayerIssuer(int count);
+
+  /// Grammatical gender of the noun for `taxpayer_issuer` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderTaxpayerIssuer;
+
+  /// Record noun for the API resource name `taxpayer_recipient` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{recipient} other{recipients}}'**
+  String apiResourceTaxpayerRecipient(int count);
+
+  /// Grammatical gender of the noun for `taxpayer_recipient` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderTaxpayerRecipient;
+
+  /// Record noun for the API resource name `user` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{user} other{users}}'**
+  String apiResourceUser(int count);
+
+  /// Grammatical gender of the noun for `user` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderUser;
+
+  /// Record noun for the API resource name `user_profile` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{profile} other{profiles}}'**
+  String apiResourceUserProfile(int count);
+
+  /// Grammatical gender of the noun for `user_profile` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderUserProfile;
+
+  /// Record noun for the API resource name `vehicle` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{vehicle} other{vehicles}}'**
+  String apiResourceVehicle(int count);
+
+  /// Grammatical gender of the noun for `vehicle` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderVehicle;
+
+  /// Record noun for the API resource name `vehicle_operator` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{vehicle operator} other{vehicle operators}}'**
+  String apiResourceVehicleOperator(int count);
+
+  /// Grammatical gender of the noun for `vehicle_operator` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderVehicleOperator;
+
+  /// Record noun for the API resource name `warehouse` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{warehouse} other{warehouses}}'**
+  String apiResourceWarehouse(int count);
+
+  /// Grammatical gender of the noun for `warehouse` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderWarehouse;
+
+  /// Generic record noun for an API resource name the app has no noun for (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{record} other{records}}'**
+  String apiResourceGeneric(int count);
+
+  /// Grammatical gender of the generic record noun in Spanish (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderGeneric;
+
+  /// mbe-api error code `auth.administrator_required` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Only administrators can do this.'**
+  String get apiErrorAuthAdministratorRequired;
+
+  /// mbe-api error code `auth.forbidden` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have permission for this action.'**
+  String get apiErrorAuthForbidden;
+
+  /// mbe-api error code `auth.incorrect_current_password` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The current password is incorrect.'**
+  String get apiErrorAuthIncorrectCurrentPassword;
+
+  /// mbe-api error code `auth.invalid_credentials` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid username or password.'**
+  String get apiErrorAuthInvalidCredentials;
+
+  /// mbe-api error code `auth.not_authenticated` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Sign in again.'**
+  String get apiErrorAuthNotAuthenticated;
+
+  /// mbe-api error code `auth.password_change_required` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'You must change your password before continuing.'**
+  String get apiErrorAuthPasswordChangeRequired;
+
+  /// mbe-api error code `auth.recovery_token_invalid` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This recovery link is invalid or has expired. Request a new one.'**
+  String get apiErrorAuthRecoveryTokenInvalid;
+
+  /// mbe-api error code `request.malformed` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The app sent a request the server couldn\'t read. Try again.'**
+  String get apiErrorRequestMalformed;
+
+  /// mbe-api error code `request.method_not_allowed` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The server doesn\'t allow this operation here.'**
+  String get apiErrorRequestMethodNotAllowed;
+
+  /// mbe-api error code `request.route_not_found` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The server doesn\'t offer this function. The app may need an update.'**
+  String get apiErrorRequestRouteNotFound;
+
+  /// mbe-api error code `resource.conflict` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The change conflicts with existing data. Reload and try again.'**
+  String get apiErrorResourceConflict;
+
+  /// mbe-api error code `server.error` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong on the server. Try again later.'**
+  String get apiErrorServerError;
+
+  /// mbe-api error code `state.transition_invalid` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This record can\'t change from its current status to the one requested.'**
+  String get apiErrorStateTransitionInvalid;
+
+  /// mbe-api error code `resource.not_found` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'{gender, select, feminine{Couldn\'t find the {resource}. It may have been deleted.} other{Couldn\'t find the {resource}. It may have been deleted.}}'**
+  String apiErrorResourceNotFound(String gender, String resource);
+
+  /// mbe-api error code `resource.already_exists` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'{gender, select, feminine{That value is already in use. Another {resource} has it.} other{That value is already in use. Another {resource} has it.}}'**
+  String apiErrorResourceAlreadyExists(String gender, String resource);
+
+  /// mbe-api error code `resource.still_referenced` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This record can\'t be deleted because it\'s still in use: {list}.'**
+  String apiErrorResourceStillReferenced(String list);
+
+  /// mbe-api error code `resource.still_referenced` (spec 058), when the blockers are not readable
+  ///
+  /// In en, this message translates to:
+  /// **'This record is still in use and can\'t be deleted.'**
+  String get apiErrorResourceStillReferencedGeneric;
+
+  /// Tail of a list of records that still reference one being deleted: how many more there are (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'{more, plural, one{and 1 other} other{and {more} others}}'**
+  String apiReferenceMore(int more);
+
+  /// mbe-api error code `cash_session.already_closed` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This cash session is already closed.'**
+  String get apiErrorCashSessionAlreadyClosed;
+
+  /// mbe-api error code `cash_session.closed` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The cash session was closed while you were working. Reload to continue.'**
+  String get apiErrorCashSessionClosed;
+
+  /// mbe-api error code `cash_session.drawer_busy` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'That cash drawer already has an open session.'**
+  String get apiErrorCashSessionDrawerBusy;
+
+  /// mbe-api error code `cash_session.not_closed` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The cash session is still open. Close it first.'**
+  String get apiErrorCashSessionNotClosed;
+
+  /// mbe-api error code `cash_session.not_open` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'You need an open cash session for this.'**
+  String get apiErrorCashSessionNotOpen;
+
+  /// mbe-api error code `cash_session.user_busy` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'You already have an open session. Close it before opening another.'**
+  String get apiErrorCashSessionUserBusy;
+
+  /// mbe-api error code `csd.certificate_not_rsa` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The certificate doesn\'t use an RSA key. It isn\'t a valid CSD.'**
+  String get apiErrorCsdCertificateNotRsa;
+
+  /// mbe-api error code `csd.certificate_unreadable` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The certificate file (.cer) couldn\'t be read.'**
+  String get apiErrorCsdCertificateUnreadable;
+
+  /// mbe-api error code `csd.key_mismatch` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The key (.key) doesn\'t match the certificate (.cer).'**
+  String get apiErrorCsdKeyMismatch;
+
+  /// mbe-api error code `csd.key_not_encrypted` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The key has no password, so it isn\'t a SAT CSD key.'**
+  String get apiErrorCsdKeyNotEncrypted;
+
+  /// mbe-api error code `csd.key_not_rsa` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The key file doesn\'t hold an RSA key.'**
+  String get apiErrorCsdKeyNotRsa;
+
+  /// mbe-api error code `csd.key_unreadable` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The key couldn\'t be opened. Check the password and the .key file.'**
+  String get apiErrorCsdKeyUnreadable;
+
+  /// mbe-api error code `customer.credit_hold` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This customer has {count, plural, one{1 overdue credit order. Settle it} other{{count} overdue credit orders. Settle them}} before creating a new credit order.'**
+  String apiErrorCustomerCreditHold(int count);
+
+  /// mbe-api error code `customer.credit_limit_exceeded` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This order would bring the customer\'s balance to {outstanding}, over their credit limit of {limit}.'**
+  String apiErrorCustomerCreditLimitExceeded(String outstanding, String limit);
+
+  /// mbe-api error code `customer.credit_limit_reached` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The customer owes {outstanding}, which reaches their credit limit of {limit}. They must pay before buying again.'**
+  String apiErrorCustomerCreditLimitReached(String outstanding, String limit);
+
+  /// mbe-api error code `customer.default_not_deletable` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The general public customer can\'t be deleted.'**
+  String get apiErrorCustomerDefaultNotDeletable;
+
+  /// mbe-api error code `customer.no_credit_limit` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This customer has no credit limit, so they can\'t buy on credit.'**
+  String get apiErrorCustomerNoCreditLimit;
+
+  /// mbe-api error code `customer.walk_in_no_credit` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The general public customer can\'t buy on credit.'**
+  String get apiErrorCustomerWalkInNoCredit;
+
+  /// mbe-api error code `customer_discount.product_not_found` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The product for this discount no longer exists.'**
+  String get apiErrorCustomerDiscountProductNotFound;
+
+  /// mbe-api error code `delivery_order.line_already_present` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'That line is already on this delivery order.'**
+  String get apiErrorDeliveryOrderLineAlreadyPresent;
+
+  /// mbe-api error code `delivery_order.line_not_deliverable` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'That line can\'t be delivered on this order: it belongs to another sale or was already delivered.'**
+  String get apiErrorDeliveryOrderLineNotDeliverable;
+
+  /// mbe-api error code `delivery_order.line_repeated` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The same line was added twice.'**
+  String get apiErrorDeliveryOrderLineRepeated;
+
+  /// mbe-api error code `delivery_order.mixed_not_allowed` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'A delivery order can\'t mix delivery and pickup.'**
+  String get apiErrorDeliveryOrderMixedNotAllowed;
+
+  /// mbe-api error code `delivery_order.not_editable` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This delivery order is no longer a draft and can\'t be changed.'**
+  String get apiErrorDeliveryOrderNotEditable;
+
+  /// mbe-api error code `delivery_order.quantity_exceeds_remaining` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'You asked for {requested}, but only {remaining} are left to deliver on that line.'**
+  String apiErrorDeliveryOrderQuantityExceedsRemaining(
+    String requested,
+    String remaining,
+  );
+
+  /// mbe-api error code `delivery_order.reason_required` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a reason for this change.'**
+  String get apiErrorDeliveryOrderReasonRequired;
+
+  /// mbe-api error code `delivery_order.sales_order_fully_delivered` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This sale has nothing left to deliver.'**
+  String get apiErrorDeliveryOrderSalesOrderFullyDelivered;
+
+  /// mbe-api error code `delivery_order.sales_order_not_deliverable` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This sale can\'t be delivered: it isn\'t completed, or it was cancelled.'**
+  String get apiErrorDeliveryOrderSalesOrderNotDeliverable;
+
+  /// mbe-api error code `delivery_order.sales_order_unpaid` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The sale must be paid, or sold on credit, before it can be delivered.'**
+  String get apiErrorDeliveryOrderSalesOrderUnpaid;
+
+  /// mbe-api error code `document.not_editable` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This document is completed or cancelled and can\'t be edited.'**
+  String get apiErrorDocumentNotEditable;
+
+  /// mbe-api error code `email.not_configured` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Email isn\'t set up on the server.'**
+  String get apiErrorEmailNotConfigured;
+
+  /// mbe-api error code `email.send_failed` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The email couldn\'t be sent. Try again later.'**
+  String get apiErrorEmailSendFailed;
+
+  /// mbe-api error code `facility.no_dispatch_warehouse` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This facility has no warehouse to dispatch from.'**
+  String get apiErrorFacilityNoDispatchWarehouse;
+
+  /// mbe-api error code `facility.other_facility` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'{gender, select, feminine{This {resource} belongs to another facility, and you don\'t have access to other facilities.} other{This {resource} belongs to another facility, and you don\'t have access to other facilities.}}'**
+  String apiErrorFacilityOtherFacility(String gender, String resource);
+
+  /// mbe-api error code `facility.required` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a facility. Your user has none assigned.'**
+  String get apiErrorFacilityRequired;
+
+  /// mbe-api error code `image.too_large` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The image is too large. The maximum is {max}.'**
+  String apiErrorImageTooLarge(String max);
+
+  /// mbe-api error code `image.unsupported_format` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The file isn\'t an image the server can read. Try another file.'**
+  String get apiErrorImageUnsupportedFormat;
+
+  /// mbe-api error code `incidence.reason_required` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a reason.'**
+  String get apiErrorIncidenceReasonRequired;
+
+  /// mbe-api error code `lock.busy` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Someone else is updating this right now. Try again in a moment.'**
+  String get apiErrorLockBusy;
+
+  /// mbe-api error code `payment.no_ticket` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This kind of payment has no ticket to print.'**
+  String get apiErrorPaymentNoTicket;
+
+  /// mbe-api error code `point_of_sale.warehouse_facility_mismatch` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The warehouse must belong to the same facility as the point of sale.'**
+  String get apiErrorPointOfSaleWarehouseFacilityMismatch;
+
+  /// mbe-api error code `price_list.cost_not_assignable` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The cost list can\'t be assigned to a customer or used as a replacement.'**
+  String get apiErrorPriceListCostNotAssignable;
+
+  /// mbe-api error code `price_list.cost_not_deletable` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The cost list can\'t be deleted.'**
+  String get apiErrorPriceListCostNotDeletable;
+
+  /// mbe-api error code `price_list.cost_read_only` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Prices on the cost list can\'t be edited here.'**
+  String get apiErrorPriceListCostReadOnly;
+
+  /// mbe-api error code `price_list.replace_with_itself` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'A price list can\'t be replaced with itself.'**
+  String get apiErrorPriceListReplaceWithItself;
+
+  /// mbe-api error code `product.lookup_criteria_required` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Type something to search for.'**
+  String get apiErrorProductLookupCriteriaRequired;
+
+  /// mbe-api error code `product.lookup_too_many` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Too many products at once. The maximum is {max}.'**
+  String apiErrorProductLookupTooMany(String max);
+
+  /// mbe-api error code `product.merge_with_itself` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'A product can\'t be merged into itself.'**
+  String get apiErrorProductMergeWithItself;
+
+  /// mbe-api error code `product_price.duplicate_entry` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The same price was entered twice.'**
+  String get apiErrorProductPriceDuplicateEntry;
+
+  /// mbe-api error code `product_price.references_not_found` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'{gender, select, feminine{Some of the {resource} in this change no longer exist. Reload and try again.} other{Some of the {resource} in this change no longer exist. Reload and try again.}}'**
+  String apiErrorProductPriceReferencesNotFound(String gender, String resource);
+
+  /// mbe-api error code `quote.already_cancelled` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This quote is already cancelled.'**
+  String get apiErrorQuoteAlreadyCancelled;
+
+  /// mbe-api error code `quote.cancelled` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This quote was cancelled and can\'t be converted.'**
+  String get apiErrorQuoteCancelled;
+
+  /// mbe-api error code `quote.expired` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This quote has expired.'**
+  String get apiErrorQuoteExpired;
+
+  /// mbe-api error code `quote.not_confirmed` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm the quote first.'**
+  String get apiErrorQuoteNotConfirmed;
+
+  /// mbe-api error code `refund.already_cancelled` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This refund is already cancelled.'**
+  String get apiErrorRefundAlreadyCancelled;
+
+  /// mbe-api error code `refund.completed_cannot_cancel` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'A completed refund is final and can\'t be cancelled.'**
+  String get apiErrorRefundCompletedCannotCancel;
+
+  /// mbe-api error code `refund.line_invoiced` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'{product} is on invoice {invoice}. Cancel or adjust that invoice before refunding it.'**
+  String apiErrorRefundLineInvoiced(String product, String invoice);
+
+  /// mbe-api error code `refund.line_invoiced` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'{product} is on a live invoice. Cancel or adjust that invoice before refunding it.'**
+  String apiErrorRefundLineInvoicedNoFolio(String product);
+
+  /// mbe-api error code `refund.no_returnable_lines` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity to return on at least one line.'**
+  String get apiErrorRefundNoReturnableLines;
+
+  /// mbe-api error code `refund.not_confirmed` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Only a confirmed refund has a receipt to print.'**
+  String get apiErrorRefundNotConfirmed;
+
+  /// mbe-api error code `refund.nothing_refundable` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing on this order is left to refund.'**
+  String get apiErrorRefundNothingRefundable;
+
+  /// mbe-api error code `refund.order_not_completed` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This order isn\'t completed, so it can\'t be refunded.'**
+  String get apiErrorRefundOrderNotCompleted;
+
+  /// mbe-api error code `refund.order_not_paid` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This order isn\'t paid. Cancel it instead of refunding it.'**
+  String get apiErrorRefundOrderNotPaid;
+
+  /// mbe-api error code `sales_order.already_cancelled` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This order is already cancelled.'**
+  String get apiErrorSalesOrderAlreadyCancelled;
+
+  /// mbe-api error code `sales_order.below_min_quantity` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'A product is below its minimum order of {min}.'**
+  String apiErrorSalesOrderBelowMinQuantity(String min);
+
+  /// mbe-api error code `sales_order.has_payment_applications` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This order has payments applied. Reverse them first.'**
+  String get apiErrorSalesOrderHasPaymentApplications;
+
+  /// mbe-api error code `sales_order.insufficient_stock` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Some lines don\'t have enough stock'**
+  String get apiErrorSalesOrderInsufficientStock;
+
+  /// mbe-api error code `sales_order.missing_delivery_details` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery details are missing'**
+  String get apiErrorSalesOrderMissingDeliveryDetails;
+
+  /// mbe-api error code `sales_order.no_lines` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one line before confirming.'**
+  String get apiErrorSalesOrderNoLines;
+
+  /// mbe-api error code `sales_order.paid_cannot_cancel` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'A paid order can\'t be cancelled. Refund it instead.'**
+  String get apiErrorSalesOrderPaidCannotCancel;
+
+  /// mbe-api error code `sales_order.zero_priced_lines` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Some lines have no price'**
+  String get apiErrorSalesOrderZeroPricedLines;
+
+  /// mbe-api error code `supplier_agreement.end_before_start` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The end date ({end}) is before the start date ({start}).'**
+  String apiErrorSupplierAgreementEndBeforeStart(String end, String start);
+
+  /// mbe-api error code `taxpayer_certificate.holder_mismatch` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The certificate belongs to {certificateTaxpayer}, not to {taxpayer}.'**
+  String apiErrorTaxpayerCertificateHolderMismatch(
+    String certificateTaxpayer,
+    String taxpayer,
+  );
+
+  /// mbe-api error code `taxpayer_issuer.unknown` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The issuer {taxpayer} isn\'t registered.'**
+  String apiErrorTaxpayerIssuerUnknown(String taxpayer);
+
+  /// mbe-api error code `user.no_cash_drawer` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Your user has no cash drawer assigned.'**
+  String get apiErrorUserNoCashDrawer;
+
+  /// mbe-api error code `user.no_facility` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Your user has no facility assigned.'**
+  String get apiErrorUserNoFacility;
+
+  /// mbe-api error code `user.no_point_of_sale` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Your user has no point of sale assigned.'**
+  String get apiErrorUserNoPointOfSale;
+
+  /// mbe-api error code `user_profile.not_active` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'This profile is inactive and can\'t be applied.'**
+  String get apiErrorUserProfileNotActive;
+
+  /// mbe-api error code `warehouse.in_transit_location` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'An in-transit warehouse can\'t be used here.'**
+  String get apiErrorWarehouseInTransitLocation;
+
+  /// mbe-api error code `warehouse.in_transit_managed` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'In-transit warehouses are managed by the system and can\'t be edited.'**
+  String get apiErrorWarehouseInTransitManaged;
+
+  /// mbe-api error code `warehouse.required` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a warehouse. Your point of sale has none.'**
+  String get apiErrorWarehouseRequired;
+
+  /// mbe-api request-validation type `contact_name_blank` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The name can\'t be blank.'**
+  String get apiValidationContactNameBlank;
+
+  /// mbe-api request-validation type `email_address_invalid` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'That isn\'t a valid email address.'**
+  String get apiValidationEmailAddressInvalid;
+
+  /// mbe-api request-validation type `product_barcode_invalid` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The barcode must be empty or exactly 13 digits (EAN-13).'**
+  String get apiValidationProductBarcodeInvalid;
+
+  /// mbe-api request-validation type `product_code_has_whitespace` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The code can\'t contain spaces.'**
+  String get apiValidationProductCodeHasWhitespace;
+
+  /// mbe-api request-validation type `profile_duplicate_system_object` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'A permission appears twice in this profile.'**
+  String get apiValidationProfileDuplicateSystemObject;
+
+  /// mbe-api request-validation type `profile_unknown_system_object` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The profile has a permission the server doesn\'t recognize.'**
+  String get apiValidationProfileUnknownSystemObject;
+
+  /// mbe-api request-validation type `supplier_agreement_end_before_start` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The end date can\'t be before the start date.'**
+  String get apiValidationSupplierAgreementEndBeforeStart;
+
+  /// mbe-api request-validation type `user_id_not_alphanumeric` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'The username can only have letters and numbers.'**
+  String get apiValidationUserIdNotAlphanumeric;
+
+  /// Record noun for the API resource name `customer_address` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{address} other{addresses}}'**
+  String apiResourceCustomerAddress(int count);
+
+  /// Grammatical gender of the noun for `customer_address` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderCustomerAddress;
+
+  /// Record noun for the API resource name `customer_contact` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{contact} other{contacts}}'**
+  String apiResourceCustomerContact(int count);
+
+  /// Grammatical gender of the noun for `customer_contact` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderCustomerContact;
+
+  /// Record noun for the API resource name `customer_taxpayer` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{tax recipient} other{tax recipients}}'**
+  String apiResourceCustomerTaxpayer(int count);
+
+  /// Grammatical gender of the noun for `customer_taxpayer` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderCustomerTaxpayer;
+
+  /// Record noun for the API resource name `supplier_address` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{address} other{addresses}}'**
+  String apiResourceSupplierAddress(int count);
+
+  /// Grammatical gender of the noun for `supplier_address` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderSupplierAddress;
+
+  /// Record noun for the API resource name `supplier_agreement` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{agreement} other{agreements}}'**
+  String apiResourceSupplierAgreement(int count);
+
+  /// Grammatical gender of the noun for `supplier_agreement` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderSupplierAgreement;
+
+  /// Record noun for the API resource name `supplier_bank_account` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{bank account} other{bank accounts}}'**
+  String apiResourceSupplierBankAccount(int count);
+
+  /// Grammatical gender of the noun for `supplier_bank_account` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderSupplierBankAccount;
+
+  /// Record noun for the API resource name `supplier_contact` (spec 058), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{contact} other{contacts}}'**
+  String apiResourceSupplierContact(int count);
+
+  /// Grammatical gender of the noun for `supplier_contact` in Spanish: `feminine` or `masculine` (spec 058)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderSupplierContact;
 }
 
 class _AppLocalizationsDelegate

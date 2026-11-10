@@ -56,7 +56,7 @@ abstract class EmployeeFormState with _$EmployeeFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _EmployeeFormState;
 }
@@ -70,35 +70,35 @@ class EmployeeFormController extends _$EmployeeFormController {
   void firstNameChanged(String v) => state = state.copyWith(
     firstName: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void lastNameChanged(String v) => state = state.copyWith(
     lastName: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void nicknameChanged(String v) => state = state.copyWith(
     nickname: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void genderChanged(Gender? v) => state = state.copyWith(
     gender: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void birthdayChanged(DateTime v) => state = state.copyWith(
     birthday: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -113,14 +113,14 @@ class EmployeeFormController extends _$EmployeeFormController {
   void startJobDateChanged(DateTime v) => state = state.copyWith(
     startJobDate: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void enrollNumberChanged(String v) => state = state.copyWith(
     enrollNumber: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -128,7 +128,7 @@ class EmployeeFormController extends _$EmployeeFormController {
 
   /// Loads an existing employee into the form for viewing/editing.
   Future<void> loadForEdit(int employeeId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final employee = await ref
           .read(employeeRepositoryProvider)
@@ -152,7 +152,7 @@ class EmployeeFormController extends _$EmployeeFormController {
       state = state.copyWith(
         loading: false,
         error: EmployeeFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -194,7 +194,7 @@ class EmployeeFormController extends _$EmployeeFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -204,7 +204,7 @@ class EmployeeFormController extends _$EmployeeFormController {
         .can(SystemObject.employees, AccessRight.create)) {
       state = state.copyWith(
         error: EmployeeFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -212,7 +212,7 @@ class EmployeeFormController extends _$EmployeeFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -244,7 +244,7 @@ class EmployeeFormController extends _$EmployeeFormController {
         state = state.copyWith(
           submitting: false,
           error: EmployeeFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -261,7 +261,7 @@ class EmployeeFormController extends _$EmployeeFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -271,7 +271,7 @@ class EmployeeFormController extends _$EmployeeFormController {
         .can(SystemObject.employees, AccessRight.update)) {
       state = state.copyWith(
         error: EmployeeFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -279,7 +279,7 @@ class EmployeeFormController extends _$EmployeeFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -312,7 +312,7 @@ class EmployeeFormController extends _$EmployeeFormController {
         state = state.copyWith(
           submitting: false,
           error: EmployeeFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -320,7 +320,7 @@ class EmployeeFormController extends _$EmployeeFormController {
 
   /// Deletes the loaded employee. No-ops if no employee has been loaded. A
   /// server rejection (e.g. still assigned as a customer's salesperson) is
-  /// surfaced via `error`/`errorDetail`, leaving the employee in place.
+  /// surfaced via `error`/`errorCause`, leaving the employee in place.
   Future<void> delete() async {
     final employeeId = state.employeeId;
     if (employeeId == null) return;
@@ -330,12 +330,12 @@ class EmployeeFormController extends _$EmployeeFormController {
         .can(SystemObject.employees, AccessRight.delete)) {
       state = state.copyWith(
         error: EmployeeFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref.read(employeeRepositoryProvider).delete(employeeId: employeeId);
       ref.invalidate(employeesListControllerProvider);
@@ -344,7 +344,7 @@ class EmployeeFormController extends _$EmployeeFormController {
       state = state.copyWith(
         submitting: false,
         error: EmployeeFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }

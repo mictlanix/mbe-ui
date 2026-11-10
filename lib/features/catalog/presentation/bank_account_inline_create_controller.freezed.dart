@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BankAccountInlineCreateState {
 
- String get bankName; String get accountNumber; String get reference; String get routingNumber; String get comment; bool get submitting; BankAccount? get created; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
+ String get bankName; String get accountNumber; String get reference; String get routingNumber; String get comment; bool get submitting; BankAccount? get created; String? get error; AppError? get errorCause; Map<String, String> get fieldErrors;
 /// Create a copy of BankAccountInlineCreateState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $BankAccountInlineCreateStateCopyWith<BankAccountInlineCreateState> get copyWith
 @override
 bool operator ==(Object other) {
   final _this = this as BankAccountInlineCreateState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BankAccountInlineCreateState&&(identical(other.bankName, _this.bankName) || other.bankName == _this.bankName)&&(identical(other.accountNumber, _this.accountNumber) || other.accountNumber == _this.accountNumber)&&(identical(other.reference, _this.reference) || other.reference == _this.reference)&&(identical(other.routingNumber, _this.routingNumber) || other.routingNumber == _this.routingNumber)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.created, _this.created) || other.created == _this.created)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BankAccountInlineCreateState&&(identical(other.bankName, _this.bankName) || other.bankName == _this.bankName)&&(identical(other.accountNumber, _this.accountNumber) || other.accountNumber == _this.accountNumber)&&(identical(other.reference, _this.reference) || other.reference == _this.reference)&&(identical(other.routingNumber, _this.routingNumber) || other.routingNumber == _this.routingNumber)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.created, _this.created) || other.created == _this.created)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorCause, _this.errorCause) || other.errorCause == _this.errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as BankAccountInlineCreateState;
-  return Object.hash(runtimeType,_this.bankName,_this.accountNumber,_this.reference,_this.routingNumber,_this.comment,_this.submitting,_this.created,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors));
+  return Object.hash(runtimeType,_this.bankName,_this.accountNumber,_this.reference,_this.routingNumber,_this.comment,_this.submitting,_this.created,_this.error,_this.errorCause,const DeepCollectionEquality().hash(_this.fieldErrors));
 }
 
 @override
 String toString() {
   final _this = this as BankAccountInlineCreateState;
-  return 'BankAccountInlineCreateState(bankName: ${_this.bankName}, accountNumber: ${_this.accountNumber}, reference: ${_this.reference}, routingNumber: ${_this.routingNumber}, comment: ${_this.comment}, submitting: ${_this.submitting}, created: ${_this.created}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
+  return 'BankAccountInlineCreateState(bankName: ${_this.bankName}, accountNumber: ${_this.accountNumber}, reference: ${_this.reference}, routingNumber: ${_this.routingNumber}, comment: ${_this.comment}, submitting: ${_this.submitting}, created: ${_this.created}, error: ${_this.error}, errorCause: ${_this.errorCause}, fieldErrors: ${_this.fieldErrors})';
 }
 
 
@@ -51,11 +51,11 @@ abstract mixin class $BankAccountInlineCreateStateCopyWith<$Res>  {
   factory $BankAccountInlineCreateStateCopyWith(BankAccountInlineCreateState value, $Res Function(BankAccountInlineCreateState) _then) = _$BankAccountInlineCreateStateCopyWithImpl;
 @useResult
 $Res call({
- String bankName, String accountNumber, String reference, String routingNumber, String comment, bool submitting, BankAccount? created, String? error, String? errorDetail, Map<String, String> fieldErrors
+ String bankName, String accountNumber, String reference, String routingNumber, String comment, bool submitting, BankAccount? created, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-$BankAccountCopyWith<$Res>? get created;
+$BankAccountCopyWith<$Res>? get created;$AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -68,7 +68,7 @@ class _$BankAccountInlineCreateStateCopyWithImpl<$Res>
 
 /// Create a copy of BankAccountInlineCreateState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? bankName = null,Object? accountNumber = null,Object? reference = null,Object? routingNumber = null,Object? comment = null,Object? submitting = null,Object? created = freezed,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? bankName = null,Object? accountNumber = null,Object? reference = null,Object? routingNumber = null,Object? comment = null,Object? submitting = null,Object? created = freezed,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(BankAccountInlineCreateState(
 bankName: null == bankName ? _self.bankName : bankName // ignore: cast_nullable_to_non_nullable
 as String,accountNumber: null == accountNumber ? _self.accountNumber : accountNumber // ignore: cast_nullable_to_non_nullable
@@ -78,8 +78,8 @@ as String,comment: null == comment ? _self.comment : comment // ignore: cast_nul
 as String,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
 as bool,created: freezed == created ? _self.created : created // ignore: cast_nullable_to_non_nullable
 as BankAccount?,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
@@ -94,6 +94,18 @@ $BankAccountCopyWith<$Res>? get created {
 
   return $BankAccountCopyWith<$Res>(_self.created!, (value) {
     return _then(_self.copyWith(created: value));
+  });
+}/// Create a copy of BankAccountInlineCreateState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
+
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
   });
 }
 }
@@ -177,10 +189,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String bankName,  String accountNumber,  String reference,  String routingNumber,  String comment,  bool submitting,  BankAccount? created,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String bankName,  String accountNumber,  String reference,  String routingNumber,  String comment,  bool submitting,  BankAccount? created,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BankAccountInlineCreateState() when $default != null:
-return $default(_that.bankName,_that.accountNumber,_that.reference,_that.routingNumber,_that.comment,_that.submitting,_that.created,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.bankName,_that.accountNumber,_that.reference,_that.routingNumber,_that.comment,_that.submitting,_that.created,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return orElse();
 
 }
@@ -198,10 +210,10 @@ return $default(_that.bankName,_that.accountNumber,_that.reference,_that.routing
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String bankName,  String accountNumber,  String reference,  String routingNumber,  String comment,  bool submitting,  BankAccount? created,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String bankName,  String accountNumber,  String reference,  String routingNumber,  String comment,  bool submitting,  BankAccount? created,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)  $default,) {final _that = this;
 switch (_that) {
 case _BankAccountInlineCreateState():
-return $default(_that.bankName,_that.accountNumber,_that.reference,_that.routingNumber,_that.comment,_that.submitting,_that.created,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.bankName,_that.accountNumber,_that.reference,_that.routingNumber,_that.comment,_that.submitting,_that.created,_that.error,_that.errorCause,_that.fieldErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -218,10 +230,10 @@ return $default(_that.bankName,_that.accountNumber,_that.reference,_that.routing
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String bankName,  String accountNumber,  String reference,  String routingNumber,  String comment,  bool submitting,  BankAccount? created,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String bankName,  String accountNumber,  String reference,  String routingNumber,  String comment,  bool submitting,  BankAccount? created,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _BankAccountInlineCreateState() when $default != null:
-return $default(_that.bankName,_that.accountNumber,_that.reference,_that.routingNumber,_that.comment,_that.submitting,_that.created,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.bankName,_that.accountNumber,_that.reference,_that.routingNumber,_that.comment,_that.submitting,_that.created,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return null;
 
 }
@@ -233,7 +245,7 @@ return $default(_that.bankName,_that.accountNumber,_that.reference,_that.routing
 
 
 class _BankAccountInlineCreateState implements BankAccountInlineCreateState {
-  const _BankAccountInlineCreateState({this.bankName = '', this.accountNumber = '', this.reference = '', this.routingNumber = '', this.comment = '', this.submitting = false, this.created, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
+  const _BankAccountInlineCreateState({this.bankName = '', this.accountNumber = '', this.reference = '', this.routingNumber = '', this.comment = '', this.submitting = false, this.created, this.error, this.errorCause,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
   
 
 @override@JsonKey() final  String bankName;
@@ -244,7 +256,7 @@ class _BankAccountInlineCreateState implements BankAccountInlineCreateState {
 @override@JsonKey() final  bool submitting;
 @override final  BankAccount? created;
 @override final  String? error;
-@override final  String? errorDetail;
+@override final  AppError? errorCause;
  final  Map<String, String> _fieldErrors;
 @override@JsonKey() Map<String, String> get fieldErrors {
   if (_fieldErrors is EqualUnmodifiableMapView) return _fieldErrors;
@@ -263,18 +275,18 @@ _$BankAccountInlineCreateStateCopyWith<_BankAccountInlineCreateState> get copyWi
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BankAccountInlineCreateState&&(identical(other.bankName, bankName) || other.bankName == bankName)&&(identical(other.accountNumber, accountNumber) || other.accountNumber == accountNumber)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.routingNumber, routingNumber) || other.routingNumber == routingNumber)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.created, created) || other.created == created)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _BankAccountInlineCreateState&&(identical(other.bankName, bankName) || other.bankName == bankName)&&(identical(other.accountNumber, accountNumber) || other.accountNumber == accountNumber)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.routingNumber, routingNumber) || other.routingNumber == routingNumber)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.created, created) || other.created == created)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorCause, errorCause) || other.errorCause == errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,bankName,accountNumber,reference,routingNumber,comment,submitting,created,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors));
+    return Object.hash(runtimeType,bankName,accountNumber,reference,routingNumber,comment,submitting,created,error,errorCause,const DeepCollectionEquality().hash(_fieldErrors));
 }
 
 @override
 String toString() {
-    return 'BankAccountInlineCreateState(bankName: $bankName, accountNumber: $accountNumber, reference: $reference, routingNumber: $routingNumber, comment: $comment, submitting: $submitting, created: $created, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'BankAccountInlineCreateState(bankName: $bankName, accountNumber: $accountNumber, reference: $reference, routingNumber: $routingNumber, comment: $comment, submitting: $submitting, created: $created, error: $error, errorCause: $errorCause, fieldErrors: $fieldErrors)';
 }
 
 
@@ -285,11 +297,11 @@ abstract mixin class _$BankAccountInlineCreateStateCopyWith<$Res> implements $Ba
   factory _$BankAccountInlineCreateStateCopyWith(_BankAccountInlineCreateState value, $Res Function(_BankAccountInlineCreateState) _then) = __$BankAccountInlineCreateStateCopyWithImpl;
 @override @useResult
 $Res call({
- String bankName, String accountNumber, String reference, String routingNumber, String comment, bool submitting, BankAccount? created, String? error, String? errorDetail, Map<String, String> fieldErrors
+ String bankName, String accountNumber, String reference, String routingNumber, String comment, bool submitting, BankAccount? created, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-@override $BankAccountCopyWith<$Res>? get created;
+@override $BankAccountCopyWith<$Res>? get created;@override $AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -302,7 +314,7 @@ class __$BankAccountInlineCreateStateCopyWithImpl<$Res>
 
 /// Create a copy of BankAccountInlineCreateState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? bankName = null,Object? accountNumber = null,Object? reference = null,Object? routingNumber = null,Object? comment = null,Object? submitting = null,Object? created = freezed,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? bankName = null,Object? accountNumber = null,Object? reference = null,Object? routingNumber = null,Object? comment = null,Object? submitting = null,Object? created = freezed,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(_BankAccountInlineCreateState(
 bankName: null == bankName ? _self.bankName : bankName // ignore: cast_nullable_to_non_nullable
 as String,accountNumber: null == accountNumber ? _self.accountNumber : accountNumber // ignore: cast_nullable_to_non_nullable
@@ -312,8 +324,8 @@ as String,comment: null == comment ? _self.comment : comment // ignore: cast_nul
 as String,submitting: null == submitting ? _self.submitting : submitting // ignore: cast_nullable_to_non_nullable
 as bool,created: freezed == created ? _self.created : created // ignore: cast_nullable_to_non_nullable
 as BankAccount?,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
@@ -329,6 +341,18 @@ $BankAccountCopyWith<$Res>? get created {
 
   return $BankAccountCopyWith<$Res>(_self.created!, (value) {
     return _then(_self.copyWith(created: value));
+  });
+}/// Create a copy of BankAccountInlineCreateState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
+
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
   });
 }
 }

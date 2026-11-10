@@ -45,7 +45,7 @@ abstract class VehicleFormState with _$VehicleFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _VehicleFormState;
 }
@@ -59,28 +59,28 @@ class VehicleFormController extends _$VehicleFormController {
   void licensePlateChanged(String v) => state = state.copyWith(
     licensePlate: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void nameChanged(String v) => state = state.copyWith(
     name: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void nicknameChanged(String v) => state = state.copyWith(
     nickname: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
   void tonsCapacityChanged(String v) => state = state.copyWith(
     tonsCapacity: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -88,7 +88,7 @@ class VehicleFormController extends _$VehicleFormController {
 
   /// Loads an existing vehicle into the form for viewing/editing.
   Future<void> loadForEdit(int vehicleId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final vehicle = await ref
           .read(vehicleRepositoryProvider)
@@ -105,7 +105,7 @@ class VehicleFormController extends _$VehicleFormController {
       state = state.copyWith(
         loading: false,
         error: VehicleFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -142,7 +142,7 @@ class VehicleFormController extends _$VehicleFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -152,7 +152,7 @@ class VehicleFormController extends _$VehicleFormController {
         .can(SystemObject.vehicle, AccessRight.create)) {
       state = state.copyWith(
         error: VehicleFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -160,7 +160,7 @@ class VehicleFormController extends _$VehicleFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -185,7 +185,7 @@ class VehicleFormController extends _$VehicleFormController {
         state = state.copyWith(
           submitting: false,
           error: VehicleFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -201,7 +201,7 @@ class VehicleFormController extends _$VehicleFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -211,7 +211,7 @@ class VehicleFormController extends _$VehicleFormController {
         .can(SystemObject.vehicle, AccessRight.update)) {
       state = state.copyWith(
         error: VehicleFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -219,7 +219,7 @@ class VehicleFormController extends _$VehicleFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -245,14 +245,14 @@ class VehicleFormController extends _$VehicleFormController {
         state = state.copyWith(
           submitting: false,
           error: VehicleFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
   }
 
   /// Deletes the loaded vehicle (FR-006). No-ops if no vehicle has been
-  /// loaded. A server rejection is surfaced via `error`/`errorDetail`,
+  /// loaded. A server rejection is surfaced via `error`/`errorCause`,
   /// leaving the vehicle in place.
   Future<void> delete() async {
     final vehicleId = state.vehicleId;
@@ -263,12 +263,12 @@ class VehicleFormController extends _$VehicleFormController {
         .can(SystemObject.vehicle, AccessRight.delete)) {
       state = state.copyWith(
         error: VehicleFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref.read(vehicleRepositoryProvider).delete(vehicleId: vehicleId);
       _invalidateCaches();
@@ -277,7 +277,7 @@ class VehicleFormController extends _$VehicleFormController {
       state = state.copyWith(
         submitting: false,
         error: VehicleFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }

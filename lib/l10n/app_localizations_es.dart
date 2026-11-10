@@ -4781,4 +4781,1186 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get refundNeedsConfirmerHint =>
       'Otra persona con permiso de confirmar debe terminar esta devolución.';
+
+  @override
+  String apiResourceCashDrawer(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'cajas',
+      one: 'caja',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCashDrawer => 'feminine';
+
+  @override
+  String apiResourceCashSession(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'sesiones de caja',
+      one: 'sesión de caja',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCashSession => 'feminine';
+
+  @override
+  String apiResourceCreditNote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'notas de crédito',
+      one: 'nota de crédito',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCreditNote => 'feminine';
+
+  @override
+  String apiResourceCustomer(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'clientes',
+      one: 'cliente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCustomer => 'masculine';
+
+  @override
+  String apiResourceCustomerDiscount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'descuentos de cliente',
+      one: 'descuento de cliente',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCustomerDiscount => 'masculine';
+
+  @override
+  String apiResourceCustomerPayment(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'pagos',
+      one: 'pago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCustomerPayment => 'masculine';
+
+  @override
+  String apiResourceCustomerRefund(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'devoluciones',
+      one: 'devolución',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCustomerRefund => 'feminine';
+
+  @override
+  String apiResourceDeliveryItinerary(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'rutas de entrega',
+      one: 'ruta de entrega',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderDeliveryItinerary => 'feminine';
+
+  @override
+  String apiResourceDeliveryOrder(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'órdenes de entrega',
+      one: 'orden de entrega',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderDeliveryOrder => 'feminine';
+
+  @override
+  String apiResourceDeliveryOrderLine(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'partidas de entrega',
+      one: 'partida de entrega',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderDeliveryOrderLine => 'feminine';
+
+  @override
+  String apiResourceEmployee(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'empleados',
+      one: 'empleado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderEmployee => 'masculine';
+
+  @override
+  String apiResourceExchangeRate(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'tipos de cambio',
+      one: 'tipo de cambio',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderExchangeRate => 'masculine';
+
+  @override
+  String apiResourceExpense(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'gastos',
+      one: 'gasto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderExpense => 'masculine';
+
+  @override
+  String apiResourceExpenseVoucher(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'vales de gasto',
+      one: 'vale de gasto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderExpenseVoucher => 'masculine';
+
+  @override
+  String apiResourceFacility(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'sucursales',
+      one: 'sucursal',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderFacility => 'feminine';
+
+  @override
+  String apiResourceFiscalDocument(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'facturas',
+      one: 'factura',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderFiscalDocument => 'feminine';
+
+  @override
+  String apiResourceInventoryIssue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'salidas de almacén',
+      one: 'salida de almacén',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderInventoryIssue => 'feminine';
+
+  @override
+  String apiResourceInventoryReceipt(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'entradas de almacén',
+      one: 'entrada de almacén',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderInventoryReceipt => 'feminine';
+
+  @override
+  String apiResourceInventoryTransfer(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'traspasos',
+      one: 'traspaso',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderInventoryTransfer => 'masculine';
+
+  @override
+  String apiResourceLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'etiquetas',
+      one: 'etiqueta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderLabel => 'feminine';
+
+  @override
+  String apiResourcePaymentMethodOption(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'formas de pago',
+      one: 'forma de pago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderPaymentMethodOption => 'feminine';
+
+  @override
+  String apiResourcePointOfSale(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'puntos de venta',
+      one: 'punto de venta',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderPointOfSale => 'masculine';
+
+  @override
+  String apiResourcePriceList(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'listas de precios',
+      one: 'lista de precios',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderPriceList => 'feminine';
+
+  @override
+  String apiResourceProduct(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'productos',
+      one: 'producto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderProduct => 'masculine';
+
+  @override
+  String apiResourceProductPrice(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'precios',
+      one: 'precio',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderProductPrice => 'masculine';
+
+  @override
+  String apiResourcePurchaseOrder(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'órdenes de compra',
+      one: 'orden de compra',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderPurchaseOrder => 'feminine';
+
+  @override
+  String apiResourceSalesOrder(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'pedidos',
+      one: 'pedido',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSalesOrder => 'masculine';
+
+  @override
+  String apiResourceSalesOrderLine(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'partidas del pedido',
+      one: 'partida del pedido',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSalesOrderLine => 'feminine';
+
+  @override
+  String apiResourceSalesOrderPayment(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'pagos de pedido',
+      one: 'pago de pedido',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSalesOrderPayment => 'masculine';
+
+  @override
+  String apiResourceSalesQuote(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'cotizaciones',
+      one: 'cotización',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSalesQuote => 'feminine';
+
+  @override
+  String apiResourceSalesQuoteLine(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'partidas de la cotización',
+      one: 'partida de la cotización',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSalesQuoteLine => 'feminine';
+
+  @override
+  String apiResourceStockMovement(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'movimientos de inventario',
+      one: 'movimiento de inventario',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderStockMovement => 'masculine';
+
+  @override
+  String apiResourceSupplier(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'proveedores',
+      one: 'proveedor',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSupplier => 'masculine';
+
+  @override
+  String apiResourceSupplierPayment(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'pagos a proveedor',
+      one: 'pago a proveedor',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSupplierPayment => 'masculine';
+
+  @override
+  String apiResourceTaxpayerCertificate(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'certificados',
+      one: 'certificado',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderTaxpayerCertificate => 'masculine';
+
+  @override
+  String apiResourceTaxpayerIssuer(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'emisores',
+      one: 'emisor',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderTaxpayerIssuer => 'masculine';
+
+  @override
+  String apiResourceTaxpayerRecipient(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'receptores',
+      one: 'receptor',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderTaxpayerRecipient => 'masculine';
+
+  @override
+  String apiResourceUser(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'usuarios',
+      one: 'usuario',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderUser => 'masculine';
+
+  @override
+  String apiResourceUserProfile(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'perfiles',
+      one: 'perfil',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderUserProfile => 'masculine';
+
+  @override
+  String apiResourceVehicle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'vehículos',
+      one: 'vehículo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderVehicle => 'masculine';
+
+  @override
+  String apiResourceVehicleOperator(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'operadores de vehículo',
+      one: 'operador de vehículo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderVehicleOperator => 'masculine';
+
+  @override
+  String apiResourceWarehouse(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'almacenes',
+      one: 'almacén',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderWarehouse => 'masculine';
+
+  @override
+  String apiResourceGeneric(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'registros',
+      one: 'registro',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderGeneric => 'masculine';
+
+  @override
+  String get apiErrorAuthAdministratorRequired =>
+      'Solo un administrador puede hacer esto.';
+
+  @override
+  String get apiErrorAuthForbidden => 'No tienes permiso para esta acción.';
+
+  @override
+  String get apiErrorAuthIncorrectCurrentPassword =>
+      'La contraseña actual es incorrecta.';
+
+  @override
+  String get apiErrorAuthInvalidCredentials =>
+      'Usuario o contraseña incorrectos.';
+
+  @override
+  String get apiErrorAuthNotAuthenticated =>
+      'Tu sesión expiró. Vuelve a iniciar sesión.';
+
+  @override
+  String get apiErrorAuthPasswordChangeRequired =>
+      'Debes cambiar tu contraseña antes de continuar.';
+
+  @override
+  String get apiErrorAuthRecoveryTokenInvalid =>
+      'Este enlace de recuperación no es válido o ya expiró. Solicita uno nuevo.';
+
+  @override
+  String get apiErrorRequestMalformed =>
+      'La app envió una solicitud que el servidor no pudo leer. Inténtalo de nuevo.';
+
+  @override
+  String get apiErrorRequestMethodNotAllowed =>
+      'El servidor no permite esta operación aquí.';
+
+  @override
+  String get apiErrorRequestRouteNotFound =>
+      'El servidor no ofrece esta función. Puede que la app necesite actualizarse.';
+
+  @override
+  String get apiErrorResourceConflict =>
+      'El cambio entra en conflicto con datos existentes. Recarga e inténtalo de nuevo.';
+
+  @override
+  String get apiErrorServerError =>
+      'Ocurrió un error en el servidor. Inténtalo de nuevo más tarde.';
+
+  @override
+  String get apiErrorStateTransitionInvalid =>
+      'Este registro no puede pasar de su estado actual al solicitado.';
+
+  @override
+  String apiErrorResourceNotFound(String gender, String resource) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'feminine': 'No se encontró la $resource. Puede que se haya eliminado.',
+      'other': 'No se encontró el $resource. Puede que se haya eliminado.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String apiErrorResourceAlreadyExists(String gender, String resource) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'feminine': 'Ese valor ya está en uso en otra $resource.',
+      'other': 'Ese valor ya está en uso en otro $resource.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String apiErrorResourceStillReferenced(String list) {
+    return 'Este registro no se puede eliminar porque todavía está en uso: $list.';
+  }
+
+  @override
+  String get apiErrorResourceStillReferencedGeneric =>
+      'Este registro todavía está en uso y no se puede eliminar.';
+
+  @override
+  String apiReferenceMore(int more) {
+    String _temp0 = intl.Intl.pluralLogic(
+      more,
+      locale: localeName,
+      other: 'y $more más',
+      one: 'y 1 más',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiErrorCashSessionAlreadyClosed =>
+      'Esta sesión de caja ya está cerrada.';
+
+  @override
+  String get apiErrorCashSessionClosed =>
+      'La sesión de caja se cerró mientras trabajabas. Recarga para continuar.';
+
+  @override
+  String get apiErrorCashSessionDrawerBusy =>
+      'Esa caja ya tiene una sesión abierta.';
+
+  @override
+  String get apiErrorCashSessionNotClosed =>
+      'La sesión de caja sigue abierta. Ciérrala primero.';
+
+  @override
+  String get apiErrorCashSessionNotOpen =>
+      'Necesitas una sesión de caja abierta para esto.';
+
+  @override
+  String get apiErrorCashSessionUserBusy =>
+      'Ya tienes una sesión abierta. Ciérrala antes de abrir otra.';
+
+  @override
+  String get apiErrorCsdCertificateNotRsa =>
+      'El certificado no usa una llave RSA. No es un CSD válido.';
+
+  @override
+  String get apiErrorCsdCertificateUnreadable =>
+      'No se pudo leer el archivo de certificado (.cer).';
+
+  @override
+  String get apiErrorCsdKeyMismatch =>
+      'La llave (.key) no corresponde al certificado (.cer).';
+
+  @override
+  String get apiErrorCsdKeyNotEncrypted =>
+      'La llave no tiene contraseña, así que no es una llave de CSD del SAT.';
+
+  @override
+  String get apiErrorCsdKeyNotRsa =>
+      'El archivo de llave no contiene una llave RSA.';
+
+  @override
+  String get apiErrorCsdKeyUnreadable =>
+      'No se pudo abrir la llave. Revisa la contraseña y el archivo .key.';
+
+  @override
+  String apiErrorCustomerCreditHold(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pedidos a crédito vencidos. Liquídalos',
+      one: '1 pedido a crédito vencido. Liquídalo',
+    );
+    return 'Este cliente tiene $_temp0 antes de crear un nuevo pedido a crédito.';
+  }
+
+  @override
+  String apiErrorCustomerCreditLimitExceeded(String outstanding, String limit) {
+    return 'Con este pedido el saldo del cliente llegaría a $outstanding, arriba de su límite de crédito de $limit.';
+  }
+
+  @override
+  String apiErrorCustomerCreditLimitReached(String outstanding, String limit) {
+    return 'El cliente debe $outstanding y ya alcanzó su límite de crédito de $limit. Debe pagar antes de volver a comprar.';
+  }
+
+  @override
+  String get apiErrorCustomerDefaultNotDeletable =>
+      'El cliente público en general no se puede eliminar.';
+
+  @override
+  String get apiErrorCustomerNoCreditLimit =>
+      'Este cliente no tiene límite de crédito, así que no puede comprar a crédito.';
+
+  @override
+  String get apiErrorCustomerWalkInNoCredit =>
+      'El cliente público en general no puede comprar a crédito.';
+
+  @override
+  String get apiErrorCustomerDiscountProductNotFound =>
+      'El producto de este descuento ya no existe.';
+
+  @override
+  String get apiErrorDeliveryOrderLineAlreadyPresent =>
+      'Esa partida ya está en esta orden de entrega.';
+
+  @override
+  String get apiErrorDeliveryOrderLineNotDeliverable =>
+      'Esa partida no se puede entregar en esta orden: es de otra venta o ya se entregó.';
+
+  @override
+  String get apiErrorDeliveryOrderLineRepeated =>
+      'La misma partida se agregó dos veces.';
+
+  @override
+  String get apiErrorDeliveryOrderMixedNotAllowed =>
+      'Una orden de entrega no puede combinar envío y recolección.';
+
+  @override
+  String get apiErrorDeliveryOrderNotEditable =>
+      'Esta orden de entrega ya no es borrador y no se puede modificar.';
+
+  @override
+  String apiErrorDeliveryOrderQuantityExceedsRemaining(
+    String requested,
+    String remaining,
+  ) {
+    return 'Pediste $requested, pero en esa partida solo quedan $remaining por entregar.';
+  }
+
+  @override
+  String get apiErrorDeliveryOrderReasonRequired =>
+      'Escribe un motivo para este cambio.';
+
+  @override
+  String get apiErrorDeliveryOrderSalesOrderFullyDelivered =>
+      'Esta venta ya no tiene nada por entregar.';
+
+  @override
+  String get apiErrorDeliveryOrderSalesOrderNotDeliverable =>
+      'Esta venta no se puede entregar: no está completada o se canceló.';
+
+  @override
+  String get apiErrorDeliveryOrderSalesOrderUnpaid =>
+      'La venta debe estar pagada o ser a crédito antes de poder entregarse.';
+
+  @override
+  String get apiErrorDocumentNotEditable =>
+      'Este documento está completado o cancelado y ya no se puede editar.';
+
+  @override
+  String get apiErrorEmailNotConfigured =>
+      'El correo no está configurado en el servidor.';
+
+  @override
+  String get apiErrorEmailSendFailed =>
+      'No se pudo enviar el correo. Inténtalo de nuevo más tarde.';
+
+  @override
+  String get apiErrorFacilityNoDispatchWarehouse =>
+      'Esta sucursal no tiene un almacén desde el cual despachar.';
+
+  @override
+  String apiErrorFacilityOtherFacility(String gender, String resource) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'feminine':
+          'Esta $resource pertenece a otra sucursal, y no tienes acceso a otras sucursales.',
+      'other':
+          'Este $resource pertenece a otra sucursal, y no tienes acceso a otras sucursales.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get apiErrorFacilityRequired =>
+      'Elige una sucursal. Tu usuario no tiene una asignada.';
+
+  @override
+  String apiErrorImageTooLarge(String max) {
+    return 'La imagen es demasiado grande. El máximo es $max.';
+  }
+
+  @override
+  String get apiErrorImageUnsupportedFormat =>
+      'El archivo no es una imagen que el servidor pueda leer. Prueba con otro archivo.';
+
+  @override
+  String get apiErrorIncidenceReasonRequired => 'Escribe un motivo.';
+
+  @override
+  String get apiErrorLockBusy =>
+      'Alguien más está actualizando esto en este momento. Inténtalo de nuevo en un momento.';
+
+  @override
+  String get apiErrorPaymentNoTicket =>
+      'Este tipo de pago no tiene ticket para imprimir.';
+
+  @override
+  String get apiErrorPointOfSaleWarehouseFacilityMismatch =>
+      'El almacén debe pertenecer a la misma sucursal que el punto de venta.';
+
+  @override
+  String get apiErrorPriceListCostNotAssignable =>
+      'La lista de costos no se puede asignar a un cliente ni usar como reemplazo.';
+
+  @override
+  String get apiErrorPriceListCostNotDeletable =>
+      'La lista de costos no se puede eliminar.';
+
+  @override
+  String get apiErrorPriceListCostReadOnly =>
+      'Los precios de la lista de costos no se pueden editar aquí.';
+
+  @override
+  String get apiErrorPriceListReplaceWithItself =>
+      'Una lista de precios no se puede reemplazar por sí misma.';
+
+  @override
+  String get apiErrorProductLookupCriteriaRequired =>
+      'Escribe algo para buscar.';
+
+  @override
+  String apiErrorProductLookupTooMany(String max) {
+    return 'Demasiados productos a la vez. El máximo es $max.';
+  }
+
+  @override
+  String get apiErrorProductMergeWithItself =>
+      'Un producto no se puede fusionar consigo mismo.';
+
+  @override
+  String get apiErrorProductPriceDuplicateEntry =>
+      'El mismo precio se capturó dos veces.';
+
+  @override
+  String apiErrorProductPriceReferencesNotFound(
+    String gender,
+    String resource,
+  ) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'feminine':
+          'Algunas de las $resource de este cambio ya no existen. Recarga e inténtalo de nuevo.',
+      'other':
+          'Algunos de los $resource de este cambio ya no existen. Recarga e inténtalo de nuevo.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get apiErrorQuoteAlreadyCancelled =>
+      'Esta cotización ya está cancelada.';
+
+  @override
+  String get apiErrorQuoteCancelled =>
+      'Esta cotización se canceló y no se puede convertir.';
+
+  @override
+  String get apiErrorQuoteExpired => 'Esta cotización ya venció.';
+
+  @override
+  String get apiErrorQuoteNotConfirmed => 'Primero confirma la cotización.';
+
+  @override
+  String get apiErrorRefundAlreadyCancelled =>
+      'Esta devolución ya está cancelada.';
+
+  @override
+  String get apiErrorRefundCompletedCannotCancel =>
+      'Una devolución completada es definitiva y no se puede cancelar.';
+
+  @override
+  String apiErrorRefundLineInvoiced(String product, String invoice) {
+    return '$product está en la factura $invoice. Cancela o ajusta esa factura antes de devolverlo.';
+  }
+
+  @override
+  String apiErrorRefundLineInvoicedNoFolio(String product) {
+    return '$product está en una factura vigente. Cancela o ajusta esa factura antes de devolverlo.';
+  }
+
+  @override
+  String get apiErrorRefundNoReturnableLines =>
+      'Captura una cantidad a devolver en al menos una partida.';
+
+  @override
+  String get apiErrorRefundNotConfirmed =>
+      'Solo una devolución confirmada tiene comprobante para imprimir.';
+
+  @override
+  String get apiErrorRefundNothingRefundable =>
+      'No queda nada por devolver en este pedido.';
+
+  @override
+  String get apiErrorRefundOrderNotCompleted =>
+      'Este pedido no está completado, así que no se puede devolver.';
+
+  @override
+  String get apiErrorRefundOrderNotPaid =>
+      'Este pedido no está pagado. Cancélalo en lugar de devolverlo.';
+
+  @override
+  String get apiErrorSalesOrderAlreadyCancelled =>
+      'Este pedido ya está cancelado.';
+
+  @override
+  String apiErrorSalesOrderBelowMinQuantity(String min) {
+    return 'Un producto está por debajo de su pedido mínimo de $min.';
+  }
+
+  @override
+  String get apiErrorSalesOrderHasPaymentApplications =>
+      'Este pedido tiene pagos aplicados. Revírtelos primero.';
+
+  @override
+  String get apiErrorSalesOrderInsufficientStock =>
+      'Algunas partidas no tienen existencia suficiente';
+
+  @override
+  String get apiErrorSalesOrderMissingDeliveryDetails =>
+      'Faltan datos de entrega';
+
+  @override
+  String get apiErrorSalesOrderNoLines =>
+      'Agrega al menos una partida antes de confirmar.';
+
+  @override
+  String get apiErrorSalesOrderPaidCannotCancel =>
+      'Un pedido pagado no se puede cancelar. Haz una devolución.';
+
+  @override
+  String get apiErrorSalesOrderZeroPricedLines =>
+      'Algunas partidas no tienen precio';
+
+  @override
+  String apiErrorSupplierAgreementEndBeforeStart(String end, String start) {
+    return 'La fecha de fin ($end) es anterior a la de inicio ($start).';
+  }
+
+  @override
+  String apiErrorTaxpayerCertificateHolderMismatch(
+    String certificateTaxpayer,
+    String taxpayer,
+  ) {
+    return 'El certificado es de $certificateTaxpayer, no de $taxpayer.';
+  }
+
+  @override
+  String apiErrorTaxpayerIssuerUnknown(String taxpayer) {
+    return 'El emisor $taxpayer no está registrado.';
+  }
+
+  @override
+  String get apiErrorUserNoCashDrawer =>
+      'Tu usuario no tiene una caja asignada.';
+
+  @override
+  String get apiErrorUserNoFacility =>
+      'Tu usuario no tiene una sucursal asignada.';
+
+  @override
+  String get apiErrorUserNoPointOfSale =>
+      'Tu usuario no tiene un punto de venta asignado.';
+
+  @override
+  String get apiErrorUserProfileNotActive =>
+      'Este perfil está inactivo y no se puede aplicar.';
+
+  @override
+  String get apiErrorWarehouseInTransitLocation =>
+      'Aquí no se puede usar un almacén en tránsito.';
+
+  @override
+  String get apiErrorWarehouseInTransitManaged =>
+      'Los almacenes en tránsito los administra el sistema y no se pueden editar.';
+
+  @override
+  String get apiErrorWarehouseRequired =>
+      'Elige un almacén. Tu punto de venta no tiene uno.';
+
+  @override
+  String get apiValidationContactNameBlank => 'El nombre no puede estar vacío.';
+
+  @override
+  String get apiValidationEmailAddressInvalid =>
+      'Ese no es un correo electrónico válido.';
+
+  @override
+  String get apiValidationProductBarcodeInvalid =>
+      'El código de barras debe estar vacío o tener exactamente 13 dígitos (EAN-13).';
+
+  @override
+  String get apiValidationProductCodeHasWhitespace =>
+      'El código no puede contener espacios.';
+
+  @override
+  String get apiValidationProfileDuplicateSystemObject =>
+      'Un permiso aparece dos veces en este perfil.';
+
+  @override
+  String get apiValidationProfileUnknownSystemObject =>
+      'El perfil tiene un permiso que el servidor no reconoce.';
+
+  @override
+  String get apiValidationSupplierAgreementEndBeforeStart =>
+      'La fecha de fin no puede ser anterior a la de inicio.';
+
+  @override
+  String get apiValidationUserIdNotAlphanumeric =>
+      'El nombre de usuario solo puede tener letras y números.';
+
+  @override
+  String apiResourceCustomerAddress(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'direcciones',
+      one: 'dirección',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCustomerAddress => 'feminine';
+
+  @override
+  String apiResourceCustomerContact(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'contactos',
+      one: 'contacto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCustomerContact => 'masculine';
+
+  @override
+  String apiResourceCustomerTaxpayer(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'receptores fiscales',
+      one: 'receptor fiscal',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCustomerTaxpayer => 'masculine';
+
+  @override
+  String apiResourceSupplierAddress(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'direcciones',
+      one: 'dirección',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSupplierAddress => 'feminine';
+
+  @override
+  String apiResourceSupplierAgreement(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'convenios',
+      one: 'convenio',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSupplierAgreement => 'masculine';
+
+  @override
+  String apiResourceSupplierBankAccount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'cuentas bancarias',
+      one: 'cuenta bancaria',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSupplierBankAccount => 'feminine';
+
+  @override
+  String apiResourceSupplierContact(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'contactos',
+      one: 'contacto',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderSupplierContact => 'masculine';
 }

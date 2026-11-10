@@ -168,7 +168,7 @@ void main() {
     await notifierOf().submit();
 
     expect(stateOf().error, BankAccountInlineCreateErrorCode.createFailed);
-    expect(stateOf().errorDetail, 'down');
+    expect(stateOf().errorCause?.serverMessage, 'down');
     expect(stateOf().created, isNull);
   });
 }

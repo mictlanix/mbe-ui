@@ -318,7 +318,7 @@ as int?,
 /// @nodoc
 mixin _$RejectedEdit {
 
- String get typed; String get reason;
+ String get typed; String get reason; AppError? get cause;
 /// Create a copy of RejectedEdit
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -330,20 +330,20 @@ $RejectedEditCopyWith<RejectedEdit> get copyWith => _$RejectedEditCopyWithImpl<R
 @override
 bool operator ==(Object other) {
   final _this = this as RejectedEdit;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RejectedEdit&&(identical(other.typed, _this.typed) || other.typed == _this.typed)&&(identical(other.reason, _this.reason) || other.reason == _this.reason));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RejectedEdit&&(identical(other.typed, _this.typed) || other.typed == _this.typed)&&(identical(other.reason, _this.reason) || other.reason == _this.reason)&&(identical(other.cause, _this.cause) || other.cause == _this.cause));
 }
 
 
 @override
 int get hashCode {
   final _this = this as RejectedEdit;
-  return Object.hash(runtimeType,_this.typed,_this.reason);
+  return Object.hash(runtimeType,_this.typed,_this.reason,_this.cause);
 }
 
 @override
 String toString() {
   final _this = this as RejectedEdit;
-  return 'RejectedEdit(typed: ${_this.typed}, reason: ${_this.reason})';
+  return 'RejectedEdit(typed: ${_this.typed}, reason: ${_this.reason}, cause: ${_this.cause})';
 }
 
 
@@ -354,11 +354,11 @@ abstract mixin class $RejectedEditCopyWith<$Res>  {
   factory $RejectedEditCopyWith(RejectedEdit value, $Res Function(RejectedEdit) _then) = _$RejectedEditCopyWithImpl;
 @useResult
 $Res call({
- String typed, String reason
+ String typed, String reason, AppError? cause
 });
 
 
-
+$AppErrorCopyWith<$Res>? get cause;
 
 }
 /// @nodoc
@@ -371,14 +371,27 @@ class _$RejectedEditCopyWithImpl<$Res>
 
 /// Create a copy of RejectedEdit
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? typed = null,Object? reason = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? typed = null,Object? reason = null,Object? cause = freezed,}) {
   return _then(RejectedEdit(
 typed: null == typed ? _self.typed : typed // ignore: cast_nullable_to_non_nullable
 as String,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
-as String,
+as String,cause: freezed == cause ? _self.cause : cause // ignore: cast_nullable_to_non_nullable
+as AppError?,
   ));
 }
+/// Create a copy of RejectedEdit
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get cause {
+    if (_self.cause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.cause!, (value) {
+    return _then(_self.copyWith(cause: value));
+  });
+}
 }
 
 
@@ -460,10 +473,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String typed,  String reason)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String typed,  String reason,  AppError? cause)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RejectedEdit() when $default != null:
-return $default(_that.typed,_that.reason);case _:
+return $default(_that.typed,_that.reason,_that.cause);case _:
   return orElse();
 
 }
@@ -481,10 +494,10 @@ return $default(_that.typed,_that.reason);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String typed,  String reason)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String typed,  String reason,  AppError? cause)  $default,) {final _that = this;
 switch (_that) {
 case _RejectedEdit():
-return $default(_that.typed,_that.reason);case _:
+return $default(_that.typed,_that.reason,_that.cause);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -501,10 +514,10 @@ return $default(_that.typed,_that.reason);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String typed,  String reason)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String typed,  String reason,  AppError? cause)?  $default,) {final _that = this;
 switch (_that) {
 case _RejectedEdit() when $default != null:
-return $default(_that.typed,_that.reason);case _:
+return $default(_that.typed,_that.reason,_that.cause);case _:
   return null;
 
 }
@@ -516,11 +529,12 @@ return $default(_that.typed,_that.reason);case _:
 
 
 class _RejectedEdit implements RejectedEdit {
-  const _RejectedEdit({required this.typed, required this.reason});
+  const _RejectedEdit({required this.typed, required this.reason, this.cause});
   
 
 @override final  String typed;
 @override final  String reason;
+@override final  AppError? cause;
 
 /// Create a copy of RejectedEdit
 /// with the given fields replaced by the non-null parameter values.
@@ -532,18 +546,18 @@ _$RejectedEditCopyWith<_RejectedEdit> get copyWith => __$RejectedEditCopyWithImp
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RejectedEdit&&(identical(other.typed, typed) || other.typed == typed)&&(identical(other.reason, reason) || other.reason == reason));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _RejectedEdit&&(identical(other.typed, typed) || other.typed == typed)&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.cause, cause) || other.cause == cause));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,typed,reason);
+    return Object.hash(runtimeType,typed,reason,cause);
 }
 
 @override
 String toString() {
-    return 'RejectedEdit(typed: $typed, reason: $reason)';
+    return 'RejectedEdit(typed: $typed, reason: $reason, cause: $cause)';
 }
 
 
@@ -554,11 +568,11 @@ abstract mixin class _$RejectedEditCopyWith<$Res> implements $RejectedEditCopyWi
   factory _$RejectedEditCopyWith(_RejectedEdit value, $Res Function(_RejectedEdit) _then) = __$RejectedEditCopyWithImpl;
 @override @useResult
 $Res call({
- String typed, String reason
+ String typed, String reason, AppError? cause
 });
 
 
-
+@override $AppErrorCopyWith<$Res>? get cause;
 
 }
 /// @nodoc
@@ -571,15 +585,28 @@ class __$RejectedEditCopyWithImpl<$Res>
 
 /// Create a copy of RejectedEdit
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? typed = null,Object? reason = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? typed = null,Object? reason = null,Object? cause = freezed,}) {
   return _then(_RejectedEdit(
 typed: null == typed ? _self.typed : typed // ignore: cast_nullable_to_non_nullable
 as String,reason: null == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
-as String,
+as String,cause: freezed == cause ? _self.cause : cause // ignore: cast_nullable_to_non_nullable
+as AppError?,
   ));
 }
 
+/// Create a copy of RejectedEdit
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get cause {
+    if (_self.cause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.cause!, (value) {
+    return _then(_self.copyWith(cause: value));
+  });
+}
 }
 
 /// @nodoc

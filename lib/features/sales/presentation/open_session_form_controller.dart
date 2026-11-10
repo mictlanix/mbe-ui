@@ -1,10 +1,12 @@
 import 'package:decimal/decimal.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_list_controller.dart';
@@ -43,7 +45,7 @@ abstract class OpenSessionFormState with _$OpenSessionFormState {
     /// only path forward.
     int? blockingSessionId,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _OpenSessionFormState;
 }
@@ -70,7 +72,7 @@ class OpenSessionFormController extends _$OpenSessionFormController {
     cashDrawerId: cashDrawerId,
     cashDrawerDisplayText: name,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     blockingSessionId: null,
     fieldErrors: const {},
   );
@@ -78,7 +80,7 @@ class OpenSessionFormController extends _$OpenSessionFormController {
   void openingAmountChanged(String value) => state = state.copyWith(
     openingAmount: value,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -108,7 +110,7 @@ class OpenSessionFormController extends _$OpenSessionFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -118,7 +120,7 @@ class OpenSessionFormController extends _$OpenSessionFormController {
         .can(SystemObject.pos, AccessRight.create)) {
       state = state.copyWith(
         error: OpenSessionFormErrorCode.openPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -126,7 +128,7 @@ class OpenSessionFormController extends _$OpenSessionFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       blockingSessionId: null,
       fieldErrors: const {},
     );
@@ -160,7 +162,7 @@ class OpenSessionFormController extends _$OpenSessionFormController {
         state = state.copyWith(
           submitting: false,
           error: OpenSessionFormErrorCode.noDrawerConfigured,
-          errorDetail: null,
+          errorCause: null,
         );
       } else {
         state = state.copyWith(
@@ -172,41 +174,43 @@ class OpenSessionFormController extends _$OpenSessionFormController {
     }
 
     if (e is ServerError && e.statusCode == 409) {
-      // The two 409s are indistinguishable by status — disambiguate by
-      // re-reading whether the caller now has a session, not by parsing the
-      // raw detail string (research.md §4).
-      var cashierBusy = false;
-      int? blockingSessionId;
-      try {
-        final current = await ref
-            .read(cashSessionRepositoryProvider)
-            .getCurrent();
-        final session = current.session;
-        if (session != null) {
-          cashierBusy = true;
-          blockingSessionId = session.cashSessionId;
-        }
-      } catch (_) {
-        // Re-read failed — fall back to drawer-busy. Telling the cashier
-        // their own drawer choice is unavailable is a safer default than
-        // incorrectly asking them to close a session that may not exist.
+      final code = e.problem?.code;
+      if (e.problem == null) {
+        // A server that sends no code: the two 409s are indistinguishable by
+        // status — disambiguate by re-reading whether the caller now has a
+        // session, not by parsing the raw detail string (research.md §4).
+        await _openRefused409(e);
+        return;
       }
-      state = state.copyWith(
-        submitting: false,
-        error: cashierBusy
-            ? OpenSessionFormErrorCode.cashierBusy
-            : OpenSessionFormErrorCode.drawerBusy,
-        errorDetail: e.serverMessage,
-        blockingSessionId: blockingSessionId,
-      );
-      return;
+      // The server told us which one it is (spec 058), so there is nothing to
+      // re-read. The form's own message for each says everything the server's
+      // would, so no cause is kept to repeat it under the headline. Any other
+      // code is not a busy refusal: it falls through to the generic failure
+      // below, with the cause kept.
+      if (code == api.ErrorCode.cashSessionPeriodUserBusy) {
+        state = state.copyWith(
+          submitting: false,
+          error: OpenSessionFormErrorCode.cashierBusy,
+          errorCause: null,
+          blockingSessionId: e.problem!.intParam('cash_session_id'),
+        );
+        return;
+      }
+      if (code == api.ErrorCode.cashSessionPeriodDrawerBusy) {
+        state = state.copyWith(
+          submitting: false,
+          error: OpenSessionFormErrorCode.drawerBusy,
+          errorCause: null,
+        );
+        return;
+      }
     }
 
     if (e is NotFoundError) {
       state = state.copyWith(
         submitting: false,
         error: OpenSessionFormErrorCode.drawerNotFound,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
       return;
     }
@@ -214,7 +218,34 @@ class OpenSessionFormController extends _$OpenSessionFormController {
     state = state.copyWith(
       submitting: false,
       error: OpenSessionFormErrorCode.openFailed,
-      errorDetail: e.serverMessage,
+      errorCause: e,
+    );
+  }
+
+  Future<void> _openRefused409(ServerError e) async {
+    var cashierBusy = false;
+    int? blockingSessionId;
+    try {
+      final current = await ref
+          .read(cashSessionRepositoryProvider)
+          .getCurrent();
+      final session = current.session;
+      if (session != null) {
+        cashierBusy = true;
+        blockingSessionId = session.cashSessionId;
+      }
+    } catch (_) {
+      // Re-read failed — fall back to drawer-busy. Telling the cashier
+      // their own drawer choice is unavailable is a safer default than
+      // incorrectly asking them to close a session that may not exist.
+    }
+    state = state.copyWith(
+      submitting: false,
+      error: cashierBusy
+          ? OpenSessionFormErrorCode.cashierBusy
+          : OpenSessionFormErrorCode.drawerBusy,
+      errorCause: e,
+      blockingSessionId: blockingSessionId,
     );
   }
 }

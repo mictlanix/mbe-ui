@@ -20,7 +20,7 @@ mixin _$WarehouseFormState {
 /// never touched by [facilitySelected], so a save that moved the
 /// warehouse to a different facility can invalidate both the old and
 /// the new card (018-nested-facility-management research §6).
- int? get originalFacilityId; String get facilityDisplayText; String get code; String get name; String get comment; EntityStatus get status; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
+ int? get originalFacilityId; String get facilityDisplayText; String get code; String get name; String get comment; EntityStatus get status; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; AppError? get errorCause; Map<String, String> get fieldErrors;
 /// Create a copy of WarehouseFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -32,20 +32,20 @@ $WarehouseFormStateCopyWith<WarehouseFormState> get copyWith => _$WarehouseFormS
 @override
 bool operator ==(Object other) {
   final _this = this as WarehouseFormState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WarehouseFormState&&(identical(other.warehouseId, _this.warehouseId) || other.warehouseId == _this.warehouseId)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.originalFacilityId, _this.originalFacilityId) || other.originalFacilityId == _this.originalFacilityId)&&(identical(other.facilityDisplayText, _this.facilityDisplayText) || other.facilityDisplayText == _this.facilityDisplayText)&&(identical(other.code, _this.code) || other.code == _this.code)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WarehouseFormState&&(identical(other.warehouseId, _this.warehouseId) || other.warehouseId == _this.warehouseId)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.originalFacilityId, _this.originalFacilityId) || other.originalFacilityId == _this.originalFacilityId)&&(identical(other.facilityDisplayText, _this.facilityDisplayText) || other.facilityDisplayText == _this.facilityDisplayText)&&(identical(other.code, _this.code) || other.code == _this.code)&&(identical(other.name, _this.name) || other.name == _this.name)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorCause, _this.errorCause) || other.errorCause == _this.errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as WarehouseFormState;
-  return Object.hash(runtimeType,_this.warehouseId,_this.facilityId,_this.originalFacilityId,_this.facilityDisplayText,_this.code,_this.name,_this.comment,_this.status,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors));
+  return Object.hash(runtimeType,_this.warehouseId,_this.facilityId,_this.originalFacilityId,_this.facilityDisplayText,_this.code,_this.name,_this.comment,_this.status,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorCause,const DeepCollectionEquality().hash(_this.fieldErrors));
 }
 
 @override
 String toString() {
   final _this = this as WarehouseFormState;
-  return 'WarehouseFormState(warehouseId: ${_this.warehouseId}, facilityId: ${_this.facilityId}, originalFacilityId: ${_this.originalFacilityId}, facilityDisplayText: ${_this.facilityDisplayText}, code: ${_this.code}, name: ${_this.name}, comment: ${_this.comment}, status: ${_this.status}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
+  return 'WarehouseFormState(warehouseId: ${_this.warehouseId}, facilityId: ${_this.facilityId}, originalFacilityId: ${_this.originalFacilityId}, facilityDisplayText: ${_this.facilityDisplayText}, code: ${_this.code}, name: ${_this.name}, comment: ${_this.comment}, status: ${_this.status}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorCause: ${_this.errorCause}, fieldErrors: ${_this.fieldErrors})';
 }
 
 
@@ -56,11 +56,11 @@ abstract mixin class $WarehouseFormStateCopyWith<$Res>  {
   factory $WarehouseFormStateCopyWith(WarehouseFormState value, $Res Function(WarehouseFormState) _then) = _$WarehouseFormStateCopyWithImpl;
 @useResult
 $Res call({
- int? warehouseId, int? facilityId, int? originalFacilityId, String facilityDisplayText, String code, String name, String comment, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? warehouseId, int? facilityId, int? originalFacilityId, String facilityDisplayText, String code, String name, String comment, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+$AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -73,7 +73,7 @@ class _$WarehouseFormStateCopyWithImpl<$Res>
 
 /// Create a copy of WarehouseFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? warehouseId = freezed,Object? facilityId = freezed,Object? originalFacilityId = freezed,Object? facilityDisplayText = null,Object? code = null,Object? name = null,Object? comment = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? warehouseId = freezed,Object? facilityId = freezed,Object? originalFacilityId = freezed,Object? facilityDisplayText = null,Object? code = null,Object? name = null,Object? comment = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(WarehouseFormState(
 warehouseId: freezed == warehouseId ? _self.warehouseId : warehouseId // ignore: cast_nullable_to_non_nullable
 as int?,facilityId: freezed == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -88,12 +88,24 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
+/// Create a copy of WarehouseFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 
@@ -175,10 +187,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? warehouseId,  int? facilityId,  int? originalFacilityId,  String facilityDisplayText,  String code,  String name,  String comment,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? warehouseId,  int? facilityId,  int? originalFacilityId,  String facilityDisplayText,  String code,  String name,  String comment,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WarehouseFormState() when $default != null:
-return $default(_that.warehouseId,_that.facilityId,_that.originalFacilityId,_that.facilityDisplayText,_that.code,_that.name,_that.comment,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.warehouseId,_that.facilityId,_that.originalFacilityId,_that.facilityDisplayText,_that.code,_that.name,_that.comment,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return orElse();
 
 }
@@ -196,10 +208,10 @@ return $default(_that.warehouseId,_that.facilityId,_that.originalFacilityId,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? warehouseId,  int? facilityId,  int? originalFacilityId,  String facilityDisplayText,  String code,  String name,  String comment,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? warehouseId,  int? facilityId,  int? originalFacilityId,  String facilityDisplayText,  String code,  String name,  String comment,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)  $default,) {final _that = this;
 switch (_that) {
 case _WarehouseFormState():
-return $default(_that.warehouseId,_that.facilityId,_that.originalFacilityId,_that.facilityDisplayText,_that.code,_that.name,_that.comment,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.warehouseId,_that.facilityId,_that.originalFacilityId,_that.facilityDisplayText,_that.code,_that.name,_that.comment,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -216,10 +228,10 @@ return $default(_that.warehouseId,_that.facilityId,_that.originalFacilityId,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? warehouseId,  int? facilityId,  int? originalFacilityId,  String facilityDisplayText,  String code,  String name,  String comment,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? warehouseId,  int? facilityId,  int? originalFacilityId,  String facilityDisplayText,  String code,  String name,  String comment,  EntityStatus status,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _WarehouseFormState() when $default != null:
-return $default(_that.warehouseId,_that.facilityId,_that.originalFacilityId,_that.facilityDisplayText,_that.code,_that.name,_that.comment,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.warehouseId,_that.facilityId,_that.originalFacilityId,_that.facilityDisplayText,_that.code,_that.name,_that.comment,_that.status,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return null;
 
 }
@@ -231,7 +243,7 @@ return $default(_that.warehouseId,_that.facilityId,_that.originalFacilityId,_tha
 
 
 class _WarehouseFormState implements WarehouseFormState {
-  const _WarehouseFormState({this.warehouseId, this.facilityId, this.originalFacilityId, this.facilityDisplayText = '', this.code = '', this.name = '', this.comment = '', this.status = EntityStatus.active, this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
+  const _WarehouseFormState({this.warehouseId, this.facilityId, this.originalFacilityId, this.facilityDisplayText = '', this.code = '', this.name = '', this.comment = '', this.status = EntityStatus.active, this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorCause,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
   
 
 @override final  int? warehouseId;
@@ -252,7 +264,7 @@ class _WarehouseFormState implements WarehouseFormState {
 @override@JsonKey() final  bool saved;
 @override@JsonKey() final  bool deleted;
 @override final  String? error;
-@override final  String? errorDetail;
+@override final  AppError? errorCause;
  final  Map<String, String> _fieldErrors;
 @override@JsonKey() Map<String, String> get fieldErrors {
   if (_fieldErrors is EqualUnmodifiableMapView) return _fieldErrors;
@@ -271,18 +283,18 @@ _$WarehouseFormStateCopyWith<_WarehouseFormState> get copyWith => __$WarehouseFo
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WarehouseFormState&&(identical(other.warehouseId, warehouseId) || other.warehouseId == warehouseId)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.originalFacilityId, originalFacilityId) || other.originalFacilityId == originalFacilityId)&&(identical(other.facilityDisplayText, facilityDisplayText) || other.facilityDisplayText == facilityDisplayText)&&(identical(other.code, code) || other.code == code)&&(identical(other.name, name) || other.name == name)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.status, status) || other.status == status)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _WarehouseFormState&&(identical(other.warehouseId, warehouseId) || other.warehouseId == warehouseId)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.originalFacilityId, originalFacilityId) || other.originalFacilityId == originalFacilityId)&&(identical(other.facilityDisplayText, facilityDisplayText) || other.facilityDisplayText == facilityDisplayText)&&(identical(other.code, code) || other.code == code)&&(identical(other.name, name) || other.name == name)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.status, status) || other.status == status)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorCause, errorCause) || other.errorCause == errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,warehouseId,facilityId,originalFacilityId,facilityDisplayText,code,name,comment,status,loading,submitting,saved,deleted,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors));
+    return Object.hash(runtimeType,warehouseId,facilityId,originalFacilityId,facilityDisplayText,code,name,comment,status,loading,submitting,saved,deleted,error,errorCause,const DeepCollectionEquality().hash(_fieldErrors));
 }
 
 @override
 String toString() {
-    return 'WarehouseFormState(warehouseId: $warehouseId, facilityId: $facilityId, originalFacilityId: $originalFacilityId, facilityDisplayText: $facilityDisplayText, code: $code, name: $name, comment: $comment, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'WarehouseFormState(warehouseId: $warehouseId, facilityId: $facilityId, originalFacilityId: $originalFacilityId, facilityDisplayText: $facilityDisplayText, code: $code, name: $name, comment: $comment, status: $status, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorCause: $errorCause, fieldErrors: $fieldErrors)';
 }
 
 
@@ -293,11 +305,11 @@ abstract mixin class _$WarehouseFormStateCopyWith<$Res> implements $WarehouseFor
   factory _$WarehouseFormStateCopyWith(_WarehouseFormState value, $Res Function(_WarehouseFormState) _then) = __$WarehouseFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- int? warehouseId, int? facilityId, int? originalFacilityId, String facilityDisplayText, String code, String name, String comment, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? warehouseId, int? facilityId, int? originalFacilityId, String facilityDisplayText, String code, String name, String comment, EntityStatus status, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+@override $AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -310,7 +322,7 @@ class __$WarehouseFormStateCopyWithImpl<$Res>
 
 /// Create a copy of WarehouseFormState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? warehouseId = freezed,Object? facilityId = freezed,Object? originalFacilityId = freezed,Object? facilityDisplayText = null,Object? code = null,Object? name = null,Object? comment = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? warehouseId = freezed,Object? facilityId = freezed,Object? originalFacilityId = freezed,Object? facilityDisplayText = null,Object? code = null,Object? name = null,Object? comment = null,Object? status = null,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(_WarehouseFormState(
 warehouseId: freezed == warehouseId ? _self.warehouseId : warehouseId // ignore: cast_nullable_to_non_nullable
 as int?,facilityId: freezed == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -325,13 +337,25 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
 
+/// Create a copy of WarehouseFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 // dart format on

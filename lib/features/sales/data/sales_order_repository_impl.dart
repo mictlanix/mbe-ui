@@ -423,12 +423,18 @@ AppError _toAppError(DioException error) {
 /// endpoint means something else entirely, and miscategorising it as a
 /// credit hold would be worse than the generic message it already gets.
 AppError _toSalesOrderError(DioException error) {
+  final mapped = _toAppError(error);
+  // A refusal the server coded (spec 058) was already classified by
+  // `mapDioException`: a credit code is a `creditHold`, any other code keeps
+  // its own variant. The string-detail guess below is only for a server that
+  // sends no code.
+  if (mapped.problem != null) return mapped;
   final data = error.response?.data;
   if (error.response?.statusCode == 422 && data is Map) {
     final detail = data['detail'];
     if (detail is String) return AppError.creditHold(detail);
   }
-  return _toAppError(error);
+  return mapped;
 }
 
 /// Confirmation refusals carry more than a headline (FR-039,
@@ -437,23 +443,30 @@ AppError _toSalesOrderError(DioException error) {
 /// stock but no warehouse is set", ...]}}` — verified against a live backend.
 /// `mapDioException` keeps only `message`, which would leave the cashier
 /// knowing something is wrong but not which line, so the per-line reasons are
-/// appended here. A confirm can also fail on credit (spec 039 FR-056) — that
-/// shape falls through to [_toSalesOrderError] rather than the plain
-/// [_toAppError] every other endpoint uses, so it is not lost the same way.
+/// appended here (`lines` for stock and zero-priced refusals, `missing` for
+/// missing delivery details), as the English fallback. The server's `code` and
+/// the same items ride along on `problem` (spec 058), where the error panel
+/// localizes the headline and lists the items; mbe-api's announced phase 3
+/// moves them to a string `detail` plus `errors[]` parts, which
+/// [_toSalesOrderError] returns as the coded error `mapDioException` built.
+/// A confirm can also fail on credit (spec 039 FR-056) — that shape falls
+/// through to [_toSalesOrderError] rather than the plain [_toAppError] every
+/// other endpoint uses, so it is not lost the same way.
 AppError _toConfirmError(DioException error) {
   final data = error.response?.data;
   if (data is Map) {
     final detail = data['detail'];
     if (detail is Map) {
       final message = detail['message'];
-      final lines = detail['lines'];
+      final items = detail['lines'] ?? detail['missing'];
       if (message is String) {
-        final reasons = lines is List
-            ? lines.map((line) => line.toString()).toList()
+        final reasons = items is List
+            ? items.map((item) => item.toString()).toList()
             : const <String>[];
         return AppError.server(
           statusCode: error.response?.statusCode,
           message: [message, ...reasons].join('\n'),
+          problem: _toAppError(error).problem,
         );
       }
     }

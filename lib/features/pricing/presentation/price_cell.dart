@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/errors/localize_problem.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/pricing/domain/entities/price_cell_key.dart';
@@ -269,8 +270,8 @@ class _PriceCellState extends ConsumerState<PriceCell> {
       color = colors.error;
       tooltip = switch (rejected.reason) {
         'invalidAmount' => l10n.pricingInvalidAmountError,
-        'saveFailed' => l10n.pricingSaveFailedError,
-        final serverMessage => serverMessage,
+        _ =>
+          rejected.cause?.userMessage(l10n, fmt) ?? l10n.pricingSaveFailedError,
       };
     } else if (widget.price == null) {
       display = l10n.pricingPriceNotSet;

@@ -38,7 +38,7 @@ abstract class ExpenseFormState with _$ExpenseFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _ExpenseFormState;
 }
@@ -52,7 +52,7 @@ class ExpenseFormController extends _$ExpenseFormController {
   void nameChanged(String v) => state = state.copyWith(
     name: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -60,7 +60,7 @@ class ExpenseFormController extends _$ExpenseFormController {
 
   /// Loads an existing expense into the form for viewing/editing.
   Future<void> loadForEdit(int expenseId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final expense = await ref
           .read(expenseRepositoryProvider)
@@ -74,7 +74,7 @@ class ExpenseFormController extends _$ExpenseFormController {
       state = state.copyWith(
         loading: false,
         error: ExpenseFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -100,7 +100,7 @@ class ExpenseFormController extends _$ExpenseFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -110,7 +110,7 @@ class ExpenseFormController extends _$ExpenseFormController {
         .can(SystemObject.expenses, AccessRight.create)) {
       state = state.copyWith(
         error: ExpenseFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -118,7 +118,7 @@ class ExpenseFormController extends _$ExpenseFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -137,7 +137,7 @@ class ExpenseFormController extends _$ExpenseFormController {
         state = state.copyWith(
           submitting: false,
           error: ExpenseFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -154,7 +154,7 @@ class ExpenseFormController extends _$ExpenseFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -164,7 +164,7 @@ class ExpenseFormController extends _$ExpenseFormController {
         .can(SystemObject.expenses, AccessRight.update)) {
       state = state.copyWith(
         error: ExpenseFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -172,7 +172,7 @@ class ExpenseFormController extends _$ExpenseFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -195,14 +195,14 @@ class ExpenseFormController extends _$ExpenseFormController {
         state = state.copyWith(
           submitting: false,
           error: ExpenseFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
   }
 
   /// Deletes the loaded expense (FR-006). No-ops if no expense has been
-  /// loaded. A server rejection is surfaced via `error`/`errorDetail`,
+  /// loaded. A server rejection is surfaced via `error`/`errorCause`,
   /// leaving the expense in place.
   Future<void> delete() async {
     final expenseId = state.expenseId;
@@ -213,12 +213,12 @@ class ExpenseFormController extends _$ExpenseFormController {
         .can(SystemObject.expenses, AccessRight.delete)) {
       state = state.copyWith(
         error: ExpenseFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref.read(expenseRepositoryProvider).delete(expenseId: expenseId);
       _invalidateCaches();
@@ -227,7 +227,7 @@ class ExpenseFormController extends _$ExpenseFormController {
       state = state.copyWith(
         submitting: false,
         error: ExpenseFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }

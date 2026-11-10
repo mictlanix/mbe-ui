@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ExchangeRateFormState {
 
- int? get exchangeRateId; DateTime? get date; String get rate; Currency? get base; Currency? get target; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; String? get errorDetail; Map<String, String> get fieldErrors;
+ int? get exchangeRateId; DateTime? get date; String get rate; Currency? get base; Currency? get target; bool get loading; bool get submitting; bool get saved; bool get deleted; String? get error; AppError? get errorCause; Map<String, String> get fieldErrors;
 /// Create a copy of ExchangeRateFormState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -27,20 +27,20 @@ $ExchangeRateFormStateCopyWith<ExchangeRateFormState> get copyWith => _$Exchange
 @override
 bool operator ==(Object other) {
   final _this = this as ExchangeRateFormState;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExchangeRateFormState&&(identical(other.exchangeRateId, _this.exchangeRateId) || other.exchangeRateId == _this.exchangeRateId)&&(identical(other.date, _this.date) || other.date == _this.date)&&(identical(other.rate, _this.rate) || other.rate == _this.rate)&&(identical(other.base, _this.base) || other.base == _this.base)&&(identical(other.target, _this.target) || other.target == _this.target)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorDetail, _this.errorDetail) || other.errorDetail == _this.errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExchangeRateFormState&&(identical(other.exchangeRateId, _this.exchangeRateId) || other.exchangeRateId == _this.exchangeRateId)&&(identical(other.date, _this.date) || other.date == _this.date)&&(identical(other.rate, _this.rate) || other.rate == _this.rate)&&(identical(other.base, _this.base) || other.base == _this.base)&&(identical(other.target, _this.target) || other.target == _this.target)&&(identical(other.loading, _this.loading) || other.loading == _this.loading)&&(identical(other.submitting, _this.submitting) || other.submitting == _this.submitting)&&(identical(other.saved, _this.saved) || other.saved == _this.saved)&&(identical(other.deleted, _this.deleted) || other.deleted == _this.deleted)&&(identical(other.error, _this.error) || other.error == _this.error)&&(identical(other.errorCause, _this.errorCause) || other.errorCause == _this.errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _this.fieldErrors));
 }
 
 
 @override
 int get hashCode {
   final _this = this as ExchangeRateFormState;
-  return Object.hash(runtimeType,_this.exchangeRateId,_this.date,_this.rate,_this.base,_this.target,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorDetail,const DeepCollectionEquality().hash(_this.fieldErrors));
+  return Object.hash(runtimeType,_this.exchangeRateId,_this.date,_this.rate,_this.base,_this.target,_this.loading,_this.submitting,_this.saved,_this.deleted,_this.error,_this.errorCause,const DeepCollectionEquality().hash(_this.fieldErrors));
 }
 
 @override
 String toString() {
   final _this = this as ExchangeRateFormState;
-  return 'ExchangeRateFormState(exchangeRateId: ${_this.exchangeRateId}, date: ${_this.date}, rate: ${_this.rate}, base: ${_this.base}, target: ${_this.target}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorDetail: ${_this.errorDetail}, fieldErrors: ${_this.fieldErrors})';
+  return 'ExchangeRateFormState(exchangeRateId: ${_this.exchangeRateId}, date: ${_this.date}, rate: ${_this.rate}, base: ${_this.base}, target: ${_this.target}, loading: ${_this.loading}, submitting: ${_this.submitting}, saved: ${_this.saved}, deleted: ${_this.deleted}, error: ${_this.error}, errorCause: ${_this.errorCause}, fieldErrors: ${_this.fieldErrors})';
 }
 
 
@@ -51,11 +51,11 @@ abstract mixin class $ExchangeRateFormStateCopyWith<$Res>  {
   factory $ExchangeRateFormStateCopyWith(ExchangeRateFormState value, $Res Function(ExchangeRateFormState) _then) = _$ExchangeRateFormStateCopyWithImpl;
 @useResult
 $Res call({
- int? exchangeRateId, DateTime? date, String rate, Currency? base, Currency? target, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? exchangeRateId, DateTime? date, String rate, Currency? base, Currency? target, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+$AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -68,7 +68,7 @@ class _$ExchangeRateFormStateCopyWithImpl<$Res>
 
 /// Create a copy of ExchangeRateFormState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? exchangeRateId = freezed,Object? date = freezed,Object? rate = null,Object? base = freezed,Object? target = freezed,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? exchangeRateId = freezed,Object? date = freezed,Object? rate = null,Object? base = freezed,Object? target = freezed,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(ExchangeRateFormState(
 exchangeRateId: freezed == exchangeRateId ? _self.exchangeRateId : exchangeRateId // ignore: cast_nullable_to_non_nullable
 as int?,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
@@ -80,12 +80,24 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self.fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
+/// Create a copy of ExchangeRateFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 
@@ -167,10 +179,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? exchangeRateId,  DateTime? date,  String rate,  Currency? base,  Currency? target,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? exchangeRateId,  DateTime? date,  String rate,  Currency? base,  Currency? target,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ExchangeRateFormState() when $default != null:
-return $default(_that.exchangeRateId,_that.date,_that.rate,_that.base,_that.target,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.exchangeRateId,_that.date,_that.rate,_that.base,_that.target,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return orElse();
 
 }
@@ -188,10 +200,10 @@ return $default(_that.exchangeRateId,_that.date,_that.rate,_that.base,_that.targ
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? exchangeRateId,  DateTime? date,  String rate,  Currency? base,  Currency? target,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? exchangeRateId,  DateTime? date,  String rate,  Currency? base,  Currency? target,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)  $default,) {final _that = this;
 switch (_that) {
 case _ExchangeRateFormState():
-return $default(_that.exchangeRateId,_that.date,_that.rate,_that.base,_that.target,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.exchangeRateId,_that.date,_that.rate,_that.base,_that.target,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +220,10 @@ return $default(_that.exchangeRateId,_that.date,_that.rate,_that.base,_that.targ
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? exchangeRateId,  DateTime? date,  String rate,  Currency? base,  Currency? target,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  String? errorDetail,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? exchangeRateId,  DateTime? date,  String rate,  Currency? base,  Currency? target,  bool loading,  bool submitting,  bool saved,  bool deleted,  String? error,  AppError? errorCause,  Map<String, String> fieldErrors)?  $default,) {final _that = this;
 switch (_that) {
 case _ExchangeRateFormState() when $default != null:
-return $default(_that.exchangeRateId,_that.date,_that.rate,_that.base,_that.target,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorDetail,_that.fieldErrors);case _:
+return $default(_that.exchangeRateId,_that.date,_that.rate,_that.base,_that.target,_that.loading,_that.submitting,_that.saved,_that.deleted,_that.error,_that.errorCause,_that.fieldErrors);case _:
   return null;
 
 }
@@ -223,7 +235,7 @@ return $default(_that.exchangeRateId,_that.date,_that.rate,_that.base,_that.targ
 
 
 class _ExchangeRateFormState implements ExchangeRateFormState {
-  const _ExchangeRateFormState({this.exchangeRateId, this.date, this.rate = '', this.base, this.target, this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorDetail,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
+  const _ExchangeRateFormState({this.exchangeRateId, this.date, this.rate = '', this.base, this.target, this.loading = false, this.submitting = false, this.saved = false, this.deleted = false, this.error, this.errorCause,  Map<String, String> fieldErrors = const <String, String>{}}): _fieldErrors = fieldErrors;
   
 
 @override final  int? exchangeRateId;
@@ -236,7 +248,7 @@ class _ExchangeRateFormState implements ExchangeRateFormState {
 @override@JsonKey() final  bool saved;
 @override@JsonKey() final  bool deleted;
 @override final  String? error;
-@override final  String? errorDetail;
+@override final  AppError? errorCause;
  final  Map<String, String> _fieldErrors;
 @override@JsonKey() Map<String, String> get fieldErrors {
   if (_fieldErrors is EqualUnmodifiableMapView) return _fieldErrors;
@@ -255,18 +267,18 @@ _$ExchangeRateFormStateCopyWith<_ExchangeRateFormState> get copyWith => __$Excha
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExchangeRateFormState&&(identical(other.exchangeRateId, exchangeRateId) || other.exchangeRateId == exchangeRateId)&&(identical(other.date, date) || other.date == date)&&(identical(other.rate, rate) || other.rate == rate)&&(identical(other.base, base) || other.base == base)&&(identical(other.target, target) || other.target == target)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorDetail, errorDetail) || other.errorDetail == errorDetail)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExchangeRateFormState&&(identical(other.exchangeRateId, exchangeRateId) || other.exchangeRateId == exchangeRateId)&&(identical(other.date, date) || other.date == date)&&(identical(other.rate, rate) || other.rate == rate)&&(identical(other.base, base) || other.base == base)&&(identical(other.target, target) || other.target == target)&&(identical(other.loading, loading) || other.loading == loading)&&(identical(other.submitting, submitting) || other.submitting == submitting)&&(identical(other.saved, saved) || other.saved == saved)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.error, error) || other.error == error)&&(identical(other.errorCause, errorCause) || other.errorCause == errorCause)&&const DeepCollectionEquality().equals(other.fieldErrors, _fieldErrors));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,exchangeRateId,date,rate,base,target,loading,submitting,saved,deleted,error,errorDetail,const DeepCollectionEquality().hash(_fieldErrors));
+    return Object.hash(runtimeType,exchangeRateId,date,rate,base,target,loading,submitting,saved,deleted,error,errorCause,const DeepCollectionEquality().hash(_fieldErrors));
 }
 
 @override
 String toString() {
-    return 'ExchangeRateFormState(exchangeRateId: $exchangeRateId, date: $date, rate: $rate, base: $base, target: $target, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorDetail: $errorDetail, fieldErrors: $fieldErrors)';
+    return 'ExchangeRateFormState(exchangeRateId: $exchangeRateId, date: $date, rate: $rate, base: $base, target: $target, loading: $loading, submitting: $submitting, saved: $saved, deleted: $deleted, error: $error, errorCause: $errorCause, fieldErrors: $fieldErrors)';
 }
 
 
@@ -277,11 +289,11 @@ abstract mixin class _$ExchangeRateFormStateCopyWith<$Res> implements $ExchangeR
   factory _$ExchangeRateFormStateCopyWith(_ExchangeRateFormState value, $Res Function(_ExchangeRateFormState) _then) = __$ExchangeRateFormStateCopyWithImpl;
 @override @useResult
 $Res call({
- int? exchangeRateId, DateTime? date, String rate, Currency? base, Currency? target, bool loading, bool submitting, bool saved, bool deleted, String? error, String? errorDetail, Map<String, String> fieldErrors
+ int? exchangeRateId, DateTime? date, String rate, Currency? base, Currency? target, bool loading, bool submitting, bool saved, bool deleted, String? error, AppError? errorCause, Map<String, String> fieldErrors
 });
 
 
-
+@override $AppErrorCopyWith<$Res>? get errorCause;
 
 }
 /// @nodoc
@@ -294,7 +306,7 @@ class __$ExchangeRateFormStateCopyWithImpl<$Res>
 
 /// Create a copy of ExchangeRateFormState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? exchangeRateId = freezed,Object? date = freezed,Object? rate = null,Object? base = freezed,Object? target = freezed,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorDetail = freezed,Object? fieldErrors = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? exchangeRateId = freezed,Object? date = freezed,Object? rate = null,Object? base = freezed,Object? target = freezed,Object? loading = null,Object? submitting = null,Object? saved = null,Object? deleted = null,Object? error = freezed,Object? errorCause = freezed,Object? fieldErrors = null,}) {
   return _then(_ExchangeRateFormState(
 exchangeRateId: freezed == exchangeRateId ? _self.exchangeRateId : exchangeRateId // ignore: cast_nullable_to_non_nullable
 as int?,date: freezed == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
@@ -306,13 +318,25 @@ as bool,submitting: null == submitting ? _self.submitting : submitting // ignore
 as bool,saved: null == saved ? _self.saved : saved // ignore: cast_nullable_to_non_nullable
 as bool,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
 as bool,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
-as String?,errorDetail: freezed == errorDetail ? _self.errorDetail : errorDetail // ignore: cast_nullable_to_non_nullable
-as String?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
+as String?,errorCause: freezed == errorCause ? _self.errorCause : errorCause // ignore: cast_nullable_to_non_nullable
+as AppError?,fieldErrors: null == fieldErrors ? _self._fieldErrors : fieldErrors // ignore: cast_nullable_to_non_nullable
 as Map<String, String>,
   ));
 }
 
+/// Create a copy of ExchangeRateFormState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$AppErrorCopyWith<$Res>? get errorCause {
+    if (_self.errorCause == null) {
+    return null;
+  }
 
+  return $AppErrorCopyWith<$Res>(_self.errorCause!, (value) {
+    return _then(_self.copyWith(errorCause: value));
+  });
+}
 }
 
 // dart format on

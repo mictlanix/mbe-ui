@@ -38,7 +38,7 @@ abstract class LabelFormState with _$LabelFormState {
     @Default(false) bool saved,
     @Default(false) bool deleted,
     String? error,
-    String? errorDetail,
+    AppError? errorCause,
     @Default(<String, String>{}) Map<String, String> fieldErrors,
   }) = _LabelFormState;
 }
@@ -52,7 +52,7 @@ class LabelFormController extends _$LabelFormController {
   void nameChanged(String v) => state = state.copyWith(
     name: v,
     error: null,
-    errorDetail: null,
+    errorCause: null,
     fieldErrors: const {},
   );
 
@@ -60,7 +60,7 @@ class LabelFormController extends _$LabelFormController {
 
   /// Loads an existing label into the form for viewing/editing.
   Future<void> loadForEdit(int labelId) async {
-    state = state.copyWith(loading: true, error: null, errorDetail: null);
+    state = state.copyWith(loading: true, error: null, errorCause: null);
     try {
       final label = await ref
           .read(labelRepositoryProvider)
@@ -74,7 +74,7 @@ class LabelFormController extends _$LabelFormController {
       state = state.copyWith(
         loading: false,
         error: LabelFormErrorCode.loadFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
@@ -104,7 +104,7 @@ class LabelFormController extends _$LabelFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -114,7 +114,7 @@ class LabelFormController extends _$LabelFormController {
         .can(SystemObject.labels, AccessRight.create)) {
       state = state.copyWith(
         error: LabelFormErrorCode.createPermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -122,7 +122,7 @@ class LabelFormController extends _$LabelFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -141,7 +141,7 @@ class LabelFormController extends _$LabelFormController {
         state = state.copyWith(
           submitting: false,
           error: LabelFormErrorCode.createFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -158,7 +158,7 @@ class LabelFormController extends _$LabelFormController {
       state = state.copyWith(
         fieldErrors: fieldErrors,
         error: null,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -168,7 +168,7 @@ class LabelFormController extends _$LabelFormController {
         .can(SystemObject.labels, AccessRight.update)) {
       state = state.copyWith(
         error: LabelFormErrorCode.updatePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
@@ -176,7 +176,7 @@ class LabelFormController extends _$LabelFormController {
     state = state.copyWith(
       submitting: true,
       error: null,
-      errorDetail: null,
+      errorCause: null,
       fieldErrors: const {},
     );
     try {
@@ -195,7 +195,7 @@ class LabelFormController extends _$LabelFormController {
         state = state.copyWith(
           submitting: false,
           error: LabelFormErrorCode.updateFailed,
-          errorDetail: e.serverMessage,
+          errorCause: e,
         );
       }
     }
@@ -203,7 +203,7 @@ class LabelFormController extends _$LabelFormController {
 
   /// Deletes the loaded label (FR-006). No-ops if no label has been loaded.
   /// A server rejection (e.g. still assigned to a product) is surfaced via
-  /// `error`/`errorDetail`, leaving the label in place.
+  /// `error`/`errorCause`, leaving the label in place.
   Future<void> delete() async {
     final labelId = state.labelId;
     if (labelId == null) return;
@@ -213,12 +213,12 @@ class LabelFormController extends _$LabelFormController {
         .can(SystemObject.labels, AccessRight.delete)) {
       state = state.copyWith(
         error: LabelFormErrorCode.deletePermissionDenied,
-        errorDetail: null,
+        errorCause: null,
       );
       return;
     }
 
-    state = state.copyWith(submitting: true, error: null, errorDetail: null);
+    state = state.copyWith(submitting: true, error: null, errorCause: null);
     try {
       await ref.read(labelRepositoryProvider).delete(labelId: labelId);
       _invalidateCaches();
@@ -227,7 +227,7 @@ class LabelFormController extends _$LabelFormController {
       state = state.copyWith(
         submitting: false,
         error: LabelFormErrorCode.deleteFailed,
-        errorDetail: e.serverMessage,
+        errorCause: e,
       );
     }
   }
