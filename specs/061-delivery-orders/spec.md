@@ -11,7 +11,7 @@
 - edit a DRAFT's header and lines in the back office, but don't create orders there;
 - include the two pickup actions (ready for pickup, and picked up with proof of delivery);
 - offer cancel wherever the server allows it, and file the cancel-on-itinerary bug upstream (filed as mbe-api#311);
-- open the list on active orders.
+- open the list on active orders. Planning found the server can't list several statuses at once, so the list opens on every status until mbe-api#312 ships (FR-003).
 
 When a customer's purchase has to be delivered, or picked up later, the cashier sets up its destinations in the POS "Entrega" step. Each destination becomes a delivery order. Today these orders stay in draft forever. Nothing in the new app confirms them, so they never get a folio and never reach the warehouse queue. Nobody can see an order's history, cancel one, or put a failed delivery back in the queue.
 
@@ -40,13 +40,13 @@ The clerk types folio 1532 and finds the order. They open it and see its header,
 
 **Why this priority**: Everything else starts from finding an order. On its own, this already shows which POS drafts are waiting for confirmation and which deliveries failed.
 
-**Independent Test**: Seed orders in several statuses at the user's facility and one at another facility. Open the list as a user with Delivery Orders read. Check that it opens on active orders at the user's facility, that the filters narrow it, and that opening a row shows its header, lines and history.
+**Independent Test**: Seed orders in several statuses at the user's facility and one at another facility. Open the list as a user with Delivery Orders read. Check that it opens on every status at the user's facility, newest first, that the filters narrow it, and that opening a row shows its header, lines and history.
 
 **Acceptance Scenarios**:
 
 1. **Given** a user with Delivery Orders read, **When** they open the back-office navigation, **Then** "Órdenes de entrega" is offered. Without that right it isn't.
-2. **Given** the list opens, **When** it loads, **Then** it shows orders at the user's facility in every non-terminal status (Borrador, Pendiente de aprobación, Aprobada, Lista para recoger, En preparación, En tránsito, Fallida), newest first, paginated.
-3. **Given** the list, **When** the user filters by status (any single status, "Activas" or "Todas"), type, scheduled date range, customer, sales order or facility, **Then** only matching orders are shown. Clearing the filters returns to active orders at the user's facility.
+2. **Given** the list opens, **When** it loads, **Then** it shows orders at the user's facility in every status, newest first, paginated. Once mbe-api#312 ships, it opens on active orders instead: every non-terminal status (Borrador, Pendiente de aprobación, Aprobada, Lista para recoger, En preparación, En tránsito, Fallida).
+3. **Given** the list, **When** the user filters by status (any single status or "Todas", plus "Activas" once mbe-api#312 ships), type, scheduled date range, customer, sales order or facility, **Then** only matching orders are shown. Clearing the filters returns to the opening state at the user's facility.
 4. **Given** the search box, **When** the user types a number, **Then** the list shows the order with that folio or that order number.
 5. **Given** a row, **When** the user clicks it, **Then** the order's detail screen opens. It shows folio, status, type, customer, facility, scheduled date, priority, ship-to, contact, comment, the sales orders it fulfills, its parent order (when it came from a partial delivery), the last rejection reason (when there is one), and its lines.
 6. **Given** the detail screen, **Then** each line shows product code, product name, dispatch warehouse, the sales order it comes from, and its ordered, committed, delivered, returned and open quantities.
@@ -81,7 +81,7 @@ The clerk notices the POS draft has the wrong contact and that the customer aske
 
 **Acceptance Scenarios**:
 
-1. **Given** a draft and a user with Delivery Orders update, **When** they edit the header, **Then** they can change scheduled date, priority (a whole number, 0 or more), ship-to (from the customer's addresses or a facility's address), contact (from the customer's contacts) and comment.
+1. **Given** a draft and a user with Delivery Orders update, **When** they edit the header, **Then** they can change scheduled date, priority (a whole number, 0 or more), ship-to (from the customer's addresses; a pickup keeps its store's address), contact (from the customer's contacts) and comment.
 2. **Given** a draft, **When** the user changes a line's quantity, **Then** it must be greater than 0 and no more than what that sales line still has left to deliver. A larger quantity is refused with how much is left.
 3. **Given** a draft, **When** the user removes a line, **Then** it's removed after confirmation, and its quantity becomes available to deliver again.
 4. **Given** a draft, **When** the user adds a line, **Then** they choose from lines on the same customer's completed sales that still have quantity left to deliver, and set a quantity within what's left. A line already on the order can't be added twice.
@@ -177,8 +177,8 @@ A customer bought cement for pickup at the counter. Their pickup order is Aproba
 
 - **FR-001**: The back office MUST offer an "Órdenes de entrega" screen only to users with Delivery Orders read.
 - **FR-002**: The list MUST show delivery orders newest first, paginated. Each row shows folio ("Borrador" when there's none), customer name, type, scheduled date, ship-to, the sales orders it fulfills, and status as a badge.
-- **FR-003**: The list MUST open on active orders (every non-terminal status) at the user's facility.
-- **FR-004**: The list MUST filter by status (a single status, "Activas" or "Todas"), type (Entrega, Recoge en tienda), scheduled date range, customer, sales order and facility. Clearing the filters returns to the opening state.
+- **FR-003**: The list MUST open on every status at the user's facility, newest first. When mbe-api#312 lets the server list every non-terminal status in one request, the list MUST open on active orders instead, and offer "Activas" as a status choice.
+- **FR-004**: The list MUST filter by status (a single status or "Todas"; "Activas" per FR-003), type (Entrega, Recoge en tienda), scheduled date range, customer, sales order and facility. Clearing the filters returns to the opening state.
 - **FR-005**: The list MUST offer a search box that finds an order by folio or order number.
 - **FR-006**: Clicking a row MUST open that order's detail screen.
 
@@ -192,7 +192,7 @@ A customer bought cement for pickup at the counter. Their pickup order is Aproba
 
 **Edit a draft**
 
-- **FR-012**: For a draft, the detail screen MUST let the user change scheduled date, priority, ship-to, contact and comment. Ship-to comes from the customer's addresses or a facility's address. Contact comes from the customer's contacts.
+- **FR-012**: For a draft, the detail screen MUST let the user change scheduled date, priority, ship-to, contact and comment. Ship-to comes from the customer's addresses. A pickup order keeps its store's address, which isn't offered for change. Contact comes from the customer's contacts.
 - **FR-013**: For a draft, the user MUST be able to change a line's quantity (more than 0, at most what's left to deliver on its sales line) and remove a line, after confirming.
 - **FR-014**: For a draft, the user MUST be able to add a line from the same customer's completed sales that still have quantity left to deliver, with a quantity within what's left. Lines already on the order aren't offered.
 - **FR-015**: Header and lines MUST be read-only when the order isn't a draft or the user lacks Delivery Orders update.
@@ -256,9 +256,10 @@ A customer bought cement for pickup at the counter. Their pickup order is Aproba
 - Trips (itineraries), including stop closure and its proof of delivery (#41), aren't part of this feature. Their effects show up here as statuses, quantities, history and proof.
 - Priority is a whole number of 0 or more, as the server takes it. There are no named priority levels, because the server has none.
 - Legacy let users rename a line's product; the new server keeps product name and code as copies, so that's dropped.
-- Legacy's default list was "orders I created or updated, not cancelled". The user chose active orders at the facility instead.
+- Legacy's default list was "orders I created or updated, not cancelled". The user chose active orders at the facility instead, deferred until mbe-api#312 (FR-003).
 - The minimum notice and whether approval is required are server settings the app can't read ahead of time. The app reacts to the server's answer.
 - The photo for a pickup is picked from a file (the app has no camera capture today).
+- "Agregar línea" works one sale at a time. The user picks one of the customer's completed sales, then that sale's lines that still have quantity left. The app computes what's left until mbe-api#313 adds a server query for it. Choosing a sale needs Sales Orders read.
 - Out of scope: creating a delivery order in the back office, approval, printing, trips, bulk actions on several orders, editing an order after confirmation, and clearing a header field.
 
 ## Verbatim Constraints
@@ -276,3 +277,4 @@ A customer bought cement for pickup at the counter. Their pickup order is Aproba
   - `delivery_order.not_failed`, `delivery_order.quantity_exceeds_remaining`, `delivery_order.line_not_deliverable`, `delivery_order.line_already_present`;
   - `delivery_order.proof_incomplete`, `delivery_order.reason_required`, `state.transition_invalid` (detail `resource`, `from`, `to`).
 - Known server gap: mbe-api#311. Cancelling an order that's a stop on an open itinerary blocks that itinerary's departure.
+- Pending server changes: mbe-api#312 (list several statuses at once, for "Activas") and mbe-api#313 (deliverable sales lines for a customer).

@@ -12,7 +12,7 @@ This is a new navigation destination in Ventas, after Pedidos. It is gated on `P
 
 ```text
 ┌ Órdenes de entrega ──────────────────────────────────────────────────────────────────────────┐
-│ [🔍 Folio o número de orden          ]  [⚙ Filtros ①]                                         │
+│ [🔍 Folio o número de orden          ]  [⚙ Filtros]                                           │
 ├──────────┬──────────────────┬─────────┬────────────┬──────────────────┬─────────┬──────────────┤
 │ Folio    │ Cliente          │ Tipo    │ Programada │ Destino          │ Pedidos │ Estado       │
 ├──────────┼──────────────────┼─────────┼────────────┼──────────────────┼─────────┼──────────────┤
@@ -25,7 +25,7 @@ This is a new navigation destination in Ventas, after Pedidos. It is gated on `P
 └──────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- **Filter row.** `CatalogFilterBar` with a `CatalogSearchBar`, which takes digits only (FR-005, spec edge case "Text search"). The badged filters button opens `showCatalogFilterSheet`. The badge reads ① on first load, because status opens on "Activas" (FR-003). There is no Create action, because orders are created only in the POS (spec Assumptions).
+- **Filter row.** `CatalogFilterBar` with a `CatalogSearchBar`, which takes digits only (FR-005, spec edge case "Text search"). The badged filters button opens `showCatalogFilterSheet`. The badge reads nothing on first load, because the list opens on every status until mbe-api#312 ships (FR-003, plan R3). There is no Create action, because orders are created only in the POS (spec Assumptions).
 - **Table.** `DataTableView<DeliveryOrderSummary>`, newest first (FR-002).
   - Folio shows "Borrador" when the order has none.
   - Destino and Cliente are truncated with a tooltip (§VI secondary text).
@@ -40,7 +40,7 @@ This is a new navigation destination in Ventas, after Pedidos. It is gated on `P
 ```text
                                             ┌ Filtros ──────────────────────────────┐
                                             │ Estado                                │
-                                            │ [ Activas                          ▾] │
+                                            │ [ Todas                            ▾] │
                                             │ Tipo                                  │
                                             │ [ Todos                            ▾] │
                                             │ Fecha programada                      │
@@ -56,19 +56,19 @@ This is a new navigation destination in Ventas, after Pedidos. It is gated on `P
                                             └───────────────────────────────────────┘
 ```
 
-- **Estado.** A dropdown: "Activas" (the default), "Todas", then each of the 11 statuses (FR-004).
+- **Estado.** A dropdown: "Todas" (the default), then each of the 11 statuses (FR-004). "Activas" is added, and becomes the default, when mbe-api#312 ships.
 - **Tipo.** Todos, Entrega or Recoge en tienda.
 - **Fecha programada.** `DateRangeFilterChip`.
 - **Cliente.** `CatalogEntityPicker` over customers. It's offered only to users with Customers read; see Open Question 6.
 - **Pedido.** A numeric field holding the sales-order id. The server filters by id, not by folio.
 - **Sucursal.** Defaults to the user's facility (spec Assumptions). It needs Facilities read to list names.
-- **"Limpiar todo".** Returns to Activas, every type, any date, no customer, no sale, the user's facility.
+- **"Limpiar todo".** Returns to every status, every type, any date, no customer, no sale, the user's facility.
 
 ### State: empty
 
 ```text
 ┌ Órdenes de entrega ──────────────────────────────────────────────────────────────────┐
-│ [🔍 Folio o número de orden          ]  [⚙ Filtros ①]                                 │
+│ [🔍 Folio o número de orden          ]  [⚙ Filtros]                                   │
 ├──────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                      │
 │               No hay órdenes de entrega con estos filtros.                           │
@@ -89,7 +89,7 @@ This is a new navigation destination in Ventas, after Pedidos. It is gated on `P
 
 ```text
 ┌ Órdenes de entrega ─────────────────┐
-│ [🔍 Folio…            ] [⚙ ①]       │
+│ [🔍 Folio…            ] [⚙]         │
 ├─────────────────────────────────────┤
 │ 1532 · Entrega      (En prepar.)    │
 │ Constructora Gil                    │
@@ -266,7 +266,7 @@ These follow `refund_detail_screen.dart`'s `_NotFound` and `_LoadFailed`: a mess
 ```
 
 - **Reason.** Required. The confirm button stays disabled while it's blank (FR-018).
-- **Refused.** `state.transition_invalid` closes the dialog, shows "La orden ya no puede cancelarse desde En tránsito.", and reloads the order (US4 scenario 4).
+- **Refused.** `state.transition_invalid` closes the dialog, shows the generic localized transition message, and reloads the order, so the new status explains why (US4 scenario 4, plan R10).
 
 ### Reprogramar / Lista para recoger
 
@@ -307,7 +307,7 @@ Both are simple confirmations naming the folio and customer. Neither has a body 
 ```
 
 - **Layout.** `ResponsiveFormGrid`, two columns.
-- **Destino.** Reuses the POS `CustomerAddressPicker`, the customer's addresses plus facility addresses (FR-012).
+- **Destino.** Reuses the POS `CustomerAddressPicker`, over the customer's addresses (FR-012). On a pickup order it's read-only and shows the store (plan R7).
 - **Contacto.** Reuses `CustomerContactPicker`.
 - **Prioridad.** A whole number, 0 or more.
 - **No clear option.** No field offers a "clear" choice, because the server ignores empty values (spec edge case "Fields that can't be cleared"). Only changed fields are sent.
@@ -317,24 +317,38 @@ Both are simple confirmations naming the folio and customer. Neither has a body 
 - **✎ Cantidad.** Opens a small dialog with a numeric field. It shows "Pendiente por entregar en el pedido: 12.00" and validates more than 0 and at most that amount (FR-013).
 - **🗑 Quitar.** Asks for confirmation: "¿Quitar Cemento gris 50 kg de la orden? La cantidad volverá a estar disponible para entregar."
 
-### Agregar línea
+### Agregar línea (two steps, plan R8)
 
 ```text
-┌ Agregar línea ────────────────────────────────────────────────────────────────┐
-│ Ventas de Ferretería López con pendiente por entregar                         │
-│ ┌──────┬────────────┬────────────────────────┬──────────┬────────────────────┐ │
-│ │Pedido│ Fecha      │ Producto               │ Pendiente│ Cantidad           │ │
-│ ├──────┼────────────┼────────────────────────┼──────────┼────────────────────┤ │
-│ │ 8841 │ 2026-11-14 │ Block 15×20×40         │   200.00 │ [        ]         │ │
-│ │ 8860 │ 2026-11-14 │ Cemento gris 50 kg     │    15.00 │ [        ]         │ │
-│ └──────┴────────────┴────────────────────────┴──────────┴────────────────────┘ │
-│                                                  [Cancelar]  [Agregar]         │
+┌ Agregar línea · 1 de 2 ───────────────────────────────────────────────────────┐
+│ Ventas completadas de Ferretería López en Centro                              │
+│ [🔍 Folio de venta        ]                                                   │
+│ ┌──────┬────────────┬──────────────┐                                          │
+│ │ Folio│ Fecha      │        Total │                                          │
+│ ├──────┼────────────┼──────────────┤                                          │
+│ │ 8860 │ 2026-11-14 │    $3,240.00 │  ›                                       │
+│ │ 8841 │ 2026-11-14 │   $18,900.00 │  ›                                       │
+│ └──────┴────────────┴──────────────┘                                          │
+│ [Cargar más]                                              [Cancelar]          │
 └───────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- **Rows.** Lines from the same customer's completed sales that still have quantity left to deliver. Lines already on the order are left out (FR-014).
-- **Multiple lines.** Several lines can get a quantity in one pass. "Agregar" sends one add per filled row.
-- **Data source.** Not yet settled; see Open Question 7.
+```text
+┌ Agregar línea · 2 de 2 ─ Venta 8860 ──────────────────────────────────────────┐
+│ ┌────────┬────────────────────────┬──────────┬────────────────────┐           │
+│ │ Código │ Producto               │ Pendiente│ Cantidad           │           │
+│ ├────────┼────────────────────────┼──────────┼────────────────────┤           │
+│ │ CEM-50 │ Cemento gris 50 kg     │    15.00 │ [        ]         │           │
+│ │ BLK-15 │ Block 15×20×40         │   200.00 │ [        ]         │           │
+│ └────────┴────────────────────────┴──────────┴────────────────────┘           │
+│ [‹ Otra venta]                                    [Cancelar]  [Agregar]       │
+└───────────────────────────────────────────────────────────────────────────────┘
+```
+
+- **Step 1.** The customer's completed sales at the order's facility, newest first, 20 at a time. Tapping a sale goes to step 2.
+- **Step 2.** That sale's lines that still have quantity left, computed on the client until mbe-api#313 ships. Lines already on the order are left out (FR-014).
+- **Multiple lines.** Several lines can get a quantity in one pass. "Agregar" sends one add per filled row, in sequence, and stops at the first error.
+- **Gate.** Offered only with Delivery Orders update and Sales Orders read (contract C7).
 
 ## Open Questions
 
@@ -353,7 +367,4 @@ Both are simple confirmations naming the folio and customer. Neither has a body 
    - The customer picker and batch name lookup need Customers read. Delivery Orders read doesn't grant it.
    - Options: hide the customer filter and show customer numbers; or require Customers read for the screen.
    - Assumed: hide the filter and fall back to numbers (FR-025), the same as the facility fallback in spec 060.
-7. **Where does "Agregar línea" get deliverable lines from?**
-   - The server has no "deliverable lines for customer X" endpoint in the delivery-orders contract. The POS step builds this from its open sales (`open_sales_selector_controller.dart`).
-   - Options: reuse the POS open-sales source, filtered to the customer; or file an mbe-api issue for a deliverable-lines query.
-   - Assumed: reuse the POS source. Confirm in planning that it covers sales other than the current one.
+7. **Where does "Agregar línea" get deliverable lines from?** *Resolved in planning (research R8):* not from the POS source, which is scoped to one register and today. The user picks one of the customer's completed sales, and the app computes what's left on that sale's lines. The user also chose to file mbe-api#313 for a server query that replaces the computation.
