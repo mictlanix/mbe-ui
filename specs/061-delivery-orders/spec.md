@@ -139,17 +139,17 @@ The driver couldn't deliver yesterday: nobody was home. The goods are back in th
 
 ### User Story 7 - Hand over a pickup order (Priority: P3)
 
-A customer bought cement for pickup at the counter. Their pickup order is Aprobada. The warehouse sets the goods aside and the clerk marks the order "Lista para recoger". When the customer arrives, the clerk opens the order and taps "Entregar al cliente". They enter the receiver's name, tick that the receiver showed ID, and take or attach a photo. The order becomes Recogida.
+A customer bought cement for pickup at the counter. Their pickup order is Aprobada. The warehouse sets the goods aside and the clerk marks the order "Lista para recoger". When the customer arrives, the clerk opens the order and taps "Entregar al cliente". They enter the receiver's name, note the ID they showed ("INE 0123456789"), and attach a photo. The order becomes Recogida.
 
 **Why this priority**: Without it, a confirmed pickup order never leaves Aprobada, because no other screen moves it. It ranks last because pickup orders are a smaller share and the counter can hand goods over before the record catches up.
 
-**Independent Test**: Confirm a pickup order. As a user with Delivery Orders update, mark it ready, then record its pickup with receiver name, ID shown and a photo. Check that it reaches Recogida and that the detail screen shows the proof of delivery.
+**Independent Test**: Confirm a pickup order. As a user with Delivery Orders update, mark it ready, then record its pickup with receiver name, the ID shown and a photo. Check that it reaches Recogida and that the detail screen shows the proof of delivery.
 
 **Acceptance Scenarios**:
 
 1. **Given** a pickup order in Aprobada and a user with Delivery Orders update, **Then** "Lista para recoger" is offered. It isn't offered on delivery orders.
-2. **Given** a pickup order in Lista para recoger, **Then** "Entregar al cliente" is offered. Its dialog asks for the receiver's name, whether they showed ID, and a photo, and can't be confirmed until all three are given.
-3. **Given** the server accepts, **Then** the order shows Recogida, and the detail screen shows the proof: receiver name, ID shown, the photo, and when it was recorded.
+2. **Given** a pickup order in Lista para recoger, **Then** "Entregar al cliente" is offered. Its dialog asks for the receiver's name, the identification they showed (free text, such as the ID type and number), and a photo, and can't be confirmed until all three are given.
+3. **Given** the server accepts, **Then** the order shows Recogida, and the detail screen shows the proof: receiver name, the identification shown, the photo, and when it was recorded.
 4. **Given** an order with proof of delivery (a pickup, or a stop closed on an itinerary), **Then** the detail screen shows the same proof read-only.
 
 ---
@@ -187,7 +187,7 @@ A customer bought cement for pickup at the counter. Their pickup order is Aproba
 - **FR-007**: The detail screen MUST show the order's header: folio, status, type, customer, facility, scheduled date, priority, ship-to, contact, comment, the sales orders it fulfills, its parent order and child orders (as links), and the last rejection reason when there is one.
 - **FR-008**: The detail screen MUST list the order's lines with product code, product name, dispatch warehouse, source sales order, and ordered, committed, delivered, returned and open quantities.
 - **FR-009**: The detail screen MUST show the order's history: each status change, oldest first, with date and time, previous and new status, employee name and reason.
-- **FR-010**: The detail screen MUST show the proof of delivery read-only when the order has one: receiver name, ID shown, photo, and when it was recorded.
+- **FR-010**: The detail screen MUST show the proof of delivery read-only when the order has one: receiver name, identification shown, photo, and when it was recorded.
 - **FR-011**: The detail screen MUST offer each action only when the order's status and type allow it and the user has Delivery Orders update (see Key Entities for the status rules).
 
 **Edit a draft**
@@ -204,7 +204,7 @@ A customer bought cement for pickup at the counter. Their pickup order is Aproba
 - **FR-018**: "Cancelar" MUST be offered in Borrador, Pendiente de aprobación, Aprobada, Lista para recoger, En preparación and Fallida, and MUST require a reason that isn't empty or only whitespace.
 - **FR-019**: "Reprogramar" MUST be offered only in Fallida, and MUST ask for confirmation.
 - **FR-020**: "Lista para recoger" MUST be offered only on a pickup order in Aprobada.
-- **FR-021**: "Entregar al cliente" MUST be offered only on a pickup order in Lista para recoger. It MUST require receiver name, whether ID was shown, and a photo.
+- **FR-021**: "Entregar al cliente" MUST be offered only on a pickup order in Lista para recoger. It MUST require receiver name, the identification shown (free text, not blank), and a photo.
 - **FR-022**: After any action succeeds, the detail screen MUST show the order's new state and history, and the list MUST reflect the change when the user returns to it.
 
 **General**
@@ -233,7 +233,7 @@ A customer bought cement for pickup at the counter. Their pickup order is Aproba
   - ready: Aprobada → Lista para recoger, pickup only;
   - pickup: Lista para recoger → Recogida, pickup only.
 - **Status change (event)**: one entry in an order's history. It has from and to status, employee, date and time, and an optional reason.
-- **Proof of delivery**: who received the goods, whether they showed ID, a photo, and when.
+- **Proof of delivery**: who received the goods, what identification they showed, a photo, and when.
 
 ## Success Criteria *(mandatory)*
 
@@ -242,7 +242,7 @@ A customer bought cement for pickup at the counter. Their pickup order is Aproba
 - **SC-001**: A clerk can find a draft created in the POS today and confirm it in under 30 seconds.
 - **SC-002**: Every delivery order created through the POS can be confirmed from the back office. None is left stuck in draft for lack of a screen.
 - **SC-003**: In every walkthrough case, the detail screen offers exactly the actions the order's status, type and the user's rights allow, and no others.
-- **SC-004**: No cancellation can be confirmed without a reason, and no pickup can be recorded without receiver name, ID shown and photo.
+- **SC-004**: No cancellation can be confirmed without a reason, and no pickup can be recorded without receiver name, identification shown and photo.
 - **SC-005**: For any order, a supervisor can tell from its history who moved it to each status and when, without asking anyone.
 - **SC-006**: Users without Delivery Orders read don't see the screen. Users without Delivery Orders update see no edit or status action anywhere on it.
 
@@ -258,7 +258,7 @@ A customer bought cement for pickup at the counter. Their pickup order is Aproba
 - Legacy let users rename a line's product; the new server keeps product name and code as copies, so that's dropped.
 - Legacy's default list was "orders I created or updated, not cancelled". The user chose active orders at the facility instead.
 - The minimum notice and whether approval is required are server settings the app can't read ahead of time. The app reacts to the server's answer.
-- The photo for a pickup can be taken with the device camera where there is one, or picked from a file.
+- The photo for a pickup is picked from a file (the app has no camera capture today).
 - Out of scope: creating a delivery order in the back office, approval, printing, trips, bulk actions on several orders, editing an order after confirmation, and clearing a header field.
 
 ## Verbatim Constraints
