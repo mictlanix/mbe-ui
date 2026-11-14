@@ -146,6 +146,216 @@ class _ConfirmDialogState extends ConsumerState<_ConfirmDialog> {
   }
 }
 
+/// The folio for a sentence; a draft has none yet.
+String _serial(AppLocalizations l10n, DeliveryOrder order) =>
+    order.serial == null ? l10n.deliveryOrderDraftFolio : '${order.serial}';
+
+// ---------------------------------------------------------------------------
+// Cancelar orden (C6, FR-018)
+// ---------------------------------------------------------------------------
+
+/// Asks for a reason, then cancels [order].
+///
+/// The confirm button stays disabled while the trimmed reason is empty. Any
+/// refusal closes the dialog and is answered to the caller to show: for
+/// `state.transition_invalid` that is the generic transition message, and the
+/// reload shows the status the order moved to (research R10). `null` when the
+/// user backed out.
+Future<DeliveryOrderActionResult?> showCancelDeliveryOrderDialog(
+  BuildContext context,
+  DeliveryOrder order,
+) => showResponsiveDialog<DeliveryOrderActionResult>(
+  context,
+  builder: (context) => _CancelDialog(order: order),
+);
+
+class _CancelDialog extends ConsumerStatefulWidget {
+  const _CancelDialog({required this.order});
+
+  final DeliveryOrder order;
+
+  @override
+  ConsumerState<_CancelDialog> createState() => _CancelDialogState();
+}
+
+class _CancelDialogState extends ConsumerState<_CancelDialog> {
+  final _reason = TextEditingController();
+  bool _busy = false;
+
+  @override
+  void dispose() {
+    _reason.dispose();
+    super.dispose();
+  }
+
+  bool get _canCancel => !_busy && _reason.text.trim().isNotEmpty;
+
+  Future<void> _cancel() async {
+    if (!_canCancel) return;
+    final navigator = Navigator.of(context);
+    setState(() => _busy = true);
+    final error = await ref
+        .read(deliveryOrderActionsProvider.notifier)
+        .cancel(widget.order.id, reason: _reason.text.trim());
+    if (!mounted) return;
+    navigator.pop((error: error));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final spacing = Theme.of(context).spacing;
+    final fmt = ref.watch(formattersProvider);
+    final order = widget.order;
+
+    return ResponsiveDialog(
+      key: const Key('delivery_order_cancel_dialog'),
+      title: l10n.deliveryOrderCancelTitle(_serial(l10n, order)),
+      dismissible: !_busy,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: spacing.fieldGapVertical,
+        children: [
+          Text(
+            l10n.deliveryOrderCancelSummary(
+              _customerName(ref, order.customerId),
+              fmt.display.date(order.date),
+            ),
+            key: const Key('delivery_order_cancel_summary'),
+          ),
+          TextField(
+            key: const Key('delivery_order_cancel_reason'),
+            controller: _reason,
+            enabled: !_busy,
+            autofocus: true,
+            minLines: 2,
+            maxLines: 4,
+            decoration: InputDecoration(
+              labelText: l10n.deliveryOrderCancelReasonLabel,
+            ),
+            onChanged: (_) => setState(() {}),
+          ),
+        ],
+      ),
+      secondaryAction: ResponsiveDialogAction(
+        label: l10n.deliveryOrderBackButton,
+        onPressed: _busy ? null : () => Navigator.of(context).pop(),
+      ),
+      primaryAction: ResponsiveDialogAction(
+        key: const Key('delivery_order_cancel_submit'),
+        label: l10n.deliveryOrderCancelAction,
+        busy: _busy,
+        onPressed: _canCancel ? _cancel : null,
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Reprogramar and Lista para recoger (C5, FR-019, FR-020)
+// ---------------------------------------------------------------------------
+
+/// Asks before requeuing failed [order], naming its folio and customer, then
+/// requeues it. A refusal (such as `delivery_order.not_failed`) closes the
+/// dialog and is answered to the caller to show. `null` when the user backed
+/// out.
+Future<DeliveryOrderActionResult?> showRequeueDeliveryOrderDialog(
+  BuildContext context,
+  DeliveryOrder order,
+) => showResponsiveDialog<DeliveryOrderActionResult>(
+  context,
+  builder: (context) => _StatusActionDialog(
+    keyPrefix: 'delivery_order_requeue',
+    order: order,
+    title: (l10n) => l10n.deliveryOrderRequeueTitle(_serial(l10n, order)),
+    body: (l10n, customer) => l10n.deliveryOrderRequeueBody(customer),
+    action: (l10n) => l10n.deliveryOrderRequeueAction,
+    run: (actions) => actions.requeue(order.id),
+  ),
+);
+
+/// Asks before marking pickup [order] ready, naming its folio and customer,
+/// then marks it. A refusal closes the dialog and is answered to the caller
+/// to show. `null` when the user backed out.
+Future<DeliveryOrderActionResult?> showReadyDeliveryOrderDialog(
+  BuildContext context,
+  DeliveryOrder order,
+) => showResponsiveDialog<DeliveryOrderActionResult>(
+  context,
+  builder: (context) => _StatusActionDialog(
+    keyPrefix: 'delivery_order_ready',
+    order: order,
+    title: (l10n) => l10n.deliveryOrderReadyTitle(_serial(l10n, order)),
+    body: (l10n, customer) => l10n.deliveryOrderReadyBody(customer),
+    action: (l10n) => l10n.deliveryOrderReadyAction,
+    run: (actions) => actions.markReady(order.id),
+  ),
+);
+
+/// A confirmation with no field that runs one status action and closes on
+/// any outcome.
+class _StatusActionDialog extends ConsumerStatefulWidget {
+  const _StatusActionDialog({
+    required this.keyPrefix,
+    required this.order,
+    required this.title,
+    required this.body,
+    required this.action,
+    required this.run,
+  });
+
+  /// `<prefix>_dialog` and `<prefix>_submit` are the dialog's keys.
+  final String keyPrefix;
+  final DeliveryOrder order;
+  final String Function(AppLocalizations l10n) title;
+  final String Function(AppLocalizations l10n, String customer) body;
+  final String Function(AppLocalizations l10n) action;
+  final Future<AppError?> Function(DeliveryOrderActions actions) run;
+
+  @override
+  ConsumerState<_StatusActionDialog> createState() =>
+      _StatusActionDialogState();
+}
+
+class _StatusActionDialogState extends ConsumerState<_StatusActionDialog> {
+  bool _busy = false;
+
+  Future<void> _submit() async {
+    if (_busy) return;
+    final navigator = Navigator.of(context);
+    setState(() => _busy = true);
+    final error = await widget.run(
+      ref.read(deliveryOrderActionsProvider.notifier),
+    );
+    if (!mounted) return;
+    navigator.pop((error: error));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return ResponsiveDialog(
+      key: Key('${widget.keyPrefix}_dialog'),
+      title: widget.title(l10n),
+      dismissible: !_busy,
+      body: Text(
+        widget.body(l10n, _customerName(ref, widget.order.customerId)),
+        key: Key('${widget.keyPrefix}_body'),
+      ),
+      secondaryAction: ResponsiveDialogAction(
+        label: l10n.deliveryOrderBackButton,
+        onPressed: _busy ? null : () => Navigator.of(context).pop(),
+      ),
+      primaryAction: ResponsiveDialogAction(
+        key: Key('${widget.keyPrefix}_submit'),
+        label: widget.action(l10n),
+        busy: _busy,
+        onPressed: _submit,
+      ),
+    );
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Line quantity and remove (C8, FR-013)
 // ---------------------------------------------------------------------------

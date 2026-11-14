@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +22,7 @@ import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/address_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/contact.dart';
@@ -68,7 +72,22 @@ class _FakeActions extends DeliveryOrderActions {
   @override
   Future<AppError?> removeLine(int id, {required int lineId}) =>
       _answer(id, 'remove $lineId');
+
+  @override
+  Future<AppError?> cancel(int id, {required String reason}) =>
+      _answer(id, 'cancel $reason');
+
+  @override
+  Future<AppError?> requeue(int id) => _answer(id, 'requeue');
+
+  @override
+  Future<AppError?> markReady(int id) => _answer(id, 'ready');
 }
+
+/// A 1×1 PNG, as the proof image endpoint answers.
+final _png = base64Decode(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
+);
 
 Override _access({bool update = false, bool salesOrdersRead = true}) =>
     accessControlProvider.overrideWithValue(
@@ -146,6 +165,7 @@ DeliveryOrder _order({
   int? parentId,
   String? rejectionReason,
   String? comment = 'Por la mañana',
+  int? proofId,
   List<DeliveryOrderLine>? lines,
 }) => DeliveryOrder(
   id: id,
@@ -162,13 +182,15 @@ DeliveryOrder _order({
   contactId: 12,
   comment: comment,
   rejectionReason: rejectionReason,
+  proofId: proofId,
   createdAt: DateTime(2026, 11, 14),
   modifiedAt: DateTime(2026, 11, 14),
   lines: lines ?? [_line(1)],
 );
 
-/// Spec 061 US1 (T018), contracts C4: the delivery order detail screen,
-/// read-only. Later stories add their sections' tests here.
+/// Spec 061, contracts C4: the delivery order detail screen. US1 (T018) reads
+/// it; US2 to US7 (T021, T027, T030, T032, T034, T038) act on it; T039 is the
+/// action matrix (data-model §3).
 void main() {
   late AppLocalizations l10n;
 
@@ -180,9 +202,12 @@ void main() {
     DeliveryOrder order, {
     Map<int, int>? sales,
     List<DeliveryOrderSummary> children = const [],
+    AsyncValue<List<DeliveryOrderEvent>> events = const AsyncData([]),
+    AsyncValue<ProofOfDelivery>? proof,
   }) => DeliveryOrderDetail(
     order: order,
-    events: const AsyncData([]),
+    events: events,
+    proof: proof,
     sales:
         sales ??
         {
@@ -202,6 +227,7 @@ void main() {
     bool namesReadable = true,
     Size surface = const Size(1400, 1400),
     _FakeActions? actions,
+    Future<Uint8List> Function()? proofImage,
   }) async {
     tester.view.physicalSize = surface;
     tester.view.devicePixelRatio = 1;
@@ -230,6 +256,12 @@ void main() {
         ),
         facilityDisplayNameProvider.overrideWith(
           (ref, id) async => namesReadable ? 'Centro' : null,
+        ),
+        employeeDisplayNameProvider.overrideWith(
+          (ref, id) async => namesReadable ? 'Empleado $id' : null,
+        ),
+        deliveryOrderProofImageProvider.overrideWith(
+          (ref, id) => (proofImage ?? () async => _png)(),
         ),
         saleCustomerControllerProvider.overrideWith(
           (ref, id) async => namesReadable
@@ -699,7 +731,6 @@ void main() {
       );
 
       expect(key('delivery_order_confirm'), findsNothing);
-      expect(key('delivery_order_actions'), findsNothing);
     });
 
     testWidgets('is disabled with a hint on a draft with no lines', (
@@ -972,5 +1003,534 @@ void main() {
     }
     expect(find.byType(FilledButton), findsNothing);
     expect(tester.widget<AppBar>(find.byType(AppBar)).actions, isNull);
+  });
+
+  AppError refusal(String codeName, api.ErrorCode code) => AppError.server(
+    statusCode: 409,
+    problem: ApiProblem(codeName: codeName, code: code),
+  );
+
+  DeliveryOrderEvent event(
+    int id,
+    DeliveryOrderStatus? from,
+    DeliveryOrderStatus to, {
+    int employee = 5,
+    int hour = 9,
+    String? reason,
+  }) => DeliveryOrderEvent(
+    id: id,
+    from: from,
+    to: to,
+    employeeId: employee,
+    at: DateTime(2026, 11, 14, hour),
+    reason: reason,
+  );
+
+  group('cancel (US4)', () {
+    testWidgets('success shows Cancelada, says so, and the history gains the '
+        'cancellation', (tester) async {
+      var current = detailOf(
+        _order(),
+        events: AsyncData([
+          event(1, null, DeliveryOrderStatus.draft),
+          event(
+            2,
+            DeliveryOrderStatus.draft,
+            DeliveryOrderStatus.inPreparation,
+            hour: 10,
+          ),
+        ]),
+      );
+      final actions = _FakeActions(
+        onSuccess: () => current = detailOf(
+          _order(status: DeliveryOrderStatus.cancelled),
+          events: AsyncData([
+            ...current.events.value!,
+            event(
+              3,
+              DeliveryOrderStatus.inPreparation,
+              DeliveryOrderStatus.cancelled,
+              hour: 11,
+              reason: 'Cliente canceló',
+            ),
+          ]),
+        ),
+      );
+      await pumpDetail(
+        tester,
+        answer: () async => current,
+        access: _access(update: true),
+        actions: actions,
+      );
+      expect(key('delivery_order_event_3'), findsNothing);
+
+      await tester.tap(key('delivery_order_cancel'));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        key('delivery_order_cancel_reason'),
+        '  Cliente canceló  ',
+      );
+      await tester.pump();
+      await tester.tap(key('delivery_order_cancel_submit'));
+      await tester.pumpAndSettle();
+
+      expect(actions.calls, ['cancel Cliente canceló']);
+      expect(key('delivery_order_cancel_dialog'), findsNothing);
+      expect(key('delivery_order_status_chip_cancelled'), findsOneWidget);
+      expect(
+        find.text(l10n.deliveryOrderSnackCancelled('1532')),
+        findsOneWidget,
+      );
+      expect(key('delivery_order_event_3'), findsOneWidget);
+      expect(key('delivery_order_cancel'), findsNothing);
+      expect(key('delivery_order_actions'), findsNothing);
+    });
+
+    testWidgets('state.transition_invalid closes the dialog, shows the '
+        'generic message and reloads', (tester) async {
+      var loads = 0;
+      var current = detailOf(_order());
+      final actions = _FakeActions(
+        error: refusal(
+          'state.transition_invalid',
+          api.ErrorCode.statePeriodTransitionInvalid,
+        ),
+      );
+      await pumpDetail(
+        tester,
+        answer: () async {
+          loads++;
+          // The truck left in the meantime.
+          if (loads > 1) {
+            current = detailOf(_order(status: DeliveryOrderStatus.inTransit));
+          }
+          return current;
+        },
+        access: _access(update: true),
+        actions: actions,
+      );
+
+      await tester.tap(key('delivery_order_cancel'));
+      await tester.pumpAndSettle();
+      await tester.enterText(key('delivery_order_cancel_reason'), 'Motivo');
+      await tester.pump();
+      await tester.tap(key('delivery_order_cancel_submit'));
+      await tester.pumpAndSettle();
+
+      expect(key('delivery_order_cancel_dialog'), findsNothing);
+      expect(key('delivery_order_refusal'), findsOneWidget);
+      expect(find.text(l10n.apiErrorStateTransitionInvalid), findsOneWidget);
+      expect(loads, 2);
+      expect(key('delivery_order_status_chip_inTransit'), findsOneWidget);
+      expect(key('delivery_order_cancel'), findsNothing);
+    });
+  });
+
+  group('history (US5)', () {
+    testWidgets('lists events oldest first, a dash for the creation and a '
+        'rejection with its reason', (tester) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(
+          draft(),
+          events: AsyncData([
+            event(
+              3,
+              DeliveryOrderStatus.pendingApproval,
+              DeliveryOrderStatus.draft,
+              employee: 6,
+              hour: 11,
+              reason: 'Falta dirección',
+            ),
+            event(1, null, DeliveryOrderStatus.draft),
+            event(
+              2,
+              DeliveryOrderStatus.draft,
+              DeliveryOrderStatus.pendingApproval,
+              hour: 10,
+            ),
+          ]),
+        ),
+      );
+
+      final first = tester.getTopLeft(key('delivery_order_event_1')).dy;
+      final second = tester.getTopLeft(key('delivery_order_event_2')).dy;
+      final third = tester.getTopLeft(key('delivery_order_event_3')).dy;
+      expect(first < second && second < third, isTrue);
+
+      String transition(int id) =>
+          tester.widget<Text>(key('delivery_order_event_transition_$id')).data!;
+      expect(
+        transition(1),
+        '$emptyValuePlaceholder → ${l10n.deliveryOrderStatusDraft}',
+      );
+      expect(
+        transition(3),
+        '${l10n.deliveryOrderStatusPendingApproval} → '
+        '${l10n.deliveryOrderStatusDraft}',
+      );
+      expect(
+        tester.widget<Text>(key('delivery_order_event_reason_3')).data,
+        'Falta dirección',
+      );
+      expect(
+        find.descendant(
+          of: key('delivery_order_event_3'),
+          matching: find.text('Empleado 6'),
+        ),
+        findsOneWidget,
+      );
+      // History follows the lines.
+      expect(
+        tester.getTopLeft(key('delivery_order_history')).dy,
+        greaterThan(tester.getTopLeft(key('delivery_order_lines')).dy),
+      );
+    });
+
+    testWidgets('employee names fall back to their number', (tester) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(
+          _order(),
+          events: AsyncData([event(1, null, DeliveryOrderStatus.draft)]),
+        ),
+        namesReadable: false,
+      );
+
+      expect(
+        find.descendant(
+          of: key('delivery_order_event_1'),
+          matching: find.text('#5'),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('no events shows the empty line', (tester) async {
+      await pumpDetail(tester, detail: detailOf(_order()));
+
+      expect(key('delivery_order_events_empty'), findsOneWidget);
+    });
+
+    testWidgets('a failed history stays inside its section', (tester) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(
+          _order(),
+          events: AsyncError(
+            const AppError.server(statusCode: 500),
+            StackTrace.empty,
+          ),
+        ),
+      );
+
+      expect(
+        find.descendant(
+          of: key('delivery_order_history'),
+          matching: key('delivery_order_events_error'),
+        ),
+        findsOneWidget,
+      );
+      expect(key('delivery_order_lines_table'), findsOneWidget);
+    });
+  });
+
+  group('requeue (US6)', () {
+    DeliveryOrder failed() => _order(status: DeliveryOrderStatus.failed);
+
+    testWidgets('success shows En preparación with Devuelta back at 0', (
+      tester,
+    ) async {
+      var current = detailOf(failed());
+      final actions = _FakeActions(
+        onSuccess: () => current = detailOf(
+          _order(
+            lines: [_line(1, returned: '0', open: '5')],
+          ),
+        ),
+      );
+      await pumpDetail(
+        tester,
+        answer: () async => current,
+        access: _access(update: true),
+        actions: actions,
+      );
+
+      await tester.tap(key('delivery_order_requeue'));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<Text>(key('delivery_order_requeue_body')).data,
+        l10n.deliveryOrderRequeueBody('Ferretería López'),
+      );
+      await tester.tap(key('delivery_order_requeue_submit'));
+      await tester.pumpAndSettle();
+
+      expect(actions.calls, ['requeue']);
+      expect(key('delivery_order_status_chip_inPreparation'), findsOneWidget);
+      expect(
+        find.text(l10n.deliveryOrderSnackRequeued('1532')),
+        findsOneWidget,
+      );
+      final table = key('delivery_order_lines_table');
+      expect(
+        find.descendant(of: table, matching: find.text('0')),
+        findsOneWidget,
+      );
+      expect(key('delivery_order_requeue'), findsNothing);
+    });
+
+    testWidgets('not_failed shows its message and reloads', (tester) async {
+      var loads = 0;
+      final actions = _FakeActions(
+        error: refusal(
+          'delivery_order.not_failed',
+          api.ErrorCode.deliveryOrderPeriodNotFailed,
+        ),
+      );
+      await pumpDetail(
+        tester,
+        answer: () async {
+          loads++;
+          return detailOf(failed());
+        },
+        access: _access(update: true),
+        actions: actions,
+      );
+
+      await tester.tap(key('delivery_order_requeue'));
+      await tester.pumpAndSettle();
+      await tester.tap(key('delivery_order_requeue_submit'));
+      await tester.pumpAndSettle();
+
+      expect(key('delivery_order_requeue_dialog'), findsNothing);
+      expect(find.text(l10n.apiErrorDeliveryOrderNotFailed), findsOneWidget);
+      expect(loads, 2);
+    });
+  });
+
+  group('pickup (US7)', () {
+    DeliveryOrder pickup(DeliveryOrderStatus status, {int? proofId}) => _order(
+      status: status,
+      type: FulfillmentType.counterPickup,
+      proofId: proofId,
+    );
+
+    final proof = ProofOfDelivery(
+      receiverName: 'Juan Pérez',
+      receiverIdShown: 'INE 0123456789',
+      capturedAt: DateTime(2026, 11, 14, 16, 22),
+      capturedBy: 8,
+    );
+
+    testWidgets('marking ready shows Lista para recoger and offers the '
+        'handover', (tester) async {
+      var current = detailOf(pickup(DeliveryOrderStatus.approved));
+      final actions = _FakeActions(
+        onSuccess: () =>
+            current = detailOf(pickup(DeliveryOrderStatus.readyForPickup)),
+      );
+      await pumpDetail(
+        tester,
+        answer: () async => current,
+        access: _access(update: true),
+        actions: actions,
+      );
+
+      await tester.tap(key('delivery_order_ready'));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<Text>(key('delivery_order_ready_body')).data,
+        l10n.deliveryOrderReadyBody('Ferretería López'),
+      );
+      await tester.tap(key('delivery_order_ready_submit'));
+      await tester.pumpAndSettle();
+
+      expect(actions.calls, ['ready']);
+      expect(key('delivery_order_status_chip_readyForPickup'), findsOneWidget);
+      expect(find.text(l10n.deliveryOrderSnackReady('1532')), findsOneWidget);
+      expect(key('delivery_order_ready'), findsNothing);
+      expect(key('delivery_order_pickup'), findsOneWidget);
+    });
+
+    testWidgets('"Entregar al cliente" opens the pickup dialog', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(pickup(DeliveryOrderStatus.readyForPickup)),
+        access: _access(update: true),
+      );
+
+      await tester.tap(key('delivery_order_pickup'));
+      await tester.pumpAndSettle();
+
+      expect(key('delivery_order_pickup_dialog'), findsOneWidget);
+    });
+
+    testWidgets('the proof shows between the lines and the history, and the '
+        'photo enlarges', (tester) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(
+          pickup(DeliveryOrderStatus.pickedUp, proofId: 1),
+          proof: AsyncData(proof),
+        ),
+      );
+
+      final section = key('delivery_order_proof');
+      for (final value in ['Juan Pérez', 'INE 0123456789', 'Empleado 8']) {
+        expect(
+          find.descendant(of: section, matching: find.text(value)),
+          findsOneWidget,
+          reason: value,
+        );
+      }
+      final y = tester.getTopLeft(section).dy;
+      expect(y, greaterThan(tester.getTopLeft(key('delivery_order_lines')).dy));
+      expect(y, lessThan(tester.getTopLeft(key('delivery_order_history')).dy));
+
+      await tester.tap(key('delivery_order_proof_photo'));
+      await tester.pumpAndSettle();
+      expect(key('delivery_order_proof_photo_dialog'), findsOneWidget);
+    });
+
+    testWidgets('a failed proof stays inside its section', (tester) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(
+          pickup(DeliveryOrderStatus.pickedUp, proofId: 1),
+          proof: AsyncError(const AppError.notFound(), StackTrace.empty),
+        ),
+      );
+
+      expect(
+        find.descendant(
+          of: key('delivery_order_proof'),
+          matching: key('delivery_order_proof_failed'),
+        ),
+        findsOneWidget,
+      );
+      expect(key('delivery_order_lines_table'), findsOneWidget);
+      expect(key('delivery_order_history'), findsOneWidget);
+    });
+
+    testWidgets('a failed photo keeps the details and says so', (tester) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(
+          pickup(DeliveryOrderStatus.pickedUp, proofId: 1),
+          proof: AsyncData(proof),
+        ),
+        proofImage: () async => throw const AppError.server(statusCode: 500),
+      );
+
+      expect(key('delivery_order_proof_receiver'), findsOneWidget);
+      expect(key('delivery_order_proof_photo'), findsNothing);
+      expect(find.text(l10n.deliveryOrderProofLoadFailed), findsOneWidget);
+    });
+
+    testWidgets('no proof, no section', (tester) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(pickup(DeliveryOrderStatus.readyForPickup)),
+      );
+
+      expect(key('delivery_order_proof'), findsNothing);
+    });
+  });
+
+  // T039 (SC-003, data-model §3): the exact action set for every status ×
+  // type × rights combination. Drafts carry a line, so Confirmar is enabled
+  // and the line icons exist.
+  testWidgets('action matrix', (tester) async {
+    const confirm = 'delivery_order_confirm';
+    const cancel = 'delivery_order_cancel';
+    const requeue = 'delivery_order_requeue';
+    const ready = 'delivery_order_ready';
+    const handover = 'delivery_order_pickup';
+    const editHeader = 'delivery_order_edit_header';
+    const addLine = 'delivery_order_add_line';
+    const lineEdit = 'delivery_order_line_edit_1';
+    const lineRemove = 'delivery_order_line_remove_1';
+    const all = {
+      confirm,
+      cancel,
+      requeue,
+      ready,
+      handover,
+      editHeader,
+      addLine,
+      lineEdit,
+      lineRemove,
+    };
+
+    // What a user with Delivery Orders update and Sales Orders read is
+    // offered, transcribed from data-model §3.
+    Set<String> offered(DeliveryOrderStatus status, FulfillmentType type) {
+      final isPickup = type == FulfillmentType.counterPickup;
+      return switch (status) {
+        DeliveryOrderStatus.draft => {
+          editHeader,
+          lineEdit,
+          lineRemove,
+          addLine,
+          confirm,
+          cancel,
+        },
+        DeliveryOrderStatus.pendingApproval => {cancel},
+        DeliveryOrderStatus.approved => {if (isPickup) ready, cancel},
+        DeliveryOrderStatus.readyForPickup => {if (isPickup) handover, cancel},
+        DeliveryOrderStatus.inPreparation => {cancel},
+        DeliveryOrderStatus.failed => {requeue, cancel},
+        DeliveryOrderStatus.inTransit ||
+        DeliveryOrderStatus.pickedUp ||
+        DeliveryOrderStatus.delivered ||
+        DeliveryOrderStatus.partiallyDelivered ||
+        DeliveryOrderStatus.cancelled => {},
+      };
+    }
+
+    for (final status in DeliveryOrderStatus.values) {
+      for (final type in FulfillmentType.values) {
+        for (final (update, salesRead) in const [
+          (false, true),
+          (true, true),
+          (true, false),
+        ]) {
+          await tester.pumpWidget(const SizedBox.shrink());
+          await pumpDetail(
+            tester,
+            detail: detailOf(
+              _order(
+                serial: status == DeliveryOrderStatus.draft ? null : 1532,
+                status: status,
+                type: type,
+              ),
+            ),
+            access: _access(update: update, salesOrdersRead: salesRead),
+          );
+
+          final expected = !update
+              ? <String>{}
+              : (offered(status, type)
+                  ..removeWhere((k) => k == addLine && !salesRead));
+          final present = {
+            for (final k in all)
+              if (find.byKey(Key(k)).evaluate().isNotEmpty) k,
+          };
+          final label =
+              '${status.name} ${type.name} update=$update '
+              'salesRead=$salesRead';
+          expect(present, expected, reason: label);
+          if (expected.contains(confirm)) {
+            expect(
+              tester.widget<FilledButton>(key(confirm)).onPressed,
+              isNotNull,
+              reason: label,
+            );
+          }
+        }
+      }
+    }
   });
 }

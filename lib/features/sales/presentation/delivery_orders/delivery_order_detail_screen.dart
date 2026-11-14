@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,6 +19,7 @@ import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/fact_strip_row.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart' show toAppError;
+import 'package:mbe_ui/core/widgets/responsive_dialog.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/sales/domain/entities/delivery_order.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
@@ -27,10 +30,12 @@ import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_orde
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_status_chip.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_orders_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/header_dialog.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_orders/pickup_dialog.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// One delivery order (spec 061 contracts C4): header facts, the detail
-/// band, the rejection banner and the lines.
+/// band, the rejection banner, the lines, the proof of delivery, the history
+/// and the status actions.
 ///
 /// A full screen with its own address rather than a side panel, because an
 /// order owns child lines and linked sections, and parent and child orders
@@ -38,9 +43,8 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// stays empty; every action belongs in the body.
 ///
 /// The body is a column of sections, top to bottom: rejection banner, facts
-/// strip, detail band, lines, action area. Later stories insert the proof of
-/// delivery (US7) and the history (US5) between the lines and the action
-/// area; see [_DeliveryOrderBody].
+/// strip, detail band, lines, proof of delivery, history, action area; see
+/// [_DeliveryOrderBody].
 class DeliveryOrderDetailScreen extends ConsumerWidget {
   /// [deliveryOrderId] is `null` for an address whose id isn't a number,
   /// which shows the not-found state instead of throwing.
@@ -156,14 +160,10 @@ class _LoadFailed extends StatelessWidget {
   }
 }
 
-/// The loaded order, as a column of sections.
-///
-/// Where later stories plug in:
-/// - the proof (US7) and history (US5) are inserted after [_LinesSection],
-///   before the action area, in that order (contracts C4);
-/// - the action area stays last: US4, US6 and US7 add their buttons to
-///   [_DeliveryOrderBodyState._actionButtons] following data-model §3, and
-///   their dialogs to `delivery_order_dialogs.dart`.
+/// The loaded order, as a column of sections (contracts C4). The action area
+/// stays last; [_DeliveryOrderBodyState._actionButtons] follows data-model
+/// §3, and the dialogs live in `delivery_order_dialogs.dart` and
+/// `pickup_dialog.dart`.
 ///
 /// Stateful so the confirm's busy flag and a refusal survive the reload every
 /// write triggers: the screen keeps showing this body while it refetches.
@@ -229,6 +229,49 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
     }
   }
 
+  /// Opens a status action's dialog; a refusal shows above the action area,
+  /// a success says so with the order's folio. Either way the order reloads.
+  Future<void> _statusAction(
+    Future<DeliveryOrderActionResult?> Function() open,
+    String Function(AppLocalizations l10n, String serial) done,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    final serial = _serialOf(_order, l10n);
+    setState(() => _actionError = null);
+    final result = await open();
+    if (!mounted || result == null) return;
+    if (result.error != null) {
+      setState(() => _actionError = result.error);
+      return;
+    }
+    _snack(done(l10n, serial));
+  }
+
+  Future<void> _cancel() => _statusAction(
+    () => showCancelDeliveryOrderDialog(context, _order),
+    (l10n, serial) => l10n.deliveryOrderSnackCancelled(serial),
+  );
+
+  Future<void> _requeue() => _statusAction(
+    () => showRequeueDeliveryOrderDialog(context, _order),
+    (l10n, serial) => l10n.deliveryOrderSnackRequeued(serial),
+  );
+
+  Future<void> _markReady() => _statusAction(
+    () => showReadyDeliveryOrderDialog(context, _order),
+    (l10n, serial) => l10n.deliveryOrderSnackReady(serial),
+  );
+
+  /// Refusals stay inside the pickup dialog, so only a success comes back.
+  Future<void> _pickup() async {
+    final l10n = AppLocalizations.of(context)!;
+    final serial = _serialOf(_order, l10n);
+    setState(() => _actionError = null);
+    if (await showPickupDialog(context, _order) && mounted) {
+      _snack(l10n.deliveryOrderSnackPickedUp(serial));
+    }
+  }
+
   Future<void> _editHeader() async {
     final l10n = AppLocalizations.of(context)!;
     final serial = _serialOf(_order, l10n);
@@ -275,7 +318,17 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
     final l10n = AppLocalizations.of(context)!;
     final order = _order;
     if (!canUpdate) return const [];
+    final status = order.status;
+    final isPickup = order.type == FulfillmentType.counterPickup;
     return [
+      // Offered in En preparación even when the order may be on an open
+      // itinerary (mbe-api#311, accepted risk).
+      if (_cancellable.contains(status))
+        OutlinedButton(
+          key: const Key('delivery_order_cancel'),
+          onPressed: _confirming ? null : _cancel,
+          child: Text(l10n.deliveryOrderCancelAction),
+        ),
       if (order.isDraft)
         FilledButton(
           key: const Key('delivery_order_confirm'),
@@ -289,8 +342,36 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
                 )
               : Text(l10n.deliveryOrderConfirmAction),
         ),
+      if (status == DeliveryOrderStatus.failed)
+        FilledButton(
+          key: const Key('delivery_order_requeue'),
+          onPressed: _requeue,
+          child: Text(l10n.deliveryOrderRequeueAction),
+        ),
+      if (isPickup && status == DeliveryOrderStatus.approved)
+        FilledButton(
+          key: const Key('delivery_order_ready'),
+          onPressed: _markReady,
+          child: Text(l10n.deliveryOrderReadyAction),
+        ),
+      if (isPickup && status == DeliveryOrderStatus.readyForPickup)
+        FilledButton(
+          key: const Key('delivery_order_pickup'),
+          onPressed: _pickup,
+          child: Text(l10n.deliveryOrderPickupAction),
+        ),
     ];
   }
+
+  /// Where "Cancelar orden" is offered (FR-018, data-model §3).
+  static const _cancellable = {
+    DeliveryOrderStatus.draft,
+    DeliveryOrderStatus.pendingApproval,
+    DeliveryOrderStatus.approved,
+    DeliveryOrderStatus.readyForPickup,
+    DeliveryOrderStatus.inPreparation,
+    DeliveryOrderStatus.failed,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -330,7 +411,13 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
             onEditLine: canEdit ? _editLine : null,
             onRemoveLine: canEdit ? _removeLine : null,
           ),
-          // Proof (US7) and history (US5) go here, above the action area.
+          if (detail.proof != null)
+            _ProofSection(
+              orderId: order.id,
+              orderLabel: _serialOf(order, l10n),
+              proof: detail.proof!,
+            ),
+          _HistorySection(events: detail.events),
           if (_actionError != null) DeliveryOrderRefusal(error: _actionError!),
           if (buttons.isNotEmpty)
             Align(
@@ -794,6 +881,237 @@ class _LinesSection extends ConsumerWidget {
           ],
         ),
         lines,
+      ],
+    );
+  }
+}
+
+/// The proof of delivery, read-only (FR-010): who received it, the
+/// identification they showed, when and by whom it was captured, and the
+/// photo. A failure shows inside this section only.
+class _ProofSection extends ConsumerWidget {
+  const _ProofSection({
+    required this.orderId,
+    required this.orderLabel,
+    required this.proof,
+  });
+
+  static const _thumbnailSize = 120.0;
+
+  final int orderId;
+
+  /// The order's folio, titling the enlarged photo.
+  final String orderLabel;
+  final AsyncValue<ProofOfDelivery> proof;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final spacing = theme.spacing;
+    final fmt = ref.watch(formattersProvider);
+    final failed = Text(
+      l10n.deliveryOrderProofLoadFailed,
+      key: const Key('delivery_order_proof_failed'),
+      style: TextStyle(color: theme.colorScheme.error),
+    );
+
+    return Column(
+      key: const Key('delivery_order_proof'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: spacing.sm,
+      children: [
+        Text(l10n.deliveryOrderProofTitle, style: theme.textTheme.titleMedium),
+        proof.when(
+          loading: () => const LinearProgressIndicator(),
+          error: (_, _) => failed,
+          data: (proof) => Wrap(
+            spacing: spacing.lg,
+            runSpacing: spacing.sm,
+            crossAxisAlignment: WrapCrossAlignment.start,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: spacing.sm,
+                children: [
+                  CompactField(
+                    label: l10n.deliveryOrderProofReceiver,
+                    child: Text(
+                      proof.receiverName,
+                      key: const Key('delivery_order_proof_receiver'),
+                    ),
+                  ),
+                  CompactField(
+                    label: l10n.deliveryOrderProofIdShown,
+                    child: Text(
+                      proof.receiverIdShown,
+                      key: const Key('delivery_order_proof_id_shown'),
+                    ),
+                  ),
+                  CompactField(
+                    label: l10n.deliveryOrderProofCapturedAt,
+                    child: Text(fmt.display.dateTime(proof.capturedAt)),
+                  ),
+                  CompactField(
+                    label: l10n.deliveryOrderProofCapturedBy,
+                    child: DeliveryOrderEmployeeName(
+                      employeeId: proof.capturedBy,
+                      truncate: false,
+                    ),
+                  ),
+                ],
+              ),
+              // Read only once the details are in (research R5).
+              ref
+                  .watch(deliveryOrderProofImageProvider(orderId))
+                  .when(
+                    loading: () => const SizedBox.square(
+                      dimension: _thumbnailSize,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                    error: (_, _) => failed,
+                    data: (bytes) => Tooltip(
+                      message: l10n.deliveryOrderProofEnlargeTooltip,
+                      child: InkWell(
+                        key: const Key('delivery_order_proof_photo'),
+                        onTap: () => _enlarge(context, bytes),
+                        child: ClipRRect(
+                          borderRadius: theme.shapes.mdRadius,
+                          child: Image.memory(
+                            bytes,
+                            width: _thumbnailSize,
+                            height: _thumbnailSize,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) => failed,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _enlarge(BuildContext context, Uint8List bytes) {
+    final l10n = AppLocalizations.of(context)!;
+    showResponsiveDialog<void>(
+      context,
+      builder: (context) => ResponsiveDialog(
+        key: const Key('delivery_order_proof_photo_dialog'),
+        title: '${l10n.deliveryOrderProofTitle} · $orderLabel',
+        maxWidth: 960,
+        body: Image.memory(bytes, fit: BoxFit.contain),
+        primaryAction: ResponsiveDialogAction(
+          label: MaterialLocalizations.of(context).closeButtonLabel,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ),
+    );
+  }
+}
+
+/// The status history (FR-009), oldest first: when, from → to (a dash for
+/// the creation event), who, and the reason. Bounded to a handful of events,
+/// so it isn't paginated (research R5). A failed history shows inside this
+/// section only.
+class _HistorySection extends ConsumerWidget {
+  const _HistorySection({required this.events});
+
+  final AsyncValue<List<DeliveryOrderEvent>> events;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final spacing = theme.spacing;
+    final fmt = ref.watch(formattersProvider);
+    final compact = LayoutBreakpoints.isCompact(context);
+
+    String label(DeliveryOrderStatus? status) => status == null
+        ? emptyValuePlaceholder
+        : deliveryOrderStatusLabel(l10n, status);
+
+    Widget row(DeliveryOrderEvent event) {
+      final when = Text(fmt.display.dateTime(event.at));
+      final transition = Text(
+        '${label(event.from)} → ${label(event.to)}',
+        key: Key('delivery_order_event_transition_${event.id}'),
+      );
+      final who = DeliveryOrderEmployeeName(employeeId: event.employeeId);
+      final reason = event.reason;
+      final why = reason == null || reason.isEmpty
+          ? const Text(emptyValuePlaceholder)
+          : Tooltip(
+              message: reason,
+              child: Text(
+                reason,
+                key: Key('delivery_order_event_reason_${event.id}'),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            );
+      return Padding(
+        key: Key('delivery_order_event_${event.id}'),
+        padding: EdgeInsets.symmetric(vertical: spacing.xs),
+        child: compact
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: spacing.xs,
+                children: [when, transition, who, why],
+              )
+            : Row(
+                spacing: spacing.md,
+                children: [
+                  Expanded(flex: 2, child: when),
+                  Expanded(flex: 3, child: transition),
+                  Expanded(flex: 2, child: who),
+                  Expanded(flex: 3, child: why),
+                ],
+              ),
+      );
+    }
+
+    return Column(
+      key: const Key('delivery_order_history'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: spacing.sm,
+      children: [
+        Text(
+          l10n.deliveryOrderHistoryTitle,
+          style: theme.textTheme.titleMedium,
+        ),
+        events.when(
+          loading: () => const LinearProgressIndicator(),
+          error: (error, _) => ErrorBanner(
+            key: const Key('delivery_order_events_error'),
+            error: toAppError(error),
+          ),
+          data: (events) {
+            if (events.isEmpty) {
+              return Text(
+                l10n.deliveryOrderEventsEmpty,
+                key: const Key('delivery_order_events_empty'),
+              );
+            }
+            final ordered = [...events]
+              ..sort((a, b) {
+                final byTime = a.at.compareTo(b.at);
+                return byTime != 0 ? byTime : a.id.compareTo(b.id);
+              });
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                for (final (i, event) in ordered.indexed) ...[
+                  if (i > 0) const Divider(height: 1),
+                  row(event),
+                ],
+              ],
+            );
+          },
+        ),
       ],
     );
   }

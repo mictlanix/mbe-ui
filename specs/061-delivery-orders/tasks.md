@@ -208,11 +208,11 @@ description: "Task list for 061-delivery-orders"
 
 **Independent Test**: cancel an order in En preparación with a reason; check Cancelada, the history entry, and that it leaves the active view (quickstart step 7).
 
-- [ ] T028 [US4] Add the cancel dialog to `delivery_order_dialogs.dart` (C6, FR-018): a multiline reason field (key `delivery_order_cancel_reason`), the confirm button disabled while the trimmed reason is empty. On `state.transition_invalid`, close the dialog, show the generic localized message, and let the reload show the new status.
+- [x] T028 [US4] Add the cancel dialog to `delivery_order_dialogs.dart` (C6, FR-018): a multiline reason field (key `delivery_order_cancel_reason`), the confirm button disabled while the trimmed reason is empty. On `state.transition_invalid`, close the dialog, show the generic localized message, and let the reload show the new status.
 
-- [ ] T029 [US4] Edit `delivery_order_detail_screen.dart`: add "Cancelar orden" (`OutlinedButton`, key `delivery_order_cancel`), offered with update in Borrador, Pendiente de aprobación, Aprobada, Lista para recoger, En preparación and Fallida (data-model §3), and in no other status. It is offered in En preparación even when the order may be on an open itinerary (mbe-api#311, accepted risk).
+- [x] T029 [US4] Edit `delivery_order_detail_screen.dart`: add "Cancelar orden" (`OutlinedButton`, key `delivery_order_cancel`), offered with update in Borrador, Pendiente de aprobación, Aprobada, Lista para recoger, En preparación and Fallida (data-model §3), and in no other status. It is offered in En preparación even when the order may be on an open itinerary (mbe-api#311, accepted risk).
 
-- [ ] T030 [P] [US4] Extend `delivery_order_dialogs_test.dart` and the detail test: Cancelar shows in exactly the six statuses and not in En tránsito or any terminal one, the confirm button stays disabled for a blank or whitespace reason, success shows Cancelada, and `state.transition_invalid` closes the dialog and reloads.
+- [x] T030 [P] [US4] Extend `delivery_order_dialogs_test.dart` and the detail test: Cancelar shows in exactly the six statuses and not in En tránsito or any terminal one, the confirm button stays disabled for a blank or whitespace reason, success shows Cancelada, and `state.transition_invalid` closes the dialog and reloads.
 
 ---
 
@@ -222,9 +222,9 @@ description: "Task list for 061-delivery-orders"
 
 **Independent Test**: take an order through create, confirm and cancel; the history shows three entries in order with the right employee and the reason (quickstart step 3).
 
-- [ ] T031 [US5] Edit `delivery_order_detail_screen.dart` (C4, FR-009): add the "Historial" section after the lines (and the proof section, when T036 adds it). One row per event, oldest first: date and time through the formatters, `from → to` (a dash for the creation event), the employee name from the name cells, and the reason truncated with a tooltip. It's a bounded list with no pagination. It refreshes with the order after every action (FR-022).
+- [x] T031 [US5] Edit `delivery_order_detail_screen.dart` (C4, FR-009): add the "Historial" section after the lines (and the proof section, when T036 adds it). One row per event, oldest first: date and time through the formatters, `from → to` (a dash for the creation event), the employee name from the name cells, and the reason truncated with a tooltip. It's a bounded list with no pagination. It refreshes with the order after every action (FR-022).
 
-- [ ] T032 [P] [US5] Extend the detail widget test: events render oldest first with from and to labels, the creation event shows a dash, an approval rejection renders as Pendiente de aprobación → Borrador with its reason, employee names fall back to `#id`, and the history gains a row after a successful action.
+- [x] T032 [P] [US5] Extend the detail widget test: events render oldest first with from and to labels, the creation event shows a dash, an approval rejection renders as Pendiente de aprobación → Borrador with its reason, employee names fall back to `#id`, and the history gains a row after a successful action.
 
 ---
 
@@ -234,9 +234,9 @@ description: "Task list for 061-delivery-orders"
 
 **Independent Test**: take an order to Fallida through an itinerary, requeue it, and check En preparación and the restored open quantity (quickstart step 9).
 
-- [ ] T033 [US6] Add the requeue confirmation to `delivery_order_dialogs.dart` (C5, FR-019), naming the folio and customer with no field, and edit `delivery_order_detail_screen.dart` to offer "Reprogramar" (`FilledButton`, key `delivery_order_requeue`) only in Fallida with update. Map `delivery_order.not_failed` through the localized errors (T003).
+- [x] T033 [US6] Add the requeue confirmation to `delivery_order_dialogs.dart` (C5, FR-019), naming the folio and customer with no field, and edit `delivery_order_detail_screen.dart` to offer "Reprogramar" (`FilledButton`, key `delivery_order_requeue`) only in Fallida with update. Map `delivery_order.not_failed` through the localized errors (T003).
 
-- [ ] T034 [P] [US6] Extend the dialogs and detail tests: Reprogramar shows only in Fallida with update, a success shows En preparación with Devuelta at 0, and `not_failed` shows its localized message and reloads.
+- [x] T034 [P] [US6] Extend the dialogs and detail tests: Reprogramar shows only in Fallida with update, a success shows En preparación with Devuelta at 0, and `not_failed` shows its localized message and reloads.
 
 ---
 
@@ -246,25 +246,25 @@ description: "Task list for 061-delivery-orders"
 
 **Independent Test**: confirm a pickup draft, mark it ready, record the pickup with name, identification and a PNG, and check Recogida and the proof section (quickstart step 8).
 
-- [ ] T035 [US7] Edit `delivery_order_detail_screen.dart`: add "Lista para recoger" (`FilledButton`, key `delivery_order_ready`) for a pickup order in Aprobada with update, and "Entregar al cliente" (`FilledButton`, key `delivery_order_pickup`) for a pickup order in Lista para recoger with update. Neither is offered on delivery orders (FR-020, FR-021).
+- [x] T035 [US7] Edit `delivery_order_detail_screen.dart`: add "Lista para recoger" (`FilledButton`, key `delivery_order_ready`) for a pickup order in Aprobada with update, and "Entregar al cliente" (`FilledButton`, key `delivery_order_pickup`) for a pickup order in Lista para recoger with update. Neither is offered on delivery orders (FR-020, FR-021).
 
-- [ ] T036 [US7] Load and show the proof (R5, FR-010):
+- [x] T036 [US7] Load and show the proof (R5, FR-010):
   - In `delivery_order_detail_controller.dart`, when `hasProof`, load `proof` and then the image bytes, with a failure kept inside the proof state so the rest of the screen still renders. Use a provider shaped like `licensePhotoProvider`, feeding `Image.memory`.
   - In `delivery_order_detail_screen.dart`, add the "Comprobante de entrega" section between Líneas and Historial: receiver name, identification shown, capture time, who captured it (employee name), and the photo thumbnail that opens larger in a `ResponsiveDialog` on tap. A load failure shows `deliveryOrderProofLoadFailed` inside the section only. The section is absent when there is no proof.
   - Extend `delivery_order_detail_controller_test.dart` for the proof and image load and the isolated failure.
 
-- [ ] T037 [US7] Create `lib/features/sales/presentation/delivery_orders/pickup_dialog.dart` (C9, FR-021) and add the ready confirmation to `delivery_order_dialogs.dart` (names the folio and customer, no field):
+- [x] T037 [US7] Create `lib/features/sales/presentation/delivery_orders/pickup_dialog.dart` (C9, FR-021) and add the ready confirmation to `delivery_order_dialogs.dart` (names the folio and customer, no field):
   - The pickup dialog has "Nombre de quien recibe" (key `delivery_order_pickup_name`), "Identificación mostrada" (key `delivery_order_pickup_id`, free text), and a "Elegir archivo" button using `FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['jpg','jpeg','png'], withData: true)`, showing the chosen filename with ✕ to clear.
   - "Entregar" is enabled only when both texts are non-blank after trimming and a file is chosen.
   - On error (including `proof_incomplete`) the dialog stays open and keeps the chosen photo.
 
-- [ ] T038 [P] [US7] Create `test/widget/features/sales/pickup_dialog_test.dart` and extend the dialogs and detail tests: "Lista para recoger" shows only for a pickup in Aprobada, "Entregar al cliente" only for a pickup in Lista para recoger, neither on a delivery order; the pickup button stays disabled until name, identification and a file are all given (each one missing in turn, and whitespace-only text); an error keeps the dialog and the photo, including `image.too_large` (a file over 2 MB) and `image.unsupported_format`; the proof section shows after success, shows a failure inside itself, and is absent without proof.
+- [x] T038 [P] [US7] Create `test/widget/features/sales/pickup_dialog_test.dart` and extend the dialogs and detail tests: "Lista para recoger" shows only for a pickup in Aprobada, "Entregar al cliente" only for a pickup in Lista para recoger, neither on a delivery order; the pickup button stays disabled until name, identification and a file are all given (each one missing in turn, and whitespace-only text); an error keeps the dialog and the photo, including `image.too_large` (a file over 2 MB) and `image.unsupported_format`; the proof section shows after success, shows a failure inside itself, and is absent without proof.
 
 ---
 
 ## Phase 10: Polish and cross-cutting
 
-- [ ] T039 Add the action matrix test (SC-003, data-model §3, analysis E1) to `test/widget/features/sales/delivery_order_detail_screen_test.dart`: one table-driven test over all 11 statuses × both types × with and without `deliveryOrders` update. For each case, assert the exact set of action keys present (`delivery_order_confirm`, `_cancel`, `_requeue`, `_ready`, `_pickup`, `_edit_header`, `_add_line`, and the line ✎/🗑) and that every other key is absent. "Agregar línea" also varies with Sales Orders read. Without update, the set is empty. This needs every story's buttons, so it runs after T038.
+- [x] T039 Add the action matrix test (SC-003, data-model §3, analysis E1) to `test/widget/features/sales/delivery_order_detail_screen_test.dart`: one table-driven test over all 11 statuses × both types × with and without `deliveryOrders` update. For each case, assert the exact set of action keys present (`delivery_order_confirm`, `_cancel`, `_requeue`, `_ready`, `_pickup`, `_edit_header`, `_add_line`, and the line ✎/🗑) and that every other key is absent. "Agregar línea" also varies with Sales Orders read. Without update, the set is empty. This needs every story's buttons, so it runs after T038.
 
 - [ ] T040 [P] Create the live test `integration_test/delivery_orders_quickstart_test.dart` (R12), following `payment_verification_quickstart_test.dart` and `customer_refunds_quickstart_test.dart`:
   - Read-only by default: the list opens, a filter narrows it, and an order's detail loads with its events.

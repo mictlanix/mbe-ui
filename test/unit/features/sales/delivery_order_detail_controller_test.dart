@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:decimal/decimal.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,6 +47,7 @@ DeliveryOrder _order({
   List<int> sales = const [501],
   List<DeliveryOrderLine>? lines,
   DeliveryOrderStatus status = DeliveryOrderStatus.draft,
+  int? proofId,
 }) => DeliveryOrder(
   id: _id,
   facilityId: 4,
@@ -54,6 +56,7 @@ DeliveryOrder _order({
   priority: 0,
   status: status,
   type: FulfillmentType.delivery,
+  proofId: proofId,
   createdAt: DateTime(2026, 11, 1),
   modifiedAt: DateTime(2026, 11, 1),
   lines: lines ?? [_line(1, 7001), _line(2, 7002)],
@@ -126,7 +129,7 @@ AccessControlService _access({required bool salesRead}) => AccessControlService(
   ),
 );
 
-/// Spec 061 research R5 (T010).
+/// Spec 061 research R5 (T010, T036).
 void main() {
   late MockDeliveryOrderAdminRepository repository;
   late MockSalesOrderRepository sales;
@@ -331,6 +334,76 @@ void main() {
 
       expect(result.order.id, _id);
       expect(result.children, isEmpty);
+    });
+  });
+
+  group('proof (T036)', () {
+    final proof = ProofOfDelivery(
+      receiverName: 'Juan Pérez',
+      receiverIdShown: 'INE 0123456789',
+      capturedAt: DateTime(2026, 11, 14, 16, 22),
+      capturedBy: 8,
+    );
+
+    setUp(() => when(() => repository.events(_id)).thenAnswer((_) async => []));
+
+    test('an order with proof loads its details', () async {
+      when(() => repository.getById(_id)).thenAnswer(
+        (_) async => _order(status: DeliveryOrderStatus.pickedUp, proofId: 3),
+      );
+      when(() => repository.proof(_id)).thenAnswer((_) async => proof);
+
+      final result = await load(container());
+
+      expect(result.proof?.value, proof);
+    });
+
+    test('an order without proof requests none', () async {
+      when(() => repository.getById(_id)).thenAnswer((_) async => _order());
+
+      final result = await load(container());
+
+      expect(result.proof, isNull);
+      verifyNever(() => repository.proof(any()));
+    });
+
+    test('a failed proof stays inside the proof state', () async {
+      when(() => repository.getById(_id)).thenAnswer(
+        (_) async => _order(status: DeliveryOrderStatus.pickedUp, proofId: 3),
+      );
+      when(
+        () => repository.proof(_id),
+      ).thenThrow(const AppError.server(statusCode: 500));
+
+      final result = await load(container());
+
+      expect(result.order.id, _id);
+      expect(result.proof?.hasError, isTrue);
+    });
+
+    test(
+      'the photo is read on its own, as the repository answers it',
+      () async {
+        final bytes = Uint8List.fromList([0x89, 0x50, 0x4E, 0x47]);
+        when(() => repository.proofImage(_id)).thenAnswer((_) async => bytes);
+
+        final c = container();
+        final photo = await c.read(deliveryOrderProofImageProvider(_id).future);
+
+        expect(photo, bytes);
+        verifyNever(() => repository.getById(any()));
+      },
+    );
+
+    test('a failed photo fails only its own provider', () async {
+      when(
+        () => repository.proofImage(_id),
+      ).thenThrow(const AppError.server(statusCode: 500));
+
+      await expectLater(
+        container().read(deliveryOrderProofImageProvider(_id).future),
+        throwsA(isA<ServerError>()),
+      );
     });
   });
 }

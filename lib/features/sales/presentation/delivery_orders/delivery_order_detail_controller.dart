@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -20,6 +22,7 @@ class DeliveryOrderDetail {
     required this.events,
     this.sales = const {},
     this.children = const [],
+    this.proof,
   });
 
   final DeliveryOrder order;
@@ -36,6 +39,12 @@ class DeliveryOrderDetail {
   /// The orders split off this one by a partial delivery. Only looked up for
   /// a partially delivered order; empty otherwise or when the lookup failed.
   final List<DeliveryOrderSummary> children;
+
+  /// The proof of delivery's details, `null` when the order has none. Its own
+  /// [AsyncValue], so a failed proof shows inside the proof section only
+  /// (FR-010). The photo is read separately, through
+  /// [deliveryOrderProofImageProvider], once these details are in.
+  final AsyncValue<ProofOfDelivery>? proof;
 }
 
 /// One delivery order for its detail screen, keyed by id (spec 061 R5).
@@ -56,19 +65,32 @@ class DeliveryOrderDetailController extends _$DeliveryOrderDetailController {
     final eventsFuture = _events(repository, id);
     final order = await repository.getById(id);
 
-    // Proof of delivery (T036) is loaded from here, beside the others, when
-    // `order.hasProof`.
-    final (events, sales, children) = await (
+    final (events, sales, children, proof) = await (
       eventsFuture,
       _sales(order),
       _children(order),
+      _proof(repository, order),
     ).wait;
     return DeliveryOrderDetail(
       order: order,
       events: events,
       sales: sales,
       children: children,
+      proof: proof,
     );
+  }
+
+  /// The proof's details, only when the order has one (research R5).
+  Future<AsyncValue<ProofOfDelivery>?> _proof(
+    DeliveryOrderAdminRepository repository,
+    DeliveryOrder order,
+  ) async {
+    if (!order.hasProof) return null;
+    try {
+      return AsyncData(await repository.proof(order.id));
+    } catch (e, st) {
+      return AsyncError(e, st);
+    }
   }
 
   Future<AsyncValue<List<DeliveryOrderEvent>>> _events(
@@ -139,3 +161,13 @@ class DeliveryOrderDetailController extends _$DeliveryOrderDetailController {
     }
   }
 }
+
+/// A delivery order's proof photo, as PNG bytes (research R5).
+///
+/// Shaped like `licensePhotoProvider`: an autodispose family keyed by order
+/// id, not kept alive, since the photo is personal data. A provider of its
+/// own, read by the proof section only after the proof's details loaded, so a
+/// slow or failed photo never holds up or breaks the rest of the screen.
+@riverpod
+Future<Uint8List> deliveryOrderProofImage(Ref ref, int deliveryOrderId) =>
+    ref.watch(deliveryOrderAdminRepositoryProvider).proofImage(deliveryOrderId);
