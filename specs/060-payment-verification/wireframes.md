@@ -12,7 +12,7 @@ A new navigation destination in Ventas, right after Pagos. It is gated on `Privi
 
 ```text
 ┌ Verificación de pagos ───────────────────────────────────────────────────────────────────┐
-│ [⚙ Filtros ①]                                                    23 pagos sin verificar  │
+│ [⚙ Filtros ①]                                                                            │
 ├───────┬──────────┬──────────────────┬──────────────────┬─────────┬────────────┬─────────┬─────┤
 │ Folio │ Sucursal │ Fecha            │ Cliente          │ Método  │ Referencia │   Monto │     │
 ├───────┼──────────┼──────────────────┼──────────────────┼─────────┼────────────┼─────────┼─────┤
@@ -25,7 +25,7 @@ A new navigation destination in Ventas, right after Pagos. It is gated on `Privi
 ```
 
 - **Filter row:** `CatalogFilterBar` with no search control. `/unverified` has no free-text search, and §VI says to leave the search box out rather than draw an empty one. The badged filters button opens `showCatalogFilterSheet`. The badge shows ① on first load because the method starts at Transfer (FR-003).
-- **Count:** the server's `total`, shown in the bar's trailing slot (FR-004).
+- **Count:** the server's `total`, shown by the pagination footer ("1–20 de 23", FR-004). Nothing is added to the filter row, which §VI keeps for the search box and entity actions.
 - **Table:** `DataTableView<CustomerPayment>`. Text columns are left-aligned, Monto right-aligned, and the action column centred (§VI). Facility names come from the facilities provider already used by Pagos. Customer names come from `customer_display_name` (FR-002).
 - **Row actions:** two direct icons. ✓ "Verificar" is the primary action and takes the slot Edit usually holds; ✕ "Rechazar" is the one secondary action. Each has a tooltip. This is the two-icon limit in §VI (v1.7.0): a primary action plus one direct secondary action or a ⋮ menu. Both icons appear only with `can(paymentsVerification, update)` (FR-006, FR-009). One tap on ✓ opens the confirmation, so a verification takes two taps.
 - **Shared helper change:** today `buildCatalogRowActions` has only an Edit slot, and with Edit absent it puts two extra actions behind ⋮. The plan extends it so a different primary action can fill the first slot when there's no Edit. The two-icon limit stays enforced in the helper (§VI, built once in `core/widgets/`). See resolved Open Question 1.
@@ -61,7 +61,7 @@ The table looks the same, but the action column is left out entirely, not left e
 
 ```text
 ┌ Verificación de pagos ───────────────────────────────────────────────────────────┐
-│ [⚙ Filtros ①]                                                0 pagos sin verificar│
+│ [⚙ Filtros ①]                                                                    │
 ├──────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                  │
 │                  No hay pagos sin verificar con estos filtros.                   │
@@ -85,14 +85,14 @@ A `CatalogListStateView` spinner shows while loading. A load error shows its ret
 │ Rechazo registrado. El pago 9128 sigue sin verificar y seguirá en esta lista.    │   ← SnackBar
 ```
 
-- **After a verification**, the page reloads. If that removed the last row on the page, the queue moves back one page (spec edge case). The count drops by one (US1 scenario 5).
+- **After a verification**, the page reloads. If that removed the last row on the page, the queue moves back one page (spec edge case). The footer's total drops by one (US1 scenario 5).
 - **After a rejection**, the row stays and nothing about it changes (FR-011, FR-012). The SnackBar is the only feedback.
 
 ### Compact tier
 
 ```text
 ┌ Verificación de pagos ──────────────┐
-│ [⚙ ①]                  23 sin verif.│
+│ [⚙ ①]                               │
 ├─────────────────────────────────────┤
 │ 9131 · Centro         $4,250.00 ✓ ✕ │
 │ Ferretería López                    │

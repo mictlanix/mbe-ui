@@ -55,13 +55,13 @@ description: "Task list for 060-payment-verification"
 **Purpose**: the pieces two or more stories use: strings, the error code, the row-actions helper, the repository gaps, the filter, the queue controller and the write controller.
 
 - [ ] T002 Add every new string to `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`, then run `flutter gen-l10n`. Each key gets an `@key` description starting "spec 060". Keys (C8):
-  - `paymentVerificationMenuTitle` ("Verificación de pagos" / "Payment verification"), `paymentVerificationCount` (plural on `count`: "1 pago sin verificar" / "{count} pagos sin verificar"), `paymentVerificationEmpty` ("No hay pagos sin verificar con estos filtros."), `paymentVerificationMethodAll` ("Todos"), `paymentVerificationFacilityAll` ("Todas").
+  - `paymentVerificationMenuTitle` ("Verificación de pagos" / "Payment verification"), `paymentVerificationEmpty` ("No hay pagos sin verificar con estos filtros."), `paymentVerificationMethodAll` ("Todos"), `paymentVerificationFacilityAll` ("Todas").
   - `paymentVerifyAction` ("Verificar"), `paymentRejectAction` ("Rechazar"), `paymentVerifyTitle` ("Verificar pago"), `paymentRejectTitle` ("Rechazar pago").
   - `paymentVerifyIrreversible` ("Confirma que el dinero está en el banco. No se puede deshacer."), `paymentRejectReasonLabel` ("Motivo"), `paymentRejectNote` ("El pago seguirá sin verificar; el rechazo queda registrado con tu nombre y la fecha.").
   - `paymentVerifiedSnack` (placeholder `id`: "Pago {id} verificado."), `paymentRejectedSnack` (placeholder `id`: "Rechazo registrado. El pago {id} sigue sin verificar y seguirá en la lista de verificación.").
   - `paymentVerifyUnknown` ("No sabemos si se verificó: se perdió la conexión. La lista se actualizó."), `paymentRejectUnknown` (same shape for rejecting).
   - `apiErrorPaymentAlreadyVerified` ("Otra persona ya verificó este pago." / "Someone else already verified this payment.", description "mbe-api error code `payment.already_verified` (spec 060)").
-  - Reuse, don't duplicate, the existing `paymentsColumn*` labels, `paymentHeaderTitle`, `filtersTooltip`, `filtersButton`, `clearAllFilters`, `applyFilters`, `clearFiltersButton`, `retryButton` and `paymentsFilterMethod`/`paymentsFilterDate`. Check `app_es.arb` before adding anything else.
+  - Reuse, don't duplicate, the existing `paymentsColumn*` labels, `paymentHeaderTitle`, `filtersTooltip`, `filtersButton`, `clearAllFilters`, `applyFilters`, `clearFiltersButton`, `retryButton`, `cancelButton`, `paymentsListForbidden` (the 403 view) and `paymentsFilterMethod`/`paymentsFilterDate`. The dialogs' "Cerrar" is `MaterialLocalizations.of(context).closeButtonLabel`, not a new key. Check `app_es.arb` before adding anything else.
 
 - [ ] T003 [P] Localize `payment.already_verified` (R8, depends on T002):
   - In `lib/core/errors/localize_problem.dart`, add `api.ErrorCode.paymentPeriodAlreadyVerified` to `localizedErrorCodes` (alphabetically, before `paymentPeriodApplicationReversed`) and map it to `l10n.apiErrorPaymentAlreadyVerified` in the switch. The enum member is `paymentPeriodAlreadyVerified` (`lib/generated/openapi/lib/src/model/error_code.g.dart`); the `payment.already_verified` wire name is mapped by `ApiProblem`, as for the other `payment.*` codes.
@@ -73,7 +73,7 @@ description: "Task list for 060-payment-verification"
 - [ ] T004 [P] Extend `buildCatalogRowActions` with a primary action (C3, R5): in `lib/core/widgets/catalog_action_icons.dart`, add an optional `CatalogRowAction? primaryAction`.
   - Assert `onEdit == null || primaryAction == null`.
   - Render order: Edit or the primary action first as a direct `IconButton` (`visualDensity: VisualDensity.compact`, same as Edit), then one extra action direct, or two or more collapsed into ⋮.
-  - A row must never show more than two icons. With a primary action plus two or more extras, that means primary plus ⋮ (still two). Say so in the doc comment, which must also state that §VI v1.7.0 is why.
+  - A row must never show more than two icons. With a primary action plus two or more extras, that means primary plus ⋮ (still two). Say so in the doc comment, which must also state that §VI v1.7.0 is why, and that `primaryAction` is for rows with no Edit because the record isn't editable there (as in the Pagos list), never a way to replace Edit on an editable record.
   - Extend `test/widget/core/widgets/catalog_action_icons_test.dart`: the primary action renders in Edit's slot; primary plus one extra gives two direct icons; primary plus two extras gives the primary and ⋮; passing both `onEdit` and `primaryAction` trips the assert; every existing case still passes unchanged.
 
 - [ ] T005 Add the three repository methods (R2): in `lib/features/sales/domain/repositories/customer_payment_repository.dart` declare `listUnverified({int? facilityId, DateTime? dateFrom, DateTime? dateTo, int? methodCode, int skip = 0, int limit = 20}) → CustomerPaymentListResult`, `verify({required int customerPaymentId}) → CustomerPayment` and `reject({required int customerPaymentId, required String reason}) → CustomerPayment`, each with a doc comment naming its endpoint.
@@ -125,7 +125,7 @@ description: "Task list for 060-payment-verification"
   - On confirm, set a busy flag and call `paymentVerificationProvider.notifier.verify`.
     - Busy: both buttons disabled, `dismissible: false`, a spinner on confirm.
     - `null`: close with `true`.
-    - An `AppError`: show a `FormErrorBanner` (`localizedMessage`, or `paymentVerifyUnknown` for a network or timeout error), and replace the confirm button with "Cerrar" (closing returns `false`).
+    - An `AppError`: show a `FormErrorBanner` (`localizedMessage`, or `paymentVerifyUnknown` for a network or timeout error), and replace the confirm button with "Cerrar" (`MaterialLocalizations.of(context).closeButtonLabel`; closing returns `false`).
   - Add `test/widget/features/sales/verify_payment_dialog_test.dart`: shows the four facts and the irreversibility text; confirm calls `verify` once with the payment id even on a double tap; both buttons are disabled and the dialog can't be dismissed while busy; `payment.already_verified` shows its localized text; a network error shows the unknown wording; after a refusal the only button is "Cerrar".
 
 - [ ] T010 [P] [US1] Create `lib/features/sales/presentation/payment_verification/verification_payment_panel.dart` (C4, FR-005a): `VerificationPaymentPanel(CustomerPayment payment)` and `showVerificationPaymentPanel(BuildContext, CustomerPayment)`, which calls `showRecordSheet(title: l10n.paymentHeaderTitle(payment.customerPaymentId), isDirty: () => false, form: …)`.
@@ -137,7 +137,7 @@ description: "Task list for 060-payment-verification"
 - [ ] T011 [US1] Create `lib/features/sales/presentation/payment_verification/payment_verification_screen.dart` (C2, FR-001 to FR-005, FR-008): `PaymentVerificationScreen` and `const paymentVerificationPath = '/sales/payment-verification'`.
   - Follow `payments_list_screen.dart`: read the address into a `PaymentVerificationFilter`, watch `verificationQueueControllerProvider(filter)`, and render a `CatalogFilterBar` with **no** search control.
     - `filters`: the badged `IconButton.outlined` keyed `verification_filter_button` (badge from `activeFilterCount`, visible whenever it is above zero), opening `showCatalogFilterSheet` with `onClearAll` going to the bare path (R3).
-    - `actions`: a `Text` keyed `verification_count` showing `paymentVerificationCount(total)` once loaded.
+    - `actions`: none. The total (FR-004) is the table's pagination footer; don't add a count to the filter row (§VI).
   - The filter sheet panel holds:
     - Facility: `CatalogEntityPicker<FacilityListItem>` keyed `verification_filter_facility`, unset text `paymentVerificationFacilityAll`, shown only with `can(SystemObject.facilities, AccessRight.read)` (R7). Copy the picker from `sales_orders_list_screen.dart`.
     - Date: `DateRangeFilterChip` with `isToday: false`, as Pagos does.
@@ -147,7 +147,7 @@ description: "Task list for 060-payment-verification"
   - `onRowTap: (p) => showVerificationPaymentPanel(context, p)`.
   - `rowActionsBuilder` is non-null only with `can(SystemObject.paymentsVerification, AccessRight.update)`, and returns `buildCatalogRowActions(editTooltip: l10n.editActionTooltip, primaryAction: CatalogRowAction(key: Key('verify_payment_${p.customerPaymentId}'), icon: Icons.check_circle_outline, tooltip: l10n.paymentVerifyAction, onPressed: …))`. Without update the argument is `null`, so the action column is left out.
   - The verify action calls `showVerifyPaymentDialog`, and on `true` shows a `SnackBar` with `paymentVerifiedSnack(id)`. The queue reloads by itself (T008).
-  - States use `CatalogListStateView`: empty is `paymentVerificationEmpty` with `isFiltered: filter.differsFromDefault` and clear going to the bare path; error retries; a 403 shows a forbidden view with no retry (copy `_ListForbidden` and `_isForbidden`).
+  - States use `CatalogListStateView`: empty is `paymentVerificationEmpty` with `isFiltered: filter.differsFromDefault` and clear going to the bare path; error retries; a 403 shows a forbidden view with no retry (copy `_ListForbidden` and `_isForbidden`, reusing `l10n.paymentsListForbidden`).
   - Pagination through the table's `pagination`/`onPageChanged`, writing `pageIndex` to the address.
   - Doc comment: the queue is company-wide by design (no facility scoping) and each row's ✓/✕ act without opening the payment, because Pagos refuses another facility's payment (R1, SC-006).
   - Depends on T004, T006 to T010.
@@ -160,10 +160,10 @@ description: "Task list for 060-payment-verification"
 
 - [ ] T013 [P] [US1] Create `test/widget/features/sales/payment_verification_screen_test.dart` (follow `payments_list_screen_test.dart`):
   - rows show folio, facility, date, customer, method, reference and amount; facility falls back to `#id` when the name can't load;
-  - the count text shows the server total;
+  - the pagination footer shows the server total, and no count widget is in the filter row;
   - the filter badge reads 1 on the default view and 0 with `method=all`;
   - the default request is Transfer from every facility; choosing "Todos" sends no method; setting a facility and a date sends them; "Limpiar todo" returns to Transfer, no facility, no dates;
-  - the facility picker is absent without Facilities read;
+  - the facility picker is absent without Facilities read, and rows then show the facility as `#id`;
   - the ✓ icon shows with Payments Verification update and the action column is absent with read only;
   - tapping ✓ opens the confirmation, and confirming reloads and shows the SnackBar; a verified row leaves the list;
   - tapping a row opens the panel, and does so for a payment of another facility, with no extra repository call;
@@ -229,11 +229,11 @@ description: "Task list for 060-payment-verification"
 
 - [ ] T018 [P] Create the live test `integration_test/payment_verification_quickstart_test.dart` (R10), following `integration_test/payments_editor_quickstart_test.dart` and the traps in `reference_macos_integration_test_traps` (frame-stall watchdog, hitTestable login). Run it as the admin account from `.env`.
   - **Read steps (always on):** the destination is in the menu; the queue loads, all rows are transfers and the count is shown; "Todos" brings other methods; a row tap opens the panel with the row's data.
-  - **Write steps (only with `--dart-define=MBE_WRITE=true`):** record a fresh 1.00 transfer through the repository, find it in the queue, verify it from the row and check it left the queue; record a second fresh 1.00 transfer, reject it with a reason and check it is still listed and unverified; record a third and verify it from the payment view in Pagos.
-  - Each write run leaves verified 1.00 transfers and one rejected, still-unverified one on the tenant. Never verify or reject a seeded fixture. Say so in a comment at the top of the file.
+  - **Write steps (only with `--dart-define=MBE_WRITE=true`):** each fresh transfer is recorded through `customerPaymentRepositoryProvider.createPayment(customer: <a named customer, not the walk-in>, amount: '1.00', method: PaymentMethod.eft.code, type: PaymentType.creditPayment)`, which needs no open cash session (spec 059 FR-015); take the customer the way `payments_editor_quickstart_test.dart` does. Record a fresh 1.00 transfer, find it in the queue, verify it from the row and check it left the queue; record a second fresh 1.00 transfer, reject it with a reason and check it is still listed and unverified; record a third and verify it from the payment view in Pagos.
+  - Each write run leaves two verified 1.00 transfers and one rejected, still-unverified one on the tenant. Never verify or reject a seeded fixture. Say so in a comment at the top of the file.
   - If a fresh transfer doesn't appear because it falls outside the default page, narrow the queue by date.
 
-- [ ] T019 Run the manual checks in `quickstart.md` steps 2, 6, 9 and 10 that automation can't prove: a user without Payments Verification (`qa054payments`) neither sees nor reaches the queue; two windows verifying the same row (the second sees "already verified"); phone width; and the largest of the four text sizes at desktop width with real fonts, confirming no queue column clips its folio, date or amount (§V; widget tests can't answer this, because their placeholder font is much wider). Record any clipping as a fix in this task, not a follow-up.
+- [ ] T019 Run the manual checks in `quickstart.md` steps 2, 6, 9 and 10 that automation can't prove: a user without Payments Verification (`qa054payments`) neither sees nor reaches the queue; two windows verifying the same row (the second sees "already verified"); phone width; and the largest of the four text sizes at desktop width with real fonts, confirming no queue column clips its folio, date or amount (§V; widget tests can't answer this, because their placeholder font is much wider). Record any clipping as a fix in this task, not a follow-up. Also do one timed pass for SC-001 and SC-002: with a stopwatch, find a given day's transfer and verify it (target under 30 seconds), and clear 20 transfers without leaving the screen. Note the times in the PR description.
 
 - [ ] T020 File the mbe-api issue for rejection visibility (FR-016, R11) **with the user's go-ahead**: ask first, then `gh issue create -R mictlanix/mbe-api`. The body must name the exact change wanted: expose a payment's rejections (reason, who, when), or a `rejected` flag or `last_rejection` summary and filter on `/customer-payments/unverified`, with the current behaviour (`reject_payment` writes only an incidence) and why the queue needs it. Link the issue in the spec's Assumptions and in the PR description. Do not patch mbe-api (§III).
 

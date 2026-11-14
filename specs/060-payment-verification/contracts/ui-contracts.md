@@ -26,7 +26,7 @@ Keys named here are the ones tests find widgets by.
 
 - **Filter row:** `CatalogFilterBar` with no search control (§VI: the endpoint has no search).
   - `filters`: the badged button `Key('verification_filter_button')`, which opens `showCatalogFilterSheet`. `onClearAll` goes to the bare path.
-  - `actions`: the count text `Key('verification_count')`, from `l10n.paymentVerificationCount(total)`.
+  - `actions`: empty. The total is the pagination footer's ("1–20 de N", FR-004). §VI keeps this row for the search box and entity actions, so no count is put here.
 - **Filter sheet:**
 
   | Facet | Key | Control | Shown |
@@ -56,7 +56,7 @@ Keys named here are the ones tests find widgets by.
 - **States:** `CatalogListStateView`.
   - Empty: `l10n.paymentVerificationEmpty`. "Quitar filtros" shows only when `differsFromDefault`.
   - Error: retry.
-  - 403: a forbidden view with no retry, as Pagos has.
+  - 403: a forbidden view with no retry, as Pagos has, reusing `l10n.paymentsListForbidden`.
 - **After a write:** a `SnackBar` shows `l10n.paymentVerifiedSnack(id)` or `l10n.paymentRejectedSnack(id)`, and the page reloads.
 - **Compact tier:** `DataTableView`'s stacked rows, with no column dropped. ✓ and ✕ stay on the first line.
 
@@ -82,7 +82,7 @@ Keys named here are the ones tests find widgets by.
 - **Body:** a `ResponsiveDialog` showing Folio, Cliente, Monto and Referencia, then `l10n.paymentVerifyIrreversible`.
 - **Buttons:** Cancelar, and `FilledButton` `Key('verify_payment_confirm')`.
 - **Submitting:** both buttons are disabled, the dialog can't be dismissed, and the confirm button shows a spinner.
-- **Result:** `null` closes the dialog with `true`. An `AppError` shows a `FormErrorBanner` (`localizeProblem`, or `l10n.paymentVerifyUnknown` for network or timeout), and the confirm button is replaced by "Cerrar".
+- **Result:** `null` closes the dialog with `true`. An `AppError` shows a `FormErrorBanner` (`localizeProblem`, or `l10n.paymentVerifyUnknown` for network or timeout), and the confirm button is replaced by "Cerrar" (`MaterialLocalizations.of(context).closeButtonLabel`).
 - **Shared:** the queue and the payment view call the same dialog.
 
 ## C6 — Reject dialog (`showRejectPaymentDialog(context, payment)`)
@@ -104,7 +104,7 @@ Keys named here are the ones tests find widgets by.
 ## C8 — Strings and error codes
 
 - **New `.arb` keys (es and en):**
-  - `paymentVerificationMenuTitle`, `paymentVerificationCount`, `paymentVerificationEmpty`;
+  - `paymentVerificationMenuTitle`, `paymentVerificationEmpty`;
   - `paymentVerifyAction`, `paymentRejectAction`, `paymentVerifyTitle`, `paymentRejectTitle`;
   - `paymentVerifyIrreversible`, `paymentRejectReasonLabel`, `paymentRejectNote`;
   - `paymentVerifiedSnack`, `paymentRejectedSnack`, `paymentVerifyUnknown`, `paymentRejectUnknown`;

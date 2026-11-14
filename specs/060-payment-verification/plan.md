@@ -58,7 +58,7 @@ Supervisors get a company-wide "Verificación de pagos" queue of unverified paym
 
 | | Files |
 |---|---|
-| **New (≈8 source)** | `presentation/payment_verification/{payment_verification_screen, payment_verification_filter, verification_queue_controller, payment_verification_controller, verify_payment_dialog, reject_payment_dialog, verification_payment_panel}.dart` and generated parts |
+| **New (7 source)** | `presentation/payment_verification/{payment_verification_screen, payment_verification_filter, verification_queue_controller, payment_verification_controller, verify_payment_dialog, reject_payment_dialog, verification_payment_panel}.dart` and generated parts |
 | **New tests** | unit: `payment_verification_filter_test`, `verification_queue_controller_test`, `payment_verification_controller_test`; widget: `payment_verification_screen_test`, `verify_payment_dialog_test`, `reject_payment_dialog_test`, `verification_payment_panel_test`; live: `integration_test/payment_verification_quickstart_test.dart` |
 | **Edited (≈10 source)** | `domain/repositories/customer_payment_repository.dart`, `data/customer_payment_repository_impl.dart`, `presentation/payments/payment_detail_screen.dart`, `core/widgets/catalog_action_icons.dart`, `core/navigation/nav_destinations.dart`, `app/router/app_router.dart`, `core/errors/localize_problem.dart`, both `.arb` files, `specs/058-…/contracts/code-scope.tsv`; tests: `catalog_action_icons_test`, `customer_payment_repository_impl_test`, `payment_detail_screen_test`, `catalog_coverage_test` (104 → 105), `problem_fixtures` |
 
@@ -75,7 +75,7 @@ These verdicts are against **v1.15.0**.
 | **III. Contract-driven API** | Pass | Only generated operations are used, mapped to `CustomerPayment`. **API error text:** of the codes the three newly called endpoints can return, only `payment.already_verified` lacks a message. It is added in both locales and flipped to `IN` in code-scope.tsv (R8). **Upstream:** the rejection-visibility change is an mbe-api issue, not a local patch (R11). |
 | **IV. Deny-by-default RBAC** | Pass | The route and nav are gated on PaymentsVerification (108) read. Verify and reject need 108 update, in the queue and on the payment view, mirroring the server (R1). The route documents 108. |
 | **V. Material 3 / design system** | Pass | Shared components only: `CatalogFilterBar`, `DataTableView`, `CatalogListStateView`, `ResponsiveDialog`, `FormErrorBanner`, `RecordSheet`, `ResponsiveFormGrid`. **Largest text level:** the 8-column queue is checked at the largest text size, desktop width, real fonts, in the live walkthrough (quickstart step 10). |
-| **VI. List and record-surface rules** | **Deviation (justified)** | The rules that pass: filter row, list and pagination; no search box, because the endpoint has none; facets in the filter drawer; two row icons at most, with ✓ as the primary in Edit's slot through the shared helper; a row tap opens a read-only surface. **The deviation:** that surface is a second one for customer payments, beside the Pagos full screen. See Complexity Tracking. |
+| **VI. List and record-surface rules** | **Deviation (justified)** | The rules that pass: filter row, list and pagination; no search box, because the endpoint has none; facets in the filter drawer; the filter row holds no count or other non-action widget (the total is the pagination footer's); two row icons at most, with ✓ as the primary in Edit's slot through the shared helper; a row tap opens a read-only surface. **No Edit:** §VI's "Edit as the primary row action" applies to editable records. A queue row is a payment the user can't edit, as in the Pagos list (spec 054), so there is no Edit to expose; verify takes the primary slot instead. **The deviation:** that surface is a second one for customer payments, beside the Pagos full screen. See Complexity Tracking. |
 | **VII. Online-only** | Pass | Nothing is persisted. |
 | **Quality gates** | Pass | Unit, widget and live tests are listed in R10. `flutter analyze` must be clean, and catalog coverage is enforced by `catalog_coverage_test.dart`. |
 
@@ -135,7 +135,7 @@ test/unit/…, test/widget/…, integration_test/payment_verification_quickstart
 
 - **Facilities (29) read (R7):** facility names and the facility facet call `/facilities`. A verifier without that right sees `#id` and gets no facility facet. The queue still works and still spans every facility.
 - **Rejection visibility (R11, FR-012):** rejected payments look unchecked until mbe-api exposes rejections. The issue is filed before the PR.
-- **Live writes are irreversible:** each `MBE_WRITE` run leaves a verified 1.00 transfer and a rejected 1.00 transfer on the dev tenant. Never verify a seeded fixture.
+- **Live writes are irreversible:** each `MBE_WRITE` run leaves two verified 1.00 transfers and one rejected, still-unverified 1.00 transfer on the dev tenant. Never verify a seeded fixture.
 - **Core helper change (C3):** every list screen uses `buildCatalogRowActions`. The new parameter is optional and asserted exclusive with `onEdit`. The existing helper tests plus new cases pin the old behaviour.
 
 ## Complexity Tracking

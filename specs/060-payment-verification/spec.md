@@ -25,7 +25,7 @@ This feature adds a verification queue to the back office. It lists unverified p
 
 ### User Story 1 - Verify transfers against the bank statement (Priority: P1)
 
-Each morning a supervisor opens "Verificación de pagos" with the bank statement beside it. The queue lists unverified transfers from every store, newest first. Each row shows folio, store, date, customer, method, reference and amount. The supervisor narrows it to yesterday and finds the $4,250.00 transfer with reference "SPEI 88213" on the statement. They tap "Verificar" and confirm. The row leaves the queue. In Pagos, that payment now shows "Verificado" and the supervisor's name under "Verificado por".
+Each morning a supervisor opens "Verificación de pagos" with the bank statement beside it. The queue lists unverified transfers from every facility, newest first. Each row shows folio, facility, date, customer, method, reference and amount. The supervisor narrows it to yesterday and finds the $4,250.00 transfer with reference "SPEI 88213" on the statement. They tap "Verificar" and confirm. The row leaves the queue. In Pagos, that payment now shows "Verificado" and the supervisor's name under "Verificado por".
 
 **Why this priority**: This is the whole legacy screen and the reason for the feature. Without it, no payment recorded in the new app can ever be verified.
 
@@ -35,7 +35,7 @@ Each morning a supervisor opens "Verificación de pagos" with the bank statement
 
 1. **Given** a user with Payments Verification read, **When** they open the back-office navigation, **Then** "Verificación de pagos" is offered. Without that right it isn't.
 2. **Given** the queue opens, **When** it loads, **Then** it lists unverified payments from every facility, method filter set to Transfer, newest first. Each row shows folio, facility, date, customer, method, reference and amount.
-3. **Given** the queue, **When** the user sets facility, date range or method, **Then** the list shows only matching unverified payments. Choosing "Todos" as the method shows every method. Clearing the filters returns to transfers from every facility, any date.
+3. **Given** the queue, **When** the user sets facility (with Facilities read), date range or method, **Then** the list shows only matching unverified payments. Choosing "Todos" as the method shows every method. Clearing the filters returns to transfers from every facility, any date.
 4. **Given** a user with Payments Verification update, **When** they tap "Verificar" on a row, **Then** a confirmation names the folio, customer, amount and reference and says verification can't be undone.
 5. **Given** the user confirms, **When** the server accepts, **Then** the row leaves the queue and the total count falls by one.
 6. **Given** a user with only Payments Verification read, **When** they open the queue, **Then** they see the list but no "Verificar" or "Rechazar" actions.
@@ -84,6 +84,7 @@ A supervisor looking up a customer's payment in Pagos sees it marked "Sin verifi
 - **Rejecting twice.** The server accepts it and records a second rejection. The app doesn't prevent it, because it can't tell.
 - **Verifying a payment after its rejection.** Allowed. Rejection doesn't block verification.
 - **Empty queue.** The queue says there are no unverified payments for the current filters. It offers to clear them when they differ from the opening filters (transfers, every facility, any date).
+- **Verifier without Facilities read.** Facility names and the facility list come from the facilities catalog, which needs Facilities read. Without it, rows and the panel show the facility's number instead of its name, and the facility filter isn't offered. The queue still lists every facility.
 - **Cash and card payments.** They appear only when the user changes the method filter. The queue doesn't hide or block verifying them.
 - **Network failure on verify or reject.** The app says the result is unknown and reloads the row, rather than claiming it failed.
 - **Last row on a page.** After the last row on a page is verified, the queue loads the previous page instead of showing an empty one.
@@ -95,9 +96,9 @@ A supervisor looking up a customer's payment in Pagos sees it marked "Sin verifi
 **Queue**
 
 - **FR-001**: The back office MUST offer a "Verificación de pagos" screen only to users with Payments Verification read.
-- **FR-002**: The queue MUST list unverified payments from every facility, newest first, paginated. Each row shows folio, facility name, date, customer name, method, reference and amount with currency.
-- **FR-003**: The queue MUST filter by facility, date range and method. The method filter starts at Transfer and can be changed to any method or to "Todos" (every method). Clearing the filters empties facility and date and returns the method to Transfer, not to "Todos".
-- **FR-004**: The queue MUST show the total count of unverified payments that match the filters.
+- **FR-002**: The queue MUST list unverified payments from every facility, newest first, paginated. Each row shows folio, facility name (its number when the user lacks Facilities read), date, customer name, method, reference and amount with currency.
+- **FR-003**: The queue MUST filter by date range and method, and by facility for users with Facilities read. The method filter starts at Transfer and can be changed to any method or to "Todos" (every method). Clearing the filters empties facility and date and returns the method to Transfer, not to "Todos".
+- **FR-004**: The queue MUST show the total count of unverified payments that match the filters. The table's pagination footer ("1–20 de N") shows it; no separate count is added.
 - **FR-005**: The queue MUST let the user act on a payment from its row, whatever its facility, through two direct row icons: ✓ Verificar (primary) and ✕ Rechazar.
 - **FR-005a**: Tapping a row (outside its icons) MUST open a read-only panel showing that payment from the data the queue already loaded, with no further request, for every row whatever its facility. The panel shows folio, facility, date, customer, payment type, method, reference, amount with currency, unapplied amount and cash session. It has no editable fields and no actions besides close.
 
@@ -148,7 +149,7 @@ A supervisor looking up a customer's payment in Pagos sees it marked "Sin verifi
 - Legacy listed both verified and unverified transfers. The queue lists only unverified ones; verified payments stay visible in Pagos through its verified filter (spec 054).
 - Legacy had a free-text search by folio, order number, customer or cashier. The server's unverified list doesn't take one, so the queue has filters only. Folio, customer and reference are on each row for scanning.
 - The queue doesn't print or export. Verified payments are read and printed from Pagos.
-- Facility names come from the facilities the app already knows.
+- Facility names come from the facilities catalog, which needs Facilities (29) read. Without that right the app shows the facility's number and offers no facility filter (see Edge Cases). The queue doesn't require Facilities read, because the server doesn't.
 - Out of scope: an amount range filter (the server accepts one, but the queue doesn't offer it), undoing a verification (the server has no way to), showing a payment's rejection history, verifying several payments in one action, verifying supplier payments, and per-tenant configuration of which methods need verification.
 
 ## Verbatim Constraints

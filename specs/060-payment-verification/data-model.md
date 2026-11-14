@@ -47,7 +47,7 @@ No new domain entity. The feature reads and writes the existing `CustomerPayment
 
 ## 3. Queue page
 
-`CatalogPage<CustomerPayment>`, built by `fetchClampedPage` with a page size of 20. `total` is the server's count, shown as "N pagos sin verificar" (FR-004).
+`CatalogPage<CustomerPayment>`, built by `fetchClampedPage` with a page size of 20. `total` is the server's count, shown by the table's pagination footer ("1–20 de N", FR-004).
 
 ## 4. Write outcomes
 

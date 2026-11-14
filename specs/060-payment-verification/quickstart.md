@@ -17,13 +17,13 @@ flutter test integration_test/payment_verification_quickstart_test.dart -d macos
   --dart-define=MBE_WRITE=true                        # also verify + reject (irreversible)
 ```
 
-Each write run leaves one verified 1.00 transfer and one rejected, still-unverified 1.00 transfer on the tenant.
+Each write run leaves two verified 1.00 transfers and one rejected, still-unverified 1.00 transfer on the tenant.
 
 ## Manual walkthrough
 
 1. **Opening (US1-1, US1-2).** Log in as admin. Ventas shows "Verificación de pagos" after Pagos.
    - Open it. Every row is a transfer, newest first, from more than one facility.
-   - The count shows, and the filter badge reads ①.
+   - The pagination footer shows the total ("1–20 de N"), and the filter badge reads ①.
 2. **Access (SC-005).** Log in as `qa054payments`. The menu entry is missing, and typing `/sales/payment-verification` is refused.
 3. **Filters (US1-3, FR-003).**
    - Set Método to "Todos". Cash payments appear and the badge clears.
@@ -34,7 +34,7 @@ Each write run leaves one verified 1.00 transfer and one rejected, still-unverif
    - It has no buttons except close.
 5. **Verify (US1-4, US1-5).**
    - Tap ✓ on a row. The dialog names folio, customer, amount and reference, and says verification can't be undone.
-   - Confirm. The row is gone, the count drops by one, and a SnackBar confirms.
+   - Confirm. The row is gone, the footer's total drops by one, and a SnackBar confirms.
    - Open that payment in Pagos. It shows "Verificado" with your name.
 6. **Already verified (edge).** Open the queue in two windows and verify the same row in both. The second window says it was already verified, and the row disappears.
 7. **Reject (US2).**
