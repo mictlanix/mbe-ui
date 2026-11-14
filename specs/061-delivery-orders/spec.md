@@ -47,7 +47,7 @@ The clerk types folio 1532 and finds the order. They open it and see its header,
 1. **Given** a user with Delivery Orders read, **When** they open the back-office navigation, **Then** "Órdenes de entrega" is offered. Without that right it isn't.
 2. **Given** the list opens, **When** it loads, **Then** it shows orders at the user's facility in every status, newest first, paginated. Once mbe-api#312 ships, it opens on active orders instead: every non-terminal status (Borrador, Pendiente de aprobación, Aprobada, Lista para recoger, En preparación, En tránsito, Fallida).
 3. **Given** the list, **When** the user filters by status (any single status or "Todas", plus "Activas" once mbe-api#312 ships), type, scheduled date range, customer, sales order or facility, **Then** only matching orders are shown. Clearing the filters returns to the opening state at the user's facility.
-4. **Given** the search box, **When** the user types a number, **Then** the list shows the order with that folio or that order number.
+4. **Given** the search box, **When** the user types a number, **Then** the list shows the order with that folio. The box doesn't search sales-order numbers; the sales-order filter does that.
 5. **Given** a row, **When** the user clicks it, **Then** the order's detail screen opens. It shows folio, status, type, customer, facility, scheduled date, priority, ship-to, contact, comment, the sales orders it fulfills, its parent order (when it came from a partial delivery), the last rejection reason (when there is one), and its lines.
 6. **Given** the detail screen, **Then** each line shows product code, product name, dispatch warehouse, the sales order it comes from, and its ordered, committed, delivered, returned and open quantities.
 
@@ -162,11 +162,12 @@ A customer bought cement for pickup at the counter. Their pickup order is Aproba
 - **Edited or confirmed elsewhere.** Someone else changed the order's status since the screen loaded. The server refuses the stale action. The app says the order changed and reloads it.
 - **Fields that can't be cleared.** The server ignores an empty value for ship-to, contact, date or comment, so those can be changed but not cleared. The editor doesn't offer to clear them.
 - **Text search.** The server's search matches only a number (folio or order number). Customer and sales order are filters, not search terms. Search text that isn't a number is not accepted.
-- **Another facility.** The list defaults to the user's facility. The facility filter shows other facilities' orders, as the server allows any facility.
+- **Another facility.** The list shows the user's own facility. Only administrators get the facility filter, and a `facility` typed into the URL by anyone else is ignored, as in Pedidos (spec 029). The server doesn't check it today, so the app is the only guard (mbe-api#314).
+- **No facility configured.** A user whose account has no facility gets a notice saying so, and no list request is sent. This applies to administrators too, as in Pedidos.
 - **Partial delivery's child order.** When a stop closes partially delivered, the server creates a new order for what's left, in En preparación, linked to its parent. Both orders link to each other on their detail screens.
 - **Names the user can't read.** Customer, address, contact, facility, warehouse and employee arrive as numbers. When the user lacks the right to read one of those catalogs, the app shows the number instead of the name.
 - **Statuses the screen doesn't set.** En tránsito, Entregada, Entregada parcialmente and Fallida are set by trips (itineraries), never from this screen.
-- **Drafts with no folio.** A draft has no folio until it's confirmed. The list shows "Borrador" in the folio column, and search by folio can't find it, but search by order number can.
+- **Drafts with no folio.** A draft has no folio until it's confirmed. The list shows "Borrador" in the folio column, and search can't find it. The user finds it by status (Borrador), customer or scheduled date.
 - **Network failure on an action.** The app says the result is unknown and reloads the order, rather than claiming the action failed.
 
 ## Requirements *(mandatory)*
@@ -178,8 +179,8 @@ A customer bought cement for pickup at the counter. Their pickup order is Aproba
 - **FR-001**: The back office MUST offer an "Órdenes de entrega" screen only to users with Delivery Orders read.
 - **FR-002**: The list MUST show delivery orders newest first, paginated. Each row shows folio ("Borrador" when there's none), customer name, type, scheduled date, ship-to, the sales orders it fulfills, and status as a badge.
 - **FR-003**: The list MUST open on every status at the user's facility, newest first. When mbe-api#312 lets the server list every non-terminal status in one request, the list MUST open on active orders instead, and offer "Activas" as a status choice.
-- **FR-004**: The list MUST filter by status (a single status or "Todas"; "Activas" per FR-003), type (Entrega, Recoge en tienda), scheduled date range, customer, sales order and facility. Clearing the filters returns to the opening state.
-- **FR-005**: The list MUST offer a search box that finds an order by folio or order number.
+- **FR-004**: The list MUST filter by status (a single status or "Todas"; "Activas" per FR-003), type (Entrega, Recoge en tienda), scheduled date range, customer, sales order and facility. The customer filter needs Customers read, and the facility filter is offered only to administrators (see Edge Cases). Clearing the filters returns to the opening state.
+- **FR-005**: The list MUST offer a search box that finds an order by its folio.
 - **FR-006**: Clicking a row MUST open that order's detail screen.
 
 **Detail**
@@ -204,7 +205,7 @@ A customer bought cement for pickup at the counter. Their pickup order is Aproba
 - **FR-018**: "Cancelar" MUST be offered in Borrador, Pendiente de aprobación, Aprobada, Lista para recoger, En preparación and Fallida, and MUST require a reason that isn't empty or only whitespace.
 - **FR-019**: "Reprogramar" MUST be offered only in Fallida, and MUST ask for confirmation.
 - **FR-020**: "Lista para recoger" MUST be offered only on a pickup order in Aprobada.
-- **FR-021**: "Entregar al cliente" MUST be offered only on a pickup order in Lista para recoger. It MUST require receiver name, the identification shown (free text, not blank), and a photo.
+- **FR-021**: "Entregar al cliente" MUST be offered only on a pickup order in Lista para recoger. It MUST require receiver name, the identification shown (free text, not blank), and a photo (jpg or png, up to 2 MB, as the server allows).
 - **FR-022**: After any action succeeds, the detail screen MUST show the order's new state and history, and the list MUST reflect the change when the user returns to it.
 
 **General**
@@ -251,7 +252,7 @@ A customer bought cement for pickup at the counter. Their pickup order is Aproba
 - The rights follow the server. Listing, detail, history and proof need Delivery Orders (71) read. Header and line edits, confirm, cancel, requeue, ready-for-pickup and pickup all need Delivery Orders update (cancel needs update, not delete).
 - Delivery orders are created only in the POS "Entrega" step (spec 026), from a completed sale. This screen doesn't create them. Legacy "New" stays out of scope, by the user's choice.
 - Delivery orders are only a back-office concern here. The POS "Entrega" step keeps working as it does and doesn't gain confirm.
-- The list's facility default is the server's (the caller's facility). The server honors any facility id, so the facility filter follows the same pattern as Pedidos.
+- The list's facility default is the server's (the caller's facility). The server honors any facility id from any reader (mbe-api#314), so the app decodes the facility filter only for administrators, in both the URL filter and the request, as Pedidos does (spec 029).
 - Approval (roadmap #39) and printing the delivery ticket and document (#42, #43) have their own issues and aren't part of this feature.
 - Trips (itineraries), including stop closure and its proof of delivery (#41), aren't part of this feature. Their effects show up here as statuses, quantities, history and proof.
 - Priority is a whole number of 0 or more, as the server takes it. There are no named priority levels, because the server has none.
@@ -275,6 +276,7 @@ A customer bought cement for pickup at the counter. Their pickup order is Aproba
 - Error codes:
   - `delivery_order.not_editable`, `delivery_order.no_lines`, `delivery_order.insufficient_notice` (detail `min_hours`, `earliest`);
   - `delivery_order.not_failed`, `delivery_order.quantity_exceeds_remaining`, `delivery_order.line_not_deliverable`, `delivery_order.line_already_present`;
-  - `delivery_order.proof_incomplete`, `delivery_order.reason_required`, `state.transition_invalid` (detail `resource`, `from`, `to`).
+  - `delivery_order.proof_incomplete`, `delivery_order.reason_required`, `state.transition_invalid` (detail `resource`, `from`, `to`);
+  - `lock.busy` (confirm), `image.too_large` and `image.unsupported_format` (pickup), `resource.not_found`.
 - Known server gap: mbe-api#311. Cancelling an order that's a stop on an open itinerary blocks that itinerary's departure.
-- Pending server changes: mbe-api#312 (list several statuses at once, for "Activas") and mbe-api#313 (deliverable sales lines for a customer).
+- Pending server changes: mbe-api#312 (list several statuses at once, for "Activas"), mbe-api#313 (deliverable sales lines for a customer) and mbe-api#314 (facility checks on every delivery-order read).

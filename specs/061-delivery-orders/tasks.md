@@ -56,7 +56,7 @@ description: "Task list for 061-delivery-orders"
 **Purpose**: the pieces two or more stories use: strings, error codes, entities, the repositories, the filter, the controllers and the status chip.
 
 - [ ] T002 Add every new string to `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`, then run `flutter gen-l10n`. Each key gets an `@key` description starting "spec 061". Check `app_es.arb` before adding anything, and reuse existing keys (`filtersTooltip`, `filtersButton`, `clearAllFilters`, `applyFilters`, `clearFiltersButton`, `retryButton`, `cancelButton`, `apiResourceDeliveryOrder`, the `apiErrorDeliveryOrder*` set). Keys (C1–C11):
-  - **Navigation and titles:** `navDeliveryOrders` ("Órdenes de entrega" / "Delivery orders"), `deliveryOrderTitle` (placeholder `serial`: "Orden de entrega {serial}"), `deliveryOrderTitleDraft` ("Orden de entrega · Borrador"), `deliveryOrderDraftFolio` ("Borrador"), `deliveryOrdersEmpty` ("No hay órdenes de entrega con estos filtros."), `deliveryOrdersSearchHint` ("Folio o número de orden"), `deliveryOrderBackToList` ("Volver a órdenes de entrega").
+  - **Navigation and titles:** `navDeliveryOrders` ("Órdenes de entrega" / "Delivery orders"), `deliveryOrderTitle` (placeholder `serial`: "Orden de entrega {serial}"), `deliveryOrderTitleDraft` ("Orden de entrega · Borrador"), `deliveryOrderDraftFolio` ("Borrador"), `deliveryOrdersEmpty` ("No hay órdenes de entrega con estos filtros."), `deliveryOrdersSearchHint` ("Folio"), `deliveryOrdersNoFacilityTitle` and `deliveryOrdersNoFacilityMessage` (the notice for a user with no facility, worded like `salesOrderNoFacilityTitle`/`Message`), `deliveryOrderBackToList` ("Volver a órdenes de entrega").
   - **Status labels (11) and types (2):** `deliveryOrderStatusDraft` ("Borrador"), `…PendingApproval` ("Pendiente de aprobación"), `…Approved` ("Aprobada"), `…ReadyForPickup` ("Lista para recoger"), `…PickedUp` ("Recogida"), `…InPreparation` ("En preparación"), `…InTransit` ("En tránsito"), `…Delivered` ("Entregada"), `…PartiallyDelivered` ("Entregada parcialmente"), `…Failed` ("Fallida"), `…Cancelled` ("Cancelada"); `deliveryOrderTypeDelivery` ("Entrega"), `deliveryOrderTypePickup` ("Recoge en tienda").
   - **Columns, fields and sections:** the list columns (Folio, Cliente, Tipo, Programada, Destino, Pedidos, Estado), the facts (Sucursal, Prioridad, Contacto, Comentario, "De la orden", "Orden derivada"), the lines columns (Código, Producto, Almacén, Pedido, Ordenada, Comprometida, Entregada, Devuelta, Abierta), and the section titles "Líneas", "Historial", "Comprobante de entrega".
   - **Filters:** Estado, Tipo, Fecha programada, Cliente, Pedido, Sucursal, "Todas", "Todos", "Mi sucursal".
@@ -69,6 +69,7 @@ description: "Task list for 061-delivery-orders"
   - Add a private `_dateTime(problem, 'earliest', fmt)` helper beside `_date`, formatting with `fmt.display.dateTime`, and use it with `_quantity`-style `_count` for `min_hours` in `insufficient_notice`.
   - In `test/unit/core/errors/problem_fixtures.dart`, add fixtures (`insufficient_notice` carries `min_hours` and `earliest`).
   - In `specs/058-localized-api-errors/contracts/code-scope.tsv`, flip the four rows from `OUT` to `IN`. Set `example_routes` to the endpoint (`POST /delivery-orders/{}/confirm`, `/requeue` or `/pickup`) and the note to "reachable from the delivery order detail screen (spec 061)".
+  - Add the delivery-order routes to the `example_routes` of the reused rows that become reachable here: `lock.busy` (`POST /delivery-orders/{}/confirm`), `image.too_large` and `image.unsupported_format` (`POST /delivery-orders/{}/pickup`), `state.transition_invalid` (`/ready-for-pickup`, `/pickup`) and `delivery_order.not_editable` (`PUT /delivery-orders/{}`, `/confirm`). Research R10 has the full per-endpoint table.
   - In `test/unit/core/errors/catalog_coverage_test.dart`, raise the `checked` count by 4 (it is 105 now, so 109; confirm the current value first).
   - Run `flutter test test/unit/core/errors/`.
 
@@ -83,14 +84,14 @@ description: "Task list for 061-delivery-orders"
 
 - [ ] T007 [P] Stop the POS counting cancelled destinations (R9, C12): in `lib/features/sales/data/delivery_order_repository_impl.dart`, make `listForSale` skip summaries whose status is `cancelled`, before fetching their detail. Add a case to `test/unit/features/sales/delivery_order_repository_impl_test.dart`: a sale with one cancelled and one draft order returns only the draft.
 
-- [ ] T008 [P] Create the filter (data-model §2, R3): `lib/features/sales/presentation/delivery_orders/delivery_orders_filter.dart` (freezed), with `fromQuery(ListQuery)`, `toQuery`, `activeFilterCount` and `isNarrowed`. Keys: `q` (digits only), `status` (wire number), `type`, `from`, `to` (a day), `customer`, `order`, `facility`. An absent `status` means every status. Create `test/unit/features/sales/delivery_orders_filter_test.dart` (follow `refunds_filter_test.dart`): round-trip, non-digit search dropped, unknown status ignored, counts, clearing. Run build_runner.
+- [ ] T008 [P] Create the filter (data-model §2, R3): `lib/features/sales/presentation/delivery_orders/delivery_orders_filter.dart` (freezed), with `fromQuery(ListQuery)`, `toQuery`, `activeFilterCount` and `isNarrowed`. Keys: `q` (digits only), `status` (wire number), `type`, `from`, `to` (a day), `customer`, `order`, `facility`. An absent `status` means every status. `fromQuery` takes `isAdministrator` and decodes `facility` only when it's true, as `SalesOrdersFilter.fromQuery` does (research R3, mbe-api#314). Create `test/unit/features/sales/delivery_orders_filter_test.dart` (follow `refunds_filter_test.dart`): round-trip, non-digit search dropped, unknown status ignored, counts, clearing, and `facility` ignored for a non-administrator. Run build_runner.
 
-- [ ] T009 Create the list controller (depends on T005, T008): `lib/features/sales/presentation/delivery_orders/delivery_orders_list_controller.dart`, an `AsyncNotifier` family keyed by the filter, 20 per page, page clamped as `fetchClampedPage` does in the payments controller. Create `test/unit/features/sales/delivery_orders_list_controller_test.dart` (follow `refunds_list_controller_test.dart`): the filter reaches the repository with `limit 20`, the page is clamped when the last row goes, and an error surfaces. Run build_runner.
+- [ ] T009 Create the list controller (depends on T005, T008): `lib/features/sales/presentation/delivery_orders/delivery_orders_list_controller.dart`, an `AsyncNotifier` family keyed by the filter, 20 per page, page clamped as `fetchClampedPage` does in the payments controller. In the fetch, drop `facility` again unless `isAdministrator`, independently of the filter (the double drop is load-bearing; never merge it into one site). When `userFacilityIdProvider` is null, send no request. Create `test/unit/features/sales/delivery_orders_list_controller_test.dart` (follow `refunds_list_controller_test.dart`): the filter reaches the repository with `limit 20`, the page is clamped when the last row goes, and an error surfaces. Also create `test/unit/features/sales/delivery_orders_scoping_test.dart`, following `sales_orders_scoping_test.dart`: for a non-administrator, a `facility` in the URL reaches neither the filter nor the request, even when the filter is built directly with one; for an administrator it reaches both; with no user facility, no request is sent. Run build_runner.
 
 - [ ] T010 Create the detail controller (R5, depends on T005): `lib/features/sales/presentation/delivery_orders/delivery_order_detail_controller.dart`, a family keyed by id.
   - It loads the order and its events in parallel.
   - It exposes a `sales` map from sales-order detail id to sale id: for a single-sale order every line maps to that sale with no request, and for several sales it loads each with `SalesOrderRepository.getById` (needs Sales Orders read; a failure leaves the map empty).
-  - For a `partiallyDelivered` order it finds children with one `list(salesOrder:)` call, keeping those whose `parentId` equals the id.
+  - For a `partiallyDelivered` order it finds children with one `list(salesOrder:, facility: order.facilityId)` call, keeping those whose `parentId` equals the id. Pass the facility: the server otherwise filters on the caller's (research R5).
   - Proof loading is added in T036.
   - Create `test/unit/features/sales/delivery_order_detail_controller_test.dart`: order and events load together, an events failure doesn't hide the order, the sale map for one and several sales, and the children lookup only for a partial delivery. Run build_runner.
 
@@ -113,8 +114,9 @@ description: "Task list for 061-delivery-orders"
 - [ ] T013 [P] [US1] Create `lib/features/sales/presentation/delivery_orders/delivery_order_name_cells.dart` with the small read-only widgets both screens use, each falling back to `#id` without the right (R4, FR-025): customer name (`customerDisplayNameProvider`), facility name (`facilityDisplayNameProvider`), warehouse name (`facilityWarehousesControllerProvider`), ship-to (the customer's address through `saleCustomerControllerProvider`, or the facility name for a pickup), contact (the same source) and employee name (`employeeDisplayNameProvider`). This file isn't in the plan's source tree; note it there when committing.
 
 - [ ] T014 [US1] Create `lib/features/sales/presentation/delivery_orders/delivery_orders_list_screen.dart` (C2, C3, FR-001–FR-006), following `refunds_list_screen.dart`:
-  - `CatalogFilterBar` with a digits-only `CatalogSearchBar` (key `delivery_orders_search`, hint `deliveryOrdersSearchHint`) and the badged filters button; no create action.
-  - `showCatalogFilterSheet` with Estado, Tipo, Fecha programada (`DateRangeFilterChip`), Cliente (`CatalogEntityPicker`, only with Customers read), Pedido (numeric) and Sucursal (only with Facilities read, first item "Mi sucursal").
+  - When `userFacilityIdProvider` is null, show only the no-facility notice (key `delivery_orders_no_facility`), administrators included, as `sales_orders_list_screen.dart` does.
+  - `CatalogFilterBar` with a digits-only `CatalogSearchBar` (key `delivery_orders_search`, hint `deliveryOrdersSearchHint`, "Folio") and the badged filters button; no create action.
+  - `showCatalogFilterSheet` with Estado, Tipo, Fecha programada (`DateRangeFilterChip`), Cliente (`CatalogEntityPicker`, only with Customers read), Pedido (numeric) and Sucursal (only for administrators, first item "Mi sucursal").
   - `DataTableView<DeliveryOrderSummary>` with the seven columns, "Borrador" when `serial` is null, truncated Cliente and Destino with tooltips, Pedidos joined with ", ", and `DeliveryOrderStatusChip`. No row icons, and a row tap pushes `/sales/delivery-orders/{id}`.
   - `CatalogPagination`, and `CatalogListStateView` for loading, error and empty, with "Quitar filtros" only when `isNarrowed`.
   - The compact tier stacks rows and drops Pedidos.
@@ -129,6 +131,7 @@ description: "Task list for 061-delivery-orders"
 - [ ] T016 [US1] Wire navigation and routes (C1, R11):
   - In `lib/core/navigation/nav_destinations.dart`, add `NavBranch.deliveryOrders = 26` and a `NavDestination(id: 'delivery-orders', …)` in Ventas right after `sales-orders`, gated on `PrivilegeGate(SystemObject.deliveryOrders, AccessRight.read)`.
   - In `lib/app/router/app_router.dart`, append a `StatefulShellBranch` for `/sales/delivery-orders` (`DeliveryOrdersListScreen(query: ListQuery.fromUri(state.uri))`), add the top-level detail `GoRoute('/sales/delivery-orders/:deliveryOrderId')` (non-integer id gives the not-found state), and add a `_routeGate` clause for any location starting with `/sales/delivery-orders`.
+  - Document SystemObject 71 in a comment on the nav destination, both routes and the gate clause (constitution §IV).
   - Run the navigation and router tests found in T001 right after this change.
 
 - [ ] T017 [P] [US1] Create `test/widget/features/sales/delivery_orders_list_screen_test.dart` (follow `refunds_list_screen_test.dart`):
@@ -136,7 +139,8 @@ description: "Task list for 061-delivery-orders"
   - The digits-only search finds by folio, and letters aren't accepted.
   - Each filter reaches the controller, and "Limpiar todo" returns to the opening state.
   - Loading, error and empty states, with "Quitar filtros" only when narrowed.
-  - The customer facet is absent without Customers read, and the facility facet without Facilities read.
+  - The customer facet is absent without Customers read, and the facility facet for a non-administrator.
+  - A user with no facility sees the notice and no request is made.
   - A row tap navigates to the detail, and a user without Delivery Orders read is redirected.
 
 - [ ] T018 [P] [US1] Create `test/widget/features/sales/delivery_order_detail_screen_test.dart` (follow `refund_detail_screen_test.dart`): header facts and chip, all five line quantities, the rejection banner only when a reason exists, the parent link, child links for a partial delivery, the Pedido column for one and several sales, names falling back to `#id`, not-found and load-error states, and no action or edit control for a user without update (this test file grows in later stories).
@@ -191,6 +195,7 @@ description: "Task list for 061-delivery-orders"
 - [ ] T027 [P] [US3] Create `test/widget/features/sales/header_dialog_test.dart` and `add_line_dialog_test.dart`, and extend the detail test:
   - Header: only changed fields are sent, Guardar is disabled until a change, a pickup's ship-to is read-only, priority rejects negatives.
   - Add line: step 1 lists the sales, step 2 shows only lines with something left and drops lines already on the order, a quantity above remaining is invalid, rows send in sequence and the first error stops the run.
+  - Line quantity (T023): `quantity_exceeds_remaining` shows inline with the server's `remaining` and keeps the dialog open.
   - Detail: the edit controls show only for a draft with update, and "Agregar línea" needs Sales Orders read.
 
 **Checkpoint**: US3 works on its own; a draft can be fully corrected, then confirmed (US2).
@@ -253,22 +258,24 @@ description: "Task list for 061-delivery-orders"
   - "Entregar" is enabled only when both texts are non-blank after trimming and a file is chosen.
   - On error (including `proof_incomplete`) the dialog stays open and keeps the chosen photo.
 
-- [ ] T038 [P] [US7] Create `test/widget/features/sales/pickup_dialog_test.dart` and extend the dialogs and detail tests: "Lista para recoger" shows only for a pickup in Aprobada, "Entregar al cliente" only for a pickup in Lista para recoger, neither on a delivery order; the pickup button stays disabled until name, identification and a file are all given (each one missing in turn, and whitespace-only text); an error keeps the dialog and the photo; the proof section shows after success, shows a failure inside itself, and is absent without proof.
+- [ ] T038 [P] [US7] Create `test/widget/features/sales/pickup_dialog_test.dart` and extend the dialogs and detail tests: "Lista para recoger" shows only for a pickup in Aprobada, "Entregar al cliente" only for a pickup in Lista para recoger, neither on a delivery order; the pickup button stays disabled until name, identification and a file are all given (each one missing in turn, and whitespace-only text); an error keeps the dialog and the photo, including `image.too_large` (a file over 2 MB) and `image.unsupported_format`; the proof section shows after success, shows a failure inside itself, and is absent without proof.
 
 ---
 
 ## Phase 10: Polish and cross-cutting
 
-- [ ] T039 [P] Create the live test `integration_test/delivery_orders_quickstart_test.dart` (R12), following `payment_verification_quickstart_test.dart` and `customer_refunds_quickstart_test.dart`:
+- [ ] T039 Add the action matrix test (SC-003, data-model §3, analysis E1) to `test/widget/features/sales/delivery_order_detail_screen_test.dart`: one table-driven test over all 11 statuses × both types × with and without `deliveryOrders` update. For each case, assert the exact set of action keys present (`delivery_order_confirm`, `_cancel`, `_requeue`, `_ready`, `_pickup`, `_edit_header`, `_add_line`, and the line ✎/🗑) and that every other key is absent. "Agregar línea" also varies with Sales Orders read. Without update, the set is empty. This needs every story's buttons, so it runs after T038.
+
+- [ ] T040 [P] Create the live test `integration_test/delivery_orders_quickstart_test.dart` (R12), following `payment_verification_quickstart_test.dart` and `customer_refunds_quickstart_test.dart`:
   - Read-only by default: the list opens, a filter narrows it, and an order's detail loads with its events.
   - With `MBE_WRITE=true`, it raises a draft through the POS repository from a completed 1-unit sale, then edits the header, confirms and cancels it, and checks the history. It also confirms a pickup draft, marks it ready, and hands it over with a generated 1×1 PNG.
   - Discover its fixtures at run time (see the memory note on live-backend tests). Requeue isn't automated: it needs an itinerary, so quickstart step 9 covers it.
 
-- [ ] T040 Run the manual checks in `quickstart.md` that automation can't prove: step 1 (`qanoaccess` has no entry and the URL is refused), step 6 (too little notice, only if the tenant has a minimum), step 9 (requeue through an itinerary), step 10 (a read-only user; give a test account right 71 read without update first), step 11 (the compact tier) and step 12 (the largest text size: the status chip, folio and quantities don't clip). Record the results in the PR description, and say plainly which checks were not run.
+- [ ] T041 Run the manual checks in `quickstart.md` that automation can't prove: step 1 (`qanoaccess` has no entry and the URL is refused), step 6 (too little notice, only if the tenant has a minimum), step 9 (requeue through an itinerary), step 10 (a read-only user; give a test account right 71 read without update first), step 11 (the compact tier) and step 12 (the largest text size: the status chip, folio and quantities don't clip). Record the results in the PR description, and say plainly which checks were not run.
 
-- [ ] T041 Final checks: `flutter analyze` is clean; `dart format` on only the files changed in this feature; the full `flutter test test/unit test/widget` passes apart from the known golden failures (mbe-ui#209); `catalog_coverage_test` passes. Check by search that no new `NumberFormat`, `toStringAsFixed`, `double` quantity, `enum.name` label or hard-coded spacing literal slipped in.
+- [ ] T042 Final checks: `flutter analyze` is clean; `dart format` on only the files changed in this feature; the full `flutter test test/unit test/widget` passes apart from the known golden failures (mbe-ui#209); `catalog_coverage_test` passes. Check by search that no new `NumberFormat`, `toStringAsFixed`, `double` quantity, `enum.name` label or hard-coded spacing literal slipped in.
 
-- [ ] T042 Write `specs/061-delivery-orders/pr-description.md` with a Roadmap section ("Closes mictlanix/mbe-roadmap#38"). Name the three upstream issues (mbe-api#311, #312, #313), what each leaves temporarily different here (the list opens on every status; add-line computes remaining; cancel on an open itinerary is allowed), the POS cancelled-destination fix (R9) and the §VI document reading. End it with the attribution line the session's reminder gives.
+- [ ] T043 Write `specs/061-delivery-orders/pr-description.md` with a Roadmap section ("Closes mictlanix/mbe-roadmap#38"). Name the four upstream issues (mbe-api#311, #312, #313, #314), what each leaves temporarily different here (cancel on an open itinerary is allowed; the list opens on every status; add-line computes remaining; the facility facet is administrators-only and a hand-typed detail URL for another facility isn't blocked), the POS cancelled-destination fix (R9) and the §VI document reading. End it with the attribution line the session's reminder gives.
 
 ---
 
@@ -288,8 +295,8 @@ T011 + T015 + T019 ─▶ T022, T023, T024 ─▶ T025 ─▶ T026 ─▶ T027  
 T019 + T020 ─▶ T028 ─▶ T029 ─▶ T030                         (US4)
 T015 ─▶ T031 ─▶ T032                                        (US5)
 T019 + T020 ─▶ T033 ─▶ T034                                 (US6)
-T020 + T010 ─▶ T035, T036 ─▶ T037 ─▶ T038                   (US7)
-all stories ─▶ T039 ─▶ T040 ─▶ T041 ─▶ T042
+T020 + T010 ─▶ T035; T031 + T010 ─▶ T036; T035 + T036 ─▶ T037 ─▶ T038   (US7)
+all stories ─▶ T039 ─▶ T040 ─▶ T041 ─▶ T042 ─▶ T043
 ```
 
 - **US1** needs T002 to T013. **US2 to US7** each need the US1 detail screen (T015) and the action area T020 creates, so edit the detail screen one story at a time. US5 only needs T015.
@@ -310,7 +317,7 @@ all stories ─▶ T039 ─▶ T040 ─▶ T041 ─▶ T042
 
 ## Task count
 
-42 tasks:
+43 tasks:
 
 | Phase | Tasks |
 |---|---|
@@ -323,4 +330,4 @@ all stories ─▶ T039 ─▶ T040 ─▶ T041 ─▶ T042
 | US5 | 2 (T031–T032) |
 | US6 | 2 (T033–T034) |
 | US7 | 4 (T035–T038) |
-| Polish | 4 (T039–T042) |
+| Polish | 5 (T039–T043) |

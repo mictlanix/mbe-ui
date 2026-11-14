@@ -15,7 +15,7 @@ Each contract states what a test can assert. Keys are given where a widget test 
 ## C2. List screen (`DeliveryOrdersListScreen`)
 
 - **Filter row.**
-  - It is a `CatalogFilterBar` with a `CatalogSearchBar` (key `delivery_orders_search`). The search accepts digits only: a `FilteringTextInputFormatter.digitsOnly`, hinted "Folio o número de orden".
+  - It is a `CatalogFilterBar` with a `CatalogSearchBar` (key `delivery_orders_search`). The search accepts digits only: a `FilteringTextInputFormatter.digitsOnly`, hinted "Folio".
   - The filters button opens `showCatalogFilterSheet`, and its badge equals `activeFilterCount`. On first load the badge is 0, because the interim opening state is every status (FR-003).
   - There is no create action.
 - **Table.** `DataTableView<DeliveryOrderSummary>` with columns Folio, Cliente, Tipo, Programada, Destino, Pedidos, Estado.
@@ -25,6 +25,7 @@ Each contract states what a test can assert. Keys are given where a widget test 
   - **Estado** is a `DeliveryOrderStatusChip`, never truncated.
 - **Row behaviour.** A row has no icons. Tapping a row pushes `/sales/delivery-orders/{id}` (FR-006). This is a recorded §VI reading: delivery orders are documents, not catalog records (plan, Constitution Check).
 - **Pagination.** `CatalogPagination`, 20 rows per page, newest first (server order: id descending).
+- **No facility configured.** When the user's account has no facility, the screen shows a notice (key `delivery_orders_no_facility`) and sends no request, administrators included, as Pedidos does.
 - **States.**
   - Loading and error use `CatalogListStateView`, with error text from `localizeProblem`.
   - Empty shows `deliveryOrdersEmpty`. "Quitar filtros" appears only when `isNarrowed`.
@@ -38,7 +39,7 @@ Each contract states what a test can assert. Keys are given where a widget test 
   - **Fecha programada:** `DateRangeFilterChip`.
   - **Cliente:** `CatalogEntityPicker`, only with Customers read.
   - **Pedido:** a numeric field.
-  - **Sucursal:** a dropdown of facilities, only with Facilities read. Its first item is "Mi sucursal" (absent).
+  - **Sucursal:** a dropdown of facilities, only for administrators. Its first item is "Mi sucursal" (absent). A non-administrator's `facility` URL key is ignored, both when the filter decodes the URL and when the controller builds the request (research R3, mbe-api#314).
 - **Buttons.** "Limpiar todo" nulls every facet. "Aplicar" writes the URL.
 - **"Activas".** Not offered until mbe-api#312 ships.
 
@@ -106,8 +107,8 @@ Each contract states what a test can assert. Keys are given where a widget test 
 
 - **✎ Cantidad.** A dialog with one decimal field, prefilled with the current quantity.
   - Above the field: "Ordenada en la venta: N".
-  - The client checks only that the quantity is greater than 0. Remaining for this line is `remaining + current`, which the client doesn't have without the sale.
-  - So the server's `delivery_order.quantity_exceeds_remaining {requested, remaining}` is the bound, shown inline in the dialog.
+  - The client checks only that the quantity is greater than 0.
+  - The server's `delivery_order.quantity_exceeds_remaining {requested, remaining}` is the bound, shown inline in the dialog. Its `remaining` already excludes this line's own quantity, so it is the true maximum for the line (research R10).
 - **🗑 Quitar.** A confirmation naming the product, which says its quantity becomes available again.
 
 ## C9. Pickup dialog ("Entregar al cliente")
@@ -117,7 +118,8 @@ Each contract states what a test can assert. Keys are given where a widget test 
   - "Identificación mostrada" (`delivery_order_pickup_id`, free text);
   - "Foto": a "Elegir archivo" button that uses `file_picker` with jpg, jpeg or png. The chosen file's name is shown with ✕ to clear it.
 - **Confirm button.** Enabled only when both texts aren't blank and a file is chosen (FR-021, SC-004).
-- **Errors.** `delivery_order.proof_incomplete` and others show inside the dialog. The dialog stays open, so the photo isn't lost.
+- **Photo size.** The server accepts up to 2 MB. A larger file is refused with `image.too_large`, and an unreadable one with `image.unsupported_format`; both are already localized.
+- **Errors.** `delivery_order.proof_incomplete`, the two image codes and others show inside the dialog. The dialog stays open, so the other fields aren't lost.
 
 ## C10. Header dialog
 

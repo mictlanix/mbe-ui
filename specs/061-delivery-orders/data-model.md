@@ -98,7 +98,7 @@ A pure function, `deliverableLines(Sale sale, List<DeliveryOrder> ordersOfSale, 
 | `from`, `to` | `dateFrom`, `dateTo` | `DateTime?` (day) | any date | `date_from` (start of day), `date_to` (end of day) |
 | `customer` | `customerId` | `int?` | any | `customer` |
 | `order` | `salesOrderId` | `int?` | any | `sales_order` |
-| `facility` | `facilityId` | `int?` | the caller's facility (server default) | `facility` |
+| `facility` | `facilityId` | `int?` | the caller's facility (server default) | `facility`, administrators only: dropped for everyone else in `fromQuery` and again in the fetch (research R3) |
 | `page` | via `ListQuery` | | page 1 | `skip`, `limit` = 20 |
 
 - `activeFilterCount` counts the non-null facets, not search or page.
@@ -141,5 +141,5 @@ The app never predicts the status that results. It shows the one returned.
 | Line quantity (edit or add) | > 0 and ≤ remaining | `delivery_order.quantity_exceeds_remaining` |
 | Priority | integer ≥ 0 | 422 validation |
 | Pickup receiver name, identification shown | not blank after trim | `delivery_order.proof_incomplete` |
-| Pickup photo | jpg, jpeg or png file chosen | `delivery_order.proof_incomplete` |
+| Pickup photo | jpg, jpeg or png file chosen, up to 2 MB | `delivery_order.proof_incomplete`, `image.too_large`, `image.unsupported_format` |
 | Confirm | at least one line | `delivery_order.no_lines` |

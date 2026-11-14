@@ -32,7 +32,9 @@ These findings come from reading mbe-api (`app/api/v1/endpoints/delivery_orders.
 - **Decision:**
   - **URL-backed filter.** A freezed `DeliveryOrdersFilter.fromQuery(ListQuery)`, modelled on `refunds_filter.dart` and `payments_filter.dart`. Its facets are `status` (wire number), `type`, `from` and `to` (scheduled date), `customer`, `order` (sales-order id) and `facility`.
   - **Absent values.** An absent `status` means every status, the interim opening state the user chose. An absent `facility` means the server default, the caller's facility.
-  - **Search** takes digits only (folio or id). The server ignores anything else.
+  - **Search** takes digits only and is labelled "Folio". The server also matches the internal id, but no screen shows that id, so the app doesn't offer it as a search key (analysis B1).
+  - **Facility scoping (analysis S1, mbe-api#314).** The server honors any `facility` from any 71 reader. Following Pedidos (spec 029, `sales_orders_scoping_test.dart`), the facet is decoded only when `isAdministrator`, twice: in `DeliveryOrdersFilter.fromQuery` and again in the list controller's fetch. Treat the double drop as load-bearing; never merge it into one site.
+  - **No facility configured.** When `userFacilityIdProvider` is null, the screen shows a notice and sends no request, administrators included, as `sales_orders_list_screen.dart` does.
   - **Clearing** empties every facet.
 - **The `Activas` gap:**
   - `GET /delivery-orders` takes one `status` value, so the seven non-terminal statuses can't be one paginated request. Filtering on the client would break `total` and page boundaries.
@@ -68,7 +70,7 @@ These findings come from reading mbe-api (`app/api/v1/endpoints/delivery_orders.
 - **Decision:** the detail controller loads the order and its events together, in two parallel requests.
   - The proof section loads only when `proofOfDelivery != null`: `proof` first, then `proofImage`.
   - `proofImage` is bytes, so it copies spec 051's `licensePhotoProvider`: a PNG signature check, then `Image.memory`. The server always answers `image/png`.
-  - Parent and child links: the parent comes from `parentDeliveryOrder`. Children are found with `GET /delivery-orders?…` filtered on the parent's sales order. Their `parentDeliveryOrder == id` is checked on the client, since the list can't filter by parent. That costs one list call, made only when the order is PARTIALLY_DELIVERED.
+  - Parent and child links: the parent comes from `parentDeliveryOrder`. Children are found with `GET /delivery-orders?sales_order=<a sale of the order>&facility=<the order's facility>`. The facility is passed because the server otherwise filters on the caller's (analysis F1). Their `parentDeliveryOrder == id` is checked on the client, since the list can't filter by parent. That costs one list call, made only when the order is PARTIALLY_DELIVERED.
 - **Rationale:** the history is bounded (a handful of events), so it isn't paginated. A failed proof never blocks the rest of the screen.
 - **Alternatives considered:** a child-order link from the server. Not available, and a partial delivery's child is rare enough that one list call is fine.
 
@@ -125,19 +127,26 @@ These findings come from reading mbe-api (`app/api/v1/endpoints/delivery_orders.
 
 ## R10. Localized errors
 
-- **Decision:** add four codes to `localizedErrorCodes`, with arms in `localize_problem.dart` and keys in both ARB files. Each one flips from `OUT` to `IN` in `specs/058-localized-api-errors/contracts/code-scope.tsv`.
+- **Decision:** add four codes to `localizedErrorCodes`, with arms in `localize_problem.dart` and keys in both ARB files, and flip each from `OUT` to `IN` in `specs/058-localized-api-errors/contracts/code-scope.tsv`: `delivery_order.insufficient_notice` (carries `earliest`, formatted by a new `_dateTime` helper on `fmt.display.dateTime`, and `min_hours`), `delivery_order.no_lines`, `delivery_order.not_failed` and `delivery_order.proof_incomplete`.
+- **Every code the newly called endpoints can return** (constitution workflow gate; analysis D1). "New" means this feature adds the message. "Have" means it's already localized and reused. Every endpoint can also return the framework codes (authentication, permission, validation, `resource.conflict`), which are already localized.
 
-  | Code | Message carries |
-  |---|---|
-  | `delivery_order.insufficient_notice` | `earliest` (date and time), via a new `_dateTime` helper on `fmt.display.dateTime`, and `min_hours` |
-  | `delivery_order.no_lines` | — |
-  | `delivery_order.not_failed` | — |
-  | `delivery_order.proof_incomplete` | — |
+  | Endpoint | Codes | Message |
+  |---|---|---|
+  | `GET /delivery-orders`, `/{id}`, `/{id}/events`, `/{id}/proof`, `/{id}/proof/image` | `resource.not_found` | have |
+  | `PUT /{id}` | `delivery_order.not_editable`, `resource.not_found` | have |
+  | `POST /{id}/lines` | `delivery_order.not_editable`, `.line_not_deliverable`, `.line_already_present`, `.quantity_exceeds_remaining`, `facility.no_dispatch_warehouse` | have |
+  | `PUT`, `DELETE /{id}/lines/{line}` | `delivery_order.not_editable`, `.quantity_exceeds_remaining` (PUT only), `resource.not_found` | have |
+  | `POST /{id}/confirm` | `delivery_order.not_editable`, `lock.busy` | have |
+  | | `delivery_order.no_lines`, `delivery_order.insufficient_notice` | **new** |
+  | `POST /{id}/cancel` | `delivery_order.reason_required`, `state.transition_invalid` | have |
+  | `POST /{id}/requeue` | `delivery_order.not_failed` | **new** |
+  | `POST /{id}/ready-for-pickup` | `state.transition_invalid` | have |
+  | `POST /{id}/pickup` | `state.transition_invalid`, `image.too_large` (2 MB), `image.unsupported_format` | have |
+  | | `delivery_order.proof_incomplete` | **new** |
 
-- **Already localized, and reused:**
-  - `state.transition_invalid`, whose message is generic: "Este registro no puede pasar de su estado actual al solicitado.";
-  - `delivery_order.not_editable`, `.quantity_exceeds_remaining`, `.line_not_deliverable`, `.line_already_present` and `.reason_required`.
-- **The wireframe's contextual cancel message** ("ya no puede cancelarse desde En tránsito") isn't built. The generic transition message plus the reload, which shows the new status, meets FR-023. A contextual variant would need per-screen copies of the code's text, which §III steers away from.
+  The `example_routes` of the reused rows (`lock.busy`, `image.*`, `state.transition_invalid`, `delivery_order.not_editable`) gain the delivery-order routes in code-scope.tsv, so the table records where each code is reachable.
+- **`state.transition_invalid`'s message is generic:** "Este registro no puede pasar de su estado actual al solicitado." The wireframe's contextual cancel message ("ya no puede cancelarse desde En tránsito") isn't built. The generic message plus the reload, which shows the new status, meets FR-023. A contextual variant would need per-screen copies of the code's text, which §III steers away from.
+- **Line edits:** `update_line` reports `remaining` with the line's own quantity already excluded (`sales_line.quantity − elsewhere`), so the refusal states the true maximum for that line (analysis U4). No client computation is needed for C8.
 - **Rationale:** constitution §III (v1.15.0) says error text comes from codes, in both locales, and `catalog_coverage_test.dart` enforces it.
 
 ## R11. Navigation and routes
@@ -152,13 +161,14 @@ These findings come from reading mbe-api (`app/api/v1/endpoints/delivery_orders.
 
 - **Unit** (`test/unit/features/sales/`):
   - `delivery_orders_filter_test`;
+  - `delivery_orders_scoping_test`, which pins the double facility drop for non-administrators (S1), following `sales_orders_scoping_test.dart`;
   - `delivery_order_admin_repository_impl_test`, covering the status mapping, the four quantities, multipart pickup and the PNG check;
   - `delivery_order_actions_test`, covering invalidations and error passthrough;
   - `deliverable_lines_test`, covering the remaining computation and cancelled exclusion;
   - the R9 case added to `delivery_order_repository_impl_test`.
 - **Widget** (`test/widget/features/sales/`):
   - `delivery_orders_list_screen_test`, covering opening, filters, empty state and the no-right redirect;
-  - `delivery_order_detail_screen_test`, an action matrix by status × type × right (SC-003), plus the rejection banner, parent link and proof;
+  - `delivery_order_detail_screen_test`: the rejection banner, parent link and proof, plus one table-driven action matrix over all 11 statuses × both types × update or not, asserting exactly the actions in data-model §3 and no others (SC-003, analysis E1);
   - dialog tests for confirm, cancel, pickup, header and add line.
 - **Core:** `catalog_coverage_test` gains four codes, and `problem_fixtures` gets the new ones.
 - **Live:** `integration_test/delivery_orders_quickstart_test.dart`.

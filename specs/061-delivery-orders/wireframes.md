@@ -12,7 +12,7 @@ This is a new navigation destination in Ventas, after Pedidos. It is gated on `P
 
 ```text
 ┌ Órdenes de entrega ──────────────────────────────────────────────────────────────────────────┐
-│ [🔍 Folio o número de orden          ]  [⚙ Filtros]                                           │
+│ [🔍 Folio                            ]  [⚙ Filtros]                                           │
 ├──────────┬──────────────────┬─────────┬────────────┬──────────────────┬─────────┬──────────────┤
 │ Folio    │ Cliente          │ Tipo    │ Programada │ Destino          │ Pedidos │ Estado       │
 ├──────────┼──────────────────┼─────────┼────────────┼──────────────────┼─────────┼──────────────┤
@@ -61,14 +61,14 @@ This is a new navigation destination in Ventas, after Pedidos. It is gated on `P
 - **Fecha programada.** `DateRangeFilterChip`.
 - **Cliente.** `CatalogEntityPicker` over customers. It's offered only to users with Customers read; see Open Question 6.
 - **Pedido.** A numeric field holding the sales-order id. The server filters by id, not by folio.
-- **Sucursal.** Defaults to the user's facility (spec Assumptions). It needs Facilities read to list names.
+- **Sucursal.** Offered only to administrators, and defaults to the user's facility. Anyone else's `facility` URL key is ignored, because the server doesn't check it (mbe-api#314, plan R3).
 - **"Limpiar todo".** Returns to every status, every type, any date, no customer, no sale, the user's facility.
 
 ### State: empty
 
 ```text
 ┌ Órdenes de entrega ──────────────────────────────────────────────────────────────────┐
-│ [🔍 Folio o número de orden          ]  [⚙ Filtros]                                   │
+│ [🔍 Folio                            ]  [⚙ Filtros]                                   │
 ├──────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                      │
 │               No hay órdenes de entrega con estos filtros.                           │
