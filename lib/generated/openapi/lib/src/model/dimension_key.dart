@@ -40,6 +40,28 @@ class DimensionKey extends EnumClass {
   static const DimensionKey paymentTerms = _$paymentTerms;
   @BuiltValueEnumConst(wireName: r'payment_method')
   static const DimensionKey paymentMethod = _$paymentMethod;
+  @BuiltValueEnumConst(wireName: r'warehouse')
+  static const DimensionKey warehouse = _$warehouse;
+  @BuiltValueEnumConst(wireName: r'movement_type')
+  static const DimensionKey movementType = _$movementType;
+  @BuiltValueEnumConst(wireName: r'supplier')
+  static const DimensionKey supplier = _$supplier;
+  @BuiltValueEnumConst(wireName: r'aging_bucket')
+  static const DimensionKey agingBucket = _$agingBucket;
+  @BuiltValueEnumConst(wireName: r'due_bucket')
+  static const DimensionKey dueBucket = _$dueBucket;
+  @BuiltValueEnumConst(wireName: r'sales_agent')
+  static const DimensionKey salesAgent = _$salesAgent;
+  @BuiltValueEnumConst(wireName: r'commission_participation')
+  static const DimensionKey commissionParticipation = _$commissionParticipation;
+  @BuiltValueEnumConst(wireName: r'commission_status')
+  static const DimensionKey commissionStatus = _$commissionStatus;
+  @BuiltValueEnumConst(wireName: r'issuer')
+  static const DimensionKey issuer = _$issuer;
+  @BuiltValueEnumConst(wireName: r'document_status')
+  static const DimensionKey documentStatus = _$documentStatus;
+  @BuiltValueEnumConst(wireName: r'document_type')
+  static const DimensionKey documentType = _$documentType;
 
   static Serializer<DimensionKey> get serializer => _$dimensionKeySerializer;
 

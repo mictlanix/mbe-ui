@@ -12,15 +12,15 @@ part 'analytics_alert.g.dart';
 /// AnalyticsAlert
 ///
 /// Properties:
-/// * [key] - overdue_credit_orders | lines_below_cost | lines_without_cost | refund_rate
+/// * [key] - overdue_credit_orders | lines_below_cost | lines_without_cost | refund_rate | stock_outs | below_reorder | dead_stock | uncosted_stock | payables_overdue
 /// * [facility] - refund_rate only: one alert per facility where it fires.
 /// * [count]
 /// * [amount]
-/// * [detail]
+/// * [detail] - The detail listing what the alert counts; null for payables_overdue, which has no detail kind (spec 038).
 @BuiltValue()
 abstract class AnalyticsAlert
     implements Built<AnalyticsAlert, AnalyticsAlertBuilder> {
-  /// overdue_credit_orders | lines_below_cost | lines_without_cost | refund_rate
+  /// overdue_credit_orders | lines_below_cost | lines_without_cost | refund_rate | stock_outs | below_reorder | dead_stock | uncosted_stock | payables_overdue
   @BuiltValueField(wireName: r'key')
   String get key;
 
@@ -34,8 +34,9 @@ abstract class AnalyticsAlert
   @BuiltValueField(wireName: r'amount')
   String? get amount;
 
+  /// The detail listing what the alert counts; null for payables_overdue, which has no detail kind (spec 038).
   @BuiltValueField(wireName: r'detail')
-  AnalyticsDetailRequest get detail;
+  AnalyticsDetailRequest? get detail;
 
   AnalyticsAlert._();
 
@@ -88,10 +89,12 @@ class _$AnalyticsAlertSerializer
             specifiedType: const FullType.nullable(String),
           );
     yield r'detail';
-    yield serializers.serialize(
-      object.detail,
-      specifiedType: const FullType(AnalyticsDetailRequest),
-    );
+    yield object.detail == null
+        ? null
+        : serializers.serialize(
+            object.detail,
+            specifiedType: const FullType.nullable(AnalyticsDetailRequest),
+          );
   }
 
   @override
@@ -158,9 +161,12 @@ class _$AnalyticsAlertSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(AnalyticsDetailRequest),
+                    specifiedType: const FullType.nullable(
+                      AnalyticsDetailRequest,
+                    ),
                   )
-                  as AnalyticsDetailRequest;
+                  as AnalyticsDetailRequest?;
+          if (valueDes == null) continue;
           result.detail.replace(valueDes);
           break;
         default:

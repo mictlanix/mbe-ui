@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/analytics_detail_figures.dart';
 import 'package:mbe_api_client/src/model/detail_kind.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -13,8 +14,8 @@ part 'analytics_detail_item.g.dart';
 ///
 /// Properties:
 /// * [kind]
-/// * [id] - sales_order_id | sales_order_detail_id | customer_refund_id | fiscal_document_id | customer_payment_id
-/// * [documentId] - The document to open: the order for a line, the refund, the fiscal document, the payment.
+/// * [id] - sales_order_id | sales_order_detail_id | customer_refund_id | fiscal_document_id | customer_payment_id | product (stock) | lot_serial_tracking_id (movements) | sales_order_detail_id (commission_lines, uninvoiced_lines) | purchase_order_detail_id (purchases)
+/// * [documentId] - The document to open: the order for a line, the refund, the fiscal document, the payment, a movement's document; null for stock pairs.
 /// * [folio]
 /// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [facility]
@@ -25,34 +26,36 @@ part 'analytics_detail_item.g.dart';
 /// * [productCode]
 /// * [productName]
 /// * [quantity]
-/// * [amount] - Positive: a line's or order's sales amount, a refund's, a credit note's, or a payment's amount in its class; the balance with flag=overdue; with the request's VAT treatment.
-/// * [cost] - Cost privilege only, absent otherwise; null on uncosted lines.
+/// * [amount] - Positive: a line's or order's sales amount, a refund's, a credit note's, or a payment's amount in its class; the balance with flag=overdue; with the request's VAT treatment. Null where a kind has no amount (stock, movements).
+/// * [cost] - Cost privilege only, absent otherwise; null on uncosted lines. A stock pair's unit cost.
 /// * [margin] - Cost privilege only, absent otherwise.
 /// * [paymentMethod]
+/// * [warehouse] - Stock, movements and purchases.
+/// * [figures] - Spec 038 kinds: the kind's own columns.
 @BuiltValue()
 abstract class AnalyticsDetailItem
     implements Built<AnalyticsDetailItem, AnalyticsDetailItemBuilder> {
   @BuiltValueField(wireName: r'kind')
   DetailKind get kind;
-  // enum kindEnum {  orders,  lines,  refunds,  credit_notes,  payments,  };
+  // enum kindEnum {  orders,  lines,  refunds,  credit_notes,  payments,  stock,  movements,  receivables,  invoices,  uninvoiced_lines,  purchases,  commission_lines,  };
 
-  /// sales_order_id | sales_order_detail_id | customer_refund_id | fiscal_document_id | customer_payment_id
+  /// sales_order_id | sales_order_detail_id | customer_refund_id | fiscal_document_id | customer_payment_id | product (stock) | lot_serial_tracking_id (movements) | sales_order_detail_id (commission_lines, uninvoiced_lines) | purchase_order_detail_id (purchases)
   @BuiltValueField(wireName: r'id')
   int get id;
 
-  /// The document to open: the order for a line, the refund, the fiscal document, the payment.
+  /// The document to open: the order for a line, the refund, the fiscal document, the payment, a movement's document; null for stock pairs.
   @BuiltValueField(wireName: r'document_id')
-  int get documentId;
+  int? get documentId;
 
   @BuiltValueField(wireName: r'folio')
   String? get folio;
 
   /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'date')
-  DateTime get date;
+  DateTime? get date;
 
   @BuiltValueField(wireName: r'facility')
-  int get facility;
+  int? get facility;
 
   @BuiltValueField(wireName: r'customer')
   int? get customer;
@@ -75,11 +78,11 @@ abstract class AnalyticsDetailItem
   @BuiltValueField(wireName: r'quantity')
   String? get quantity;
 
-  /// Positive: a line's or order's sales amount, a refund's, a credit note's, or a payment's amount in its class; the balance with flag=overdue; with the request's VAT treatment.
+  /// Positive: a line's or order's sales amount, a refund's, a credit note's, or a payment's amount in its class; the balance with flag=overdue; with the request's VAT treatment. Null where a kind has no amount (stock, movements).
   @BuiltValueField(wireName: r'amount')
-  String get amount;
+  String? get amount;
 
-  /// Cost privilege only, absent otherwise; null on uncosted lines.
+  /// Cost privilege only, absent otherwise; null on uncosted lines. A stock pair's unit cost.
   @BuiltValueField(wireName: r'cost')
   String? get cost;
 
@@ -89,6 +92,14 @@ abstract class AnalyticsDetailItem
 
   @BuiltValueField(wireName: r'payment_method')
   int? get paymentMethod;
+
+  /// Stock, movements and purchases.
+  @BuiltValueField(wireName: r'warehouse')
+  int? get warehouse;
+
+  /// Spec 038 kinds: the kind's own columns.
+  @BuiltValueField(wireName: r'figures')
+  AnalyticsDetailFigures? get figures;
 
   AnalyticsDetailItem._();
 
@@ -126,11 +137,13 @@ class _$AnalyticsDetailItemSerializer
     );
     yield r'id';
     yield serializers.serialize(object.id, specifiedType: const FullType(int));
-    yield r'document_id';
-    yield serializers.serialize(
-      object.documentId,
-      specifiedType: const FullType(int),
-    );
+    if (object.documentId != null) {
+      yield r'document_id';
+      yield serializers.serialize(
+        object.documentId,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
     yield r'folio';
     yield object.folio == null
         ? null
@@ -138,16 +151,20 @@ class _$AnalyticsDetailItemSerializer
             object.folio,
             specifiedType: const FullType.nullable(String),
           );
-    yield r'date';
-    yield serializers.serialize(
-      object.date,
-      specifiedType: const FullType(DateTime),
-    );
-    yield r'facility';
-    yield serializers.serialize(
-      object.facility,
-      specifiedType: const FullType(int),
-    );
+    if (object.date != null) {
+      yield r'date';
+      yield serializers.serialize(
+        object.date,
+        specifiedType: const FullType.nullable(DateTime),
+      );
+    }
+    if (object.facility != null) {
+      yield r'facility';
+      yield serializers.serialize(
+        object.facility,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
     yield r'customer';
     yield object.customer == null
         ? null
@@ -197,11 +214,13 @@ class _$AnalyticsDetailItemSerializer
             object.quantity,
             specifiedType: const FullType.nullable(String),
           );
-    yield r'amount';
-    yield serializers.serialize(
-      object.amount,
-      specifiedType: const FullType(String),
-    );
+    if (object.amount != null) {
+      yield r'amount';
+      yield serializers.serialize(
+        object.amount,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     if (object.cost != null) {
       yield r'cost';
       yield serializers.serialize(
@@ -223,6 +242,20 @@ class _$AnalyticsDetailItemSerializer
             object.paymentMethod,
             specifiedType: const FullType.nullable(int),
           );
+    if (object.warehouse != null) {
+      yield r'warehouse';
+      yield serializers.serialize(
+        object.warehouse,
+        specifiedType: const FullType.nullable(int),
+      );
+    }
+    if (object.figures != null) {
+      yield r'figures';
+      yield serializers.serialize(
+        object.figures,
+        specifiedType: const FullType.nullable(AnalyticsDetailFigures),
+      );
+    }
   }
 
   @override
@@ -267,8 +300,12 @@ class _$AnalyticsDetailItemSerializer
           break;
         case r'document_id':
           final valueDes =
-              serializers.deserialize(value, specifiedType: const FullType(int))
-                  as int;
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
           result.documentId = valueDes;
           break;
         case r'folio':
@@ -285,15 +322,20 @@ class _$AnalyticsDetailItemSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(DateTime),
+                    specifiedType: const FullType.nullable(DateTime),
                   )
-                  as DateTime;
+                  as DateTime?;
+          if (valueDes == null) continue;
           result.date = valueDes;
           break;
         case r'facility':
           final valueDes =
-              serializers.deserialize(value, specifiedType: const FullType(int))
-                  as int;
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
           result.facility = valueDes;
           break;
         case r'customer':
@@ -370,9 +412,10 @@ class _$AnalyticsDetailItemSerializer
           final valueDes =
               serializers.deserialize(
                     value,
-                    specifiedType: const FullType(String),
+                    specifiedType: const FullType.nullable(String),
                   )
-                  as String;
+                  as String?;
+          if (valueDes == null) continue;
           result.amount = valueDes;
           break;
         case r'cost':
@@ -404,6 +447,28 @@ class _$AnalyticsDetailItemSerializer
                   as int?;
           if (valueDes == null) continue;
           result.paymentMethod = valueDes;
+          break;
+        case r'warehouse':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.warehouse = valueDes;
+          break;
+        case r'figures':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(
+                      AnalyticsDetailFigures,
+                    ),
+                  )
+                  as AnalyticsDetailFigures?;
+          if (valueDes == null) continue;
+          result.figures.replace(valueDes);
           break;
         default:
           unhandled.add(key);

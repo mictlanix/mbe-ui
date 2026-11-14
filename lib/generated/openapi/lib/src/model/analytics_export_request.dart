@@ -4,7 +4,9 @@
 
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/analytics_dashboard_request.dart';
+import 'package:mbe_api_client/src/model/analytics_kardex_request.dart';
 import 'package:mbe_api_client/src/model/analytics_detail_request.dart';
+import 'package:mbe_api_client/src/model/analytics_customer_request.dart';
 import 'package:mbe_api_client/src/model/export_format.dart';
 import 'package:mbe_api_client/src/model/analytics_query_request.dart';
 import 'package:built_value/built_value.dart';
@@ -19,6 +21,8 @@ part 'analytics_export_request.g.dart';
 /// * [query]
 /// * [dashboard]
 /// * [detail]
+/// * [kardex] - Spec 038: every entry of the range; skip and limit are ignored.
+/// * [customer] - Spec 038.
 @BuiltValue()
 abstract class AnalyticsExportRequest
     implements Built<AnalyticsExportRequest, AnalyticsExportRequestBuilder> {
@@ -34,6 +38,14 @@ abstract class AnalyticsExportRequest
 
   @BuiltValueField(wireName: r'detail')
   AnalyticsDetailRequest? get detail;
+
+  /// Spec 038: every entry of the range; skip and limit are ignored.
+  @BuiltValueField(wireName: r'kardex')
+  AnalyticsKardexRequest? get kardex;
+
+  /// Spec 038.
+  @BuiltValueField(wireName: r'customer')
+  AnalyticsCustomerRequest? get customer;
 
   AnalyticsExportRequest._();
 
@@ -89,6 +101,20 @@ class _$AnalyticsExportRequestSerializer
       yield serializers.serialize(
         object.detail,
         specifiedType: const FullType.nullable(AnalyticsDetailRequest),
+      );
+    }
+    if (object.kardex != null) {
+      yield r'kardex';
+      yield serializers.serialize(
+        object.kardex,
+        specifiedType: const FullType.nullable(AnalyticsKardexRequest),
+      );
+    }
+    if (object.customer != null) {
+      yield r'customer';
+      yield serializers.serialize(
+        object.customer,
+        specifiedType: const FullType.nullable(AnalyticsCustomerRequest),
       );
     }
   }
@@ -162,6 +188,30 @@ class _$AnalyticsExportRequestSerializer
                   as AnalyticsDetailRequest?;
           if (valueDes == null) continue;
           result.detail.replace(valueDes);
+          break;
+        case r'kardex':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(
+                      AnalyticsKardexRequest,
+                    ),
+                  )
+                  as AnalyticsKardexRequest?;
+          if (valueDes == null) continue;
+          result.kardex.replace(valueDes);
+          break;
+        case r'customer':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(
+                      AnalyticsCustomerRequest,
+                    ),
+                  )
+                  as AnalyticsCustomerRequest?;
+          if (valueDes == null) continue;
+          result.customer.replace(valueDes);
           break;
         default:
           unhandled.add(key);

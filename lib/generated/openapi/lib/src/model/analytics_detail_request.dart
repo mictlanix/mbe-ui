@@ -22,17 +22,18 @@ part 'analytics_detail_request.g.dart';
 /// * [end]
 /// * [facility]
 /// * [filters]
-/// * [flag] - overdue (orders) | below_cost, without_cost (lines, cost privilege) | collected, paid_out, store_credit (payments)
+/// * [flag] - overdue (orders, receivables) | below_cost, without_cost (lines, cost privilege) | collected, paid_out, store_credit (payments) | stock_out, below_reorder, dead, slow, uncosted (stock) | price_change (purchases)
 /// * [vat]
 /// * [sort] - date | amount | document; \"-\" = descending (default -date)
 /// * [skip]
 /// * [limit]
+/// * [priceChangePct] - Whole percent: flag price_change selects purchases whose price changed by more than it (default 10).
 @BuiltValue()
 abstract class AnalyticsDetailRequest
     implements Built<AnalyticsDetailRequest, AnalyticsDetailRequestBuilder> {
   @BuiltValueField(wireName: r'kind')
   DetailKind get kind;
-  // enum kindEnum {  orders,  lines,  refunds,  credit_notes,  payments,  };
+  // enum kindEnum {  orders,  lines,  refunds,  credit_notes,  payments,  stock,  movements,  receivables,  invoices,  uninvoiced_lines,  purchases,  commission_lines,  };
 
   @BuiltValueField(wireName: r'start')
   Date get start;
@@ -46,10 +47,10 @@ abstract class AnalyticsDetailRequest
   @BuiltValueField(wireName: r'filters')
   BuiltList<AnalyticsFilter>? get filters;
 
-  /// overdue (orders) | below_cost, without_cost (lines, cost privilege) | collected, paid_out, store_credit (payments)
+  /// overdue (orders, receivables) | below_cost, without_cost (lines, cost privilege) | collected, paid_out, store_credit (payments) | stock_out, below_reorder, dead, slow, uncosted (stock) | price_change (purchases)
   @BuiltValueField(wireName: r'flag')
   DetailFlag? get flag;
-  // enum flagEnum {  overdue,  below_cost,  without_cost,  collected,  paid_out,  store_credit,  };
+  // enum flagEnum {  overdue,  below_cost,  without_cost,  collected,  paid_out,  store_credit,  stock_out,  below_reorder,  dead,  slow,  uncosted,  price_change,  };
 
   @BuiltValueField(wireName: r'vat')
   VatTreatment? get vat;
@@ -64,6 +65,10 @@ abstract class AnalyticsDetailRequest
 
   @BuiltValueField(wireName: r'limit')
   int? get limit;
+
+  /// Whole percent: flag price_change selects purchases whose price changed by more than it (default 10).
+  @BuiltValueField(wireName: r'price_change_pct')
+  int? get priceChangePct;
 
   AnalyticsDetailRequest._();
 
@@ -161,6 +166,13 @@ class _$AnalyticsDetailRequestSerializer
       yield serializers.serialize(
         object.limit,
         specifiedType: const FullType(int),
+      );
+    }
+    if (object.priceChangePct != null) {
+      yield r'price_change_pct';
+      yield serializers.serialize(
+        object.priceChangePct,
+        specifiedType: const FullType.nullable(int),
       );
     }
   }
@@ -288,6 +300,16 @@ class _$AnalyticsDetailRequestSerializer
                   as int?;
           if (valueDes == null) continue;
           result.limit = valueDes;
+          break;
+        case r'price_change_pct':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.priceChangePct = valueDes;
           break;
         default:
           unhandled.add(key);

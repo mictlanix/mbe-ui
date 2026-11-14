@@ -20,7 +20,7 @@ abstract class AnalyticsKey
     implements Built<AnalyticsKey, AnalyticsKeyBuilder> {
   @BuiltValueField(wireName: r'dimension')
   DimensionKey get dimension;
-  // enum dimensionEnum {  date,  weekday,  hour,  facility,  point_of_sale,  salesperson,  cash_session,  customer,  customer_type,  product,  brand,  model,  label,  payment_terms,  payment_method,  };
+  // enum dimensionEnum {  date,  weekday,  hour,  facility,  point_of_sale,  salesperson,  cash_session,  customer,  customer_type,  product,  brand,  model,  label,  payment_terms,  payment_method,  warehouse,  movement_type,  supplier,  aging_bucket,  due_bucket,  sales_agent,  commission_participation,  commission_status,  issuer,  document_status,  document_type,  };
 
   /// The id or value; null is \"none\".
   @BuiltValueField(wireName: r'value')

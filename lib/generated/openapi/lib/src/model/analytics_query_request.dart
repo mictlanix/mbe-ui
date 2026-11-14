@@ -5,6 +5,7 @@
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/measure_key.dart';
 import 'package:mbe_api_client/src/model/comparison.dart';
+import 'package:mbe_api_client/src/model/stock_options.dart';
 import 'package:mbe_api_client/src/model/date.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/model/analytics_filter.dart';
@@ -30,6 +31,7 @@ part 'analytics_query_request.g.dart';
 /// * [vat]
 /// * [sort] - A requested measure or dimension key; \"-\" prefix = descending.
 /// * [top]
+/// * [stockOptions] - Inventory measures only; omitted gives the defaults.
 @BuiltValue()
 abstract class AnalyticsQueryRequest
     implements Built<AnalyticsQueryRequest, AnalyticsQueryRequestBuilder> {
@@ -72,6 +74,10 @@ abstract class AnalyticsQueryRequest
 
   @BuiltValueField(wireName: r'top')
   int? get top;
+
+  /// Inventory measures only; omitted gives the defaults.
+  @BuiltValueField(wireName: r'stock_options')
+  StockOptions? get stockOptions;
 
   AnalyticsQueryRequest._();
 
@@ -176,6 +182,13 @@ class _$AnalyticsQueryRequestSerializer
       yield serializers.serialize(
         object.top,
         specifiedType: const FullType.nullable(int),
+      );
+    }
+    if (object.stockOptions != null) {
+      yield r'stock_options';
+      yield serializers.serialize(
+        object.stockOptions,
+        specifiedType: const FullType.nullable(StockOptions),
       );
     }
   }
@@ -317,6 +330,16 @@ class _$AnalyticsQueryRequestSerializer
                   as int?;
           if (valueDes == null) continue;
           result.top = valueDes;
+          break;
+        case r'stock_options':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(StockOptions),
+                  )
+                  as StockOptions?;
+          if (valueDes == null) continue;
+          result.stockOptions.replace(valueDes);
           break;
         default:
           unhandled.add(key);

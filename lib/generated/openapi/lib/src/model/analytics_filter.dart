@@ -14,15 +14,15 @@ part 'analytics_filter.g.dart';
 ///
 /// Properties:
 /// * [dimension]
-/// * [values] - Ids for entity dimensions; the value for brand, model, customer_type (credit, cash), payment_terms (immediate, credit), weekday (1 = Monday) and hour; the ISO date of the period start for date. An empty string selects \"none\".
+/// * [values] - Ids for entity dimensions; the value for brand, model, customer_type (credit, cash), payment_terms (immediate, credit), weekday (1 = Monday), hour, issuer (RFC), aging_bucket (current, 1-30, 31-60, 61-90, 90+), due_bucket (overdue, 1-7, 8-30, 31-60, 60+), commission_status (provisional, closed), document_status (stamped, cancelled, pending) and document_type (invoice, credit_note, payment_receipt); the ISO date of the period start for date. An empty string selects \"none\".
 @BuiltValue()
 abstract class AnalyticsFilter
     implements Built<AnalyticsFilter, AnalyticsFilterBuilder> {
   @BuiltValueField(wireName: r'dimension')
   DimensionKey get dimension;
-  // enum dimensionEnum {  date,  weekday,  hour,  facility,  point_of_sale,  salesperson,  cash_session,  customer,  customer_type,  product,  brand,  model,  label,  payment_terms,  payment_method,  };
+  // enum dimensionEnum {  date,  weekday,  hour,  facility,  point_of_sale,  salesperson,  cash_session,  customer,  customer_type,  product,  brand,  model,  label,  payment_terms,  payment_method,  warehouse,  movement_type,  supplier,  aging_bucket,  due_bucket,  sales_agent,  commission_participation,  commission_status,  issuer,  document_status,  document_type,  };
 
-  /// Ids for entity dimensions; the value for brand, model, customer_type (credit, cash), payment_terms (immediate, credit), weekday (1 = Monday) and hour; the ISO date of the period start for date. An empty string selects \"none\".
+  /// Ids for entity dimensions; the value for brand, model, customer_type (credit, cash), payment_terms (immediate, credit), weekday (1 = Monday), hour, issuer (RFC), aging_bucket (current, 1-30, 31-60, 61-90, 90+), due_bucket (overdue, 1-7, 8-30, 31-60, 60+), commission_status (provisional, closed), document_status (stamped, cancelled, pending) and document_type (invoice, credit_note, payment_receipt); the ISO date of the period start for date. An empty string selects \"none\".
   @BuiltValueField(wireName: r'values')
   BuiltList<String> get values;
 

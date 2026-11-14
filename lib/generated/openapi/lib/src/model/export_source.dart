@@ -16,6 +16,10 @@ class ExportSource extends EnumClass {
   static const ExportSource dashboard = _$dashboard;
   @BuiltValueEnumConst(wireName: r'detail')
   static const ExportSource detail = _$detail;
+  @BuiltValueEnumConst(wireName: r'kardex')
+  static const ExportSource kardex = _$kardex;
+  @BuiltValueEnumConst(wireName: r'customer')
+  static const ExportSource customer = _$customer;
 
   static Serializer<ExportSource> get serializer => _$exportSourceSerializer;
 

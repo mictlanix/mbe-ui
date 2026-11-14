@@ -10,6 +10,12 @@ import 'package:built_value/serializer.dart';
 part 'error_code.g.dart';
 
 class ErrorCode extends EnumClass {
+  @BuiltValueEnumConst(wireName: r'analytics.attachment_too_large')
+  static const ErrorCode analyticsPeriodAttachmentTooLarge =
+      _$analyticsPeriodAttachmentTooLarge;
+  @BuiltValueEnumConst(wireName: r'analytics.before_history')
+  static const ErrorCode analyticsPeriodBeforeHistory =
+      _$analyticsPeriodBeforeHistory;
   @BuiltValueEnumConst(wireName: r'analytics.dimension_not_applicable')
   static const ErrorCode analyticsPeriodDimensionNotApplicable =
       _$analyticsPeriodDimensionNotApplicable;
@@ -28,12 +34,24 @@ class ErrorCode extends EnumClass {
   @BuiltValueEnumConst(wireName: r'analytics.period_invalid')
   static const ErrorCode analyticsPeriodPeriodInvalid =
       _$analyticsPeriodPeriodInvalid;
+  @BuiltValueEnumConst(wireName: r'analytics.period_not_month_end')
+  static const ErrorCode analyticsPeriodPeriodNotMonthEnd =
+      _$analyticsPeriodPeriodNotMonthEnd;
+  @BuiltValueEnumConst(wireName: r'analytics.recipient_ineligible')
+  static const ErrorCode analyticsPeriodRecipientIneligible =
+      _$analyticsPeriodRecipientIneligible;
   @BuiltValueEnumConst(wireName: r'analytics.sort_invalid')
   static const ErrorCode analyticsPeriodSortInvalid =
       _$analyticsPeriodSortInvalid;
+  @BuiltValueEnumConst(wireName: r'analytics.stock_options_invalid')
+  static const ErrorCode analyticsPeriodStockOptionsInvalid =
+      _$analyticsPeriodStockOptionsInvalid;
   @BuiltValueEnumConst(wireName: r'analytics.too_many_dimensions')
   static const ErrorCode analyticsPeriodTooManyDimensions =
       _$analyticsPeriodTooManyDimensions;
+  @BuiltValueEnumConst(wireName: r'analytics.view_invalid')
+  static const ErrorCode analyticsPeriodViewInvalid =
+      _$analyticsPeriodViewInvalid;
   @BuiltValueEnumConst(wireName: r'auth.administrator_required')
   static const ErrorCode authPeriodAdministratorRequired =
       _$authPeriodAdministratorRequired;
@@ -664,6 +682,24 @@ class ErrorCode extends EnumClass {
   @BuiltValueEnumConst(wireName: r'sales_order.zero_priced_lines')
   static const ErrorCode salesOrderPeriodZeroPricedLines =
       _$salesOrderPeriodZeroPricedLines;
+  @BuiltValueEnumConst(wireName: r'sales_order_delivery.intent_missing')
+  static const ErrorCode salesOrderDeliveryPeriodIntentMissing =
+      _$salesOrderDeliveryPeriodIntentMissing;
+  @BuiltValueEnumConst(wireName: r'sales_order_delivery.promise_date_past')
+  static const ErrorCode salesOrderDeliveryPeriodPromiseDatePast =
+      _$salesOrderDeliveryPeriodPromiseDatePast;
+  @BuiltValueEnumConst(wireName: r'sales_order_delivery.ship_to_missing')
+  static const ErrorCode salesOrderDeliveryPeriodShipToMissing =
+      _$salesOrderDeliveryPeriodShipToMissing;
+  @BuiltValueEnumConst(wireName: r'sales_order_line.insufficient_stock')
+  static const ErrorCode salesOrderLinePeriodInsufficientStock =
+      _$salesOrderLinePeriodInsufficientStock;
+  @BuiltValueEnumConst(wireName: r'sales_order_line.no_warehouse')
+  static const ErrorCode salesOrderLinePeriodNoWarehouse =
+      _$salesOrderLinePeriodNoWarehouse;
+  @BuiltValueEnumConst(wireName: r'sales_order_line.zero_priced')
+  static const ErrorCode salesOrderLinePeriodZeroPriced =
+      _$salesOrderLinePeriodZeroPriced;
   @BuiltValueEnumConst(wireName: r'server.error')
   static const ErrorCode serverPeriodError = _$serverPeriodError;
   @BuiltValueEnumConst(wireName: r'state.transition_invalid')

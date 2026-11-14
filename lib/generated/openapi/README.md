@@ -80,12 +80,26 @@ Class | Method | HTTP request | Description
 [*AddressesApi*](doc/AddressesApi.md) | [**listAddressesApiV1AddressesGet**](doc/AddressesApi.md#listaddressesapiv1addressesget) | **GET** /api/v1/addresses | List Addresses
 [*AddressesApi*](doc/AddressesApi.md) | [**updateAddressApiV1AddressesAddressIdPut**](doc/AddressesApi.md#updateaddressapiv1addressesaddressidput) | **PUT** /api/v1/addresses/{address_id} | Update Address
 [*AnalyticsApi*](doc/AnalyticsApi.md) | [**createExportApiV1AnalyticsExportsPost**](doc/AnalyticsApi.md#createexportapiv1analyticsexportspost) | **POST** /api/v1/analytics/exports | Create Export
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**createScheduleApiV1AnalyticsSchedulesPost**](doc/AnalyticsApi.md#createscheduleapiv1analyticsschedulespost) | **POST** /api/v1/analytics/schedules | Create Schedule
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**createViewApiV1AnalyticsViewsPost**](doc/AnalyticsApi.md#createviewapiv1analyticsviewspost) | **POST** /api/v1/analytics/views | Create View
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**deleteScheduleApiV1AnalyticsSchedulesAnalyticsScheduleIdDelete**](doc/AnalyticsApi.md#deletescheduleapiv1analyticsschedulesanalyticsscheduleiddelete) | **DELETE** /api/v1/analytics/schedules/{analytics_schedule_id} | Delete Schedule
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**deleteViewApiV1AnalyticsViewsAnalyticsViewIdDelete**](doc/AnalyticsApi.md#deleteviewapiv1analyticsviewsanalyticsviewiddelete) | **DELETE** /api/v1/analytics/views/{analytics_view_id} | Delete View
 [*AnalyticsApi*](doc/AnalyticsApi.md) | [**downloadExportApiV1AnalyticsExportsAnalyticsExportIdFileGet**](doc/AnalyticsApi.md#downloadexportapiv1analyticsexportsanalyticsexportidfileget) | **GET** /api/v1/analytics/exports/{analytics_export_id}/file | Download Export
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**listSchedulesApiV1AnalyticsSchedulesGet**](doc/AnalyticsApi.md#listschedulesapiv1analyticsschedulesget) | **GET** /api/v1/analytics/schedules | List Schedules
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**listSendsApiV1AnalyticsSchedulesAnalyticsScheduleIdSendsGet**](doc/AnalyticsApi.md#listsendsapiv1analyticsschedulesanalyticsscheduleidsendsget) | **GET** /api/v1/analytics/schedules/{analytics_schedule_id}/sends | List Sends
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**listViewsApiV1AnalyticsViewsGet**](doc/AnalyticsApi.md#listviewsapiv1analyticsviewsget) | **GET** /api/v1/analytics/views | List Views
 [*AnalyticsApi*](doc/AnalyticsApi.md) | [**queryApiV1AnalyticsQueryPost**](doc/AnalyticsApi.md#queryapiv1analyticsquerypost) | **POST** /api/v1/analytics/query | Query
 [*AnalyticsApi*](doc/AnalyticsApi.md) | [**readCatalogApiV1AnalyticsCatalogGet**](doc/AnalyticsApi.md#readcatalogapiv1analyticscatalogget) | **GET** /api/v1/analytics/catalog | Read Catalog
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**readCustomerApiV1AnalyticsCustomersCustomerIdGet**](doc/AnalyticsApi.md#readcustomerapiv1analyticscustomerscustomeridget) | **GET** /api/v1/analytics/customers/{customer_id} | Read Customer
 [*AnalyticsApi*](doc/AnalyticsApi.md) | [**readDashboardApiV1AnalyticsDashboardGet**](doc/AnalyticsApi.md#readdashboardapiv1analyticsdashboardget) | **GET** /api/v1/analytics/dashboard | Read Dashboard
 [*AnalyticsApi*](doc/AnalyticsApi.md) | [**readDetailApiV1AnalyticsDetailPost**](doc/AnalyticsApi.md#readdetailapiv1analyticsdetailpost) | **POST** /api/v1/analytics/detail | Read Detail
 [*AnalyticsApi*](doc/AnalyticsApi.md) | [**readExportApiV1AnalyticsExportsAnalyticsExportIdGet**](doc/AnalyticsApi.md#readexportapiv1analyticsexportsanalyticsexportidget) | **GET** /api/v1/analytics/exports/{analytics_export_id} | Read Export
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**readKardexApiV1AnalyticsKardexGet**](doc/AnalyticsApi.md#readkardexapiv1analyticskardexget) | **GET** /api/v1/analytics/kardex | Read Kardex
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**readScheduleApiV1AnalyticsSchedulesAnalyticsScheduleIdGet**](doc/AnalyticsApi.md#readscheduleapiv1analyticsschedulesanalyticsscheduleidget) | **GET** /api/v1/analytics/schedules/{analytics_schedule_id} | Read Schedule
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**readViewApiV1AnalyticsViewsAnalyticsViewIdGet**](doc/AnalyticsApi.md#readviewapiv1analyticsviewsanalyticsviewidget) | **GET** /api/v1/analytics/views/{analytics_view_id} | Read View
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**runViewApiV1AnalyticsViewsAnalyticsViewIdRunPost**](doc/AnalyticsApi.md#runviewapiv1analyticsviewsanalyticsviewidrunpost) | **POST** /api/v1/analytics/views/{analytics_view_id}/run | Run View
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**updateScheduleApiV1AnalyticsSchedulesAnalyticsScheduleIdPatch**](doc/AnalyticsApi.md#updatescheduleapiv1analyticsschedulesanalyticsscheduleidpatch) | **PATCH** /api/v1/analytics/schedules/{analytics_schedule_id} | Update Schedule
+[*AnalyticsApi*](doc/AnalyticsApi.md) | [**updateViewApiV1AnalyticsViewsAnalyticsViewIdPatch**](doc/AnalyticsApi.md#updateviewapiv1analyticsviewsanalyticsviewidpatch) | **PATCH** /api/v1/analytics/views/{analytics_view_id} | Update View
 [*AuthApi*](doc/AuthApi.md) | [**changePasswordApiV1AuthChangePasswordPost**](doc/AuthApi.md#changepasswordapiv1authchangepasswordpost) | **POST** /api/v1/auth/change-password | Change Password
 [*AuthApi*](doc/AuthApi.md) | [**confirmRecoveryApiV1AuthRecoverPost**](doc/AuthApi.md#confirmrecoveryapiv1authrecoverpost) | **POST** /api/v1/auth/recover | Confirm Recovery
 [*AuthApi*](doc/AuthApi.md) | [**getMeApiV1AuthMeGet**](doc/AuthApi.md#getmeapiv1authmeget) | **GET** /api/v1/auth/me | Get Me
@@ -511,8 +525,11 @@ Class | Method | HTTP request | Description
  - [AmountMin](doc/AmountMin.md)
  - [AnalyticsAlert](doc/AnalyticsAlert.md)
  - [AnalyticsCatalogResponse](doc/AnalyticsCatalogResponse.md)
+ - [AnalyticsCustomerRequest](doc/AnalyticsCustomerRequest.md)
+ - [AnalyticsCustomerResponse](doc/AnalyticsCustomerResponse.md)
  - [AnalyticsDashboardRequest](doc/AnalyticsDashboardRequest.md)
  - [AnalyticsDashboardResponse](doc/AnalyticsDashboardResponse.md)
+ - [AnalyticsDetailFigures](doc/AnalyticsDetailFigures.md)
  - [AnalyticsDetailItem](doc/AnalyticsDetailItem.md)
  - [AnalyticsDetailRequest](doc/AnalyticsDetailRequest.md)
  - [AnalyticsDetailResponse](doc/AnalyticsDetailResponse.md)
@@ -520,14 +537,25 @@ Class | Method | HTTP request | Description
  - [AnalyticsExportRequest](doc/AnalyticsExportRequest.md)
  - [AnalyticsExportResponse](doc/AnalyticsExportResponse.md)
  - [AnalyticsFilter](doc/AnalyticsFilter.md)
+ - [AnalyticsKardexRequest](doc/AnalyticsKardexRequest.md)
+ - [AnalyticsKardexResponse](doc/AnalyticsKardexResponse.md)
+ - [AnalyticsKardexRow](doc/AnalyticsKardexRow.md)
  - [AnalyticsKey](doc/AnalyticsKey.md)
  - [AnalyticsKpi](doc/AnalyticsKpi.md)
  - [AnalyticsMeasure](doc/AnalyticsMeasure.md)
+ - [AnalyticsPeriod](doc/AnalyticsPeriod.md)
  - [AnalyticsPoint](doc/AnalyticsPoint.md)
  - [AnalyticsQueryRequest](doc/AnalyticsQueryRequest.md)
  - [AnalyticsQueryResponse](doc/AnalyticsQueryResponse.md)
  - [AnalyticsRow](doc/AnalyticsRow.md)
+ - [AnalyticsScheduleCreate](doc/AnalyticsScheduleCreate.md)
+ - [AnalyticsScheduleResponse](doc/AnalyticsScheduleResponse.md)
+ - [AnalyticsScheduleUpdate](doc/AnalyticsScheduleUpdate.md)
+ - [AnalyticsSendResponse](doc/AnalyticsSendResponse.md)
  - [AnalyticsSeries](doc/AnalyticsSeries.md)
+ - [AnalyticsViewCreate](doc/AnalyticsViewCreate.md)
+ - [AnalyticsViewResponse](doc/AnalyticsViewResponse.md)
+ - [AnalyticsViewUpdate](doc/AnalyticsViewUpdate.md)
  - [Application](doc/Application.md)
  - [ApplicationCreate](doc/ApplicationCreate.md)
  - [ApplicationItem](doc/ApplicationItem.md)
@@ -542,6 +570,7 @@ Class | Method | HTTP request | Description
  - [BulkApprove](doc/BulkApprove.md)
  - [BulkApproveResponse](doc/BulkApproveResponse.md)
  - [BulkApproveResult](doc/BulkApproveResult.md)
+ - [Cadence](doc/Cadence.md)
  - [CashDrawerCreate](doc/CashDrawerCreate.md)
  - [CashDrawerResponse](doc/CashDrawerResponse.md)
  - [CashDrawerSummary](doc/CashDrawerSummary.md)
@@ -657,6 +686,7 @@ Class | Method | HTTP request | Description
  - [FacilitySummary](doc/FacilitySummary.md)
  - [FacilityType](doc/FacilityType.md)
  - [FacilityUpdate](doc/FacilityUpdate.md)
+ - [Family](doc/Family.md)
  - [FiscalCertificationProvider](doc/FiscalCertificationProvider.md)
  - [FiscalDocumentLine](doc/FiscalDocumentLine.md)
  - [FiscalDocumentRelationResponse](doc/FiscalDocumentRelationResponse.md)
@@ -714,6 +744,7 @@ Class | Method | HTTP request | Description
  - [LineUpdate](doc/LineUpdate.md)
  - [LinkedDocument](doc/LinkedDocument.md)
  - [ListResponseAddressResponse](doc/ListResponseAddressResponse.md)
+ - [ListResponseAnalyticsSendResponse](doc/ListResponseAnalyticsSendResponse.md)
  - [ListResponseBankAccountResponse](doc/ListResponseBankAccountResponse.md)
  - [ListResponseCashDrawerResponse](doc/ListResponseCashDrawerResponse.md)
  - [ListResponseCashSessionResponse](doc/ListResponseCashSessionResponse.md)
@@ -858,9 +889,11 @@ Class | Method | HTTP request | Description
  - [RefundPayout](doc/RefundPayout.md)
  - [RejectRequest](doc/RejectRequest.md)
  - [RejectionRequest](doc/RejectionRequest.md)
+ - [RelativePeriod](doc/RelativePeriod.md)
  - [RequestLineAdd](doc/RequestLineAdd.md)
  - [RequestLineUpdate](doc/RequestLineUpdate.md)
  - [RequestStatus](doc/RequestStatus.md)
+ - [ResponseRunViewApiV1AnalyticsViewsAnalyticsViewIdRunPost](doc/ResponseRunViewApiV1AnalyticsViewsAnalyticsViewIdRunPost.md)
  - [ReversalRequest](doc/ReversalRequest.md)
  - [SalesOrderCreate](doc/SalesOrderCreate.md)
  - [SalesOrderItemsAdd](doc/SalesOrderItemsAdd.md)
@@ -879,11 +912,13 @@ Class | Method | HTTP request | Description
  - [SalesQuoteUpdate](doc/SalesQuoteUpdate.md)
  - [SatCatalogResponse](doc/SatCatalogResponse.md)
  - [SatUnitOfMeasurementResponse](doc/SatUnitOfMeasurementResponse.md)
+ - [SendOutcome](doc/SendOutcome.md)
  - [SessionState](doc/SessionState.md)
  - [ShortfallReason](doc/ShortfallReason.md)
  - [SkippedLine](doc/SkippedLine.md)
  - [StatementEmailRequest](doc/StatementEmailRequest.md)
  - [StatementEmailResponse](doc/StatementEmailResponse.md)
+ - [StockOptions](doc/StockOptions.md)
  - [StockRow](doc/StockRow.md)
  - [StopCreate](doc/StopCreate.md)
  - [StopOutcome](doc/StopOutcome.md)
@@ -943,6 +978,7 @@ Class | Method | HTTP request | Description
  - [VehicleOperatorUpdate](doc/VehicleOperatorUpdate.md)
  - [VehicleResponse](doc/VehicleResponse.md)
  - [VehicleUpdate](doc/VehicleUpdate.md)
+ - [ViewKind](doc/ViewKind.md)
  - [WarehouseCreate](doc/WarehouseCreate.md)
  - [WarehouseResponse](doc/WarehouseResponse.md)
  - [WarehouseSummary](doc/WarehouseSummary.md)
