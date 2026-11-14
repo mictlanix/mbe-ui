@@ -33,7 +33,8 @@ The walkthrough must end with `==== RESULTS ====` showing every step `PASS`.
 7. **Walk-in refused (FR-012):** Pick the general-public customer. Saving is refused.
 8. **Pedidos (US3):** Open the seeded back-office order. "Pagos" opens the list of applications, live and reversed. Reverse one: the list and the order's status update. Its payment link opens the Pagos payment view.
 9. **Rights (SC-005):** Log in as the QA054 account. Pagos shows no "Registrar pago", the payment view shows no reverse or apply, and Pedidos' "Pagos" dialog has no reverse icon.
-10. **POS unchanged:** At the register, reverse a payment on an open sale. It still works, and the dialog's text follows the app language.
+10. **Largest text size (constitution §V):** In user settings, pick the largest text size. At desktop width, open the apply dialog with orders listed, the payment view with its reverse column, the record dialog, and the Pedidos payments dialog. Nothing clips, overflows, or wraps a money cell. Set the size back.
+11. **POS unchanged:** At the register, reverse a payment on an open sale. It still works, and the dialog's text follows the app language.
 
 ## Known limit
 

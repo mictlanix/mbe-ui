@@ -33,8 +33,9 @@ Keys are the test contract. Strings live in both `.arb` files.
 
 ## C4. Reverse dialog, shared by POS, Pagos and Pedidos (FR-002, FR-004)
 
-- `showReversalReasonDialog(context, {required String amount, required String orderLabel, bool orderHasRefunds = false}) → Future<String?>` returns the trimmed reason, or null if cancelled.
-- The header line (key `reversal_subject`) names the formatted amount and the order folio, for example "$1,500.00 aplicados al pedido #1041". It appears everywhere, the POS included.
+- `showReversalReasonDialog(context, {required String amount, required String orderLabel, bool orderHasRefunds = false, Future<AppError?> Function(String reason)? submit}) → Future<String?>` returns the trimmed reason, or null if cancelled.
+- With `submit`: confirm runs it behind a busy flag (spinner, not dismissible). A returned `AppError` shows in a `FormErrorBanner` and the dialog stays open. Null pops the reason. Without `submit`, confirm pops the reason directly (the POS).
+- The header line (key `reversal_subject`) names the formatted amount and the order number (`#id`), for example "$1,500.00 aplicados al pedido #1041". It appears everywhere, the POS included.
 - Keys: `reversal_reason_dialog`, `reversal_reason_field` (max 500), `reversal_reason_confirm`, which is disabled while the trimmed text is empty.
 - Key `reversal_refund_warning` is shown when `orderHasRefunds`.
 - All text is localized (replaces the hard-coded "Revertir pago" / "Motivo").
@@ -43,8 +44,9 @@ Keys are the test contract. Strings live in both `.arb` files.
 
 - `ResponsiveDialog`, key `apply_payment_dialog`.
 - Header: the payment's unapplied amount.
-- Search: key `apply_payment_search` (folio search).
-- Order list: one row per outstanding order in the payment's currency, keyed `apply_payment_order_<orderId>`. Each row shows folio, date, total and balance.
+- Title: "Aplicar pago #{customerPaymentId}", matching the payment view's header.
+- Search: key `apply_payment_search` (order number or folio; the server matches either).
+- Order list: one row per outstanding order in the payment's currency, keyed `apply_payment_order_<orderId>`. Each row shows the order as `#id` (the label the payment view and snackbars use), its folio when it has one, date, total and balance.
 - Empty state: key `apply_payment_empty`.
 - Amount: key `apply_payment_amount`, prefilled with `min(balance, unapplied)`. Out-of-bounds values show an inline error.
 - Confirm: key `apply_payment_confirm`, disabled with no order picked, with an invalid amount, or while busy.

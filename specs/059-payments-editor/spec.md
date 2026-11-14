@@ -96,6 +96,7 @@ A supervisor is looking at order 1041 in Pedidos and sees it marked paid, but kn
 - **Payment of type credit note.** It is applied like any payment (spec 056 already spends notes at the POS). Recording a credit note here is not offered: notes come only from refunds.
 - **Cash session closed while recording.** If the clerk's session is closed in between, the server refuses with "The cash session is closed"; the app shows it and nothing is created.
 - **Walk-in customer.** Recording an advance or credit payment for the general-public customer is refused by the form: it can't be tracked to anyone.
+- **Older back-office order with payments.** An order created before origins were recorded (mbe-api#209), with any payment applied, opens in Pedidos as a register sale (spec 041), so its "Pagos" action isn't reachable. Its payments are still reversed from Pagos.
 - **Network failure after save.** The user isn't told it failed when it may have succeeded; the app says the result is unknown and points to Pagos to check before retrying.
 
 ## Requirements *(mandatory)*
@@ -107,12 +108,12 @@ A supervisor is looking at order 1041 in Pedidos and sees it marked paid, but kn
 - **FR-001**: The payment view MUST offer "Revertir" on each live application, only to users with Customer Payments update.
 - **FR-002**: Reversing MUST require a reason that isn't empty or only whitespace. The reason is recorded by the server as evidence. The dialog MUST name the amount and the order being reversed.
 - **FR-003**: After a reversal, the payment view MUST show the application as reversed, the new unapplied amount, and the order's updated status. Reversed applications MUST stay visible.
-- **FR-004**: Before confirming a reversal on an order that has refunds, the dialog MUST warn that the refund will not be undone.
+- **FR-004**: Before confirming a reversal on an order that has completed refunds, the dialog MUST warn that the refund will not be undone, whenever the app can tell. It can't tell when the user lacks Customer Refunds read or the refund lookup fails; the reversal then proceeds without the warning.
 
 **Apply**
 
 - **FR-005**: The payment view MUST offer "Aplicar a pedido" when the payment has more than 0.01 unapplied and belongs to the user's facility, only to users with Customer Payments create.
-- **FR-006**: The apply dialog MUST list only outstanding orders of the payment's customer in the payment's currency, with folio, date, total and balance, searchable by folio.
+- **FR-006**: The apply dialog MUST list only outstanding orders of the payment's customer in the payment's currency. Each row shows the order number (`#id`, as the payment view labels orders), its folio when it has one, date, total and balance. The list is searchable by order number or folio.
 - **FR-007**: The applied amount MUST default to the smaller of the order's balance and the payment's unapplied amount, and MUST NOT be accepted above either or at zero or less.
 - **FR-008**: The back-office apply MUST record no change given back.
 - **FR-009**: When the server refuses an application (order settled, cancelled or not completed, amount above balance or above what the payment has left, currency or customer mismatch), the app MUST show the reason in the user's language and reload the data the refusal concerns.
@@ -128,7 +129,7 @@ A supervisor is looking at order 1041 in Pedidos and sees it marked paid, but kn
 
 **Order screen**
 
-- **FR-016**: A completed order in Pedidos MUST list its applications, live and reversed, with method, reference, amount, change, date and reversed status.
+- **FR-016**: A completed order that the Pedidos screen opens MUST list its applications, live and reversed, with method, reference, amount, change, date and reversed status.
 - **FR-017**: Each live application on that list MUST offer reversal under FR-001 and FR-002, and the order's balance and paid status MUST refresh after it.
 - **FR-018**: Each application row MUST link to its payment's view in Pagos.
 
@@ -165,9 +166,11 @@ A supervisor is looking at order 1041 in Pedidos and sees it marked paid, but kn
 - The Pedidos order screen shows no payments today; this feature adds that list. Applying a payment from the order side is not offered: the user opens the payment to apply it.
 - Applying with change given back is a register action and stays in the POS.
 - Mismatched currencies are not offered; the server refuses them anyway.
+- The refund warning (FR-004) depends on reading the order's refunds. Without Customer Refunds read, or when that read fails, the dialog shows no warning. The server allows the reversal either way.
+- An order's payment list doesn't say which facility each payment belongs to. So in the Pedidos dialog, a user without Payments Editor read still sees the reverse action on another facility's payment, and the server's refusal reads as "not found". This is accepted rather than adding facility to that list.
 - Out of scope: payment verification and rejection (mictlanix/mbe-roadmap#27), editing a recorded payment's amount, method or customer, deleting a payment, splitting one application into several in one step, recording credit notes, the received-payments report (#99), and accounts receivable statements (#78).
 
 ## Verbatim Constraints
 
-- Server rules relied on: `POST /customer-payments`, `POST /customer-payments/{id}/applications`, `POST /customer-payments/{id}/applications/{application_id}/reverse` (body carries `reason`), `GET /customer-payments/outstanding-orders`, `GET /sales-orders/{id}/applications`, `GET /customer-payments/{id}/ticket`.
+- Server rules relied on: `POST /customer-payments`, `POST /customer-payments/{id}/applications`, `POST /customer-payments/{id}/applications/{application_id}/reverse` (body carries `reason`), `GET /customer-payments/outstanding-orders`, `GET /sales-orders/{id}/payments`, `GET /customer-payments/{id}/ticket`.
 - Error text: "The cash session is closed".

@@ -224,22 +224,22 @@ The applications reload in place, and a `SnackBar` says "Aplicación revertida" 
 
 ### State: refused (already reversed, busy)
 
-`FormErrorBanner` shows the localized text. Confirm becomes "Cerrar", and the view reloads behind the dialog (spec edge case).
+`FormErrorBanner` shows the localized text, the dialog stays open (the user closes it with "Cancelar"), and the view reloads behind it (spec edge case).
 
 ## Dialog: Aplicar a pedido (C5)
 
 ### State: populated
 
 ```text
-┌ Aplicar pago 9120 ──────────────────────────────────────────────┐
+┌ Aplicar pago #9120 ─────────────────────────────────────────────┐
 │ Sin aplicar: $1,500.00 MXN                                      │
-│ [🔍 Folio…                                                    ] │
-├──────────┬────────────┬────────────┬─────────────┬──────────────┤
-│          │ Folio      │ Fecha      │       Total │        Saldo │
-├──────────┼────────────┼────────────┼─────────────┼──────────────┤
-│   ○      │ 1047       │ 2026-11-10 │   $2,400.00 │    $1,800.00 │
-│   ●      │ 1052       │ 2026-11-11 │     $900.00 │      $900.00 │
-├──────────┴────────────┴────────────┴─────────────┴──────────────┤
+│ [🔍 Pedido o folio…                                           ] │
+├────┬────────┬───────┬────────────┬─────────────┬────────────────┤
+│    │ Pedido │ Folio │ Fecha      │       Total │          Saldo │
+├────┼────────┼───────┼────────────┼─────────────┼────────────────┤
+│ ○  │ #1047  │ 812   │ 2026-11-10 │   $2,400.00 │      $1,800.00 │
+│ ●  │ #1052  │ —     │ 2026-11-11 │     $900.00 │        $900.00 │
+├────┴────────┴───────┴────────────┴─────────────┴────────────────┤
 │ Monto a aplicar                                                 │
 │ [                                                       900.00] │
 │ Máximo $900.00                                                  │
@@ -248,7 +248,8 @@ The applications reload in place, and a `SnackBar` says "Aplicación revertida" 
 ```
 
 - **Order list:** single choice, `RadioListTile` rows in a bounded `ListView`. The rows are the customer's outstanding orders in MXN only (FR-006).
-- **Search:** filters by folio on the server.
+- **Order label:** `#id`, the label the payment view, the reverse dialog and the snackbar use. Folio (`serial`) is secondary and "—" when absent.
+- **Search:** by order number or folio, on the server (it matches either).
 - **Monto:** prefilled with `min(saldo, sin aplicar)`, with "Máximo" stating that bound (FR-007). There is no change field (FR-008).
 
 ### State: amount out of bounds
@@ -283,7 +284,7 @@ A `CatalogListStateView` spinner while loading. On a load error it shows its ret
 
 ### Compact tier
 
-A full-screen dialog. Each row stacks "Folio · Fecha" over "Saldo"; Total is dropped, since the balance is what the choice depends on. The amount field and actions are pinned at the bottom.
+A full-screen dialog. Each row stacks "#Pedido · Fecha" over "Saldo"; Folio and Total are dropped, since the order number and balance are what the choice depends on. The amount field and actions are pinned at the bottom.
 
 ## Screen: Pedidos order (`/sales/orders/:orderId`), completed order
 
