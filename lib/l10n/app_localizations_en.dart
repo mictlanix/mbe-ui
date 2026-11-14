@@ -103,6 +103,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get salesGroupTitle => 'Sales';
 
   @override
+  String get logisticsGroupTitle => 'Logistics';
+
+  @override
   String get usersMenuTitle => 'Users';
 
   @override

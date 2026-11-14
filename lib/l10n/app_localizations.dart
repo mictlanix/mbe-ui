@@ -272,6 +272,12 @@ abstract class AppLocalizations {
   /// **'Sales'**
   String get salesGroupTitle;
 
+  /// Navigation group for delivery orders, vehicles and vehicle operators.
+  ///
+  /// In en, this message translates to:
+  /// **'Logistics'**
+  String get logisticsGroupTitle;
+
   /// No description provided for @usersMenuTitle.
   ///
   /// In en, this message translates to:

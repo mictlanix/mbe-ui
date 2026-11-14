@@ -397,43 +397,62 @@ void main() {
       );
     });
 
-    test('it sits right after Pedidos, on branch 26', () {
-      final container = ProviderContainer(
-        overrides: [
-          multiCurrencyEnabledProvider.overrideWithValue(false),
-          accessControlProvider.overrideWithValue(
-            AccessControlService(
-              AuthState.authenticated(
-                token: 't',
-                user: const User(
-                  userId: 'u',
-                  email: 'u@example.com',
-                  administrator: true,
-                  status: EntityStatus.active,
-                  sessionVersion: 1,
-                  privileges: [],
+    test(
+      'it opens the Logística group, ahead of vehicles and operators, on branch 26',
+      () {
+        final container = ProviderContainer(
+          overrides: [
+            multiCurrencyEnabledProvider.overrideWithValue(false),
+            accessControlProvider.overrideWithValue(
+              AccessControlService(
+                AuthState.authenticated(
+                  token: 't',
+                  user: const User(
+                    userId: 'u',
+                    email: 'u@example.com',
+                    administrator: true,
+                    status: EntityStatus.active,
+                    sessionVersion: 1,
+                    privileges: [],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      );
-      addTearDown(container.dispose);
-      final destinations = [
-        for (final item in container.read(navDestinationsProvider))
-          ...switch (item) {
-            NavDestination() => [item],
-            NavGroup() => item.children,
-          },
-      ];
-      final ids = [for (final d in destinations) d.id];
-
-      expect(ids.indexOf('delivery-orders'), ids.indexOf('sales-orders') + 1);
-      expect(
-        destinations.firstWhere((d) => d.id == 'delivery-orders').branchIndex,
-        NavBranch.deliveryOrders,
-      );
-      expect(NavBranch.deliveryOrders, 26);
-    });
+          ],
+        );
+        addTearDown(container.dispose);
+        final items = container.read(navDestinationsProvider);
+        final groupIds = [
+          for (final item in items)
+            if (item is NavGroup) item.id,
+        ];
+        expect(groupIds.indexOf('logistics'), groupIds.indexOf('sales') + 1);
+        final logistics =
+            items.firstWhere((i) => i is NavGroup && i.id == 'logistics')
+                as NavGroup;
+        expect(
+          [for (final d in logistics.children) d.id],
+          ['delivery-orders', 'vehicles', 'vehicle-operators'],
+        );
+        final catalogs =
+            items.firstWhere((i) => i is NavGroup && i.id == 'catalogs')
+                as NavGroup;
+        final sales =
+            items.firstWhere((i) => i is NavGroup && i.id == 'sales')
+                as NavGroup;
+        final elsewhere = [
+          for (final d in [...catalogs.children, ...sales.children]) d.id,
+        ];
+        expect(elsewhere, isNot(contains('delivery-orders')));
+        expect(elsewhere, isNot(contains('vehicles')));
+        expect(elsewhere, isNot(contains('vehicle-operators')));
+        final destinations = logistics.children;
+        expect(
+          destinations.firstWhere((d) => d.id == 'delivery-orders').branchIndex,
+          NavBranch.deliveryOrders,
+        );
+        expect(NavBranch.deliveryOrders, 26);
+      },
+    );
   });
 }

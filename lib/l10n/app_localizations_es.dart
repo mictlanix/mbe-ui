@@ -103,6 +103,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get salesGroupTitle => 'Ventas';
 
   @override
+  String get logisticsGroupTitle => 'Logística';
+
+  @override
   String get usersMenuTitle => 'Usuarios';
 
   @override

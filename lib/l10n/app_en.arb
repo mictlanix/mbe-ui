@@ -83,6 +83,10 @@
   "@catalogsGroupTitle": {},
   "salesGroupTitle": "Sales",
   "@salesGroupTitle": {},
+  "logisticsGroupTitle": "Logistics",
+  "@logisticsGroupTitle": {
+    "description": "Navigation group for delivery orders, vehicles and vehicle operators."
+  },
   "usersMenuTitle": "Users",
   "@usersMenuTitle": {},
 

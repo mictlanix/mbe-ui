@@ -83,7 +83,7 @@ class NavBranch {
 
   // 061-delivery-orders: appended last, same rationale as `cashSessions`
   // above — display order comes from position within `kNavigationTree` (this
-  // destination sits right after `sales-orders` there).
+  // destination opens the Logística group there).
   static const int deliveryOrders = 26;
 }
 
@@ -201,24 +201,6 @@ const List<NavItem> kNavigationTree = [
         route: '/expenses',
         branchIndex: NavBranch.expenses,
         gate: PrivilegeGate(SystemObject.expenses, AccessRight.read),
-      ),
-      NavDestination(
-        id: 'vehicles',
-        label: _vehiclesLabel,
-        icon: Icons.airport_shuttle_outlined,
-        selectedIcon: Icons.airport_shuttle,
-        route: '/vehicles',
-        branchIndex: NavBranch.vehicles,
-        gate: PrivilegeGate(SystemObject.vehicle, AccessRight.read),
-      ),
-      NavDestination(
-        id: 'vehicle-operators',
-        label: _vehicleOperatorsLabel,
-        icon: Icons.assignment_ind_outlined,
-        selectedIcon: Icons.assignment_ind,
-        route: '/vehicle-operators',
-        branchIndex: NavBranch.vehicleOperators,
-        gate: PrivilegeGate(SystemObject.vehicleOperators, AccessRight.read),
       ),
       // Warehouses, Cash Drawers and Points of Sale are no longer
       // standalone destinations (018-nested-facility-management): each
@@ -359,18 +341,6 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.salesOrders,
         gate: PrivilegeGate(SystemObject.salesOrders, AccessRight.read),
       ),
-      // 061-delivery-orders: right after Pedidos, the sales these orders
-      // fulfill. Gated on SystemObject 71 (`deliveryOrders`) read, matching
-      // the server's GET /delivery-orders.
-      NavDestination(
-        id: 'delivery-orders',
-        label: _deliveryOrdersLabel,
-        icon: Icons.delivery_dining_outlined,
-        selectedIcon: Icons.delivery_dining,
-        route: '/sales/delivery-orders',
-        branchIndex: NavBranch.deliveryOrders,
-        gate: PrivilegeGate(SystemObject.deliveryOrders, AccessRight.read),
-      ),
       // 040-sales-quotes: placed after Pedidos, before nothing — quotes are
       // the document that precedes an order, so it sits next to it.
       NavDestination(
@@ -384,12 +354,52 @@ const List<NavItem> kNavigationTree = [
       ),
     ],
   ),
+  // Logística: delivery orders and the vehicles and operators that carry
+  // them. Delivery itineraries join this group when they ship. Only nav
+  // placement changed; routes and branch indices are unchanged.
+  NavGroup(
+    id: 'logistics',
+    label: _logisticsLabel,
+    children: [
+      // 061-delivery-orders: first in Logística. Gated on SystemObject 71
+      // (`deliveryOrders`) read, matching the server's GET /delivery-orders.
+      // The route stays under /sales/ (only the nav entry moved).
+      NavDestination(
+        id: 'delivery-orders',
+        label: _deliveryOrdersLabel,
+        icon: Icons.delivery_dining_outlined,
+        selectedIcon: Icons.delivery_dining,
+        route: '/sales/delivery-orders',
+        branchIndex: NavBranch.deliveryOrders,
+        gate: PrivilegeGate(SystemObject.deliveryOrders, AccessRight.read),
+      ),
+      NavDestination(
+        id: 'vehicles',
+        label: _vehiclesLabel,
+        icon: Icons.airport_shuttle_outlined,
+        selectedIcon: Icons.airport_shuttle,
+        route: '/vehicles',
+        branchIndex: NavBranch.vehicles,
+        gate: PrivilegeGate(SystemObject.vehicle, AccessRight.read),
+      ),
+      NavDestination(
+        id: 'vehicle-operators',
+        label: _vehicleOperatorsLabel,
+        icon: Icons.assignment_ind_outlined,
+        selectedIcon: Icons.assignment_ind,
+        route: '/vehicle-operators',
+        branchIndex: NavBranch.vehicleOperators,
+        gate: PrivilegeGate(SystemObject.vehicleOperators, AccessRight.read),
+      ),
+    ],
+  ),
 ];
 
 // Label resolvers kept as top-level tear-offs so [kNavigationTree] stays const.
 String _homeLabel(AppLocalizations l10n) => l10n.homeMenuTitle;
 String _catalogsLabel(AppLocalizations l10n) => l10n.catalogsGroupTitle;
 String _salesLabel(AppLocalizations l10n) => l10n.salesGroupTitle;
+String _logisticsLabel(AppLocalizations l10n) => l10n.logisticsGroupTitle;
 String _usersLabel(AppLocalizations l10n) => l10n.usersMenuTitle;
 String _userProfilesLabel(AppLocalizations l10n) => l10n.userProfilesMenuTitle;
 String _productsLabel(AppLocalizations l10n) => l10n.productsTitle;
