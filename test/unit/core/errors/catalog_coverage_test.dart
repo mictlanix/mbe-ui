@@ -98,7 +98,7 @@ void main() {
         missing.add(cells[1]);
       }
     }
-    expect(checked, 104);
+    expect(checked, 105);
     expect(missing, isEmpty);
   });
 

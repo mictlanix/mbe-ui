@@ -53,6 +53,8 @@ import 'package:mbe_ui/features/catalog/domain/repositories/supplier_repository.
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_issuer_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_recipient_repository.dart';
 import 'package:mbe_ui/features/sales/data/credit_note_repository_impl.dart';
+import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/customer_payment_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/credit_note_repository.dart';
 import 'package:mbe_ui/features/sales/data/customer_refund_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/customer_refund_repository.dart'
@@ -114,6 +116,9 @@ class MockSalesOrderRepository extends Mock implements SalesOrderRepository {}
 class MockSalesQuoteRepository extends Mock implements SalesQuoteRepository {}
 
 class MockCreditNoteRepository extends Mock implements CreditNoteRepository {}
+
+class MockCustomerPaymentRepository extends Mock
+    implements CustomerPaymentRepository {}
 
 /// Bypasses `AuthNotifier.build()`'s real `TokenStorage`/`AuthRepository`
 /// round-trip, resolving directly to a fixed [AuthState] — this test only
@@ -253,6 +258,20 @@ const _customerPaymentsReaderUser = User(
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.customerPayments, rawValue: 2),
+  ],
+);
+
+/// Holds read on `paymentsVerification` (108) alone — the gate for spec 060's
+/// `/sales/payment-verification` route, its own privilege so a verifier needs
+/// no Customer Payments right.
+const _paymentsVerifierUser = User(
+  userId: 'payments-verifier',
+  email: 'payments-verifier@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.paymentsVerification, rawValue: 2),
   ],
 );
 
@@ -643,6 +662,23 @@ void main() {
       ),
     ).thenAnswer((_) async => const RefundListResult(items: [], total: 0));
 
+    // 060-payment-verification: `PaymentVerificationScreen` pages the queue
+    // eagerly for a user who can read Payments Verification; a real request
+    // would leave a timer pending past the test.
+    final customerPaymentRepository = MockCustomerPaymentRepository();
+    when(
+      () => customerPaymentRepository.listUnverified(
+        facilityId: any(named: 'facilityId'),
+        dateFrom: any(named: 'dateFrom'),
+        dateTo: any(named: 'dateTo'),
+        methodCode: any(named: 'methodCode'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer(
+      (_) async => const CustomerPaymentListResult(items: [], total: 0),
+    );
+
     // 040-sales-quotes: `SalesQuotesListScreen` calls `listQuotes` eagerly,
     // and `QuoteEditorController.build` calls `getById` eagerly whenever
     // `/sales/quotes/:quoteId` names a quote — both need a mock, same
@@ -722,6 +758,9 @@ void main() {
         salesOrderRepositoryProvider.overrideWithValue(salesOrderRepository),
         salesQuoteRepositoryProvider.overrideWithValue(salesQuoteRepository),
         creditNoteRepositoryProvider.overrideWithValue(creditNoteRepository),
+        customerPaymentRepositoryProvider.overrideWithValue(
+          customerPaymentRepository,
+        ),
         customerRefundRepositoryProvider.overrideWithValue(
           customerRefundRepository,
         ),
@@ -1076,6 +1115,61 @@ void main() {
       await pumpAt(tester, _customerPaymentsReaderUser, '/sales/payments');
       final shell = tester.widget<AppShell>(find.byType(AppShell));
       expect(shell.navigationShell.currentIndex, NavBranch.salesPayments);
+    });
+  });
+
+  group('060-payment-verification — /sales/payment-verification gates on '
+      'paymentsVerification/read (FR-001)', () {
+    testWidgets('a user with paymentsVerification:read reaches the queue', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _paymentsVerifierUser,
+        '/sales/payment-verification',
+      );
+      expect(handle.router.state.uri.path, '/sales/payment-verification');
+    });
+
+    testWidgets('a user without it is redirected away', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/sales/payment-verification',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('customerPayments:read alone does not open it — the gate is '
+        'its own privilege', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _customerPaymentsReaderUser,
+        '/sales/payment-verification',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('paymentsVerification:read does not open Pagos — the two '
+        'rights are separate', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _paymentsVerifierUser,
+        '/sales/payments',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('activates shell branch NavBranch.paymentVerification', (
+      tester,
+    ) async {
+      await pumpAt(
+        tester,
+        _paymentsVerifierUser,
+        '/sales/payment-verification',
+      );
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(shell.navigationShell.currentIndex, NavBranch.paymentVerification);
     });
   });
 

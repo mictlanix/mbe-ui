@@ -58,6 +58,7 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.imagePeriodUnsupportedFormat,
   api.ErrorCode.incidencePeriodReasonRequired,
   api.ErrorCode.lockPeriodBusy,
+  api.ErrorCode.paymentPeriodAlreadyVerified,
   api.ErrorCode.paymentPeriodApplicationReversed,
   api.ErrorCode.paymentPeriodCurrencyMismatch,
   api.ErrorCode.paymentPeriodCustomerMismatch,
@@ -268,6 +269,8 @@ String? localizeProblem(
     api.ErrorCode.incidencePeriodReasonRequired =>
       l10n.apiErrorIncidenceReasonRequired,
     api.ErrorCode.lockPeriodBusy => l10n.apiErrorLockBusy,
+    api.ErrorCode.paymentPeriodAlreadyVerified =>
+      l10n.apiErrorPaymentAlreadyVerified,
     api.ErrorCode.paymentPeriodApplicationReversed =>
       l10n.apiErrorPaymentApplicationReversed,
     api.ErrorCode.paymentPeriodCurrencyMismatch => _ap2(

@@ -47,6 +47,7 @@ User _user({
   bool editor = false,
   bool customerPaymentsRead = true,
   int paymentRights = 2,
+  int verificationRights = 0,
   int? facilityId = 9,
 }) => User(
   userId: 'u1',
@@ -64,6 +65,11 @@ User _user({
     if (pos) const Privilege(systemObject: SystemObject.pos, rawValue: 2),
     if (editor)
       const Privilege(systemObject: SystemObject.paymentsEditor, rawValue: 2),
+    if (verificationRights > 0)
+      Privilege(
+        systemObject: SystemObject.paymentsVerification,
+        rawValue: verificationRights,
+      ),
   ],
 );
 
@@ -116,8 +122,9 @@ void main() {
     int? paymentId = 501,
     Map<int, String?> orderTargets = const {},
     List<Override> extraOverrides = const [],
+    Size size = const Size(1400, 1400),
   }) async {
-    tester.view.physicalSize = const Size(1400, 1400);
+    tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
     SharedPreferences.setMockInitialValues({});
@@ -948,6 +955,120 @@ void main() {
           reason: type.name,
         );
       }
+    });
+  });
+
+  group('verify and reject (spec 060 FR-013)', () {
+    const verifyRights = 2 | 4; // read + update
+
+    testWidgets('both buttons show on an unverified payment, to a user with '
+        'Payments Verification update', (tester) async {
+      stubGet(testPayment(verifierId: null));
+      await pumpDetail(tester, user: _user(verificationRights: verifyRights));
+
+      expect(find.byKey(const Key('payment_verify_button')), findsOneWidget);
+      expect(find.byKey(const Key('payment_reject_button')), findsOneWidget);
+    });
+
+    testWidgets('neither shows on a verified payment', (tester) async {
+      stubGet(testPayment(verifierId: 5));
+      await pumpDetail(tester, user: _user(verificationRights: verifyRights));
+
+      expect(find.byKey(const Key('payment_verify_button')), findsNothing);
+      expect(find.byKey(const Key('payment_reject_button')), findsNothing);
+    });
+
+    testWidgets('neither shows with read only', (tester) async {
+      stubGet(testPayment(verifierId: null));
+      await pumpDetail(tester, user: _user(verificationRights: 2));
+
+      expect(find.byKey(const Key('payment_verify_button')), findsNothing);
+      expect(find.byKey(const Key('payment_reject_button')), findsNothing);
+    });
+
+    testWidgets('neither shows without any Payments Verification right, '
+        'whatever the Customer Payments rights', (tester) async {
+      stubGet(testPayment(verifierId: null));
+      await pumpDetail(tester, user: _user(paymentRights: 2 | 4, editor: true));
+
+      expect(find.byKey(const Key('payment_verify_button')), findsNothing);
+      expect(find.byKey(const Key('payment_reject_button')), findsNothing);
+    });
+
+    testWidgets('verifying reloads the view as verified, by name, and the '
+        'buttons go', (tester) async {
+      var verified = false;
+      when(
+        () => mocks.payments.get(customerPaymentId: 501),
+      ).thenAnswer((_) async => testPayment(verifierId: verified ? 5 : null));
+      when(() => mocks.payments.verify(customerPaymentId: 501)).thenAnswer((
+        _,
+      ) async {
+        verified = true;
+        return testPayment(verifierId: 5);
+      });
+      await pumpDetail(tester, user: _user(verificationRights: verifyRights));
+      expect(find.text('Sin verificar'), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('payment_verify_button')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('verify_payment_confirm')));
+      await tester.pumpAndSettle();
+
+      verify(() => mocks.payments.verify(customerPaymentId: 501)).called(1);
+      expect(find.text('Verificado'), findsOneWidget);
+      expect(find.text('Luis Reyes'), findsOneWidget);
+      expect(find.byKey(const Key('payment_verify_button')), findsNothing);
+      expect(find.byKey(const Key('payment_reject_button')), findsNothing);
+      expect(find.text('Pago 501 verificado.'), findsOneWidget);
+    });
+
+    testWidgets('rejecting sends the trimmed reason and the payment stays '
+        'unverified, buttons included', (tester) async {
+      stubGet(testPayment(verifierId: null));
+      when(
+        () => mocks.payments.reject(
+          customerPaymentId: 501,
+          reason: any(named: 'reason'),
+        ),
+      ).thenAnswer((_) async => testPayment(verifierId: null));
+      await pumpDetail(tester, user: _user(verificationRights: verifyRights));
+
+      await tester.tap(find.byKey(const Key('payment_reject_button')));
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('reject_reason_field')),
+        '  No aparece  ',
+      );
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('reject_payment_confirm')));
+      await tester.pumpAndSettle();
+
+      verify(
+        () =>
+            mocks.payments.reject(customerPaymentId: 501, reason: 'No aparece'),
+      ).called(1);
+      expect(find.text('Sin verificar'), findsOneWidget);
+      expect(find.byKey(const Key('payment_verify_button')), findsOneWidget);
+      expect(find.byKey(const Key('payment_reject_button')), findsOneWidget);
+      expect(
+        find.textContaining('sigue sin verificar y seguirá en la lista'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('on a phone the buttons wrap with their full labels, with no '
+        'overflow', (tester) async {
+      stubGet(testPayment(verifierId: null));
+      await pumpDetail(
+        tester,
+        user: _user(verificationRights: verifyRights),
+        size: const Size(420, 900),
+      );
+
+      expect(find.text('Verificar'), findsOneWidget);
+      expect(find.text('Rechazar'), findsOneWidget);
+      expect(tester.takeException(), isNull);
     });
   });
 }

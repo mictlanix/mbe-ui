@@ -56,8 +56,8 @@ abstract class PaymentsFilter with _$PaymentsFilter {
   }) {
     final allFacilities =
         canSearchAllFacilities && query.facet('scope') == 'all';
-    var from = _parseDateFacet(query.facet('date-from'));
-    var to = _parseDateFacet(query.facet('date-to'));
+    var from = parsePaymentsDateFacet(query.facet('date-from'));
+    var to = parsePaymentsDateFacet(query.facet('date-to'));
     // An end before the start can't be a range; the picker prevents it, so
     // only a hand-edited address gets here. Dropping both is the one reading
     // that cannot show an empty list for a filter the user can't see.
@@ -127,7 +127,7 @@ ListQuery paymentsQueryForScope(ListQuery query, PaymentsScope scope) =>
 /// display path, and the formatting guard (spec 028 FR-018) keeps `intl` out
 /// of everything but the formatting surface. A date that does not exist
 /// (`2026-02-31`) is rejected, not rolled over to March.
-DateTime? _parseDateFacet(String? value) {
+DateTime? parsePaymentsDateFacet(String? value) {
   if (value == null) return null;
   final match = RegExp(r'^(\d{4})-(\d{2})-(\d{2})$').firstMatch(value);
   if (match == null) return null;

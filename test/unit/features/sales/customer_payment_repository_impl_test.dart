@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
@@ -389,6 +390,118 @@ void main() {
         () => repository.listOutstandingOrders(customerId: 77),
         throwsA(isA<AppError>()),
       );
+    });
+  });
+
+  group('verification queue (spec 060 R2)', () {
+    test('listUnverified hits /unverified and forwards every filter', () async {
+      late RequestOptions seen;
+      final repository = _repositoryWith((options) async {
+        seen = options;
+        return _page([_paymentJson(id: 9)], total: 23);
+      });
+
+      final page = await repository.listUnverified(
+        facilityId: 3,
+        dateFrom: DateTime(2026, 10, 1, 15, 30),
+        dateTo: DateTime(2026, 10, 27, 8),
+        methodCode: 3,
+        skip: 20,
+        limit: 20,
+      );
+
+      expect(seen.path, endsWith('/api/v1/customer-payments/unverified'));
+      final q = seen.queryParameters;
+      expect(q['facility'], 3);
+      expect(q['method'], 3);
+      expect(q['skip'], 20);
+      expect(q['limit'], 20);
+      expect('${q['date_from']}', startsWith('2026-10-01T00:00:00'));
+      expect('${q['date_to']}', startsWith('2026-10-27T23:59:59'));
+      expect(page.items.single.customerPaymentId, 9);
+      expect(page.total, 23);
+    });
+
+    test('listUnverified omits unset filters and never sends an amount '
+        'range', () async {
+      late Map<String, dynamic> q;
+      final repository = _repositoryWith((options) async {
+        q = options.queryParameters;
+        return _page(const []);
+      });
+
+      await repository.listUnverified();
+
+      expect(q.containsKey('facility'), isFalse);
+      expect(q.containsKey('method'), isFalse);
+      expect(q.containsKey('date_from'), isFalse);
+      expect(q.containsKey('date_to'), isFalse);
+      expect(q.containsKey('amount_min'), isFalse);
+      expect(q.containsKey('amount_max'), isFalse);
+    });
+
+    test('verify posts to the payment and maps the verified payment', () async {
+      late RequestOptions seen;
+      final repository = _repositoryWith((options) async {
+        seen = options;
+        return ResponseBody.fromString(
+          jsonEncode(_paymentJson(id: 41, verifier: 12)),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final payment = await repository.verify(customerPaymentId: 41);
+
+      expect(seen.method, 'POST');
+      expect(seen.path, endsWith('/api/v1/customer-payments/41/verify'));
+      expect(payment.customerPaymentId, 41);
+      expect(payment.verifierId, 12);
+    });
+
+    test('reject posts the reason and maps the unchanged payment', () async {
+      late RequestOptions seen;
+      final repository = _repositoryWith((options) async {
+        seen = options;
+        return ResponseBody.fromString(
+          jsonEncode(_paymentJson(id: 42)),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final payment = await repository.reject(
+        customerPaymentId: 42,
+        reason: 'No aparece en el estado de cuenta',
+      );
+
+      expect(seen.method, 'POST');
+      expect(seen.path, endsWith('/api/v1/customer-payments/42/reject'));
+      expect(seen.data, {'reason': 'No aparece en el estado de cuenta'});
+      expect(payment.verifierId, isNull);
+    });
+
+    test('an already-verified payment surfaces as an AppError carrying the '
+        'code', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'status': 409,
+            'code': 'payment.already_verified',
+            'detail': 'Payment is already verified',
+          }),
+          409,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      final error = await repository
+          .verify(customerPaymentId: 41)
+          .then<AppError?>((_) => null)
+          .catchError((Object e) => e as AppError);
+
+      expect(error, isA<AppError>());
+      expect(error!.problem!.code, api.ErrorCode.paymentPeriodAlreadyVerified);
     });
   });
 

@@ -164,6 +164,70 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
   }
 
   @override
+  Future<CustomerPaymentListResult> listUnverified({
+    int? facilityId,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    int? methodCode,
+    int skip = 0,
+    int limit = 20,
+  }) async {
+    try {
+      final response = await _payments
+          .listUnverifiedPaymentsApiV1CustomerPaymentsUnverifiedGet(
+            facility: facilityId,
+            dateFrom: dateFrom == null ? null : wireDate(dateFrom),
+            dateTo: dateTo == null ? null : wireDateEnd(dateTo),
+            method: methodCode,
+            skip: skip,
+            limit: limit,
+          );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return CustomerPaymentListResult(
+        items: result.items.map(CustomerPayment.fromResponse).toList(),
+        total: result.total,
+      );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<CustomerPayment> verify({required int customerPaymentId}) async {
+    try {
+      final response = await _payments
+          .verifyCustomerPaymentApiV1CustomerPaymentsCustomerPaymentIdVerifyPost(
+            customerPaymentId: customerPaymentId,
+          );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return CustomerPayment.fromResponse(result);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<CustomerPayment> reject({
+    required int customerPaymentId,
+    required String reason,
+  }) async {
+    try {
+      final response = await _payments
+          .rejectCustomerPaymentApiV1CustomerPaymentsCustomerPaymentIdRejectPost(
+            customerPaymentId: customerPaymentId,
+            rejectionRequest: api.RejectionRequest((b) => b.reason = reason),
+          );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return CustomerPayment.fromResponse(result);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
   Future<CustomerPaymentListResult> searchAcrossFacilities({
     int? customerId,
     String? reference,

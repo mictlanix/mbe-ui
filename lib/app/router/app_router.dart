@@ -46,6 +46,7 @@ import 'package:mbe_ui/features/sales/presentation/capture/advanced_search_scree
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_workspace_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/payment_verification/payment_verification_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/credit_notes/credit_notes_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payments_list_screen.dart';
@@ -355,6 +356,21 @@ final goRouterProvider = Provider<GoRouter>((ref) {
                 path: '/sales/refunds',
                 builder: (context, state) =>
                     RefundsListScreen(query: ListQuery.fromUri(state.uri)),
+              ),
+            ],
+          ),
+          // 060-payment-verification: appended last (index 25), same
+          // rationale as `payments` above. Deliberately not under
+          // `/sales/payments`: that prefix is gated on Customer Payments and
+          // its `:paymentId` route would catch it. `PaymentsVerification`
+          // (108) is its own right (see the gate below).
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: paymentVerificationPath,
+                builder: (context, state) => PaymentVerificationScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
               ),
             ],
           ),
@@ -775,6 +791,13 @@ NavGate? _routeGate(String location) {
   // they all share the `/sales/quotes` prefix (FR-001, FR-002).
   if (location.startsWith('/sales/quotes')) {
     return PrivilegeGate(SystemObject.salesQuotes, AccessRight.read);
+  }
+  // 060-payment-verification: `paymentsVerification` (108) read, matching the
+  // server's /customer-payments/unverified. Placed before the
+  // `/sales/payments` clause below so the order never depends on how the two
+  // prefixes compare, and documented here as §IV requires.
+  if (location.startsWith(paymentVerificationPath)) {
+    return PrivilegeGate(SystemObject.paymentsVerification, AccessRight.read);
   }
   // 054-payments-list-search: `customerPayments` (8), matching the server. The
   // prefix covers the list and every `/sales/payments/:paymentId`. The
