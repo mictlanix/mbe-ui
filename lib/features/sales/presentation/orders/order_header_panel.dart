@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
+import 'package:mbe_ui/core/access/access_right.dart';
+import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/async/critical_action_guard.dart';
 import 'package:mbe_ui/core/config/app_settings_provider.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
@@ -25,6 +27,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart'
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_recipient_list_item.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/orders/order_payments_dialog.dart';
 import 'package:mbe_ui/features/sales/presentation/refunds/refund_open_or_resume.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/unconfirmed_edits_resolver.dart';
@@ -426,6 +429,15 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
     // spec 057 R9: "Devolver" on a paid order, absent — not disabled —
     // without Customer Refunds create and read.
     final canRefund = canStartRefund(ref.watch(accessControlProvider), sale);
+    // spec 059 FR-016: the order's payments, once it has been confirmed.
+    // Absent — not disabled — on a draft or a cancelled order and without
+    // Customer Payments read.
+    final canSeePayments =
+        (sale.status == SaleStatus.completed ||
+            sale.status == SaleStatus.paid) &&
+        ref
+            .watch(accessControlProvider)
+            .can(SystemObject.customerPayments, AccessRight.read);
     final writesPending =
         ref.watch(pendingWritesProvider(salesOrderWritesScope)) > 0;
 
@@ -515,7 +527,7 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
       // tier or a large text scale leaves it too little room (the row caps
       // this slot — `FactStripRow`). Absent — not disabled — without
       // sales-orders read.
-      trailing: canViewPedido || canRefund
+      trailing: canViewPedido || canSeePayments || canRefund
           ? Wrap(
               alignment: WrapAlignment.end,
               crossAxisAlignment: WrapCrossAlignment.center,
@@ -535,6 +547,16 @@ class _OrderHeaderPanelState extends ConsumerState<OrderHeaderPanel> {
                       onPressed: writesPending ? null : _viewPedido,
                       icon: const Icon(Icons.description_outlined),
                       label: Text(l10n.salesOrderViewDocumentAction),
+                    ),
+                  ),
+                if (canSeePayments)
+                  TextFieldTapRegion(
+                    child: OutlinedButton.icon(
+                      key: const Key('sales_order_payments_button'),
+                      onPressed: () =>
+                          showOrderPaymentsDialog(context, orderId: sale.id),
+                      icon: const Icon(Icons.payments_outlined),
+                      label: Text(l10n.salesOrderPaymentsButton),
                     ),
                   ),
                 if (canRefund)

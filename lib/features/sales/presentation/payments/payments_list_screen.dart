@@ -12,6 +12,7 @@ import 'package:mbe_ui/core/domain/payment_method.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
+import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/navigation/list_search_submit.dart';
 import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
@@ -32,6 +33,7 @@ import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_link_providers.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_widgets.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payments_filter.dart';
+import 'package:mbe_ui/features/sales/presentation/payments/record_payment_dialog.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payments_list_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -66,6 +68,11 @@ class PaymentsListScreen extends ConsumerWidget {
       canSearchAllFacilities: canSearchAll,
     );
     final allFacilities = filter.scope == PaymentsScope.allFacilities;
+    final canRecord = access.can(
+      SystemObject.customerPayments,
+      AccessRight.create,
+    );
+    final compact = LayoutBreakpoints.isCompact(context);
     final pageAsync = ref.watch(paymentsListControllerProvider(filter));
     final fmt = ref.watch(formattersProvider);
     final spacing = Theme.of(context).spacing;
@@ -113,8 +120,20 @@ class PaymentsListScreen extends ConsumerWidget {
             ),
           ),
           // The scope switch exists only for a Payments Editor reader —
-          // absent, not disabled, for everyone else (FR-002).
+          // absent, not disabled, for everyone else (FR-002). "Registrar
+          // pago" likewise needs Customer Payments create (spec 059 FR-010).
           actions: [
+            if (canRecord)
+              FilledButton.icon(
+                key: const Key('payments_record_button'),
+                icon: const Icon(Icons.add),
+                label: Text(
+                  compact
+                      ? l10n.paymentRecordActionShort
+                      : l10n.paymentRecordAction,
+                ),
+                onPressed: () => showRecordPaymentDialog(context),
+              ),
             if (canSearchAll)
               SegmentedButton<PaymentsScope>(
                 key: const Key('payments_scope_switch'),

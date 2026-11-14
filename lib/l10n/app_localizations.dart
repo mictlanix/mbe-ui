@@ -9442,6 +9442,57 @@ abstract class AppLocalizations {
   /// **'This kind of payment has no ticket to print.'**
   String get apiErrorPaymentNoTicket;
 
+  /// mbe-api error code `payment.exceeds_order_balance` (spec 059)
+  ///
+  /// In en, this message translates to:
+  /// **'The amount {amount} is more than the order\'s balance of {balance}.'**
+  String apiErrorPaymentExceedsOrderBalance(String amount, String balance);
+
+  /// mbe-api error code `payment.exceeds_unapplied` (spec 059)
+  ///
+  /// In en, this message translates to:
+  /// **'The amount {amount} is more than the {unapplied} left on the payment.'**
+  String apiErrorPaymentExceedsUnapplied(String amount, String unapplied);
+
+  /// mbe-api error code `payment.order_settled` (spec 059)
+  ///
+  /// In en, this message translates to:
+  /// **'The order is already paid.'**
+  String get apiErrorPaymentOrderSettled;
+
+  /// mbe-api error code `payment.order_cancelled` (spec 059)
+  ///
+  /// In en, this message translates to:
+  /// **'The order is cancelled and can\'t take a payment.'**
+  String get apiErrorPaymentOrderCancelled;
+
+  /// mbe-api error code `payment.order_not_completed` (spec 059)
+  ///
+  /// In en, this message translates to:
+  /// **'The order isn\'t confirmed. Confirm it before applying a payment.'**
+  String get apiErrorPaymentOrderNotCompleted;
+
+  /// mbe-api error code `payment.currency_mismatch` (spec 059)
+  ///
+  /// In en, this message translates to:
+  /// **'The payment is in {paymentCurrency} and the order in {orderCurrency}.'**
+  String apiErrorPaymentCurrencyMismatch(
+    String paymentCurrency,
+    String orderCurrency,
+  );
+
+  /// mbe-api error code `payment.customer_mismatch` (spec 059)
+  ///
+  /// In en, this message translates to:
+  /// **'The payment belongs to another customer.'**
+  String get apiErrorPaymentCustomerMismatch;
+
+  /// mbe-api error code `payment.application_reversed` (spec 059)
+  ///
+  /// In en, this message translates to:
+  /// **'This application was already reversed.'**
+  String get apiErrorPaymentApplicationReversed;
+
   /// mbe-api error code `point_of_sale.warehouse_facility_mismatch` (spec 058)
   ///
   /// In en, this message translates to:
@@ -9822,6 +9873,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'masculine'**
   String get apiResourceGenderSupplierContact;
+
+  /// spec 059: Reverse dialog title, and the table action tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Reverse application'**
+  String get paymentReverseTitle;
+
+  /// spec 059: Reverse dialog: names what is being reversed
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} applied to order #{order}.'**
+  String paymentReverseSubject(String amount, String order);
+
+  /// spec 059: Reverse dialog: mandatory reason field label
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get paymentReverseReasonLabel;
+
+  /// spec 059: Reverse dialog: refund caution (FR-004)
+  ///
+  /// In en, this message translates to:
+  /// **'This order has refunds. Reversing the payment does not undo the refund.'**
+  String get paymentReverseRefundWarning;
+
+  /// spec 059: Reverse dialog: confirm button
+  ///
+  /// In en, this message translates to:
+  /// **'Reverse'**
+  String get paymentReverseConfirm;
+
+  /// spec 059: Snackbar after a reversal
+  ///
+  /// In en, this message translates to:
+  /// **'Application reversed'**
+  String get paymentReverseDone;
+
+  /// spec 059: Payment view: apply button
+  ///
+  /// In en, this message translates to:
+  /// **'Apply to order'**
+  String get paymentApplyAction;
+
+  /// spec 059: Apply dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Apply payment #{payment}'**
+  String paymentApplyTitle(String payment);
+
+  /// spec 059: Apply dialog header
+  ///
+  /// In en, this message translates to:
+  /// **'Unapplied: {amount}'**
+  String paymentApplyUnapplied(String amount);
+
+  /// spec 059: Apply dialog: search hint
+  ///
+  /// In en, this message translates to:
+  /// **'Order or folio…'**
+  String get paymentApplySearchHint;
+
+  /// spec 059: Apply dialog: folio column
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get paymentApplyColumnFolio;
+
+  /// spec 059: Apply dialog: total column
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get paymentApplyColumnTotal;
+
+  /// spec 059: Apply dialog: balance column
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get paymentApplyColumnBalance;
+
+  /// spec 059: Apply dialog: amount field label
+  ///
+  /// In en, this message translates to:
+  /// **'Amount to apply'**
+  String get paymentApplyAmountLabel;
+
+  /// spec 059: Apply dialog: amount bound hint
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum {amount}'**
+  String paymentApplyAmountMax(String amount);
+
+  /// spec 059: Apply dialog: amount above the bound
+  ///
+  /// In en, this message translates to:
+  /// **'It can\'t be more than {amount}.'**
+  String paymentApplyAmountTooHigh(String amount);
+
+  /// spec 059: Apply dialog: amount missing or zero
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount above zero.'**
+  String get paymentApplyAmountInvalid;
+
+  /// spec 059: Apply dialog: empty state
+  ///
+  /// In en, this message translates to:
+  /// **'This customer has no orders to pay in {currency}.'**
+  String paymentApplyEmpty(String currency);
+
+  /// spec 059: Apply dialog: confirm button
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get paymentApplyConfirm;
+
+  /// spec 059: Snackbar after an application
+  ///
+  /// In en, this message translates to:
+  /// **'Payment applied to #{order}'**
+  String paymentApplyDone(String order);
+
+  /// spec 059: Pagos list: record button and dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Record payment'**
+  String get paymentRecordAction;
+
+  /// spec 059: Pagos list: record button on compact screens
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get paymentRecordActionShort;
+
+  /// spec 059: Record dialog: currency label
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get paymentRecordCurrencyLabel;
+
+  /// spec 059: Record dialog: save button
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get paymentRecordSave;
+
+  /// spec 059: Record dialog: save button while busy
+  ///
+  /// In en, this message translates to:
+  /// **'Recording…'**
+  String get paymentRecordSaving;
+
+  /// spec 059: Record dialog: no customer
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a customer.'**
+  String get paymentRecordErrorCustomer;
+
+  /// spec 059: Record dialog: walk-in customer refused (FR-012)
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a named customer: the general public can\'t hold advances or credit payments.'**
+  String get paymentRecordErrorWalkIn;
+
+  /// spec 059: Record dialog: no method
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a payment method.'**
+  String get paymentRecordErrorMethod;
+
+  /// spec 059: Record dialog: reference required
+  ///
+  /// In en, this message translates to:
+  /// **'This method needs a reference.'**
+  String get paymentRecordErrorReference;
+
+  /// spec 059: Record dialog: amount missing or zero
+  ///
+  /// In en, this message translates to:
+  /// **'Enter an amount above zero.'**
+  String get paymentRecordErrorAmount;
+
+  /// spec 059: Record dialog: cash without an open session (FR-015)
+  ///
+  /// In en, this message translates to:
+  /// **'To record cash you need a cash session open today.'**
+  String get paymentRecordErrorCashSession;
+
+  /// spec 059: Record dialog: link next to the cash-session error
+  ///
+  /// In en, this message translates to:
+  /// **'Go to cash sessions'**
+  String get paymentRecordGoToSessions;
+
+  /// spec 059: Record dialog: network failure after saving
+  ///
+  /// In en, this message translates to:
+  /// **'We don\'t know whether the payment was recorded: the connection was lost. Look for it in Payments before trying again.'**
+  String get paymentRecordUnknownResult;
+
+  /// spec 059: Pedidos order header: payments button
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get salesOrderPaymentsButton;
+
+  /// spec 059: Pedidos payments dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Payments on order #{order}'**
+  String salesOrderPaymentsTitle(String order);
+
+  /// spec 059: Pedidos payments dialog: open the payment view
+  ///
+  /// In en, this message translates to:
+  /// **'Open payment'**
+  String get salesOrderPaymentOpenTooltip;
+
+  /// spec 059: Apply dialog: search found nothing
+  ///
+  /// In en, this message translates to:
+  /// **'No order matches the search.'**
+  String get paymentApplyNoMatches;
 }
 
 class _AppLocalizationsDelegate

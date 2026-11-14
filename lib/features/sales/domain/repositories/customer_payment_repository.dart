@@ -1,6 +1,8 @@
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
+import 'package:mbe_ui/features/sales/domain/entities/outstanding_order.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
+import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 
 /// Taking money and applying it to a sale (contracts/mbe-api-pos.md §1, §3).
 ///
@@ -18,6 +20,10 @@ abstract class CustomerPaymentRepository {
   /// session is attached server-side; by this feature's own precondition
   /// (contracts/pos-screen.md §0) one always exists by now. Returns the new
   /// payment's id, which [applyPayment] needs.
+  ///
+  /// [type] is what the payment represents. The POS leaves it at
+  /// [PaymentType.immediate] (mbe-api's own default); the back office records
+  /// a credit payment or an advance (spec 059 R6).
   Future<int> createPayment({
     required int customer,
     required String amount,
@@ -25,6 +31,7 @@ abstract class CustomerPaymentRepository {
     Currency? currency,
     int? paymentCharge,
     String? reference,
+    PaymentType type = PaymentType.immediate,
   });
 
   /// `POST /customer-payments/{id}/applications` — applies the tender to the
@@ -58,6 +65,17 @@ abstract class CustomerPaymentRepository {
   /// until every outstanding order is counted, so the figure is the whole
   /// balance rather than the first page of it.
   Future<String> outstandingBalanceFor({required int customerId});
+
+  /// `GET /customer-payments/outstanding-orders` — one page of [customerId]'s
+  /// outstanding orders, for choosing where to apply a payment (spec 059 R5).
+  /// The server lists only the caller's own facility's orders (mbe-api#308).
+  /// [search] matches an order number or folio.
+  Future<OutstandingOrderPage> listOutstandingOrders({
+    required int customerId,
+    String? search,
+    int skip = 0,
+    int limit = 20,
+  });
 
   /// `GET /customer-payments` — the **facility-scoped** list (spec 054 FR-004,
   /// R4), newest first. [facilityId] is required so no caller can lean on the

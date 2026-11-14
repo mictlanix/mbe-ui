@@ -9,11 +9,13 @@ import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
+import 'package:mbe_ui/features/sales/domain/entities/outstanding_order.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart'
     show wireDate, wireDateEnd;
 import 'package:mbe_ui/features/sales/domain/money.dart';
+import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/customer_payment_repository.dart';
 
 final customerPaymentRepositoryProvider = Provider<CustomerPaymentRepository>((
@@ -42,6 +44,7 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
     Currency? currency,
     int? paymentCharge,
     String? reference,
+    PaymentType type = PaymentType.immediate,
   }) async {
     try {
       final response = await _payments
@@ -52,7 +55,8 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
                 ..method = _methodToApi(method)
                 ..currency = currency == null ? null : currencyToApi(currency)
                 ..paymentCharge = paymentCharge
-                ..reference = reference;
+                ..reference = reference
+                ..paymentType = _typeToApi(type);
               _setAmount(b.amount, amount);
             }),
           );
@@ -249,6 +253,34 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
       throw _toAppError(e);
     }
   }
+
+  @override
+  Future<OutstandingOrderPage> listOutstandingOrders({
+    required int customerId,
+    String? search,
+    int skip = 0,
+    int limit = 20,
+  }) async {
+    try {
+      final response = await _payments
+          .listOutstandingOrdersApiV1CustomerPaymentsOutstandingOrdersGet(
+            customer: customerId,
+            search: search == null || search.trim().isEmpty
+                ? null
+                : search.trim(),
+            skip: skip,
+            limit: limit,
+          );
+      final page = response.data;
+      if (page == null) throw const AppError.server();
+      return OutstandingOrderPage(
+        items: page.items.map(OutstandingOrder.fromResponse).toList(),
+        total: page.total,
+      );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
 }
 
 AppError _toAppError(DioException error) {
@@ -272,3 +304,9 @@ void _setAmountChange(api.AmountChangeBuilder builder, String value) {
 /// `paymentMethodCodeFromApi` in `core/domain/payment_method.dart`.
 api.PaymentMethod _methodToApi(int code) =>
     api.PaymentMethod.valueOf('number$code');
+
+/// The generated `api.PaymentType`'s members are named after their wire
+/// numbers too (`number2` = credit payment) — the inverse of
+/// `PaymentType.fromApi`.
+api.PaymentType _typeToApi(PaymentType type) =>
+    api.PaymentType.valueOf('number${type.code}');

@@ -30,6 +30,9 @@ void main() {
     'delivery_order.quantity_exceeds_remaining',
     'facility.other_facility',
     'image.too_large',
+    'payment.currency_mismatch',
+    'payment.exceeds_order_balance',
+    'payment.exceeds_unapplied',
     'product.lookup_too_many',
     'product_price.references_not_found',
     'refund.line_invoiced',
@@ -95,7 +98,7 @@ void main() {
         missing.add(cells[1]);
       }
     }
-    expect(checked, 96);
+    expect(checked, 104);
     expect(missing, isEmpty);
   });
 

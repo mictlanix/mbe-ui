@@ -275,6 +275,123 @@ void main() {
     });
   });
 
+  group('createPayment (spec 059 R6)', () {
+    Future<Map<String, dynamic>> bodyOf(PaymentType? type) async {
+      late Map<String, dynamic> body;
+      final repository = _repositoryWith((options) async {
+        body = options.data as Map<String, dynamic>;
+        return ResponseBody.fromString(
+          jsonEncode(_paymentJson(id: 55)),
+          201,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final id = type == null
+          ? await repository.createPayment(
+              customer: 77,
+              amount: '100.00',
+              method: 1,
+            )
+          : await repository.createPayment(
+              customer: 77,
+              amount: '100.00',
+              method: 1,
+              type: type,
+            );
+
+      expect(id, 55);
+      return body;
+    }
+
+    test('records a credit payment and an advance with their type', () async {
+      expect((await bodyOf(PaymentType.creditPayment))['payment_type'], 2);
+      expect((await bodyOf(PaymentType.paymentInAdvance))['payment_type'], 3);
+    });
+
+    test('leaves the type at IMMEDIATE (1) for the register', () async {
+      expect((await bodyOf(null))['payment_type'], 1);
+    });
+  });
+
+  group('listOutstandingOrders (spec 059 R5)', () {
+    Map<String, dynamic> row(int id, {int? serial}) => {
+      'sales_order_id': id,
+      'serial': serial,
+      'customer': 77,
+      'customer_name': null,
+      'customer_display_name': 'Ana López',
+      'date': '2026-11-10T09:30:00',
+      'due_date': '2026-11-25T00:00:00',
+      'currency': 0,
+      'total': '2400.00',
+      'balance': '1800.00',
+    };
+
+    test('forwards the customer, search and paging', () async {
+      late RequestOptions seen;
+      final repository = _repositoryWith((options) async {
+        seen = options;
+        return _page(const []);
+      });
+
+      await repository.listOutstandingOrders(
+        customerId: 77,
+        search: ' 1047 ',
+        skip: 20,
+        limit: 20,
+      );
+
+      expect(seen.path, endsWith('/customer-payments/outstanding-orders'));
+      final q = seen.queryParameters;
+      expect(q['customer'], 77);
+      expect(q['search'], '1047');
+      expect(q['skip'], 20);
+      expect(q['limit'], 20);
+    });
+
+    test('a blank search sends none', () async {
+      late Map<String, dynamic> q;
+      final repository = _repositoryWith((options) async {
+        q = options.queryParameters;
+        return _page(const []);
+      });
+
+      await repository.listOutstandingOrders(customerId: 77, search: '  ');
+
+      expect(q.containsKey('search'), isFalse);
+    });
+
+    test('maps the rows and the total', () async {
+      final repository = _repositoryWith(
+        (options) async => _page([row(1047, serial: 812), row(1052)], total: 9),
+      );
+
+      final page = await repository.listOutstandingOrders(customerId: 77);
+
+      expect(page.total, 9);
+      expect(page.items.map((o) => o.id), [1047, 1052]);
+      expect(page.items.first.serial, 812);
+      expect(page.items.last.serial, isNull);
+      expect(page.items.first.balance, '1800.00');
+    });
+
+    test('a server failure surfaces as an AppError', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({'detail': 'boom'}),
+          500,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        () => repository.listOutstandingOrders(customerId: 77),
+        throwsA(isA<AppError>()),
+      );
+    });
+  });
+
   group('a server failure', () {
     test('surfaces as an AppError, not a DioException', () async {
       final repository = _repositoryWith(
