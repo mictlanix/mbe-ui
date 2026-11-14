@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
@@ -12,6 +13,7 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/domain/address_type.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
@@ -26,6 +28,7 @@ import 'package:mbe_ui/features/sales/domain/entities/delivery_order.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/facility_warehouses_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_actions.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_detail_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_detail_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -40,6 +43,31 @@ class _FakeDetail extends DeliveryOrderDetailController {
 
   @override
   Future<DeliveryOrderDetail> build(int id) => answer();
+}
+
+/// Records each write and answers [error]; on success runs [onSuccess]
+/// first (to swap what the detail answers), then invalidates the order as the
+/// real actions do.
+class _FakeActions extends DeliveryOrderActions {
+  _FakeActions({this.error, this.onSuccess});
+
+  AppError? error;
+  final void Function()? onSuccess;
+  final calls = <String>[];
+
+  Future<AppError?> _answer(int id, String call) async {
+    calls.add(call);
+    if (error == null) onSuccess?.call();
+    ref.invalidate(deliveryOrderDetailControllerProvider(id));
+    return error;
+  }
+
+  @override
+  Future<AppError?> confirm(int id) => _answer(id, 'confirm');
+
+  @override
+  Future<AppError?> removeLine(int id, {required int lineId}) =>
+      _answer(id, 'remove $lineId');
 }
 
 Override _access({bool update = false, bool salesOrdersRead = true}) =>
@@ -173,6 +201,7 @@ void main() {
     String location = '/sales/delivery-orders/9',
     bool namesReadable = true,
     Size surface = const Size(1400, 1400),
+    _FakeActions? actions,
   }) async {
     tester.view.physicalSize = surface;
     tester.view.devicePixelRatio = 1;
@@ -184,6 +213,8 @@ void main() {
       overrides: [
         sharedPreferencesProvider.overrideWithValue(prefs),
         access ?? _access(),
+        if (actions != null)
+          deliveryOrderActionsProvider.overrideWith(() => actions),
         deliveryOrderDetailControllerProvider(
           9,
         ).overrideWith(() => _FakeDetail(answer ?? () async => detail!)),
@@ -639,6 +670,285 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(key('delivery_order_facts'), findsOneWidget);
+    });
+  });
+
+  DeliveryOrder draft({List<DeliveryOrderLine>? lines}) =>
+      _order(serial: null, status: DeliveryOrderStatus.draft, lines: lines);
+
+  group('confirm (US2)', () {
+    testWidgets('is offered on a draft with update', (tester) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(draft()),
+        access: _access(update: true),
+      );
+
+      final button = tester.widget<FilledButton>(key('delivery_order_confirm'));
+      expect(button.onPressed, isNotNull);
+      expect(key('delivery_order_confirm_needs_lines'), findsNothing);
+    });
+
+    testWidgets('is absent on a confirmed order, even with update', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(_order()),
+        access: _access(update: true),
+      );
+
+      expect(key('delivery_order_confirm'), findsNothing);
+      expect(key('delivery_order_actions'), findsNothing);
+    });
+
+    testWidgets('is disabled with a hint on a draft with no lines', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(draft(lines: const [])),
+        access: _access(update: true),
+      );
+
+      final button = tester.widget<FilledButton>(key('delivery_order_confirm'));
+      expect(button.onPressed, isNull);
+      expect(find.text(l10n.deliveryOrderConfirmNeedsLines), findsOneWidget);
+    });
+
+    testWidgets('asks first, naming customer, date and line count', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(draft(lines: [_line(1), _line(2)])),
+        access: _access(update: true),
+      );
+
+      await tester.tap(key('delivery_order_confirm'));
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<Text>(key('delivery_order_confirm_summary')).data,
+        l10n.deliveryOrderConfirmSummary('Ferretería López', '2026-11-15', 2),
+      );
+      expect(find.text(l10n.deliveryOrderConfirmIrreversible), findsOneWidget);
+    });
+
+    testWidgets('success shows the folio and status the server chose', (
+      tester,
+    ) async {
+      var current = detailOf(draft());
+      final actions = _FakeActions(
+        onSuccess: () => current = detailOf(
+          _order(serial: 1600, status: DeliveryOrderStatus.pendingApproval),
+        ),
+      );
+      await pumpDetail(
+        tester,
+        answer: () async => current,
+        access: _access(update: true),
+        actions: actions,
+      );
+
+      await tester.tap(key('delivery_order_confirm'));
+      await tester.pumpAndSettle();
+      await tester.tap(key('delivery_order_confirm_submit'));
+      await tester.pumpAndSettle();
+
+      expect(actions.calls, ['confirm']);
+      expect(key('delivery_order_confirm_dialog'), findsNothing);
+      expect(
+        find.text(l10n.deliveryOrderSnackConfirmed('1600')),
+        findsOneWidget,
+      );
+      expect(find.text(l10n.deliveryOrderTitle('1600')), findsOneWidget);
+      expect(key('delivery_order_status_chip_pendingApproval'), findsOneWidget);
+      expect(key('delivery_order_confirm'), findsNothing);
+    });
+
+    testWidgets('too little notice keeps the dialog open with the earliest '
+        'date', (tester) async {
+      final actions = _FakeActions(
+        error: const AppError.server(
+          statusCode: 409,
+          problem: ApiProblem(
+            codeName: 'delivery_order.insufficient_notice',
+            code: api.ErrorCode.deliveryOrderPeriodInsufficientNotice,
+            params: {'min_hours': 24, 'earliest': '2026-11-16T08:00:00'},
+          ),
+        ),
+      );
+      await pumpDetail(
+        tester,
+        detail: detailOf(draft()),
+        access: _access(update: true),
+        actions: actions,
+      );
+
+      await tester.tap(key('delivery_order_confirm'));
+      await tester.pumpAndSettle();
+      await tester.tap(key('delivery_order_confirm_submit'));
+      await tester.pumpAndSettle();
+
+      final dialog = key('delivery_order_confirm_dialog');
+      expect(dialog, findsOneWidget);
+      expect(
+        find.descendant(
+          of: dialog,
+          matching: find.textContaining('2026-11-16'),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: dialog, matching: find.textContaining('24')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('another refusal closes the dialog, shows why and reloads', (
+      tester,
+    ) async {
+      var loads = 0;
+      final actions = _FakeActions(
+        error: const AppError.server(
+          statusCode: 409,
+          problem: ApiProblem(
+            codeName: 'delivery_order.no_lines',
+            code: api.ErrorCode.deliveryOrderPeriodNoLines,
+          ),
+        ),
+      );
+      await pumpDetail(
+        tester,
+        answer: () async {
+          loads++;
+          return detailOf(draft());
+        },
+        access: _access(update: true),
+        actions: actions,
+      );
+
+      await tester.tap(key('delivery_order_confirm'));
+      await tester.pumpAndSettle();
+      await tester.tap(key('delivery_order_confirm_submit'));
+      await tester.pumpAndSettle();
+
+      expect(key('delivery_order_confirm_dialog'), findsNothing);
+      expect(key('delivery_order_refusal'), findsOneWidget);
+      expect(find.text(l10n.apiErrorDeliveryOrderNoLines), findsOneWidget);
+      expect(loads, 2);
+    });
+
+    testWidgets('a lost connection says the result is unknown', (tester) async {
+      final actions = _FakeActions(error: const AppError.network());
+      await pumpDetail(
+        tester,
+        detail: detailOf(draft()),
+        access: _access(update: true),
+        actions: actions,
+      );
+
+      await tester.tap(key('delivery_order_confirm'));
+      await tester.pumpAndSettle();
+      await tester.tap(key('delivery_order_confirm_submit'));
+      await tester.pumpAndSettle();
+
+      expect(key('delivery_order_confirm_dialog'), findsNothing);
+      expect(find.text(l10n.deliveryOrderActionUnknown), findsOneWidget);
+    });
+  });
+
+  group('edit controls (US3)', () {
+    const editKeys = [
+      'delivery_order_edit_header',
+      'delivery_order_add_line',
+      'delivery_order_line_edit_1',
+      'delivery_order_line_remove_1',
+    ];
+
+    testWidgets('show on a draft with update', (tester) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(draft()),
+        access: _access(update: true),
+      );
+
+      for (final k in editKeys) {
+        expect(key(k), findsOneWidget, reason: k);
+      }
+    });
+
+    testWidgets('are absent on a confirmed order', (tester) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(_order()),
+        access: _access(update: true),
+      );
+
+      for (final k in editKeys) {
+        expect(key(k), findsNothing, reason: k);
+      }
+    });
+
+    testWidgets('"Agregar línea" needs Sales Orders read', (tester) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(draft()),
+        access: _access(update: true, salesOrdersRead: false),
+      );
+
+      expect(key('delivery_order_add_line'), findsNothing);
+      expect(key('delivery_order_edit_header'), findsOneWidget);
+      expect(key('delivery_order_line_edit_1'), findsOneWidget);
+      expect(key('delivery_order_line_remove_1'), findsOneWidget);
+    });
+
+    testWidgets('the line icons are on the compact cards too', (tester) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(draft()),
+        access: _access(update: true),
+        surface: const Size(400, 1400),
+      );
+
+      expect(
+        find.descendant(
+          of: key('delivery_order_line_card_1'),
+          matching: key('delivery_order_line_edit_1'),
+        ),
+        findsOneWidget,
+      );
+      expect(key('delivery_order_line_remove_1'), findsOneWidget);
+    });
+
+    testWidgets('removing a line asks, then removes it and says so', (
+      tester,
+    ) async {
+      final actions = _FakeActions();
+      await pumpDetail(
+        tester,
+        detail: detailOf(draft()),
+        access: _access(update: true),
+        actions: actions,
+      );
+
+      await tester.tap(key('delivery_order_line_remove_1'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(l10n.deliveryOrderLineRemoveTitle('Producto 1')),
+        findsOneWidget,
+      );
+      await tester.tap(key('delivery_order_line_remove_submit'));
+      await tester.pumpAndSettle();
+
+      expect(actions.calls, ['remove 1']);
+      expect(
+        find.text(
+          l10n.deliveryOrderSnackLineRemoved(l10n.deliveryOrderDraftFolio),
+        ),
+        findsOneWidget,
+      );
     });
   });
 

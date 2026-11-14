@@ -11,6 +11,7 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
+import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/compact_field.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
@@ -19,10 +20,13 @@ import 'package:mbe_ui/core/widgets/list_state_views.dart' show toAppError;
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/sales/domain/entities/delivery_order.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_orders/add_line_dialog.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_detail_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_dialogs.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_name_cells.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_status_chip.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_orders_list_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_orders/header_dialog.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// One delivery order (spec 061 contracts C4): header facts, the detail
@@ -34,9 +38,9 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// stays empty; every action belongs in the body.
 ///
 /// The body is a column of sections, top to bottom: rejection banner, facts
-/// strip, detail band, lines. Later stories add, below the lines and in this
-/// order, the proof of delivery (US7), the history (US5) and the action area
-/// (US2); see [_DeliveryOrderBody].
+/// strip, detail band, lines, action area. Later stories insert the proof of
+/// delivery (US7) and the history (US5) between the lines and the action
+/// area; see [_DeliveryOrderBody].
 class DeliveryOrderDetailScreen extends ConsumerWidget {
   /// [deliveryOrderId] is `null` for an address whose id isn't a number,
   /// which shows the not-found state instead of throwing.
@@ -152,22 +156,161 @@ class _LoadFailed extends StatelessWidget {
   }
 }
 
-/// The loaded order, as a column of sections. Read-only for now.
+/// The loaded order, as a column of sections.
 ///
 /// Where later stories plug in:
-/// - "Editar encabezado" (US3) ends the detail band ([_DetailBand]);
-/// - "Agregar línea" and the per-line icons (US3) go in [_LinesSection];
-/// - the proof (US7), history (US5) and action area (US2) are appended to
-///   this column after [_LinesSection], in that order (contracts C4).
-class _DeliveryOrderBody extends StatelessWidget {
+/// - the proof (US7) and history (US5) are inserted after [_LinesSection],
+///   before the action area, in that order (contracts C4);
+/// - the action area stays last: US4, US6 and US7 add their buttons to
+///   [_DeliveryOrderBodyState._actionButtons] following data-model §3, and
+///   their dialogs to `delivery_order_dialogs.dart`.
+///
+/// Stateful so the confirm's busy flag and a refusal survive the reload every
+/// write triggers: the screen keeps showing this body while it refetches.
+class _DeliveryOrderBody extends ConsumerStatefulWidget {
   const _DeliveryOrderBody({required this.detail});
 
   final DeliveryOrderDetail detail;
 
   @override
+  ConsumerState<_DeliveryOrderBody> createState() => _DeliveryOrderBodyState();
+}
+
+class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
+  /// Set from a confirm's success until the reloaded order arrives.
+  bool _confirming = false;
+
+  /// The last status action's refusal, shown above the action area.
+  AppError? _actionError;
+
+  DeliveryOrder get _order => widget.detail.order;
+
+  /// The folio for a snackbar; a draft has none yet.
+  String _serialOf(DeliveryOrder order, AppLocalizations l10n) =>
+      order.serial == null ? l10n.deliveryOrderDraftFolio : '${order.serial}';
+
+  void _snack(String message) => ScaffoldMessenger.of(
+    context,
+  ).showSnackBar(SnackBar(content: Text(message)));
+
+  Future<void> _confirm() async {
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final id = _order.id;
+    setState(() => _actionError = null);
+    final result = await showConfirmDeliveryOrderDialog(context, _order);
+    if (!mounted || result == null) return;
+    if (result.error != null) {
+      setState(() => _actionError = result.error);
+      return;
+    }
+    // The folio is the server's: read it from the reload the write started.
+    // Until it lands the button stays busy, so the stale draft can't be
+    // confirmed twice.
+    setState(() => _confirming = true);
+    DeliveryOrder? confirmed;
+    try {
+      confirmed = (await ref.read(
+        deliveryOrderDetailControllerProvider(id).future,
+      )).order;
+    } on Object {
+      // The screen shows the failed reload itself.
+    }
+    if (!mounted) return;
+    setState(() => _confirming = false);
+    if (confirmed != null) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n.deliveryOrderSnackConfirmed(_serialOf(confirmed, l10n)),
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _editHeader() async {
+    final l10n = AppLocalizations.of(context)!;
+    final serial = _serialOf(_order, l10n);
+    if (await showDeliveryOrderHeaderDialog(context, _order) && mounted) {
+      _snack(l10n.deliveryOrderSnackHeaderSaved(serial));
+    }
+  }
+
+  Future<void> _addLine() async {
+    final l10n = AppLocalizations.of(context)!;
+    final serial = _serialOf(_order, l10n);
+    if (await showAddDeliveryOrderLineDialog(context, _order) > 0 && mounted) {
+      _snack(l10n.deliveryOrderSnackLineAdded(serial));
+    }
+  }
+
+  Future<void> _editLine(DeliveryOrderLine line) async {
+    final l10n = AppLocalizations.of(context)!;
+    final serial = _serialOf(_order, l10n);
+    final saved = await showDeliveryOrderLineQuantityDialog(
+      context,
+      orderId: _order.id,
+      line: line,
+      saleId: widget.detail.sales[line.salesOrderDetailId],
+    );
+    if (saved && mounted) _snack(l10n.deliveryOrderSnackLineUpdated(serial));
+  }
+
+  Future<void> _removeLine(DeliveryOrderLine line) async {
+    final l10n = AppLocalizations.of(context)!;
+    final serial = _serialOf(_order, l10n);
+    final removed = await showRemoveDeliveryOrderLineDialog(
+      context,
+      orderId: _order.id,
+      line: line,
+    );
+    if (removed && mounted) _snack(l10n.deliveryOrderSnackLineRemoved(serial));
+  }
+
+  /// The status actions the order's status, its type and the user's rights
+  /// allow (data-model §3, FR-011): absent, never disabled, without them. An
+  /// outlined "Cancelar orden" (US4) goes first, then the one filled primary.
+  List<Widget> _actionButtons(bool canUpdate) {
+    final l10n = AppLocalizations.of(context)!;
+    final order = _order;
+    if (!canUpdate) return const [];
+    return [
+      if (order.isDraft)
+        FilledButton(
+          key: const Key('delivery_order_confirm'),
+          // The one disabled action: a draft with no lines (FR-016).
+          onPressed: _confirming || order.lines.isEmpty ? null : _confirm,
+          child: _confirming
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(l10n.deliveryOrderConfirmAction),
+        ),
+    ];
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final spacing = Theme.of(context).spacing;
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final spacing = theme.spacing;
+    final access = ref.watch(accessControlProvider);
+    final detail = widget.detail;
     final order = detail.order;
+    final canUpdate = access.can(
+      SystemObject.deliveryOrders,
+      AccessRight.update,
+    );
+    // Header and lines are editable only on a draft (FR-015).
+    final canEdit = canUpdate && order.isDraft;
+    // Step 1 of "Agregar línea" lists sales (contracts C7).
+    final canAddLine =
+        canEdit && access.can(SystemObject.salesOrders, AccessRight.read);
+    final buttons = _actionButtons(canUpdate);
+
     return SingleChildScrollView(
       padding: EdgeInsets.all(spacing.screenMargin),
       child: Column(
@@ -177,8 +320,41 @@ class _DeliveryOrderBody extends StatelessWidget {
           if (order.rejectionReason != null)
             _RejectionBanner(reason: order.rejectionReason!),
           _HeaderFacts(order: order),
-          _DetailBand(detail: detail),
-          _LinesSection(detail: detail),
+          _DetailBand(
+            detail: detail,
+            onEditHeader: canEdit ? _editHeader : null,
+          ),
+          _LinesSection(
+            detail: detail,
+            onAddLine: canAddLine ? _addLine : null,
+            onEditLine: canEdit ? _editLine : null,
+            onRemoveLine: canEdit ? _removeLine : null,
+          ),
+          // Proof (US7) and history (US5) go here, above the action area.
+          if (_actionError != null) DeliveryOrderRefusal(error: _actionError!),
+          if (buttons.isNotEmpty)
+            Align(
+              key: const Key('delivery_order_actions'),
+              alignment: AlignmentDirectional.centerEnd,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                spacing: spacing.xs,
+                children: [
+                  Wrap(
+                    alignment: WrapAlignment.end,
+                    spacing: spacing.sm,
+                    runSpacing: spacing.sm,
+                    children: buttons,
+                  ),
+                  if (order.isDraft && order.lines.isEmpty)
+                    Text(
+                      l10n.deliveryOrderConfirmNeedsLines,
+                      key: const Key('delivery_order_confirm_needs_lines'),
+                      style: theme.textTheme.bodySmall,
+                    ),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -275,9 +451,12 @@ class _HeaderFacts extends ConsumerWidget {
 /// Destino, Contacto, Pedidos, Comentario, and the parent and child orders
 /// as links (FR-007).
 class _DetailBand extends ConsumerWidget {
-  const _DetailBand({required this.detail});
+  const _DetailBand({required this.detail, this.onEditHeader});
 
   final DeliveryOrderDetail detail;
+
+  /// Opens the header dialog; `null` hides "Editar encabezado" (FR-015).
+  final VoidCallback? onEditHeader;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -384,6 +563,19 @@ class _DetailBand extends ConsumerWidget {
               ),
             ),
           ),
+        if (onEditHeader != null)
+          FormGridChild(
+            Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: OutlinedButton.icon(
+                key: const Key('delivery_order_edit_header'),
+                onPressed: onEditHeader,
+                icon: Icon(CatalogAction.edit.icon),
+                label: Text(l10n.deliveryOrderEditHeader),
+              ),
+            ),
+            span: FormGridSpan.full,
+          ),
       ],
     );
   }
@@ -426,9 +618,39 @@ class _Links extends StatelessWidget {
 /// The lines (FR-008): a table on wider tiers, cards at the compact tier.
 /// Every quantity is kept and never truncated.
 class _LinesSection extends ConsumerWidget {
-  const _LinesSection({required this.detail});
+  const _LinesSection({
+    required this.detail,
+    this.onAddLine,
+    this.onEditLine,
+    this.onRemoveLine,
+  });
 
   final DeliveryOrderDetail detail;
+
+  /// Each `null` hides its control (FR-015, contracts C7).
+  final VoidCallback? onAddLine;
+  final void Function(DeliveryOrderLine line)? onEditLine;
+  final void Function(DeliveryOrderLine line)? onRemoveLine;
+
+  /// ✎ and 🗑 for [line], or none when the lines aren't editable.
+  List<Widget> _lineActions(AppLocalizations l10n, DeliveryOrderLine line) {
+    final onEdit = onEditLine;
+    final onRemove = onRemoveLine;
+    if (onEdit == null || onRemove == null) return const [];
+    return buildCatalogRowActions(
+      editTooltip: l10n.deliveryOrderLineEditTooltip,
+      editKey: Key('delivery_order_line_edit_${line.id}'),
+      onEdit: () => onEdit(line),
+      extraActions: [
+        CatalogRowAction(
+          key: Key('delivery_order_line_remove_${line.id}'),
+          icon: Icons.delete_outline,
+          tooltip: l10n.deliveryOrderLineRemoveTooltip,
+          onPressed: () => onRemove(line),
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -464,7 +686,14 @@ class _LinesSection extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 spacing: spacing.xs,
                 children: [
-                  Text('${line.productCode} ${line.productName}'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text('${line.productCode} ${line.productName}'),
+                      ),
+                      ..._lineActions(l10n, line),
+                    ],
+                  ),
                   Row(
                     children: [
                       Flexible(
@@ -503,6 +732,9 @@ class _LinesSection extends ConsumerWidget {
         shrinkWrap: true,
         margin: EdgeInsets.zero,
         rows: order.lines,
+        rowActionsBuilder: onEditLine == null
+            ? null
+            : (context, line) => _lineActions(l10n, line),
         columns: [
           DataTableColumn.text(
             label: l10n.deliveryOrderLineColumnCode,
@@ -544,7 +776,23 @@ class _LinesSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       spacing: spacing.sm,
       children: [
-        Text(l10n.deliveryOrderLinesTitle, style: theme.textTheme.titleMedium),
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                l10n.deliveryOrderLinesTitle,
+                style: theme.textTheme.titleMedium,
+              ),
+            ),
+            if (onAddLine != null)
+              OutlinedButton.icon(
+                key: const Key('delivery_order_add_line'),
+                onPressed: onAddLine,
+                icon: Icon(CatalogAction.create.icon),
+                label: Text(l10n.deliveryOrderAddLine),
+              ),
+          ],
+        ),
         lines,
       ],
     );

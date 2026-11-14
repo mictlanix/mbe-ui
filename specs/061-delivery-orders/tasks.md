@@ -155,18 +155,18 @@ description: "Task list for 061-delivery-orders"
 
 **Independent Test**: create a one-line draft through the POS, open it as a user with Delivery Orders update, confirm it, and check the folio, status and history (quickstart step 5).
 
-- [ ] T019 [US2] Create `lib/features/sales/presentation/delivery_orders/delivery_order_dialogs.dart` with the confirm dialog (C5, FR-016, FR-017), a `ResponsiveDialog` naming the customer, scheduled date and line count, with `deliveryOrderConfirmIrreversible`.
+- [x] T019 [US2] Create `lib/features/sales/presentation/delivery_orders/delivery_order_dialogs.dart` with the confirm dialog (C5, FR-016, FR-017), a `ResponsiveDialog` naming the customer, scheduled date and line count, with `deliveryOrderConfirmIrreversible`.
   - It uses a busy flag and isn't dismissible while submitting.
   - On `delivery_order.insufficient_notice` it stays open with a `FormErrorBanner` carrying the localized message, which includes the earliest date and time.
   - Other errors close the dialog, show the localized error, and let the reload happen.
 
-- [ ] T020 [US2] Edit `delivery_order_detail_screen.dart` (C4): add the end-aligned action area, built as a `Wrap`.
+- [x] T020 [US2] Edit `delivery_order_detail_screen.dart` (C4): add the end-aligned action area, built as a `Wrap`.
   - Add "Confirmar" (`FilledButton`, key `delivery_order_confirm`) for a draft with update. It is disabled, with the hint `deliveryOrderConfirmNeedsLines`, while the order has no lines.
   - Show a snackbar naming the folio the server assigned after success.
   - Gate it on `can(SystemObject.deliveryOrders, AccessRight.update)` and absent otherwise, never disabled (§VI).
   - The later stories add their buttons to this same area, following data-model §3.
 
-- [ ] T021 [US2] Extend `test/widget/features/sales/delivery_order_detail_screen_test.dart` and create `test/widget/features/sales/delivery_order_dialogs_test.dart`: Confirmar shows only for a draft with update, is disabled with no lines, and names customer, date and line count; success shows the server's folio and status; `insufficient_notice` keeps the dialog open with the earliest date; other errors close it and reload.
+- [x] T021 [US2] Extend `test/widget/features/sales/delivery_order_detail_screen_test.dart` and create `test/widget/features/sales/delivery_order_dialogs_test.dart`: Confirmar shows only for a draft with update, is disabled with no lines, and names customer, date and line count; success shows the server's folio and status; `insufficient_notice` keeps the dialog open with the earliest date; other errors close it and reload.
 
 **Checkpoint**: US1 + US2 are the MVP. POS drafts can now reach the warehouse.
 
@@ -178,21 +178,21 @@ description: "Task list for 061-delivery-orders"
 
 **Independent Test**: edit each header field, change one line's quantity, remove a line and add one from another sale; reload and check each change stuck (quickstart step 4).
 
-- [ ] T022 [US3] Create `lib/features/sales/presentation/delivery_orders/header_dialog.dart` (C10, FR-012): a `ResponsiveDialog` with a two-column `ResponsiveFormGrid` of scheduled date and time, priority (integer ≥ 0), ship-to (`CustomerAddressPicker`, deliveries only; read-only as the store on a pickup), contact (`CustomerContactPicker`) and comment. Send only changed fields, offer no clear option, and keep "Guardar" disabled until something changes.
+- [x] T022 [US3] Create `lib/features/sales/presentation/delivery_orders/header_dialog.dart` (C10, FR-012): a `ResponsiveDialog` with a two-column `ResponsiveFormGrid` of scheduled date and time, priority (integer ≥ 0), ship-to (`CustomerAddressPicker`, deliveries only; read-only as the store on a pickup), contact (`CustomerContactPicker`) and comment. Send only changed fields, offer no clear option, and keep "Guardar" disabled until something changes.
 
-- [ ] T023 [US3] Add the line dialogs to `delivery_order_dialogs.dart` (C8, FR-013): the quantity dialog (one decimal field prefilled with the current quantity, "Ordenada en la venta" above it, greater than 0 checked on the client, the server's `quantity_exceeds_remaining` shown inline), and the remove confirmation naming the product and saying its quantity becomes available again.
+- [x] T023 [US3] Add the line dialogs to `delivery_order_dialogs.dart` (C8, FR-013): the quantity dialog (one decimal field prefilled with the current quantity, "Ordenada en la venta" above it, greater than 0 checked on the client, the server's `quantity_exceeds_remaining` shown inline), and the remove confirmation naming the product and saying its quantity becomes available again.
 
-- [ ] T024 [P] [US3] Create `lib/features/sales/domain/entities/deliverable_lines.dart` (data-model §1, R8): `DeliverableLine` and the pure function `deliverableLines(Sale sale, List<DeliveryOrder> ordersOfSale, {required Set<int> excludeDetailIds})`. Remaining is the sale line's quantity minus the sum over non-cancelled orders; lines with nothing left and lines already on the order are dropped. Create `test/unit/features/sales/deliverable_lines_test.dart`: cancelled orders don't count, several orders sum, a partly covered line, a fully covered line is dropped, and excluded ids are dropped.
+- [x] T024 [P] [US3] Create `lib/features/sales/domain/entities/deliverable_lines.dart` (data-model §1, R8): `DeliverableLine` and the pure function `deliverableLines(Sale sale, List<DeliveryOrder> ordersOfSale, {required Set<int> excludeDetailIds})`. Remaining is the sale line's quantity minus the sum over non-cancelled orders; lines with nothing left and lines already on the order are dropped. Create `test/unit/features/sales/deliverable_lines_test.dart`: cancelled orders don't count, several orders sum, a partly covered line, a fully covered line is dropped, and excluded ids are dropped.
 
-- [ ] T025 [US3] Create `lib/features/sales/presentation/delivery_orders/add_line_dialog.dart` (C7, FR-014), the two-step dialog:
+- [x] T025 [US3] Create `lib/features/sales/presentation/delivery_orders/add_line_dialog.dart` (C7, FR-014), the two-step dialog:
   - Step 1 lists the customer's completed sales at the order's facility through `listOrders(customer:, status: completed, facility:)`, 20 at a time with "Cargar más", and a digits-only folio search.
   - Step 2 loads that sale (`getById`) and its delivery orders (`list(salesOrder:, facility: <sale's facility>)`, then each order's lines), computes `deliverableLines`, and shows the table with a quantity field per line validated `0 < q ≤ remaining` (blank means skip). It has an "Otra venta" back button.
   - "Agregar" sends one `addLine` per filled row in sequence, stops at the first error and shows it inline, and the lines already added stay. The detail reloads on close.
   - Both empty states from C7.
 
-- [ ] T026 [US3] Edit `delivery_order_detail_screen.dart` (C4): for a draft with update, add "Editar encabezado" (key `delivery_order_edit_header`), the line ✎ and 🗑 icons built with `buildCatalogRowActions` (keys `delivery_order_line_edit_{id}`, `delivery_order_line_remove_{id}`), and "Agregar línea" (key `delivery_order_add_line`) in the lines header. "Agregar línea" also needs `can(SystemObject.salesOrders, AccessRight.read)`. All of it is absent for a non-draft or a user without update (FR-015).
+- [x] T026 [US3] Edit `delivery_order_detail_screen.dart` (C4): for a draft with update, add "Editar encabezado" (key `delivery_order_edit_header`), the line ✎ and 🗑 icons built with `buildCatalogRowActions` (keys `delivery_order_line_edit_{id}`, `delivery_order_line_remove_{id}`), and "Agregar línea" (key `delivery_order_add_line`) in the lines header. "Agregar línea" also needs `can(SystemObject.salesOrders, AccessRight.read)`. All of it is absent for a non-draft or a user without update (FR-015).
 
-- [ ] T027 [P] [US3] Create `test/widget/features/sales/header_dialog_test.dart` and `add_line_dialog_test.dart`, and extend the detail test:
+- [x] T027 [P] [US3] Create `test/widget/features/sales/header_dialog_test.dart` and `add_line_dialog_test.dart`, and extend the detail test:
   - Header: only changed fields are sent, Guardar is disabled until a change, a pickup's ship-to is read-only, priority rejects negatives.
   - Add line: step 1 lists the sales, step 2 shows only lines with something left and drops lines already on the order, a quantity above remaining is invalid, rows send in sequence and the first error stops the run.
   - Line quantity (T023): `quantity_exceeds_remaining` shows inline with the server's `remaining` and keeps the dialog open.
