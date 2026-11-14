@@ -111,9 +111,9 @@ description: "Task list for 061-delivery-orders"
 
 **Independent Test**: seed orders in several statuses at the user's facility and one at another facility. As a user with Delivery Orders read, open the list, apply each filter, and open a row (quickstart steps 1–3).
 
-- [ ] T013 [P] [US1] Create `lib/features/sales/presentation/delivery_orders/delivery_order_name_cells.dart` with the small read-only widgets both screens use, each falling back to `#id` without the right (R4, FR-025): customer name (`customerDisplayNameProvider`), facility name (`facilityDisplayNameProvider`), warehouse name (`facilityWarehousesControllerProvider`), ship-to (the customer's address through `saleCustomerControllerProvider`, or the facility name for a pickup), contact (the same source) and employee name (`employeeDisplayNameProvider`). This file isn't in the plan's source tree; note it there when committing.
+- [x] T013 [P] [US1] Create `lib/features/sales/presentation/delivery_orders/delivery_order_name_cells.dart` with the small read-only widgets both screens use, each falling back to `#id` without the right (R4, FR-025): customer name (`customerDisplayNameProvider`), facility name (`facilityDisplayNameProvider`), warehouse name (`facilityWarehousesControllerProvider`), ship-to (the customer's address through `saleCustomerControllerProvider`, or the facility name for a pickup), contact (the same source) and employee name (`employeeDisplayNameProvider`). This file isn't in the plan's source tree; note it there when committing.
 
-- [ ] T014 [US1] Create `lib/features/sales/presentation/delivery_orders/delivery_orders_list_screen.dart` (C2, C3, FR-001–FR-006), following `refunds_list_screen.dart`:
+- [x] T014 [US1] Create `lib/features/sales/presentation/delivery_orders/delivery_orders_list_screen.dart` (C2, C3, FR-001–FR-006), following `refunds_list_screen.dart`:
   - When `userFacilityIdProvider` is null, show only the no-facility notice (key `delivery_orders_no_facility`), administrators included, as `sales_orders_list_screen.dart` does.
   - `CatalogFilterBar` with a digits-only `CatalogSearchBar` (key `delivery_orders_search`, hint `deliveryOrdersSearchHint`, "Folio") and the badged filters button; no create action.
   - `showCatalogFilterSheet` with Estado, Tipo, Fecha programada (`DateRangeFilterChip`), Cliente (`CatalogEntityPicker`, only with Customers read), Pedido (numeric) and Sucursal (only for administrators, first item "Mi sucursal").
@@ -121,20 +121,20 @@ description: "Task list for 061-delivery-orders"
   - `CatalogPagination`, and `CatalogListStateView` for loading, error and empty, with "Quitar filtros" only when `isNarrowed`.
   - The compact tier stacks rows and drops Pedidos.
 
-- [ ] T015 [US1] Create `lib/features/sales/presentation/delivery_orders/delivery_order_detail_screen.dart` (C4, FR-007, FR-008), read-only for now, following `refund_detail_screen.dart`:
+- [x] T015 [US1] Create `lib/features/sales/presentation/delivery_orders/delivery_order_detail_screen.dart` (C4, FR-007, FR-008), read-only for now, following `refund_detail_screen.dart`:
   - Title `deliveryOrderTitle` or `deliveryOrderTitleDraft`, with `AppBar.actions` empty.
   - The rejection banner (key `delivery_order_rejection_banner`) when `rejectionReason != null`.
   - A `FactStripRow` with Folio, Estado, Tipo, Cliente, Sucursal, Programada and Prioridad, and a `ResponsiveFormGrid` band with Destino, Contacto, Pedidos (links to `/sales/orders/{id}`), Comentario, "De la orden" (parent link) and "Orden derivada" (child links).
   - The lines `DataTableView` with the nine columns, quantities right-aligned, and the Pedido column from the controller's sale map ("—" when it can't tell). Lines stack as cards at the compact tier.
   - `_NotFound` (with "Volver a órdenes de entrega") and `_LoadFailed` (with retry) for a bad id or a load error.
 
-- [ ] T016 [US1] Wire navigation and routes (C1, R11):
+- [x] T016 [US1] Wire navigation and routes (C1, R11):
   - In `lib/core/navigation/nav_destinations.dart`, add `NavBranch.deliveryOrders = 26` and a `NavDestination(id: 'delivery-orders', …)` in Ventas right after `sales-orders`, gated on `PrivilegeGate(SystemObject.deliveryOrders, AccessRight.read)`.
   - In `lib/app/router/app_router.dart`, append a `StatefulShellBranch` for `/sales/delivery-orders` (`DeliveryOrdersListScreen(query: ListQuery.fromUri(state.uri))`), add the top-level detail `GoRoute('/sales/delivery-orders/:deliveryOrderId')` (non-integer id gives the not-found state), and add a `_routeGate` clause for any location starting with `/sales/delivery-orders`.
   - Document SystemObject 71 in a comment on the nav destination, both routes and the gate clause (constitution §IV).
   - Run the navigation and router tests found in T001 right after this change.
 
-- [ ] T017 [P] [US1] Create `test/widget/features/sales/delivery_orders_list_screen_test.dart` (follow `refunds_list_screen_test.dart`):
+- [x] T017 [P] [US1] Create `test/widget/features/sales/delivery_orders_list_screen_test.dart` (follow `refunds_list_screen_test.dart`):
   - It opens on every status with the filter badge at 0, and a draft row reads "Borrador".
   - The digits-only search finds by folio, and letters aren't accepted.
   - Each filter reaches the controller, and "Limpiar todo" returns to the opening state.
@@ -143,7 +143,7 @@ description: "Task list for 061-delivery-orders"
   - A user with no facility sees the notice and no request is made.
   - A row tap navigates to the detail, and a user without Delivery Orders read is redirected.
 
-- [ ] T018 [P] [US1] Create `test/widget/features/sales/delivery_order_detail_screen_test.dart` (follow `refund_detail_screen_test.dart`): header facts and chip, all five line quantities, the rejection banner only when a reason exists, the parent link, child links for a partial delivery, the Pedido column for one and several sales, names falling back to `#id`, not-found and load-error states, and no action or edit control for a user without update (this test file grows in later stories).
+- [x] T018 [P] [US1] Create `test/widget/features/sales/delivery_order_detail_screen_test.dart` (follow `refund_detail_screen_test.dart`): header facts and chip, all five line quantities, the rejection banner only when a reason exists, the parent link, child links for a partial delivery, the Pedido column for one and several sales, names falling back to `#id`, not-found and load-error states, and no action or edit control for a user without update (this test file grows in later stories).
 
 **Checkpoint**: US1 is demoable alone: find any order and read it.
 

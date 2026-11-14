@@ -50,6 +50,8 @@ import 'package:mbe_ui/features/sales/presentation/payment_verification/payment_
 import 'package:mbe_ui/features/sales/presentation/payments/payment_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/credit_notes/credit_notes_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payments_list_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_detail_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_orders_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/refunds/refund_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/refunds/refunds_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/sales_orders_list_screen.dart';
@@ -374,6 +376,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 061-delivery-orders: appended last (index 26), same rationale as
+          // `payments` above. Gated on SystemObject 71 (`deliveryOrders`)
+          // read, see `_routeGate`. An order opens the top-level
+          // `/sales/delivery-orders/:deliveryOrderId` route.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: deliveryOrdersPath,
+                builder: (context, state) => DeliveryOrdersListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -554,6 +570,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/sales/refunds/:refundId',
         builder: (context, state) => RefundDetailScreen(
           refundId: int.tryParse(state.pathParameters['refundId'] ?? ''),
+        ),
+      ),
+      // 061-delivery-orders: an order's own full screen, gated on
+      // SystemObject 71 (`deliveryOrders`) read by the `_routeGate` prefix. A
+      // non-numeric id parses to `null`, which the screen shows as not found.
+      GoRoute(
+        path: '$deliveryOrdersPath/:deliveryOrderId',
+        builder: (context, state) => DeliveryOrderDetailScreen(
+          deliveryOrderId: int.tryParse(
+            state.pathParameters['deliveryOrderId'] ?? '',
+          ),
         ),
       ),
       // 038-advanced-product-search: a top-level sibling, not a shell branch
@@ -810,6 +837,13 @@ NavGate? _routeGate(String location) {
   // `/sales/refunds/:refundId`; the list branch joins it in a later task.
   if (location.startsWith('/sales/refunds')) {
     return PrivilegeGate(SystemObject.customerRefunds, AccessRight.read);
+  }
+  // 061-delivery-orders: SystemObject 71 (`deliveryOrders`) read, matching
+  // the server's GET /delivery-orders. The prefix covers the list and every
+  // `/sales/delivery-orders/:deliveryOrderId`; it doesn't overlap
+  // `/sales/orders` above.
+  if (location.startsWith(deliveryOrdersPath)) {
+    return PrivilegeGate(SystemObject.deliveryOrders, AccessRight.read);
   }
   // 056-credit-notes: `creditPayments` (83), matching the server's credit-notes
   // read. Opening a row goes to `/sales/payments/:id`, which is gated above.

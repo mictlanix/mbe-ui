@@ -370,4 +370,70 @@ void main() {
       expect(destinations.firstWhere((d) => d.id == 'refunds').branchIndex, 24);
     });
   });
+  group('Órdenes de entrega destination (spec 061 FR-001, C1)', () {
+    test('a user without Delivery Orders read has no entry', () {
+      expect(
+        visibleIds(
+          multiCurrency: false,
+          administrator: false,
+          privileges: const [
+            Privilege(systemObject: SystemObject.salesOrders, rawValue: 2),
+          ],
+        ),
+        isNot(contains('delivery-orders')),
+      );
+    });
+
+    test('a user with Delivery Orders read has the entry', () {
+      expect(
+        visibleIds(
+          multiCurrency: false,
+          administrator: false,
+          privileges: const [
+            Privilege(systemObject: SystemObject.deliveryOrders, rawValue: 2),
+          ],
+        ),
+        contains('delivery-orders'),
+      );
+    });
+
+    test('it sits right after Pedidos, on branch 26', () {
+      final container = ProviderContainer(
+        overrides: [
+          multiCurrencyEnabledProvider.overrideWithValue(false),
+          accessControlProvider.overrideWithValue(
+            AccessControlService(
+              AuthState.authenticated(
+                token: 't',
+                user: const User(
+                  userId: 'u',
+                  email: 'u@example.com',
+                  administrator: true,
+                  status: EntityStatus.active,
+                  sessionVersion: 1,
+                  privileges: [],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      final destinations = [
+        for (final item in container.read(navDestinationsProvider))
+          ...switch (item) {
+            NavDestination() => [item],
+            NavGroup() => item.children,
+          },
+      ];
+      final ids = [for (final d in destinations) d.id];
+
+      expect(ids.indexOf('delivery-orders'), ids.indexOf('sales-orders') + 1);
+      expect(
+        destinations.firstWhere((d) => d.id == 'delivery-orders').branchIndex,
+        NavBranch.deliveryOrders,
+      );
+      expect(NavBranch.deliveryOrders, 26);
+    });
+  });
 }

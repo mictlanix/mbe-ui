@@ -80,6 +80,11 @@ class NavBranch {
   // above — display order comes from position within `kNavigationTree` (this
   // destination sits right after `payments` there).
   static const int paymentVerification = 25;
+
+  // 061-delivery-orders: appended last, same rationale as `cashSessions`
+  // above — display order comes from position within `kNavigationTree` (this
+  // destination sits right after `sales-orders` there).
+  static const int deliveryOrders = 26;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -354,6 +359,18 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.salesOrders,
         gate: PrivilegeGate(SystemObject.salesOrders, AccessRight.read),
       ),
+      // 061-delivery-orders: right after Pedidos, the sales these orders
+      // fulfill. Gated on SystemObject 71 (`deliveryOrders`) read, matching
+      // the server's GET /delivery-orders.
+      NavDestination(
+        id: 'delivery-orders',
+        label: _deliveryOrdersLabel,
+        icon: Icons.delivery_dining_outlined,
+        selectedIcon: Icons.delivery_dining,
+        route: '/sales/delivery-orders',
+        branchIndex: NavBranch.deliveryOrders,
+        gate: PrivilegeGate(SystemObject.deliveryOrders, AccessRight.read),
+      ),
       // 040-sales-quotes: placed after Pedidos, before nothing — quotes are
       // the document that precedes an order, so it sits next to it.
       NavDestination(
@@ -399,6 +416,7 @@ String _cashSessionsLabel(AppLocalizations l10n) => l10n.cashSessionsMenuTitle;
 String _posLabel(AppLocalizations l10n) => l10n.posMenuTitle;
 String _salesOrdersLabel(AppLocalizations l10n) => l10n.salesOrdersMenuTitle;
 String _salesQuotesLabel(AppLocalizations l10n) => l10n.salesQuotesMenuTitle;
+String _deliveryOrdersLabel(AppLocalizations l10n) => l10n.navDeliveryOrders;
 String _paymentsLabel(AppLocalizations l10n) => l10n.paymentsMenuTitle;
 String _paymentVerificationLabel(AppLocalizations l10n) =>
     l10n.paymentVerificationMenuTitle;
