@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
@@ -66,5 +67,29 @@ void main() {
       final radius = (border! as OutlineInputBorder).borderRadius.topLeft.x;
       expect(radius, greaterThanOrEqualTo(height / 2));
     }
+  });
+
+  testWidgets('input formatters filter what is typed (spec 061 C2)', (
+    tester,
+  ) async {
+    final submitted = <String>[];
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: CatalogSearchBar(
+            label: 'Folio',
+            onSubmitted: submitted.add,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          ),
+        ),
+      ),
+    );
+
+    await tester.enterText(find.byType(TextField), 'a1b2');
+    await tester.testTextInput.receiveAction(TextInputAction.search);
+    await tester.pump();
+
+    expect(find.text('12'), findsOneWidget);
+    expect(submitted, ['12']);
   });
 }

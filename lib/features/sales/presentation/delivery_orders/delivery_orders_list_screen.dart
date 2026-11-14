@@ -106,15 +106,13 @@ class DeliveryOrdersListScreen extends ConsumerWidget {
             searchTooltip: l10n.searchButtonTooltip,
             initialValue: filter.search ?? '',
             // The server's search matches a number only (spec Edge Cases),
-            // so anything but digits is dropped from the term.
-            // simplified: dropped on submit rather than refused while typing,
-            // since CatalogSearchBar takes no input formatters; give it an
-            // `inputFormatters` parameter and pass `digitsOnly` here.
+            // so the box refuses anything but digits (C2).
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             onSubmitted: (value) => submitCatalogSearch(
               context: context,
               query: query,
               path: deliveryOrdersPath,
-              submitted: value.replaceAll(RegExp(r'\D'), ''),
+              submitted: value,
               current: filter.search ?? '',
               refresh: () =>
                   ref.invalidate(deliveryOrdersListControllerProvider(filter)),

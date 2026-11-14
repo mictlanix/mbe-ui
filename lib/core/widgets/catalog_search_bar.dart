@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
 
@@ -14,12 +15,18 @@ class CatalogSearchBar extends StatefulWidget {
     required this.onSubmitted,
     this.searchTooltip,
     this.initialValue = '',
+    this.inputFormatters,
   });
 
   final String label;
   final ValueChanged<String> onSubmitted;
   final String? searchTooltip;
   final String initialValue;
+
+  /// Restricts what can be typed or pasted, for a search the server only
+  /// matches in one shape (e.g. digits-only folio search, spec 061). Null
+  /// accepts anything, as before.
+  final List<TextInputFormatter>? inputFormatters;
 
   @override
   State<CatalogSearchBar> createState() => _CatalogSearchBarState();
@@ -72,6 +79,7 @@ class _CatalogSearchBarState extends State<CatalogSearchBar> {
           onPressed: _submit,
         ),
       ),
+      inputFormatters: widget.inputFormatters,
       onSubmitted: (_) => _submit(),
       textInputAction: TextInputAction.search,
     );

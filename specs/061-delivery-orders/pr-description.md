@@ -30,6 +30,7 @@ None of these blocks the feature. Each one leaves something temporarily differen
 
 - **POS fix (research R9).** `listForSale` no longer counts cancelled destinations as claiming a sale's lines. Without it, a cancel from the new screen would leave the sale looking already distributed when the POS resumed it.
 - **`SalesOrderRepository.listOrders`** gains an optional `customer` parameter, used by "Agregar línea". Existing callers are unchanged.
+- **`CatalogSearchBar`** gains an optional `inputFormatters` parameter; the delivery-orders search passes `digitsOnly`, so letters are refused as they're typed. Other callers are unchanged.
 - **Four error codes localized**, with a `_dateTime` placeholder helper: `delivery_order.insufficient_notice`, `.no_lines`, `.not_failed` and `.proof_incomplete`. `code-scope.tsv` is updated.
 
 ## Constitution notes
@@ -40,7 +41,7 @@ None of these blocks the feature. Each one leaves something temporarily differen
 ## Tests
 
 - `flutter analyze`: no issues.
-- `flutter test test/unit test/widget`: 4,497 passed, 0 failed.
+- `flutter test test/unit test/widget`: 4,498 passed, 0 failed.
 - The new unit and widget tests include:
   - a facility-scoping test;
   - a table-driven action matrix over all 11 statuses × both types × with and without edit rights (SC-003).
@@ -63,7 +64,6 @@ None of these blocks the feature. Each one leaves something temporarily differen
 
 ## Known gaps
 
-- **Search box filtering:** the box accepts letters while typing; non-digits are stripped when the search is submitted. Rejecting them as they're typed needs an optional `inputFormatters` parameter on the shared `CatalogSearchBar`, which was left out of this PR pending approval.
 - **Live test file picker:** the live test replaces the native file picker with a fake, because the macOS open panel can't be driven. The dialog, the upload and the proof display are all exercised.
 - **Fixed sizes:** the proof thumbnail (120) and the enlarged-photo dialog width (960) are fixed sizes, not spacing tokens.
 

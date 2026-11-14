@@ -357,6 +357,8 @@ void main() {
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
 
+      final field = tester.widget<TextField>(searchField());
+      expect(field.controller!.text, isEmpty);
       expect(router.state.uri.queryParameters.containsKey('search'), isFalse);
       expect(requests.every((r) => r.search == null), isTrue);
     });
