@@ -58,7 +58,15 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.imagePeriodUnsupportedFormat,
   api.ErrorCode.incidencePeriodReasonRequired,
   api.ErrorCode.lockPeriodBusy,
+  api.ErrorCode.paymentPeriodApplicationReversed,
+  api.ErrorCode.paymentPeriodCurrencyMismatch,
+  api.ErrorCode.paymentPeriodCustomerMismatch,
+  api.ErrorCode.paymentPeriodExceedsOrderBalance,
+  api.ErrorCode.paymentPeriodExceedsUnapplied,
   api.ErrorCode.paymentPeriodNoTicket,
+  api.ErrorCode.paymentPeriodOrderCancelled,
+  api.ErrorCode.paymentPeriodOrderNotCompleted,
+  api.ErrorCode.paymentPeriodOrderSettled,
   api.ErrorCode.pointOfSalePeriodWarehouseFacilityMismatch,
   api.ErrorCode.priceListPeriodCostNotAssignable,
   api.ErrorCode.priceListPeriodCostNotDeletable,
@@ -260,7 +268,31 @@ String? localizeProblem(
     api.ErrorCode.incidencePeriodReasonRequired =>
       l10n.apiErrorIncidenceReasonRequired,
     api.ErrorCode.lockPeriodBusy => l10n.apiErrorLockBusy,
+    api.ErrorCode.paymentPeriodApplicationReversed =>
+      l10n.apiErrorPaymentApplicationReversed,
+    api.ErrorCode.paymentPeriodCurrencyMismatch => _ap2(
+      problem.stringParam('payment_currency'),
+      problem.stringParam('order_currency'),
+      l10n.apiErrorPaymentCurrencyMismatch,
+    ),
+    api.ErrorCode.paymentPeriodCustomerMismatch =>
+      l10n.apiErrorPaymentCustomerMismatch,
+    api.ErrorCode.paymentPeriodExceedsOrderBalance => _ap2(
+      _money(problem, 'amount', fmt),
+      _money(problem, 'balance', fmt),
+      l10n.apiErrorPaymentExceedsOrderBalance,
+    ),
+    api.ErrorCode.paymentPeriodExceedsUnapplied => _ap2(
+      _money(problem, 'amount', fmt),
+      _money(problem, 'unapplied', fmt),
+      l10n.apiErrorPaymentExceedsUnapplied,
+    ),
     api.ErrorCode.paymentPeriodNoTicket => l10n.apiErrorPaymentNoTicket,
+    api.ErrorCode.paymentPeriodOrderCancelled =>
+      l10n.apiErrorPaymentOrderCancelled,
+    api.ErrorCode.paymentPeriodOrderNotCompleted =>
+      l10n.apiErrorPaymentOrderNotCompleted,
+    api.ErrorCode.paymentPeriodOrderSettled => l10n.apiErrorPaymentOrderSettled,
     api.ErrorCode.pointOfSalePeriodWarehouseFacilityMismatch =>
       l10n.apiErrorPointOfSaleWarehouseFacilityMismatch,
     api.ErrorCode.priceListPeriodCostNotAssignable =>

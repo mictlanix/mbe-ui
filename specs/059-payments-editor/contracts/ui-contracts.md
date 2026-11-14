@@ -12,7 +12,7 @@ Keys are the test contract. Strings live in both `.arb` files.
 ## C2. Record payment dialog (FR-011 to FR-015, US2)
 
 - `ResponsiveDialog`, key `record_payment_dialog`. It can't be dismissed while saving.
-- Fields, by key:
+- Fields, by key (as built: the type labels are the app's existing "Pago de crédito" / "Pago anticipado", the same words the payment view's Type field uses; the amount is a plain labelled `TextField` since `PaymentAmountField` is the register's fixed hero display; the currency field appears only with multi-currency on, and otherwise the server applies its default):
   - `record_payment_customer`
   - `record_payment_type` (credit payment / advance segments)
   - `record_payment_method`
@@ -33,7 +33,7 @@ Keys are the test contract. Strings live in both `.arb` files.
 
 ## C4. Reverse dialog, shared by POS, Pagos and Pedidos (FR-002, FR-004)
 
-- `showReversalReasonDialog(context, {required String amount, required String orderLabel, bool orderHasRefunds = false, Future<AppError?> Function(String reason)? submit}) → Future<String?>` returns the trimmed reason, or null if cancelled.
+- `showReversalReasonDialog(context, {required String amount, required int orderId, bool orderHasRefunds = false, Future<AppError?> Function(String reason)? submit}) → Future<String?>` returns the trimmed reason, or null if cancelled.
 - With `submit`: confirm runs it behind a busy flag (spinner, not dismissible). A returned `AppError` shows in a `FormErrorBanner` and the dialog stays open. Null pops the reason. Without `submit`, confirm pops the reason directly (the POS).
 - The header line (key `reversal_subject`) names the formatted amount and the order number (`#id`), for example "$1,500.00 aplicados al pedido #1041". It appears everywhere, the POS included.
 - Keys: `reversal_reason_dialog`, `reversal_reason_field` (max 500), `reversal_reason_confirm`, which is disabled while the trimmed text is empty.
@@ -46,7 +46,7 @@ Keys are the test contract. Strings live in both `.arb` files.
 - Header: the payment's unapplied amount.
 - Title: "Aplicar pago #{customerPaymentId}", matching the payment view's header.
 - Search: key `apply_payment_search` (order number or folio; the server matches either).
-- Order list: one row per outstanding order in the payment's currency, keyed `apply_payment_order_<orderId>`. Each row shows the order as `#id` (the label the payment view and snackbars use), its folio when it has one, date, total and balance.
+- Order list (as built: single-choice `ListTile`s showing `#id · Folio`, date, "Saldo" and "Total", not table columns): one row per outstanding order in the payment's currency, keyed `apply_payment_order_<orderId>`. Each row shows the order as `#id` (the label the payment view and snackbars use), its folio when it has one, date, total and balance.
 - Empty state: key `apply_payment_empty`.
 - Amount: key `apply_payment_amount`, prefilled with `min(balance, unapplied)`. Out-of-bounds values show an inline error.
 - Confirm: key `apply_payment_confirm`, disabled with no order picked, with an invalid amount, or while busy.
@@ -54,7 +54,7 @@ Keys are the test contract. Strings live in both `.arb` files.
 
 ## C6. Pedidos "Pagos" (FR-016 to FR-018, US3)
 
-- `TextButton` with key `sales_order_payments_button`, in the `OrderHeaderPanel` trailing group. Shown for a completed or paid order with Customer Payments read. The label has no count; the list loads when the dialog opens.
+- `OutlinedButton.icon` (matching "Ver pedido" beside it) with key `sales_order_payments_button`, in the `OrderHeaderPanel` trailing group. Shown for a completed or paid order with Customer Payments read. The label has no count; the list loads when the dialog opens.
 - It opens a `ResponsiveDialog` with key `sales_order_payments_dialog` that contains `AppliedPaymentsPanel(enabled: canUpdate, showChangeAndDate: true, onReverse:, onOpenPayment:)`.
 - The empty state reads "No se han aplicado pagos" ("No payments have been applied").
 - Each row carries a link, `applied_payment_open_<customerPaymentId>`, that closes the dialog and pushes `/sales/payments/:id`.

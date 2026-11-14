@@ -5605,6 +5605,43 @@ class AppLocalizationsEn extends AppLocalizations {
       'This kind of payment has no ticket to print.';
 
   @override
+  String apiErrorPaymentExceedsOrderBalance(String amount, String balance) {
+    return 'The amount $amount is more than the order\'s balance of $balance.';
+  }
+
+  @override
+  String apiErrorPaymentExceedsUnapplied(String amount, String unapplied) {
+    return 'The amount $amount is more than the $unapplied left on the payment.';
+  }
+
+  @override
+  String get apiErrorPaymentOrderSettled => 'The order is already paid.';
+
+  @override
+  String get apiErrorPaymentOrderCancelled =>
+      'The order is cancelled and can\'t take a payment.';
+
+  @override
+  String get apiErrorPaymentOrderNotCompleted =>
+      'The order isn\'t confirmed. Confirm it before applying a payment.';
+
+  @override
+  String apiErrorPaymentCurrencyMismatch(
+    String paymentCurrency,
+    String orderCurrency,
+  ) {
+    return 'The payment is in $paymentCurrency and the order in $orderCurrency.';
+  }
+
+  @override
+  String get apiErrorPaymentCustomerMismatch =>
+      'The payment belongs to another customer.';
+
+  @override
+  String get apiErrorPaymentApplicationReversed =>
+      'This application was already reversed.';
+
+  @override
   String get apiErrorPointOfSaleWarehouseFacilityMismatch =>
       'The warehouse must belong to the same facility as the point of sale.';
 
@@ -5912,4 +5949,135 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get apiResourceGenderSupplierContact => 'masculine';
+
+  @override
+  String get paymentReverseTitle => 'Reverse application';
+
+  @override
+  String paymentReverseSubject(String amount, String order) {
+    return '$amount applied to order #$order.';
+  }
+
+  @override
+  String get paymentReverseReasonLabel => 'Reason';
+
+  @override
+  String get paymentReverseRefundWarning =>
+      'This order has refunds. Reversing the payment does not undo the refund.';
+
+  @override
+  String get paymentReverseConfirm => 'Reverse';
+
+  @override
+  String get paymentReverseDone => 'Application reversed';
+
+  @override
+  String get paymentApplyAction => 'Apply to order';
+
+  @override
+  String paymentApplyTitle(String payment) {
+    return 'Apply payment #$payment';
+  }
+
+  @override
+  String paymentApplyUnapplied(String amount) {
+    return 'Unapplied: $amount';
+  }
+
+  @override
+  String get paymentApplySearchHint => 'Order or folio…';
+
+  @override
+  String get paymentApplyColumnFolio => 'Folio';
+
+  @override
+  String get paymentApplyColumnTotal => 'Total';
+
+  @override
+  String get paymentApplyColumnBalance => 'Balance';
+
+  @override
+  String get paymentApplyAmountLabel => 'Amount to apply';
+
+  @override
+  String paymentApplyAmountMax(String amount) {
+    return 'Maximum $amount';
+  }
+
+  @override
+  String paymentApplyAmountTooHigh(String amount) {
+    return 'It can\'t be more than $amount.';
+  }
+
+  @override
+  String get paymentApplyAmountInvalid => 'Enter an amount above zero.';
+
+  @override
+  String paymentApplyEmpty(String currency) {
+    return 'This customer has no orders to pay in $currency.';
+  }
+
+  @override
+  String get paymentApplyConfirm => 'Apply';
+
+  @override
+  String paymentApplyDone(String order) {
+    return 'Payment applied to #$order';
+  }
+
+  @override
+  String get paymentRecordAction => 'Record payment';
+
+  @override
+  String get paymentRecordActionShort => 'Payment';
+
+  @override
+  String get paymentRecordCurrencyLabel => 'Currency';
+
+  @override
+  String get paymentRecordSave => 'Record';
+
+  @override
+  String get paymentRecordSaving => 'Recording…';
+
+  @override
+  String get paymentRecordErrorCustomer => 'Choose a customer.';
+
+  @override
+  String get paymentRecordErrorWalkIn =>
+      'Choose a named customer: the general public can\'t hold advances or credit payments.';
+
+  @override
+  String get paymentRecordErrorMethod => 'Choose a payment method.';
+
+  @override
+  String get paymentRecordErrorReference => 'This method needs a reference.';
+
+  @override
+  String get paymentRecordErrorAmount => 'Enter an amount above zero.';
+
+  @override
+  String get paymentRecordErrorCashSession =>
+      'To record cash you need a cash session open today.';
+
+  @override
+  String get paymentRecordGoToSessions => 'Go to cash sessions';
+
+  @override
+  String get paymentRecordUnknownResult =>
+      'We don\'t know whether the payment was recorded: the connection was lost. Look for it in Payments before trying again.';
+
+  @override
+  String get salesOrderPaymentsButton => 'Payments';
+
+  @override
+  String salesOrderPaymentsTitle(String order) {
+    return 'Payments on order #$order';
+  }
+
+  @override
+  String get salesOrderPaymentOpenTooltip => 'Open payment';
+
+  @override
+  String get paymentApplyNoMatches => 'No order matches the search.';
 }

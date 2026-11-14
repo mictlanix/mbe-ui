@@ -47,7 +47,7 @@ description: "Task list for 059-payments-editor"
 
 **Purpose**: a known-good baseline, so later failures are attributable.
 
-- [ ] T001 Run `flutter analyze` and the existing tests this feature touches: `test/widget/features/sales/payment_detail_screen_test.dart`, `payments_list_screen_test.dart`, `payments_layout_test.dart`, `order_header_refund_button_test.dart`, `order_workspace_foreign_order_test.dart`, `test/unit/features/sales/customer_payment_repository_impl_test.dart`, `payment_controller_test.dart`, `payment_detail_controller_test.dart`, `test/unit/core/errors/catalog_coverage_test.dart`, plus any existing test for `AppliedPaymentsPanel` or `pos_sale_detail_view` (find them with `grep -rl AppliedPaymentsPanel test`). Note any pre-existing failures so they aren't blamed on this feature. The six failures in `test/golden/core_widgets_golden_test.dart` are already known.
+- [x] T001 Run `flutter analyze` and the existing tests this feature touches: `test/widget/features/sales/payment_detail_screen_test.dart`, `payments_list_screen_test.dart`, `payments_layout_test.dart`, `order_header_refund_button_test.dart`, `order_workspace_foreign_order_test.dart`, `test/unit/features/sales/customer_payment_repository_impl_test.dart`, `payment_controller_test.dart`, `payment_detail_controller_test.dart`, `test/unit/core/errors/catalog_coverage_test.dart`, plus any existing test for `AppliedPaymentsPanel` or `pos_sale_detail_view` (find them with `grep -rl AppliedPaymentsPanel test`). Note any pre-existing failures so they aren't blamed on this feature. The six failures in `test/golden/core_widgets_golden_test.dart` are already known.
 
 ---
 
@@ -55,7 +55,7 @@ description: "Task list for 059-payments-editor"
 
 **Purpose**: the pieces two or more stories use: strings and error codes, the repository gaps, the shared reverse dialog, the back-office write controller and the reverse flow.
 
-- [ ] T002 Add every new string to `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`, then run `flutter gen-l10n`. Group the keys by prefix so the later tasks can find them:
+- [x] T002 Add every new string to `lib/l10n/app_es.arb` and `lib/l10n/app_en.arb`, then run `flutter gen-l10n`. Group the keys by prefix so the later tasks can find them:
   - **Error codes (R8)** with descriptions "mbe-api error code `<code>` (spec 059)", and the placeholders in the research table: `apiErrorPaymentExceedsOrderBalance` (`amount`, `balance`), `apiErrorPaymentExceedsUnapplied` (`amount`, `unapplied`), `apiErrorPaymentOrderSettled`, `apiErrorPaymentOrderCancelled`, `apiErrorPaymentOrderNotCompleted`, `apiErrorPaymentCurrencyMismatch` (`paymentCurrency`, `orderCurrency`), `apiErrorPaymentCustomerMismatch`, `apiErrorPaymentApplicationReversed`. Use the wording in research R8.
   - **Reverse dialog:** title "Revertir aplicación", the subject line "{amount} aplicados al pedido #{order}", the reason label "Motivo", the refund warning "Este pedido tiene devoluciones. Revertir el pago no deshace la devolución.", confirm "Revertir", the snackbar "Aplicación revertida".
   - **Apply dialog:** title "Aplicar pago #{payment}" (the payment's id, as `paymentHeaderTitle` shows it), "Sin aplicar: {amount}", the search hint "Pedido o folio…", column headers (Pedido, Folio, Fecha, Total, Saldo), "Monto a aplicar", "Máximo {amount}", the "No puede ser más de {amount}" error, the empty state "Este cliente no tiene pedidos por pagar en {currency}.", confirm "Aplicar", the snackbar "Pago aplicado a #{order}", and the "Aplicar a pedido" button label.
@@ -63,7 +63,7 @@ description: "Task list for 059-payments-editor"
   - **Pedidos:** the "Pagos" button, the dialog title "Pagos del pedido {order}", "No se han aplicado pagos a este pedido.", and the tooltip for the payment link.
   English text follows the Spanish meaning. Keep es and en in step, and keep the wording consistent with the existing `payments*`, `refunds*` and `posApplied*` keys.
 
-- [ ] T003 Localize the eight `payment.*` codes (research R8, §III). Depends on T002.
+- [x] T003 Localize the eight `payment.*` codes (research R8, §III). Depends on T002.
   - In `lib/core/errors/localize_problem.dart`, add the eight codes to `localizedErrorCodes` and to the `localizeProblem` switch:
     - `paymentPeriodExceedsOrderBalance` and `paymentPeriodExceedsUnapplied` through `_ap2` with `_money(problem, 'amount', fmt)` and `_money(problem, 'balance' | 'unapplied', fmt)`.
     - `paymentPeriodCurrencyMismatch` through `_ap2` with `problem.stringParam('payment_currency')` and `stringParam('order_currency')`.
@@ -73,16 +73,16 @@ description: "Task list for 059-payments-editor"
   - In `specs/058-localized-api-errors/contracts/code-scope.tsv`, flip the eight rows from `OUT` to `IN`, with the routes that now call them (`POST /customer-payments/{}/applications`, `POST /customer-payments/{}/applications/{}/reverse`) and a note "reachable from … UI route(s)". Leave `payment.already_verified` as `OUT` (it belongs to verify, roadmap#27).
   - Verify: `flutter test test/unit/core/errors`.
 
-- [ ] T004 [P] Create `lib/features/sales/domain/entities/outstanding_order.dart` (freezed): `OutstandingOrder { id, serial?, date, dueDate, currency, total, balance }` with `fromResponse(api.OutstandingOrderResponse)` (amounts kept as the API's strings, as `CustomerPayment` does) and `OutstandingOrderPage { items, total }`, per data-model.md. Run build_runner. Add `test/unit/features/sales/outstanding_order_entity_test.dart` for the mapping, including a null `serial` and the `dueDate`.
+- [x] T004 [P] Create `lib/features/sales/domain/entities/outstanding_order.dart` (freezed): `OutstandingOrder { id, serial?, date, dueDate, currency, total, balance }` with `fromResponse(api.OutstandingOrderResponse)` (amounts kept as the API's strings, as `CustomerPayment` does) and `OutstandingOrderPage { items, total }`, per data-model.md. Run build_runner. Add `test/unit/features/sales/outstanding_order_entity_test.dart` for the mapping, including a null `serial` and the `dueDate`.
 
-- [ ] T005 `CustomerPaymentRepository` gaps (R5, R6). Depends on T004.
+- [x] T005 `CustomerPaymentRepository` gaps (R5, R6). Depends on T004.
   - In `lib/features/sales/domain/repositories/customer_payment_repository.dart` and `lib/features/sales/data/customer_payment_repository_impl.dart`:
     - Add `PaymentType type = PaymentType.immediate` to `createPayment`, sent as `paymentType` on `CustomerPaymentCreate`. Use `lib/features/sales/domain/payment_type.dart`, and map to the generated `api.PaymentType` the way `_methodToApi` does for methods.
     - Add `listOutstandingOrders({required int customerId, String? search, int skip = 0, int limit = 20})` returning `OutstandingOrderPage`, over `listOutstandingOrdersApiV1CustomerPaymentsOutstandingOrdersGet`, with `_toAppError` on `DioException`. Leave `outstandingBalanceFor` as it is.
   - In `test/unit/features/sales/customer_payment_repository_impl_test.dart`: `createPayment` sends `payment_type` for credit payment and advance, and the POS default sends IMMEDIATE (1); `listOutstandingOrders` passes `customer`, `search`, `skip` and `limit` and maps rows and total.
   - Verify the existing `payment_controller_test.dart` still passes unchanged.
 
-- [ ] T006 Create `lib/features/sales/presentation/payment/reversal_reason_dialog.dart` (C4): `showReversalReasonDialog(BuildContext, {required String amount, required String orderLabel, bool orderHasRefunds = false, Future<AppError?> Function(String reason)? submit}) → Future<String?>`. Depends on T002.
+- [x] T006 Create `lib/features/sales/presentation/payment/reversal_reason_dialog.dart` (C4): `showReversalReasonDialog(BuildContext, {required String amount, required String orderLabel, bool orderHasRefunds = false, Future<AppError?> Function(String reason)? submit}) → Future<String?>`. Depends on T002.
   - It is a `ResponsiveDialog` keyed `reversal_reason_dialog`, with the subject line (`reversal_subject`), `reversal_reason_field` (max 500) and `reversal_reason_confirm`, disabled while the trimmed text is empty (FR-002).
   - It shows `reversal_refund_warning` when `orderHasRefunds` (FR-004).
   - Without `submit`: confirm pops the trimmed reason, as the POS dialog does today.
@@ -90,22 +90,22 @@ description: "Task list for 059-payments-editor"
   - Contract C4 and research R3 already describe `submit`. Keep them in step if the signature changes.
   - Add `test/widget/features/sales/reversal_reason_dialog_test.dart`: confirm disabled for empty and whitespace-only text; the subject names amount and order; the warning shows only when asked; `submit` error shows the banner and keeps the dialog open; `submit` success pops the reason; a double tap on confirm calls `submit` once.
 
-- [ ] T007 `AppliedPaymentsPanel` (C7, R3). Depends on T006.
+- [x] T007 `AppliedPaymentsPanel` (C7, R3). Depends on T006.
   - In `lib/features/sales/presentation/payment/applied_payments_panel.dart`, add `void Function(SalePayment payment)? onReverse` and `void Function(int customerPaymentId)? onOpenPayment`.
   - Remove the private `_ReversalReasonDialog`.
-  - With `onReverse == null` (the POS), the reverse tap opens the shared dialog with the payment's formatted amount and `#<saleId>` as the order label, then calls `paymentControllerProvider.notifier.reverse` exactly as today. Don't change its error handling.
+  - With `onReverse == null` (the POS), the reverse tap opens the shared dialog with the payment's formatted amount and the sale id as `orderId`, then calls `paymentControllerProvider.notifier.reverse` exactly as today. Don't change its error handling.
   - With `onReverse` set, the tap calls it and does nothing else.
   - With `onOpenPayment` set, each row shows a link keyed `applied_payment_open_<customerPaymentId>` that calls it.
   - Add `test/widget/features/sales/applied_payments_panel_test.dart`. Pin the POS path: with `onReverse` null, confirming the dialog calls `PaymentController.reverse` with the same arguments as before. Also cover: `onReverse` is called and `PaymentController` is not touched; the link appears only with `onOpenPayment`; no reverse icon on a cancelled row or with `enabled: false`.
 
-- [ ] T008 Create `lib/features/sales/presentation/payments/payment_editor_controller.dart` (R3): a `@riverpod` notifier `paymentEditor` with two mutations that call `customerPaymentRepositoryProvider` and return `AppError?` (null on success) instead of throwing. Depends on T005. Run build_runner.
+- [x] T008 Create `lib/features/sales/presentation/payments/payment_editor_controller.dart` (R3): a `@riverpod` notifier `paymentEditor` with two mutations that call `customerPaymentRepositoryProvider` and return `AppError?` (null on success) instead of throwing. Depends on T005. Run build_runner.
   - `reverse({required int paymentId, required int applicationId, required int saleId, required String reason})`
   - `apply({required int paymentId, required int saleId, required String amount})`, sending no change.
   - After either call, success or failure, invalidate: `paymentDetailProvider(paymentId)`, `paymentApplicationsProvider(paymentId)`, `orderPaymentsControllerProvider(saleId)`, `orderEditorControllerProvider(saleId)`, and the `paymentsListControllerProvider` family. A refusal leaves state unchanged, so the invalidation is what reloads what the refusal concerned (FR-009).
   - Do not touch `posSaleControllerProvider` or `posWritesScope`.
   - Add `test/unit/features/sales/payment_editor_controller_test.dart` with a mocked repository: success returns null and invalidates each provider; a refusal returns the `AppError` and still invalidates; the repository receives the right ids and a reason that is passed through trimmed by the caller, not here.
 
-- [ ] T009 Create `lib/features/sales/presentation/payments/reverse_application_flow.dart` (FR-004, FR-017). Depends on T006, T008.
+- [x] T009 Create `lib/features/sales/presentation/payments/reverse_application_flow.dart` (FR-004, FR-017). Depends on T006, T008.
   - `orderHasRefundsProvider` is a `FutureProvider.family<bool, int>` keyed by the sale id. It returns false without Customer Refunds read; otherwise it calls `customerRefundRepositoryProvider.list(salesOrderId: id, status: RefundStatus.completed, skip: 0, limit: 1)` and returns `total > 0`. Any error returns false (R4).
   - `reverseApplicationFlow(BuildContext, WidgetRef, {required int paymentId, required int applicationId, required int saleId, required String amount})` reads that provider, opens `showReversalReasonDialog` with `submit: (reason) => ref.read(paymentEditorProvider.notifier).reverse(...)`, and on a reason result shows the "Aplicación revertida" snackbar.
   - Add `test/unit/features/sales/reverse_application_flow_test.dart` for the provider: no right → false without calling the repository; total 0 → false; total > 0 → true; a failing lookup → false.
@@ -120,7 +120,7 @@ description: "Task list for 059-payments-editor"
 
 **Independent test**: with the seeded payment applied to one order, reverse that application, then apply the freed amount to the spare order. Both orders' balances and paid status, and the payment's unapplied amount, are right (quickstart steps 1–4).
 
-- [ ] T010 [US1] Create `lib/features/sales/presentation/payments/apply_payment_dialog.dart` (C5, FR-005 to FR-009): `showApplyPaymentDialog(BuildContext, CustomerPayment payment)`.
+- [x] T010 [US1] Create `lib/features/sales/presentation/payments/apply_payment_dialog.dart` (C5, FR-005 to FR-009): `showApplyPaymentDialog(BuildContext, CustomerPayment payment)`.
   - A `ResponsiveDialog` keyed `apply_payment_dialog`. The header shows `Sin aplicar` from `payment.unapplied`.
   - The title is "Aplicar pago #{payment.customerPaymentId}".
   - The search (`apply_payment_search`, order number or folio; the server matches either) calls `listOutstandingOrders(customerId: payment.customerId, search:)`, 20 per page. Keep only rows whose currency equals the payment's (`// simplified: a customer with more than one page of foreign-currency orders can get a thin page; add a server filter if it happens`).
@@ -130,13 +130,13 @@ description: "Task list for 059-payments-editor"
   - The dialog is not dismissible while busy.
   - Add `test/widget/features/sales/apply_payment_dialog_test.dart`: only same-currency orders are listed; the amount defaults to the smaller of balance and unapplied; out-of-bounds and zero amounts disable confirm and show the error; the empty state; a refusal shows the localized text, reloads and stays open; a double tap applies once. Add a unit test for the pure bound function in the same file or `test/unit/features/sales/apply_amount_test.dart`.
 
-- [ ] T011 [US1] Edit `lib/features/sales/presentation/payments/payment_detail_screen.dart` (C3, FR-001, FR-003, FR-005, FR-019). Depends on T009, T010.
+- [x] T011 [US1] Edit `lib/features/sales/presentation/payments/payment_detail_screen.dart` (C3, FR-001, FR-003, FR-005, FR-019). Depends on T009, T010.
   - In `_ApplicationsSection`, add a trailing action column when the user has Customer Payments update. A live row shows an `IconButton` keyed `payment_application_reverse_<applicationId>` that calls `reverseApplicationFlow(...)` with `payment.customerPaymentId`, the application's id and sale id, and its formatted amount. Reversed rows show nothing. With no update right, drop the column rather than leaving it empty. Size the column the way spec 055 sizes the row-actions column.
   - In the summary area, add an `OutlinedButton.icon` keyed `payment_apply_button`, labelled "Aplicar a pedido". Show it only when `payment.unapplied > 0.01`, `payment.facilityId == ref.watch(userFacilityIdProvider)` and the user has Customer Payments create (another facility's payment gets none, until mbe-api#308). It opens `showApplyPaymentDialog`.
   - Update the doc comment at lines ~35-37, which says the view deliberately has no actions.
   - Do not change the ticket button or the facility guard.
 
-- [ ] T012 [P] [US1] Extend `test/widget/features/sales/payment_detail_screen_test.dart`:
+- [x] T012 [P] [US1] Extend `test/widget/features/sales/payment_detail_screen_test.dart`:
   - reverse icon only on live rows and only with update;
   - the column is absent without update;
   - apply button hidden when unapplied is 0 or 0.01, when the payment is of another facility, and without create;
@@ -154,7 +154,7 @@ description: "Task list for 059-payments-editor"
 
 **Independent test**: record a credit payment for the seeded customer. It appears in Pagos with its folio and the full amount unapplied; apply it to an order; print its ticket (quickstart steps 5–7).
 
-- [ ] T013 [US2] Create `lib/features/sales/presentation/payments/record_payment_dialog.dart` (C2, R6, FR-011 to FR-015): `showRecordPaymentDialog(BuildContext)`. Depends on T002, T005.
+- [x] T013 [US2] Create `lib/features/sales/presentation/payments/record_payment_dialog.dart` (C2, R6, FR-011 to FR-015): `showRecordPaymentDialog(BuildContext)`. Depends on T002, T005.
   - A `ResponsiveDialog` keyed `record_payment_dialog`, with fields keyed `record_payment_customer`, `record_payment_type`, `record_payment_method`, `record_payment_reference`, `record_payment_amount`, laid out with `ResponsiveFormGrid`.
   - **Customer:** `CatalogEntityPicker<CustomerListItem>`, as in `payments_list_screen.dart`, shown as "code — name".
   - **Type:** a `SegmentedButton` with credit payment and advance only. It defaults to credit payment.
@@ -168,9 +168,9 @@ description: "Task list for 059-payments-editor"
   - Add `test/widget/features/sales/record_payment_dialog_test.dart`: each validation message; cash without a session is refused while transfer is saved without one; the walk-in customer is refused; the request carries the chosen type, method, `paymentCharge` and reference; a double tap creates one payment; a server refusal shows the localized banner; a network failure shows the unknown-result message; success navigates to the new payment.
   - FR-014: for each recordable type (credit payment, advance), the payment view opened after saving shows `payment_view_ticket_button`. Either assert it here with the detail provider overridden, or add the two type cases to `payment_detail_screen_test.dart`.
 
-- [ ] T014 [US2] Edit `lib/features/sales/presentation/payments/payments_list_screen.dart` (C1, FR-010): add a `FilledButton.icon` keyed `payments_record_button` (icon `Icons.add`, short label "Pago" when `LayoutBreakpoints.isCompact(context)`) at the start of `CatalogFilterBar.actions`, shown only when `access.can(SystemObject.customerPayments, AccessRight.create)`. It opens `showRecordPaymentDialog`. Don't touch the scope switch or the list's behavior.
+- [x] T014 [US2] Edit `lib/features/sales/presentation/payments/payments_list_screen.dart` (C1, FR-010): add a `FilledButton.icon` keyed `payments_record_button` (icon `Icons.add`, short label "Pago" when `LayoutBreakpoints.isCompact(context)`) at the start of `CatalogFilterBar.actions`, shown only when `access.can(SystemObject.customerPayments, AccessRight.create)`. It opens `showRecordPaymentDialog`. Don't touch the scope switch or the list's behavior.
 
-- [ ] T015 [P] [US2] Extend `test/widget/features/sales/payments_list_screen_test.dart`: the button is present with create and absent without it; the compact label is "Pago"; it opens the record dialog; the scope switch still shows only for Payments Editor readers.
+- [x] T015 [P] [US2] Extend `test/widget/features/sales/payments_list_screen_test.dart`: the button is present with create and absent without it; the compact label is "Pago"; it opens the record dialog; the scope switch still shows only for Payments Editor readers.
 
 **Checkpoint**: US1 and US2 both work. Run `flutter test test/widget/features/sales/record_payment_dialog_test.dart test/widget/features/sales/payments_list_screen_test.dart`.
 
@@ -182,16 +182,16 @@ description: "Task list for 059-payments-editor"
 
 **Independent test**: open a back-office order with an applied payment, open "Pagos", reverse an application. The list, the order's status and its balance refresh, and the payment link opens the Pagos view (quickstart step 8).
 
-- [ ] T016 [US3] Create `lib/features/sales/presentation/orders/order_payments_dialog.dart` (C6, R7, FR-016 to FR-018): `showOrderPaymentsDialog(BuildContext, {required int orderId})`.
+- [x] T016 [US3] Create `lib/features/sales/presentation/orders/order_payments_dialog.dart` (C6, R7, FR-016 to FR-018): `showOrderPaymentsDialog(BuildContext, {required int orderId})`.
   - A `ResponsiveDialog` keyed `sales_order_payments_dialog` that contains `AppliedPaymentsPanel(saleId: orderId, enabled: canUpdate, showChangeAndDate: true, onReverse: …, onOpenPayment: …)`.
   - `canUpdate` is `access.can(customerPayments, update)`.
   - `onReverse` calls `reverseApplicationFlow(...)` with `payment.customerPayment`, `payment.id`, `orderId` and the payment's formatted amount.
   - `onOpenPayment` closes the dialog and `context.push('/sales/payments/$id')`.
   - Without Customer Payments read, or on a 403 from `orderPaymentsControllerProvider`, show `posSaleDetailPaymentsForbidden`, as `_PaymentsSection` does. With no applications, show the empty text "No se han aplicado pagos a este pedido." (check how the panel renders an empty list today and reuse it if it already does).
 
-- [ ] T017 [US3] Edit `lib/features/sales/presentation/orders/order_header_panel.dart`: add a `TextButton` keyed `sales_order_payments_button`, labelled "Pagos", to the trailing group beside "Ver pedido" and `RefundOrderButton` (lines ~518-539). Show it only for an order whose status is completed or paid and only with Customer Payments read. No count in the label. It opens `showOrderPaymentsDialog(orderId: sale.id)`. Don't change the foreign-order guard (R7).
+- [x] T017 [US3] Edit `lib/features/sales/presentation/orders/order_header_panel.dart`: add a `TextButton` keyed `sales_order_payments_button`, labelled "Pagos", to the trailing group beside "Ver pedido" and `RefundOrderButton` (lines ~518-539). Show it only for an order whose status is completed or paid and only with Customer Payments read. No count in the label. It opens `showOrderPaymentsDialog(orderId: sale.id)`. Don't change the foreign-order guard (R7).
 
-- [ ] T018 [P] [US3] Tests (depends on T016, T017):
+- [x] T018 [P] [US3] Tests (depends on T016, T017; both groups live in `test/widget/features/sales/order_header_payments_button_test.dart` because they share one harness):
   - Add `test/widget/features/sales/order_header_payments_button_test.dart`, modelled on `order_header_refund_button_test.dart`: the button is shown for completed and paid orders with read; hidden for a draft, a cancelled order and without read.
   - Add `test/widget/features/sales/order_payments_dialog_test.dart`: lists live and reversed applications; the reverse icon needs update; reversing calls the controller and invalidates the order editor provider so the status refreshes; the payment link pops the dialog and pushes `/sales/payments/<id>`; empty text; the forbidden text on a 403.
   - Check `test/widget/features/sales/order_workspace_foreign_order_test.dart` still passes: an origin-null order with a payment still shows the foreign notice.
@@ -202,13 +202,13 @@ description: "Task list for 059-payments-editor"
 
 ## Phase 6: Polish and cross-cutting
 
-- [ ] T019 [P] Extend `tool/seed_payment_fixtures.py` so the seeded customer also has a spare outstanding back-office order (completed, unpaid, MXN, same facility) next to the one `QA055-SEED` is applied to. It prints the payment, the applied order and the spare order, and creates nothing when run again. Keep it runnable after `seed_test_accounts.py` on a reset database.
+- [x] T019 [P] Extend `tool/seed_payment_fixtures.py` so it finds and reports a spare outstanding order of the seeded customer (any origin, same currency) next to the one `QA055-SEED` is applied to, and warns if there is none. It does not create orders: the dev tenant already has one (customer 4: orders 344062 and 344061), and creating one from a script is far more machinery than the walkthrough needs. It prints the payment, the applied order and the spare order, and creates nothing when run again. Keep it runnable after `seed_test_accounts.py` on a reset database.
 
-- [ ] T020 Add `integration_test/payments_editor_quickstart_test.dart` against the dev tenant, modelled on `integration_test/payments_quickstart_test.dart` (macOS traps: see the frame-stall watchdog and finder notes there). It follows quickstart steps 1, 2, 5, 6, 8, 9, 10 and 11, discovering fixtures at runtime from the seed output. It ends with `==== RESULTS ====` and every step `PASS`.
+- [x] T020 Add `integration_test/payments_editor_quickstart_test.dart` against the dev tenant, modelled on `integration_test/payments_quickstart_test.dart` (macOS traps: see the frame-stall watchdog and finder notes there). It follows quickstart steps 1, 2, 5, 6, 8, 9, 10 and 11, discovering fixtures at runtime from the seed output. It ends with `==== RESULTS ====` and every step `PASS`.
   - **Largest text level (constitution §V).** Add a step that sets the largest of the four text sizes, at desktop width with real fonts (as spec 055's step 1b does at 1680 px), then opens: the apply dialog with orders listed, the payment view with the reverse column, the record dialog, and the Pedidos payments dialog. Assert nothing clips, overflows or wraps a money cell, using the same checks step 1b uses. Restore the text size afterwards.
   - Steps 3 (a concurrent refusal) and 4 (refund warning) stay manual, because the tenant has no order with a completed refund that this seed controls. Depends on T011, T013, T017, T019.
 
-- [ ] T021 Final checks.
+- [x] T021 Final checks.
   - `flutter analyze` is clean.
   - `flutter test test/unit test/widget` passes, apart from the six known golden failures.
   - Format only the changed files (`dart format <files>`).
@@ -217,7 +217,7 @@ description: "Task list for 059-payments-editor"
   - Check the largest-text-level step in T020 passed. If the live run can't happen, walk those four surfaces at the largest text size by hand and record the result (constitution §V).
   - Confirm mbe-api#308 is still open and referenced from the plan and T011.
 
-- [ ] T022 Write `specs/059-payments-editor/pr-description.md` with a "Roadmap" section: `Closes mictlanix/mbe-roadmap#26`. List the follow-ups: mbe-api#308 (apply on another facility's payment), and the Pedidos limit for older orders with no origin (research R7). End it with the attribution line from the session's instructions.
+- [x] T022 Write `specs/059-payments-editor/pr-description.md` with a "Roadmap" section: `Closes mictlanix/mbe-roadmap#26`. List the follow-ups: mbe-api#308 (apply on another facility's payment), and the Pedidos limit for older orders with no origin (research R7). End it with the attribution line from the session's instructions.
 
 ---
 

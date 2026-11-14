@@ -17,6 +17,13 @@ API. It logs in as `MBE_ADMIN_*` from `.env` and:
    balance, creates a CREDIT_PAYMENT for its customer (reference `QA055-SEED`,
    at most 1.00, in the order's currency) and applies it to that order.
 
+Spec 059's walkthrough (integration_test/payments_editor_quickstart_test.dart)
+also needs a *second* outstanding order of the same customer, to apply the
+freed money to. The script does not create orders: it looks for one among the
+customer's outstanding orders (the payment-application list, any origin) and
+prints it, or says that none exists and what to do. It never fails for that,
+so the original seeding still works.
+
 A credit payment is also what the walkthrough's ticket step needs. If the
 server refuses either call, the script stops and prints the status and the
 server's own message, without trying other types or amounts. Credentials are
@@ -72,6 +79,29 @@ def existing_application(api, orders):
     return None
 
 
+def report_spare_order(api, customer, applied_order, currency):
+    """Names another outstanding order of [customer] (spec 059 walkthrough)."""
+    status, page = api.call(
+        'GET', f'/customer-payments/outstanding-orders?customer={customer}'
+        '&limit=100')
+    if status != 200:
+        fail(f'Listing outstanding orders failed: {status} {detail(page)}')
+    spare = next(
+        (o for o in page['items']
+         if o['sales_order_id'] != applied_order
+         and o['currency'] == currency
+         and Decimal(o['balance']) > 0),
+        None)
+    if spare is None:
+        print(f'WARNING: customer {customer} has no second outstanding order '
+              f'in the same currency, so the spec 059 apply step has nothing '
+              'to apply to. Complete another back-office order for that '
+              'customer in the app, then run this again.')
+        return
+    print(f"Spare outstanding order for applying: {spare['sales_order_id']} "
+          f"(customer {customer}, balance {spare['balance']}).")
+
+
 def main():
     if not os.path.exists(ENV_PATH):
         fail('Run from the repository root; .env not found.')
@@ -97,6 +127,8 @@ def main():
         print(f"Already seeded: payment {application['customer_payment']} is "
               f"applied to back-office order {order['sales_order_id']}. "
               'Nothing written.')
+        report_spare_order(api, order['customer'], order['sales_order_id'],
+                           order['currency'])
         return
 
     target = next(
@@ -129,6 +161,8 @@ def main():
 
     print(f'Seeded: credit payment {payment_id} ({amount}, {SEED_REFERENCE}) '
           f"applied to back-office order {target['sales_order_id']}.")
+    report_spare_order(api, target['customer'], target['sales_order_id'],
+                       target['currency'])
 
 
 if __name__ == '__main__':

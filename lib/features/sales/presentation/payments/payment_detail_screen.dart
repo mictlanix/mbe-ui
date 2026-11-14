@@ -21,20 +21,26 @@ import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
+import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/domain/payment_type.dart';
+import 'package:mbe_ui/features/sales/presentation/payments/apply_payment_dialog.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_detail_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_link_providers.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_widgets.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payments_list_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/payments/reverse_application_flow.dart';
+import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-/// "Ver pago": one payment, read-only (spec 054 US2).
+/// "Ver pago": one payment and what was done with it (spec 054 US2).
 ///
 /// A full detail screen rather than the side panel because a payment owns a
 /// child collection (its applications) and needs its own address — the
-/// constitution's §VI record-surface criteria. The AppBar carries only Back:
-/// nothing here verifies, reverses or edits a payment (FR-003); those belong
-/// to the Payments Editor (#26) and Verification (#27) specs.
+/// constitution's §VI record-surface criteria. The AppBar carries only Back.
+/// Spec 054 left the screen read-only (FR-003); spec 059 adds the two Payments
+/// Editor actions in the body, where the data they change is: "Aplicar a
+/// pedido" next to the summary, and a reverse icon on each live application.
+/// Verifying or rejecting a payment still belongs to Verification (#27).
 ///
 /// Gated by Customer Payments (8) read; [paymentDetailProvider] additionally
 /// refuses another facility's payment unless the user is a Payments Editor.
@@ -57,6 +63,9 @@ class PaymentDetailScreen extends ConsumerWidget {
           : ref
                 .watch(paymentDetailProvider(id))
                 .when(
+                  // A write reloads the payment; keep the page on screen while
+                  // it does, so the user stays where they were (spec 059).
+                  skipLoadingOnReload: true,
                   loading: () =>
                       const Center(child: CircularProgressIndicator()),
                   error: (error, _) => error is NotFoundError
@@ -128,6 +137,14 @@ class _PaymentBody extends ConsumerWidget {
         payment.cashSessionId != null &&
         access.can(SystemObject.pos, AccessRight.read);
 
+    // spec 059 FR-005: money left to apply, on a payment of the user's own
+    // facility — the server lists only that facility's outstanding orders
+    // (mbe-api#308), so another facility's payment can't be applied from here.
+    final canApply =
+        compareAmounts(payment.unapplied, '0.01') > 0 &&
+        payment.facilityId == ref.watch(userFacilityIdProvider) &&
+        access.can(SystemObject.customerPayments, AccessRight.create);
+
     return SingleChildScrollView(
       padding: EdgeInsets.all(spacing.screenMargin),
       child: Column(
@@ -196,6 +213,13 @@ class _PaymentBody extends ConsumerWidget {
                   ),
                 ],
               ),
+              if (canApply)
+                OutlinedButton.icon(
+                  key: const Key('payment_apply_button'),
+                  onPressed: () => showApplyPaymentDialog(context, payment),
+                  icon: const Icon(Icons.playlist_add_check),
+                  label: Text(l10n.paymentApplyAction),
+                ),
             ],
           ),
           ResponsiveFormGrid(
@@ -377,6 +401,11 @@ class _ApplicationsSection extends ConsumerWidget {
     final fmt = ref.watch(formattersProvider);
     final spacing = Theme.of(context).spacing;
     final mutedStyle = TextStyle(color: Theme.of(context).disabledColor);
+    // spec 059 FR-001: reversing is a Customer Payments update, as on the
+    // server. Without it the table has no actions column at all.
+    final canReverse = ref
+        .watch(accessControlProvider)
+        .can(SystemObject.customerPayments, AccessRight.update);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -387,6 +416,8 @@ class _ApplicationsSection extends ConsumerWidget {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         applications.when(
+          // A write reloads the list; keep the rows while it does.
+          skipLoadingOnReload: true,
           loading: () => const Center(child: CircularProgressIndicator()),
           // Only this section fails; the payment's own fields stay above it.
           error: (error, _) => ListFailedView(
@@ -410,6 +441,24 @@ class _ApplicationsSection extends ConsumerWidget {
               shrinkWrap: true,
               margin: EdgeInsets.zero,
               rows: items,
+              rowActionsBuilder: canReverse
+                  ? (context, a) => [
+                      if (!a.reversed)
+                        IconButton(
+                          key: Key('payment_application_reverse_${a.id}'),
+                          icon: const Icon(Icons.undo),
+                          tooltip: l10n.paymentReverseTitle,
+                          onPressed: () => reverseApplicationFlow(
+                            context,
+                            ref,
+                            paymentId: paymentId,
+                            applicationId: a.id,
+                            saleId: a.saleId,
+                            amount: paymentAmountLabel(fmt, a.amount, currency),
+                          ),
+                        ),
+                    ]
+                  : null,
               columns: [
                 DataTableColumn(
                   label: l10n.paymentApplicationsColumnOrder,

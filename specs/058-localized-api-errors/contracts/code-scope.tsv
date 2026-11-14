@@ -155,15 +155,15 @@ code	kardex.range_reversed	422	—	OUT
 code	kardex.range_too_long	422	max_days: int	OUT		
 code	lock.busy	409	resource: str (`warehouse`, `facility` or `sales_order`)	IN	POST /customer-payments; POST /customer-refunds/{}/confirm	reachable from 4 UI route(s)
 code	payment.already_verified	409	—	OUT		
-code	payment.application_reversed	409	—	OUT		
-code	payment.currency_mismatch	422	payment_currency: enum:CurrencyCode, order_currency: enum:CurrencyCode	OUT		
-code	payment.customer_mismatch	422	payment_customer_id: int, order_customer_id: int	OUT		
-code	payment.exceeds_order_balance	422	amount: decimal, balance: decimal	OUT		
-code	payment.exceeds_unapplied	422	amount: decimal, unapplied: decimal	OUT		
+code	payment.application_reversed	409	—	IN	POST /customer-payments/{}/applications/{}/reverse	reachable from the payment view and the Pedidos payments dialog (spec 059)
+code	payment.currency_mismatch	422	payment_currency: enum:CurrencyCode, order_currency: enum:CurrencyCode	IN	POST /customer-payments/{}/applications	reachable from the payment view and the Pedidos payments dialog (spec 059)
+code	payment.customer_mismatch	422	payment_customer_id: int, order_customer_id: int	IN	POST /customer-payments/{}/applications	reachable from the payment view and the Pedidos payments dialog (spec 059)
+code	payment.exceeds_order_balance	422	amount: decimal, balance: decimal	IN	POST /customer-payments/{}/applications	reachable from the payment view and the Pedidos payments dialog (spec 059)
+code	payment.exceeds_unapplied	422	amount: decimal, unapplied: decimal	IN	POST /customer-payments/{}/applications	reachable from the payment view and the Pedidos payments dialog (spec 059)
 code	payment.no_ticket	409	payment_type: enum:PaymentType	IN	GET /customer-payments/{}/ticket	reachable from 1 UI route(s)
-code	payment.order_cancelled	409	—	OUT		
-code	payment.order_not_completed	409	—	OUT		
-code	payment.order_settled	409	—	OUT		
+code	payment.order_cancelled	409	—	IN	POST /customer-payments/{}/applications	reachable from the payment view and the Pedidos payments dialog (spec 059)
+code	payment.order_not_completed	409	—	IN	POST /customer-payments/{}/applications	reachable from the payment view and the Pedidos payments dialog (spec 059)
+code	payment.order_settled	409	—	IN	POST /customer-payments/{}/applications	reachable from the payment view and the Pedidos payments dialog (spec 059)
 code	point_of_sale.warehouse_facility_mismatch	422	warehouse_id: int, facility_id: int	IN	POST /points-of-sale; PUT /points-of-sale/{}	reachable from 2 UI route(s)
 code	price_list.cost_not_assignable	400	—	IN	DELETE /price-lists/{}; POST /customers	reachable from 6 UI route(s)
 code	price_list.cost_not_deletable	400	—	IN	DELETE /price-lists/{}	reachable from 1 UI route(s)

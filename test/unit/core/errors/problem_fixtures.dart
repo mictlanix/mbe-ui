@@ -72,7 +72,27 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.imagePeriodUnsupportedFormat: {},
   api.ErrorCode.incidencePeriodReasonRequired: {},
   api.ErrorCode.lockPeriodBusy: {'resource': 'warehouse'},
+  api.ErrorCode.paymentPeriodApplicationReversed: {},
+  api.ErrorCode.paymentPeriodCurrencyMismatch: {
+    'payment_currency': 'MXN',
+    'order_currency': 'USD',
+  },
+  api.ErrorCode.paymentPeriodCustomerMismatch: {
+    'payment_customer_id': 1,
+    'order_customer_id': 2,
+  },
+  api.ErrorCode.paymentPeriodExceedsOrderBalance: {
+    'amount': '1200.00',
+    'balance': '900.00',
+  },
+  api.ErrorCode.paymentPeriodExceedsUnapplied: {
+    'amount': '1200.00',
+    'unapplied': '900.00',
+  },
   api.ErrorCode.paymentPeriodNoTicket: {'payment_type': 'CASH'},
+  api.ErrorCode.paymentPeriodOrderCancelled: {},
+  api.ErrorCode.paymentPeriodOrderNotCompleted: {},
+  api.ErrorCode.paymentPeriodOrderSettled: {},
   api.ErrorCode.pointOfSalePeriodWarehouseFacilityMismatch: {
     'warehouse_id': 4,
     'facility_id': 2,

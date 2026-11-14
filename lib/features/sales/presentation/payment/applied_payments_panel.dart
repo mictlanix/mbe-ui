@@ -8,6 +8,7 @@ import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/order_payments_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
+import 'package:mbe_ui/features/sales/presentation/payment/reversal_reason_dialog.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
 
@@ -22,6 +23,8 @@ class AppliedPaymentsPanel extends ConsumerWidget {
     required this.saleId,
     this.enabled = true,
     this.showChangeAndDate = false,
+    this.onReverse,
+    this.onOpenPayment,
   });
 
   final int saleId;
@@ -30,6 +33,16 @@ class AppliedPaymentsPanel extends ConsumerWidget {
   /// spec 048 FR-011: the read-only sale detail also shows the change given
   /// and the date of each payment. `false` keeps the Cobro rail as it was.
   final bool showChangeAndDate;
+
+  /// spec 059 C7: when set, a tap on a row's reverse icon calls this and does
+  /// nothing else — the host runs the whole reversal (dialog, write, refresh)
+  /// against its own screen's state. `null` keeps the register's own path:
+  /// the shared dialog, then `PaymentController.reverse`.
+  final void Function(SalePayment payment)? onReverse;
+
+  /// spec 059 C7: when set, each row links to its payment's own view. The
+  /// register shows no link.
+  final void Function(int customerPaymentId)? onOpenPayment;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -136,11 +149,22 @@ class AppliedPaymentsPanel extends ConsumerWidget {
                       ],
                     ),
                   ),
+                  if (onOpenPayment != null)
+                    IconButton(
+                      key: Key(
+                        'applied_payment_open_${payment.customerPayment}',
+                      ),
+                      icon: const Icon(Icons.open_in_new),
+                      tooltip: l10n.salesOrderPaymentOpenTooltip,
+                      onPressed: () => onOpenPayment!(payment.customerPayment),
+                    ),
                   if (enabled && !payment.cancelled)
                     IconButton(
                       icon: const Icon(Icons.undo),
                       tooltip: l10n.posReverseAction,
-                      onPressed: () => _confirmReversal(context, ref, payment),
+                      onPressed: () => onReverse != null
+                          ? onReverse!(payment)
+                          : _confirmReversal(context, ref, payment),
                     ),
                 ],
               ),
@@ -161,9 +185,10 @@ class AppliedPaymentsPanel extends ConsumerWidget {
     WidgetRef ref,
     SalePayment payment,
   ) async {
-    final reason = await showDialog<String>(
-      context: context,
-      builder: (context) => const _ReversalReasonDialog(),
+    final reason = await showReversalReasonDialog(
+      context,
+      amount: ref.read(formattersProvider).display.currency(payment.amount),
+      orderId: saleId,
     );
     if (reason == null) return;
     await ref
@@ -174,52 +199,5 @@ class AppliedPaymentsPanel extends ConsumerWidget {
           applicationId: payment.id,
           reason: reason,
         );
-  }
-}
-
-/// FR-048: the reason is mandatory (1–500 chars, per the API contract), so
-/// the dialog cannot be confirmed empty.
-class _ReversalReasonDialog extends StatefulWidget {
-  const _ReversalReasonDialog();
-
-  @override
-  State<_ReversalReasonDialog> createState() => _ReversalReasonDialogState();
-}
-
-class _ReversalReasonDialogState extends State<_ReversalReasonDialog> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Revertir pago'),
-      content: TextField(
-        key: const Key('reversal_reason_field'),
-        controller: _controller,
-        autofocus: true,
-        maxLength: 500,
-        decoration: const InputDecoration(labelText: 'Motivo'),
-        onChanged: (_) => setState(() {}),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancelar'),
-        ),
-        FilledButton(
-          key: const Key('reversal_confirm_button'),
-          onPressed: _controller.text.trim().isEmpty
-              ? null
-              : () => Navigator.of(context).pop(_controller.text.trim()),
-          child: const Text('Revertir'),
-        ),
-      ],
-    );
   }
 }

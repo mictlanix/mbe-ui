@@ -26,6 +26,7 @@ import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_im
 import 'package:mbe_ui/features/catalog/domain/entities/payment_method_option.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
+import 'package:mbe_ui/features/sales/domain/entities/outstanding_order.dart';
 import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_link_providers.dart';
@@ -45,6 +46,7 @@ User _user({
   bool pos = false,
   bool editor = false,
   bool customerPaymentsRead = true,
+  int paymentRights = 2,
   int? facilityId = 9,
 }) => User(
   userId: 'u1',
@@ -55,7 +57,10 @@ User _user({
   settings: facilityId == null ? null : UserSettings(facilityId: facilityId),
   privileges: [
     if (customerPaymentsRead)
-      const Privilege(systemObject: SystemObject.customerPayments, rawValue: 2),
+      Privilege(
+        systemObject: SystemObject.customerPayments,
+        rawValue: paymentRights,
+      ),
     if (pos) const Privilege(systemObject: SystemObject.pos, rawValue: 2),
     if (editor)
       const Privilege(systemObject: SystemObject.paymentsEditor, rawValue: 2),
@@ -734,6 +739,215 @@ void main() {
       expect(find.text('A IMMEDIATE payment has no ticket'), findsOneWidget);
       expect(output.printed, isEmpty);
       expect(output.rastered, isEmpty);
+    });
+  });
+
+  group('payments editor (spec 059)', () {
+    const create = 1;
+    const read = 2;
+    const update = 4;
+    const applyButton = Key('payment_apply_button');
+
+    void stubReverse() => when(
+      () => mocks.payments.reverseApplication(
+        customerPaymentId: any(named: 'customerPaymentId'),
+        applicationId: any(named: 'applicationId'),
+        reason: any(named: 'reason'),
+      ),
+    ).thenAnswer((_) async {});
+
+    group('"Aplicar a pedido" (FR-005)', () {
+      testWidgets('is offered with money left, in the user\'s facility, '
+          'to a user who can create', (tester) async {
+        stubGet(testPayment(unapplied: '200.00'));
+
+        await pumpDetail(tester, user: _user(paymentRights: read | create));
+
+        expect(find.byKey(applyButton), findsOneWidget);
+      });
+
+      testWidgets('is hidden when nothing, or only a cent, is left', (
+        tester,
+      ) async {
+        for (final left in ['0.00', '0.01']) {
+          stubGet(testPayment(unapplied: left));
+
+          await pumpDetail(tester, user: _user(paymentRights: read | create));
+
+          expect(find.byKey(applyButton), findsNothing, reason: left);
+        }
+      });
+
+      testWidgets('is hidden on another facility\'s payment', (tester) async {
+        stubGet(testPayment(unapplied: '200.00').copyWith(facilityId: 3));
+
+        await pumpDetail(
+          tester,
+          user: _user(paymentRights: read | create, editor: true),
+        );
+
+        expect(find.text('Pago 501'), findsOneWidget);
+        expect(find.byKey(applyButton), findsNothing);
+      });
+
+      testWidgets('is hidden without Customer Payments create', (tester) async {
+        stubGet(testPayment(unapplied: '200.00'));
+
+        await pumpDetail(tester, user: _user(paymentRights: read | update));
+
+        expect(find.byKey(applyButton), findsNothing);
+      });
+
+      testWidgets('opens the apply dialog', (tester) async {
+        stubGet(testPayment(unapplied: '200.00'));
+        when(
+          () => mocks.payments.listOutstandingOrders(
+            customerId: any(named: 'customerId'),
+            search: any(named: 'search'),
+            skip: any(named: 'skip'),
+            limit: any(named: 'limit'),
+          ),
+        ).thenAnswer(
+          (_) async => const OutstandingOrderPage(items: [], total: 0),
+        );
+
+        await pumpDetail(tester, user: _user(paymentRights: read | create));
+        await tester.tap(find.byKey(applyButton));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('apply_payment_dialog')), findsOneWidget);
+      });
+    });
+
+    group('reverse (FR-001)', () {
+      testWidgets('is offered on live applications only, to a user who can '
+          'update', (tester) async {
+        stubGet(testPayment());
+        stubApps([
+          _app(1, 10, '200.00'),
+          _app(2, 11, '100.00', reversed: true),
+        ]);
+
+        await pumpDetail(tester, user: _user(paymentRights: read | update));
+
+        expect(
+          find.byKey(const Key('payment_application_reverse_1')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('payment_application_reverse_2')),
+          findsNothing,
+        );
+      });
+
+      testWidgets('is absent, with no empty column, without Customer Payments '
+          'update', (tester) async {
+        stubGet(testPayment());
+        stubApps([_app(1, 10, '200.00')]);
+
+        await pumpDetail(tester, user: _user(paymentRights: read | create));
+
+        expect(
+          find.byKey(const Key('payment_application_reverse_1')),
+          findsNothing,
+        );
+        expect(find.byIcon(Icons.undo), findsNothing);
+      });
+
+      testWidgets('asks for a reason that names the amount and the order, '
+          'reverses with it and reloads the payment', (tester) async {
+        stubGet(testPayment(unapplied: '0.00'));
+        stubApps([_app(1, 10, '200.00')]);
+        stubReverse();
+
+        await pumpDetail(tester, user: _user(paymentRights: read | update));
+        await tester.tap(
+          find.byKey(const Key('payment_application_reverse_1')),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text(r'$200.00 MXN aplicados al pedido #10.'),
+          findsOneWidget,
+        );
+
+        await tester.enterText(
+          find.byKey(const Key('reversal_reason_field')),
+          'Aplicado al pedido equivocado',
+        );
+        await tester.pump();
+        await tester.tap(find.byKey(const Key('reversal_reason_confirm')));
+        await tester.pumpAndSettle();
+
+        verify(
+          () => mocks.payments.reverseApplication(
+            customerPaymentId: 501,
+            applicationId: 1,
+            reason: 'Aplicado al pedido equivocado',
+          ),
+        ).called(1);
+        expect(find.byKey(const Key('reversal_reason_dialog')), findsNothing);
+        expect(find.text('Aplicación revertida'), findsOneWidget);
+        // The payment and its applications were read again.
+        verify(
+          () => mocks.payments.get(customerPaymentId: 501),
+        ).called(greaterThanOrEqualTo(1));
+        verify(
+          () => mocks.payments.listApplications(customerPaymentId: 501),
+        ).called(greaterThanOrEqualTo(1));
+      });
+
+      testWidgets('a refusal stays in the dialog and the payment is reloaded', (
+        tester,
+      ) async {
+        stubGet(testPayment());
+        stubApps([_app(1, 10, '200.00')]);
+        when(
+          () => mocks.payments.reverseApplication(
+            customerPaymentId: any(named: 'customerPaymentId'),
+            applicationId: any(named: 'applicationId'),
+            reason: any(named: 'reason'),
+          ),
+        ).thenThrow(const AppError.server());
+
+        await pumpDetail(tester, user: _user(paymentRights: read | update));
+        await tester.tap(
+          find.byKey(const Key('payment_application_reverse_1')),
+        );
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byKey(const Key('reversal_reason_field')),
+          'Motivo',
+        );
+        await tester.pump();
+        await tester.tap(find.byKey(const Key('reversal_reason_confirm')));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(const Key('reversal_reason_dialog')), findsOneWidget);
+        expect(find.text('Aplicación revertida'), findsNothing);
+        // Reloaded: a refusal means the screen was out of date.
+        verify(
+          () => mocks.payments.get(customerPaymentId: 501),
+        ).called(greaterThanOrEqualTo(1));
+      });
+    });
+
+    testWidgets('a freshly recorded credit payment or advance offers its '
+        'ticket (FR-014)', (tester) async {
+      for (final type in [
+        PaymentType.creditPayment,
+        PaymentType.paymentInAdvance,
+      ]) {
+        stubGet(testPayment(type: type, unapplied: '200.00'));
+
+        await pumpDetail(tester, user: _user(paymentRights: read | create));
+
+        expect(
+          find.byKey(const Key('payment_view_ticket_button')),
+          findsOneWidget,
+          reason: type.name,
+        );
+      }
     });
   });
 }

@@ -66,6 +66,7 @@ User paymentsUser({
   bool pos = false,
   bool editor = false,
   bool customerPaymentsRead = true,
+  int paymentRights = 2,
   int? facilityId = 9,
 }) => User(
   userId: 'cashier-1',
@@ -76,7 +77,10 @@ User paymentsUser({
   settings: facilityId == null ? null : UserSettings(facilityId: facilityId),
   privileges: [
     if (customerPaymentsRead)
-      const Privilege(systemObject: SystemObject.customerPayments, rawValue: 2),
+      Privilege(
+        systemObject: SystemObject.customerPayments,
+        rawValue: paymentRights,
+      ),
     if (pos) const Privilege(systemObject: SystemObject.pos, rawValue: 2),
     if (editor)
       const Privilege(systemObject: SystemObject.paymentsEditor, rawValue: 2),
@@ -1145,6 +1149,83 @@ void main() {
       expect(find.byKey(const Key('list_state_failed')), findsOneWidget);
       expect(find.byKey(const Key('list_state_retry_button')), findsOneWidget);
       expect(find.byKey(const Key('payments_list_forbidden')), findsNothing);
+    });
+  });
+
+  group('"Registrar pago" (spec 059 FR-010)', () {
+    const create = 1;
+    const read = 2;
+    const button = Key('payments_record_button');
+
+    testWidgets('is offered to a user who can create', (tester) async {
+      await pumpPayments(
+        tester,
+        mocks,
+        user: paymentsUser(paymentRights: read | create),
+      );
+
+      expect(find.byKey(button), findsOneWidget);
+      expect(find.text('Registrar pago'), findsOneWidget);
+    });
+
+    testWidgets('is absent, not disabled, without Customer Payments create', (
+      tester,
+    ) async {
+      await pumpPayments(tester, mocks, user: paymentsUser());
+
+      expect(find.byKey(button), findsNothing);
+    });
+
+    testWidgets('reads "Pago" on a compact screen', (tester) async {
+      await pumpPayments(
+        tester,
+        mocks,
+        user: paymentsUser(paymentRights: read | create),
+      );
+      tester.view.physicalSize = const Size(420, 900);
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(button), findsOneWidget);
+      expect(find.text('Pago'), findsOneWidget);
+      expect(find.text('Registrar pago'), findsNothing);
+    });
+
+    testWidgets('opens the record dialog', (tester) async {
+      await pumpPayments(
+        tester,
+        mocks,
+        user: paymentsUser(paymentRights: read | create),
+      );
+
+      await tester.tap(find.byKey(button));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('record_payment_dialog')), findsOneWidget);
+    });
+
+    testWidgets('shows no scope switch without Payments Editor read', (
+      tester,
+    ) async {
+      await pumpPayments(
+        tester,
+        mocks,
+        user: paymentsUser(paymentRights: read | create),
+      );
+
+      expect(find.byKey(const Key('payments_scope_switch')), findsNothing);
+    });
+
+    testWidgets('sits beside the scope switch for a Payments Editor reader', (
+      tester,
+    ) async {
+      await pumpPayments(
+        tester,
+        mocks,
+        user: paymentsUser(paymentRights: read | create, editor: true),
+      );
+
+      expect(find.byKey(const Key('payments_scope_switch')), findsOneWidget);
+      expect(find.byKey(button), findsOneWidget);
     });
   });
 }
