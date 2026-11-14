@@ -18,12 +18,15 @@ import 'package:mbe_ui/core/storage/token_storage.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
+import 'package:mbe_ui/features/sales/data/customer_refund_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
+import 'package:mbe_ui/features/sales/domain/entities/customer_refund.dart';
 import 'package:mbe_ui/features/sales/domain/entities/outstanding_order.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale_payment.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/domain/payment_type.dart';
+import 'package:mbe_ui/features/sales/presentation/payments/payment_detail_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 
 /// Automates specs/059-payments-editor/quickstart.md against the REAL app
@@ -435,6 +438,54 @@ void main() {
       await pumpUntilGone(byKey('sales_order_payments_dialog'));
     });
 
+    // ---- 4d: refund warning on a refunded order (FR-004) ------------------
+    // Read-only: opens the reverse dialog and cancels it.
+    ({int saleId, SalePayment application})? refunded;
+    final refunds = await CustomerRefundRepositoryImpl(
+      dio,
+    ).list(status: RefundStatus.completed, skip: 0, limit: 50);
+    for (final r in refunds.items) {
+      final live = (await payments.listForOrder(
+        saleId: r.salesOrderId,
+      )).where((a) => !a.cancelled).firstOrNull;
+      if (live == null) continue;
+      refunded = (saleId: r.salesOrderId, application: live);
+      break;
+    }
+    final refundFixture = refunded;
+    if (refundFixture == null) {
+      note('No refunded order with a live application: skipping 4d.');
+    } else {
+      await step(
+        '4d reverse on a refunded order warns the refund is not undone',
+        () async {
+          final app = refundFixture.application;
+          await openPayment(app.customerPayment);
+          await tapKey('payment_application_reverse_${app.id}');
+          await pumpUntil(byKey('reversal_reason_dialog'));
+          await pumpUntil(byKey('reversal_refund_warning'));
+          expect(
+            find.text(
+              'Este pedido tiene devoluciones. Revertir el pago no deshace '
+              'la devolución.',
+            ),
+            findsOneWidget,
+          );
+          await tester.tap(find.text('Cancelar'));
+          await pumpUntilGone(byKey('reversal_reason_dialog'));
+          // Cancelling left the application live.
+          final still = (await payments.listForOrder(
+            saleId: refundFixture.saleId,
+          )).firstWhere((a) => a.id == app.id);
+          expect(still.cancelled, isFalse);
+          note(
+            'refunded order ${refundFixture.saleId}, application ${app.id} '
+            '(payment ${app.customerPayment})',
+          );
+        },
+      );
+    }
+
     // ---- write steps (opt-in) --------------------------------------------
     // They work on a payment this run records, never on the seeded one: a
     // reversed application stays on record, and the server keeps one
@@ -529,6 +580,66 @@ void main() {
         );
       } else {
         late String balanceBefore;
+
+        // A second outstanding order for the concurrent writer. Its pair with
+        // the new payment is used once and reversed, so it never collides
+        // with the target's pair in step 6.
+        final other = outstanding.items
+            .where(
+              (o) =>
+                  o.id != target.id &&
+                  o.currency == fixture.payment.currency &&
+                  compareAmounts(o.balance, '1') >= 0,
+            )
+            .firstOrNull;
+        if (other == null) {
+          note('No second outstanding order: skipping 6a.');
+        } else {
+          await step(
+            '6a refusal: money applied elsewhere while the dialog is open',
+            () async {
+              await openPayment(id);
+              await tapKey('payment_apply_button');
+              await pumpUntil(byKey('apply_payment_order_${target.id}'));
+              await tapKey('apply_payment_order_${target.id}');
+              // "Another window" spends the whole payment first.
+              await payments.applyPayment(
+                customerPaymentId: id,
+                salesOrder: other.id,
+                amount: '1.00',
+              );
+              await tapKey('apply_payment_confirm');
+              await pumpUntil(
+                find.textContaining('supera lo que queda por aplicar'),
+              );
+              expect(byKey('apply_payment_dialog'), findsOneWidget);
+              await tester.tap(find.text('Cancelar'));
+              await pumpUntilGone(byKey('apply_payment_dialog'));
+              // The payment view reloaded: nothing left, so no apply button.
+              await pumpUntilGone(byKey('payment_apply_button'));
+
+              final concurrent = (await payments.listApplications(
+                customerPaymentId: id,
+              )).firstWhere((a) => !a.reversed && a.saleId == other.id);
+              await payments.reverseApplication(
+                customerPaymentId: id,
+                applicationId: concurrent.id,
+                reason: 'QA059 walkthrough: concurrent writer',
+              );
+              // That reversal happened behind the app's back, like the other
+              // window's apply: drop what the app cached so step 6 sees it.
+              container()
+                ..invalidate(paymentDetailProvider(id))
+                ..invalidate(paymentApplicationsProvider(id));
+              final freed = await payments.get(customerPaymentId: id);
+              expect(compareAmounts(freed.unapplied, '1'), 0);
+              final target2 = (await payments.listApplications(
+                customerPaymentId: id,
+              )).where((a) => a.saleId == target.id);
+              expect(target2, isEmpty, reason: 'the UI apply was refused');
+            },
+          );
+        }
 
         await step(
           '6 apply the new payment to an outstanding order (UI)',
