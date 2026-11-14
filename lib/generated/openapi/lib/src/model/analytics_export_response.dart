@@ -31,7 +31,7 @@ abstract class AnalyticsExportResponse
 
   @BuiltValueField(wireName: r'source')
   ExportSource get source_;
-  // enum source_Enum {  query,  dashboard,  detail,  };
+  // enum source_Enum {  query,  dashboard,  detail,  kardex,  customer,  };
 
   @BuiltValueField(wireName: r'format')
   ExportFormat get format;

@@ -22,7 +22,7 @@ abstract class AnalyticsDimension
     implements Built<AnalyticsDimension, AnalyticsDimensionBuilder> {
   @BuiltValueField(wireName: r'key')
   DimensionKey get key;
-  // enum keyEnum {  date,  weekday,  hour,  facility,  point_of_sale,  salesperson,  cash_session,  customer,  customer_type,  product,  brand,  model,  label,  payment_terms,  payment_method,  };
+  // enum keyEnum {  date,  weekday,  hour,  facility,  point_of_sale,  salesperson,  cash_session,  customer,  customer_type,  product,  brand,  model,  label,  payment_terms,  payment_method,  warehouse,  movement_type,  supplier,  aging_bucket,  due_bucket,  sales_agent,  commission_participation,  commission_status,  issuer,  document_status,  document_type,  };
 
   @BuiltValueField(wireName: r'label')
   String get label;

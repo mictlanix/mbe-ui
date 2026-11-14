@@ -22,6 +22,18 @@ class DetailFlag extends EnumClass {
   static const DetailFlag paidOut = _$paidOut;
   @BuiltValueEnumConst(wireName: r'store_credit')
   static const DetailFlag storeCredit = _$storeCredit;
+  @BuiltValueEnumConst(wireName: r'stock_out')
+  static const DetailFlag stockOut = _$stockOut;
+  @BuiltValueEnumConst(wireName: r'below_reorder')
+  static const DetailFlag belowReorder = _$belowReorder;
+  @BuiltValueEnumConst(wireName: r'dead')
+  static const DetailFlag dead = _$dead;
+  @BuiltValueEnumConst(wireName: r'slow')
+  static const DetailFlag slow = _$slow;
+  @BuiltValueEnumConst(wireName: r'uncosted')
+  static const DetailFlag uncosted = _$uncosted;
+  @BuiltValueEnumConst(wireName: r'price_change')
+  static const DetailFlag priceChange = _$priceChange;
 
   static Serializer<DetailFlag> get serializer => _$detailFlagSerializer;
 

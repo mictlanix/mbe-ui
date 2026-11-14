@@ -12,13 +12,13 @@ part 'analytics_series.g.dart';
 /// AnalyticsSeries
 ///
 /// Properties:
-/// * [key] - sales_over_time | sales_by_facility | sales_by_label | sales_by_brand | top_products | top_customers | payment_mix | heatmap
+/// * [key] - sales_over_time | sales_by_facility | sales_by_label | sales_by_brand | top_products | top_customers | payment_mix | heatmap | stock_value_by_facility
 /// * [chart] - line | bar | donut | heatmap
 /// * [query]
 @BuiltValue()
 abstract class AnalyticsSeries
     implements Built<AnalyticsSeries, AnalyticsSeriesBuilder> {
-  /// sales_over_time | sales_by_facility | sales_by_label | sales_by_brand | top_products | top_customers | payment_mix | heatmap
+  /// sales_over_time | sales_by_facility | sales_by_label | sales_by_brand | top_products | top_customers | payment_mix | heatmap | stock_value_by_facility
   @BuiltValueField(wireName: r'key')
   String get key;
 

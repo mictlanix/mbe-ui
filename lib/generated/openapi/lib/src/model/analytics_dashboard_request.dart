@@ -3,8 +3,10 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/family.dart';
 import 'package:mbe_api_client/src/model/comparison.dart';
 import 'package:mbe_api_client/src/model/date.dart';
+import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -17,6 +19,7 @@ part 'analytics_dashboard_request.g.dart';
 /// * [end]
 /// * [facility]
 /// * [comparison]
+/// * [families] - Only the tiles, series and alerts of these families, of those the caller holds; null for every one. Cost only widens the sales and inventory tiles, so alone it gives none. The UI requests tile groups in parallel (spec 038, R18).
 @BuiltValue()
 abstract class AnalyticsDashboardRequest
     implements
@@ -33,6 +36,10 @@ abstract class AnalyticsDashboardRequest
   @BuiltValueField(wireName: r'comparison')
   Comparison? get comparison;
   // enum comparisonEnum {  previous_period,  same_period_last_year,  };
+
+  /// Only the tiles, series and alerts of these families, of those the caller holds; null for every one. Cost only widens the sales and inventory tiles, so alone it gives none. The UI requests tile groups in parallel (spec 038, R18).
+  @BuiltValueField(wireName: r'families')
+  BuiltList<Family>? get families;
 
   AnalyticsDashboardRequest._();
 
@@ -86,6 +93,13 @@ class _$AnalyticsDashboardRequestSerializer
       yield serializers.serialize(
         object.comparison,
         specifiedType: const FullType.nullable(Comparison),
+      );
+    }
+    if (object.families != null) {
+      yield r'families';
+      yield serializers.serialize(
+        object.families,
+        specifiedType: const FullType.nullable(BuiltList, [FullType(Family)]),
       );
     }
   }
@@ -152,6 +166,18 @@ class _$AnalyticsDashboardRequestSerializer
                   as Comparison?;
           if (valueDes == null) continue;
           result.comparison = valueDes;
+          break;
+        case r'families':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(BuiltList, [
+                      FullType(Family),
+                    ]),
+                  )
+                  as BuiltList<Family>?;
+          if (valueDes == null) continue;
+          result.families.replace(valueDes);
           break;
         default:
           unhandled.add(key);

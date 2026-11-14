@@ -20,6 +20,20 @@ class DetailKind extends EnumClass {
   static const DetailKind creditNotes = _$creditNotes;
   @BuiltValueEnumConst(wireName: r'payments')
   static const DetailKind payments = _$payments;
+  @BuiltValueEnumConst(wireName: r'stock')
+  static const DetailKind stock = _$stock;
+  @BuiltValueEnumConst(wireName: r'movements')
+  static const DetailKind movements = _$movements;
+  @BuiltValueEnumConst(wireName: r'receivables')
+  static const DetailKind receivables = _$receivables;
+  @BuiltValueEnumConst(wireName: r'invoices')
+  static const DetailKind invoices = _$invoices;
+  @BuiltValueEnumConst(wireName: r'uninvoiced_lines')
+  static const DetailKind uninvoicedLines = _$uninvoicedLines;
+  @BuiltValueEnumConst(wireName: r'purchases')
+  static const DetailKind purchases = _$purchases;
+  @BuiltValueEnumConst(wireName: r'commission_lines')
+  static const DetailKind commissionLines = _$commissionLines;
 
   static Serializer<DetailKind> get serializer => _$detailKindSerializer;
 

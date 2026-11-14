@@ -14,7 +14,7 @@ part 'analytics_kpi.g.dart';
 /// AnalyticsKpi
 ///
 /// Properties:
-/// * [key] - net_sales | margin_pct | orders | average_ticket | collected_today | collected | refunds | cost_coverage
+/// * [key] - net_sales | margin_pct | orders | average_ticket | collected_today | collected | refunds | cost_coverage | stock_value
 /// * [value]
 /// * [comparison]
 /// * [change]
@@ -24,7 +24,7 @@ part 'analytics_kpi.g.dart';
 @BuiltValue()
 abstract class AnalyticsKpi
     implements Built<AnalyticsKpi, AnalyticsKpiBuilder> {
-  /// net_sales | margin_pct | orders | average_ticket | collected_today | collected | refunds | cost_coverage
+  /// net_sales | margin_pct | orders | average_ticket | collected_today | collected | refunds | cost_coverage | stock_value
   @BuiltValueField(wireName: r'key')
   String get key;
 

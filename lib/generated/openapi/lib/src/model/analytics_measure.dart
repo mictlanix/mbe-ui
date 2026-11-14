@@ -16,24 +16,35 @@ part 'analytics_measure.g.dart';
 /// Properties:
 /// * [key]
 /// * [label]
-/// * [unit] - money | quantity | count | ratio
+/// * [unit] - money | quantity | count | ratio | days
+/// * [family] - sales | payments | inventory | receivables | payables | commissions | fiscal | purchases
+/// * [kind] - flow: summed over the period | balance: the value at the period's end, at each date bucket's end, never added across dates
 /// * [sensitive] - Needs the cost privilege (37, 38 or 39).
 /// * [vat] - Whether `vat=included` changes it.
 /// * [additive] - False for ratios, recomputed from their parts.
 /// * [dimensions] - The dimensions it can be grouped by.
+/// * [definition] - The written definition, with its caveats.
 @BuiltValue()
 abstract class AnalyticsMeasure
     implements Built<AnalyticsMeasure, AnalyticsMeasureBuilder> {
   @BuiltValueField(wireName: r'key')
   MeasureKey get key;
-  // enum keyEnum {  gross_sales,  discounts,  refunds,  credit_notes,  net_sales,  costed_net_sales,  cost_coverage,  cost_of_sales,  gross_margin,  margin_pct,  units_sold,  units_refunded,  units,  orders,  average_ticket,  collected,  refunds_paid_out,  store_credit_issued,  payments,  };
+  // enum keyEnum {  gross_sales,  discounts,  refunds,  credit_notes,  net_sales,  costed_net_sales,  cost_coverage,  cost_of_sales,  gross_margin,  margin_pct,  units_sold,  units_refunded,  units,  orders,  average_ticket,  collected,  refunds_paid_out,  store_credit_issued,  payments,  on_hand,  reserved,  available,  in_transit,  stock_value,  stock_cost_coverage,  uncosted_quantity,  units_in,  units_out,  movement_documents,  sales_velocity,  days_of_cover,  stock_out_pairs,  below_reorder_pairs,  suggested_quantity,  dead_stock_quantity,  dead_stock_value,  slow_stock_quantity,  slow_stock_value,  turnover,  days_of_inventory,  receivable,  receivable_current,  receivable_overdue,  open_orders,  credit_sales,  collected_on_credit,  due_in_period,  due_collected,  dso,  cei,  credit_limit,  credit_utilization,  payable,  payable_current,  payable_overdue,  open_purchase_orders,  commission,  commission_base,  commission_lines,  invoiced,  invoices,  standalone_invoiced,  payment_receipts,  output_vat,  invoiced_sales,  uninvoiced_sales,  invoice_coverage,  invoicing_lag,  purchases,  purchase_quantity,  received_quantity,  purchase_orders,  average_purchase_price,  average_sale_price,  purchase_sale_spread,  purchase_sale_spread_pct,  };
 
   @BuiltValueField(wireName: r'label')
   String get label;
 
-  /// money | quantity | count | ratio
+  /// money | quantity | count | ratio | days
   @BuiltValueField(wireName: r'unit')
   String get unit;
+
+  /// sales | payments | inventory | receivables | payables | commissions | fiscal | purchases
+  @BuiltValueField(wireName: r'family')
+  String get family;
+
+  /// flow: summed over the period | balance: the value at the period's end, at each date bucket's end, never added across dates
+  @BuiltValueField(wireName: r'kind')
+  String get kind;
 
   /// Needs the cost privilege (37, 38 or 39).
   @BuiltValueField(wireName: r'sensitive')
@@ -50,6 +61,10 @@ abstract class AnalyticsMeasure
   /// The dimensions it can be grouped by.
   @BuiltValueField(wireName: r'dimensions')
   BuiltList<DimensionKey> get dimensions;
+
+  /// The written definition, with its caveats.
+  @BuiltValueField(wireName: r'definition')
+  String get definition;
 
   AnalyticsMeasure._();
 
@@ -92,6 +107,16 @@ class _$AnalyticsMeasureSerializer
       object.unit,
       specifiedType: const FullType(String),
     );
+    yield r'family';
+    yield serializers.serialize(
+      object.family,
+      specifiedType: const FullType(String),
+    );
+    yield r'kind';
+    yield serializers.serialize(
+      object.kind,
+      specifiedType: const FullType(String),
+    );
     yield r'sensitive';
     yield serializers.serialize(
       object.sensitive,
@@ -111,6 +136,11 @@ class _$AnalyticsMeasureSerializer
     yield serializers.serialize(
       object.dimensions,
       specifiedType: const FullType(BuiltList, [FullType(DimensionKey)]),
+    );
+    yield r'definition';
+    yield serializers.serialize(
+      object.definition,
+      specifiedType: const FullType(String),
     );
   }
 
@@ -166,6 +196,24 @@ class _$AnalyticsMeasureSerializer
                   as String;
           result.unit = valueDes;
           break;
+        case r'family':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
+          result.family = valueDes;
+          break;
+        case r'kind':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
+          result.kind = valueDes;
+          break;
         case r'sensitive':
           final valueDes =
               serializers.deserialize(
@@ -203,6 +251,15 @@ class _$AnalyticsMeasureSerializer
                   )
                   as BuiltList<DimensionKey>;
           result.dimensions.replace(valueDes);
+          break;
+        case r'definition':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
+          result.definition = valueDes;
           break;
         default:
           unhandled.add(key);
