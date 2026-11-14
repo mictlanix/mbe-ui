@@ -21,7 +21,7 @@ Staff can now fix a misapplied payment, take a credit payment or an advance outs
 
 **Known limits.**
 - **Another facility's payment can't be applied from here:** mbe-api lists only the user's own facility's outstanding orders. "Aplicar a pedido" is hidden on such a payment until mbe-api#308 adds a facility parameter. Reversing still works.
-- **A payment reversed off an order can't be applied to that order again.** The legacy table keeps one application per payment and order (`UNIQUE (sales_order, customer_payment)`), and a reversed application stays on record as evidence. The server answers a generic `resource.conflict`. This blocks "reverse the wrong amount, apply the right one to the same order". Not filed yet; see below.
+- **A payment reversed off an order can't be applied to that order again.** The legacy table keeps one application per payment and order (`UNIQUE (sales_order, customer_payment)`), and a reversed application stays on record as evidence. The server answers a generic `resource.conflict`. This blocks "reverse the wrong amount, apply the right one to the same order". Filed as mbe-api#309.
 - **Older back-office orders with payments:** one with no recorded origin opens as a register sale in Pedidos, so its "Pagos" button isn't reachable. Its payments are still reached from Pagos.
 - **Found, not caused here:** the Pagos list clips dates and amounts at the largest text size, which constitution §V forbids. It predates this spec.
 
@@ -29,7 +29,7 @@ Staff can now fix a misapplied payment, take a credit payment or an advance outs
 
 Closes mictlanix/mbe-roadmap#26
 
-Upstream: mbe-api#308 (filed 2026-11-13, not blocking).
+Upstream: mbe-api#308 (filed 2026-11-13) and mbe-api#309 (filed 2026-11-14), neither blocking.
 
 ## Test plan
 
