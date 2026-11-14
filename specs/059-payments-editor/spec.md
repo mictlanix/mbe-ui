@@ -17,6 +17,11 @@ This feature adds those actions. On a payment, staff can reverse an application,
 ### Session 2026-11-13
 
 - Q: Must recording a payment require an open cash session? → A: Only for cash. A cash payment needs one so the drawer count includes it. A transfer, card or check can be recorded without one.
+- Q (wireframes): The server lists outstanding orders from the user's own facility only. What happens on another facility's payment? → A: "Aplicar a pedido" is hidden on it until mbe-api#308 lets the list take a facility. Reversing it is still allowed.
+- Q (wireframes): The walk-in customer: leave it out of the picker, or refuse it on save? → A: Refuse on save, with the error under the field.
+- Q (wireframes): Offer "Registrar y aplicar"? → A: No. The payment view opens with "Aplicar a pedido" one tap away.
+- Q (wireframes): Show a count on the Pedidos "Pagos" action? → A: No. The list loads when it opens.
+- Q (wireframes): What does the reverse dialog show? → A: The amount and the order it reverses, above the reason, everywhere it's used, the POS included.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -34,7 +39,7 @@ A cashier applied a customer's $1,500 transfer to order 1041. It belonged to ord
 2. **Given** the reverse dialog, **When** the reason is empty or only spaces, **Then** the confirm action is disabled.
 3. **Given** a reason, **When** the user confirms, **Then** the application stays listed and is marked reversed, the payment's unapplied amount goes up by what the application took (amount plus change given), and the order's balance is restored.
 4. **Given** the reversal brought the order's balance back above zero, **When** the user looks at the order, **Then** it no longer shows as paid.
-5. **Given** a payment with unapplied money, **When** a user allowed to apply opens the payment view, **Then** "Aplicar a pedido" is offered. With nothing left unapplied, it is not.
+5. **Given** a payment of the user's facility with unapplied money, **When** a user allowed to apply opens the payment view, **Then** "Aplicar a pedido" is offered. With nothing left unapplied, or on another facility's payment, it is not.
 6. **Given** the apply dialog, **When** it opens, **Then** it lists only the payment customer's outstanding orders, in the payment's currency, each with its folio, date, total and balance.
 7. **Given** an order is picked, **When** the amount is proposed, **Then** it defaults to the smaller of the order's balance and the payment's unapplied amount, and can be lowered but not raised above either.
 8. **Given** a confirmed application, **When** the view refreshes, **Then** the new application shows in the list and the payment's unapplied amount fell by the amount applied.
@@ -83,7 +88,7 @@ A supervisor is looking at order 1041 in Pedidos and sees it marked paid, but kn
 ### Edge Cases
 
 - **Reversing on an order that was already refunded.** The order stops being paid but the refund stays. The reverse dialog warns that the order has refunds before the user confirms.
-- **Another facility's payment.** A user without Payments Editor read can't open it (spec 055), so can't act on it. A Payments Editor can act on it. The order applied to may be of any facility.
+- **Another facility's payment.** A user without Payments Editor read can't open it (spec 055), so can't act on it. A Payments Editor can reverse its applications. "Aplicar a pedido" is hidden on it, because the outstanding-orders list covers only the user's own facility (mbe-api#308).
 - **The order changed in between.** It was settled or cancelled, or its balance dropped below the amount, after the list loaded. The server refuses; the app shows the reason and reloads the outstanding orders.
 - **The payment changed in between.** Another user applied or reversed it meanwhile. The server refuses an amount above what is left; the app shows the reason and reloads the payment.
 - **Application already reversed.** A second reversal is refused with a message and the view reloads.
@@ -100,13 +105,13 @@ A supervisor is looking at order 1041 in Pedidos and sees it marked paid, but kn
 **Reverse**
 
 - **FR-001**: The payment view MUST offer "Revertir" on each live application, only to users with Customer Payments update.
-- **FR-002**: Reversing MUST require a reason that isn't empty or only whitespace. The reason is recorded by the server as evidence.
+- **FR-002**: Reversing MUST require a reason that isn't empty or only whitespace. The reason is recorded by the server as evidence. The dialog MUST name the amount and the order being reversed.
 - **FR-003**: After a reversal, the payment view MUST show the application as reversed, the new unapplied amount, and the order's updated status. Reversed applications MUST stay visible.
 - **FR-004**: Before confirming a reversal on an order that has refunds, the dialog MUST warn that the refund will not be undone.
 
 **Apply**
 
-- **FR-005**: The payment view MUST offer "Aplicar a pedido" when the payment has more than 0.01 unapplied, only to users with Customer Payments create.
+- **FR-005**: The payment view MUST offer "Aplicar a pedido" when the payment has more than 0.01 unapplied and belongs to the user's facility, only to users with Customer Payments create.
 - **FR-006**: The apply dialog MUST list only outstanding orders of the payment's customer in the payment's currency, with folio, date, total and balance, searchable by folio.
 - **FR-007**: The applied amount MUST default to the smaller of the order's balance and the payment's unapplied amount, and MUST NOT be accepted above either or at zero or less.
 - **FR-008**: The back-office apply MUST record no change given back.

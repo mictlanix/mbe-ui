@@ -18,7 +18,8 @@ Keys are the test contract. Strings live in both `.arb` files.
   - `record_payment_method`
   - `record_payment_reference`
   - `record_payment_amount`
-- Inline errors name the failing field: missing customer, walk-in customer, missing method, reference required, amount ≤ 0, or cash without an open session.
+- Inline errors name the failing field: missing customer, walk-in customer, missing method, reference required, amount ≤ 0, or cash without an open session. Validation runs when the user presses save. The walk-in customer stays searchable and is refused under the field. A cash-session error links to the sessions list.
+- There is no "save and apply" action. The payment view's apply button follows.
 - `record_payment_save` is disabled while busy and shows a spinner.
 - A server refusal shows the localized message in a `FormErrorBanner`. A network or timeout failure shows "result unknown, check Pagos".
 - On success the dialog closes, the Pagos list refreshes, and the app pushes `/sales/payments/:id`.
@@ -26,13 +27,14 @@ Keys are the test contract. Strings live in both `.arb` files.
 ## C3. Payment view actions (FR-001 to FR-009, US1)
 
 - Applications table: a trailing action column. A live row shows an `IconButton` with key `payment_application_reverse_<applicationId>`, only with Customer Payments update. Reversed rows show no action.
-- Summary area: an `OutlinedButton.icon` with key `payment_apply_button`, shown when `unapplied > 0.01` and the user has Customer Payments create.
+- Summary area: an `OutlinedButton.icon` with key `payment_apply_button`, shown when `unapplied > 0.01`, `payment.facilityId == userFacilityId`, and the user has Customer Payments create. Another facility's payment gets no apply button until mbe-api#308.
 - After a successful reverse or apply, the detail, the applications and the list refresh, and a snackbar confirms.
 - The doc comment that says the view has no actions (payment_detail_screen.dart:35-37) is updated.
 
 ## C4. Reverse dialog, shared by POS, Pagos and Pedidos (FR-002, FR-004)
 
-- `showReversalReasonDialog(context, {bool orderHasRefunds = false}) → Future<String?>` returns the trimmed reason, or null if cancelled.
+- `showReversalReasonDialog(context, {required String amount, required String orderLabel, bool orderHasRefunds = false}) → Future<String?>` returns the trimmed reason, or null if cancelled.
+- The header line (key `reversal_subject`) names the formatted amount and the order folio, for example "$1,500.00 aplicados al pedido #1041". It appears everywhere, the POS included.
 - Keys: `reversal_reason_dialog`, `reversal_reason_field` (max 500), `reversal_reason_confirm`, which is disabled while the trimmed text is empty.
 - Key `reversal_refund_warning` is shown when `orderHasRefunds`.
 - All text is localized (replaces the hard-coded "Revertir pago" / "Motivo").
@@ -50,7 +52,7 @@ Keys are the test contract. Strings live in both `.arb` files.
 
 ## C6. Pedidos "Pagos" (FR-016 to FR-018, US3)
 
-- `TextButton` with key `sales_order_payments_button`, in the `OrderHeaderPanel` trailing group. Shown for a completed or paid order with Customer Payments read.
+- `TextButton` with key `sales_order_payments_button`, in the `OrderHeaderPanel` trailing group. Shown for a completed or paid order with Customer Payments read. The label has no count; the list loads when the dialog opens.
 - It opens a `ResponsiveDialog` with key `sales_order_payments_dialog` that contains `AppliedPaymentsPanel(enabled: canUpdate, showChangeAndDate: true, onReverse:, onOpenPayment:)`.
 - The empty state reads "No se han aplicado pagos" ("No payments have been applied").
 - Each row carries a link, `applied_payment_open_<customerPaymentId>`, that closes the dialog and pushes `/sales/payments/:id`.

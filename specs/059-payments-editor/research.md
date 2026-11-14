@@ -28,7 +28,7 @@ Another facility's payment is visible only with Payments Editor (100) read, and 
 ## R3. Reversal: one shared dialog, one shared reverse path
 
 **Decision**:
-- **Shared dialog**: move `_ReversalReasonDialog` out of `applied_payments_panel.dart` into a public, localized `showReversalReasonDialog(context, {bool orderHasRefunds = false})` in `presentation/payment/reversal_reason_dialog.dart`. It keeps the 500-character limit and the trimmed non-empty rule. It shows the refund warning (FR-004) when asked.
+- **Shared dialog**: move `_ReversalReasonDialog` out of `applied_payments_panel.dart` into a public, localized `showReversalReasonDialog(context, {required amount, required orderLabel, bool orderHasRefunds = false})` in `presentation/payment/reversal_reason_dialog.dart`. It keeps the 500-character limit and the trimmed non-empty rule. It names the amount and order above the reason (FR-002, wireframes Q5), and shows the refund warning (FR-004) when asked.
 - **Back-office reverse path**: a new `paymentEditorProvider` notifier (`presentation/payments/payment_editor_controller.dart`) provides `reverse(...)` and `apply(...)`. It calls the repository, then invalidates `paymentDetailProvider(paymentId)`, `paymentApplicationsProvider(paymentId)`, `orderPaymentsControllerProvider(saleId)`, `orderEditorControllerProvider(saleId)` and the `paymentsListControllerProvider` family. It returns the `AppError` instead of throwing, so the dialog can show it.
 - **Panel change**: `AppliedPaymentsPanel` gets two optional callbacks.
   - `onReverse(SalePayment)`: when it is null, the panel keeps calling `paymentControllerProvider.reverse`, so the POS is unchanged.
@@ -51,6 +51,8 @@ Another facility's payment is visible only with Payments Editor (100) read, and 
 **Decision**: add `Future<OutstandingOrderPage> listOutstandingOrders({required int customerId, String? search, int skip = 0, int limit = 20})` to `CustomerPaymentRepository`. It maps `OutstandingOrderResponse` to a new freezed `OutstandingOrder` (id, serial, date, dueDate, currency, total, balance). The dialog filters to the payment's currency on the client. The server has no currency filter, and spec FR-006 wants mismatched orders hidden, not refused.
 
 **Rationale**: today `outstandingBalanceFor` only sums the balances (customer_payment_repository_impl.dart:225-251). The picker needs the rows.
+
+**Facility scope**: the server lists only the caller's facility's orders (`search_outstanding`, `SalesOrder.facility == current.facility_id`). So "Aplicar a pedido" is hidden on another facility's payment (`payment.facilityId != userFacilityIdProvider`). Filed upstream as mbe-api#308 (a `facility` param, 2026-11-13). When it ships, pass the payment's facility and drop the hide.
 
 **Amount rule**: default `min(order.balance, payment.unapplied)`. Accept `0 < amount ≤ that min`. `amountChange` is never sent (FR-008). Amounts use `Decimal` through `money.dart`, never `double`.
 
