@@ -4,7 +4,7 @@
 
 The POS "Entrega" step creates delivery orders but never confirms them. Until now, every order made in the new app stayed a draft with no folio and never reached the warehouse. This PR adds the back-office screen where those drafts are confirmed, plus the rest of the delivery-order lifecycle the server already supports.
 
-- **List** under Ventas, right after Pedidos. It shows the facility's delivery orders newest first, with folio search and filters for status, type, scheduled date, customer, sales order and facility.
+- **List** in a new Logística nav group, together with Vehículos and Operadores, which move there from Catálogos. Routes are unchanged. It shows the facility's delivery orders newest first, with folio search and filters for status, type, scheduled date, customer, sales order and facility.
 - **Detail screen** with header facts, links to the sales orders and to the parent and child orders, all five line quantities (ordered, committed, delivered, returned, open), status history and proof of delivery.
 - **Draft editing:** header (date, priority, ship-to, contact, comment), line quantity, line removal, and "Agregar línea" from another completed sale of the same customer.
 - **Status actions:** confirm, cancel (with a reason), requeue a failed delivery, mark a pickup order ready, and hand it over with the receiver's name, the identification they showed and a photo.

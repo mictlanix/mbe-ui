@@ -152,7 +152,7 @@ These findings come from reading mbe-api (`app/api/v1/endpoints/delivery_orders.
 ## R11. Navigation and routes
 
 - **Decision:**
-  - **List.** A new `StatefulShellBranch` appended last in `app_router.dart`, with `GoRoute('/sales/delivery-orders')`, and a `NavBranch.deliveryOrders = 26` const. The `NavDestination` goes in Ventas right after Pedidos (`sales-orders`) in `kNavigationTree`.
+  - **List.** A new `StatefulShellBranch` appended last in `app_router.dart`, with `GoRoute('/sales/delivery-orders')`, and a `NavBranch.deliveryOrders = 26` const. The `NavDestination` opens a new Logística group in `kNavigationTree` (decided after implementation; Vehículos and Operadores moved there too).
   - **Detail.** A top-level `GoRoute('/sales/delivery-orders/:deliveryOrderId')`, like the refunds detail.
   - **Gate.** A `_routeGate` prefix clause on `/sales/delivery-orders` for 71 read.
 - **Rationale:** this is the same as every recent sales screen. A Logística group is deferred until itineraries (wireframes Open Question 1).

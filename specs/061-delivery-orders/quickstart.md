@@ -28,7 +28,7 @@ Each write run leaves on the tenant:
 ## Manual walkthrough
 
 1. **Access (US1-1, SC-006).**
-   - As admin, Ventas shows "Órdenes de entrega" right after Pedidos.
+   - As admin, the Logística group (after Ventas) shows "Órdenes de entrega", then Vehículos and Operadores.
    - As `qanoaccess`, the entry is missing, and typing `/sales/delivery-orders` is refused.
 2. **List (US1-2..4, FR-002..005).**
    - It opens on every status at your facility, newest first, with the filter badge at 0.

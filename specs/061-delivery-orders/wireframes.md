@@ -6,7 +6,7 @@ These wireframes were drawn from the spec, before planning. Layout is indicative
 
 ## Screen: Órdenes de entrega (`/sales/delivery-orders`)
 
-This is a new navigation destination in Ventas, after Pedidos. It is gated on `PrivilegeGate(SystemObject.deliveryOrders, AccessRight.read)` (FR-001). Where it sits in the navigation is Open Question 1.
+This is a new navigation destination, first in the Logística group (decided after implementation; see Open Question 1). It is gated on `PrivilegeGate(SystemObject.deliveryOrders, AccessRight.read)` (FR-001). Where it sits in the navigation is Open Question 1.
 
 ### State: populated (opening filters)
 
@@ -354,7 +354,7 @@ Both are simple confirmations naming the folio and customer. Neither has a body 
 
 1. **Where does "Órdenes de entrega" go in the navigation?**
    - Options: under Ventas after Pedidos; or a new "Logística" group, which would later hold itineraries and might move Vehículos and Operadores out of Catálogos.
-   - Assumed: Ventas, after Pedidos, with the route under `/sales/`. A Logística group is better decided when itineraries arrive.
+   - Assumed at drafting: Ventas, after Pedidos. *Resolved after implementation:* a Logística group after Ventas holding Órdenes de entrega, Vehículos and Operadores. The route stays under `/sales/`.
 2. **Does a list row need the §VI Edit icon?**
    - Options: no icons, and the row opens the detail (as Pedidos, Reembolsos and Notas de crédito do); or an Edit icon on drafts.
    - Assumed: no icons. Delivery orders are documents with a status lifecycle, not catalog records, so editing happens on the draft's detail screen. The Edit rule in §VI is written for catalog rows.

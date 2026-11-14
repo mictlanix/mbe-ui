@@ -6,7 +6,7 @@ Each contract states what a test can assert. Keys are given where a widget test 
 
 ## C1. Navigation and routes
 
-- **Nav entry.** `NavDestination(id: 'delivery-orders')` is in Ventas, immediately after `sales-orders`. Its label is `navDeliveryOrders` ("Órdenes de entrega" / "Delivery orders"), with `NavBranch.deliveryOrders = 26`. Its gate is `PrivilegeGate(SystemObject.deliveryOrders, AccessRight.read)`.
+- **Nav entry.** `NavDestination(id: 'delivery-orders')` opens the Logística group (`NavGroup(id: 'logistics')`, after Ventas), followed by `vehicles` and `vehicle-operators`, which moved there from Catálogos. Routes are unchanged. Its label is `navDeliveryOrders` ("Órdenes de entrega" / "Delivery orders"), with `NavBranch.deliveryOrders = 26`. Its gate is `PrivilegeGate(SystemObject.deliveryOrders, AccessRight.read)`.
 - **List route.** `/sales/delivery-orders` (shell branch). Query keys are listed in data-model §2.
 - **Detail route.** `/sales/delivery-orders/:deliveryOrderId` (top-level). A non-integer id renders the not-found state.
 - **Gate.** `_routeGate`: any location starting with `/sales/delivery-orders` requires 71 read. Without it, the user is redirected like every other gated route (FR-001, SC-006).
