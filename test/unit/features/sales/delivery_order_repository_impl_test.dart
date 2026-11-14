@@ -387,6 +387,38 @@ void main() {
       expect(destinations.first.lines, hasLength(1));
     });
 
+    test('a cancelled destination is skipped before its detail is fetched '
+        '(spec 061 R9)', () async {
+      final requests = <RequestOptions>[];
+      final repository = _repositoryWith((options) async {
+        requests.add(options);
+        if (options.path.endsWith('/delivery-orders')) {
+          return ResponseBody.fromString(
+            jsonEncode({
+              'items': [
+                {..._summaryJson(500), 'status': 10},
+                _summaryJson(501),
+              ],
+              'total': 2,
+            }),
+            200,
+            headers: _jsonHeaders,
+          );
+        }
+        final id = int.parse(options.path.split('/').last);
+        return ResponseBody.fromString(
+          jsonEncode(_orderJson(deliveryOrderId: id, lines: [_lineJson()])),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final destinations = await repository.listForSale(salesOrder: 42);
+
+      expect(destinations.map((d) => d.id), [501]);
+      expect(requests.any((r) => r.path.endsWith('/500')), isFalse);
+    });
+
     test('a sale with no destinations yields an empty list', () async {
       final repository = _repositoryWith(
         (options) async => ResponseBody.fromString(

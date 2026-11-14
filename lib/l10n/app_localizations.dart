@@ -10191,6 +10191,831 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Someone else already verified this payment.'**
   String get apiErrorPaymentAlreadyVerified;
+
+  /// spec 061: navigation entry under Ventas (C1)
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery orders'**
+  String get navDeliveryOrders;
+
+  /// spec 061: detail app bar title (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery order {serial}'**
+  String deliveryOrderTitle(String serial);
+
+  /// spec 061: detail app bar title of a draft (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery order · Draft'**
+  String get deliveryOrderTitleDraft;
+
+  /// spec 061: folio shown when the order has no serial yet (C2)
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get deliveryOrderDraftFolio;
+
+  /// spec 061: list empty state (C2)
+  ///
+  /// In en, this message translates to:
+  /// **'No delivery orders match these filters.'**
+  String get deliveryOrdersEmpty;
+
+  /// spec 061: list search hint, digits only (C2)
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get deliveryOrdersSearchHint;
+
+  /// spec 061: list notice title when the user has no facility (C2)
+  ///
+  /// In en, this message translates to:
+  /// **'No facility configured'**
+  String get deliveryOrdersNoFacilityTitle;
+
+  /// spec 061: list notice message when the user has no facility (C2)
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has no facility assigned, so delivery orders cannot be listed. Ask your administrator to configure one on your user.'**
+  String get deliveryOrdersNoFacilityMessage;
+
+  /// spec 061: detail not-found / error action (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Back to delivery orders'**
+  String get deliveryOrderBackToList;
+
+  /// spec 061: delivery order status label (C11)
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get deliveryOrderStatusDraft;
+
+  /// spec 061: delivery order status label (C11)
+  ///
+  /// In en, this message translates to:
+  /// **'Pending approval'**
+  String get deliveryOrderStatusPendingApproval;
+
+  /// spec 061: delivery order status label (C11)
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get deliveryOrderStatusApproved;
+
+  /// spec 061: delivery order status label (C11)
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for pickup'**
+  String get deliveryOrderStatusReadyForPickup;
+
+  /// spec 061: delivery order status label (C11)
+  ///
+  /// In en, this message translates to:
+  /// **'Picked up'**
+  String get deliveryOrderStatusPickedUp;
+
+  /// spec 061: delivery order status label (C11)
+  ///
+  /// In en, this message translates to:
+  /// **'In preparation'**
+  String get deliveryOrderStatusInPreparation;
+
+  /// spec 061: delivery order status label (C11)
+  ///
+  /// In en, this message translates to:
+  /// **'In transit'**
+  String get deliveryOrderStatusInTransit;
+
+  /// spec 061: delivery order status label (C11)
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get deliveryOrderStatusDelivered;
+
+  /// spec 061: delivery order status label (C11)
+  ///
+  /// In en, this message translates to:
+  /// **'Partially delivered'**
+  String get deliveryOrderStatusPartiallyDelivered;
+
+  /// spec 061: delivery order status label (C11)
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get deliveryOrderStatusFailed;
+
+  /// spec 061: delivery order status label (C11)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get deliveryOrderStatusCancelled;
+
+  /// spec 061: delivery order type label (C11)
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get deliveryOrderTypeDelivery;
+
+  /// spec 061: delivery order type label (C11)
+  ///
+  /// In en, this message translates to:
+  /// **'Store pickup'**
+  String get deliveryOrderTypePickup;
+
+  /// spec 061: list column and detail fact label (C2, C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get deliveryOrderColumnSerial;
+
+  /// spec 061: list column and detail fact label (C2, C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get deliveryOrderColumnCustomer;
+
+  /// spec 061: list column and detail fact label (C2, C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get deliveryOrderColumnType;
+
+  /// spec 061: list column and detail fact label (C2, C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get deliveryOrderColumnScheduled;
+
+  /// spec 061: list column and detail fact label (C2, C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get deliveryOrderColumnDestination;
+
+  /// spec 061: list column and detail fact label (C2, C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Sales'**
+  String get deliveryOrderColumnSalesOrders;
+
+  /// spec 061: list column and detail fact label (C2, C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get deliveryOrderColumnStatus;
+
+  /// spec 061: detail fact / band label (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get deliveryOrderFactFacility;
+
+  /// spec 061: detail fact / band label (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get deliveryOrderFactPriority;
+
+  /// spec 061: detail fact / band label (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get deliveryOrderFactContact;
+
+  /// spec 061: detail fact / band label (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get deliveryOrderFactComment;
+
+  /// spec 061: detail fact / band label (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'From order'**
+  String get deliveryOrderFactParent;
+
+  /// spec 061: detail fact / band label (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Derived order'**
+  String get deliveryOrderFactChild;
+
+  /// spec 061: detail lines table column (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get deliveryOrderLineColumnCode;
+
+  /// spec 061: detail lines table column (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get deliveryOrderLineColumnProduct;
+
+  /// spec 061: detail lines table column (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get deliveryOrderLineColumnWarehouse;
+
+  /// spec 061: detail lines table column (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Sale'**
+  String get deliveryOrderLineColumnSalesOrder;
+
+  /// spec 061: detail lines table column (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Ordered'**
+  String get deliveryOrderLineColumnOrdered;
+
+  /// spec 061: detail lines table column (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Committed'**
+  String get deliveryOrderLineColumnCommitted;
+
+  /// spec 061: detail lines table column (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get deliveryOrderLineColumnDelivered;
+
+  /// spec 061: detail lines table column (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Returned'**
+  String get deliveryOrderLineColumnReturned;
+
+  /// spec 061: detail lines table column (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get deliveryOrderLineColumnOpen;
+
+  /// spec 061: detail section title (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Lines'**
+  String get deliveryOrderLinesTitle;
+
+  /// spec 061: detail section title (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get deliveryOrderHistoryTitle;
+
+  /// spec 061: detail section title (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Proof of delivery'**
+  String get deliveryOrderProofTitle;
+
+  /// spec 061: proof section: receiver name label (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Received by'**
+  String get deliveryOrderProofReceiver;
+
+  /// spec 061: proof section and pickup dialog field label (C4, C9)
+  ///
+  /// In en, this message translates to:
+  /// **'Identification shown'**
+  String get deliveryOrderProofIdShown;
+
+  /// spec 061: proof section: capture time label (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Captured'**
+  String get deliveryOrderProofCapturedAt;
+
+  /// spec 061: proof section: who captured it (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Captured by'**
+  String get deliveryOrderProofCapturedBy;
+
+  /// spec 061: proof section load failure (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'The proof could not be loaded'**
+  String get deliveryOrderProofLoadFailed;
+
+  /// spec 061: proof thumbnail tooltip (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Enlarge photo'**
+  String get deliveryOrderProofEnlargeTooltip;
+
+  /// spec 061: history section empty state (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'No history yet.'**
+  String get deliveryOrderEventsEmpty;
+
+  /// spec 061: detail rejection banner (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection reason: {reason}'**
+  String deliveryOrderRejectionBanner(String reason);
+
+  /// spec 061: list filter sheet label (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get deliveryOrderFilterStatus;
+
+  /// spec 061: list filter sheet label (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get deliveryOrderFilterType;
+
+  /// spec 061: list filter sheet label (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled date'**
+  String get deliveryOrderFilterScheduled;
+
+  /// spec 061: list filter sheet label (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get deliveryOrderFilterCustomer;
+
+  /// spec 061: list filter sheet label (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'Sale'**
+  String get deliveryOrderFilterSalesOrder;
+
+  /// spec 061: list filter sheet label (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get deliveryOrderFilterFacility;
+
+  /// spec 061: list filter sheet label (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get deliveryOrderFilterAllStatuses;
+
+  /// spec 061: list filter sheet label (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get deliveryOrderFilterAllTypes;
+
+  /// spec 061: list filter sheet label (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'My facility'**
+  String get deliveryOrderFilterMyFacility;
+
+  /// spec 061: list filter sheet: sale field hint (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'Sale number'**
+  String get deliveryOrderFilterSalesOrderHint;
+
+  /// spec 061: detail action (C4, C10)
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get deliveryOrderEditHeader;
+
+  /// spec 061: detail action (C4, C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Add line'**
+  String get deliveryOrderAddLine;
+
+  /// spec 061: detail primary action (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get deliveryOrderConfirmAction;
+
+  /// spec 061: detail action (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel order'**
+  String get deliveryOrderCancelAction;
+
+  /// spec 061: detail primary action (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Reschedule'**
+  String get deliveryOrderRequeueAction;
+
+  /// spec 061: detail primary action (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for pickup'**
+  String get deliveryOrderReadyAction;
+
+  /// spec 061: detail primary action (C4, C9)
+  ///
+  /// In en, this message translates to:
+  /// **'Hand over to customer'**
+  String get deliveryOrderPickupAction;
+
+  /// spec 061: dialog dismiss button (C5-C10)
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get deliveryOrderBackButton;
+
+  /// spec 061: line row action tooltip (C4, C8)
+  ///
+  /// In en, this message translates to:
+  /// **'Change quantity'**
+  String get deliveryOrderLineEditTooltip;
+
+  /// spec 061: line row action tooltip (C4, C8)
+  ///
+  /// In en, this message translates to:
+  /// **'Remove line'**
+  String get deliveryOrderLineRemoveTooltip;
+
+  /// spec 061: confirm dialog title (C5)
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm delivery order?'**
+  String get deliveryOrderConfirmTitle;
+
+  /// spec 061: confirm dialog summary (C5)
+  ///
+  /// In en, this message translates to:
+  /// **'{customer} · Scheduled {date} · {count, plural, one{# line} other{# lines}}'**
+  String deliveryOrderConfirmSummary(String customer, String date, int count);
+
+  /// spec 061: confirm dialog warning (C5)
+  ///
+  /// In en, this message translates to:
+  /// **'Once confirmed, it can no longer be edited.'**
+  String get deliveryOrderConfirmIrreversible;
+
+  /// spec 061: hint beside the disabled Confirm button (C4, FR-016)
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one line to confirm.'**
+  String get deliveryOrderConfirmNeedsLines;
+
+  /// spec 061: requeue dialog title (C5)
+  ///
+  /// In en, this message translates to:
+  /// **'Reschedule order {serial}?'**
+  String deliveryOrderRequeueTitle(String serial);
+
+  /// spec 061: requeue dialog body (C5)
+  ///
+  /// In en, this message translates to:
+  /// **'{customer}. The order goes back to In preparation and its quantities become open again.'**
+  String deliveryOrderRequeueBody(String customer);
+
+  /// spec 061: ready dialog title (C5)
+  ///
+  /// In en, this message translates to:
+  /// **'Mark order {serial} ready for pickup?'**
+  String deliveryOrderReadyTitle(String serial);
+
+  /// spec 061: ready dialog body (C5)
+  ///
+  /// In en, this message translates to:
+  /// **'{customer}. The customer will be able to come and pick the goods up.'**
+  String deliveryOrderReadyBody(String customer);
+
+  /// spec 061: cancel dialog title (C6)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel order {serial}'**
+  String deliveryOrderCancelTitle(String serial);
+
+  /// spec 061: cancel dialog summary (C6)
+  ///
+  /// In en, this message translates to:
+  /// **'{customer} · Scheduled {date}'**
+  String deliveryOrderCancelSummary(String customer, String date);
+
+  /// spec 061: cancel dialog reason field (C6)
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get deliveryOrderCancelReasonLabel;
+
+  /// spec 061: add-line dialog title, step 1 (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Add line · 1 of 2'**
+  String get deliveryOrderAddLineStep1Title;
+
+  /// spec 061: add-line dialog title, step 2 (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Add line · 2 of 2 · Sale {serial}'**
+  String deliveryOrderAddLineStep2Title(String serial);
+
+  /// spec 061: add-line step 1 intro (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Completed sales of {customer} at {facility}'**
+  String deliveryOrderAddLineStep1Intro(String customer, String facility);
+
+  /// spec 061: add-line step 1 search hint (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Sale folio'**
+  String get deliveryOrderAddLineSearchHint;
+
+  /// spec 061: add-line step 1 table column (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get deliveryOrderAddLineSaleColumnSerial;
+
+  /// spec 061: add-line step 1 table column (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get deliveryOrderAddLineSaleColumnDate;
+
+  /// spec 061: add-line step 1 table column (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get deliveryOrderAddLineSaleColumnTotal;
+
+  /// spec 061: add-line step 1 pagination (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get deliveryOrderAddLineLoadMore;
+
+  /// spec 061: add-line step 2 table column (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining'**
+  String get deliveryOrderAddLineColumnRemaining;
+
+  /// spec 061: add-line step 2 table column (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get deliveryOrderAddLineColumnQuantity;
+
+  /// spec 061: add-line step 2 back button (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Another sale'**
+  String get deliveryOrderAddLineAnotherSale;
+
+  /// spec 061: add-line step 2 submit button (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get deliveryOrderAddLineSubmit;
+
+  /// spec 061: add-line step 1 empty state (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'This customer has no sales with goods left to deliver at this facility.'**
+  String get deliveryOrderAddLineEmptySales;
+
+  /// spec 061: add-line step 2 empty state (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'This sale has nothing left to deliver.'**
+  String get deliveryOrderAddLineEmptyLines;
+
+  /// spec 061: add-line quantity field validation (C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity greater than 0 and at most {remaining}.'**
+  String deliveryOrderAddLineQuantityInvalid(String remaining);
+
+  /// spec 061: line quantity dialog title (C8)
+  ///
+  /// In en, this message translates to:
+  /// **'Change quantity'**
+  String get deliveryOrderLineQuantityTitle;
+
+  /// spec 061: line quantity dialog hint above the field (C8)
+  ///
+  /// In en, this message translates to:
+  /// **'Ordered on the sale: {quantity}'**
+  String deliveryOrderLineQuantityOrdered(String quantity);
+
+  /// spec 061: line quantity dialog field label (C8)
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get deliveryOrderLineQuantityLabel;
+
+  /// spec 061: line quantity field validation (C8)
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity greater than 0.'**
+  String get deliveryOrderLineQuantityInvalid;
+
+  /// spec 061: remove-line confirmation title (C8)
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {product} from the order?'**
+  String deliveryOrderLineRemoveTitle(String product);
+
+  /// spec 061: remove-line confirmation body (C8)
+  ///
+  /// In en, this message translates to:
+  /// **'The quantity becomes available for delivery again.'**
+  String get deliveryOrderLineRemoveBody;
+
+  /// spec 061: remove-line confirmation button (C8)
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get deliveryOrderLineRemoveAction;
+
+  /// spec 061: pickup dialog title (C9)
+  ///
+  /// In en, this message translates to:
+  /// **'Hand over to customer · Order {serial}'**
+  String deliveryOrderPickupTitle(String serial);
+
+  /// spec 061: pickup dialog field label (C9)
+  ///
+  /// In en, this message translates to:
+  /// **'Receiver name'**
+  String get deliveryOrderPickupNameLabel;
+
+  /// spec 061: pickup dialog field label (C9)
+  ///
+  /// In en, this message translates to:
+  /// **'Identification shown'**
+  String get deliveryOrderPickupIdLabel;
+
+  /// spec 061: pickup dialog field label (C9)
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get deliveryOrderPickupPhotoLabel;
+
+  /// spec 061: pickup dialog photo button (C9)
+  ///
+  /// In en, this message translates to:
+  /// **'Choose file'**
+  String get deliveryOrderPickupChooseFile;
+
+  /// spec 061: pickup dialog clear-file tooltip (C9)
+  ///
+  /// In en, this message translates to:
+  /// **'Remove file'**
+  String get deliveryOrderPickupClearFile;
+
+  /// spec 061: pickup dialog confirm button (C9)
+  ///
+  /// In en, this message translates to:
+  /// **'Hand over'**
+  String get deliveryOrderPickupSubmit;
+
+  /// spec 061: header dialog title (C10)
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get deliveryOrderHeaderTitle;
+
+  /// spec 061: header dialog field label (C10)
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled date'**
+  String get deliveryOrderHeaderScheduledLabel;
+
+  /// spec 061: header dialog field label (C10)
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get deliveryOrderHeaderPriorityLabel;
+
+  /// spec 061: header dialog field label (C10)
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get deliveryOrderHeaderDestinationLabel;
+
+  /// spec 061: header dialog field label (C10)
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get deliveryOrderHeaderContactLabel;
+
+  /// spec 061: header dialog field label (C10)
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get deliveryOrderHeaderCommentLabel;
+
+  /// spec 061: header dialog priority validation (C10)
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a whole number, 0 or more.'**
+  String get deliveryOrderHeaderPriorityInvalid;
+
+  /// spec 061: header dialog: read-only destination of a pickup order (C10)
+  ///
+  /// In en, this message translates to:
+  /// **'Store {facility}'**
+  String deliveryOrderHeaderPickupDestination(String facility);
+
+  /// spec 061: snackbar after the action succeeds
+  ///
+  /// In en, this message translates to:
+  /// **'Order {serial} confirmed'**
+  String deliveryOrderSnackConfirmed(String serial);
+
+  /// spec 061: snackbar after the action succeeds
+  ///
+  /// In en, this message translates to:
+  /// **'Order {serial} cancelled'**
+  String deliveryOrderSnackCancelled(String serial);
+
+  /// spec 061: snackbar after the action succeeds
+  ///
+  /// In en, this message translates to:
+  /// **'Order {serial} rescheduled'**
+  String deliveryOrderSnackRequeued(String serial);
+
+  /// spec 061: snackbar after the action succeeds
+  ///
+  /// In en, this message translates to:
+  /// **'Order {serial} ready for pickup'**
+  String deliveryOrderSnackReady(String serial);
+
+  /// spec 061: snackbar after the action succeeds
+  ///
+  /// In en, this message translates to:
+  /// **'Order {serial} handed over to the customer'**
+  String deliveryOrderSnackPickedUp(String serial);
+
+  /// spec 061: snackbar after the action succeeds
+  ///
+  /// In en, this message translates to:
+  /// **'Order {serial} header saved'**
+  String deliveryOrderSnackHeaderSaved(String serial);
+
+  /// spec 061: snackbar after the action succeeds
+  ///
+  /// In en, this message translates to:
+  /// **'Line added to order {serial}'**
+  String deliveryOrderSnackLineAdded(String serial);
+
+  /// spec 061: snackbar after the action succeeds
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity updated on order {serial}'**
+  String deliveryOrderSnackLineUpdated(String serial);
+
+  /// spec 061: snackbar after the action succeeds
+  ///
+  /// In en, this message translates to:
+  /// **'Line removed from order {serial}'**
+  String deliveryOrderSnackLineRemoved(String serial);
+
+  /// spec 061: action network failure, result unknown (FR-022)
+  ///
+  /// In en, this message translates to:
+  /// **'We don\'t know whether it completed: the connection was lost. The order was refreshed.'**
+  String get deliveryOrderActionUnknown;
+
+  /// spec 061: mbe-api error code `delivery_order.insufficient_notice` (R10)
+  ///
+  /// In en, this message translates to:
+  /// **'At least {minHours} h of notice are required. Earliest date: {earliest}.'**
+  String apiErrorDeliveryOrderInsufficientNotice(
+    String minHours,
+    String earliest,
+  );
+
+  /// spec 061: mbe-api error code `delivery_order.no_lines` (R10)
+  ///
+  /// In en, this message translates to:
+  /// **'The delivery order has no lines.'**
+  String get apiErrorDeliveryOrderNoLines;
+
+  /// spec 061: mbe-api error code `delivery_order.not_failed` (R10)
+  ///
+  /// In en, this message translates to:
+  /// **'Only a failed order can be rescheduled.'**
+  String get apiErrorDeliveryOrderNotFailed;
+
+  /// spec 061: mbe-api error code `delivery_order.proof_incomplete` (R10)
+  ///
+  /// In en, this message translates to:
+  /// **'The proof is incomplete: enter who received the goods and the identification they showed.'**
+  String get apiErrorDeliveryOrderProofIncomplete;
 }
 
 class _AppLocalizationsDelegate

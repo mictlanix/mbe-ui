@@ -6189,4 +6189,489 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get apiErrorPaymentAlreadyVerified =>
       'Otra persona ya verificó este pago.';
+
+  @override
+  String get navDeliveryOrders => 'Órdenes de entrega';
+
+  @override
+  String deliveryOrderTitle(String serial) {
+    return 'Orden de entrega $serial';
+  }
+
+  @override
+  String get deliveryOrderTitleDraft => 'Orden de entrega · Borrador';
+
+  @override
+  String get deliveryOrderDraftFolio => 'Borrador';
+
+  @override
+  String get deliveryOrdersEmpty =>
+      'No hay órdenes de entrega con estos filtros.';
+
+  @override
+  String get deliveryOrdersSearchHint => 'Folio';
+
+  @override
+  String get deliveryOrdersNoFacilityTitle => 'No hay instalación configurada';
+
+  @override
+  String get deliveryOrdersNoFacilityMessage =>
+      'Tu cuenta no tiene una instalación asignada, así que las órdenes de entrega no se pueden listar. Pide a tu administrador que configure una en tu usuario.';
+
+  @override
+  String get deliveryOrderBackToList => 'Volver a órdenes de entrega';
+
+  @override
+  String get deliveryOrderStatusDraft => 'Borrador';
+
+  @override
+  String get deliveryOrderStatusPendingApproval => 'Pendiente de aprobación';
+
+  @override
+  String get deliveryOrderStatusApproved => 'Aprobada';
+
+  @override
+  String get deliveryOrderStatusReadyForPickup => 'Lista para recoger';
+
+  @override
+  String get deliveryOrderStatusPickedUp => 'Recogida';
+
+  @override
+  String get deliveryOrderStatusInPreparation => 'En preparación';
+
+  @override
+  String get deliveryOrderStatusInTransit => 'En tránsito';
+
+  @override
+  String get deliveryOrderStatusDelivered => 'Entregada';
+
+  @override
+  String get deliveryOrderStatusPartiallyDelivered => 'Entregada parcialmente';
+
+  @override
+  String get deliveryOrderStatusFailed => 'Fallida';
+
+  @override
+  String get deliveryOrderStatusCancelled => 'Cancelada';
+
+  @override
+  String get deliveryOrderTypeDelivery => 'Entrega';
+
+  @override
+  String get deliveryOrderTypePickup => 'Recoge en tienda';
+
+  @override
+  String get deliveryOrderColumnSerial => 'Folio';
+
+  @override
+  String get deliveryOrderColumnCustomer => 'Cliente';
+
+  @override
+  String get deliveryOrderColumnType => 'Tipo';
+
+  @override
+  String get deliveryOrderColumnScheduled => 'Programada';
+
+  @override
+  String get deliveryOrderColumnDestination => 'Destino';
+
+  @override
+  String get deliveryOrderColumnSalesOrders => 'Pedidos';
+
+  @override
+  String get deliveryOrderColumnStatus => 'Estado';
+
+  @override
+  String get deliveryOrderFactFacility => 'Sucursal';
+
+  @override
+  String get deliveryOrderFactPriority => 'Prioridad';
+
+  @override
+  String get deliveryOrderFactContact => 'Contacto';
+
+  @override
+  String get deliveryOrderFactComment => 'Comentario';
+
+  @override
+  String get deliveryOrderFactParent => 'De la orden';
+
+  @override
+  String get deliveryOrderFactChild => 'Orden derivada';
+
+  @override
+  String get deliveryOrderLineColumnCode => 'Código';
+
+  @override
+  String get deliveryOrderLineColumnProduct => 'Producto';
+
+  @override
+  String get deliveryOrderLineColumnWarehouse => 'Almacén';
+
+  @override
+  String get deliveryOrderLineColumnSalesOrder => 'Pedido';
+
+  @override
+  String get deliveryOrderLineColumnOrdered => 'Ordenada';
+
+  @override
+  String get deliveryOrderLineColumnCommitted => 'Comprometida';
+
+  @override
+  String get deliveryOrderLineColumnDelivered => 'Entregada';
+
+  @override
+  String get deliveryOrderLineColumnReturned => 'Devuelta';
+
+  @override
+  String get deliveryOrderLineColumnOpen => 'Abierta';
+
+  @override
+  String get deliveryOrderLinesTitle => 'Líneas';
+
+  @override
+  String get deliveryOrderHistoryTitle => 'Historial';
+
+  @override
+  String get deliveryOrderProofTitle => 'Comprobante de entrega';
+
+  @override
+  String get deliveryOrderProofReceiver => 'Recibió';
+
+  @override
+  String get deliveryOrderProofIdShown => 'Identificación mostrada';
+
+  @override
+  String get deliveryOrderProofCapturedAt => 'Capturado';
+
+  @override
+  String get deliveryOrderProofCapturedBy => 'Capturó';
+
+  @override
+  String get deliveryOrderProofLoadFailed => 'No se pudo cargar el comprobante';
+
+  @override
+  String get deliveryOrderProofEnlargeTooltip => 'Ampliar foto';
+
+  @override
+  String get deliveryOrderEventsEmpty => 'Sin movimientos todavía.';
+
+  @override
+  String deliveryOrderRejectionBanner(String reason) {
+    return 'Motivo de rechazo: $reason';
+  }
+
+  @override
+  String get deliveryOrderFilterStatus => 'Estado';
+
+  @override
+  String get deliveryOrderFilterType => 'Tipo';
+
+  @override
+  String get deliveryOrderFilterScheduled => 'Fecha programada';
+
+  @override
+  String get deliveryOrderFilterCustomer => 'Cliente';
+
+  @override
+  String get deliveryOrderFilterSalesOrder => 'Pedido';
+
+  @override
+  String get deliveryOrderFilterFacility => 'Sucursal';
+
+  @override
+  String get deliveryOrderFilterAllStatuses => 'Todas';
+
+  @override
+  String get deliveryOrderFilterAllTypes => 'Todos';
+
+  @override
+  String get deliveryOrderFilterMyFacility => 'Mi sucursal';
+
+  @override
+  String get deliveryOrderFilterSalesOrderHint => 'Número de pedido';
+
+  @override
+  String get deliveryOrderEditHeader => 'Editar encabezado';
+
+  @override
+  String get deliveryOrderAddLine => 'Agregar línea';
+
+  @override
+  String get deliveryOrderConfirmAction => 'Confirmar';
+
+  @override
+  String get deliveryOrderCancelAction => 'Cancelar orden';
+
+  @override
+  String get deliveryOrderRequeueAction => 'Reprogramar';
+
+  @override
+  String get deliveryOrderReadyAction => 'Lista para recoger';
+
+  @override
+  String get deliveryOrderPickupAction => 'Entregar al cliente';
+
+  @override
+  String get deliveryOrderBackButton => 'Volver';
+
+  @override
+  String get deliveryOrderLineEditTooltip => 'Cambiar cantidad';
+
+  @override
+  String get deliveryOrderLineRemoveTooltip => 'Quitar línea';
+
+  @override
+  String get deliveryOrderConfirmTitle => '¿Confirmar orden de entrega?';
+
+  @override
+  String deliveryOrderConfirmSummary(String customer, String date, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '# líneas',
+      one: '# línea',
+    );
+    return '$customer · Programada $date · $_temp0';
+  }
+
+  @override
+  String get deliveryOrderConfirmIrreversible =>
+      'Una vez confirmada, ya no podrá editarse.';
+
+  @override
+  String get deliveryOrderConfirmNeedsLines =>
+      'Agrega al menos una línea para poder confirmar.';
+
+  @override
+  String deliveryOrderRequeueTitle(String serial) {
+    return '¿Reprogramar orden $serial?';
+  }
+
+  @override
+  String deliveryOrderRequeueBody(String customer) {
+    return '$customer. La orden volverá a En preparación y sus cantidades quedarán abiertas otra vez.';
+  }
+
+  @override
+  String deliveryOrderReadyTitle(String serial) {
+    return '¿Marcar orden $serial lista para recoger?';
+  }
+
+  @override
+  String deliveryOrderReadyBody(String customer) {
+    return '$customer. El cliente podrá pasar a recoger el pedido.';
+  }
+
+  @override
+  String deliveryOrderCancelTitle(String serial) {
+    return 'Cancelar orden $serial';
+  }
+
+  @override
+  String deliveryOrderCancelSummary(String customer, String date) {
+    return '$customer · Programada $date';
+  }
+
+  @override
+  String get deliveryOrderCancelReasonLabel => 'Motivo';
+
+  @override
+  String get deliveryOrderAddLineStep1Title => 'Agregar línea · 1 de 2';
+
+  @override
+  String deliveryOrderAddLineStep2Title(String serial) {
+    return 'Agregar línea · 2 de 2 · Venta $serial';
+  }
+
+  @override
+  String deliveryOrderAddLineStep1Intro(String customer, String facility) {
+    return 'Ventas completadas de $customer en $facility';
+  }
+
+  @override
+  String get deliveryOrderAddLineSearchHint => 'Folio de venta';
+
+  @override
+  String get deliveryOrderAddLineSaleColumnSerial => 'Folio';
+
+  @override
+  String get deliveryOrderAddLineSaleColumnDate => 'Fecha';
+
+  @override
+  String get deliveryOrderAddLineSaleColumnTotal => 'Total';
+
+  @override
+  String get deliveryOrderAddLineLoadMore => 'Cargar más';
+
+  @override
+  String get deliveryOrderAddLineColumnRemaining => 'Pendiente';
+
+  @override
+  String get deliveryOrderAddLineColumnQuantity => 'Cantidad';
+
+  @override
+  String get deliveryOrderAddLineAnotherSale => 'Otra venta';
+
+  @override
+  String get deliveryOrderAddLineSubmit => 'Agregar';
+
+  @override
+  String get deliveryOrderAddLineEmptySales =>
+      'Este cliente no tiene ventas con pendiente por entregar en esta sucursal.';
+
+  @override
+  String get deliveryOrderAddLineEmptyLines =>
+      'Esta venta ya no tiene pendiente por entregar.';
+
+  @override
+  String deliveryOrderAddLineQuantityInvalid(String remaining) {
+    return 'Escribe una cantidad mayor que 0 y no mayor que $remaining.';
+  }
+
+  @override
+  String get deliveryOrderLineQuantityTitle => 'Cambiar cantidad';
+
+  @override
+  String deliveryOrderLineQuantityOrdered(String quantity) {
+    return 'Ordenada en la venta: $quantity';
+  }
+
+  @override
+  String get deliveryOrderLineQuantityLabel => 'Cantidad';
+
+  @override
+  String get deliveryOrderLineQuantityInvalid =>
+      'Escribe una cantidad mayor que 0.';
+
+  @override
+  String deliveryOrderLineRemoveTitle(String product) {
+    return '¿Quitar $product de la orden?';
+  }
+
+  @override
+  String get deliveryOrderLineRemoveBody =>
+      'La cantidad volverá a estar disponible para entregar.';
+
+  @override
+  String get deliveryOrderLineRemoveAction => 'Quitar';
+
+  @override
+  String deliveryOrderPickupTitle(String serial) {
+    return 'Entregar al cliente · Orden $serial';
+  }
+
+  @override
+  String get deliveryOrderPickupNameLabel => 'Nombre de quien recibe';
+
+  @override
+  String get deliveryOrderPickupIdLabel => 'Identificación mostrada';
+
+  @override
+  String get deliveryOrderPickupPhotoLabel => 'Foto';
+
+  @override
+  String get deliveryOrderPickupChooseFile => 'Elegir archivo';
+
+  @override
+  String get deliveryOrderPickupClearFile => 'Quitar archivo';
+
+  @override
+  String get deliveryOrderPickupSubmit => 'Entregar';
+
+  @override
+  String get deliveryOrderHeaderTitle => 'Editar encabezado';
+
+  @override
+  String get deliveryOrderHeaderScheduledLabel => 'Fecha programada';
+
+  @override
+  String get deliveryOrderHeaderPriorityLabel => 'Prioridad';
+
+  @override
+  String get deliveryOrderHeaderDestinationLabel => 'Destino';
+
+  @override
+  String get deliveryOrderHeaderContactLabel => 'Contacto';
+
+  @override
+  String get deliveryOrderHeaderCommentLabel => 'Comentario';
+
+  @override
+  String get deliveryOrderHeaderPriorityInvalid =>
+      'Escribe un número entero de 0 o más.';
+
+  @override
+  String deliveryOrderHeaderPickupDestination(String facility) {
+    return 'Sucursal $facility';
+  }
+
+  @override
+  String deliveryOrderSnackConfirmed(String serial) {
+    return 'Orden $serial confirmada';
+  }
+
+  @override
+  String deliveryOrderSnackCancelled(String serial) {
+    return 'Orden $serial cancelada';
+  }
+
+  @override
+  String deliveryOrderSnackRequeued(String serial) {
+    return 'Orden $serial reprogramada';
+  }
+
+  @override
+  String deliveryOrderSnackReady(String serial) {
+    return 'Orden $serial lista para recoger';
+  }
+
+  @override
+  String deliveryOrderSnackPickedUp(String serial) {
+    return 'Orden $serial entregada al cliente';
+  }
+
+  @override
+  String deliveryOrderSnackHeaderSaved(String serial) {
+    return 'Encabezado de la orden $serial guardado';
+  }
+
+  @override
+  String deliveryOrderSnackLineAdded(String serial) {
+    return 'Línea agregada a la orden $serial';
+  }
+
+  @override
+  String deliveryOrderSnackLineUpdated(String serial) {
+    return 'Cantidad actualizada en la orden $serial';
+  }
+
+  @override
+  String deliveryOrderSnackLineRemoved(String serial) {
+    return 'Línea quitada de la orden $serial';
+  }
+
+  @override
+  String get deliveryOrderActionUnknown =>
+      'No sabemos si se completó: se perdió la conexión. La orden se actualizó.';
+
+  @override
+  String apiErrorDeliveryOrderInsufficientNotice(
+    String minHours,
+    String earliest,
+  ) {
+    return 'Se requieren al menos $minHours h de anticipación. Fecha más próxima: $earliest.';
+  }
+
+  @override
+  String get apiErrorDeliveryOrderNoLines =>
+      'La orden de entrega no tiene líneas.';
+
+  @override
+  String get apiErrorDeliveryOrderNotFailed =>
+      'Solo una orden fallida se puede reprogramar.';
+
+  @override
+  String get apiErrorDeliveryOrderProofIncomplete =>
+      'Faltan datos del comprobante: indica quién recibe y la identificación que mostró.';
 }

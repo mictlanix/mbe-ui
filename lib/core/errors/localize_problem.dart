@@ -38,11 +38,15 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.customerPeriodNoCreditLimit,
   api.ErrorCode.customerPeriodWalkInNoCredit,
   api.ErrorCode.customerDiscountPeriodProductNotFound,
+  api.ErrorCode.deliveryOrderPeriodInsufficientNotice,
   api.ErrorCode.deliveryOrderPeriodLineAlreadyPresent,
   api.ErrorCode.deliveryOrderPeriodLineNotDeliverable,
   api.ErrorCode.deliveryOrderPeriodLineRepeated,
   api.ErrorCode.deliveryOrderPeriodMixedNotAllowed,
+  api.ErrorCode.deliveryOrderPeriodNoLines,
   api.ErrorCode.deliveryOrderPeriodNotEditable,
+  api.ErrorCode.deliveryOrderPeriodNotFailed,
+  api.ErrorCode.deliveryOrderPeriodProofIncomplete,
   api.ErrorCode.deliveryOrderPeriodQuantityExceedsRemaining,
   api.ErrorCode.deliveryOrderPeriodReasonRequired,
   api.ErrorCode.deliveryOrderPeriodSalesOrderFullyDelivered,
@@ -224,6 +228,11 @@ String? localizeProblem(
       l10n.apiErrorCustomerWalkInNoCredit,
     api.ErrorCode.customerDiscountPeriodProductNotFound =>
       l10n.apiErrorCustomerDiscountProductNotFound,
+    api.ErrorCode.deliveryOrderPeriodInsufficientNotice => _ap2(
+      _count(problem, 'min_hours', fmt),
+      _dateTime(problem, 'earliest', fmt),
+      l10n.apiErrorDeliveryOrderInsufficientNotice,
+    ),
     api.ErrorCode.deliveryOrderPeriodLineAlreadyPresent =>
       l10n.apiErrorDeliveryOrderLineAlreadyPresent,
     api.ErrorCode.deliveryOrderPeriodLineNotDeliverable =>
@@ -232,8 +241,14 @@ String? localizeProblem(
       l10n.apiErrorDeliveryOrderLineRepeated,
     api.ErrorCode.deliveryOrderPeriodMixedNotAllowed =>
       l10n.apiErrorDeliveryOrderMixedNotAllowed,
+    api.ErrorCode.deliveryOrderPeriodNoLines =>
+      l10n.apiErrorDeliveryOrderNoLines,
     api.ErrorCode.deliveryOrderPeriodNotEditable =>
       l10n.apiErrorDeliveryOrderNotEditable,
+    api.ErrorCode.deliveryOrderPeriodNotFailed =>
+      l10n.apiErrorDeliveryOrderNotFailed,
+    api.ErrorCode.deliveryOrderPeriodProofIncomplete =>
+      l10n.apiErrorDeliveryOrderProofIncomplete,
     api.ErrorCode.deliveryOrderPeriodQuantityExceedsRemaining => _ap2(
       _quantity(problem, 'requested', fmt),
       _quantity(problem, 'remaining', fmt),
@@ -660,6 +675,12 @@ String? _quantity(ApiProblem problem, String key, AppFormatters fmt) {
 String? _date(ApiProblem problem, String key, AppFormatters fmt) {
   final value = problem.dateParam(key);
   return value == null ? null : fmt.display.date(value);
+}
+
+/// A date-and-time param.
+String? _dateTime(ApiProblem problem, String key, AppFormatters fmt) {
+  final value = problem.dateParam(key);
+  return value == null ? null : fmt.display.dateTime(value);
 }
 
 /// An integer count param, with the locale's digit grouping.

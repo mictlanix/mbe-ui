@@ -27,6 +27,7 @@ void main() {
     'customer.credit_hold',
     'customer.credit_limit_exceeded',
     'customer.credit_limit_reached',
+    'delivery_order.insufficient_notice',
     'delivery_order.quantity_exceeds_remaining',
     'facility.other_facility',
     'image.too_large',
@@ -98,7 +99,7 @@ void main() {
         missing.add(cells[1]);
       }
     }
-    expect(checked, 105);
+    expect(checked, 109);
     expect(missing, isEmpty);
   });
 

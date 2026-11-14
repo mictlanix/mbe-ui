@@ -43,6 +43,10 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.customerPeriodNoCreditLimit: {'customer_id': 812},
   api.ErrorCode.customerPeriodWalkInNoCredit: {},
   api.ErrorCode.customerDiscountPeriodProductNotFound: {'product_id': 77},
+  api.ErrorCode.deliveryOrderPeriodInsufficientNotice: {
+    'min_hours': 24,
+    'earliest': '2026-11-16T08:00:00',
+  },
   api.ErrorCode.deliveryOrderPeriodLineAlreadyPresent: {
     'sales_order_line_id': 5,
     'delivery_order_line_id': 8,
@@ -52,7 +56,10 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   },
   api.ErrorCode.deliveryOrderPeriodLineRepeated: {'sales_order_line_id': 5},
   api.ErrorCode.deliveryOrderPeriodMixedNotAllowed: {},
+  api.ErrorCode.deliveryOrderPeriodNoLines: {},
   api.ErrorCode.deliveryOrderPeriodNotEditable: {'status': 'APPROVED'},
+  api.ErrorCode.deliveryOrderPeriodNotFailed: {'status': 'APPROVED'},
+  api.ErrorCode.deliveryOrderPeriodProofIncomplete: {},
   api.ErrorCode.deliveryOrderPeriodQuantityExceedsRemaining: {
     'sales_order_line_id': 5,
     'remaining': '2',

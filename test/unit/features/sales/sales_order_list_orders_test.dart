@@ -55,6 +55,24 @@ void main() {
       expect(query['limit'], 20);
     });
 
+    test('customer reaches the wire when supplied (spec 061 R8)', () async {
+      final requests = <RequestOptions>[];
+      final repository = _repositoryWith((options) async {
+        requests.add(options);
+        return ResponseBody.fromString(
+          jsonEncode({'items': <Object?>[], 'total': 0}),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.listOrders(customer: 7);
+      await repository.listOrders();
+
+      expect(requests.first.queryParameters['customer'], 7);
+      expect(requests.last.queryParameters.containsKey('customer'), isFalse);
+    });
+
     test('omitting facility sends no facility param at all — the server '
         'defaults to the caller\'s own facility (FR-006)', () async {
       final requests = <RequestOptions>[];
