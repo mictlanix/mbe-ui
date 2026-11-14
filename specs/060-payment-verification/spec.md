@@ -12,6 +12,15 @@ Customers pay by bank transfer, and the cashier records the transfer as a paymen
 
 This feature adds a verification queue to the back office. It lists unverified payments from every facility, starting on transfers. For each payment, the supervisor sees what's needed to find it on the bank statement. They mark it verified, or reject it with a reason when it can't be found. The same two actions are on the Pagos payment view.
 
+## Clarifications
+
+### Session 2026-11-14
+
+- Q (wireframes): One "⋮" menu or direct icons for the row's actions? → A: Two direct icons. ✓ Verificar is the primary action, in the slot Edit usually holds, and ✕ Rechazar is the secondary one. This stays within §VI's two-icon limit.
+- Q: What does tapping a queue row do? → A: It opens a read-only panel built from the row's own data, for every row, whatever its facility. (This replaces an earlier answer that rows weren't tappable.) Opening the payment in Pagos would fail for another facility's payment unless the user has Payments Editor read, and the queue spans every facility. This gives a customer payment a second surface beside its Pagos screen, which constitution §VI forbids. §VI stays as it is; the plan records the panel as a justified one-off deviation. The panel offers no actions, only close.
+- Q: Keep the amount range filter? → A: No. The queue filters by facility, date range and method only. The supervisor finds an amount by scanning the rows.
+- Q: What does clearing the filters reset the method to? → A: Transferencia, as the queue opened. Clearing empties facility and date. "Todos" is chosen only on purpose, from the method filter.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Verify transfers against the bank statement (Priority: P1)
@@ -26,7 +35,7 @@ Each morning a supervisor opens "Verificación de pagos" with the bank statement
 
 1. **Given** a user with Payments Verification read, **When** they open the back-office navigation, **Then** "Verificación de pagos" is offered. Without that right it isn't.
 2. **Given** the queue opens, **When** it loads, **Then** it lists unverified payments from every facility, method filter set to Transfer, newest first. Each row shows folio, facility, date, customer, method, reference and amount.
-3. **Given** the queue, **When** the user sets facility, date range, method or amount range, **Then** the list shows only matching unverified payments. Clearing the method filter shows every method.
+3. **Given** the queue, **When** the user sets facility, date range or method, **Then** the list shows only matching unverified payments. Choosing "Todos" as the method shows every method. Clearing the filters returns to transfers from every facility, any date.
 4. **Given** a user with Payments Verification update, **When** they tap "Verificar" on a row, **Then** a confirmation names the folio, customer, amount and reference and says verification can't be undone.
 5. **Given** the user confirms, **When** the server accepts, **Then** the row leaves the queue and the total count falls by one.
 6. **Given** a user with only Payments Verification read, **When** they open the queue, **Then** they see the list but no "Verificar" or "Rechazar" actions.
@@ -74,7 +83,7 @@ A supervisor looking up a customer's payment in Pagos sees it marked "Sin verifi
 - **Rejected payments come back.** The server records only the rejection, so a rejected payment stays unverified, and nothing in the app can show that it was rejected. Each time the queue loads, rejected payments look the same as payments nobody has checked. The rejection still leaves a record with who, when and why. An mbe-api issue asks the server to expose that rejection so the queue can mark or hide those payments later.
 - **Rejecting twice.** The server accepts it and records a second rejection. The app doesn't prevent it, because it can't tell.
 - **Verifying a payment after its rejection.** Allowed. Rejection doesn't block verification.
-- **Empty queue.** The queue says there are no unverified payments for the current filters, and offers to clear them when any are set.
+- **Empty queue.** The queue says there are no unverified payments for the current filters. It offers to clear them when they differ from the opening filters (transfers, every facility, any date).
 - **Cash and card payments.** They appear only when the user changes the method filter. The queue doesn't hide or block verifying them.
 - **Network failure on verify or reject.** The app says the result is unknown and reloads the row, rather than claiming it failed.
 - **Last row on a page.** After the last row on a page is verified, the queue loads the previous page instead of showing an empty one.
@@ -87,9 +96,10 @@ A supervisor looking up a customer's payment in Pagos sees it marked "Sin verifi
 
 - **FR-001**: The back office MUST offer a "Verificación de pagos" screen only to users with Payments Verification read.
 - **FR-002**: The queue MUST list unverified payments from every facility, newest first, paginated. Each row shows folio, facility name, date, customer name, method, reference and amount with currency.
-- **FR-003**: The queue MUST filter by facility, date range, method and amount range. The method filter starts at Transfer and can be changed or cleared to show every method.
+- **FR-003**: The queue MUST filter by facility, date range and method. The method filter starts at Transfer and can be changed to any method or to "Todos" (every method). Clearing the filters empties facility and date and returns the method to Transfer, not to "Todos".
 - **FR-004**: The queue MUST show the total count of unverified payments that match the filters.
-- **FR-005**: The queue MUST let the user act on a payment from its row, without opening the payment, whatever its facility.
+- **FR-005**: The queue MUST let the user act on a payment from its row, whatever its facility, through two direct row icons: ✓ Verificar (primary) and ✕ Rechazar.
+- **FR-005a**: Tapping a row (outside its icons) MUST open a read-only panel showing that payment from the data the queue already loaded, with no further request, for every row whatever its facility. The panel shows folio, facility, date, customer, payment type, method, reference, amount with currency, unapplied amount and cash session. It has no editable fields and no actions besides close.
 
 **Verify**
 
@@ -139,9 +149,9 @@ A supervisor looking up a customer's payment in Pagos sees it marked "Sin verifi
 - Legacy had a free-text search by folio, order number, customer or cashier. The server's unverified list doesn't take one, so the queue has filters only. Folio, customer and reference are on each row for scanning.
 - The queue doesn't print or export. Verified payments are read and printed from Pagos.
 - Facility names come from the facilities the app already knows.
-- Out of scope: undoing a verification (the server has no way to), showing a payment's rejection history, verifying several payments in one action, verifying supplier payments, and per-tenant configuration of which methods need verification.
+- Out of scope: an amount range filter (the server accepts one, but the queue doesn't offer it), undoing a verification (the server has no way to), showing a payment's rejection history, verifying several payments in one action, verifying supplier payments, and per-tenant configuration of which methods need verification.
 
 ## Verbatim Constraints
 
-- Server rules relied on: `GET /customer-payments/unverified` (filters `facility`, `date_from`, `date_to`, `method`, `amount_min`, `amount_max`, `skip`, `limit`), `POST /customer-payments/{id}/verify`, `POST /customer-payments/{id}/reject` (body carries `reason`, 1 to 500 characters).
+- Server rules relied on: `GET /customer-payments/unverified` (filters used: `facility`, `date_from`, `date_to`, `method`, `skip`, `limit`; `amount_min` and `amount_max` are left unused), `POST /customer-payments/{id}/verify`, `POST /customer-payments/{id}/reject` (body carries `reason`, 1 to 500 characters).
 - Error codes: `payment.already_verified`, `incidence.reason_required`.
