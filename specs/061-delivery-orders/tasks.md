@@ -266,7 +266,7 @@ description: "Task list for 061-delivery-orders"
 
 - [x] T039 Add the action matrix test (SC-003, data-model §3, analysis E1) to `test/widget/features/sales/delivery_order_detail_screen_test.dart`: one table-driven test over all 11 statuses × both types × with and without `deliveryOrders` update. For each case, assert the exact set of action keys present (`delivery_order_confirm`, `_cancel`, `_requeue`, `_ready`, `_pickup`, `_edit_header`, `_add_line`, and the line ✎/🗑) and that every other key is absent. "Agregar línea" also varies with Sales Orders read. Without update, the set is empty. This needs every story's buttons, so it runs after T038.
 
-- [ ] T040 [P] Create the live test `integration_test/delivery_orders_quickstart_test.dart` (R12), following `payment_verification_quickstart_test.dart` and `customer_refunds_quickstart_test.dart`:
+- [x] T040 [P] Create the live test `integration_test/delivery_orders_quickstart_test.dart` (R12), following `payment_verification_quickstart_test.dart` and `customer_refunds_quickstart_test.dart`:
   - Read-only by default: the list opens, a filter narrows it, and an order's detail loads with its events.
   - With `MBE_WRITE=true`, it raises a draft through the POS repository from a completed 1-unit sale, then edits the header, confirms and cancels it, and checks the history. It also confirms a pickup draft, marks it ready, and hands it over with a generated 1×1 PNG.
   - Discover its fixtures at run time (see the memory note on live-backend tests). Requeue isn't automated: it needs an itinerary, so quickstart step 9 covers it.
