@@ -148,4 +148,4 @@ The view itself is still gated on Customer Payments read (spec 054). This featur
 - a `rejections` read for a payment, with reason, who and when;
 - a `last_rejection` summary or a `rejected` filter on `/customer-payments/unverified`.
 
-It must be filed before the PR, but it doesn't block this feature. Until it ships, the queue makes no claim about rejection (FR-012).
+Filed as mbe-api#310 (2026-11-14). It doesn't block this feature. Until it ships, the queue makes no claim about rejection (FR-012).

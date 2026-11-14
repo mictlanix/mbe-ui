@@ -6,7 +6,7 @@
 
 Roadmap: Closes mictlanix/mbe-roadmap#27.
 
-Upstream: an mbe-api issue for rejection visibility must be filed before the PR (FR-016, R11). It doesn't block this feature. Every endpoint used already exists in the generated client.
+Upstream: mbe-api#310 (rejection visibility, filed 2026-11-14; FR-016, R11). It doesn't block this feature. Every endpoint used already exists in the generated client.
 
 ## Summary
 
@@ -134,7 +134,7 @@ test/unit/…, test/widget/…, integration_test/payment_verification_quickstart
 ## Dependencies and risks
 
 - **Facilities (29) read (R7):** facility names and the facility facet call `/facilities`. A verifier without that right sees `#id` and gets no facility facet. The queue still works and still spans every facility.
-- **Rejection visibility (R11, FR-012):** rejected payments look unchecked until mbe-api exposes rejections. The issue is filed before the PR.
+- **Rejection visibility (R11, FR-012):** rejected payments look unchecked until mbe-api exposes rejections. Filed as mbe-api#310.
 - **Live writes are irreversible:** each `MBE_WRITE` run leaves three verified 1.00 transfers and one rejected, still-unverified 1.00 transfer on the dev tenant. Never verify a seeded fixture.
 - **Core helper change (C3):** every list screen uses `buildCatalogRowActions`. The new parameter is optional and asserted exclusive with `onEdit`. The existing helper tests plus new cases pin the old behaviour.
 

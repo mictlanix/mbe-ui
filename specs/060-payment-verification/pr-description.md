@@ -20,7 +20,7 @@ Supervisors can now verify customer payments, usually bank transfers, against th
 **Constitution §VI deviation (recorded in `plan.md`, Complexity Tracking).** The row panel is a second surface for customer payments, beside the Pagos screen. A row tap can't open Pagos: it refuses another facility's payment to a verifier without Payments Editor read, and the queue spans every facility. §VI isn't amended; this is a one-off.
 
 **Known limits.**
-- **Rejected payments look unchecked.** The server only writes the rejection to its incidence log; nothing reads it back, so a rejected payment looks like one nobody has checked. Filed as mbe-api#TBD (FR-016).
+- **Rejected payments look unchecked.** The server only writes the rejection to its incidence log; nothing reads it back, so a rejected payment looks like one nobody has checked. Filed as mbe-api#310 (FR-016).
 - **Without Facilities read** (29), a verifier sees the facility's number instead of its name and gets no facility filter. The queue still lists every facility.
 - **No undo:** the server has no way to unverify a payment, so the confirmation says so.
 
@@ -28,7 +28,7 @@ Supervisors can now verify customer payments, usually bank transfers, against th
 
 Closes mictlanix/mbe-roadmap#27
 
-Upstream: mbe-api#TBD (rejection visibility), not blocking.
+Upstream: mbe-api#310 (rejection visibility, filed 2026-11-14), not blocking.
 
 ## Test plan
 

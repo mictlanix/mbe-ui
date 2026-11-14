@@ -80,7 +80,7 @@ A supervisor looking up a customer's payment in Pagos sees it marked "Sin verifi
 
 - **Already verified by someone else.** Two supervisors work the same queue. The second to verify is refused. The app says the payment was already verified and removes the row (or refreshes the payment view).
 - **Another facility's payment.** The queue lists and acts on payments from every facility. A verifier without Payments Editor read can't open those payments in Pagos (spec 055). So the queue row itself must show everything needed to decide, and must not depend on opening the payment.
-- **Rejected payments come back.** The server records only the rejection, so a rejected payment stays unverified, and nothing in the app can show that it was rejected. Each time the queue loads, rejected payments look the same as payments nobody has checked. The rejection still leaves a record with who, when and why. An mbe-api issue asks the server to expose that rejection so the queue can mark or hide those payments later.
+- **Rejected payments come back.** The server records only the rejection, so a rejected payment stays unverified, and nothing in the app can show that it was rejected. Each time the queue loads, rejected payments look the same as payments nobody has checked. The rejection still leaves a record with who, when and why. mbe-api#310 asks the server to expose that rejection so the queue can mark or hide those payments later.
 - **Rejecting twice.** The server accepts it and records a second rejection. The app doesn't prevent it, because it can't tell.
 - **Verifying a payment after its rejection.** Allowed. Rejection doesn't block verification.
 - **Empty queue.** The queue says there are no unverified payments for the current filters. It offers to clear them when they differ from the opening filters (transfers, every facility, any date).
@@ -123,7 +123,7 @@ A supervisor looking up a customer's payment in Pagos sees it marked "Sin verifi
 
 - **FR-014**: When the server refuses a verification or rejection, the app MUST show the reason in the user's language, from the error code, and reload the affected payment. An already-verified payment is reported as such.
 - **FR-015**: Every new label, message and error MUST be available in Spanish and English.
-- **FR-016**: An mbe-api issue MUST be filed asking the server to expose a payment's rejections (or a rejected flag on the unverified list), and linked from this spec, before the feature ships.
+- **FR-016**: An mbe-api issue MUST be filed asking the server to expose a payment's rejections (or a rejected flag on the unverified list), and linked from this spec, before the feature ships. Filed as mbe-api#310 (2026-11-14).
 
 ### Key Entities
 
