@@ -38,11 +38,11 @@ Upstream: mbe-api#310 (rejection visibility, filed 2026-11-14), not blocking.
   - Read-only: the queue opens on transfers with the API's own total; "Todos" lists every method; a row tap opens the panel; the queue and the panel at the largest text size at 1680 px with real fonts.
   - Writes, each on a fresh 1.00 transfer: verify from the queue (the row leaves, the server agrees); reject from the queue (reason required, the row stays, the server shows it unverified); verify from the payment view (the buttons go, "Verificado" shows); verify a payment the API verified underneath a stale row (the Spanish "already verified" message, and the row goes).
 - [x] Found and fixed by the live run: the amount column clipped "$150,000.00 MXN" by up to 10 px at the largest text size. It is now wider, and the method column narrower.
-- [ ] Manual (quickstart steps 2, 6, 9, plus the SC-001/SC-002 stopwatch pass): log in as `qa054payments` and confirm the queue is neither listed nor reachable; verify one row from two windows; phone width on a real device. The automated tests cover each of these with fixtures (router tests, the stale-row live step, compact widget tests), but not as a person using the app.
+- [x] Manual checks (T019, quickstart steps 2, 6, 9 and the SC-001/SC-002 timing): done by hand. In step 6 the stale row in a second window showed "Otra persona ya verificó este pago." with only "Cerrar" left.
 - [ ] Goldens (`test/golden`): the same 6 known failures as `main` (Flutter 3.44.2 baselines on 3.47.7). None comes from this branch: the new `primaryAction` only renders when a caller passes one, and the goldens don't. Baselines belong with mbe-ui#209.
 - Dev tenant: verification can't be undone and payments can't be deleted, so each write run leaves its payments.
   - **Verified:** 300919, 300920, 300921, 300923, 300924.
   - **Rejected, still unverified:** 300922.
-  - **Unverified, left by a first run** whose queue steps failed before the refresh fix in the test: 300917, 300918.
+  - **Left by a first run** whose queue steps failed before the refresh fix in the test: 300917 (still unverified) and 300918 (verified later during the manual two-window check).
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
