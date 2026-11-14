@@ -53,7 +53,7 @@ None of these blocks the feature. Each one leaves something temporarily differen
 
 ## Manual checks (quickstart.md)
 
-**Not run yet.** These still need someone at the app:
+**Not run yet**; tracked in #242. These still need someone at the app:
 
 - Step 1: `qanoaccess` sees no entry and the URL is refused. The router tests cover the gate.
 - Step 6: too little notice. The local tenant has no minimum set.
