@@ -199,6 +199,7 @@ abstract class SalesOrderRepository {
     bool mine = false,
     int? facility,
     int? salesperson,
+    int? customer,
     SaleStatus? status,
     DateTime? dateFrom,
     DateTime? dateTo,

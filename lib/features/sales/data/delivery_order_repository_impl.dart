@@ -67,7 +67,7 @@ class DeliveryOrderRepositoryImpl implements DeliveryOrderRepository {
               lines.map(
                 (line) => api.DeliveryOrderLineRequest((lb) {
                   lb.salesOrderDetail = line.salesOrderDetail;
-                  _setQuantity1(lb.quantity, line.quantity);
+                  setQuantity1(lb.quantity, line.quantity);
                 }),
               ),
             );
@@ -123,7 +123,7 @@ class DeliveryOrderRepositoryImpl implements DeliveryOrderRepository {
             deliveryOrderId: destinationId,
             deliveryOrderLineRequest: api.DeliveryOrderLineRequest((b) {
               b.salesOrderDetail = salesOrderDetail;
-              _setQuantity1(b.quantity, quantity);
+              setQuantity1(b.quantity, quantity);
             }),
           );
       final result = response.data;
@@ -146,7 +146,7 @@ class DeliveryOrderRepositoryImpl implements DeliveryOrderRepository {
             deliveryOrderId: destinationId,
             lineId: lineId,
             deliveryOrderLineUpdate: api.DeliveryOrderLineUpdate((b) {
-              _setQuantity1(b.quantity, quantity);
+              setQuantity1(b.quantity, quantity);
             }),
           );
       final result = response.data;
@@ -206,6 +206,12 @@ class DeliveryOrderRepositoryImpl implements DeliveryOrderRepository {
       // so each is read back in full.
       final destinations = <Destination>[];
       for (final summary in summaries) {
+        // The server's own coverage sum excludes CANCELLED, so the
+        // distribution panel must not count one as claimed (spec 061 R9).
+        if (DeliveryOrderStatus.fromApi(summary.status) ==
+            DeliveryOrderStatus.cancelled) {
+          continue;
+        }
         final detail = await _api
             .getDeliveryOrderApiV1DeliveryOrdersDeliveryOrderIdGet(
               deliveryOrderId: summary.deliveryOrderId,
@@ -229,6 +235,6 @@ AppError _toAppError(DioException error) {
 /// update-line bodies — the generator gives both the same `Quantity1`
 /// wrapper, so one setter serves both. Same String arm, key `0`, as
 /// everywhere else (see `sales_order_repository_impl.dart`).
-void _setQuantity1(api.Quantity1Builder builder, String value) {
+void setQuantity1(api.Quantity1Builder builder, String value) {
   builder.anyOf = AnyOf2<String, num>(values: {0: value});
 }

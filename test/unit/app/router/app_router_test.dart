@@ -60,6 +60,9 @@ import 'package:mbe_ui/features/sales/data/customer_refund_repository_impl.dart'
 import 'package:mbe_ui/features/sales/domain/repositories/customer_refund_repository.dart'
     show RefundListResult;
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
+import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/features/sales/data/delivery_order_admin_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_admin_repository.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_quote_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/current_session.dart';
@@ -75,6 +78,9 @@ import '../../../widget/features/sales/pos_test_harness.dart'
 class MockProductRepository extends Mock implements ProductRepository {}
 
 class MockFacilityRepository extends Mock implements FacilityRepository {}
+
+class MockDeliveryOrderAdminRepository extends Mock
+    implements DeliveryOrderAdminRepository {}
 
 class MockUserRepository extends Mock implements UserRepository {}
 
@@ -300,6 +306,20 @@ const _customerRefundsReaderUser = User(
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.customerRefunds, rawValue: 2),
+  ],
+);
+
+/// Holds read on `deliveryOrders` (71) alone — the gate for spec 061's
+/// `/sales/delivery-orders*` routes, its own privilege so it is not folded
+/// into Pedidos.
+const _deliveryOrdersReaderUser = User(
+  userId: 'delivery-orders-reader',
+  email: 'delivery-orders-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.deliveryOrders, rawValue: 2),
   ],
 );
 
@@ -704,6 +724,17 @@ void main() {
     // resulting `MissingStubError` as an `AsyncError`, same as the orders
     // route does today.
 
+    // 061-delivery-orders: the fixture users have no facility, so the list
+    // sends no request; the detail screen reads its order eagerly, and this
+    // one is not found.
+    final deliveryOrderAdminRepository = MockDeliveryOrderAdminRepository();
+    when(
+      () => deliveryOrderAdminRepository.getById(any()),
+    ).thenThrow(const AppError.notFound());
+    when(
+      () => deliveryOrderAdminRepository.events(any()),
+    ).thenAnswer((_) async => const []);
+
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
 
@@ -763,6 +794,9 @@ void main() {
         ),
         customerRefundRepositoryProvider.overrideWithValue(
           customerRefundRepository,
+        ),
+        deliveryOrderAdminRepositoryProvider.overrideWithValue(
+          deliveryOrderAdminRepository,
         ),
       ],
     );
@@ -1311,6 +1345,92 @@ void main() {
 
       expect(handle.router.state.uri.path, '/sales/refunds/abc');
       expect(find.byKey(const Key('refund_not_found')), findsOneWidget);
+    });
+  });
+
+  group('061-delivery-orders — /sales/delivery-orders* gates on '
+      'deliveryOrders (71) read', () {
+    testWidgets('a user with deliveryOrders:read reaches the list (here the '
+        'no-facility notice, as the fixture user has none)', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _deliveryOrdersReaderUser,
+        '/sales/delivery-orders',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/sales/delivery-orders');
+      expect(
+        find.byKey(const Key('delivery_orders_no_facility')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a user without deliveryOrders:read is redirected home', (
+      tester,
+    ) async {
+      final list = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/sales/delivery-orders',
+      );
+      expect(list.router.state.uri.path, '/');
+    });
+
+    testWidgets('salesOrders:read alone does not open the list or an order', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _salesOrdersReaderUser,
+        '/sales/delivery-orders/9',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('activates shell branch NavBranch.deliveryOrders (26)', (
+      tester,
+    ) async {
+      await pumpAt(tester, _deliveryOrdersReaderUser, '/sales/delivery-orders');
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.deliveryOrders, 26);
+      expect(shell.navigationShell.currentIndex, NavBranch.deliveryOrders);
+    });
+
+    testWidgets('a user with deliveryOrders:read reaches an order', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _deliveryOrdersReaderUser,
+        '/sales/delivery-orders/9',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/sales/delivery-orders/9');
+      expect(find.byKey(const Key('delivery_order_not_found')), findsOneWidget);
+    });
+
+    testWidgets('a user without deliveryOrders:read is redirected from an '
+        'order', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/sales/delivery-orders/9',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a non-numeric id gives the not-found state', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _deliveryOrdersReaderUser,
+        '/sales/delivery-orders/abc',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/sales/delivery-orders/abc');
+      expect(find.byKey(const Key('delivery_order_not_found')), findsOneWidget);
     });
   });
 

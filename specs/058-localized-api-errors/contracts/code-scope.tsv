@@ -41,20 +41,20 @@ code	customer.default_not_deletable	409	—	IN	DELETE /customers/{}	reachable fr
 code	customer.no_credit_limit	422	customer_id: int	IN	POST /sales-orders; POST /sales-quotes/{}/convert	reachable from 3 UI route(s)
 code	customer.walk_in_no_credit	422	—	IN	POST /sales-orders; POST /sales-quotes/{}/convert	reachable from 3 UI route(s)
 code	customer_discount.product_not_found	422	product_id: int	IN	POST /customers/{}/discounts	reachable from 1 UI route(s)
-code	delivery_order.insufficient_notice	422	min_hours: int, earliest: datetime	OUT		
+code	delivery_order.insufficient_notice	422	min_hours: int, earliest: datetime	IN	POST /delivery-orders/{}/confirm	reachable from the delivery order detail screen (spec 061)
 code	delivery_order.line_already_present	409	sales_order_line_id: int, delivery_order_line_id: int	IN	POST /delivery-orders/{}/lines	reachable from 1 UI route(s)
 code	delivery_order.line_not_deliverable	422	sales_order_line_id: int	IN	POST /delivery-orders; POST /delivery-orders/{}/lines	reachable from 2 UI route(s)
 code	delivery_order.line_repeated	422	sales_order_line_id: int	IN	POST /delivery-orders	reachable from 1 UI route(s)
 code	delivery_order.mixed_not_allowed	422	—	IN	POST /delivery-orders	reachable from 1 UI route(s)
-code	delivery_order.no_lines	409	—	OUT		
+code	delivery_order.no_lines	409	—	IN	POST /delivery-orders/{}/confirm	reachable from the delivery order detail screen (spec 061)
 code	delivery_order.no_lines_from_warehouse	422	warehouse_id: int	OUT		
 code	delivery_order.not_approved	409	status: enum:DeliveryOrderStatus	OUT		
-code	delivery_order.not_editable	409	status: enum:DeliveryOrderStatus	IN	DELETE /delivery-orders/{}/lines/{}; POST /delivery-orders/{}/lines	reachable from 4 UI route(s)
-code	delivery_order.not_failed	409	status: enum:DeliveryOrderStatus	OUT		
+code	delivery_order.not_editable	409	status: enum:DeliveryOrderStatus	IN	DELETE /delivery-orders/{}/lines/{}; POST /delivery-orders/{}/confirm; POST /delivery-orders/{}/lines; PUT /delivery-orders/{}	reachable from 6 UI route(s)
+code	delivery_order.not_failed	409	status: enum:DeliveryOrderStatus	IN	POST /delivery-orders/{}/requeue	reachable from the delivery order detail screen (spec 061)
 code	delivery_order.not_in_preparation	409	status: enum:DeliveryOrderStatus	OUT		
 code	delivery_order.not_pending_approval	409	status: enum:DeliveryOrderStatus, action: str (`approve` or `reject`)	OUT		
 code	delivery_order.pickup_not_loadable	409	—	OUT		
-code	delivery_order.proof_incomplete	422	—	OUT		
+code	delivery_order.proof_incomplete	422	—	IN	POST /delivery-orders/{}/pickup	reachable from the delivery order detail screen (spec 061)
 code	delivery_order.quantity_exceeds_remaining	422	sales_order_line_id: int, remaining: decimal, requested: decimal	IN	POST /delivery-orders; POST /delivery-orders/{}/lines	reachable from 3 UI route(s)
 code	delivery_order.reason_required	422	to: enum:DeliveryOrderStatus	IN	POST /delivery-orders/{}/cancel	reachable from 1 UI route(s)
 code	delivery_order.sales_order_fully_delivered	409	—	IN	POST /delivery-orders	reachable from 1 UI route(s)
@@ -122,8 +122,8 @@ code	fiscal_document.unknown_facility	422	facility_id: int	OUT
 code	fiscal_document.unknown_usage	422	usage: str	OUT		
 code	fiscal_document.version_not_printable	409	version: str	OUT		
 code	fiscal_document.xml_unavailable	409	—	OUT		
-code	image.too_large	422	max_bytes: int	IN	POST /facilities/{}/logo; POST /products/{}/image	reachable from 2 UI route(s)
-code	image.unsupported_format	422	—	IN	POST /facilities/{}/logo; POST /products/{}/image	reachable from 2 UI route(s)
+code	image.too_large	422	max_bytes: int	IN	POST /delivery-orders/{}/pickup; POST /facilities/{}/logo; POST /products/{}/image	reachable from 3 UI route(s)
+code	image.unsupported_format	422	—	IN	POST /delivery-orders/{}/pickup; POST /facilities/{}/logo; POST /products/{}/image	reachable from 3 UI route(s)
 code	incidence.reason_required	422	—	IN	DELETE /facilities/{}; DELETE /products/{}	reachable from 10 UI route(s)
 code	inventory_count.batch_invalid	422	— (`errors[]`: index, product or product_code, reason, code)	OUT		
 code	inventory_count.confirmed_cannot_cancel	409	—	OUT		
@@ -153,7 +153,7 @@ code	itinerary.stop_lines_malformed	422	—	OUT
 code	itinerary.stop_shortfall_needs_reason	422	line_id: int	OUT		
 code	kardex.range_reversed	422	—	OUT		
 code	kardex.range_too_long	422	max_days: int	OUT		
-code	lock.busy	409	resource: str (`warehouse`, `facility` or `sales_order`)	IN	POST /customer-payments; POST /customer-refunds/{}/confirm	reachable from 4 UI route(s)
+code	lock.busy	409	resource: str (`warehouse`, `facility` or `sales_order`)	IN	POST /customer-payments; POST /customer-refunds/{}/confirm; POST /delivery-orders/{}/confirm	reachable from 5 UI route(s)
 code	payment.already_verified	409	—	IN	POST /customer-payments/{}/verify	reachable from the payment verification queue and the payment view (spec 060)
 code	payment.application_reversed	409	—	IN	POST /customer-payments/{}/applications/{}/reverse	reachable from the payment view and the Pedidos payments dialog (spec 059)
 code	payment.currency_mismatch	422	payment_currency: enum:CurrencyCode, order_currency: enum:CurrencyCode	IN	POST /customer-payments/{}/applications	reachable from the payment view and the Pedidos payments dialog (spec 059)
@@ -226,7 +226,7 @@ code	sales_order.not_confirmed	409	sales_order_id: int	OUT
 code	sales_order.paid_cannot_cancel	409	—	IN	POST /sales-orders/{}/cancel	reachable from 1 UI route(s)
 code	sales_order.zero_priced_lines	409	— (dict `detail` kept: message, lines)	IN	POST /sales-orders/{}/confirm	reachable from 1 UI route(s)
 code	server.error	500	—	IN	every route (unhandled exception)	generic/framework
-code	state.transition_invalid	409	resource: str, from: enum, to: enum, required?: enum	IN	POST /delivery-orders/{}/cancel	reachable from 1 UI route(s)
+code	state.transition_invalid	409	resource: str, from: enum, to: enum, required?: enum	IN	POST /delivery-orders/{}/cancel; POST /delivery-orders/{}/pickup; POST /delivery-orders/{}/ready-for-pickup	reachable from 3 UI route(s)
 code	status_filter.unsupported	422	allowed: list[str]	OUT		
 code	supplier_agreement.end_before_start	422	start: date, end: date	IN	POST /suppliers/{}/agreements	reachable from 1 UI route(s)
 code	supplier_payment.already_cancelled	409	—	OUT		
