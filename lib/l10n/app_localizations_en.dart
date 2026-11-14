@@ -6080,4 +6080,62 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentApplyNoMatches => 'No order matches the search.';
+
+  @override
+  String get paymentVerificationMenuTitle => 'Payment verification';
+
+  @override
+  String get paymentVerificationEmpty =>
+      'There are no unverified payments for these filters.';
+
+  @override
+  String get paymentVerificationMethodAll => 'All';
+
+  @override
+  String get paymentVerificationFacilityAll => 'All';
+
+  @override
+  String get paymentVerifyAction => 'Verify';
+
+  @override
+  String get paymentRejectAction => 'Reject';
+
+  @override
+  String get paymentVerifyTitle => 'Verify payment';
+
+  @override
+  String get paymentRejectTitle => 'Reject payment';
+
+  @override
+  String get paymentVerifyIrreversible =>
+      'Confirm the money is in the bank. This can\'t be undone.';
+
+  @override
+  String get paymentRejectReasonLabel => 'Reason';
+
+  @override
+  String get paymentRejectNote =>
+      'The payment stays unverified; the rejection is recorded with your name and the date.';
+
+  @override
+  String paymentVerifiedSnack(String id) {
+    return 'Payment $id verified.';
+  }
+
+  @override
+  String paymentRejectedSnack(String id) {
+    return 'Rejection recorded. Payment $id stays unverified and stays in the verification list.';
+  }
+
+  @override
+  String get paymentVerifyUnknown =>
+      'We don\'t know whether it was verified: the connection was lost. The list was refreshed.';
+
+  @override
+  String get paymentRejectUnknown =>
+      'We don\'t know whether the rejection was recorded: the connection was lost. The list was refreshed.';
+
+  @override
+  String get apiErrorPaymentAlreadyVerified =>
+      'Someone else already verified this payment.';
 }

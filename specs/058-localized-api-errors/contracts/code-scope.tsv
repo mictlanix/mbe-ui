@@ -154,7 +154,7 @@ code	itinerary.stop_shortfall_needs_reason	422	line_id: int	OUT
 code	kardex.range_reversed	422	—	OUT		
 code	kardex.range_too_long	422	max_days: int	OUT		
 code	lock.busy	409	resource: str (`warehouse`, `facility` or `sales_order`)	IN	POST /customer-payments; POST /customer-refunds/{}/confirm	reachable from 4 UI route(s)
-code	payment.already_verified	409	—	OUT		
+code	payment.already_verified	409	—	IN	POST /customer-payments/{}/verify	reachable from the payment verification queue and the payment view (spec 060)
 code	payment.application_reversed	409	—	IN	POST /customer-payments/{}/applications/{}/reverse	reachable from the payment view and the Pedidos payments dialog (spec 059)
 code	payment.currency_mismatch	422	payment_currency: enum:CurrencyCode, order_currency: enum:CurrencyCode	IN	POST /customer-payments/{}/applications	reachable from the payment view and the Pedidos payments dialog (spec 059)
 code	payment.customer_mismatch	422	payment_customer_id: int, order_customer_id: int	IN	POST /customer-payments/{}/applications	reachable from the payment view and the Pedidos payments dialog (spec 059)

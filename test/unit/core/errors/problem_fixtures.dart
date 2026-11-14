@@ -72,6 +72,7 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.imagePeriodUnsupportedFormat: {},
   api.ErrorCode.incidencePeriodReasonRequired: {},
   api.ErrorCode.lockPeriodBusy: {'resource': 'warehouse'},
+  api.ErrorCode.paymentPeriodAlreadyVerified: {},
   api.ErrorCode.paymentPeriodApplicationReversed: {},
   api.ErrorCode.paymentPeriodCurrencyMismatch: {
     'payment_currency': 'MXN',

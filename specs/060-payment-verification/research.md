@@ -138,7 +138,7 @@ The view itself is still gated on Customer Payments read (spec 054). This featur
 
 **Live test:** `integration_test/payment_verification_quickstart_test.dart`, run as the admin account.
 - **Read steps** are always on.
-- **Write steps** run only with `--dart-define=MBE_WRITE=true`. Verification can't be undone, so each write uses a fresh 1.00 transfer, recorded as a credit payment (`PaymentType.creditPayment`, `PaymentMethod.eft`), which needs no cash session (spec 059 FR-015). One is verified from the queue, one is rejected and stays in the queue, and one is verified from the payment view. Each run leaves two verified 1.00 transfers and one rejected, still-unverified one behind.
+- **Write steps** run only with `--dart-define=MBE_WRITE=true`. Verification can't be undone, so each write uses a fresh 1.00 transfer, recorded as a credit payment (`PaymentType.creditPayment`, `PaymentMethod.eft`), which needs no cash session (spec 059 FR-015). One is verified from the queue, one is rejected and stays in the queue, one is verified from the payment view, and one is verified through the API under a stale queue row to check the already-verified refusal live. Each run leaves three verified 1.00 transfers and one rejected, still-unverified one behind.
 
 **Text size:** the largest of the four text sizes is checked in the live walkthrough, at desktop width with real fonts (§V). The queue has 8 columns.
 

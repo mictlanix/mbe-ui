@@ -37,7 +37,12 @@ class CatalogRowAction {
 /// first, omitted when [onEdit] is `null` rather than rendered disabled, so
 /// callers decide visibility based on `AccessControlService.can(...)`.
 ///
-/// [extraActions] adds row-level actions beyond Edit:
+/// [primaryAction] takes Edit's slot on a row that has no Edit because its
+/// record isn't editable there (a payment in the verification queue, as in
+/// the Pagos list, spec 060). It is never a way to replace Edit on an
+/// editable record, so passing both [onEdit] and [primaryAction] is an error.
+///
+/// [extraActions] adds row-level actions beyond Edit (or the primary action):
 /// - Zero or one extra action renders as its own direct icon.
 /// - Two or more collapse behind a single overflow ("kebab") menu icon
 ///   instead of stacking more row icons — a row MUST show at most two icons
@@ -48,10 +53,16 @@ class CatalogRowAction {
 List<Widget> buildCatalogRowActions({
   required String editTooltip,
   VoidCallback? onEdit,
+  CatalogRowAction? primaryAction,
   List<CatalogRowAction> extraActions = const [],
   String? moreActionsTooltip,
   Key? editKey,
 }) {
+  assert(
+    onEdit == null || primaryAction == null,
+    'primaryAction takes the slot Edit would hold, so a row cannot have both '
+    '(constitution §VI, v1.7.0 — at most two icons)',
+  );
   assert(
     extraActions.length <= 1 || moreActionsTooltip != null,
     'moreActionsTooltip is required once extraActions has more than one '
@@ -66,6 +77,14 @@ List<Widget> buildCatalogRowActions({
         tooltip: editTooltip,
         visualDensity: VisualDensity.compact,
         onPressed: onEdit,
+      ),
+    if (primaryAction != null)
+      IconButton(
+        key: primaryAction.key,
+        icon: Icon(primaryAction.icon),
+        tooltip: primaryAction.tooltip,
+        visualDensity: VisualDensity.compact,
+        onPressed: primaryAction.onPressed,
       ),
     if (extraActions.length == 1)
       IconButton(

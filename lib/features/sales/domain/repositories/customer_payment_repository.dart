@@ -116,6 +116,35 @@ abstract class CustomerPaymentRepository {
   /// (mbe-api#271), so the screen applies its own guard (spec 054 R4).
   Future<CustomerPayment> get({required int customerPaymentId});
 
+  /// `GET /customer-payments/unverified` — the verification queue (spec 060
+  /// R2), newest first. It covers **every facility** on purpose: mbe-api gates
+  /// it on Payments Verification read and verification is company-wide, so
+  /// unlike [list] there is no required facility. [facilityId] only narrows.
+  /// [dateFrom]/[dateTo] are inclusive wall-clock days. The server's amount
+  /// range is deliberately not exposed.
+  Future<CustomerPaymentListResult> listUnverified({
+    int? facilityId,
+    DateTime? dateFrom,
+    DateTime? dateTo,
+    int? methodCode,
+    int skip = 0,
+    int limit = 20,
+  });
+
+  /// `POST /customer-payments/{id}/verify` — sets the verifier to the caller.
+  /// Irreversible: the server has no way back. A payment someone else
+  /// verified first is `payment.already_verified`.
+  Future<CustomerPayment> verify({required int customerPaymentId});
+
+  /// `POST /customer-payments/{id}/reject` — records [reason] (1–500 chars)
+  /// against the payment. It changes nothing on the payment itself, which
+  /// stays unverified, and nothing reads the rejection back (spec 060
+  /// FR-012).
+  Future<CustomerPayment> reject({
+    required int customerPaymentId,
+    required String reason,
+  });
+
   /// `GET /customer-payments/{id}/applications` — every application,
   /// reversed ones included, in the server's order.
   Future<List<PaymentApplication>> listApplications({

@@ -23,6 +23,8 @@ import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_im
 import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/domain/payment_type.dart';
+import 'package:mbe_ui/features/sales/presentation/payment_verification/reject_payment_dialog.dart';
+import 'package:mbe_ui/features/sales/presentation/payment_verification/verify_payment_dialog.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/apply_payment_dialog.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_detail_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_link_providers.dart';
@@ -40,7 +42,9 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// Spec 054 left the screen read-only (FR-003); spec 059 adds the two Payments
 /// Editor actions in the body, where the data they change is: "Aplicar a
 /// pedido" next to the summary, and a reverse icon on each live application.
-/// Verifying or rejecting a payment still belongs to Verification (#27).
+/// Spec 060 adds "Verificar" and "Rechazar" in the header, beside the verified
+/// chip they change, for an unverified payment and a user with Payments
+/// Verification (108) update.
 ///
 /// Gated by Customer Payments (8) read; [paymentDetailProvider] additionally
 /// refuses another facility's payment unless the user is a Payments Editor.
@@ -137,6 +141,14 @@ class _PaymentBody extends ConsumerWidget {
         payment.cashSessionId != null &&
         access.can(SystemObject.pos, AccessRight.read);
 
+    // spec 060 FR-013: verify or reject an unverified payment. The right is
+    // Payments Verification update, not a Customer Payments one: it mirrors
+    // the server, where verification is its own right and acts on any
+    // facility's payment.
+    final canVerify =
+        !payment.isVerified &&
+        access.can(SystemObject.paymentsVerification, AccessRight.update);
+
     // spec 059 FR-005: money left to apply, on a payment of the user's own
     // facility — the server lists only that facility's outstanding orders
     // (mbe-api#308), so another facility's payment can't be applied from here.
@@ -165,6 +177,20 @@ class _PaymentBody extends ConsumerWidget {
                     style: Theme.of(context).textTheme.titleLarge,
                   ),
                   PaymentVerifiedChip(verified: payment.isVerified),
+                  if (canVerify) ...[
+                    OutlinedButton.icon(
+                      key: const Key('payment_verify_button'),
+                      onPressed: () => _verify(context, payment),
+                      icon: const Icon(Icons.check_circle_outline),
+                      label: Text(l10n.paymentVerifyAction),
+                    ),
+                    OutlinedButton.icon(
+                      key: const Key('payment_reject_button'),
+                      onPressed: () => _reject(context, payment),
+                      icon: const Icon(Icons.block),
+                      label: Text(l10n.paymentRejectAction),
+                    ),
+                  ],
                 ],
               ),
               Wrap(
@@ -332,6 +358,29 @@ class _PaymentBody extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Verifies [payment] after its confirmation, and says so once it went
+/// through. The view reloads by itself: the write controller invalidates the
+/// payment (spec 060 R4).
+Future<void> _verify(BuildContext context, CustomerPayment payment) async {
+  final messenger = ScaffoldMessenger.of(context);
+  final message = AppLocalizations.of(
+    context,
+  )!.paymentVerifiedSnack('${payment.customerPaymentId}');
+  final done = await showVerifyPaymentDialog(context, payment);
+  if (done) messenger.showSnackBar(SnackBar(content: Text(message)));
+}
+
+/// Rejects [payment] with a reason. The payment stays unverified, so the
+/// buttons stay too (spec 060 FR-011).
+Future<void> _reject(BuildContext context, CustomerPayment payment) async {
+  final messenger = ScaffoldMessenger.of(context);
+  final message = AppLocalizations.of(
+    context,
+  )!.paymentRejectedSnack('${payment.customerPaymentId}');
+  final done = await showRejectPaymentDialog(context, payment);
+  if (done) messenger.showSnackBar(SnackBar(content: Text(message)));
 }
 
 class _Labeled extends StatelessWidget {

@@ -6131,4 +6131,62 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get paymentApplyNoMatches => 'Ningún pedido coincide con la búsqueda.';
+
+  @override
+  String get paymentVerificationMenuTitle => 'Verificación de pagos';
+
+  @override
+  String get paymentVerificationEmpty =>
+      'No hay pagos sin verificar con estos filtros.';
+
+  @override
+  String get paymentVerificationMethodAll => 'Todos';
+
+  @override
+  String get paymentVerificationFacilityAll => 'Todas';
+
+  @override
+  String get paymentVerifyAction => 'Verificar';
+
+  @override
+  String get paymentRejectAction => 'Rechazar';
+
+  @override
+  String get paymentVerifyTitle => 'Verificar pago';
+
+  @override
+  String get paymentRejectTitle => 'Rechazar pago';
+
+  @override
+  String get paymentVerifyIrreversible =>
+      'Confirma que el dinero está en el banco. No se puede deshacer.';
+
+  @override
+  String get paymentRejectReasonLabel => 'Motivo';
+
+  @override
+  String get paymentRejectNote =>
+      'El pago seguirá sin verificar; el rechazo queda registrado con tu nombre y la fecha.';
+
+  @override
+  String paymentVerifiedSnack(String id) {
+    return 'Pago $id verificado.';
+  }
+
+  @override
+  String paymentRejectedSnack(String id) {
+    return 'Rechazo registrado. El pago $id sigue sin verificar y seguirá en la lista de verificación.';
+  }
+
+  @override
+  String get paymentVerifyUnknown =>
+      'No sabemos si se verificó: se perdió la conexión. La lista se actualizó.';
+
+  @override
+  String get paymentRejectUnknown =>
+      'No sabemos si se registró el rechazo: se perdió la conexión. La lista se actualizó.';
+
+  @override
+  String get apiErrorPaymentAlreadyVerified =>
+      'Otra persona ya verificó este pago.';
 }

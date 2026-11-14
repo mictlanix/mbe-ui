@@ -10095,6 +10095,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No order matches the search.'**
   String get paymentApplyNoMatches;
+
+  /// spec 060: nav label of the payment verification queue
+  ///
+  /// In en, this message translates to:
+  /// **'Payment verification'**
+  String get paymentVerificationMenuTitle;
+
+  /// spec 060: queue empty state
+  ///
+  /// In en, this message translates to:
+  /// **'There are no unverified payments for these filters.'**
+  String get paymentVerificationEmpty;
+
+  /// spec 060: queue method filter: every method
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get paymentVerificationMethodAll;
+
+  /// spec 060: queue facility filter: every facility
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get paymentVerificationFacilityAll;
+
+  /// spec 060: verify action (row icon tooltip and payment view button)
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get paymentVerifyAction;
+
+  /// spec 060: reject action (row icon tooltip and payment view button)
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get paymentRejectAction;
+
+  /// spec 060: verify dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Verify payment'**
+  String get paymentVerifyTitle;
+
+  /// spec 060: reject dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Reject payment'**
+  String get paymentRejectTitle;
+
+  /// spec 060: verify dialog: irreversibility notice
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm the money is in the bank. This can\'t be undone.'**
+  String get paymentVerifyIrreversible;
+
+  /// spec 060: reject dialog: reason field label
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get paymentRejectReasonLabel;
+
+  /// spec 060: reject dialog: what a rejection does
+  ///
+  /// In en, this message translates to:
+  /// **'The payment stays unverified; the rejection is recorded with your name and the date.'**
+  String get paymentRejectNote;
+
+  /// spec 060: snackbar after a verification
+  ///
+  /// In en, this message translates to:
+  /// **'Payment {id} verified.'**
+  String paymentVerifiedSnack(String id);
+
+  /// spec 060: snackbar after a rejection
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection recorded. Payment {id} stays unverified and stays in the verification list.'**
+  String paymentRejectedSnack(String id);
+
+  /// spec 060: verify dialog: network failure, result unknown
+  ///
+  /// In en, this message translates to:
+  /// **'We don\'t know whether it was verified: the connection was lost. The list was refreshed.'**
+  String get paymentVerifyUnknown;
+
+  /// spec 060: reject dialog: network failure, result unknown
+  ///
+  /// In en, this message translates to:
+  /// **'We don\'t know whether the rejection was recorded: the connection was lost. The list was refreshed.'**
+  String get paymentRejectUnknown;
+
+  /// spec 060: mbe-api error code `payment.already_verified`
+  ///
+  /// In en, this message translates to:
+  /// **'Someone else already verified this payment.'**
+  String get apiErrorPaymentAlreadyVerified;
 }
 
 class _AppLocalizationsDelegate

@@ -75,6 +75,11 @@ class NavBranch {
   // above — display order comes from position within `kNavigationTree` (this
   // destination sits right after `credit-notes` there).
   static const int customerRefunds = 24;
+
+  // 060-payment-verification: appended last, same rationale as `cashSessions`
+  // above — display order comes from position within `kNavigationTree` (this
+  // destination sits right after `payments` there).
+  static const int paymentVerification = 25;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -289,6 +294,22 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.salesPayments,
         gate: PrivilegeGate(SystemObject.customerPayments, AccessRight.read),
       ),
+      // 060-payment-verification: gated on `paymentsVerification` (108) read,
+      // matching the server's /customer-payments/unverified — not on
+      // `customerPayments`, since verification is a separate right and a
+      // verifier needs none of the others.
+      NavDestination(
+        id: 'payment-verification',
+        label: _paymentVerificationLabel,
+        icon: Icons.fact_check_outlined,
+        selectedIcon: Icons.fact_check,
+        route: '/sales/payment-verification',
+        branchIndex: NavBranch.paymentVerification,
+        gate: PrivilegeGate(
+          SystemObject.paymentsVerification,
+          AccessRight.read,
+        ),
+      ),
       // Gated on `creditPayments` (83), matching the server's credit-notes
       // read; the payment a note opens is gated separately, on
       // `customerPayments`, when the user taps a row.
@@ -379,6 +400,8 @@ String _posLabel(AppLocalizations l10n) => l10n.posMenuTitle;
 String _salesOrdersLabel(AppLocalizations l10n) => l10n.salesOrdersMenuTitle;
 String _salesQuotesLabel(AppLocalizations l10n) => l10n.salesQuotesMenuTitle;
 String _paymentsLabel(AppLocalizations l10n) => l10n.paymentsMenuTitle;
+String _paymentVerificationLabel(AppLocalizations l10n) =>
+    l10n.paymentVerificationMenuTitle;
 String _creditNotesLabel(AppLocalizations l10n) => l10n.creditNotesMenuTitle;
 String _refundsLabel(AppLocalizations l10n) => l10n.refundsMenuTitle;
 

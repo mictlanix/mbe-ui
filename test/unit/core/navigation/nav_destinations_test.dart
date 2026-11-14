@@ -204,7 +204,93 @@ void main() {
           },
       ];
 
-      expect(ids.indexOf('credit-notes'), ids.indexOf('payments') + 1);
+      // Verificación de pagos sits between Pagos and Notas de crédito
+      // (spec 060), so a user holding both rights sees them in that order.
+      expect(ids.indexOf('credit-notes'), greaterThan(ids.indexOf('payments')));
+    });
+  });
+
+  group('Verificación de pagos destination (spec 060 FR-001)', () {
+    test('a user without Payments Verification read has no entry', () {
+      expect(
+        visibleIds(multiCurrency: false, administrator: false),
+        isNot(contains('payment-verification')),
+      );
+      // Customer Payments read alone is not enough: verification is its own
+      // right, on the server too.
+      expect(
+        visibleIds(
+          multiCurrency: false,
+          administrator: false,
+          privileges: const [
+            Privilege(systemObject: SystemObject.customerPayments, rawValue: 2),
+          ],
+        ),
+        isNot(contains('payment-verification')),
+      );
+    });
+
+    test('a user with Payments Verification read has the entry', () {
+      expect(
+        visibleIds(
+          multiCurrency: false,
+          administrator: false,
+          privileges: const [
+            Privilege(
+              systemObject: SystemObject.paymentsVerification,
+              rawValue: 2,
+            ),
+          ],
+        ),
+        contains('payment-verification'),
+      );
+    });
+
+    test('an administrator has the entry', () {
+      expect(
+        visibleIds(multiCurrency: false, administrator: true),
+        contains('payment-verification'),
+      );
+    });
+
+    test('it sits right after Pagos, on its own branch', () {
+      final container = ProviderContainer(
+        overrides: [
+          multiCurrencyEnabledProvider.overrideWithValue(false),
+          accessControlProvider.overrideWithValue(
+            AccessControlService(
+              AuthState.authenticated(
+                token: 't',
+                user: const User(
+                  userId: 'u',
+                  email: 'u@example.com',
+                  administrator: true,
+                  status: EntityStatus.active,
+                  sessionVersion: 1,
+                  privileges: [],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      final destinations = [
+        for (final item in container.read(navDestinationsProvider))
+          ...switch (item) {
+            NavDestination() => [item],
+            NavGroup() => item.children.whereType<NavDestination>(),
+          },
+      ];
+      final ids = [for (final d in destinations) d.id];
+
+      expect(ids.indexOf('payment-verification'), ids.indexOf('payments') + 1);
+      expect(
+        destinations
+            .firstWhere((d) => d.id == 'payment-verification')
+            .branchIndex,
+        25,
+      );
     });
   });
 

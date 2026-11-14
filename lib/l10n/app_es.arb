@@ -1864,5 +1864,21 @@
   "salesOrderPaymentsButton": "Pagos",
   "salesOrderPaymentsTitle": "Pagos del pedido #{order}",
   "salesOrderPaymentOpenTooltip": "Abrir pago",
-  "paymentApplyNoMatches": "Ningún pedido coincide con la búsqueda."
+  "paymentApplyNoMatches": "Ningún pedido coincide con la búsqueda.",
+  "paymentVerificationMenuTitle": "Verificación de pagos",
+  "paymentVerificationEmpty": "No hay pagos sin verificar con estos filtros.",
+  "paymentVerificationMethodAll": "Todos",
+  "paymentVerificationFacilityAll": "Todas",
+  "paymentVerifyAction": "Verificar",
+  "paymentRejectAction": "Rechazar",
+  "paymentVerifyTitle": "Verificar pago",
+  "paymentRejectTitle": "Rechazar pago",
+  "paymentVerifyIrreversible": "Confirma que el dinero está en el banco. No se puede deshacer.",
+  "paymentRejectReasonLabel": "Motivo",
+  "paymentRejectNote": "El pago seguirá sin verificar; el rechazo queda registrado con tu nombre y la fecha.",
+  "paymentVerifiedSnack": "Pago {id} verificado.",
+  "paymentRejectedSnack": "Rechazo registrado. El pago {id} sigue sin verificar y seguirá en la lista de verificación.",
+  "paymentVerifyUnknown": "No sabemos si se verificó: se perdió la conexión. La lista se actualizó.",
+  "paymentRejectUnknown": "No sabemos si se registró el rechazo: se perdió la conexión. La lista se actualizó.",
+  "apiErrorPaymentAlreadyVerified": "Otra persona ya verificó este pago."
 }

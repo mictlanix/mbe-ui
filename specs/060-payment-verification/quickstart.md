@@ -12,12 +12,15 @@
 
 ```bash
 flutter test test/unit test/widget                    # unit + widget
-flutter test integration_test/payment_verification_quickstart_test.dart -d macos
+# Live, against a running mbe-api: the admin account is MBE_POS_* in .env
 flutter test integration_test/payment_verification_quickstart_test.dart -d macos \
-  --dart-define=MBE_WRITE=true                        # also verify + reject (irreversible)
+  --dart-define-from-file=.env.settings \
+  --dart-define=MBE_POS_USERNAME=... --dart-define=MBE_POS_PASSWORD=...
+# ...and add this to also verify + reject (irreversible, leaves payments behind)
+  --dart-define=MBE_WRITE=true
 ```
 
-Each write run leaves two verified 1.00 transfers and one rejected, still-unverified 1.00 transfer on the tenant.
+Each write run leaves three verified 1.00 transfers and one rejected, still-unverified 1.00 transfer on the tenant.
 
 ## Manual walkthrough
 
