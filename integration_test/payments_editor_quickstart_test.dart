@@ -40,12 +40,14 @@ import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 ///
 /// **Read-only by default.** It checks that the new actions are on screen, in
 /// the right places, and that the new surfaces fit at the largest text size.
-/// With `MBE_WRITE=true` it also drives the real writes on a payment it
-/// records itself: record a 1.00 credit payment, apply it to an outstanding
-/// order, then reverse that application. Every order ends as it started;
-/// **the new payment stays on the tenant** (a payment can't be deleted). The
-/// seeded payment is never written to: a payment reversed off an order can't
-/// be applied to it again (legacy `UNIQUE (sales_order, customer_payment)`).
+/// With `MBE_WRITE=true` it also drives the real writes on a 1.00 credit
+/// payment of its own: apply it to an outstanding order, then reverse that
+/// application. Every order ends as it started. The payment is one an earlier
+/// run recorded (reference `QA059-…`) and left fully unapplied: since
+/// mbe-api#309 a payment can be applied again to an order it was reversed
+/// off, so one payment serves every run. Only when none is left does the run
+/// record a new one through the UI, and **that payment stays on the tenant**
+/// (a payment can't be deleted). The seeded payment is never written to.
 ///
 /// Fixtures come from `tool/seed_payment_fixtures.py` (a payment applied to a
 /// back-office order, and a second outstanding order of the same customer),
@@ -488,89 +490,123 @@ void main() {
     }
 
     // ---- write steps (opt-in) --------------------------------------------
-    // They work on a payment this run records, never on the seeded one: a
-    // reversed application stays on record, and the server keeps one
-    // application per payment and order (legacy `UNIQUE (sales_order,
-    // customer_payment)`), so a payment reversed off an order can never be
-    // applied to it again. Recording, applying and reversing a fresh payment
-    // leaves every order as it was; only the new 1.00 payment remains.
+    // They work on a QA payment of their own, never on the seeded one. An
+    // earlier run's payment is reused when it is fully unapplied: a reversed
+    // application stays on record, but since mbe-api#309 only a live one
+    // holds the (order, payment) pair, so the same pairs are applied and
+    // reversed again on every run. Applying and reversing leaves every order
+    // as it was.
     if (!_write) {
       note('MBE_WRITE is not set: skipping the steps that change data.');
     } else {
       int? recordedId;
 
-      await step(
-        '5 record a credit payment (UI): its view offers apply and ticket',
-        () async {
-          final customer = await customers.get(
-            customerId: fixture.payment.customerId,
-          );
-          await go('/sales/payments');
-          await tapKey('payments_record_button');
-          await pumpUntil(byKey('record_payment_dialog'));
-
-          await tester.enterText(
-            find.descendant(
-              of: byKey('record_payment_customer'),
-              matching: find.byType(TextFormField),
-            ),
-            customer.code,
-          );
-          final option = find.text('${customer.code} — ${customer.name}');
-          await pumpUntil(option);
-          await tester.tap(option.last);
-          await pumpFor(const Duration(milliseconds: 500));
-
-          // The first method that is not cash, so no cash session is needed.
-          await tapKey('record_payment_method');
-          await pumpFor(const Duration(milliseconds: 500));
-          final items = find.byType(DropdownMenuItem<int>).evaluate().toList();
-          var pick = items.length > 1 ? 1 : 0;
-          for (var i = 0; i < items.length; i++) {
-            final text = find
-                .descendant(
-                  of: find.byWidget(items[i].widget),
-                  matching: find.byType(Text),
-                )
-                .evaluate()
-                .map((e) => (e.widget as Text).data ?? '')
-                .join(' ')
-                .toLowerCase();
-            if (!text.contains('efectivo')) {
-              pick = i;
-              break;
-            }
-          }
-          await tester.tap(find.byWidget(items[pick].widget).last);
-          await pumpFor(const Duration(milliseconds: 500));
-
-          await tester.enterText(
-            byKey('record_payment_reference'),
-            'QA059-${DateTime.now().millisecondsSinceEpoch % 100000}',
-          );
-          await tester.enterText(byKey('record_payment_amount'), '1.00');
-          await pumpFor(const Duration(milliseconds: 300));
-          await tapKey('record_payment_save');
-
-          await pumpUntilTrue(
-            () =>
-                location().startsWith('/sales/payments/') &&
-                location() != '/sales/payments/$paymentId',
-            'on the new payment',
-            timeout: const Duration(seconds: 40),
-          );
-          final id = int.parse(location().split('/').last);
-          recordedId = id;
-          await pumpUntil(byKey('payment_summary_amount'));
-          final created = await payments.get(customerPaymentId: id);
-          expect(created.type, PaymentType.creditPayment);
-          expect(compareAmounts(created.amount, '1'), 0);
-          expect(compareAmounts(created.unapplied, '1'), 0);
-          expect(byKey('payment_apply_button'), findsOneWidget);
-          expect(byKey('payment_view_ticket_button'), findsOneWidget);
-          note('recorded payment $id (stays on the tenant)');
-        },
+      final previous = await payments.list(
+        facilityId: facilityId,
+        customerId: fixture.payment.customerId,
+        limit: 100,
       );
+      final reusable = previous.items
+          .where(
+            (p) =>
+                (p.reference ?? '').startsWith('QA059-') &&
+                p.type == PaymentType.creditPayment &&
+                compareAmounts(p.amount, '1') == 0 &&
+                compareAmounts(p.unapplied, '1') == 0,
+          )
+          .firstOrNull;
+
+      if (reusable != null) {
+        await step(
+          '5 reuse QA payment ${reusable.customerPaymentId}: its view offers '
+          'apply and ticket',
+          () async {
+            final id = reusable.customerPaymentId;
+            await openPayment(id);
+            await pumpUntil(byKey('payment_summary_amount'));
+            expect(byKey('payment_apply_button'), findsOneWidget);
+            expect(byKey('payment_view_ticket_button'), findsOneWidget);
+            recordedId = id;
+            note('reusing payment $id (no new payment recorded)');
+          },
+        );
+      } else {
+        await step(
+          '5 record a credit payment (UI): its view offers apply and ticket',
+          () async {
+            final customer = await customers.get(
+              customerId: fixture.payment.customerId,
+            );
+            await go('/sales/payments');
+            await tapKey('payments_record_button');
+            await pumpUntil(byKey('record_payment_dialog'));
+
+            await tester.enterText(
+              find.descendant(
+                of: byKey('record_payment_customer'),
+                matching: find.byType(TextFormField),
+              ),
+              customer.code,
+            );
+            final option = find.text('${customer.code} — ${customer.name}');
+            await pumpUntil(option);
+            await tester.tap(option.last);
+            await pumpFor(const Duration(milliseconds: 500));
+
+            // The first method that is not cash, so no cash session is needed.
+            await tapKey('record_payment_method');
+            await pumpFor(const Duration(milliseconds: 500));
+            final items = find
+                .byType(DropdownMenuItem<int>)
+                .evaluate()
+                .toList();
+            var pick = items.length > 1 ? 1 : 0;
+            for (var i = 0; i < items.length; i++) {
+              final text = find
+                  .descendant(
+                    of: find.byWidget(items[i].widget),
+                    matching: find.byType(Text),
+                  )
+                  .evaluate()
+                  .map((e) => (e.widget as Text).data ?? '')
+                  .join(' ')
+                  .toLowerCase();
+              if (!text.contains('efectivo')) {
+                pick = i;
+                break;
+              }
+            }
+            await tester.tap(find.byWidget(items[pick].widget).last);
+            await pumpFor(const Duration(milliseconds: 500));
+
+            await tester.enterText(
+              byKey('record_payment_reference'),
+              'QA059-${DateTime.now().millisecondsSinceEpoch % 100000}',
+            );
+            await tester.enterText(byKey('record_payment_amount'), '1.00');
+            await pumpFor(const Duration(milliseconds: 300));
+            await tapKey('record_payment_save');
+
+            await pumpUntilTrue(
+              () =>
+                  location().startsWith('/sales/payments/') &&
+                  location() != '/sales/payments/$paymentId',
+              'on the new payment',
+              timeout: const Duration(seconds: 40),
+            );
+            final id = int.parse(location().split('/').last);
+            recordedId = id;
+            await pumpUntil(byKey('payment_summary_amount'));
+            final created = await payments.get(customerPaymentId: id);
+            expect(created.type, PaymentType.creditPayment);
+            expect(compareAmounts(created.amount, '1'), 0);
+            expect(compareAmounts(created.unapplied, '1'), 0);
+            expect(byKey('payment_apply_button'), findsOneWidget);
+            expect(byKey('payment_view_ticket_button'), findsOneWidget);
+            note('recorded payment $id (stays on the tenant)');
+          },
+        );
+      }
 
       final target = spare;
       final id = recordedId;
@@ -634,9 +670,12 @@ void main() {
                 ..invalidate(paymentApplicationsProvider(id));
               final freed = await payments.get(customerPaymentId: id);
               expect(compareAmounts(freed.unapplied, '1'), 0);
+              // A reused payment keeps earlier runs' reversed applications
+              // to the target; only a live one would mean the apply went
+              // through.
               final target2 = (await payments.listApplications(
                 customerPaymentId: id,
-              )).where((a) => a.saleId == target.id);
+              )).where((a) => a.saleId == target.id && !a.reversed);
               expect(target2, isEmpty, reason: 'the UI apply was refused');
             },
           );
