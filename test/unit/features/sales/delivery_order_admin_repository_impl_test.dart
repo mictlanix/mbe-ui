@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/sales/data/delivery_order_admin_repository_impl.dart';
@@ -268,6 +269,99 @@ void main() {
     expect(body is String ? jsonDecode(body) : body, {
       'sales_order_detail': 1,
       'quantity': '2',
+    });
+  });
+
+  group('approval (spec 062)', () {
+    test('approvalQueue sends skip and limit and no facility, and maps the '
+        'page with its total', () async {
+      final requests = <RequestOptions>[];
+      final repository = _repositoryWith((options) async {
+        requests.add(options);
+        return ResponseBody.fromString(
+          jsonEncode({
+            'items': [_summaryJson(31, 1, 1), _summaryJson(32, 1, 0)],
+            'total': 23,
+          }),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final page = await repository.approvalQueue(skip: 20, limit: 20);
+
+      expect(requests.single.method, 'GET');
+      expect(requests.single.path, endsWith('/delivery-orders/approval'));
+      expect(requests.single.queryParameters, {'skip': 20, 'limit': 20});
+      expect(page.total, 23);
+      expect(page.items.map((o) => o.id), [31, 32]);
+      expect(
+        page.items.map((o) => o.status),
+        everyElement(DeliveryOrderStatus.pendingApproval),
+      );
+      expect(page.items.map((o) => o.type), [
+        FulfillmentType.delivery,
+        FulfillmentType.counterPickup,
+      ]);
+    });
+
+    test('approve and reject hit the approval paths and map the order, and '
+        'reject sends the reason as its body', () async {
+      final requests = <RequestOptions>[];
+      final repository = _repositoryWith((options) async {
+        requests.add(options);
+        final approved = options.path.endsWith('/approve');
+        return ResponseBody.fromString(
+          jsonEncode(_orderJson(id: 500, status: approved ? 5 : 0)),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final approved = await repository.approve(500);
+      final rejected = await repository.reject(
+        id: 500,
+        reason: 'Dirección equivocada',
+      );
+
+      expect(approved.status, DeliveryOrderStatus.inPreparation);
+      expect(rejected.status, DeliveryOrderStatus.draft);
+      expect(
+        requests.map(
+          (r) => '${r.method} ${r.path.split('/delivery-orders').last}',
+        ),
+        ['POST /approval/500/approve', 'POST /approval/500/reject'],
+      );
+      final body = requests[1].data;
+      expect(body is String ? jsonDecode(body) : body, {
+        'reason': 'Dirección equivocada',
+      });
+    });
+
+    test('a 409 answers an AppError that carries '
+        'delivery_order.not_pending_approval', () async {
+      final repository = _repositoryWith(
+        (options) async => ResponseBody.fromString(
+          jsonEncode({
+            'detail': 'Only an order awaiting approval can be approved',
+            'code': 'delivery_order.not_pending_approval',
+            'params': {'status': 'APPROVED', 'action': 'approve'},
+          }),
+          409,
+          headers: _jsonHeaders,
+        ),
+      );
+
+      await expectLater(
+        repository.approve(500),
+        throwsA(
+          isA<AppError>().having(
+            (e) => e.problem?.code,
+            'code',
+            api.ErrorCode.deliveryOrderPeriodNotPendingApproval,
+          ),
+        ),
+      );
     });
   });
 }

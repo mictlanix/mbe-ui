@@ -208,6 +208,48 @@ class DeliveryOrderAdminRepositoryImpl implements DeliveryOrderAdminRepository {
       );
 
   @override
+  Future<DeliveryOrderPage> approvalQueue({
+    int skip = 0,
+    int limit = 20,
+  }) async {
+    try {
+      final response = await _api
+          .listApprovalQueueApiV1DeliveryOrdersApprovalGet(
+            skip: skip,
+            limit: limit,
+          );
+      final result = response.data;
+      if (result == null) throw const AppError.server();
+      return DeliveryOrderPage(
+        items: result.items.map(DeliveryOrderSummary.fromResponse).toList(),
+        total: result.total,
+      );
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  @override
+  Future<DeliveryOrder> approve(int id) => _order(
+    () => _api
+        .approveDeliveryOrderApiV1DeliveryOrdersApprovalDeliveryOrderIdApprovePost(
+          deliveryOrderId: id,
+        ),
+  );
+
+  @override
+  Future<DeliveryOrder> reject({
+    required int id,
+    required String reason,
+  }) => _order(
+    () => _api
+        .rejectDeliveryOrderApiV1DeliveryOrdersApprovalDeliveryOrderIdRejectPost(
+          deliveryOrderId: id,
+          reasonRequest: api.ReasonRequest((b) => b.reason = reason),
+        ),
+  );
+
+  @override
   Future<DeliveryOrder> requeue(int id) => _order(
     () =>
         _api.requeueDeliveryOrderApiV1DeliveryOrdersDeliveryOrderIdRequeuePost(

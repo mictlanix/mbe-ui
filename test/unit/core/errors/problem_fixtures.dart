@@ -59,6 +59,10 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.deliveryOrderPeriodNoLines: {},
   api.ErrorCode.deliveryOrderPeriodNotEditable: {'status': 'APPROVED'},
   api.ErrorCode.deliveryOrderPeriodNotFailed: {'status': 'APPROVED'},
+  api.ErrorCode.deliveryOrderPeriodNotPendingApproval: {
+    'status': 'APPROVED',
+    'action': 'approve',
+  },
   api.ErrorCode.deliveryOrderPeriodProofIncomplete: {},
   api.ErrorCode.deliveryOrderPeriodQuantityExceedsRemaining: {
     'sales_order_line_id': 5,

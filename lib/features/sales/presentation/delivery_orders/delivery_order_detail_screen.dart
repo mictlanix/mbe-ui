@@ -23,6 +23,8 @@ import 'package:mbe_ui/core/widgets/responsive_dialog.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/sales/domain/entities/delivery_order.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_order_approval/approval_dialogs.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_order_approval/approval_target.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/add_line_dialog.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_detail_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_dialogs.dart';
@@ -252,6 +254,41 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
     (l10n, serial) => l10n.deliveryOrderSnackCancelled(serial),
   );
 
+  /// Approves the order after its confirmation (spec 062 FR-013). A refusal
+  /// stays inside the dialog, so only a success comes back, with the status
+  /// the server put the order in.
+  Future<void> _approve() async {
+    final l10n = AppLocalizations.of(context)!;
+    final serial = _serialOf(_order, l10n);
+    setState(() => _actionError = null);
+    final status = await showApproveDeliveryOrderDialog(
+      context,
+      ApprovalTarget.fromOrder(_order),
+    );
+    if (!mounted || status == null) return;
+    _snack(
+      l10n.deliveryOrderSnackApproved(
+        serial,
+        deliveryOrderStatusLabel(l10n, status),
+      ),
+    );
+  }
+
+  /// Rejects the order back to its author with a reason (spec 062 FR-013).
+  /// Same shape as [_approve]: the order reloads as Borrador with the reason
+  /// in its banner and history.
+  Future<void> _reject() async {
+    final l10n = AppLocalizations.of(context)!;
+    final serial = _serialOf(_order, l10n);
+    setState(() => _actionError = null);
+    final status = await showRejectDeliveryOrderDialog(
+      context,
+      ApprovalTarget.fromOrder(_order),
+    );
+    if (!mounted || status == null) return;
+    _snack(l10n.deliveryOrderSnackRejected(serial));
+  }
+
   Future<void> _requeue() => _statusAction(
     () => showRequeueDeliveryOrderDialog(context, _order),
     (l10n, serial) => l10n.deliveryOrderSnackRequeued(serial),
@@ -314,22 +351,42 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
   /// The status actions the order's status, its type and the user's rights
   /// allow (data-model §3, FR-011): absent, never disabled, without them. An
   /// outlined "Cancelar orden" (US4) goes first, then the one filled primary.
-  List<Widget> _actionButtons(bool canUpdate) {
+  ///
+  /// Each right is checked per button. Spec 061's actions need Delivery
+  /// Orders update ([canUpdate]); "Rechazar" and "Aprobar" on an order
+  /// waiting for approval need Delivery Order Approval update ([canDecide])
+  /// and nothing else (spec 062 R7), so an approver without the first right
+  /// still gets both. Cancelar, Rechazar, Aprobar is the order.
+  List<Widget> _actionButtons({
+    required bool canUpdate,
+    required bool canDecide,
+  }) {
     final l10n = AppLocalizations.of(context)!;
     final order = _order;
-    if (!canUpdate) return const [];
     final status = order.status;
     final isPickup = order.type == FulfillmentType.counterPickup;
     return [
       // Offered in En preparación even when the order may be on an open
       // itinerary (mbe-api#311, accepted risk).
-      if (_cancellable.contains(status))
+      if (canUpdate && _cancellable.contains(status))
         OutlinedButton(
           key: const Key('delivery_order_cancel'),
           onPressed: _confirming ? null : _cancel,
           child: Text(l10n.deliveryOrderCancelAction),
         ),
-      if (order.isDraft)
+      if (canDecide && status == DeliveryOrderStatus.pendingApproval) ...[
+        OutlinedButton(
+          key: const Key('delivery_order_reject'),
+          onPressed: _reject,
+          child: Text(l10n.deliveryOrderRejectAction),
+        ),
+        FilledButton(
+          key: const Key('delivery_order_approve'),
+          onPressed: _approve,
+          child: Text(l10n.deliveryOrderApproveAction),
+        ),
+      ],
+      if (canUpdate && order.isDraft)
         FilledButton(
           key: const Key('delivery_order_confirm'),
           // The one disabled action: a draft with no lines (FR-016).
@@ -342,19 +399,19 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
                 )
               : Text(l10n.deliveryOrderConfirmAction),
         ),
-      if (status == DeliveryOrderStatus.failed)
+      if (canUpdate && status == DeliveryOrderStatus.failed)
         FilledButton(
           key: const Key('delivery_order_requeue'),
           onPressed: _requeue,
           child: Text(l10n.deliveryOrderRequeueAction),
         ),
-      if (isPickup && status == DeliveryOrderStatus.approved)
+      if (canUpdate && isPickup && status == DeliveryOrderStatus.approved)
         FilledButton(
           key: const Key('delivery_order_ready'),
           onPressed: _markReady,
           child: Text(l10n.deliveryOrderReadyAction),
         ),
-      if (isPickup && status == DeliveryOrderStatus.readyForPickup)
+      if (canUpdate && isPickup && status == DeliveryOrderStatus.readyForPickup)
         FilledButton(
           key: const Key('delivery_order_pickup'),
           onPressed: _pickup,
@@ -390,7 +447,11 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
     // Step 1 of "Agregar línea" lists sales (contracts C7).
     final canAddLine =
         canEdit && access.can(SystemObject.salesOrders, AccessRight.read);
-    final buttons = _actionButtons(canUpdate);
+    final canDecide = access.can(
+      SystemObject.deliveryOrderApproval,
+      AccessRight.update,
+    );
+    final buttons = _actionButtons(canUpdate: canUpdate, canDecide: canDecide);
 
     return SingleChildScrollView(
       padding: EdgeInsets.all(spacing.screenMargin),

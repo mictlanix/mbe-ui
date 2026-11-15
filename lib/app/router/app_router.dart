@@ -50,6 +50,7 @@ import 'package:mbe_ui/features/sales/presentation/payment_verification/payment_
 import 'package:mbe_ui/features/sales/presentation/payments/payment_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/credit_notes/credit_notes_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payments_list_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_order_approval/delivery_order_approval_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_orders_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/refunds/refund_detail_screen.dart';
@@ -385,6 +386,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: deliveryOrdersPath,
                 builder: (context, state) => DeliveryOrdersListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
+              ),
+            ],
+          ),
+          // 062-delivery-order-approval: appended last (index 27), same
+          // rationale as `payments` above. Gated on SystemObject 94
+          // (`deliveryOrderApproval`) read, see `_routeGate`. A row opens the
+          // top-level `/sales/delivery-orders/:deliveryOrderId` route.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: deliveryOrderApprovalPath,
+                builder: (context, state) => DeliveryOrderApprovalScreen(
                   query: ListQuery.fromUri(state.uri),
                 ),
               ),
@@ -837,6 +852,15 @@ NavGate? _routeGate(String location) {
   // `/sales/refunds/:refundId`; the list branch joins it in a later task.
   if (location.startsWith('/sales/refunds')) {
     return PrivilegeGate(SystemObject.customerRefunds, AccessRight.read);
+  }
+  // 062-delivery-order-approval: SystemObject 94 (`deliveryOrderApproval`)
+  // read, matching the server's GET /delivery-orders/approval. Placed before
+  // the `deliveryOrdersPath` clause below so the order never depends on how
+  // the two prefixes compare: `/sales/delivery-order-approval` doesn't start
+  // with `/sales/delivery-orders`, but a later path could, and 71 read must
+  // not open this screen.
+  if (location.startsWith(deliveryOrderApprovalPath)) {
+    return PrivilegeGate(SystemObject.deliveryOrderApproval, AccessRight.read);
   }
   // 061-delivery-orders: SystemObject 71 (`deliveryOrders`) read, matching
   // the server's GET /delivery-orders. The prefix covers the list and every

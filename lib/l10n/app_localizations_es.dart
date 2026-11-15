@@ -6677,4 +6677,75 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get apiErrorDeliveryOrderProofIncomplete =>
       'Faltan datos del comprobante: indica quién recibe y la identificación que mostró.';
+
+  @override
+  String get navDeliveryOrderApproval => 'Aprobación de entregas';
+
+  @override
+  String get deliveryOrderApprovalColumnPriority => 'Prio.';
+
+  @override
+  String get deliveryOrderApprovalEmpty =>
+      'No hay órdenes de entrega pendientes de aprobación.';
+
+  @override
+  String get deliveryOrderApprovalNoFacilityTitle => 'Sin sucursal configurada';
+
+  @override
+  String get deliveryOrderApprovalNoFacilityMessage =>
+      'Tu usuario no tiene sucursal asignada. La aprobación de entregas muestra las órdenes de tu sucursal. Pide a tu administrador que configure una en tu usuario.';
+
+  @override
+  String get deliveryOrderApprovalForbidden =>
+      'No tienes acceso a la aprobación de entregas.';
+
+  @override
+  String get deliveryOrderApproveAction => 'Aprobar';
+
+  @override
+  String get deliveryOrderRejectAction => 'Rechazar';
+
+  @override
+  String deliveryOrderApproveTitle(String serial) {
+    return '¿Aprobar orden de entrega $serial?';
+  }
+
+  @override
+  String get deliveryOrderApproveNextDelivery =>
+      'Pasará a En preparación y aparecerá para el almacén.';
+
+  @override
+  String get deliveryOrderApproveNextPickup =>
+      'Pasará a Aprobada; después se marca lista para recoger.';
+
+  @override
+  String deliveryOrderRejectTitle(String serial) {
+    return 'Rechazar orden de entrega $serial';
+  }
+
+  @override
+  String deliveryOrderRejectSummary(String customer, String date) {
+    return '$customer · Programada $date';
+  }
+
+  @override
+  String get deliveryOrderRejectReasonLabel => 'Motivo';
+
+  @override
+  String get deliveryOrderRejectNote =>
+      'La orden regresa a borrador para que su autor la corrija y la vuelva a confirmar. El motivo queda en la orden.';
+
+  @override
+  String deliveryOrderSnackApproved(String serial, String status) {
+    return 'Orden $serial aprobada: $status';
+  }
+
+  @override
+  String deliveryOrderSnackRejected(String serial) {
+    return 'Orden $serial rechazada. Regresó a borrador con el motivo.';
+  }
+
+  @override
+  String get apiErrorDeliveryOrderNotPendingApproval =>
+      'Esta orden ya no está pendiente de aprobación.';
 }
