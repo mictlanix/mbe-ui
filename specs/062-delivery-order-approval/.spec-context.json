@@ -1,0 +1,28 @@
+{
+  "workflow": "speckit",
+  "specName": "Delivery Order Approval",
+  "branch": "chore/062-mark-complete",
+  "verified": [
+    {
+      "what": "flutter analyze clean; flutter test 4596 passed (7 pre-existing golden/screenshot failures, also on main, tracked in #209); live integration_test/delivery_order_approval_quickstart_test.dart 2/2 read-only, 6/6 MBE_WRITE with DELIVERY_ORDER_APPROVAL_REQUIRED=true (PR #245, merged c1629323)"
+    }
+  ],
+  "concerns": [
+    {
+      "note": "T030 manual checks (stale action from a second window, approval-read-only user, user without Delivery Orders read, compact tier, largest text, SC-001/SC-002 timing) not yet run; tracked in mictlanix/mbe-ui#244"
+    }
+  ],
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-15T18:19:36.239Z"
+    }
+  ],
+  "telemetryInstanceId": "5a381884-bff0-4555-99c4-345acd5563b5",
+  "currentTask": null
+}
