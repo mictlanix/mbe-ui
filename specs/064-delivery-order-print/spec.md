@@ -96,7 +96,7 @@ A branch that delivers concrete prints the order on Letter paper. The receiver s
 
 ### Edge Cases
 
-- **No Delivery Orders read.** The user can't reach the list or the detail screen, so nothing is offered. If the right is revoked mid-session, the server refuses the request and the preview shows its message.
+- **No Delivery Orders read.** The user can't reach the list or the detail screen, so nothing is offered. If the right is revoked mid-session, the preview's own access check (spec 044) refuses before fetching and shows the shared generic message. That refusal carries no server code, so it isn't translated per case. A refusal from the server (`auth.forbidden`) shows its localized message.
 - **Status changed since the screen loaded.** Another user cancels or approves the order in the meantime. The app offers the action from the status it shows. Whatever the server decides when the document is requested wins: a cancelled order prints marked "CANCELADA", and a refusal shows the server's message in the preview.
 - **A warehouse emptied since the screen loaded.** The user picks a warehouse whose lines were removed meanwhile. The server refuses ("no line of this order comes from that warehouse") and the preview shows that message with a retry.
 - **Warehouse names the user can't read.** The warehouse choice shows the warehouse number instead of its name, as spec 061 does elsewhere.
@@ -127,7 +127,7 @@ A branch that delivers concrete prints the order on Letter paper. The receiver s
 **Preview and content**
 
 - **FR-020**: Both documents MUST open in the shared document preview from spec 044, with its zoom, page indicator, "Imprimir" and "Descargar", loading state, error with retry, and repeated-press protection.
-- **FR-021**: The preview title MUST identify the document and the order's folio, for example "Ticket de entrega 12345" or "Orden de entrega 12345 (formato carta)".
+- **FR-021**: The preview title MUST identify the document and the order's folio, for example "Ticket de entrega · 12345" or "Orden de entrega · 12345 (carta)".
 - **FR-022**: The document shown, printed and downloaded MUST be exactly the one mbe-api produced. mbe-ui MUST NOT choose between the delivery and pickup tickets, alter content, or add the "CANCELADA" mark itself. A download MUST use the server's file name.
 - **FR-023**: Each open MUST fetch the current document. Nothing is cached.
 
@@ -159,7 +159,7 @@ A branch that delivers concrete prints the order on Letter paper. The receiver s
 - **SC-002**: In every walkthrough case, an order offers the print actions exactly when its status is Aprobada or later and the user has Delivery Orders read, and never otherwise.
 - **SC-003**: The ticket for a counter pickup is the pickup ticket and the ticket for a delivery is the delivery ticket, in 100% of the walkthrough cases, with no choice by the user.
 - **SC-004**: A ticket limited to one warehouse contains only that warehouse's lines, and an unlimited one contains all of them, in every walkthrough case with a multi-warehouse order.
-- **SC-005**: Every server refusal in the walkthrough (not approved, warehouse with no lines, missing privilege) shows a message the user can act on, in Spanish and in English.
+- **SC-005**: Every server refusal of a print (order not approved, unknown warehouse, warehouse with no lines, missing privilege) shows a message the user can act on, in Spanish and in English. A refusal by the app's own access check before any request shows the shared generic message (spec 044).
 - **SC-006**: Staff can print every delivery order ticket from the new back office, with no trip to the current system.
 
 ## Assumptions

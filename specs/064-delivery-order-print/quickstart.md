@@ -42,7 +42,7 @@ flutter test integration_test/delivery_order_print_quickstart_test.dart -d macos
    - Repeat from the list row: the same chooser appears after a brief lookup.
    - Dismiss the chooser: nothing opens.
 7. **Cancelled.** On a cancelled order, the detail screen shows only the two print buttons, with no status actions. The ticket is stamped "CANCELADA".
-8. **Refusal messages.** An order never moves from a printable status back to an unprintable one, so the UI can't trigger the 409 live. The widget tests cover the three new messages with fake refusals, and the unit tests cover them in es and en. Live, `curl` the ticket of a draft (`/api/v1/delivery-orders/{id}/ticket`) and check that the body's `code` is `delivery_order.not_approved`.
+8. **Refusal messages.** An order never moves from a printable status back to an unprintable one, so the UI can't trigger the 409 live. The detail-screen widget test (T012) shows the three new messages in the preview from fake refusals, in es and en, and the catalog unit tests (T006) cover their text. Live, `curl` the ticket of a draft (`/api/v1/delivery-orders/{id}/ticket`) and check that the body's `code` is `delivery_order.not_approved`.
 9. **Rights.** As a user without Delivery Orders read, the screens aren't reachable, so nothing is offered.
 10. **Repeated taps.** Double-click the row icon quickly: one chooser or preview, never two.
 11. **Compact.** Narrow the window to phone width. The chooser and the preview go fullscreen, and the row icon still shows on the cards.
