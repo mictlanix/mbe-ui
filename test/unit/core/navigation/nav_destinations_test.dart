@@ -432,7 +432,12 @@ void main() {
                 as NavGroup;
         expect(
           [for (final d in logistics.children) d.id],
-          ['delivery-orders', 'vehicles', 'vehicle-operators'],
+          [
+            'delivery-orders',
+            'delivery-order-approval',
+            'vehicles',
+            'vehicle-operators',
+          ],
         );
         final catalogs =
             items.firstWhere((i) => i is NavGroup && i.id == 'catalogs')
@@ -454,5 +459,78 @@ void main() {
         expect(NavBranch.deliveryOrders, 26);
       },
     );
+  });
+
+  group('Aprobación de entregas destination (spec 062 FR-001, C1)', () {
+    test('a user without Delivery Order Approval read has no entry, even '
+        'with Delivery Orders read', () {
+      expect(
+        visibleIds(
+          multiCurrency: false,
+          administrator: false,
+          privileges: const [
+            Privilege(systemObject: SystemObject.deliveryOrders, rawValue: 2),
+          ],
+        ),
+        isNot(contains('delivery-order-approval')),
+      );
+    });
+
+    test('a user with Delivery Order Approval read has the entry, and no '
+        'Delivery Orders entry unless they hold that right too', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(
+            systemObject: SystemObject.deliveryOrderApproval,
+            rawValue: 2,
+          ),
+        ],
+      );
+      expect(ids, contains('delivery-order-approval'));
+      expect(ids, isNot(contains('delivery-orders')));
+    });
+
+    test('it sits right after Órdenes de entrega in Logística, on branch 27 '
+        'at /sales/delivery-order-approval', () {
+      final container = ProviderContainer(
+        overrides: [
+          multiCurrencyEnabledProvider.overrideWithValue(false),
+          accessControlProvider.overrideWithValue(
+            AccessControlService(
+              AuthState.authenticated(
+                token: 't',
+                user: const User(
+                  userId: 'u',
+                  email: 'u@example.com',
+                  administrator: true,
+                  status: EntityStatus.active,
+                  sessionVersion: 1,
+                  privileges: [],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      final logistics =
+          container
+                  .read(navDestinationsProvider)
+                  .firstWhere((i) => i is NavGroup && i.id == 'logistics')
+              as NavGroup;
+      final ids = [for (final d in logistics.children) d.id];
+      expect(
+        ids.indexOf('delivery-order-approval'),
+        ids.indexOf('delivery-orders') + 1,
+      );
+      final entry = logistics.children.firstWhere(
+        (d) => d.id == 'delivery-order-approval',
+      );
+      expect(entry.branchIndex, NavBranch.deliveryOrderApproval);
+      expect(entry.route, '/sales/delivery-order-approval');
+      expect(NavBranch.deliveryOrderApproval, 27);
+    });
   });
 }

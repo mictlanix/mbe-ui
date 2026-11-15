@@ -11022,6 +11022,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The proof is incomplete: enter who received the goods and the identification they showed.'**
   String get apiErrorDeliveryOrderProofIncomplete;
+
+  /// spec 062: navigation entry under Logística (C1)
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery approval'**
+  String get navDeliveryOrderApproval;
+
+  /// spec 062: queue column (C2)
+  ///
+  /// In en, this message translates to:
+  /// **'Prio.'**
+  String get deliveryOrderApprovalColumnPriority;
+
+  /// spec 062: queue empty state (C2)
+  ///
+  /// In en, this message translates to:
+  /// **'No delivery orders are waiting for approval.'**
+  String get deliveryOrderApprovalEmpty;
+
+  /// spec 062: queue notice title when the user has no facility (FR-004)
+  ///
+  /// In en, this message translates to:
+  /// **'No facility configured'**
+  String get deliveryOrderApprovalNoFacilityTitle;
+
+  /// spec 062: queue notice message when the user has no facility (FR-004)
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has no facility assigned. Delivery approval shows your facility\'s orders. Ask your administrator to configure one on your user.'**
+  String get deliveryOrderApprovalNoFacilityMessage;
+
+  /// spec 062: queue not-allowed state after a 403 (C2)
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have access to delivery approval.'**
+  String get deliveryOrderApprovalForbidden;
+
+  /// spec 062: row tooltip, detail button and dialog confirm (C2, C3, C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get deliveryOrderApproveAction;
+
+  /// spec 062: row tooltip, detail button and dialog confirm (C2, C4, C7)
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get deliveryOrderRejectAction;
+
+  /// spec 062: approve dialog title (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'Approve delivery order {serial}?'**
+  String deliveryOrderApproveTitle(String serial);
+
+  /// spec 062: approve dialog note for a delivery (FR-008)
+  ///
+  /// In en, this message translates to:
+  /// **'It will move to In preparation and appear for the warehouse.'**
+  String get deliveryOrderApproveNextDelivery;
+
+  /// spec 062: approve dialog note for a pickup (FR-008)
+  ///
+  /// In en, this message translates to:
+  /// **'It will move to Approved; then it is marked ready for pickup.'**
+  String get deliveryOrderApproveNextPickup;
+
+  /// spec 062: reject dialog title (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Reject delivery order {serial}'**
+  String deliveryOrderRejectTitle(String serial);
+
+  /// spec 062: reject dialog summary (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'{customer} · Scheduled {date}'**
+  String deliveryOrderRejectSummary(String customer, String date);
+
+  /// spec 062: reject dialog reason field (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get deliveryOrderRejectReasonLabel;
+
+  /// spec 062: reject dialog note (FR-011)
+  ///
+  /// In en, this message translates to:
+  /// **'The order goes back to its author as a draft so they can fix it and confirm it again. The reason stays on the order.'**
+  String get deliveryOrderRejectNote;
+
+  /// spec 062: snackbar after an approval (FR-009)
+  ///
+  /// In en, this message translates to:
+  /// **'Order {serial} approved: {status}'**
+  String deliveryOrderSnackApproved(String serial, String status);
+
+  /// spec 062: snackbar after a rejection (FR-012)
+  ///
+  /// In en, this message translates to:
+  /// **'Order {serial} rejected. It went back to draft with the reason.'**
+  String deliveryOrderSnackRejected(String serial);
+
+  /// spec 062: mbe-api error code `delivery_order.not_pending_approval` (R9)
+  ///
+  /// In en, this message translates to:
+  /// **'This order is no longer pending approval.'**
+  String get apiErrorDeliveryOrderNotPendingApproval;
 }
 
 class _AppLocalizationsDelegate

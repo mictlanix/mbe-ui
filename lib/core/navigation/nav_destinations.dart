@@ -85,6 +85,12 @@ class NavBranch {
   // above — display order comes from position within `kNavigationTree` (this
   // destination opens the Logística group there).
   static const int deliveryOrders = 26;
+
+  // 062-delivery-order-approval: appended last, same rationale as
+  // `cashSessions` above — display order comes from position within
+  // `kNavigationTree` (this destination sits right after `deliveryOrders` in
+  // the Logística group there).
+  static const int deliveryOrderApproval = 27;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -373,6 +379,22 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.deliveryOrders,
         gate: PrivilegeGate(SystemObject.deliveryOrders, AccessRight.read),
       ),
+      // 062-delivery-order-approval: right after Órdenes de entrega. Gated on
+      // SystemObject 94 (`deliveryOrderApproval`) read, matching the server's
+      // GET /delivery-orders/approval. Approving and rejecting need 94 update,
+      // checked on the screen and the detail screen.
+      NavDestination(
+        id: 'delivery-order-approval',
+        label: _deliveryOrderApprovalLabel,
+        icon: Icons.fact_check_outlined,
+        selectedIcon: Icons.fact_check,
+        route: '/sales/delivery-order-approval',
+        branchIndex: NavBranch.deliveryOrderApproval,
+        gate: PrivilegeGate(
+          SystemObject.deliveryOrderApproval,
+          AccessRight.read,
+        ),
+      ),
       NavDestination(
         id: 'vehicles',
         label: _vehiclesLabel,
@@ -427,6 +449,8 @@ String _posLabel(AppLocalizations l10n) => l10n.posMenuTitle;
 String _salesOrdersLabel(AppLocalizations l10n) => l10n.salesOrdersMenuTitle;
 String _salesQuotesLabel(AppLocalizations l10n) => l10n.salesQuotesMenuTitle;
 String _deliveryOrdersLabel(AppLocalizations l10n) => l10n.navDeliveryOrders;
+String _deliveryOrderApprovalLabel(AppLocalizations l10n) =>
+    l10n.navDeliveryOrderApproval;
 String _paymentsLabel(AppLocalizations l10n) => l10n.paymentsMenuTitle;
 String _paymentVerificationLabel(AppLocalizations l10n) =>
     l10n.paymentVerificationMenuTitle;

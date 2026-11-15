@@ -52,11 +52,11 @@ code	delivery_order.not_approved	409	status: enum:DeliveryOrderStatus	OUT
 code	delivery_order.not_editable	409	status: enum:DeliveryOrderStatus	IN	DELETE /delivery-orders/{}/lines/{}; POST /delivery-orders/{}/confirm; POST /delivery-orders/{}/lines; PUT /delivery-orders/{}	reachable from 6 UI route(s)
 code	delivery_order.not_failed	409	status: enum:DeliveryOrderStatus	IN	POST /delivery-orders/{}/requeue	reachable from the delivery order detail screen (spec 061)
 code	delivery_order.not_in_preparation	409	status: enum:DeliveryOrderStatus	OUT		
-code	delivery_order.not_pending_approval	409	status: enum:DeliveryOrderStatus, action: str (`approve` or `reject`)	OUT		
+code	delivery_order.not_pending_approval	409	status: enum:DeliveryOrderStatus, action: str (`approve` or `reject`)	IN	POST /delivery-orders/approval/{}/approve; POST /delivery-orders/approval/{}/reject	reachable from the delivery order approval queue and detail screen (spec 062)
 code	delivery_order.pickup_not_loadable	409	—	OUT		
 code	delivery_order.proof_incomplete	422	—	IN	POST /delivery-orders/{}/pickup	reachable from the delivery order detail screen (spec 061)
 code	delivery_order.quantity_exceeds_remaining	422	sales_order_line_id: int, remaining: decimal, requested: decimal	IN	POST /delivery-orders; POST /delivery-orders/{}/lines	reachable from 3 UI route(s)
-code	delivery_order.reason_required	422	to: enum:DeliveryOrderStatus	IN	POST /delivery-orders/{}/cancel	reachable from 1 UI route(s)
+code	delivery_order.reason_required	422	to: enum:DeliveryOrderStatus	IN	POST /delivery-orders/{}/cancel; POST /delivery-orders/approval/{}/reject	reachable from 1 UI route(s)
 code	delivery_order.sales_order_fully_delivered	409	—	IN	POST /delivery-orders	reachable from 1 UI route(s)
 code	delivery_order.sales_order_not_deliverable	409	—	IN	POST /delivery-orders	reachable from 1 UI route(s)
 code	delivery_order.sales_order_unpaid	422	—	IN	POST /delivery-orders	reachable from 1 UI route(s)
@@ -226,7 +226,7 @@ code	sales_order.not_confirmed	409	sales_order_id: int	OUT
 code	sales_order.paid_cannot_cancel	409	—	IN	POST /sales-orders/{}/cancel	reachable from 1 UI route(s)
 code	sales_order.zero_priced_lines	409	— (dict `detail` kept: message, lines)	IN	POST /sales-orders/{}/confirm	reachable from 1 UI route(s)
 code	server.error	500	—	IN	every route (unhandled exception)	generic/framework
-code	state.transition_invalid	409	resource: str, from: enum, to: enum, required?: enum	IN	POST /delivery-orders/{}/cancel; POST /delivery-orders/{}/pickup; POST /delivery-orders/{}/ready-for-pickup	reachable from 3 UI route(s)
+code	state.transition_invalid	409	resource: str, from: enum, to: enum, required?: enum	IN	POST /delivery-orders/{}/cancel; POST /delivery-orders/{}/pickup; POST /delivery-orders/{}/ready-for-pickup; POST /delivery-orders/approval/{}/approve; POST /delivery-orders/approval/{}/reject	reachable from 3 UI route(s)
 code	status_filter.unsupported	422	allowed: list[str]	OUT		
 code	supplier_agreement.end_before_start	422	start: date, end: date	IN	POST /suppliers/{}/agreements	reachable from 1 UI route(s)
 code	supplier_payment.already_cancelled	409	—	OUT		

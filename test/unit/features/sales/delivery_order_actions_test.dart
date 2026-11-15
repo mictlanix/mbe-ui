@@ -13,6 +13,7 @@ import 'package:mbe_ui/features/sales/data/delivery_order_admin_repository_impl.
 import 'package:mbe_ui/features/sales/domain/entities/delivery_order.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_admin_repository.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_order_approval/delivery_order_approval_queue_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_actions.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_detail_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_orders_filter.dart';
@@ -25,6 +26,7 @@ const _id = 900;
 
 var _detailBuilds = 0;
 var _listBuilds = 0;
+var _queueBuilds = 0;
 
 DeliveryOrder _order() => DeliveryOrder(
   id: _id,
@@ -55,7 +57,16 @@ class _CountingList extends DeliveryOrdersListController {
   }
 }
 
-/// Spec 061 research R6 (T011).
+class _CountingQueue extends DeliveryOrderApprovalQueueController {
+  @override
+  Future<CatalogPage<DeliveryOrderSummary>> build(int pageIndex) async {
+    _queueBuilds++;
+    return const CatalogPage(items: [], total: 0, pageIndex: 0, pageSize: 20);
+  }
+}
+
+/// Spec 061 research R6 (T011), and spec 062 R6: every write also refreshes
+/// the approval queue, and approve and reject answer the new status.
 void main() {
   late MockDeliveryOrderAdminRepository repository;
   late ProviderContainer container;
@@ -67,6 +78,7 @@ void main() {
     repository = MockDeliveryOrderAdminRepository();
     _detailBuilds = 0;
     _listBuilds = 0;
+    _queueBuilds = 0;
     container = ProviderContainer(
       retry: (_, _) => null,
       overrides: [
@@ -77,6 +89,9 @@ void main() {
         deliveryOrdersListControllerProvider(
           const DeliveryOrdersFilter(),
         ).overrideWith(_CountingList.new),
+        deliveryOrderApprovalQueueControllerProvider(
+          0,
+        ).overrideWith(_CountingQueue.new),
       ],
     );
     addTearDown(container.dispose);
@@ -85,6 +100,10 @@ void main() {
     container.listen(deliveryOrderDetailControllerProvider(_id), (_, _) {});
     container.listen(
       deliveryOrdersListControllerProvider(const DeliveryOrdersFilter()),
+      (_, _) {},
+    );
+    container.listen(
+      deliveryOrderApprovalQueueControllerProvider(0),
       (_, _) {},
     );
   });
@@ -191,6 +210,7 @@ void main() {
         verify(c.call).called(1);
         expect(_detailBuilds, 2, reason: 'order and events');
         expect(_listBuilds, 2, reason: 'list');
+        expect(_queueBuilds, 2, reason: 'approval queue (spec 062 R6)');
       });
 
       test(
@@ -217,6 +237,7 @@ void main() {
           );
           expect(_detailBuilds, 2, reason: 'order reloaded (FR-023)');
           expect(_listBuilds, 1, reason: 'a refusal changed nothing');
+          expect(_queueBuilds, 1, reason: 'a refusal changed nothing');
         },
       );
 
@@ -231,7 +252,94 @@ void main() {
         expect(result, isA<NetworkError>());
         expect(_detailBuilds, 2);
         expect(_listBuilds, 2);
+        expect(_queueBuilds, 2);
       });
     });
   }
+
+  group('approve and reject (spec 062 C5)', () {
+    DeliveryOrder inStatus(DeliveryOrderStatus status) =>
+        _order().copyWith(status: status);
+
+    test('approve answers the status the server moved the order to, with no '
+        'error, and refreshes the order, list and queue', () async {
+      when(
+        () => repository.approve(_id),
+      ).thenAnswer((_) async => inStatus(DeliveryOrderStatus.inPreparation));
+      await settle();
+
+      final outcome = await actions().approve(_id);
+      await settle();
+
+      expect(outcome.error, isNull);
+      expect(outcome.status, DeliveryOrderStatus.inPreparation);
+      verify(() => repository.approve(_id)).called(1);
+      expect(_detailBuilds, 2);
+      expect(_listBuilds, 2);
+      expect(_queueBuilds, 2);
+    });
+
+    test(
+      'reject sends the reason as given and answers the draft status',
+      () async {
+        when(
+          () => repository.reject(id: _id, reason: 'Dirección equivocada'),
+        ).thenAnswer((_) async => inStatus(DeliveryOrderStatus.draft));
+        await settle();
+
+        final outcome = await actions().reject(
+          _id,
+          reason: 'Dirección equivocada',
+        );
+        await settle();
+
+        expect(outcome.error, isNull);
+        expect(outcome.status, DeliveryOrderStatus.draft);
+        verify(
+          () => repository.reject(id: _id, reason: 'Dirección equivocada'),
+        ).called(1);
+        expect(_queueBuilds, 2);
+      },
+    );
+
+    test('a refusal answers the error and no status, and leaves the list and '
+        'queue alone', () async {
+      const refusal = AppError.validation(
+        [],
+        'not pending',
+        ApiProblem(
+          codeName: 'delivery_order.not_pending_approval',
+          code: api.ErrorCode.deliveryOrderPeriodNotPendingApproval,
+        ),
+      );
+      when(
+        () => repository.approve(_id),
+      ).thenAnswer((_) async => throw refusal);
+      await settle();
+
+      final outcome = await actions().approve(_id);
+      await settle();
+
+      expect(outcome.error, refusal);
+      expect(outcome.status, isNull);
+      expect(_detailBuilds, 2, reason: 'order reloaded (FR-015)');
+      expect(_listBuilds, 1);
+      expect(_queueBuilds, 1);
+    });
+
+    test('a lost connection answers NetworkError and still refreshes the '
+        'queue, since the write may have landed', () async {
+      when(
+        () => repository.reject(id: _id, reason: 'x'),
+      ).thenAnswer((_) async => throw const AppError.network());
+      await settle();
+
+      final outcome = await actions().reject(_id, reason: 'x');
+      await settle();
+
+      expect(outcome.error, isA<NetworkError>());
+      expect(outcome.status, isNull);
+      expect(_queueBuilds, 2);
+    });
+  });
 }

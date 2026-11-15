@@ -46,6 +46,7 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.deliveryOrderPeriodNoLines,
   api.ErrorCode.deliveryOrderPeriodNotEditable,
   api.ErrorCode.deliveryOrderPeriodNotFailed,
+  api.ErrorCode.deliveryOrderPeriodNotPendingApproval,
   api.ErrorCode.deliveryOrderPeriodProofIncomplete,
   api.ErrorCode.deliveryOrderPeriodQuantityExceedsRemaining,
   api.ErrorCode.deliveryOrderPeriodReasonRequired,
@@ -247,6 +248,8 @@ String? localizeProblem(
       l10n.apiErrorDeliveryOrderNotEditable,
     api.ErrorCode.deliveryOrderPeriodNotFailed =>
       l10n.apiErrorDeliveryOrderNotFailed,
+    api.ErrorCode.deliveryOrderPeriodNotPendingApproval =>
+      l10n.apiErrorDeliveryOrderNotPendingApproval,
     api.ErrorCode.deliveryOrderPeriodProofIncomplete =>
       l10n.apiErrorDeliveryOrderProofIncomplete,
     api.ErrorCode.deliveryOrderPeriodQuantityExceedsRemaining => _ap2(

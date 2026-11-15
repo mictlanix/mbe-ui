@@ -80,6 +80,19 @@ abstract class DeliveryOrderAdminRepository {
   /// `POST /delivery-orders/{id}/requeue`.
   Future<DeliveryOrder> requeue(int id);
 
+  /// `GET /delivery-orders/approval?skip=&limit=` — the orders awaiting a
+  /// decision (spec 062 R1). The server scopes the queue to the caller's
+  /// facility and takes no facility, status or search parameter.
+  Future<DeliveryOrderPage> approvalQueue({int skip = 0, int limit = 20});
+
+  /// `POST /delivery-orders/approval/{id}/approve` — a delivery moves to
+  /// En preparación, a pickup to Aprobada (spec 062 R1).
+  Future<DeliveryOrder> approve(int id);
+
+  /// `POST /delivery-orders/approval/{id}/reject` — back to Borrador with
+  /// [reason], which the server requires and stores (spec 062 R1).
+  Future<DeliveryOrder> reject({required int id, required String reason});
+
   /// `POST /delivery-orders/{id}/ready-for-pickup`.
   Future<DeliveryOrder> markReadyForPickup(int id);
 

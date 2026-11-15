@@ -82,6 +82,26 @@ class _FakeActions extends DeliveryOrderActions {
 
   @override
   Future<AppError?> markReady(int id) => _answer(id, 'ready');
+
+  /// Spec 062: approve and reject answer the status the server moved the
+  /// order to, and on success run [onSuccess] first, as the writes above do.
+  @override
+  Future<ApprovalOutcome> approve(int id) async {
+    final error = await _answer(id, 'approve');
+    return (
+      error: error,
+      status: error == null ? DeliveryOrderStatus.inPreparation : null,
+    );
+  }
+
+  @override
+  Future<ApprovalOutcome> reject(int id, {required String reason}) async {
+    final error = await _answer(id, 'reject $reason');
+    return (
+      error: error,
+      status: error == null ? DeliveryOrderStatus.draft : null,
+    );
+  }
 }
 
 /// A 1×1 PNG, as the proof image endpoint answers.
@@ -89,32 +109,40 @@ final _png = base64Decode(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=',
 );
 
-Override _access({bool update = false, bool salesOrdersRead = true}) =>
-    accessControlProvider.overrideWithValue(
-      AccessControlService(
-        AuthState.authenticated(
-          token: 't',
-          user: User(
-            userId: 'd',
-            email: 'd@example.com',
-            administrator: false,
-            status: EntityStatus.active,
-            sessionVersion: 1,
-            privileges: [
-              Privilege(
-                systemObject: SystemObject.deliveryOrders,
-                rawValue: update ? 6 : 2,
-              ),
-              if (salesOrdersRead)
-                const Privilege(
-                  systemObject: SystemObject.salesOrders,
-                  rawValue: 2,
-                ),
-            ],
+Override _access({
+  bool update = false,
+  bool salesOrdersRead = true,
+  bool approvalUpdate = false,
+}) => accessControlProvider.overrideWithValue(
+  AccessControlService(
+    AuthState.authenticated(
+      token: 't',
+      user: User(
+        userId: 'd',
+        email: 'd@example.com',
+        administrator: false,
+        status: EntityStatus.active,
+        sessionVersion: 1,
+        privileges: [
+          Privilege(
+            systemObject: SystemObject.deliveryOrders,
+            rawValue: update ? 6 : 2,
           ),
-        ),
+          if (salesOrdersRead)
+            const Privilege(
+              systemObject: SystemObject.salesOrders,
+              rawValue: 2,
+            ),
+          if (approvalUpdate)
+            const Privilege(
+              systemObject: SystemObject.deliveryOrderApproval,
+              rawValue: 6,
+            ),
+        ],
       ),
-    );
+    ),
+  ),
+);
 
 const _customer = Customer(
   customerId: 7,
@@ -1532,5 +1560,210 @@ void main() {
         }
       }
     }
+  });
+
+  // Spec 062 T024 (data-model §4, FR-013): Rechazar and Aprobar need Delivery
+  // Order Approval update and an order waiting for approval, and nothing
+  // else. Cancelar still needs Delivery Orders update (spec 061 FR-018).
+  testWidgets('approval action matrix (spec 062)', (tester) async {
+    const cancel = 'delivery_order_cancel';
+    const reject = 'delivery_order_reject';
+    const approve = 'delivery_order_approve';
+    const watched = {cancel, reject, approve};
+    const cancellable = {
+      DeliveryOrderStatus.draft,
+      DeliveryOrderStatus.pendingApproval,
+      DeliveryOrderStatus.approved,
+      DeliveryOrderStatus.readyForPickup,
+      DeliveryOrderStatus.inPreparation,
+      DeliveryOrderStatus.failed,
+    };
+
+    for (final status in DeliveryOrderStatus.values) {
+      for (final (orders, approval) in const [
+        (false, false),
+        (true, false),
+        (false, true),
+        (true, true),
+      ]) {
+        await tester.pumpWidget(const SizedBox.shrink());
+        await pumpDetail(
+          tester,
+          detail: detailOf(
+            _order(
+              serial: status == DeliveryOrderStatus.draft ? null : 1532,
+              status: status,
+            ),
+          ),
+          access: _access(update: orders, approvalUpdate: approval),
+        );
+
+        final expected = {
+          if (orders && cancellable.contains(status)) cancel,
+          if (approval && status == DeliveryOrderStatus.pendingApproval) ...{
+            reject,
+            approve,
+          },
+        };
+        final present = {
+          for (final k in watched)
+            if (find.byKey(Key(k)).evaluate().isNotEmpty) k,
+        };
+        expect(
+          present,
+          expected,
+          reason: '${status.name} ordersUpdate=$orders approval=$approval',
+        );
+      }
+    }
+  });
+
+  group('approval (spec 062)', () {
+    final pending = _order(status: DeliveryOrderStatus.pendingApproval);
+
+    testWidgets('an approver with both rights sees Cancelar, Rechazar and '
+        'Aprobar in that order, Aprobar filled', (tester) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(pending),
+        access: _access(update: true, approvalUpdate: true),
+      );
+
+      final cancelX = tester.getTopLeft(key('delivery_order_cancel')).dx;
+      final rejectX = tester.getTopLeft(key('delivery_order_reject')).dx;
+      final approveX = tester.getTopLeft(key('delivery_order_approve')).dx;
+      expect(cancelX, lessThan(rejectX));
+      expect(rejectX, lessThan(approveX));
+      expect(
+        tester.widget<FilledButton>(key('delivery_order_approve')).onPressed,
+        isNotNull,
+      );
+      expect(find.byType(OutlinedButton), findsNWidgets(2));
+    });
+
+    testWidgets('an approver without Delivery Orders update sees only the two '
+        'approval actions', (tester) async {
+      await pumpDetail(
+        tester,
+        detail: detailOf(pending),
+        access: _access(approvalUpdate: true),
+      );
+
+      expect(key('delivery_order_approve'), findsOneWidget);
+      expect(key('delivery_order_reject'), findsOneWidget);
+      expect(key('delivery_order_cancel'), findsNothing);
+    });
+
+    testWidgets('approving asks first, writes once, says which status the '
+        'order moved to, and the reloaded screen shows it', (tester) async {
+      var current = detailOf(pending);
+      final actions = _FakeActions(
+        onSuccess: () => current = detailOf(
+          _order(status: DeliveryOrderStatus.inPreparation),
+        ),
+      );
+      await pumpDetail(
+        tester,
+        answer: () async => current,
+        access: _access(update: true, approvalUpdate: true),
+        actions: actions,
+      );
+
+      await tester.tap(key('delivery_order_approve'));
+      await tester.pumpAndSettle();
+      expect(key('delivery_order_approve_dialog'), findsOneWidget);
+      expect(actions.calls, isEmpty);
+
+      await tester.tap(key('delivery_order_approve_submit'));
+      await tester.pumpAndSettle();
+
+      expect(actions.calls, ['approve']);
+      expect(
+        find.text(l10n.deliveryOrderSnackApproved('1532', 'En preparación')),
+        findsOneWidget,
+      );
+      expect(key('delivery_order_approve'), findsNothing);
+      expect(key('delivery_order_reject'), findsNothing);
+    });
+
+    testWidgets('rejecting needs a reason, and the reloaded draft shows it in '
+        'the rejection banner', (tester) async {
+      var current = detailOf(pending);
+      final actions = _FakeActions(
+        onSuccess: () => current = detailOf(
+          // The server keeps the folio a rejected order was confirmed with.
+          _order(
+            status: DeliveryOrderStatus.draft,
+            rejectionReason: 'Dirección equivocada',
+          ),
+        ),
+      );
+      await pumpDetail(
+        tester,
+        answer: () async => current,
+        access: _access(update: true, approvalUpdate: true),
+        actions: actions,
+      );
+
+      await tester.tap(key('delivery_order_reject'));
+      await tester.pumpAndSettle();
+      expect(
+        tester
+            .widget<FilledButton>(key('delivery_order_reject_submit'))
+            .onPressed,
+        isNull,
+      );
+
+      await tester.enterText(
+        key('delivery_order_reject_reason'),
+        'Dirección equivocada',
+      );
+      await tester.pump();
+      await tester.tap(key('delivery_order_reject_submit'));
+      await tester.pumpAndSettle();
+
+      expect(actions.calls, ['reject Dirección equivocada']);
+      expect(
+        find.text(l10n.deliveryOrderSnackRejected('1532')),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Dirección equivocada'), findsWidgets);
+      expect(key('delivery_order_reject'), findsNothing);
+      expect(key('delivery_order_approve'), findsNothing);
+    });
+
+    testWidgets('a refusal stays in the dialog and the order is unchanged', (
+      tester,
+    ) async {
+      final actions = _FakeActions(
+        error: const AppError.server(
+          statusCode: 409,
+          problem: ApiProblem(
+            codeName: 'delivery_order.not_pending_approval',
+            code: api.ErrorCode.deliveryOrderPeriodNotPendingApproval,
+          ),
+        ),
+      );
+      await pumpDetail(
+        tester,
+        detail: detailOf(pending),
+        access: _access(update: true, approvalUpdate: true),
+        actions: actions,
+      );
+
+      await tester.tap(key('delivery_order_approve'));
+      await tester.pumpAndSettle();
+      await tester.tap(key('delivery_order_approve_submit'));
+      await tester.pumpAndSettle();
+
+      expect(key('delivery_order_approve_dialog'), findsOneWidget);
+      expect(
+        find.text(l10n.apiErrorDeliveryOrderNotPendingApproval),
+        findsOneWidget,
+      );
+      await tester.tap(key('delivery_order_approve_close'));
+      await tester.pumpAndSettle();
+      expect(key('delivery_order_approve_dialog'), findsNothing);
+    });
   });
 }

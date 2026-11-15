@@ -99,7 +99,7 @@ void main() {
         missing.add(cells[1]);
       }
     }
-    expect(checked, 109);
+    expect(checked, 110);
     expect(missing, isEmpty);
   });
 

@@ -323,6 +323,20 @@ const _deliveryOrdersReaderUser = User(
   ],
 );
 
+/// Holds read on `deliveryOrderApproval` (94) alone — the gate for spec 062's
+/// `/sales/delivery-order-approval` route. It is its own privilege: Delivery
+/// Orders (71) read must not open it, and it must not open the orders.
+const _deliveryOrderApprovalReaderUser = User(
+  userId: 'delivery-order-approval-reader',
+  email: 'delivery-order-approval-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.deliveryOrderApproval, rawValue: 2),
+  ],
+);
+
 /// Holds read on `salesOrders` (7) alone — no `pos` — the gate for
 /// 029-back-office-sales-orders' `/sales/orders*` routes (contracts/
 /// routes.md §3). Deliberately a *different* privilege from `_posReaderUser`
@@ -1431,6 +1445,75 @@ void main() {
 
       expect(handle.router.state.uri.path, '/sales/delivery-orders/abc');
       expect(find.byKey(const Key('delivery_order_not_found')), findsOneWidget);
+    });
+  });
+
+  group('062-delivery-order-approval — /sales/delivery-order-approval gates on '
+      'deliveryOrderApproval (94) read', () {
+    testWidgets('a user with deliveryOrderApproval:read reaches the queue '
+        '(here the no-facility notice, as the fixture user has none)', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _deliveryOrderApprovalReaderUser,
+        '/sales/delivery-order-approval',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/sales/delivery-order-approval');
+      expect(
+        find.byKey(const Key('delivery_order_approval_no_facility')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a user without deliveryOrderApproval:read is redirected '
+        'home', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/sales/delivery-order-approval',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('deliveryOrders:read alone does not open the queue', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _deliveryOrdersReaderUser,
+        '/sales/delivery-order-approval',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('deliveryOrderApproval:read alone does not open an order', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _deliveryOrderApprovalReaderUser,
+        '/sales/delivery-orders/9',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('activates shell branch NavBranch.deliveryOrderApproval (27)', (
+      tester,
+    ) async {
+      await pumpAt(
+        tester,
+        _deliveryOrderApprovalReaderUser,
+        '/sales/delivery-order-approval',
+      );
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.deliveryOrderApproval, 27);
+      expect(
+        shell.navigationShell.currentIndex,
+        NavBranch.deliveryOrderApproval,
+      );
     });
   });
 
