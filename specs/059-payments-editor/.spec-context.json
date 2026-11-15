@@ -1,0 +1,17 @@
+{
+  "workflow": "speckit",
+  "specName": "Payments Editor",
+  "branch": "",
+  "currentStep": "specify",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-15T14:32:00.895Z"
+    }
+  ],
+  "telemetryInstanceId": "b100ee3d-f374-4a9f-8050-34c51cdf4522"
+}
