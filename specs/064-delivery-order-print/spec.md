@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-15
 
-**Status**: Draft
+**Status**: Implemented
 
 **Input**: User description: mictlanix/mbe-roadmap#43 ([UI] Delivery order print). Scope 06 §6.1 (mbe-api `docs/specs/06-logistics.md` §1 "Print / Ticket"; SystemObject DeliveryOrders 71). Server side done in mbe-api spec 026 (mictlanix/mbe-roadmap#42, closed). Weight: 1 legacy action. Builds on spec 061 (Órdenes de entrega) and spec 044 (document preview).
 
@@ -172,3 +172,4 @@ A branch that delivers concrete prints the order on Letter paper. The receiver s
 - **Itinerary documents are out of scope.** The itinerary ticket and the delivery notes (mbe-api spec 026, User Story 2) ship with itineraries (mictlanix/mbe-roadmap#41).
 - **Other screens.** The Por entregar queue (spec 063) and the approval queue (spec 062) get no print action in this feature.
 - **No direct-to-printer.** Every print goes through the preview. A send-straight-to-printer path is for later, as spec 044 left room for.
+- **Manual checks.** The checks automation can't cover, including the two-warehouse walkthrough the live test skipped (the dev tenant has no such order), are tracked in mictlanix/mbe-ui#251.
