@@ -54,7 +54,7 @@ On Thursday afternoon the coordinator opens the filters and sees how many lines 
 3. **Given** the user uses "Clear all", **When** the list reloads, **Then** it's back on Hoy with no badge.
 4. **Given** a delivery line scheduled before yesterday, **When** the user picks Anteriores, **Then** it's listed with its scheduled date.
 5. **Given** a delivery line scheduled more than two days ahead, or with no scheduled date, **When** the user picks Posteriores, **Then** it's listed. A line with no date says so instead of showing a date.
-6. **Given** a period with no lines, **When** it's chosen, **Then** the list says there are no deliveries pending for that period and offers to clear the filter.
+6. **Given** a period other than Hoy with no lines, **When** it's chosen, **Then** the list shows the app's standard "no matches" state with its clear-filters action, which goes back to Hoy.
 
 ---
 
@@ -102,7 +102,7 @@ The coordinator sees a line for 40 bags of cement with priority 5 and wants to c
 - **FR-009**: With Delivery Orders (SystemObject 71) read, tapping a row MUST open that delivery order's detail screen (spec 061). Without it, rows MUST NOT be tappable.
 - **FR-010**: The queue MUST be read-only. It MUST NOT offer actions that change a delivery order or commit lines to an itinerary.
 - **FR-011**: The filter row MUST hold only the shared filters button, badged when a period other than Hoy is selected. It MUST NOT show a search box: the server offers no search for this queue. "Clear all" MUST return to Hoy.
-- **FR-012**: An empty period MUST say there are no deliveries pending for that period. A load failure MUST show the standard error with a retry.
+- **FR-012**: An empty Hoy MUST say there are no deliveries pending for this period. An empty period other than Hoy MUST show the app's standard filtered-empty state with its clear-filters action, as every filtered list does. A load failure MUST show the standard error with a retry.
 - **FR-013**: All user-visible text MUST be localized (Spanish and English), and API errors MUST be shown from their error codes as elsewhere in the app.
 
 ### Key Entities

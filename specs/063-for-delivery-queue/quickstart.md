@@ -30,7 +30,7 @@ flutter test integration_test/for_delivery_quickstart_test.dart -d macos
 4. Pick a period holding a known order (e.g. the one 30240 falls in). The badge shows 1, the list shows its lines with their scheduled date, page 1. The URL carries `period=…`.
 5. Tap a row. Order detail opens. Go back: same period and page, reloaded.
 6. With a role lacking DeliveryOrders read: rows don't respond to a tap. With a role lacking ForDeliver read: no nav entry, and `/sales/for-delivery` redirects.
-7. Pick a period with no lines: the empty message and "Borrar filtros". Use it: back to Hoy, no badge.
+7. Pick a period with no lines: the shared "No se encontraron coincidencias" state with its "Limpiar filtros" button. Use it: back to Hoy, no badge.
 8. Type `?period=bogus` in the URL: the list shows Hoy.
 9. Cancel an in-preparation order from its detail screen (or approve a new one), return: its lines are gone (or appear).
 10. Narrow the window to compact: rows become cards without Destino; the filter panel opens as a bottom sheet.

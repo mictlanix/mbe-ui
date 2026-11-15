@@ -52,7 +52,7 @@
 | Loading | `CatalogListStateView` loading |
 | Error | `CatalogListStateView` error, message from the problem code, "Reintentar" invalidates (FR-012, FR-013) |
 | Empty, period = Hoy | empty message "No hay entregas pendientes para este periodo.", no button |
-| Empty, other period | same message, `isFiltered: true` → "Borrar filtros" to the default filter |
+| Empty, other period | the shared filtered-empty state (`isFiltered: true`: "No se encontraron coincidencias", "Intenta ajustar o borrar tus filtros") with its clear-filters button to the default filter |
 | Populated | C4 |
 
 ## C6. Repository

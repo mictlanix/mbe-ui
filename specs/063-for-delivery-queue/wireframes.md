@@ -80,13 +80,14 @@ The table looks the same, but rows don't respond to a tap: no hover highlight an
 │                                                                                 [ ⚙¹ ]  │
 ├──────────────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                          │
-│                  No hay entregas pendientes para este periodo.                           │
-│                            [ Borrar filtros ]                                            │
+│                       No se encontraron coincidencias                                    │
+│                  Intenta ajustar o borrar tus filtros.                                   │
+│                            [ Limpiar filtros ]                                           │
 │                                                                                          │
 └──────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- `CatalogListStateView` empty variant with `isFiltered` set when the period isn't Hoy, so it offers "Borrar filtros" back to Hoy (FR-012, US2 scenario 6). On Hoy itself there's no button.
+- `CatalogListStateView` empty variant with `isFiltered` set when the period isn't Hoy, so it shows the shared filtered-empty state, whose button goes back to Hoy (FR-012, US2 scenario 6). On Hoy itself the message is "No hay entregas pendientes para este periodo." with no button.
 
 ### State: loading / error
 
