@@ -60,14 +60,20 @@ class CloseSessionFormController extends _$CloseSessionFormController {
   CloseSessionFormState build() => const CloseSessionFormState();
 
   /// Seeds the form from an already-loaded [session] — the expected-cash
-  /// figure (opening amount + cash-method payments only) is fixed for the
-  /// lifetime of the count; only the counted total and difference change as
-  /// the cashier enters quantities.
+  /// figure is fixed for the lifetime of the count; only the counted total
+  /// and difference change as the cashier enters quantities.
+  ///
+  /// The figure is the server's `expected_cash` (mbe-api#239), which nets
+  /// change, expenses and cash refunds. A session without it (a list row)
+  /// falls back to the gross opening amount + cash-method payments.
   void loadSession(CashSession session) {
-    final expected = expectedCash(
-      openingAmount: session.openingAmount,
-      payments: session.paymentsByMethod,
-    );
+    final serverExpected = session.expectedCash;
+    final expected = serverExpected != null
+        ? parseAmount(serverExpected)
+        : expectedCash(
+            openingAmount: session.openingAmount,
+            payments: session.paymentsByMethod,
+          );
     state = CloseSessionFormState(
       cashSessionId: session.cashSessionId,
       expectedCash: formatAmount(expected),

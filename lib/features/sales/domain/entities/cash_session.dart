@@ -35,6 +35,11 @@ abstract class CashSession with _$CashSession {
     String? cashSupervisorName,
     required String openingAmount,
     @Default(<PaymentMethodTotal>[]) List<PaymentMethodTotal> paymentsByMethod,
+
+    /// Cash the drawer should hold, the server's cut figure: opening amount
+    /// plus cash sales net of change, minus expenses and cash refunds
+    /// (mbe-api#239). Sent on single-session reads only; `null` on list rows.
+    String? expectedCash,
   }) = _CashSession;
 
   factory CashSession.fromResponse(CashSessionResponse r) => CashSession(
@@ -55,6 +60,7 @@ abstract class CashSession with _$CashSession {
     paymentsByMethod: (r.paymentsByMethod ?? const <MethodTotal>[])
         .map(PaymentMethodTotal.fromResponse)
         .toList(),
+    expectedCash: r.expectedCash,
   );
 }
 

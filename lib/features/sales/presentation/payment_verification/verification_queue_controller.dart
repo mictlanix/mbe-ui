@@ -43,6 +43,7 @@ class VerificationQueueController extends _$VerificationQueueController {
           dateFrom: filter.dateFrom,
           dateTo: filter.dateTo,
           methodCode: filter.methodCode,
+          rejected: filter.rejected,
           skip: pageIndex * _pageSize,
           limit: _pageSize,
         );

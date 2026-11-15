@@ -47,6 +47,7 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.deliveryOrderPeriodNotEditable,
   api.ErrorCode.deliveryOrderPeriodNotFailed,
   api.ErrorCode.deliveryOrderPeriodNotPendingApproval,
+  api.ErrorCode.deliveryOrderPeriodOnItinerary,
   api.ErrorCode.deliveryOrderPeriodProofIncomplete,
   api.ErrorCode.deliveryOrderPeriodQuantityExceedsRemaining,
   api.ErrorCode.deliveryOrderPeriodReasonRequired,
@@ -63,6 +64,7 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.imagePeriodUnsupportedFormat,
   api.ErrorCode.incidencePeriodReasonRequired,
   api.ErrorCode.lockPeriodBusy,
+  api.ErrorCode.paymentPeriodAlreadyApplied,
   api.ErrorCode.paymentPeriodAlreadyVerified,
   api.ErrorCode.paymentPeriodApplicationReversed,
   api.ErrorCode.paymentPeriodCurrencyMismatch,
@@ -250,6 +252,8 @@ String? localizeProblem(
       l10n.apiErrorDeliveryOrderNotFailed,
     api.ErrorCode.deliveryOrderPeriodNotPendingApproval =>
       l10n.apiErrorDeliveryOrderNotPendingApproval,
+    api.ErrorCode.deliveryOrderPeriodOnItinerary =>
+      l10n.apiErrorDeliveryOrderOnItinerary,
     api.ErrorCode.deliveryOrderPeriodProofIncomplete =>
       l10n.apiErrorDeliveryOrderProofIncomplete,
     api.ErrorCode.deliveryOrderPeriodQuantityExceedsRemaining => _ap2(
@@ -287,6 +291,8 @@ String? localizeProblem(
     api.ErrorCode.incidencePeriodReasonRequired =>
       l10n.apiErrorIncidenceReasonRequired,
     api.ErrorCode.lockPeriodBusy => l10n.apiErrorLockBusy,
+    api.ErrorCode.paymentPeriodAlreadyApplied =>
+      l10n.apiErrorPaymentAlreadyApplied,
     api.ErrorCode.paymentPeriodAlreadyVerified =>
       l10n.apiErrorPaymentAlreadyVerified,
     api.ErrorCode.paymentPeriodApplicationReversed =>

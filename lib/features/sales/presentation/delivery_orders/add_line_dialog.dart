@@ -163,8 +163,8 @@ class _AddLineDialogState extends ConsumerState<_AddLineDialog> {
     });
   }
 
-  /// The sale, and every delivery order of it with its lines, to compute
-  /// what is left on each sale line (research R8).
+  /// The sale's lines with something left to deliver, as the server counts
+  /// it (mbe-api#313), less the ones already on this order.
   Future<void> _loadLines() async {
     final saleId = _sale!.id;
     final request = ++_linesRequest;
@@ -173,33 +173,18 @@ class _AddLineDialogState extends ConsumerState<_AddLineDialog> {
       _linesError = null;
     });
     try {
-      final sale = await ref
-          .read(salesOrderRepositoryProvider)
-          .getById(saleId: saleId);
-      final orders = ref.read(deliveryOrderAdminRepositoryProvider);
-      // The server's list always filters by facility, defaulting to the
-      // caller's, so pass the sale's own: an order at another facility
-      // claiming this sale would otherwise be missed (research R8).
-      // simplified: the first 100 orders of one sale; a sale split over more
-      // would overstate what's left, which the server then refuses with
-      // quantity_exceeds_remaining. Page through them if that ever happens.
-      final page = await orders.list(
-        salesOrder: sale.id,
-        facility: sale.facility,
-        limit: 100,
-      );
-      final full = await Future.wait(
-        page.items.map((summary) => orders.getById(summary.id)),
-      );
+      final deliverable = await ref
+          .read(deliveryOrderAdminRepositoryProvider)
+          .deliverableLines(customer: _order.customerId, salesOrder: saleId);
       if (!mounted || request != _linesRequest) return;
-      final lines = deliverableLines(
-        sale,
-        full,
-        excludeDetailIds: {
-          for (final line in _order.lines)
-            if (line.salesOrderDetailId != null) line.salesOrderDetailId!,
-        },
-      );
+      final onOrder = {
+        for (final line in _order.lines)
+          if (line.salesOrderDetailId != null) line.salesOrderDetailId!,
+      };
+      final lines = [
+        for (final line in deliverable)
+          if (!onOrder.contains(line.salesOrderDetailId)) line,
+      ];
       setState(() {
         _disposeQuantities();
         for (final line in lines) {

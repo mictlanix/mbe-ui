@@ -127,8 +127,16 @@ class PaymentVerificationScreen extends ConsumerWidget {
                       DataTableColumn(
                         label: l10n.paymentsColumnFolio,
                         fixedWidth: 90,
-                        cellBuilder: (context, p) =>
-                            Text('${p.customerPaymentId}'),
+                        // A rejected payment carries its mark here
+                        // (mbe-api#310).
+                        cellBuilder: (context, p) => Row(
+                          spacing: 4,
+                          children: [
+                            Flexible(child: Text('${p.customerPaymentId}')),
+                            if (p.lastRejection case final rejection?)
+                              PaymentRejectedIcon(rejection: rejection),
+                          ],
+                        ),
                       ),
                       DataTableColumn(
                         label: l10n.paymentsColumnFacility,
@@ -230,10 +238,9 @@ Future<void> _verify(BuildContext context, CustomerPayment payment) async {
 }
 
 /// Rejects [payment] with a reason, and says so once it was recorded. The row
-/// stays where it is: a rejection changes nothing the queue can read, so the
-/// payment is still unverified and still listed (spec 060 FR-011, FR-012). No
-/// local "rejected" mark is kept, since it would vanish on reload and claim
-/// knowledge the app doesn't have.
+/// stays where it is: the payment is still unverified and still listed (spec
+/// 060 FR-011). The queue reloads, and the row then carries the server's
+/// rejection mark (mbe-api#310); no local mark is kept.
 Future<void> _reject(BuildContext context, CustomerPayment payment) async {
   final messenger = ScaffoldMessenger.of(context);
   final message = AppLocalizations.of(
@@ -401,6 +408,32 @@ class _VerificationFiltersPanel extends ConsumerWidget {
               ),
             ),
           ),
+        ),
+        // Tri-state (mbe-api#310): rejected at least once, never, or both.
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: spacing.sm,
+          children: [
+            Text(l10n.paymentVerificationFilterRejected, style: titleStyle),
+            Wrap(
+              spacing: spacing.sm,
+              runSpacing: spacing.sm,
+              children: [
+                for (final (key, label, value) in [
+                  ('any', l10n.paymentVerificationRejectedAny, null),
+                  ('yes', l10n.paymentVerificationRejectedYes, true),
+                  ('no', l10n.paymentVerificationRejectedNo, false),
+                ])
+                  ChoiceChip(
+                    key: Key('verification_filter_rejected_$key'),
+                    label: Text(label),
+                    selected: filter.rejected == value,
+                    onSelected: (_) =>
+                        goTo(query.withFacet('rejected', value?.toString())),
+                  ),
+              ],
+            ),
+          ],
         ),
       ],
     );

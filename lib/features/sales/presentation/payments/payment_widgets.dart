@@ -9,7 +9,9 @@ import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/widgets/status_chip.dart';
+import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -90,6 +92,62 @@ class PaymentVerifiedIcon extends StatelessWidget {
             : scheme.onSurfaceVariant.withValues(alpha: 0.5),
         semanticLabel: label,
       ),
+    );
+  }
+}
+
+/// The mark on a queue row whose payment a verifier rejected (spec 060,
+/// mbe-api#310): an icon, with "Rechazado", the date and the reason in its
+/// tooltip and semantics, so it fits the narrow folio column.
+class PaymentRejectedIcon extends ConsumerWidget {
+  const PaymentRejectedIcon({super.key, required this.rejection});
+
+  final PaymentRejection rejection;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final fmt = ref.watch(formattersProvider);
+    final at = rejection.rejectedAt;
+    final label = [
+      l10n.paymentRejected,
+      if (at != null) fmt.display.dateTime(at),
+      ?rejection.reason,
+    ].join(' · ');
+    return Tooltip(
+      message: label,
+      child: Icon(
+        Icons.block,
+        key: const Key('payment_icon_rejected'),
+        size: 18,
+        color: Theme.of(context).colorScheme.error,
+        semanticLabel: label,
+      ),
+    );
+  }
+}
+
+/// A payment's last rejection, for the "Último rechazo" field (spec 060,
+/// mbe-api#310): when and by whom, then the reason.
+class PaymentRejectionDetails extends ConsumerWidget {
+  const PaymentRejectionDetails({super.key, required this.rejection});
+
+  final PaymentRejection rejection;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final fmt = ref.watch(formattersProvider);
+    final at = rejection.rejectedAt;
+    final by =
+        ref.watch(employeeDisplayNameProvider(rejection.rejectedById)).value ??
+        '#${rejection.rejectedById}';
+    return Column(
+      key: const Key('payment_last_rejection'),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text([if (at != null) fmt.display.dateTime(at), by].join(' · ')),
+        if (rejection.reason case final reason?) Text(reason),
+      ],
     );
   }
 }

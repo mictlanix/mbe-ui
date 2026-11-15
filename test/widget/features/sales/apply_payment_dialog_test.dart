@@ -72,6 +72,7 @@ void main() {
   void stubOrders(List<OutstandingOrder> orders) => when(
     () => mocks.payments.listOutstandingOrders(
       customerId: any(named: 'customerId'),
+      facilityId: any(named: 'facilityId'),
       search: any(named: 'search'),
       skip: any(named: 'skip'),
       limit: any(named: 'limit'),
@@ -153,13 +154,15 @@ void main() {
     expect(find.textContaining(r'Total $2,400.00'), findsOneWidget);
   });
 
-  testWidgets('asks the server for this customer\'s orders', (tester) async {
+  testWidgets('asks the server for this customer\'s orders at the payment\'s '
+      'facility (mbe-api#308)', (tester) async {
     stubOrders([_order(1047)]);
     await open(tester);
 
     verify(
       () => mocks.payments.listOutstandingOrders(
         customerId: 77,
+        facilityId: 9,
         search: '',
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
@@ -244,6 +247,7 @@ void main() {
     verify(
       () => mocks.payments.listOutstandingOrders(
         customerId: 77,
+        facilityId: any(named: 'facilityId'),
         search: '999',
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
@@ -255,6 +259,7 @@ void main() {
     when(
       () => mocks.payments.listOutstandingOrders(
         customerId: any(named: 'customerId'),
+        facilityId: any(named: 'facilityId'),
         search: any(named: 'search'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
@@ -314,6 +319,7 @@ void main() {
     verify(
       () => mocks.payments.listOutstandingOrders(
         customerId: 77,
+        facilityId: any(named: 'facilityId'),
         search: any(named: 'search'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),

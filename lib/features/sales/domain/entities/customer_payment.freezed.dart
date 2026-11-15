@@ -20,7 +20,9 @@ mixin _$CustomerPayment {
 /// customer row is missing; a blank name is treated the same way.
  String? get customerName; String get amount; Currency get currency; int get methodCode; int? get paymentOptionId; String? get reference; DateTime get date; int get facilityId; int? get cashSessionId; PaymentType get type; int? get verifierId;/// The server's derived figure: the amount less its non-reversed
 /// applications. Never recomputed client-side.
- String get unapplied;
+ String get unapplied;/// The latest time a verifier rejected this payment, `null` when it never
+/// was (mbe-api#310). A rejection leaves the payment unverified.
+ PaymentRejection? get lastRejection;
 /// Create a copy of CustomerPayment
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -32,20 +34,20 @@ $CustomerPaymentCopyWith<CustomerPayment> get copyWith => _$CustomerPaymentCopyW
 @override
 bool operator ==(Object other) {
   final _this = this as CustomerPayment;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CustomerPayment&&(identical(other.customerPaymentId, _this.customerPaymentId) || other.customerPaymentId == _this.customerPaymentId)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.customerName, _this.customerName) || other.customerName == _this.customerName)&&(identical(other.amount, _this.amount) || other.amount == _this.amount)&&(identical(other.currency, _this.currency) || other.currency == _this.currency)&&(identical(other.methodCode, _this.methodCode) || other.methodCode == _this.methodCode)&&(identical(other.paymentOptionId, _this.paymentOptionId) || other.paymentOptionId == _this.paymentOptionId)&&(identical(other.reference, _this.reference) || other.reference == _this.reference)&&(identical(other.date, _this.date) || other.date == _this.date)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.cashSessionId, _this.cashSessionId) || other.cashSessionId == _this.cashSessionId)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.verifierId, _this.verifierId) || other.verifierId == _this.verifierId)&&(identical(other.unapplied, _this.unapplied) || other.unapplied == _this.unapplied));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CustomerPayment&&(identical(other.customerPaymentId, _this.customerPaymentId) || other.customerPaymentId == _this.customerPaymentId)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.customerName, _this.customerName) || other.customerName == _this.customerName)&&(identical(other.amount, _this.amount) || other.amount == _this.amount)&&(identical(other.currency, _this.currency) || other.currency == _this.currency)&&(identical(other.methodCode, _this.methodCode) || other.methodCode == _this.methodCode)&&(identical(other.paymentOptionId, _this.paymentOptionId) || other.paymentOptionId == _this.paymentOptionId)&&(identical(other.reference, _this.reference) || other.reference == _this.reference)&&(identical(other.date, _this.date) || other.date == _this.date)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.cashSessionId, _this.cashSessionId) || other.cashSessionId == _this.cashSessionId)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.verifierId, _this.verifierId) || other.verifierId == _this.verifierId)&&(identical(other.unapplied, _this.unapplied) || other.unapplied == _this.unapplied)&&(identical(other.lastRejection, _this.lastRejection) || other.lastRejection == _this.lastRejection));
 }
 
 
 @override
 int get hashCode {
   final _this = this as CustomerPayment;
-  return Object.hash(runtimeType,_this.customerPaymentId,_this.customerId,_this.customerName,_this.amount,_this.currency,_this.methodCode,_this.paymentOptionId,_this.reference,_this.date,_this.facilityId,_this.cashSessionId,_this.type,_this.verifierId,_this.unapplied);
+  return Object.hash(runtimeType,_this.customerPaymentId,_this.customerId,_this.customerName,_this.amount,_this.currency,_this.methodCode,_this.paymentOptionId,_this.reference,_this.date,_this.facilityId,_this.cashSessionId,_this.type,_this.verifierId,_this.unapplied,_this.lastRejection);
 }
 
 @override
 String toString() {
   final _this = this as CustomerPayment;
-  return 'CustomerPayment(customerPaymentId: ${_this.customerPaymentId}, customerId: ${_this.customerId}, customerName: ${_this.customerName}, amount: ${_this.amount}, currency: ${_this.currency}, methodCode: ${_this.methodCode}, paymentOptionId: ${_this.paymentOptionId}, reference: ${_this.reference}, date: ${_this.date}, facilityId: ${_this.facilityId}, cashSessionId: ${_this.cashSessionId}, type: ${_this.type}, verifierId: ${_this.verifierId}, unapplied: ${_this.unapplied})';
+  return 'CustomerPayment(customerPaymentId: ${_this.customerPaymentId}, customerId: ${_this.customerId}, customerName: ${_this.customerName}, amount: ${_this.amount}, currency: ${_this.currency}, methodCode: ${_this.methodCode}, paymentOptionId: ${_this.paymentOptionId}, reference: ${_this.reference}, date: ${_this.date}, facilityId: ${_this.facilityId}, cashSessionId: ${_this.cashSessionId}, type: ${_this.type}, verifierId: ${_this.verifierId}, unapplied: ${_this.unapplied}, lastRejection: ${_this.lastRejection})';
 }
 
 
@@ -56,11 +58,11 @@ abstract mixin class $CustomerPaymentCopyWith<$Res>  {
   factory $CustomerPaymentCopyWith(CustomerPayment value, $Res Function(CustomerPayment) _then) = _$CustomerPaymentCopyWithImpl;
 @useResult
 $Res call({
- int customerPaymentId, int customerId, String? customerName, String amount, Currency currency, int methodCode, int? paymentOptionId, String? reference, DateTime date, int facilityId, int? cashSessionId, PaymentType type, int? verifierId, String unapplied
+ int customerPaymentId, int customerId, String? customerName, String amount, Currency currency, int methodCode, int? paymentOptionId, String? reference, DateTime date, int facilityId, int? cashSessionId, PaymentType type, int? verifierId, String unapplied, PaymentRejection? lastRejection
 });
 
 
-
+$PaymentRejectionCopyWith<$Res>? get lastRejection;
 
 }
 /// @nodoc
@@ -73,7 +75,7 @@ class _$CustomerPaymentCopyWithImpl<$Res>
 
 /// Create a copy of CustomerPayment
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? customerPaymentId = null,Object? customerId = null,Object? customerName = freezed,Object? amount = null,Object? currency = null,Object? methodCode = null,Object? paymentOptionId = freezed,Object? reference = freezed,Object? date = null,Object? facilityId = null,Object? cashSessionId = freezed,Object? type = null,Object? verifierId = freezed,Object? unapplied = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? customerPaymentId = null,Object? customerId = null,Object? customerName = freezed,Object? amount = null,Object? currency = null,Object? methodCode = null,Object? paymentOptionId = freezed,Object? reference = freezed,Object? date = null,Object? facilityId = null,Object? cashSessionId = freezed,Object? type = null,Object? verifierId = freezed,Object? unapplied = null,Object? lastRejection = freezed,}) {
   return _then(CustomerPayment(
 customerPaymentId: null == customerPaymentId ? _self.customerPaymentId : customerPaymentId // ignore: cast_nullable_to_non_nullable
 as int,customerId: null == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
@@ -89,10 +91,23 @@ as int,cashSessionId: freezed == cashSessionId ? _self.cashSessionId : cashSessi
 as int?,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as PaymentType,verifierId: freezed == verifierId ? _self.verifierId : verifierId // ignore: cast_nullable_to_non_nullable
 as int?,unapplied: null == unapplied ? _self.unapplied : unapplied // ignore: cast_nullable_to_non_nullable
-as String,
+as String,lastRejection: freezed == lastRejection ? _self.lastRejection : lastRejection // ignore: cast_nullable_to_non_nullable
+as PaymentRejection?,
   ));
 }
+/// Create a copy of CustomerPayment
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PaymentRejectionCopyWith<$Res>? get lastRejection {
+    if (_self.lastRejection == null) {
+    return null;
+  }
 
+  return $PaymentRejectionCopyWith<$Res>(_self.lastRejection!, (value) {
+    return _then(_self.copyWith(lastRejection: value));
+  });
+}
 }
 
 
@@ -174,10 +189,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int customerPaymentId,  int customerId,  String? customerName,  String amount,  Currency currency,  int methodCode,  int? paymentOptionId,  String? reference,  DateTime date,  int facilityId,  int? cashSessionId,  PaymentType type,  int? verifierId,  String unapplied)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int customerPaymentId,  int customerId,  String? customerName,  String amount,  Currency currency,  int methodCode,  int? paymentOptionId,  String? reference,  DateTime date,  int facilityId,  int? cashSessionId,  PaymentType type,  int? verifierId,  String unapplied,  PaymentRejection? lastRejection)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CustomerPayment() when $default != null:
-return $default(_that.customerPaymentId,_that.customerId,_that.customerName,_that.amount,_that.currency,_that.methodCode,_that.paymentOptionId,_that.reference,_that.date,_that.facilityId,_that.cashSessionId,_that.type,_that.verifierId,_that.unapplied);case _:
+return $default(_that.customerPaymentId,_that.customerId,_that.customerName,_that.amount,_that.currency,_that.methodCode,_that.paymentOptionId,_that.reference,_that.date,_that.facilityId,_that.cashSessionId,_that.type,_that.verifierId,_that.unapplied,_that.lastRejection);case _:
   return orElse();
 
 }
@@ -195,10 +210,10 @@ return $default(_that.customerPaymentId,_that.customerId,_that.customerName,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int customerPaymentId,  int customerId,  String? customerName,  String amount,  Currency currency,  int methodCode,  int? paymentOptionId,  String? reference,  DateTime date,  int facilityId,  int? cashSessionId,  PaymentType type,  int? verifierId,  String unapplied)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int customerPaymentId,  int customerId,  String? customerName,  String amount,  Currency currency,  int methodCode,  int? paymentOptionId,  String? reference,  DateTime date,  int facilityId,  int? cashSessionId,  PaymentType type,  int? verifierId,  String unapplied,  PaymentRejection? lastRejection)  $default,) {final _that = this;
 switch (_that) {
 case _CustomerPayment():
-return $default(_that.customerPaymentId,_that.customerId,_that.customerName,_that.amount,_that.currency,_that.methodCode,_that.paymentOptionId,_that.reference,_that.date,_that.facilityId,_that.cashSessionId,_that.type,_that.verifierId,_that.unapplied);case _:
+return $default(_that.customerPaymentId,_that.customerId,_that.customerName,_that.amount,_that.currency,_that.methodCode,_that.paymentOptionId,_that.reference,_that.date,_that.facilityId,_that.cashSessionId,_that.type,_that.verifierId,_that.unapplied,_that.lastRejection);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -215,10 +230,10 @@ return $default(_that.customerPaymentId,_that.customerId,_that.customerName,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int customerPaymentId,  int customerId,  String? customerName,  String amount,  Currency currency,  int methodCode,  int? paymentOptionId,  String? reference,  DateTime date,  int facilityId,  int? cashSessionId,  PaymentType type,  int? verifierId,  String unapplied)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int customerPaymentId,  int customerId,  String? customerName,  String amount,  Currency currency,  int methodCode,  int? paymentOptionId,  String? reference,  DateTime date,  int facilityId,  int? cashSessionId,  PaymentType type,  int? verifierId,  String unapplied,  PaymentRejection? lastRejection)?  $default,) {final _that = this;
 switch (_that) {
 case _CustomerPayment() when $default != null:
-return $default(_that.customerPaymentId,_that.customerId,_that.customerName,_that.amount,_that.currency,_that.methodCode,_that.paymentOptionId,_that.reference,_that.date,_that.facilityId,_that.cashSessionId,_that.type,_that.verifierId,_that.unapplied);case _:
+return $default(_that.customerPaymentId,_that.customerId,_that.customerName,_that.amount,_that.currency,_that.methodCode,_that.paymentOptionId,_that.reference,_that.date,_that.facilityId,_that.cashSessionId,_that.type,_that.verifierId,_that.unapplied,_that.lastRejection);case _:
   return null;
 
 }
@@ -230,7 +245,7 @@ return $default(_that.customerPaymentId,_that.customerId,_that.customerName,_tha
 
 
 class _CustomerPayment extends CustomerPayment {
-  const _CustomerPayment({required this.customerPaymentId, required this.customerId, this.customerName, required this.amount, required this.currency, required this.methodCode, this.paymentOptionId, this.reference, required this.date, required this.facilityId, this.cashSessionId, required this.type, this.verifierId, required this.unapplied}): super._();
+  const _CustomerPayment({required this.customerPaymentId, required this.customerId, this.customerName, required this.amount, required this.currency, required this.methodCode, this.paymentOptionId, this.reference, required this.date, required this.facilityId, this.cashSessionId, required this.type, this.verifierId, required this.unapplied, this.lastRejection}): super._();
   
 
 @override final  int customerPaymentId;
@@ -252,6 +267,9 @@ class _CustomerPayment extends CustomerPayment {
 /// The server's derived figure: the amount less its non-reversed
 /// applications. Never recomputed client-side.
 @override final  String unapplied;
+/// The latest time a verifier rejected this payment, `null` when it never
+/// was (mbe-api#310). A rejection leaves the payment unverified.
+@override final  PaymentRejection? lastRejection;
 
 /// Create a copy of CustomerPayment
 /// with the given fields replaced by the non-null parameter values.
@@ -263,18 +281,18 @@ _$CustomerPaymentCopyWith<_CustomerPayment> get copyWith => __$CustomerPaymentCo
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CustomerPayment&&(identical(other.customerPaymentId, customerPaymentId) || other.customerPaymentId == customerPaymentId)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.customerName, customerName) || other.customerName == customerName)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.methodCode, methodCode) || other.methodCode == methodCode)&&(identical(other.paymentOptionId, paymentOptionId) || other.paymentOptionId == paymentOptionId)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.date, date) || other.date == date)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.cashSessionId, cashSessionId) || other.cashSessionId == cashSessionId)&&(identical(other.type, type) || other.type == type)&&(identical(other.verifierId, verifierId) || other.verifierId == verifierId)&&(identical(other.unapplied, unapplied) || other.unapplied == unapplied));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CustomerPayment&&(identical(other.customerPaymentId, customerPaymentId) || other.customerPaymentId == customerPaymentId)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.customerName, customerName) || other.customerName == customerName)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.methodCode, methodCode) || other.methodCode == methodCode)&&(identical(other.paymentOptionId, paymentOptionId) || other.paymentOptionId == paymentOptionId)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.date, date) || other.date == date)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.cashSessionId, cashSessionId) || other.cashSessionId == cashSessionId)&&(identical(other.type, type) || other.type == type)&&(identical(other.verifierId, verifierId) || other.verifierId == verifierId)&&(identical(other.unapplied, unapplied) || other.unapplied == unapplied)&&(identical(other.lastRejection, lastRejection) || other.lastRejection == lastRejection));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,customerPaymentId,customerId,customerName,amount,currency,methodCode,paymentOptionId,reference,date,facilityId,cashSessionId,type,verifierId,unapplied);
+    return Object.hash(runtimeType,customerPaymentId,customerId,customerName,amount,currency,methodCode,paymentOptionId,reference,date,facilityId,cashSessionId,type,verifierId,unapplied,lastRejection);
 }
 
 @override
 String toString() {
-    return 'CustomerPayment(customerPaymentId: $customerPaymentId, customerId: $customerId, customerName: $customerName, amount: $amount, currency: $currency, methodCode: $methodCode, paymentOptionId: $paymentOptionId, reference: $reference, date: $date, facilityId: $facilityId, cashSessionId: $cashSessionId, type: $type, verifierId: $verifierId, unapplied: $unapplied)';
+    return 'CustomerPayment(customerPaymentId: $customerPaymentId, customerId: $customerId, customerName: $customerName, amount: $amount, currency: $currency, methodCode: $methodCode, paymentOptionId: $paymentOptionId, reference: $reference, date: $date, facilityId: $facilityId, cashSessionId: $cashSessionId, type: $type, verifierId: $verifierId, unapplied: $unapplied, lastRejection: $lastRejection)';
 }
 
 
@@ -285,11 +303,11 @@ abstract mixin class _$CustomerPaymentCopyWith<$Res> implements $CustomerPayment
   factory _$CustomerPaymentCopyWith(_CustomerPayment value, $Res Function(_CustomerPayment) _then) = __$CustomerPaymentCopyWithImpl;
 @override @useResult
 $Res call({
- int customerPaymentId, int customerId, String? customerName, String amount, Currency currency, int methodCode, int? paymentOptionId, String? reference, DateTime date, int facilityId, int? cashSessionId, PaymentType type, int? verifierId, String unapplied
+ int customerPaymentId, int customerId, String? customerName, String amount, Currency currency, int methodCode, int? paymentOptionId, String? reference, DateTime date, int facilityId, int? cashSessionId, PaymentType type, int? verifierId, String unapplied, PaymentRejection? lastRejection
 });
 
 
-
+@override $PaymentRejectionCopyWith<$Res>? get lastRejection;
 
 }
 /// @nodoc
@@ -302,7 +320,7 @@ class __$CustomerPaymentCopyWithImpl<$Res>
 
 /// Create a copy of CustomerPayment
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? customerPaymentId = null,Object? customerId = null,Object? customerName = freezed,Object? amount = null,Object? currency = null,Object? methodCode = null,Object? paymentOptionId = freezed,Object? reference = freezed,Object? date = null,Object? facilityId = null,Object? cashSessionId = freezed,Object? type = null,Object? verifierId = freezed,Object? unapplied = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? customerPaymentId = null,Object? customerId = null,Object? customerName = freezed,Object? amount = null,Object? currency = null,Object? methodCode = null,Object? paymentOptionId = freezed,Object? reference = freezed,Object? date = null,Object? facilityId = null,Object? cashSessionId = freezed,Object? type = null,Object? verifierId = freezed,Object? unapplied = null,Object? lastRejection = freezed,}) {
   return _then(_CustomerPayment(
 customerPaymentId: null == customerPaymentId ? _self.customerPaymentId : customerPaymentId // ignore: cast_nullable_to_non_nullable
 as int,customerId: null == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
@@ -318,7 +336,290 @@ as int,cashSessionId: freezed == cashSessionId ? _self.cashSessionId : cashSessi
 as int?,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as PaymentType,verifierId: freezed == verifierId ? _self.verifierId : verifierId // ignore: cast_nullable_to_non_nullable
 as int?,unapplied: null == unapplied ? _self.unapplied : unapplied // ignore: cast_nullable_to_non_nullable
-as String,
+as String,lastRejection: freezed == lastRejection ? _self.lastRejection : lastRejection // ignore: cast_nullable_to_non_nullable
+as PaymentRejection?,
+  ));
+}
+
+/// Create a copy of CustomerPayment
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$PaymentRejectionCopyWith<$Res>? get lastRejection {
+    if (_self.lastRejection == null) {
+    return null;
+  }
+
+  return $PaymentRejectionCopyWith<$Res>(_self.lastRejection!, (value) {
+    return _then(_self.copyWith(lastRejection: value));
+  });
+}
+}
+
+/// @nodoc
+mixin _$PaymentRejection {
+
+ String? get reason; int get rejectedById; DateTime? get rejectedAt;
+/// Create a copy of PaymentRejection
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PaymentRejectionCopyWith<PaymentRejection> get copyWith => _$PaymentRejectionCopyWithImpl<PaymentRejection>(this as PaymentRejection, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as PaymentRejection;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PaymentRejection&&(identical(other.reason, _this.reason) || other.reason == _this.reason)&&(identical(other.rejectedById, _this.rejectedById) || other.rejectedById == _this.rejectedById)&&(identical(other.rejectedAt, _this.rejectedAt) || other.rejectedAt == _this.rejectedAt));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as PaymentRejection;
+  return Object.hash(runtimeType,_this.reason,_this.rejectedById,_this.rejectedAt);
+}
+
+@override
+String toString() {
+  final _this = this as PaymentRejection;
+  return 'PaymentRejection(reason: ${_this.reason}, rejectedById: ${_this.rejectedById}, rejectedAt: ${_this.rejectedAt})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PaymentRejectionCopyWith<$Res>  {
+  factory $PaymentRejectionCopyWith(PaymentRejection value, $Res Function(PaymentRejection) _then) = _$PaymentRejectionCopyWithImpl;
+@useResult
+$Res call({
+ String? reason, int rejectedById, DateTime? rejectedAt
+});
+
+
+
+
+}
+/// @nodoc
+class _$PaymentRejectionCopyWithImpl<$Res>
+    implements $PaymentRejectionCopyWith<$Res> {
+  _$PaymentRejectionCopyWithImpl(this._self, this._then);
+
+  final PaymentRejection _self;
+  final $Res Function(PaymentRejection) _then;
+
+/// Create a copy of PaymentRejection
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? reason = freezed,Object? rejectedById = null,Object? rejectedAt = freezed,}) {
+  return _then(PaymentRejection(
+reason: freezed == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
+as String?,rejectedById: null == rejectedById ? _self.rejectedById : rejectedById // ignore: cast_nullable_to_non_nullable
+as int,rejectedAt: freezed == rejectedAt ? _self.rejectedAt : rejectedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [PaymentRejection].
+extension PaymentRejectionPatterns on PaymentRejection {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _PaymentRejection value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _PaymentRejection() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _PaymentRejection value)  $default,){
+final _that = this;
+switch (_that) {
+case _PaymentRejection():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _PaymentRejection value)?  $default,){
+final _that = this;
+switch (_that) {
+case _PaymentRejection() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? reason,  int rejectedById,  DateTime? rejectedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _PaymentRejection() when $default != null:
+return $default(_that.reason,_that.rejectedById,_that.rejectedAt);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? reason,  int rejectedById,  DateTime? rejectedAt)  $default,) {final _that = this;
+switch (_that) {
+case _PaymentRejection():
+return $default(_that.reason,_that.rejectedById,_that.rejectedAt);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? reason,  int rejectedById,  DateTime? rejectedAt)?  $default,) {final _that = this;
+switch (_that) {
+case _PaymentRejection() when $default != null:
+return $default(_that.reason,_that.rejectedById,_that.rejectedAt);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _PaymentRejection implements PaymentRejection {
+  const _PaymentRejection({this.reason, required this.rejectedById, this.rejectedAt});
+  
+
+@override final  String? reason;
+@override final  int rejectedById;
+@override final  DateTime? rejectedAt;
+
+/// Create a copy of PaymentRejection
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$PaymentRejectionCopyWith<_PaymentRejection> get copyWith => __$PaymentRejectionCopyWithImpl<_PaymentRejection>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PaymentRejection&&(identical(other.reason, reason) || other.reason == reason)&&(identical(other.rejectedById, rejectedById) || other.rejectedById == rejectedById)&&(identical(other.rejectedAt, rejectedAt) || other.rejectedAt == rejectedAt));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,reason,rejectedById,rejectedAt);
+}
+
+@override
+String toString() {
+    return 'PaymentRejection(reason: $reason, rejectedById: $rejectedById, rejectedAt: $rejectedAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$PaymentRejectionCopyWith<$Res> implements $PaymentRejectionCopyWith<$Res> {
+  factory _$PaymentRejectionCopyWith(_PaymentRejection value, $Res Function(_PaymentRejection) _then) = __$PaymentRejectionCopyWithImpl;
+@override @useResult
+$Res call({
+ String? reason, int rejectedById, DateTime? rejectedAt
+});
+
+
+
+
+}
+/// @nodoc
+class __$PaymentRejectionCopyWithImpl<$Res>
+    implements _$PaymentRejectionCopyWith<$Res> {
+  __$PaymentRejectionCopyWithImpl(this._self, this._then);
+
+  final _PaymentRejection _self;
+  final $Res Function(_PaymentRejection) _then;
+
+/// Create a copy of PaymentRejection
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? reason = freezed,Object? rejectedById = null,Object? rejectedAt = freezed,}) {
+  return _then(_PaymentRejection(
+reason: freezed == reason ? _self.reason : reason // ignore: cast_nullable_to_non_nullable
+as String?,rejectedById: null == rejectedById ? _self.rejectedById : rejectedById // ignore: cast_nullable_to_non_nullable
+as int,rejectedAt: freezed == rejectedAt ? _self.rejectedAt : rejectedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

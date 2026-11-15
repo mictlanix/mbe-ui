@@ -39,6 +39,10 @@ abstract class CustomerPayment with _$CustomerPayment {
     /// The server's derived figure: the amount less its non-reversed
     /// applications. Never recomputed client-side.
     required String unapplied,
+
+    /// The latest time a verifier rejected this payment, `null` when it never
+    /// was (mbe-api#310). A rejection leaves the payment unverified.
+    PaymentRejection? lastRejection,
   }) = _CustomerPayment;
 
   factory CustomerPayment.fromResponse(api.CustomerPaymentResponse r) =>
@@ -57,10 +61,31 @@ abstract class CustomerPayment with _$CustomerPayment {
         type: PaymentType.fromApi(r.paymentType),
         verifierId: r.verifier,
         unapplied: r.unapplied,
+        lastRejection: r.lastRejection == null
+            ? null
+            : PaymentRejection.fromResponse(r.lastRejection!),
       );
 
   /// A payment is verified once someone has signed off on it.
   bool get isVerified => verifierId != null;
+}
+
+/// A verifier's rejection of a payment (spec 060, mbe-api#310): why, who
+/// (an employee id) and when.
+@freezed
+abstract class PaymentRejection with _$PaymentRejection {
+  const factory PaymentRejection({
+    String? reason,
+    required int rejectedById,
+    DateTime? rejectedAt,
+  }) = _PaymentRejection;
+
+  factory PaymentRejection.fromResponse(api.PaymentRejection r) =>
+      PaymentRejection(
+        reason: _nonBlank(r.reason),
+        rejectedById: r.rejectedBy,
+        rejectedAt: r.rejectedAt,
+      );
 }
 
 String? _nonBlank(String? value) =>

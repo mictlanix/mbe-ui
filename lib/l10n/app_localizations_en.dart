@@ -2993,7 +2993,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cashSessionAdvisoryNote =>
-      'Advisory only: covers the opening amount and cash payments taken this shift. Does not account for expense vouchers or other cash movements out of the drawer.';
+      'Advisory only: the opening amount plus this shift\'s cash sales net of change given, minus expenses and cash refunds.';
 
   @override
   String get cashSessionEmptyCountConfirmTitle => 'Confirm empty drawer';
@@ -4335,6 +4335,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentFieldVerifier => 'Verified by';
 
   @override
+  String get paymentFieldLastRejection => 'Last rejection';
+
+  @override
+  String get paymentRejected => 'Rejected';
+
+  @override
+  String get paymentVerificationFilterRejected => 'Rejections';
+
+  @override
+  String get paymentVerificationRejectedAny => 'All';
+
+  @override
+  String get paymentVerificationRejectedYes => 'Rejected';
+
+  @override
+  String get paymentVerificationRejectedNo => 'Never rejected';
+
+  @override
   String get paymentApplicationsTitle => 'Applications';
 
   @override
@@ -5645,6 +5663,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'This application was already reversed.';
 
   @override
+  String get apiErrorPaymentAlreadyApplied =>
+      'This payment is already applied to this order. Reverse that application before applying it again.';
+
+  @override
   String get apiErrorPointOfSaleWarehouseFacilityMismatch =>
       'The warehouse must belong to the same facility as the point of sale.';
 
@@ -6331,6 +6353,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deliveryOrderFilterFacility => 'Facility';
 
   @override
+  String get deliveryOrderFilterActiveStatuses => 'Active';
+
+  @override
   String get deliveryOrderFilterAllStatuses => 'All';
 
   @override
@@ -6620,6 +6645,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get apiErrorDeliveryOrderNotFailed =>
       'Only a failed order can be rescheduled.';
+
+  @override
+  String get apiErrorDeliveryOrderOnItinerary =>
+      'This order is on an open delivery itinerary. Remove it from the itinerary before cancelling it.';
 
   @override
   String get apiErrorDeliveryOrderProofIncomplete =>

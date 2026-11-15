@@ -5514,7 +5514,7 @@ abstract class AppLocalizations {
   /// No description provided for @cashSessionAdvisoryNote.
   ///
   /// In en, this message translates to:
-  /// **'Advisory only: covers the opening amount and cash payments taken this shift. Does not account for expense vouchers or other cash movements out of the drawer.'**
+  /// **'Advisory only: the opening amount plus this shift\'s cash sales net of change given, minus expenses and cash refunds.'**
   String get cashSessionAdvisoryNote;
 
   /// No description provided for @cashSessionEmptyCountConfirmTitle.
@@ -7867,6 +7867,42 @@ abstract class AppLocalizations {
   /// **'Verified by'**
   String get paymentFieldVerifier;
 
+  /// spec 060: payment verification, mbe-api#310 rejections
+  ///
+  /// In en, this message translates to:
+  /// **'Last rejection'**
+  String get paymentFieldLastRejection;
+
+  /// spec 060: payment verification, mbe-api#310 rejections
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get paymentRejected;
+
+  /// spec 060: payment verification, mbe-api#310 rejections
+  ///
+  /// In en, this message translates to:
+  /// **'Rejections'**
+  String get paymentVerificationFilterRejected;
+
+  /// spec 060: payment verification, mbe-api#310 rejections
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get paymentVerificationRejectedAny;
+
+  /// spec 060: payment verification, mbe-api#310 rejections
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get paymentVerificationRejectedYes;
+
+  /// spec 060: payment verification, mbe-api#310 rejections
+  ///
+  /// In en, this message translates to:
+  /// **'Never rejected'**
+  String get paymentVerificationRejectedNo;
+
   /// spec 054 FR-014: applications section title
   ///
   /// In en, this message translates to:
@@ -9499,6 +9535,12 @@ abstract class AppLocalizations {
   /// **'This application was already reversed.'**
   String get apiErrorPaymentApplicationReversed;
 
+  /// mbe-api error code `payment.already_applied` (mbe-api#309)
+  ///
+  /// In en, this message translates to:
+  /// **'This payment is already applied to this order. Reverse that application before applying it again.'**
+  String get apiErrorPaymentAlreadyApplied;
+
   /// mbe-api error code `point_of_sale.warehouse_facility_mismatch` (spec 058)
   ///
   /// In en, this message translates to:
@@ -10564,6 +10606,12 @@ abstract class AppLocalizations {
   /// **'Facility'**
   String get deliveryOrderFilterFacility;
 
+  /// spec 061 FR-003: the status filter's default, every non-terminal status (mbe-api#312)
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get deliveryOrderFilterActiveStatuses;
+
   /// spec 061: list filter sheet label (C3)
   ///
   /// In en, this message translates to:
@@ -11016,6 +11064,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Only a failed order can be rescheduled.'**
   String get apiErrorDeliveryOrderNotFailed;
+
+  /// mbe-api error code `delivery_order.on_itinerary` (mbe-api#311)
+  ///
+  /// In en, this message translates to:
+  /// **'This order is on an open delivery itinerary. Remove it from the itinerary before cancelling it.'**
+  String get apiErrorDeliveryOrderOnItinerary;
 
   /// spec 061: mbe-api error code `delivery_order.proof_incomplete` (R10)
   ///

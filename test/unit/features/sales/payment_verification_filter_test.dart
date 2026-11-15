@@ -100,6 +100,23 @@ void main() {
     });
   });
 
+  group('rejected facet (mbe-api#310)', () {
+    test('true and false are read, counted and written back', () {
+      for (final value in [true, false]) {
+        final filter = read('?rejected=$value');
+        expect(filter.rejected, value);
+        expect(filter.activeFilterCount, 2);
+        expect(filter.differsFromDefault, isTrue);
+        expect(filter.toQuery().facet('rejected'), '$value');
+      }
+    });
+
+    test('absent or junk is both', () {
+      expect(read('').rejected, isNull);
+      expect(read('?rejected=maybe').rejected, isNull);
+    });
+  });
+
   test('the page index is read', () {
     // The address counts pages from 1; the index from 0.
     expect(read('?page=3').pageIndex, 2);

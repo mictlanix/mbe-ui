@@ -35,8 +35,9 @@ class PaymentVerification extends _$PaymentVerification {
   );
 
   /// `POST /customer-payments/{paymentId}/reject`. [reason] is sent as given:
-  /// the dialog trims it and requires it non-empty. A rejection changes
-  /// nothing the queue can read, so the payment stays listed.
+  /// the dialog trims it and requires it non-empty. The payment stays
+  /// unverified, so it stays listed, now carrying its last rejection
+  /// (mbe-api#310).
   Future<AppError?> reject({required int paymentId, required String reason}) =>
       _run(
         paymentId: paymentId,

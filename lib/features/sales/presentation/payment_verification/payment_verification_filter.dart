@@ -47,6 +47,10 @@ abstract class PaymentVerificationFilter with _$PaymentVerificationFilter {
     DateTime? dateTo,
     @Default(VerificationMethodFilter.code(verificationDefaultMethodCode))
     VerificationMethodFilter method,
+
+    /// Tri-state (mbe-api#310): `null` lists both, `true` only payments
+    /// rejected at least once, `false` only those never rejected.
+    bool? rejected,
     @Default(0) int pageIndex,
   }) = _PaymentVerificationFilter;
 
@@ -70,6 +74,11 @@ abstract class PaymentVerificationFilter with _$PaymentVerificationFilter {
       dateFrom: from,
       dateTo: to,
       method: _methodFromFacet(query.facet('method')),
+      rejected: switch (query.facet('rejected')) {
+        'true' => true,
+        'false' => false,
+        _ => null,
+      },
       pageIndex: query.pageIndex,
     );
   }
@@ -87,6 +96,7 @@ abstract class PaymentVerificationFilter with _$PaymentVerificationFilter {
         dateTo == null ? null : encodePaymentsDateFacet(dateTo!),
       )
       .withFacet('method', methodFacetValue(method))
+      .withFacet('rejected', rejected?.toString())
       .copyWith(pageIndex: pageIndex);
 
   /// The method code to send, or `null` for every method.
@@ -96,11 +106,13 @@ abstract class PaymentVerificationFilter with _$PaymentVerificationFilter {
   };
 
   /// How many facets the drawer badge counts: the facility, the date range
-  /// (one facet), and the method whenever it isn't "every method" — so the
-  /// badge reads 1 on the opening view, where Transfer is already narrowing.
+  /// (one facet), the rejected facet, and the method whenever it isn't
+  /// "every method" — so the badge reads 1 on the opening view, where
+  /// Transfer is already narrowing.
   int get activeFilterCount =>
       (facilityId != null ? 1 : 0) +
       (dateFrom != null ? 1 : 0) +
+      (rejected != null ? 1 : 0) +
       (method is! VerificationMethodAll ? 1 : 0);
 
   /// Whether the view differs from how the queue opens (Transfer, every
@@ -109,6 +121,7 @@ abstract class PaymentVerificationFilter with _$PaymentVerificationFilter {
   bool get differsFromDefault =>
       facilityId != null ||
       dateFrom != null ||
+      rejected != null ||
       method !=
           const VerificationMethodFilter.code(verificationDefaultMethodCode);
 }

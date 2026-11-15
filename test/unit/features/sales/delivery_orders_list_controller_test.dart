@@ -47,7 +47,7 @@ void main() {
 
   When<Future<DeliveryOrderPage>> whenList() => when(
     () => repository.list(
-      status: any(named: 'status'),
+      statuses: any(named: 'statuses'),
       customer: any(named: 'customer'),
       facility: any(named: 'facility'),
       type: any(named: 'type'),
@@ -95,7 +95,7 @@ void main() {
     expect(page.pageIndex, 1);
     verify(
       () => repository.list(
-        status: DeliveryOrderStatus.failed,
+        statuses: [DeliveryOrderStatus.failed],
         customer: 77,
         facility: null,
         type: FulfillmentType.counterPickup,
@@ -107,6 +107,37 @@ void main() {
         limit: 20,
       ),
     ).called(1);
+  });
+
+  test('the opening filter asks for the active statuses, "Todas" for every '
+      'status (FR-003, mbe-api#312)', () async {
+    serve(const []);
+    final c = container();
+
+    await c.read(
+      deliveryOrdersListControllerProvider(const DeliveryOrdersFilter()).future,
+    );
+    await c.read(
+      deliveryOrdersListControllerProvider(
+        const DeliveryOrdersFilter(everyStatus: true),
+      ).future,
+    );
+
+    final sent = verify(
+      () => repository.list(
+        statuses: captureAny(named: 'statuses'),
+        customer: any(named: 'customer'),
+        facility: any(named: 'facility'),
+        type: any(named: 'type'),
+        salesOrder: any(named: 'salesOrder'),
+        dateFrom: any(named: 'dateFrom'),
+        dateTo: any(named: 'dateTo'),
+        search: any(named: 'search'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).captured;
+    expect(sent, [DeliveryOrderStatus.active, null]);
   });
 
   test('a page emptied by its last row going is clamped to the last page '

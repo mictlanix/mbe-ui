@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:built_collection/built_collection.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
@@ -12,6 +13,7 @@ import 'package:mbe_ui/features/sales/data/delivery_order_repository_impl.dart'
     show setQuantity1;
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart'
     show wireDate, wireDateEnd;
+import 'package:mbe_ui/features/sales/domain/entities/deliverable_lines.dart';
 import 'package:mbe_ui/features/sales/domain/entities/delivery_order.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_admin_repository.dart';
@@ -31,7 +33,7 @@ class DeliveryOrderAdminRepositoryImpl implements DeliveryOrderAdminRepository {
 
   @override
   Future<DeliveryOrderPage> list({
-    DeliveryOrderStatus? status,
+    List<DeliveryOrderStatus>? statuses,
     int? customer,
     int? facility,
     FulfillmentType? type,
@@ -44,7 +46,9 @@ class DeliveryOrderAdminRepositoryImpl implements DeliveryOrderAdminRepository {
   }) async {
     try {
       final response = await _api.listDeliveryOrdersApiV1DeliveryOrdersGet(
-        status: status == null ? null : _statusToApi(status),
+        status: statuses == null || statuses.isEmpty
+            ? null
+            : BuiltList<api.DeliveryOrderStatus>(statuses.map(_statusToApi)),
         customer: customer,
         facility: facility,
         fulfillmentType: type?.toApi(),
@@ -75,6 +79,35 @@ class DeliveryOrderAdminRepositoryImpl implements DeliveryOrderAdminRepository {
       deliveryOrderId: id,
     ),
   );
+
+  @override
+  Future<List<DeliverableLine>> deliverableLines({
+    required int customer,
+    required int salesOrder,
+  }) async {
+    try {
+      const pageSize = 100;
+      final lines = <DeliverableLine>[];
+      while (true) {
+        final response = await _api
+            .listDeliverableLinesApiV1DeliveryOrdersDeliverableLinesGet(
+              customer: customer,
+              salesOrder: salesOrder,
+              skip: lines.length,
+              limit: pageSize,
+            );
+        final page = response.data;
+        if (page == null) throw const AppError.server();
+        lines.addAll(page.items.map(DeliverableLine.fromResponse));
+        // Stop on a short page as well as on the count, so a server that
+        // reports `total` differently cannot spin this loop forever.
+        if (page.items.isEmpty || lines.length >= page.total) break;
+      }
+      return lines;
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
 
   @override
   Future<List<DeliveryOrderEvent>> events(int id) async {

@@ -7,13 +7,18 @@ import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
 import 'package:mbe_ui/features/sales/domain/payment_type.dart';
 
 const _jsonHeaders = {
   Headers.contentTypeHeader: [Headers.jsonContentType],
 };
 
-Map<String, dynamic> _paymentJson({int id = 1, int? verifier}) => {
+Map<String, dynamic> _paymentJson({
+  int id = 1,
+  int? verifier,
+  Map<String, dynamic>? lastRejection,
+}) => {
   'customer_payment_id': id,
   'serial': id,
   'customer': 77,
@@ -29,6 +34,7 @@ Map<String, dynamic> _paymentJson({int id = 1, int? verifier}) => {
   'payment_type': 1,
   'verifier': verifier,
   'unapplied': '0.00',
+  'last_rejection': lastRejection,
 };
 
 ResponseBody _page(List<Map<String, dynamic>> items, {int? total}) =>
@@ -329,7 +335,7 @@ void main() {
       'balance': '1800.00',
     };
 
-    test('forwards the customer, search and paging', () async {
+    test('forwards the customer, facility, search and paging', () async {
       late RequestOptions seen;
       final repository = _repositoryWith((options) async {
         seen = options;
@@ -338,6 +344,7 @@ void main() {
 
       await repository.listOutstandingOrders(
         customerId: 77,
+        facilityId: 3,
         search: ' 1047 ',
         skip: 20,
         limit: 20,
@@ -346,6 +353,7 @@ void main() {
       expect(seen.path, endsWith('/customer-payments/outstanding-orders'));
       final q = seen.queryParameters;
       expect(q['customer'], 77);
+      expect(q['facility'], 3);
       expect(q['search'], '1047');
       expect(q['skip'], 20);
       expect(q['limit'], 20);
@@ -358,7 +366,11 @@ void main() {
         return _page(const []);
       });
 
-      await repository.listOutstandingOrders(customerId: 77, search: '  ');
+      await repository.listOutstandingOrders(
+        customerId: 77,
+        facilityId: 9,
+        search: '  ',
+      );
 
       expect(q.containsKey('search'), isFalse);
     });
@@ -368,7 +380,10 @@ void main() {
         (options) async => _page([row(1047, serial: 812), row(1052)], total: 9),
       );
 
-      final page = await repository.listOutstandingOrders(customerId: 77);
+      final page = await repository.listOutstandingOrders(
+        customerId: 77,
+        facilityId: 9,
+      );
 
       expect(page.total, 9);
       expect(page.items.map((o) => o.id), [1047, 1052]);
@@ -387,7 +402,7 @@ void main() {
       );
 
       await expectLater(
-        () => repository.listOutstandingOrders(customerId: 77),
+        () => repository.listOutstandingOrders(customerId: 77, facilityId: 9),
         throwsA(isA<AppError>()),
       );
     });
@@ -422,6 +437,38 @@ void main() {
       expect(page.total, 23);
     });
 
+    test('listUnverified forwards the rejected facet and maps the last '
+        'rejection (mbe-api#310)', () async {
+      late Map<String, dynamic> q;
+      final repository = _repositoryWith((options) async {
+        q = options.queryParameters;
+        return _page([
+          _paymentJson(
+            id: 9,
+            lastRejection: {
+              'reason': 'Sin comprobante',
+              'rejected_by': 12,
+              'rejected_at': '2026-11-14T09:30:00',
+            },
+          ),
+          _paymentJson(id: 10),
+        ]);
+      });
+
+      final page = await repository.listUnverified(rejected: true);
+
+      expect(q['rejected'], true);
+      expect(
+        page.items.first.lastRejection,
+        PaymentRejection(
+          reason: 'Sin comprobante',
+          rejectedById: 12,
+          rejectedAt: DateTime(2026, 11, 14, 9, 30),
+        ),
+      );
+      expect(page.items.last.lastRejection, isNull);
+    });
+
     test('listUnverified omits unset filters and never sends an amount '
         'range', () async {
       late Map<String, dynamic> q;
@@ -436,6 +483,7 @@ void main() {
       expect(q.containsKey('method'), isFalse);
       expect(q.containsKey('date_from'), isFalse);
       expect(q.containsKey('date_to'), isFalse);
+      expect(q.containsKey('rejected'), isFalse);
       expect(q.containsKey('amount_min'), isFalse);
       expect(q.containsKey('amount_max'), isFalse);
     });

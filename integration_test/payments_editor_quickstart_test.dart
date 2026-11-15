@@ -338,6 +338,7 @@ void main() {
     OutstandingOrder? spare;
     final outstanding = await payments.listOutstandingOrders(
       customerId: fixture.payment.customerId,
+      facilityId: fixture.payment.facilityId,
       limit: 100,
     );
     for (final o in outstanding.items) {

@@ -3036,7 +3036,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get cashSessionAdvisoryNote =>
-      'Solo informativo: cubre el monto inicial y los pagos en efectivo de este turno. No considera vales de gastos ni otros movimientos de efectivo de la caja.';
+      'Solo informativo: el monto inicial más las ventas en efectivo de este turno, ya sin el cambio entregado, menos gastos y devoluciones en efectivo.';
 
   @override
   String get cashSessionEmptyCountConfirmTitle => 'Confirmar caja vacía';
@@ -4383,6 +4383,24 @@ class AppLocalizationsEs extends AppLocalizations {
   String get paymentFieldVerifier => 'Verificado por';
 
   @override
+  String get paymentFieldLastRejection => 'Último rechazo';
+
+  @override
+  String get paymentRejected => 'Rechazado';
+
+  @override
+  String get paymentVerificationFilterRejected => 'Rechazos';
+
+  @override
+  String get paymentVerificationRejectedAny => 'Todos';
+
+  @override
+  String get paymentVerificationRejectedYes => 'Rechazados';
+
+  @override
+  String get paymentVerificationRejectedNo => 'Nunca rechazados';
+
+  @override
   String get paymentApplicationsTitle => 'Aplicaciones';
 
   @override
@@ -5693,6 +5711,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'Esta aplicación ya estaba revertida.';
 
   @override
+  String get apiErrorPaymentAlreadyApplied =>
+      'Este pago ya está aplicado a este pedido. Revierte esa aplicación antes de aplicarlo otra vez.';
+
+  @override
   String get apiErrorPointOfSaleWarehouseFacilityMismatch =>
       'El almacén debe pertenecer a la misma sucursal que el punto de venta.';
 
@@ -6383,6 +6405,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get deliveryOrderFilterFacility => 'Sucursal';
 
   @override
+  String get deliveryOrderFilterActiveStatuses => 'Activas';
+
+  @override
   String get deliveryOrderFilterAllStatuses => 'Todas';
 
   @override
@@ -6673,6 +6698,10 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get apiErrorDeliveryOrderNotFailed =>
       'Solo una orden fallida se puede reprogramar.';
+
+  @override
+  String get apiErrorDeliveryOrderOnItinerary =>
+      'Esta orden está en una ruta de entrega abierta. Quítala de la ruta antes de cancelarla.';
 
   @override
   String get apiErrorDeliveryOrderProofIncomplete =>

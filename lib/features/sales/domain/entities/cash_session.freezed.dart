@@ -19,7 +19,10 @@ mixin _$CashSession {
 /// so this is the only way to tell which facility it belongs to (spec 054
 /// research R7). `null` only for a hand-built value; `fromResponse` always
 /// sets it, and a `null` never counts as the user's facility.
- int? get cashDrawerFacilityId; int get cashierId; String get cashierName; DateTime get start; DateTime? get end; int? get cashSupervisorId; String? get cashSupervisorName; String get openingAmount; List<PaymentMethodTotal> get paymentsByMethod;
+ int? get cashDrawerFacilityId; int get cashierId; String get cashierName; DateTime get start; DateTime? get end; int? get cashSupervisorId; String? get cashSupervisorName; String get openingAmount; List<PaymentMethodTotal> get paymentsByMethod;/// Cash the drawer should hold, the server's cut figure: opening amount
+/// plus cash sales net of change, minus expenses and cash refunds
+/// (mbe-api#239). Sent on single-session reads only; `null` on list rows.
+ String? get expectedCash;
 /// Create a copy of CashSession
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -31,20 +34,20 @@ $CashSessionCopyWith<CashSession> get copyWith => _$CashSessionCopyWithImpl<Cash
 @override
 bool operator ==(Object other) {
   final _this = this as CashSession;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CashSession&&(identical(other.cashSessionId, _this.cashSessionId) || other.cashSessionId == _this.cashSessionId)&&(identical(other.cashDrawerId, _this.cashDrawerId) || other.cashDrawerId == _this.cashDrawerId)&&(identical(other.cashDrawerName, _this.cashDrawerName) || other.cashDrawerName == _this.cashDrawerName)&&(identical(other.cashDrawerCode, _this.cashDrawerCode) || other.cashDrawerCode == _this.cashDrawerCode)&&(identical(other.cashDrawerFacilityId, _this.cashDrawerFacilityId) || other.cashDrawerFacilityId == _this.cashDrawerFacilityId)&&(identical(other.cashierId, _this.cashierId) || other.cashierId == _this.cashierId)&&(identical(other.cashierName, _this.cashierName) || other.cashierName == _this.cashierName)&&(identical(other.start, _this.start) || other.start == _this.start)&&(identical(other.end, _this.end) || other.end == _this.end)&&(identical(other.cashSupervisorId, _this.cashSupervisorId) || other.cashSupervisorId == _this.cashSupervisorId)&&(identical(other.cashSupervisorName, _this.cashSupervisorName) || other.cashSupervisorName == _this.cashSupervisorName)&&(identical(other.openingAmount, _this.openingAmount) || other.openingAmount == _this.openingAmount)&&const DeepCollectionEquality().equals(other.paymentsByMethod, _this.paymentsByMethod));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CashSession&&(identical(other.cashSessionId, _this.cashSessionId) || other.cashSessionId == _this.cashSessionId)&&(identical(other.cashDrawerId, _this.cashDrawerId) || other.cashDrawerId == _this.cashDrawerId)&&(identical(other.cashDrawerName, _this.cashDrawerName) || other.cashDrawerName == _this.cashDrawerName)&&(identical(other.cashDrawerCode, _this.cashDrawerCode) || other.cashDrawerCode == _this.cashDrawerCode)&&(identical(other.cashDrawerFacilityId, _this.cashDrawerFacilityId) || other.cashDrawerFacilityId == _this.cashDrawerFacilityId)&&(identical(other.cashierId, _this.cashierId) || other.cashierId == _this.cashierId)&&(identical(other.cashierName, _this.cashierName) || other.cashierName == _this.cashierName)&&(identical(other.start, _this.start) || other.start == _this.start)&&(identical(other.end, _this.end) || other.end == _this.end)&&(identical(other.cashSupervisorId, _this.cashSupervisorId) || other.cashSupervisorId == _this.cashSupervisorId)&&(identical(other.cashSupervisorName, _this.cashSupervisorName) || other.cashSupervisorName == _this.cashSupervisorName)&&(identical(other.openingAmount, _this.openingAmount) || other.openingAmount == _this.openingAmount)&&const DeepCollectionEquality().equals(other.paymentsByMethod, _this.paymentsByMethod)&&(identical(other.expectedCash, _this.expectedCash) || other.expectedCash == _this.expectedCash));
 }
 
 
 @override
 int get hashCode {
   final _this = this as CashSession;
-  return Object.hash(runtimeType,_this.cashSessionId,_this.cashDrawerId,_this.cashDrawerName,_this.cashDrawerCode,_this.cashDrawerFacilityId,_this.cashierId,_this.cashierName,_this.start,_this.end,_this.cashSupervisorId,_this.cashSupervisorName,_this.openingAmount,const DeepCollectionEquality().hash(_this.paymentsByMethod));
+  return Object.hash(runtimeType,_this.cashSessionId,_this.cashDrawerId,_this.cashDrawerName,_this.cashDrawerCode,_this.cashDrawerFacilityId,_this.cashierId,_this.cashierName,_this.start,_this.end,_this.cashSupervisorId,_this.cashSupervisorName,_this.openingAmount,const DeepCollectionEquality().hash(_this.paymentsByMethod),_this.expectedCash);
 }
 
 @override
 String toString() {
   final _this = this as CashSession;
-  return 'CashSession(cashSessionId: ${_this.cashSessionId}, cashDrawerId: ${_this.cashDrawerId}, cashDrawerName: ${_this.cashDrawerName}, cashDrawerCode: ${_this.cashDrawerCode}, cashDrawerFacilityId: ${_this.cashDrawerFacilityId}, cashierId: ${_this.cashierId}, cashierName: ${_this.cashierName}, start: ${_this.start}, end: ${_this.end}, cashSupervisorId: ${_this.cashSupervisorId}, cashSupervisorName: ${_this.cashSupervisorName}, openingAmount: ${_this.openingAmount}, paymentsByMethod: ${_this.paymentsByMethod})';
+  return 'CashSession(cashSessionId: ${_this.cashSessionId}, cashDrawerId: ${_this.cashDrawerId}, cashDrawerName: ${_this.cashDrawerName}, cashDrawerCode: ${_this.cashDrawerCode}, cashDrawerFacilityId: ${_this.cashDrawerFacilityId}, cashierId: ${_this.cashierId}, cashierName: ${_this.cashierName}, start: ${_this.start}, end: ${_this.end}, cashSupervisorId: ${_this.cashSupervisorId}, cashSupervisorName: ${_this.cashSupervisorName}, openingAmount: ${_this.openingAmount}, paymentsByMethod: ${_this.paymentsByMethod}, expectedCash: ${_this.expectedCash})';
 }
 
 
@@ -55,7 +58,7 @@ abstract mixin class $CashSessionCopyWith<$Res>  {
   factory $CashSessionCopyWith(CashSession value, $Res Function(CashSession) _then) = _$CashSessionCopyWithImpl;
 @useResult
 $Res call({
- int cashSessionId, int cashDrawerId, String cashDrawerName, String cashDrawerCode, int? cashDrawerFacilityId, int cashierId, String cashierName, DateTime start, DateTime? end, int? cashSupervisorId, String? cashSupervisorName, String openingAmount, List<PaymentMethodTotal> paymentsByMethod
+ int cashSessionId, int cashDrawerId, String cashDrawerName, String cashDrawerCode, int? cashDrawerFacilityId, int cashierId, String cashierName, DateTime start, DateTime? end, int? cashSupervisorId, String? cashSupervisorName, String openingAmount, List<PaymentMethodTotal> paymentsByMethod, String? expectedCash
 });
 
 
@@ -72,7 +75,7 @@ class _$CashSessionCopyWithImpl<$Res>
 
 /// Create a copy of CashSession
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? cashSessionId = null,Object? cashDrawerId = null,Object? cashDrawerName = null,Object? cashDrawerCode = null,Object? cashDrawerFacilityId = freezed,Object? cashierId = null,Object? cashierName = null,Object? start = null,Object? end = freezed,Object? cashSupervisorId = freezed,Object? cashSupervisorName = freezed,Object? openingAmount = null,Object? paymentsByMethod = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? cashSessionId = null,Object? cashDrawerId = null,Object? cashDrawerName = null,Object? cashDrawerCode = null,Object? cashDrawerFacilityId = freezed,Object? cashierId = null,Object? cashierName = null,Object? start = null,Object? end = freezed,Object? cashSupervisorId = freezed,Object? cashSupervisorName = freezed,Object? openingAmount = null,Object? paymentsByMethod = null,Object? expectedCash = freezed,}) {
   return _then(CashSession(
 cashSessionId: null == cashSessionId ? _self.cashSessionId : cashSessionId // ignore: cast_nullable_to_non_nullable
 as int,cashDrawerId: null == cashDrawerId ? _self.cashDrawerId : cashDrawerId // ignore: cast_nullable_to_non_nullable
@@ -87,7 +90,8 @@ as DateTime?,cashSupervisorId: freezed == cashSupervisorId ? _self.cashSuperviso
 as int?,cashSupervisorName: freezed == cashSupervisorName ? _self.cashSupervisorName : cashSupervisorName // ignore: cast_nullable_to_non_nullable
 as String?,openingAmount: null == openingAmount ? _self.openingAmount : openingAmount // ignore: cast_nullable_to_non_nullable
 as String,paymentsByMethod: null == paymentsByMethod ? _self.paymentsByMethod : paymentsByMethod // ignore: cast_nullable_to_non_nullable
-as List<PaymentMethodTotal>,
+as List<PaymentMethodTotal>,expectedCash: freezed == expectedCash ? _self.expectedCash : expectedCash // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -172,10 +176,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int cashSessionId,  int cashDrawerId,  String cashDrawerName,  String cashDrawerCode,  int? cashDrawerFacilityId,  int cashierId,  String cashierName,  DateTime start,  DateTime? end,  int? cashSupervisorId,  String? cashSupervisorName,  String openingAmount,  List<PaymentMethodTotal> paymentsByMethod)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int cashSessionId,  int cashDrawerId,  String cashDrawerName,  String cashDrawerCode,  int? cashDrawerFacilityId,  int cashierId,  String cashierName,  DateTime start,  DateTime? end,  int? cashSupervisorId,  String? cashSupervisorName,  String openingAmount,  List<PaymentMethodTotal> paymentsByMethod,  String? expectedCash)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CashSession() when $default != null:
-return $default(_that.cashSessionId,_that.cashDrawerId,_that.cashDrawerName,_that.cashDrawerCode,_that.cashDrawerFacilityId,_that.cashierId,_that.cashierName,_that.start,_that.end,_that.cashSupervisorId,_that.cashSupervisorName,_that.openingAmount,_that.paymentsByMethod);case _:
+return $default(_that.cashSessionId,_that.cashDrawerId,_that.cashDrawerName,_that.cashDrawerCode,_that.cashDrawerFacilityId,_that.cashierId,_that.cashierName,_that.start,_that.end,_that.cashSupervisorId,_that.cashSupervisorName,_that.openingAmount,_that.paymentsByMethod,_that.expectedCash);case _:
   return orElse();
 
 }
@@ -193,10 +197,10 @@ return $default(_that.cashSessionId,_that.cashDrawerId,_that.cashDrawerName,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int cashSessionId,  int cashDrawerId,  String cashDrawerName,  String cashDrawerCode,  int? cashDrawerFacilityId,  int cashierId,  String cashierName,  DateTime start,  DateTime? end,  int? cashSupervisorId,  String? cashSupervisorName,  String openingAmount,  List<PaymentMethodTotal> paymentsByMethod)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int cashSessionId,  int cashDrawerId,  String cashDrawerName,  String cashDrawerCode,  int? cashDrawerFacilityId,  int cashierId,  String cashierName,  DateTime start,  DateTime? end,  int? cashSupervisorId,  String? cashSupervisorName,  String openingAmount,  List<PaymentMethodTotal> paymentsByMethod,  String? expectedCash)  $default,) {final _that = this;
 switch (_that) {
 case _CashSession():
-return $default(_that.cashSessionId,_that.cashDrawerId,_that.cashDrawerName,_that.cashDrawerCode,_that.cashDrawerFacilityId,_that.cashierId,_that.cashierName,_that.start,_that.end,_that.cashSupervisorId,_that.cashSupervisorName,_that.openingAmount,_that.paymentsByMethod);case _:
+return $default(_that.cashSessionId,_that.cashDrawerId,_that.cashDrawerName,_that.cashDrawerCode,_that.cashDrawerFacilityId,_that.cashierId,_that.cashierName,_that.start,_that.end,_that.cashSupervisorId,_that.cashSupervisorName,_that.openingAmount,_that.paymentsByMethod,_that.expectedCash);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -213,10 +217,10 @@ return $default(_that.cashSessionId,_that.cashDrawerId,_that.cashDrawerName,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int cashSessionId,  int cashDrawerId,  String cashDrawerName,  String cashDrawerCode,  int? cashDrawerFacilityId,  int cashierId,  String cashierName,  DateTime start,  DateTime? end,  int? cashSupervisorId,  String? cashSupervisorName,  String openingAmount,  List<PaymentMethodTotal> paymentsByMethod)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int cashSessionId,  int cashDrawerId,  String cashDrawerName,  String cashDrawerCode,  int? cashDrawerFacilityId,  int cashierId,  String cashierName,  DateTime start,  DateTime? end,  int? cashSupervisorId,  String? cashSupervisorName,  String openingAmount,  List<PaymentMethodTotal> paymentsByMethod,  String? expectedCash)?  $default,) {final _that = this;
 switch (_that) {
 case _CashSession() when $default != null:
-return $default(_that.cashSessionId,_that.cashDrawerId,_that.cashDrawerName,_that.cashDrawerCode,_that.cashDrawerFacilityId,_that.cashierId,_that.cashierName,_that.start,_that.end,_that.cashSupervisorId,_that.cashSupervisorName,_that.openingAmount,_that.paymentsByMethod);case _:
+return $default(_that.cashSessionId,_that.cashDrawerId,_that.cashDrawerName,_that.cashDrawerCode,_that.cashDrawerFacilityId,_that.cashierId,_that.cashierName,_that.start,_that.end,_that.cashSupervisorId,_that.cashSupervisorName,_that.openingAmount,_that.paymentsByMethod,_that.expectedCash);case _:
   return null;
 
 }
@@ -228,7 +232,7 @@ return $default(_that.cashSessionId,_that.cashDrawerId,_that.cashDrawerName,_tha
 
 
 class _CashSession implements CashSession {
-  const _CashSession({required this.cashSessionId, required this.cashDrawerId, required this.cashDrawerName, required this.cashDrawerCode, this.cashDrawerFacilityId, required this.cashierId, required this.cashierName, required this.start, this.end, this.cashSupervisorId, this.cashSupervisorName, required this.openingAmount,  List<PaymentMethodTotal> paymentsByMethod = const <PaymentMethodTotal>[]}): _paymentsByMethod = paymentsByMethod;
+  const _CashSession({required this.cashSessionId, required this.cashDrawerId, required this.cashDrawerName, required this.cashDrawerCode, this.cashDrawerFacilityId, required this.cashierId, required this.cashierName, required this.start, this.end, this.cashSupervisorId, this.cashSupervisorName, required this.openingAmount,  List<PaymentMethodTotal> paymentsByMethod = const <PaymentMethodTotal>[], this.expectedCash}): _paymentsByMethod = paymentsByMethod;
   
 
 @override final  int cashSessionId;
@@ -254,6 +258,10 @@ class _CashSession implements CashSession {
   return EqualUnmodifiableListView(_paymentsByMethod);
 }
 
+/// Cash the drawer should hold, the server's cut figure: opening amount
+/// plus cash sales net of change, minus expenses and cash refunds
+/// (mbe-api#239). Sent on single-session reads only; `null` on list rows.
+@override final  String? expectedCash;
 
 /// Create a copy of CashSession
 /// with the given fields replaced by the non-null parameter values.
@@ -265,18 +273,18 @@ _$CashSessionCopyWith<_CashSession> get copyWith => __$CashSessionCopyWithImpl<_
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CashSession&&(identical(other.cashSessionId, cashSessionId) || other.cashSessionId == cashSessionId)&&(identical(other.cashDrawerId, cashDrawerId) || other.cashDrawerId == cashDrawerId)&&(identical(other.cashDrawerName, cashDrawerName) || other.cashDrawerName == cashDrawerName)&&(identical(other.cashDrawerCode, cashDrawerCode) || other.cashDrawerCode == cashDrawerCode)&&(identical(other.cashDrawerFacilityId, cashDrawerFacilityId) || other.cashDrawerFacilityId == cashDrawerFacilityId)&&(identical(other.cashierId, cashierId) || other.cashierId == cashierId)&&(identical(other.cashierName, cashierName) || other.cashierName == cashierName)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.cashSupervisorId, cashSupervisorId) || other.cashSupervisorId == cashSupervisorId)&&(identical(other.cashSupervisorName, cashSupervisorName) || other.cashSupervisorName == cashSupervisorName)&&(identical(other.openingAmount, openingAmount) || other.openingAmount == openingAmount)&&const DeepCollectionEquality().equals(other.paymentsByMethod, _paymentsByMethod));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _CashSession&&(identical(other.cashSessionId, cashSessionId) || other.cashSessionId == cashSessionId)&&(identical(other.cashDrawerId, cashDrawerId) || other.cashDrawerId == cashDrawerId)&&(identical(other.cashDrawerName, cashDrawerName) || other.cashDrawerName == cashDrawerName)&&(identical(other.cashDrawerCode, cashDrawerCode) || other.cashDrawerCode == cashDrawerCode)&&(identical(other.cashDrawerFacilityId, cashDrawerFacilityId) || other.cashDrawerFacilityId == cashDrawerFacilityId)&&(identical(other.cashierId, cashierId) || other.cashierId == cashierId)&&(identical(other.cashierName, cashierName) || other.cashierName == cashierName)&&(identical(other.start, start) || other.start == start)&&(identical(other.end, end) || other.end == end)&&(identical(other.cashSupervisorId, cashSupervisorId) || other.cashSupervisorId == cashSupervisorId)&&(identical(other.cashSupervisorName, cashSupervisorName) || other.cashSupervisorName == cashSupervisorName)&&(identical(other.openingAmount, openingAmount) || other.openingAmount == openingAmount)&&const DeepCollectionEquality().equals(other.paymentsByMethod, _paymentsByMethod)&&(identical(other.expectedCash, expectedCash) || other.expectedCash == expectedCash));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,cashSessionId,cashDrawerId,cashDrawerName,cashDrawerCode,cashDrawerFacilityId,cashierId,cashierName,start,end,cashSupervisorId,cashSupervisorName,openingAmount,const DeepCollectionEquality().hash(_paymentsByMethod));
+    return Object.hash(runtimeType,cashSessionId,cashDrawerId,cashDrawerName,cashDrawerCode,cashDrawerFacilityId,cashierId,cashierName,start,end,cashSupervisorId,cashSupervisorName,openingAmount,const DeepCollectionEquality().hash(_paymentsByMethod),expectedCash);
 }
 
 @override
 String toString() {
-    return 'CashSession(cashSessionId: $cashSessionId, cashDrawerId: $cashDrawerId, cashDrawerName: $cashDrawerName, cashDrawerCode: $cashDrawerCode, cashDrawerFacilityId: $cashDrawerFacilityId, cashierId: $cashierId, cashierName: $cashierName, start: $start, end: $end, cashSupervisorId: $cashSupervisorId, cashSupervisorName: $cashSupervisorName, openingAmount: $openingAmount, paymentsByMethod: $paymentsByMethod)';
+    return 'CashSession(cashSessionId: $cashSessionId, cashDrawerId: $cashDrawerId, cashDrawerName: $cashDrawerName, cashDrawerCode: $cashDrawerCode, cashDrawerFacilityId: $cashDrawerFacilityId, cashierId: $cashierId, cashierName: $cashierName, start: $start, end: $end, cashSupervisorId: $cashSupervisorId, cashSupervisorName: $cashSupervisorName, openingAmount: $openingAmount, paymentsByMethod: $paymentsByMethod, expectedCash: $expectedCash)';
 }
 
 
@@ -287,7 +295,7 @@ abstract mixin class _$CashSessionCopyWith<$Res> implements $CashSessionCopyWith
   factory _$CashSessionCopyWith(_CashSession value, $Res Function(_CashSession) _then) = __$CashSessionCopyWithImpl;
 @override @useResult
 $Res call({
- int cashSessionId, int cashDrawerId, String cashDrawerName, String cashDrawerCode, int? cashDrawerFacilityId, int cashierId, String cashierName, DateTime start, DateTime? end, int? cashSupervisorId, String? cashSupervisorName, String openingAmount, List<PaymentMethodTotal> paymentsByMethod
+ int cashSessionId, int cashDrawerId, String cashDrawerName, String cashDrawerCode, int? cashDrawerFacilityId, int cashierId, String cashierName, DateTime start, DateTime? end, int? cashSupervisorId, String? cashSupervisorName, String openingAmount, List<PaymentMethodTotal> paymentsByMethod, String? expectedCash
 });
 
 
@@ -304,7 +312,7 @@ class __$CashSessionCopyWithImpl<$Res>
 
 /// Create a copy of CashSession
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? cashSessionId = null,Object? cashDrawerId = null,Object? cashDrawerName = null,Object? cashDrawerCode = null,Object? cashDrawerFacilityId = freezed,Object? cashierId = null,Object? cashierName = null,Object? start = null,Object? end = freezed,Object? cashSupervisorId = freezed,Object? cashSupervisorName = freezed,Object? openingAmount = null,Object? paymentsByMethod = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? cashSessionId = null,Object? cashDrawerId = null,Object? cashDrawerName = null,Object? cashDrawerCode = null,Object? cashDrawerFacilityId = freezed,Object? cashierId = null,Object? cashierName = null,Object? start = null,Object? end = freezed,Object? cashSupervisorId = freezed,Object? cashSupervisorName = freezed,Object? openingAmount = null,Object? paymentsByMethod = null,Object? expectedCash = freezed,}) {
   return _then(_CashSession(
 cashSessionId: null == cashSessionId ? _self.cashSessionId : cashSessionId // ignore: cast_nullable_to_non_nullable
 as int,cashDrawerId: null == cashDrawerId ? _self.cashDrawerId : cashDrawerId // ignore: cast_nullable_to_non_nullable
@@ -319,7 +327,8 @@ as DateTime?,cashSupervisorId: freezed == cashSupervisorId ? _self.cashSuperviso
 as int?,cashSupervisorName: freezed == cashSupervisorName ? _self.cashSupervisorName : cashSupervisorName // ignore: cast_nullable_to_non_nullable
 as String?,openingAmount: null == openingAmount ? _self.openingAmount : openingAmount // ignore: cast_nullable_to_non_nullable
 as String,paymentsByMethod: null == paymentsByMethod ? _self._paymentsByMethod : paymentsByMethod // ignore: cast_nullable_to_non_nullable
-as List<PaymentMethodTotal>,
+as List<PaymentMethodTotal>,expectedCash: freezed == expectedCash ? _self.expectedCash : expectedCash // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

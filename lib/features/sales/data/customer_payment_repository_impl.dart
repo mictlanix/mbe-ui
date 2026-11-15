@@ -169,6 +169,7 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
     DateTime? dateFrom,
     DateTime? dateTo,
     int? methodCode,
+    bool? rejected,
     int skip = 0,
     int limit = 20,
   }) async {
@@ -179,6 +180,7 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
             dateFrom: dateFrom == null ? null : wireDate(dateFrom),
             dateTo: dateTo == null ? null : wireDateEnd(dateTo),
             method: methodCode,
+            rejected: rejected,
             skip: skip,
             limit: limit,
           );
@@ -321,6 +323,7 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
   @override
   Future<OutstandingOrderPage> listOutstandingOrders({
     required int customerId,
+    required int facilityId,
     String? search,
     int skip = 0,
     int limit = 20,
@@ -329,6 +332,7 @@ class CustomerPaymentRepositoryImpl implements CustomerPaymentRepository {
       final response = await _payments
           .listOutstandingOrdersApiV1CustomerPaymentsOutstandingOrdersGet(
             customer: customerId,
+            facility: facilityId,
             search: search == null || search.trim().isEmpty
                 ? null
                 : search.trim(),
