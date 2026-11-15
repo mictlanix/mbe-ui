@@ -110,3 +110,4 @@ The action area adds to spec 061 C4. For an order in `pendingApproval`:
 
 - `delivery_order.not_pending_approval`: an `.arb` message in es and en, in the `localize_problem.dart` catalog set, and its `code-scope.tsv` row set to `IN` with both endpoints.
 - `delivery_order.reason_required`: its row's endpoint list gains `POST /delivery-orders/approval/{}/reject`.
+- `state.transition_invalid`: its row's endpoint list gains both approval endpoints. It's reachable only on a race (research R9).

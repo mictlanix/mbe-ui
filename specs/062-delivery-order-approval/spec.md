@@ -80,7 +80,7 @@ Before approving, the supervisor wants to see what's actually going out. They ta
 - **Order cancelled while waiting.** Spec 061 allows cancelling an order in Pendiente de aprobación. It leaves the queue. Acting on a stale row is refused the same way.
 - **User without a facility.** The queue shows only the user's facility. A user with no facility assigned sees a notice that the queue needs a facility, as Pedidos does, instead of an empty list.
 - **Another facility's orders.** The server offers no facility choice for the queue. An approver sees only their own facility's orders, and must switch facility to review another's.
-- **Rejected, then confirmed again.** The order comes back to the queue as a fresh request. Its detail screen still shows the last rejection reason until it's approved, so the approver can see why it was rejected before (spec 061 shows "the last rejection reason when there is one").
+- **Rejected, then confirmed again.** The order comes back to the queue as a fresh request. Confirming clears the stored rejection reason, so the detail screen's rejection banner is gone by then. The earlier rejection stays in the order's history, with its reason and who rejected it, so the approver can still see why it was sent back before.
 - **Names the user can't read.** Customer, ship-to and facility arrive as numbers. When the user lacks the right to read one of those catalogs, the row shows the number instead of the name, as in spec 061.
 - **Network failure on approve or reject.** The app says the result is unknown and reloads the row or the detail screen, rather than claiming it failed.
 - **Last row on a page.** After the last row on a page is approved or rejected, the queue loads the previous page instead of showing an empty one.
@@ -139,6 +139,7 @@ Before approving, the supervisor wants to see what's actually going out. They ta
 ## Assumptions
 
 - The rights follow the server. Listing the queue needs Delivery Order Approval (94) read. Approving and rejecting need Delivery Order Approval update. Opening the detail screen needs Delivery Orders (71) read, as in spec 061.
+- This feature amends spec 061's SC-006 and FR-011 for two actions. "Rechazar" and "Aprobar" on the detail screen are status actions that need Delivery Order Approval update, not Delivery Orders update. A user without Delivery Orders update can see them, and spec 061's own actions still need that right.
 - The queue is limited to the user's facility because the server lists it that way and offers no facility parameter. A facility filter is out of scope.
 - Legacy excluded counter pickups from approval. The new server sends pickups through approval too when it's required (06a, decision D3), so the queue shows them.
 - The author learns of a rejection by finding the order among the drafts in Órdenes de entrega and reading its reason on the detail screen. No notification is sent, by server design. A "mis órdenes" filter on Órdenes de entrega is out of scope.

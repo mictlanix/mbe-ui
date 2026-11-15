@@ -114,11 +114,14 @@ Each dialog runs its write and handles the outcome itself:
 **Decision.**
 - **`delivery_order.not_pending_approval` (409)** gets a message in both `.arb` files ("Esta orden ya no está pendiente de aprobación." / "This order is no longer pending approval."). It joins `localize_problem.dart`'s catalog set, and its `code-scope.tsv` row flips to `IN` with both endpoints.
 - **`delivery_order.reason_required`** is already `IN`. Its row gains the reject endpoint.
+- **`state.transition_invalid`** is already `IN`. It is reachable from approve and reject only on a race, because the service checks `PENDING_APPROVAL` before calling the transition helper. Its row's endpoint list gains both approval endpoints.
 - **Every code the two writes can return:**
   - `delivery_order.not_pending_approval` (new);
   - `delivery_order.reason_required` (existing; the client prevents it);
-  - `delivery_order.not_found` / 404 and 403 (generic, existing).
-- **Queue read:** only generic codes.
+  - `state.transition_invalid` (existing; race only);
+  - `resource.not_found` (404, generic, existing), which covers both an unknown id and another facility's order the user may not see (R12);
+  - `auth.forbidden` (403) and `auth.not_authenticated` (401), generic and existing.
+- **Queue read:** only the generic `auth.forbidden` and `auth.not_authenticated`.
 
 **Rationale.** §III v1.15.0, API error text from codes. `catalog_coverage_test.dart` enforces the TSV.
 

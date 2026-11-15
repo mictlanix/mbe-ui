@@ -95,23 +95,19 @@ The table looks the same, but the action column is left out entirely, not left e
 ### Compact tier
 
 ```text
-┌ Aprobación de entregas ─────────────┐
-├─────────────────────────────────────┤
-│ 1541 · Entrega · P2           ✓ ✕   │
-│ Constructora Gil                    │
-│ Calle 5 #33, Centro                 │
-│ 2026-11-16 · Ped. 8790, 8812        │
-├─────────────────────────────────────┤
-│ 1536 · Recoge · P0            ✓ ✕   │
-│ Materiales Ríos                     │
-│ Sucursal Centro                     │
-│ 2026-11-15 · Ped. 8802              │
-├─────────────────────────────────────┤
-│              ‹ 1 2 ›                │
-└─────────────────────────────────────┘
+┌ Aprobación de entregas ───────────────────────┐
+├───────┬──────────────────┬────────────┬──────┬─────┤
+│ Folio │ Cliente          │ Programada │ Prio.│     │
+├───────┼──────────────────┼────────────┼──────┼─────┤
+│ 1541  │ Constructora Gil │ 2026-11-16 │    2 │ ✓ ✕ │
+│ 1536  │ Materiales Ríos  │ 2026-11-15 │    0 │ ✓ ✕ │
+├───────┴──────────────────┴────────────┴──────┴─────┤
+│                    1–2 de 2   ‹ 1 ›                │
+└────────────────────────────────────────────────────┘
 ```
 
-- `DataTableView` falls back to stacked rows. No column is dropped; the type and priority move onto the folio line, and ✓ ✕ stay on the first line.
+- `DataTableView` has no stacked-row compact layout yet (`data_table_view.dart`), so it stays a table. The table drops Tipo, Destino and Pedidos at this tier, as the spec 061 list does (`if (!compact)` columns).
+- Folio, Cliente, Programada, Prio. and ✓ ✕ remain. The dropped fields are one tap away on the detail screen, and the approve dialog names the type.
 
 ## Screen: Orden de entrega (`/sales/delivery-orders/:id`), changed
 
@@ -140,7 +136,7 @@ This is the spec 061 detail screen. Only its action area changes, and only when 
   - "Aprobar" is filled, as the primary action.
   - "Rechazar" and "Aprobar" show only with `can(deliveryOrderApproval, update)` and status Pendiente de aprobación (FR-013). This holds whether the screen was opened from the queue or from Órdenes de entrega.
   - Putting Cancelar and Rechazar side by side is Open Question 3.
-- **Rejection banner.** When the order was rejected before and confirmed again, the spec 061 rejection banner is still showing. The approver sees the earlier reason (spec edge case "Rejected, then confirmed again"). Nothing new is drawn for this.
+- **Earlier rejection.** When the order was rejected before and confirmed again, the rejection banner is gone, because confirming clears the stored reason (server `delivery_order_service.py`, in confirm). The earlier rejection and its reason are still in the history section (spec edge case "Rejected, then confirmed again"). Nothing new is drawn for this.
 
 ### State: Pendiente de aprobación, approver without Delivery Orders update
 
