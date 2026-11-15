@@ -148,4 +148,4 @@ The view itself is still gated on Customer Payments read (spec 054). This featur
 - a `rejections` read for a payment, with reason, who and when;
 - a `last_rejection` summary or a `rejected` filter on `/customer-payments/unverified`.
 
-Filed as mbe-api#310 (2026-11-14). It doesn't block this feature. Until it ships, the queue makes no claim about rejection (FR-012).
+Filed as mbe-api#310 (2026-11-14). It doesn't block this feature. Until it ships, the queue makes no claim about rejection (FR-012). **Shipped 2026-11-14** (mbe-api PR #317): rejected rows carry a rejection icon, the queue has a "Rechazos" filter, and the panel and payment view show "Último rechazo" (fix/consume-mbe-api-308-314).

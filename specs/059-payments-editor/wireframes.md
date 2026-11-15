@@ -335,7 +335,7 @@ The header's trailing group already wraps. The dialog goes full screen, and each
 
 ## Open Questions
 
-**Resolved 2026-11-13.** The user accepted the recommendation for Q1, and Q2–Q5 as drawn. The answers are in spec.md (Clarifications, FR-002, FR-005) and contracts C2–C6. For Q1, mbe-api#308 was filed and "Aplicar a pedido" is hidden on another facility's payment until it ships.
+**Resolved 2026-11-13.** The user accepted the recommendation for Q1, and Q2–Q5 as drawn. The answers are in spec.md (Clarifications, FR-002, FR-005) and contracts C2–C6. For Q1, mbe-api#308 was filed and "Aplicar a pedido" is hidden on another facility's payment until it ships. **Shipped 2026-11-14** (mbe-api PR #316): "Aplicar a pedido" is offered on another facility's payment, and the dialog lists that facility's orders (fix/consume-mbe-api-308-314).
 
 1. **Applying a payment from another facility.** The server lists outstanding orders from the **caller's** facility only (mbe-api `search_outstanding`, `SalesOrder.facility == current.facility_id`). Take a Payments Editor in Centro opening a Norte payment: the dialog offers Centro's orders, not the Norte orders the customer most likely owes.
    - Options:

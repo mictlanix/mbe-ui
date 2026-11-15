@@ -39,9 +39,9 @@ Each contract states what a test can assert. Keys are given where a widget test 
   - **Fecha programada:** `DateRangeFilterChip`.
   - **Cliente:** `CatalogEntityPicker`, only with Customers read.
   - **Pedido:** a numeric field.
-  - **Sucursal:** a dropdown of facilities, only for administrators. Its first item is "Mi sucursal" (absent). A non-administrator's `facility` URL key is ignored, both when the filter decodes the URL and when the controller builds the request (research R3, mbe-api#314).
+  - **Sucursal:** a dropdown of facilities, only for administrators. Its first item is "Mi sucursal" (absent). A non-administrator's `facility` URL key is ignored, both when the filter decodes the URL and when the controller builds the request (research R3, mbe-api#314). **Fixed 2026-11-14** (mbe-api PR #321): the server checks the facility on the list and on every read and write by id. The client drop stays as defence in depth (fix/consume-mbe-api-308-314).
 - **Buttons.** "Limpiar todo" nulls every facet. "Aplicar" writes the URL.
-- **"Activas".** Not offered until mbe-api#312 ships.
+- **"Activas".** Not offered until mbe-api#312 ships. **Shipped 2026-11-14** (mbe-api PR #315): the list opens on "Activas"; "Todas" is `status=all` (fix/consume-mbe-api-308-314).
 
 ## C4. Detail screen (`DeliveryOrderDetailScreen`)
 

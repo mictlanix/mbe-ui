@@ -93,7 +93,7 @@ A pure function, `deliverableLines(Sale sale, List<DeliveryOrder> ordersOfSale, 
 | URL key | Field | Type | Absent means | Sent as |
 |---|---|---|---|---|
 | `q` | `search` | `String?` (digits) | no search | `search` |
-| `status` | `status` | `DeliveryOrderStatus?` (wire number) | every status (interim, until mbe-api#312) | `status` |
+| `status` | `status` | `DeliveryOrderStatus?` (wire number) | active statuses (mbe-api#312 shipped; `status=all` is every status) | `status` |
 | `type` | `type` | `FulfillmentType?` | every type | `fulfillment_type` |
 | `from`, `to` | `dateFrom`, `dateTo` | `DateTime?` (day) | any date | `date_from` (start of day), `date_to` (end of day) |
 | `customer` | `customerId` | `int?` | any | `customer` |
@@ -104,7 +104,7 @@ A pure function, `deliverableLines(Sale sale, List<DeliveryOrder> ordersOfSale, 
 - `activeFilterCount` counts the non-null facets, not search or page.
 - `isNarrowed` is `activeFilterCount > 0 || search != null`.
 - Clearing nulls every facet.
-- When #312 ships, `status=active` becomes one more value, and the absent value moves to active (FR-003).
+- When #312 ships, `status=active` becomes one more value, and the absent value moves to active (FR-003). **Shipped 2026-11-14** (mbe-api PR #315): the list opens on "Activas"; "Todas" is `status=all` (fix/consume-mbe-api-308-314).
 
 ## 3. Status rules (what the detail screen offers)
 
@@ -117,7 +117,7 @@ A pure function, `deliverableLines(Sale sale, List<DeliveryOrder> ordersOfSale, 
 | approved | pickup | **Lista para recoger**, Cancelar |
 | approved | delivery | Cancelar (not reachable: a confirmed delivery skips approved) |
 | readyForPickup | pickup | **Entregar al cliente**, Cancelar |
-| inPreparation | any | Cancelar (mbe-api#311 risk accepted) |
+| inPreparation | any | Cancelar (refused while on an open itinerary: mbe-api#311 fixed) |
 | inTransit | any | — |
 | failed | any | **Reprogramar**, Cancelar |
 | pickedUp, delivered, partiallyDelivered, cancelled | any | — |

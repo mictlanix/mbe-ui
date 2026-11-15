@@ -4,7 +4,7 @@
 
 **Input**: Feature specification from `/specs/059-payments-editor/spec.md`
 
-Roadmap: Closes mictlanix/mbe-roadmap#26 · Upstream: mbe-api#308 (filed 2026-11-13; not blocking). Every endpoint used already exists and is in the generated client. #308 would let apply work on another facility's payment, and until it ships that action is hidden (R5).
+Roadmap: Closes mictlanix/mbe-roadmap#26 · Upstream: mbe-api#308 (filed 2026-11-13; not blocking). Every endpoint used already exists and is in the generated client. #308 would let apply work on another facility's payment, and until it ships that action is hidden (R5). **Shipped 2026-11-14** (mbe-api PR #316): "Aplicar a pedido" is offered on another facility's payment, and the dialog lists that facility's orders (fix/consume-mbe-api-308-314).
 
 ## Summary
 
@@ -135,7 +135,7 @@ integration_test/payments_editor_quickstart_test.dart
 ## Dependencies and risks
 
 - **Legacy-order guard (R7):** Pedidos' "Pagos" button can't reach older back-office orders that have payments, because `isForeignOrder` declines them. Those orders are still served from Pagos. Changing the guard is out of scope.
-- **mbe-api#308** (outstanding orders by facility): apply is hidden on another facility's payment until it ships. Reverse is unaffected.
+- **mbe-api#308** (outstanding orders by facility): apply is hidden on another facility's payment until it ships. Reverse is unaffected. **Shipped 2026-11-14** (mbe-api PR #316): "Aplicar a pedido" is offered on another facility's payment, and the dialog lists that facility's orders (fix/consume-mbe-api-308-314).
 - **mbe-api#276** (unapplied vs change) is already resolved by mbe-api spec 033: `unapplied` subtracts change. The client shows the server's figure.
 - **POS regression risk:** the dialog move touches the register. A widget test pins the POS path (`onReverse == null` → `PaymentController.reverse`).
 

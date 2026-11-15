@@ -10,10 +10,10 @@ Upstream: none of these block the feature. Every endpoint used already exists in
 
 | Issue | Filed | What it changes here |
 |---|---|---|
-| mbe-api#311 | during specify | Cancelling an order on an open itinerary blocks departure. The risk is accepted. |
-| mbe-api#312 | during plan | Multi-status list filter. Until it ships, the list opens on every status rather than "Activas" (R3). |
-| mbe-api#313 | during plan | Deliverable-lines query. Until it ships, add-line computes what's left on the client (R8). |
-| mbe-api#314 | during analysis | Delivery-order reads aren't facility-checked. Until it ships, the app decodes the facility facet only for administrators, twice (R3). |
+| mbe-api#311 | during specify | Cancelling an order on an open itinerary blocks departure. The risk is accepted. **Fixed 2026-11-14** (mbe-api PR #320): the server refuses that cancel with `delivery_order.on_itinerary`, shown as a localized refusal (fix/consume-mbe-api-308-314). |
+| mbe-api#312 | during plan | Multi-status list filter. Until it ships, the list opens on every status rather than "Activas" (R3). **Shipped 2026-11-14** (mbe-api PR #315): the list opens on "Activas"; "Todas" is `status=all` (fix/consume-mbe-api-308-314). |
+| mbe-api#313 | during plan | Deliverable-lines query. Until it ships, add-line computes what's left on the client (R8). **Shipped 2026-11-14** (mbe-api PR #318): step 2 reads `GET /delivery-orders/deliverable-lines`; the client computation is deleted (fix/consume-mbe-api-308-314). |
+| mbe-api#314 | during analysis | Delivery-order reads aren't facility-checked. Until it ships, the app decodes the facility facet only for administrators, twice (R3). **Fixed 2026-11-14** (mbe-api PR #321): the server checks the facility on the list and on every read and write by id. The client drop stays as defence in depth (fix/consume-mbe-api-308-314). |
 
 ## Summary
 
@@ -156,10 +156,10 @@ test/unit/features/sales/…, test/widget/features/sales/…, integration_test/d
 
 ## Dependencies and risks
 
-- **Cancel on an open itinerary (mbe-api#311):** cancel is offered in En preparación, and that can block a trip's departure until the server fix ships. The user accepted this risk.
-- **Interim list default (mbe-api#312):** the list opens on every status, so finished orders mix with active ones. Single-status filters and newest-first ordering cover the daily need. Adding "Activas" later is a filter value plus a default.
-- **Client-side remaining (R8, mbe-api#313):** it mirrors `_covered_quantities` one sale at a time. One edge, a consolidated order at another facility, can overstate what's left, and the server refuses the add with a localized message. The mirror is deleted when #313 ships.
-- **Facility exposure (mbe-api#314):** the client drop keeps a non-administrator to their own facility's list, but nothing client-side can stop a hand-typed `/sales/delivery-orders/{id}` for another facility's order. That needs the server fix.
+- **Cancel on an open itinerary (mbe-api#311):** cancel is offered in En preparación, and that can block a trip's departure until the server fix ships. The user accepted this risk. **Fixed 2026-11-14** (mbe-api PR #320): the server refuses that cancel with `delivery_order.on_itinerary`, shown as a localized refusal (fix/consume-mbe-api-308-314).
+- **Interim list default (mbe-api#312):** the list opens on every status, so finished orders mix with active ones. Single-status filters and newest-first ordering cover the daily need. Adding "Activas" later is a filter value plus a default. **Shipped 2026-11-14** (mbe-api PR #315): the list opens on "Activas"; "Todas" is `status=all` (fix/consume-mbe-api-308-314).
+- **Client-side remaining (R8, mbe-api#313):** it mirrors `_covered_quantities` one sale at a time. One edge, a consolidated order at another facility, can overstate what's left, and the server refuses the add with a localized message. The mirror is deleted when #313 ships. **Shipped 2026-11-14** (mbe-api PR #318): step 2 reads `GET /delivery-orders/deliverable-lines`; the client computation is deleted (fix/consume-mbe-api-308-314).
+- **Facility exposure (mbe-api#314):** the client drop keeps a non-administrator to their own facility's list, but nothing client-side can stop a hand-typed `/sales/delivery-orders/{id}` for another facility's order. That needs the server fix. **Fixed 2026-11-14** (mbe-api PR #321): the server checks the facility on the list and on every read and write by id. The client drop stays as defence in depth (fix/consume-mbe-api-308-314).
 - **Names need other rights (R4):** customers, facilities, warehouses and employees fall back to `#id` without their read right. Ship-to and contact need Customers read.
 - **Live writes leave data:** each `MBE_WRITE` run leaves a cancelled order, a picked-up order with its proof, and two 1-unit sales. Requeue can't be automated without driving an itinerary, so it's checked manually.
 - **Approval setting unknown to the client:** confirm may land in Pendiente de aprobación. The screen shows whatever the server returns, and approval itself belongs to roadmap #39.

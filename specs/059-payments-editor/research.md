@@ -52,7 +52,7 @@ Another facility's payment is visible only with Payments Editor (100) read, and 
 
 **Rationale**: today `outstandingBalanceFor` only sums the balances (customer_payment_repository_impl.dart:225-251). The picker needs the rows.
 
-**Facility scope**: the server lists only the caller's facility's orders (`search_outstanding`, `SalesOrder.facility == current.facility_id`). So "Aplicar a pedido" is hidden on another facility's payment (`payment.facilityId != userFacilityIdProvider`). Filed upstream as mbe-api#308 (a `facility` param, 2026-11-13). When it ships, pass the payment's facility and drop the hide.
+**Facility scope**: the server lists only the caller's facility's orders (`search_outstanding`, `SalesOrder.facility == current.facility_id`). So "Aplicar a pedido" is hidden on another facility's payment (`payment.facilityId != userFacilityIdProvider`). Filed upstream as mbe-api#308 (a `facility` param, 2026-11-13). When it ships, pass the payment's facility and drop the hide. **Shipped 2026-11-14** (mbe-api PR #316): "Aplicar a pedido" is offered on another facility's payment, and the dialog lists that facility's orders (fix/consume-mbe-api-308-314).
 
 **Amount rule**: default `min(order.balance, payment.unapplied)`. Accept `0 < amount ≤ that min`. `amountChange` is never sent (FR-008). Amounts use `Decimal` through `money.dart`, never `double`.
 

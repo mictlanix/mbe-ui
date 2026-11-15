@@ -80,7 +80,7 @@ A supervisor looking up a customer's payment in Pagos sees it marked "Sin verifi
 
 - **Already verified by someone else.** Two supervisors work the same queue. The second to verify is refused. The app says the payment was already verified and removes the row (or refreshes the payment view).
 - **Another facility's payment.** The queue lists and acts on payments from every facility. A verifier without Payments Editor read can't open those payments in Pagos (spec 055). So the queue row itself must show everything needed to decide, and must not depend on opening the payment.
-- **Rejected payments come back.** The server records only the rejection, so a rejected payment stays unverified, and nothing in the app can show that it was rejected. Each time the queue loads, rejected payments look the same as payments nobody has checked. The rejection still leaves a record with who, when and why. mbe-api#310 asks the server to expose that rejection so the queue can mark or hide those payments later.
+- **Rejected payments come back.** The server records only the rejection, so a rejected payment stays unverified, and nothing in the app can show that it was rejected. Each time the queue loads, rejected payments look the same as payments nobody has checked. The rejection still leaves a record with who, when and why. mbe-api#310 asks the server to expose that rejection so the queue can mark or hide those payments later. **Shipped 2026-11-14** (mbe-api PR #317): rejected rows carry a rejection icon, the queue has a "Rechazos" filter, and the panel and payment view show "Último rechazo" (fix/consume-mbe-api-308-314).
 - **Rejecting twice.** The server accepts it and records a second rejection. The app doesn't prevent it, because it can't tell.
 - **Verifying a payment after its rejection.** Allowed. Rejection doesn't block verification.
 - **Empty queue.** The queue says there are no unverified payments for the current filters. It offers to clear them when they differ from the opening filters (transfers, every facility, any date).
@@ -113,7 +113,7 @@ A supervisor looking up a customer's payment in Pagos sees it marked "Sin verifi
 - **FR-009**: "Rechazar" MUST be offered only to users with Payments Verification update, and only on unverified payments.
 - **FR-010**: Rejecting MUST require a reason that isn't empty or only whitespace, up to 500 characters. The dialog names the payment's folio, customer, amount and reference.
 - **FR-011**: After a rejection, the app MUST confirm it was recorded and say the payment stays unverified and stays in the queue.
-- **FR-012**: Until the server exposes rejections, the queue MUST NOT claim to know whether a payment was rejected. Rejected and unchecked payments look the same.
+- **FR-012**: Until the server exposes rejections, the queue MUST NOT claim to know whether a payment was rejected. Rejected and unchecked payments look the same. **Shipped 2026-11-14** (mbe-api PR #317): rejected rows carry a rejection icon, the queue has a "Rechazos" filter, and the panel and payment view show "Último rechazo" (fix/consume-mbe-api-308-314).
 
 **Payment view**
 

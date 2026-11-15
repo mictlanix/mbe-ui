@@ -33,12 +33,12 @@ These findings come from reading mbe-api (`app/api/v1/endpoints/delivery_orders.
   - **URL-backed filter.** A freezed `DeliveryOrdersFilter.fromQuery(ListQuery)`, modelled on `refunds_filter.dart` and `payments_filter.dart`. Its facets are `status` (wire number), `type`, `from` and `to` (scheduled date), `customer`, `order` (sales-order id) and `facility`.
   - **Absent values.** An absent `status` means every status, the interim opening state the user chose. An absent `facility` means the server default, the caller's facility.
   - **Search** takes digits only and is labelled "Folio". The server also matches the internal id, but no screen shows that id, so the app doesn't offer it as a search key (analysis B1).
-  - **Facility scoping (analysis S1, mbe-api#314).** The server honors any `facility` from any 71 reader. Following Pedidos (spec 029, `sales_orders_scoping_test.dart`), the facet is decoded only when `isAdministrator`, twice: in `DeliveryOrdersFilter.fromQuery` and again in the list controller's fetch. Treat the double drop as load-bearing; never merge it into one site.
+  - **Facility scoping (analysis S1, mbe-api#314).** The server honors any `facility` from any 71 reader. Following Pedidos (spec 029, `sales_orders_scoping_test.dart`), the facet is decoded only when `isAdministrator`, twice: in `DeliveryOrdersFilter.fromQuery` and again in the list controller's fetch. Treat the double drop as load-bearing; never merge it into one site. **Fixed 2026-11-14** (mbe-api PR #321): the server checks the facility on the list and on every read and write by id. The client drop stays as defence in depth (fix/consume-mbe-api-308-314).
   - **No facility configured.** When `userFacilityIdProvider` is null, the screen shows a notice and sends no request, administrators included, as `sales_orders_list_screen.dart` does.
   - **Clearing** empties every facet.
 - **The `Activas` gap:**
   - `GET /delivery-orders` takes one `status` value, so the seven non-terminal statuses can't be one paginated request. Filtering on the client would break `total` and page boundaries.
-  - The user chose to file mbe-api#312 and open on every status in the meantime. The spec's FR-003 says so.
+  - The user chose to file mbe-api#312 and open on every status in the meantime. The spec's FR-003 says so. **Shipped 2026-11-14** (mbe-api PR #315): the list opens on "Activas"; "Todas" is `status=all` (fix/consume-mbe-api-308-314).
   - The filter keeps `status` a nullable single value, so an `active` choice can be added as one more value when #312 ships. Nothing else in the screen changes then.
 - **Alternatives considered:**
   - Opening on Borrador.
@@ -106,7 +106,7 @@ These findings come from reading mbe-api (`app/api/v1/endpoints/delivery_orders.
 - **Facility:** the server's list always applies a facility filter, defaulting to the caller's. So the coverage call passes the sale's own facility, or another facility's orders for that sale would be missed.
   - One rare case is still missed: a consolidated order at a different facility claiming this sale's line.
   - Then the computed amount overstates what's left, and the server refuses the add with `delivery_order.quantity_exceeds_remaining {requested, remaining}`, which is already localized.
-- **Upstream:** the user chose to file mbe-api#313 for a server query, `deliverable-lines?customer=`. When it ships, step 2 switches to it and the coverage computation is deleted.
+- **Upstream:** the user chose to file mbe-api#313 for a server query, `deliverable-lines?customer=`. When it ships, step 2 switches to it and the coverage computation is deleted. **Shipped 2026-11-14** (mbe-api PR #318): step 2 reads `GET /delivery-orders/deliverable-lines`; the client computation is deleted (fix/consume-mbe-api-308-314).
 - **Rationale:** working one sale at a time keeps it to a few calls per sale, rather than N+1 across every sale the customer has. The server stays the authority on what's left.
 - **Alternatives considered:**
   - Reusing the POS open-sales source. Rejected, because it's scoped to one register and today, and has no customer filter.
