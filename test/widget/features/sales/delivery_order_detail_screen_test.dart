@@ -178,13 +178,14 @@ DeliveryOrderLine _line(
   String delivered = '5',
   String returned = '2',
   String open = '3',
+  int warehouse = 3,
 }) => DeliveryOrderLine(
   id: id,
   salesOrderDetailId: detail ?? id + 100,
   productId: id,
   productCode: 'P-$id',
   productName: 'Producto $id',
-  warehouseId: 3,
+  warehouseId: warehouse,
   quantity: Decimal.parse(quantity),
   committed: Decimal.parse(committed),
   delivered: Decimal.parse(delivered),
@@ -1958,6 +1959,124 @@ void main() {
       expect(loads, 1);
       expect(key('delivery_order_view_ticket'), findsOneWidget);
       expect(key('delivery_order_cancel'), findsOneWidget);
+    });
+
+    group('warehouse choice (US3)', () {
+      // Warehouse 3 is "Bodega 1" in the pump's catalog; 4 is unknown there,
+      // so it reads "#4".
+      DeliveryOrderDetail twoWarehouses() => detailOf(
+        _order(
+          status: DeliveryOrderStatus.approved,
+          lines: [_line(1), _line(2, warehouse: 4)],
+        ),
+        sales: const {101: 8841, 102: 8841},
+      );
+
+      testWidgets('an order from two warehouses asks first and fetches '
+          'nothing yet', (tester) async {
+        final documents = FakeDocumentSource();
+        await pumpDetail(tester, detail: twoWarehouses(), documents: documents);
+
+        await tester.tap(key('delivery_order_view_ticket'));
+        await tester.pumpAndSettle();
+
+        expect(key('delivery_ticket_scope_dialog'), findsOneWidget);
+        expect(find.text('Bodega 1'), findsWidgets);
+        expect(find.text('#4'), findsWidgets);
+        expect(documents.fetched, isEmpty);
+        expect(find.byType(DocumentPreviewDialog), findsNothing);
+      });
+
+      testWidgets('choosing a warehouse fetches only its lines, and the title '
+          'names it', (tester) async {
+        final documents = FakeDocumentSource();
+        await pumpDetail(tester, detail: twoWarehouses(), documents: documents);
+
+        await tester.tap(key('delivery_order_view_ticket'));
+        await tester.pumpAndSettle();
+        await tester.tap(key('delivery_ticket_scope_3'));
+        await tester.pump();
+        await tester.tap(key('delivery_ticket_scope_confirm'));
+        await tester.pumpAndSettle();
+
+        expect(documents.fetched, hasLength(1));
+        expect(documents.fetched.single.kind, DocumentKind.deliveryTicket);
+        expect(documents.fetched.single.warehouseId, 3);
+        expect(
+          documents.fetched.single.title,
+          'Ticket de entrega · 1532 · Bodega 1',
+        );
+        expect(find.byType(DocumentPreviewDialog), findsOneWidget);
+      });
+
+      testWidgets('"Todos los almacenes" fetches every line', (tester) async {
+        final documents = FakeDocumentSource();
+        await pumpDetail(tester, detail: twoWarehouses(), documents: documents);
+
+        await tester.tap(key('delivery_order_view_ticket'));
+        await tester.pumpAndSettle();
+        await tester.tap(key('delivery_ticket_scope_confirm'));
+        await tester.pumpAndSettle();
+
+        expect(documents.fetched, hasLength(1));
+        expect(documents.fetched.single.warehouseId, isNull);
+        expect(documents.fetched.single.title, 'Ticket de entrega · 1532');
+      });
+
+      testWidgets('dismissing the choice fetches and opens nothing', (
+        tester,
+      ) async {
+        final documents = FakeDocumentSource();
+        await pumpDetail(tester, detail: twoWarehouses(), documents: documents);
+
+        await tester.tap(key('delivery_order_view_ticket'));
+        await tester.pumpAndSettle();
+        await tester.tap(key('delivery_ticket_scope_cancel'));
+        await tester.pumpAndSettle();
+
+        expect(documents.fetched, isEmpty);
+        expect(find.byType(DocumentPreviewDialog), findsNothing);
+        expect(key('delivery_ticket_scope_dialog'), findsNothing);
+      });
+
+      testWidgets('lines from one warehouse never ask, however many there '
+          'are', (tester) async {
+        final documents = FakeDocumentSource();
+        await pumpDetail(
+          tester,
+          detail: detailOf(
+            _order(
+              status: DeliveryOrderStatus.approved,
+              lines: [_line(1), _line(2), _line(3)],
+            ),
+            sales: const {101: 8841, 102: 8841, 103: 8841},
+          ),
+          documents: documents,
+        );
+
+        await tester.tap(key('delivery_order_view_ticket'));
+        await tester.pumpAndSettle();
+
+        expect(key('delivery_ticket_scope_dialog'), findsNothing);
+        expect(documents.fetched, hasLength(1));
+        expect(documents.fetched.single.warehouseId, isNull);
+      });
+
+      testWidgets('a second press while the choice is open starts nothing', (
+        tester,
+      ) async {
+        final documents = FakeDocumentSource();
+        await pumpDetail(tester, detail: twoWarehouses(), documents: documents);
+        final press = tester
+            .widget<OutlinedButton>(key('delivery_order_view_ticket'))
+            .onPressed!;
+
+        press();
+        press();
+        await tester.pumpAndSettle();
+
+        expect(key('delivery_ticket_scope_dialog'), findsOneWidget);
+      });
     });
 
     // Refusals reach the preview through its shared error banner, which

@@ -11,6 +11,7 @@ import 'package:mbe_ui/core/widgets/list_state_views.dart' show toAppError;
 import 'package:mbe_ui/features/sales/data/delivery_order_admin_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/delivery_order.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_ticket_scope_dialog.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// Whether the delivery order's print actions are offered (spec 064 FR-003,
@@ -93,14 +94,33 @@ Future<void> openDeliveryTicket(
       if (!context.mounted) return;
     }
 
-    // simplified: no warehouse choice yet, the preview is always unlimited; the
-    // warehouse choice (spec 064 US3) adds the chooser here.
+    // An order drawing from several warehouses asks which lines to print
+    // (FR-010); one warehouse never asks (FR-011). Dismissing the choice
+    // opens, and fetches, nothing (FR-012).
+    var scope = const DeliveryTicketScope.all();
+    if (warehouseIds.length >= 2) {
+      final chosen = await showDeliveryTicketScopeDialog(
+        context,
+        facilityId: facilityId,
+        warehouseIds: warehouseIds,
+      );
+      if (chosen == null || !context.mounted) return;
+      scope = chosen;
+    }
+
+    final warehouseId = scope.warehouseId;
     await documents.preview(
       context,
       DocumentRef(
         kind: DocumentKind.deliveryTicket,
         recordId: orderId,
-        title: l10n.documentDeliveryTicketTitle(folio),
+        warehouseId: warehouseId,
+        title: warehouseId == null
+            ? l10n.documentDeliveryTicketTitle(folio)
+            : l10n.documentDeliveryTicketWarehouseTitle(
+                folio,
+                scope.warehouseName!,
+              ),
       ),
     );
   } finally {

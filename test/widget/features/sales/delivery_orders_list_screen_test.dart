@@ -30,10 +30,12 @@ import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/address_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/sales/data/delivery_order_admin_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/delivery_order.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_admin_repository.dart';
+import 'package:mbe_ui/features/sales/presentation/capture/facility_warehouses_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_orders_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
@@ -248,6 +250,26 @@ void main() {
         ),
         saleCustomerControllerProvider.overrideWith(
           (ref, id) async => _customer(id),
+        ),
+        facilityWarehousesControllerProvider.overrideWith(
+          (ref, facilityId) async => const [
+            Warehouse(
+              warehouseId: 2,
+              facilityId: 1,
+              facilityName: 'Sucursal 1',
+              code: 'N1',
+              name: 'Bodega norte',
+              status: EntityStatus.active,
+            ),
+            Warehouse(
+              warehouseId: 5,
+              facilityId: 1,
+              facilityName: 'Sucursal 1',
+              code: 'P1',
+              name: 'Patio',
+              status: EntityStatus.active,
+            ),
+          ],
         ),
       ],
     );
@@ -815,6 +837,74 @@ void main() {
       expect(requests.length, before);
       expect(router.state.uri.toString(), uri);
       expect(ticket(3), findsOneWidget);
+    });
+  });
+
+  group('warehouse choice from the list (spec 064 US3)', () {
+    Finder ticket(int id) => key('delivery_order_view_ticket_$id');
+
+    void serveOne() => stubList(
+      (_) async => DeliveryOrderPage(
+        items: [row(3, serial: 903, status: DeliveryOrderStatus.approved)],
+        total: 1,
+      ),
+    );
+
+    testWidgets('an order from two warehouses asks after the lookup, before '
+        'any fetch', (tester) async {
+      serveOne();
+      when(
+        () => repository.getById(3),
+      ).thenAnswer((_) async => fullOrder(3, [2, 5], serial: 903));
+      final documents = FakeDocumentSource();
+      await pumpList(tester, documents: documents);
+
+      await tester.tap(ticket(3));
+      await tester.pumpAndSettle();
+
+      verify(() => repository.getById(3)).called(1);
+      expect(key('delivery_ticket_scope_dialog'), findsOneWidget);
+      expect(find.text('Bodega norte'), findsOneWidget);
+      expect(find.text('Patio'), findsOneWidget);
+      expect(documents.fetched, isEmpty);
+    });
+
+    testWidgets('choosing a warehouse fetches only its lines', (tester) async {
+      serveOne();
+      when(
+        () => repository.getById(3),
+      ).thenAnswer((_) async => fullOrder(3, [2, 5], serial: 903));
+      final documents = FakeDocumentSource();
+      await pumpList(tester, documents: documents);
+
+      await tester.tap(ticket(3));
+      await tester.pumpAndSettle();
+      await tester.tap(key('delivery_ticket_scope_5'));
+      await tester.pump();
+      await tester.tap(key('delivery_ticket_scope_confirm'));
+      await tester.pumpAndSettle();
+
+      expect(documents.fetched, hasLength(1));
+      expect(documents.fetched.single.warehouseId, 5);
+      expect(documents.fetched.single.title, 'Ticket de entrega · 903 · Patio');
+      expect(find.byType(DocumentPreviewDialog), findsOneWidget);
+    });
+
+    testWidgets('dismissing the choice fetches nothing', (tester) async {
+      serveOne();
+      when(
+        () => repository.getById(3),
+      ).thenAnswer((_) async => fullOrder(3, [2, 5], serial: 903));
+      final documents = FakeDocumentSource();
+      await pumpList(tester, documents: documents);
+
+      await tester.tap(ticket(3));
+      await tester.pumpAndSettle();
+      await tester.tap(key('delivery_ticket_scope_cancel'));
+      await tester.pumpAndSettle();
+
+      expect(documents.fetched, isEmpty);
+      expect(find.byType(DocumentPreviewDialog), findsNothing);
     });
   });
 }
