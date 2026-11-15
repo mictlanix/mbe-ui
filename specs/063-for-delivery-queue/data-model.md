@@ -48,6 +48,10 @@ All types are client-side views of `GET /delivery-itineraries/deliveries` (resea
 | `periods` | `List<PendingDeliveryPeriodSummary>` | all six, display order; feeds the panel counts (FR-003) |
 | `page` | `CatalogPage<PendingDeliveryLine>` | the selected period's page and total (FR-006) |
 
+`LastPendingDeliverySummaries` (keep-alive) holds the `periods` of the last successful load, so the panel's counts survive a period change (research R5).
+
+The bucket `date` arrives as the generated `Date?` type, not `DateTime?`; the repository converts it (`Date.toDateTime()` or the equivalent) when mapping.
+
 The repository returns `PendingDeliveriesResult`: `Map<PendingDeliveryPeriod, (DateTime? date, int total, List<PendingDeliveryLine> items)>`, from which the controller builds the view.
 
 ## 4. `PendingDeliveriesFilter` (presentation, freezed)

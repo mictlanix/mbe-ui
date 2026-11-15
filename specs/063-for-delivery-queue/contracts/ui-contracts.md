@@ -25,7 +25,7 @@
 - Six items, display order, no "all" item. Item text:
   - single-day period: `{label} · {date} ({total})`
   - `earlier` / `later`: `{label} ({total})`
-  - counts and dates come from the controller's current state for the current period and page; while loading or on error, labels only.
+  - counts and dates come from `LastPendingDeliverySummaries` (C7), the six summaries of the last successful load, so they stay visible while a newly picked period loads; labels only until the first load succeeds.
 - Selecting goes to page 0 with the new period (FR-007). Selecting `today` drops the facet.
 - "Borrar todo" goes to the default filter (FR-011).
 
@@ -67,7 +67,9 @@ Provider `deliveryItineraryRepositoryProvider`. Maps R1's response to data-model
 
 ## C7. Controller
 
-`@riverpod class PendingDeliveriesController` — `build(PendingDeliveryPeriod period, int pageIndex)` → `Future<PendingDeliveriesView>`, page size 20, via `fetchClampedPage` (R4). Doc comment states there is no facility guard and why.
+`@riverpod class PendingDeliveriesController` — `build(PendingDeliveryPeriod period, int pageIndex)` → `Future<PendingDeliveriesView>`, page size 20, via `fetchClampedPage` (R4). Doc comment states there is no facility guard and why. After a successful load it writes the view's six summaries to `LastPendingDeliverySummaries`.
+
+`@Riverpod(keepAlive: true) class LastPendingDeliverySummaries` — state `List<PendingDeliveryPeriodSummary>?`, `null` until the first successful load; a `set(summaries)` method. Feeds the panel counts (C3, R5).
 
 ## C8. Name-cell extraction
 

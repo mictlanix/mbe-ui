@@ -120,6 +120,8 @@ No drawing. Without ForDeliver read the destination isn't in the navigation, and
 
 ## Open Questions
 
+All three were resolved in planning: 1 → research R9 (`/sales/for-delivery`), 2 → R10 (flat rows), 3 → R5 (the existing dropdown facet, no "all" item).
+
 1. **Route.** Siblings live under `/sales/…` (`/sales/delivery-orders`, `/sales/delivery-order-approval`) even though the menu group is Logística. Options: `/sales/for-delivery`, `/sales/pending-deliveries`, or a new `/logistics/…` prefix. Wireframe assumed `/sales/for-delivery`.
 2. **One row per line or per order.** The server returns lines, so an order with five lines repeats its folio, customer and ship-to five times. Options: flat rows (as drawn, the legacy layout), or group lines under an order header row. Grouping breaks the period counts and pagination, which count lines. Wireframe assumed flat rows.
 3. **Single-select facet control.** The period is the first facet that must always have one value (no "any"). Options: the single-select control an existing panel already uses, without an "all" choice; or a radio list. Wireframe assumed whatever existing panels use, to be confirmed in planning.

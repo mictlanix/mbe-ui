@@ -56,7 +56,9 @@
 
 **Date format**: `formattersProvider.display.date`, the app's date format (ISO by default, spec 028). The wireframe's "15 nov" was indicative.
 
-**Counts before the first load**: while the view is loading, items show labels without counts. On error, labels without counts.
+**Counts survive a period change**: the panel applies live, and picking a period switches the controller to a new family key that starts in loading. If the panel read counts from the current key, every count would vanish until the new response lands. So each successful load also writes its six summaries into a small keep-alive `LastPendingDeliverySummaries` notifier, and the panel reads the counts from there. The six totals don't depend on the selected period, so the last-known set is the right one to show while the next page loads.
+
+**Counts before the first load**: until any load has succeeded, the notifier is empty and items show labels without counts. A failed load leaves the last-known counts in place.
 
 ## R6. Reload on return (FR-008)
 
