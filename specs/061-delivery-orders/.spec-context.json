@@ -1,0 +1,28 @@
+{
+  "workflow": "speckit",
+  "specName": "Delivery Orders",
+  "branch": "chore/061-mark-complete",
+  "status": "completed",
+  "currentStep": "implement",
+  "history": [
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-15T14:29:49.924Z"
+    }
+  ],
+  "verified": [
+    {
+      "what": "flutter analyze clean; flutter test test/unit test/widget 4498 passed; live integration_test/delivery_orders_quickstart_test.dart 3/3 read-only, 9/9 MBE_WRITE (PR #241, merged 76d33ff4)"
+    }
+  ],
+  "telemetryInstanceId": "c229a8ea-1990-48aa-8348-f06735f29e2b",
+  "concerns": [
+    {
+      "note": "T041 manual checks (requeue, read-only user, compact tier, largest text, too little notice, qanoaccess) not yet run; tracked in mictlanix/mbe-ui#242"
+    }
+  ],
+  "currentTask": null
+}
