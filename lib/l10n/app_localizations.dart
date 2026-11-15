@@ -11130,6 +11130,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This order is no longer pending approval.'**
   String get apiErrorDeliveryOrderNotPendingApproval;
+
+  /// spec 063: navigation entry under Logística (C1) and screen title
+  ///
+  /// In en, this message translates to:
+  /// **'For delivery'**
+  String get navForDelivery;
+
+  /// spec 063: label of the period filter (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get forDeliveryPeriodLabel;
+
+  /// spec 063: period option, before yesterday
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier'**
+  String get forDeliveryPeriodEarlier;
+
+  /// spec 063: period option
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get forDeliveryPeriodYesterday;
+
+  /// spec 063: period option, the default
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get forDeliveryPeriodToday;
+
+  /// spec 063: period option
+  ///
+  /// In en, this message translates to:
+  /// **'Tomorrow'**
+  String get forDeliveryPeriodTomorrow;
+
+  /// spec 063: period option
+  ///
+  /// In en, this message translates to:
+  /// **'Day after tomorrow'**
+  String get forDeliveryPeriodDayAfter;
+
+  /// spec 063: period option, later than the day after tomorrow or with no date
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get forDeliveryPeriodLater;
+
+  /// spec 063: single-day period option with its date and line count (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'{label} · {date} ({total})'**
+  String forDeliveryPeriodOptionDated(String label, String date, int total);
+
+  /// spec 063: open-ended period option with its line count (C3)
+  ///
+  /// In en, this message translates to:
+  /// **'{label} ({total})'**
+  String forDeliveryPeriodOptionUndated(String label, int total);
+
+  /// spec 063: scheduled date of a line whose order has none (FR-005)
+  ///
+  /// In en, this message translates to:
+  /// **'No date'**
+  String get forDeliveryNoDate;
+
+  /// spec 063: empty state (C5)
+  ///
+  /// In en, this message translates to:
+  /// **'No deliveries pending for this period.'**
+  String get forDeliveryEmpty;
+
+  /// spec 063: table column (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Prio.'**
+  String get forDeliveryColumnPriority;
+
+  /// spec 063: table column (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get forDeliveryColumnProduct;
+
+  /// spec 063: table column (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get forDeliveryColumnWarehouse;
+
+  /// spec 063: table column, quantity still to load (C4)
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get forDeliveryColumnOpenQuantity;
 }
 
 class _AppLocalizationsDelegate

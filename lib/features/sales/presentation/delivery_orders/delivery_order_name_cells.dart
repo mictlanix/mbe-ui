@@ -5,6 +5,7 @@ import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/facility_warehouses_controller.dart';
@@ -153,6 +154,31 @@ class DeliveryOrderShipTo extends ConsumerWidget {
         truncate: truncate,
       );
     }
+    return DeliveryOrderCustomerAddress(
+      customerId: customerId,
+      shipToId: shipToId,
+      truncate: truncate,
+    );
+  }
+}
+
+/// A delivery's ship-to, from the customer's embedded addresses (Customers
+/// read). `DeliveryOrderShipTo`'s delivery branch, on its own for callers that
+/// only ever hold delivery lines and have no facility to pass (spec 063 R7).
+class DeliveryOrderCustomerAddress extends ConsumerWidget {
+  const DeliveryOrderCustomerAddress({
+    super.key,
+    required this.customerId,
+    required this.shipToId,
+    this.truncate = true,
+  });
+
+  final int customerId;
+  final int? shipToId;
+  final bool truncate;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final id = shipToId;
     if (id == null) {
       return _NameText(emptyValuePlaceholder, truncate: truncate);
@@ -169,6 +195,24 @@ class DeliveryOrderShipTo extends ConsumerWidget {
       truncate: truncate,
     );
   }
+}
+
+/// A warehouse's name from its id alone (Warehouses read), for callers whose
+/// row carries no facility. `DeliveryOrderWarehouseName` needs the facility;
+/// this doesn't (spec 063 R7).
+class WarehouseNameById extends ConsumerWidget {
+  const WarehouseNameById({super.key, required this.warehouseId});
+
+  final int warehouseId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) => _NameText(
+    _resolved(
+      ref.watch(warehouseDisplayNameProvider(warehouseId)),
+      warehouseId,
+    ),
+    truncate: true,
+  );
 }
 
 /// The order's contact, from the customer's embedded contacts (Customers
