@@ -207,6 +207,7 @@ Class | Method | HTTP request | Description
 [*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**getProofApiV1DeliveryOrdersDeliveryOrderIdProofGet**](doc/DeliveryOrdersApi.md#getproofapiv1deliveryordersdeliveryorderidproofget) | **GET** /api/v1/delivery-orders/{delivery_order_id}/proof | Get Proof
 [*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**getProofImageApiV1DeliveryOrdersDeliveryOrderIdProofImageGet**](doc/DeliveryOrdersApi.md#getproofimageapiv1deliveryordersdeliveryorderidproofimageget) | **GET** /api/v1/delivery-orders/{delivery_order_id}/proof/image | Get Proof Image
 [*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**listApprovalQueueApiV1DeliveryOrdersApprovalGet**](doc/DeliveryOrdersApi.md#listapprovalqueueapiv1deliveryordersapprovalget) | **GET** /api/v1/delivery-orders/approval | List Approval Queue
+[*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**listDeliverableLinesApiV1DeliveryOrdersDeliverableLinesGet**](doc/DeliveryOrdersApi.md#listdeliverablelinesapiv1deliveryordersdeliverablelinesget) | **GET** /api/v1/delivery-orders/deliverable-lines | List Deliverable Lines
 [*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**listDeliveryOrderEventsApiV1DeliveryOrdersDeliveryOrderIdEventsGet**](doc/DeliveryOrdersApi.md#listdeliveryordereventsapiv1deliveryordersdeliveryorderideventsget) | **GET** /api/v1/delivery-orders/{delivery_order_id}/events | List Delivery Order Events
 [*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**listDeliveryOrdersApiV1DeliveryOrdersGet**](doc/DeliveryOrdersApi.md#listdeliveryordersapiv1deliveryordersget) | **GET** /api/v1/delivery-orders | List Delivery Orders
 [*DeliveryOrdersApi*](doc/DeliveryOrdersApi.md) | [**markReadyForPickupApiV1DeliveryOrdersDeliveryOrderIdReadyForPickupPost**](doc/DeliveryOrdersApi.md#markreadyforpickupapiv1deliveryordersdeliveryorderidreadyforpickuppost) | **POST** /api/v1/delivery-orders/{delivery_order_id}/ready-for-pickup | Mark Ready For Pickup
@@ -641,6 +642,7 @@ Class | Method | HTTP request | Description
  - [CustomerRefundSummary](doc/CustomerRefundSummary.md)
  - [CustomerResponse](doc/CustomerResponse.md)
  - [CustomerUpdate](doc/CustomerUpdate.md)
+ - [DeliverableLineResponse](doc/DeliverableLineResponse.md)
  - [DeliveryOrderCreate](doc/DeliveryOrderCreate.md)
  - [DeliveryOrderEventResponse](doc/DeliveryOrderEventResponse.md)
  - [DeliveryOrderLineRequest](doc/DeliveryOrderLineRequest.md)
@@ -755,6 +757,7 @@ Class | Method | HTTP request | Description
  - [ListResponseCustomerListItem](doc/ListResponseCustomerListItem.md)
  - [ListResponseCustomerPaymentResponse](doc/ListResponseCustomerPaymentResponse.md)
  - [ListResponseCustomerRefundSummary](doc/ListResponseCustomerRefundSummary.md)
+ - [ListResponseDeliverableLineResponse](doc/ListResponseDeliverableLineResponse.md)
  - [ListResponseDeliveryOrderSummary](doc/ListResponseDeliveryOrderSummary.md)
  - [ListResponseEmployeeResponse](doc/ListResponseEmployeeResponse.md)
  - [ListResponseExchangeRateResponse](doc/ListResponseExchangeRateResponse.md)
@@ -814,6 +817,7 @@ Class | Method | HTTP request | Description
  - [PaymentMethodOptionResponse](doc/PaymentMethodOptionResponse.md)
  - [PaymentMethodOptionUpdate](doc/PaymentMethodOptionUpdate.md)
  - [PaymentReceiptCreate](doc/PaymentReceiptCreate.md)
+ - [PaymentRejection](doc/PaymentRejection.md)
  - [PaymentStatus](doc/PaymentStatus.md)
  - [PaymentTerms](doc/PaymentTerms.md)
  - [PaymentType](doc/PaymentType.md)

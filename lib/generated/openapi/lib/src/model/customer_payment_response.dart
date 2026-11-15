@@ -4,6 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/payment_type.dart';
+import 'package:mbe_api_client/src/model/payment_rejection.dart';
 import 'package:mbe_api_client/src/model/payment_method.dart';
 import 'package:mbe_api_client/src/model/currency_code.dart';
 import 'package:built_value/built_value.dart';
@@ -29,6 +30,7 @@ part 'customer_payment_response.g.dart';
 /// * [paymentType]
 /// * [verifier]
 /// * [unapplied]
+/// * [lastRejection]
 @BuiltValue()
 abstract class CustomerPaymentResponse
     implements Built<CustomerPaymentResponse, CustomerPaymentResponseBuilder> {
@@ -81,6 +83,9 @@ abstract class CustomerPaymentResponse
 
   @BuiltValueField(wireName: r'unapplied')
   String get unapplied;
+
+  @BuiltValueField(wireName: r'last_rejection')
+  PaymentRejection? get lastRejection;
 
   CustomerPaymentResponse._();
 
@@ -197,6 +202,13 @@ class _$CustomerPaymentResponseSerializer
       object.unapplied,
       specifiedType: const FullType(String),
     );
+    if (object.lastRejection != null) {
+      yield r'last_rejection';
+      yield serializers.serialize(
+        object.lastRejection,
+        specifiedType: const FullType.nullable(PaymentRejection),
+      );
+    }
   }
 
   @override
@@ -351,6 +363,16 @@ class _$CustomerPaymentResponseSerializer
                   )
                   as String;
           result.unapplied = valueDes;
+          break;
+        case r'last_rejection':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(PaymentRejection),
+                  )
+                  as PaymentRejection?;
+          if (valueDes == null) continue;
+          result.lastRejection.replace(valueDes);
           break;
         default:
           unhandled.add(key);

@@ -19,6 +19,7 @@ import 'package:mbe_api_client/src/model/delivery_order_response.dart';
 import 'package:mbe_api_client/src/model/delivery_order_status.dart';
 import 'package:mbe_api_client/src/model/delivery_order_update.dart';
 import 'package:mbe_api_client/src/model/fulfillment_type.dart';
+import 'package:mbe_api_client/src/model/list_response_deliverable_line_response.dart';
 import 'package:mbe_api_client/src/model/list_response_delivery_order_summary.dart';
 import 'package:mbe_api_client/src/model/problem.dart';
 import 'package:mbe_api_client/src/model/proof_of_delivery_response.dart';
@@ -1093,6 +1094,115 @@ class DeliveryOrdersApi {
     );
   }
 
+  /// List Deliverable Lines
+  /// What &#x60;POST /{id}/lines&#x60; would accept for this customer, and how much of each (#313).  Every facility&#39;s sales: a consolidated shipment may draw on any of them.
+  ///
+  /// Parameters:
+  /// * [customer]
+  /// * [salesOrder]
+  /// * [skip]
+  /// * [limit]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [ListResponseDeliverableLineResponse] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<ListResponseDeliverableLineResponse>>
+  listDeliverableLinesApiV1DeliveryOrdersDeliverableLinesGet({
+    required int customer,
+    int? salesOrder,
+    int? skip = 0,
+    int? limit = 20,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/delivery-orders/deliverable-lines';
+    final _options = Options(
+      method: r'GET',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _queryParameters = <String, dynamic>{
+      r'customer': encodeQueryParameter(
+        _serializers,
+        customer,
+        const FullType(int),
+      ),
+      if (salesOrder != null)
+        r'sales_order': encodeQueryParameter(
+          _serializers,
+          salesOrder,
+          const FullType(int),
+        ),
+      if (skip != null)
+        r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
+      if (limit != null)
+        r'limit': encodeQueryParameter(
+          _serializers,
+          limit,
+          const FullType(int),
+        ),
+    };
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      queryParameters: _queryParameters,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    ListResponseDeliverableLineResponse? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(
+                    ListResponseDeliverableLineResponse,
+                  ),
+                )
+                as ListResponseDeliverableLineResponse;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<ListResponseDeliverableLineResponse>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
   /// List Delivery Order Events
   ///
   ///
@@ -1184,7 +1294,7 @@ class DeliveryOrdersApi {
   }
 
   /// List Delivery Orders
-  /// &#x60;mine&#x60; is how an author finds a rejected draft — no notification is sent (FR-067).  &#x60;sales_order&#x60; answers \&quot;which deliveries belong to this sale?\&quot; in one call (#147).
+  /// &#x60;mine&#x60; is how an author finds a rejected draft — no notification is sent (FR-067).  &#x60;sales_order&#x60; answers \&quot;which deliveries belong to this sale?\&quot; in one call (#147).  &#x60;status&#x60; repeats (&#x60;?status&#x3D;0&amp;status&#x3D;2&#x60;), so every order still in play is one paginated request (#312).
   ///
   /// Parameters:
   /// * [status]
@@ -1209,7 +1319,7 @@ class DeliveryOrdersApi {
   /// Throws [DioException] if API call or serialization fails
   Future<Response<ListResponseDeliveryOrderSummary>>
   listDeliveryOrdersApiV1DeliveryOrdersGet({
-    DeliveryOrderStatus? status,
+    BuiltList<DeliveryOrderStatus>? status,
     int? customer,
     int? facility,
     FulfillmentType? fulfillmentType,
@@ -1242,10 +1352,11 @@ class DeliveryOrdersApi {
 
     final _queryParameters = <String, dynamic>{
       if (status != null)
-        r'status': encodeQueryParameter(
+        r'status': encodeCollectionQueryParameter<DeliveryOrderStatus>(
           _serializers,
           status,
-          const FullType(DeliveryOrderStatus),
+          const FullType(BuiltList, [FullType(DeliveryOrderStatus)]),
+          format: ListFormat.multi,
         ),
       if (customer != null)
         r'customer': encodeQueryParameter(

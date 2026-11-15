@@ -149,6 +149,7 @@ import 'package:mbe_api_client/src/model/customer_refund_response.dart';
 import 'package:mbe_api_client/src/model/customer_refund_summary.dart';
 import 'package:mbe_api_client/src/model/customer_response.dart';
 import 'package:mbe_api_client/src/model/customer_update.dart';
+import 'package:mbe_api_client/src/model/deliverable_line_response.dart';
 import 'package:mbe_api_client/src/model/delivery_order_create.dart';
 import 'package:mbe_api_client/src/model/delivery_order_event_response.dart';
 import 'package:mbe_api_client/src/model/delivery_order_line_request.dart';
@@ -263,6 +264,7 @@ import 'package:mbe_api_client/src/model/list_response_credit_note_response.dart
 import 'package:mbe_api_client/src/model/list_response_customer_list_item.dart';
 import 'package:mbe_api_client/src/model/list_response_customer_payment_response.dart';
 import 'package:mbe_api_client/src/model/list_response_customer_refund_summary.dart';
+import 'package:mbe_api_client/src/model/list_response_deliverable_line_response.dart';
 import 'package:mbe_api_client/src/model/list_response_delivery_order_summary.dart';
 import 'package:mbe_api_client/src/model/list_response_employee_response.dart';
 import 'package:mbe_api_client/src/model/list_response_exchange_rate_response.dart';
@@ -322,6 +324,7 @@ import 'package:mbe_api_client/src/model/payment_method_option_create.dart';
 import 'package:mbe_api_client/src/model/payment_method_option_response.dart';
 import 'package:mbe_api_client/src/model/payment_method_option_update.dart';
 import 'package:mbe_api_client/src/model/payment_receipt_create.dart';
+import 'package:mbe_api_client/src/model/payment_rejection.dart';
 import 'package:mbe_api_client/src/model/payment_status.dart';
 import 'package:mbe_api_client/src/model/payment_terms.dart';
 import 'package:mbe_api_client/src/model/payment_type.dart';
@@ -630,6 +633,7 @@ part 'serializers.g.dart';
   CustomerRefundSummary,
   CustomerResponse,
   CustomerUpdate,
+  DeliverableLineResponse,
   DeliveryOrderCreate,
   DeliveryOrderEventResponse,
   DeliveryOrderLineRequest,
@@ -744,6 +748,7 @@ part 'serializers.g.dart';
   ListResponseCustomerListItem,
   ListResponseCustomerPaymentResponse,
   ListResponseCustomerRefundSummary,
+  ListResponseDeliverableLineResponse,
   ListResponseDeliveryOrderSummary,
   ListResponseEmployeeResponse,
   ListResponseExchangeRateResponse,
@@ -803,6 +808,7 @@ part 'serializers.g.dart';
   PaymentMethodOptionResponse,
   PaymentMethodOptionUpdate,
   PaymentReceiptCreate,
+  PaymentRejection,
   PaymentStatus,
   PaymentTerms,
   PaymentType,
@@ -1012,6 +1018,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(CountLineSet)]),
             () => ListBuilder<CountLineSet>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(DeliveryOrderStatus)]),
+            () => ListBuilder<DeliveryOrderStatus>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(WarehouseResponse)]),
@@ -1384,6 +1394,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(PaidInvoiceResponse)]),
             () => ListBuilder<PaidInvoiceResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(DeliverableLineResponse)]),
+            () => ListBuilder<DeliverableLineResponse>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(TransferReceiveLine)]),

@@ -182,6 +182,9 @@ class ErrorCode extends EnumClass {
   @BuiltValueEnumConst(wireName: r'delivery_order.not_pending_approval')
   static const ErrorCode deliveryOrderPeriodNotPendingApproval =
       _$deliveryOrderPeriodNotPendingApproval;
+  @BuiltValueEnumConst(wireName: r'delivery_order.on_itinerary')
+  static const ErrorCode deliveryOrderPeriodOnItinerary =
+      _$deliveryOrderPeriodOnItinerary;
   @BuiltValueEnumConst(wireName: r'delivery_order.pickup_not_loadable')
   static const ErrorCode deliveryOrderPeriodPickupNotLoadable =
       _$deliveryOrderPeriodPickupNotLoadable;
@@ -480,6 +483,9 @@ class ErrorCode extends EnumClass {
   static const ErrorCode kardexPeriodRangeTooLong = _$kardexPeriodRangeTooLong;
   @BuiltValueEnumConst(wireName: r'lock.busy')
   static const ErrorCode lockPeriodBusy = _$lockPeriodBusy;
+  @BuiltValueEnumConst(wireName: r'payment.already_applied')
+  static const ErrorCode paymentPeriodAlreadyApplied =
+      _$paymentPeriodAlreadyApplied;
   @BuiltValueEnumConst(wireName: r'payment.already_verified')
   static const ErrorCode paymentPeriodAlreadyVerified =
       _$paymentPeriodAlreadyVerified;

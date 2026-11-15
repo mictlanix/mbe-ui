@@ -483,11 +483,12 @@ class CustomerPaymentsApi {
   }
 
   /// List Outstanding Orders
-  ///
+  /// Another facility&#39;s orders need PaymentsEditor (100), to apply that facility&#39;s payment, or SearchCreditsFromAllStores (101), which opens its orders (#308).
   ///
   /// Parameters:
   /// * [search]
   /// * [customer]
+  /// * [facility] - Omitted: the caller's facility.
   /// * [skip]
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -503,6 +504,7 @@ class CustomerPaymentsApi {
   listOutstandingOrdersApiV1CustomerPaymentsOutstandingOrdersGet({
     String? search,
     int? customer,
+    int? facility,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -536,6 +538,12 @@ class CustomerPaymentsApi {
         r'customer': encodeQueryParameter(
           _serializers,
           customer,
+          const FullType(int),
+        ),
+      if (facility != null)
+        r'facility': encodeQueryParameter(
+          _serializers,
+          facility,
           const FullType(int),
         ),
       if (skip != null)
@@ -693,6 +701,7 @@ class CustomerPaymentsApi {
   /// * [method]
   /// * [amountMin]
   /// * [amountMax]
+  /// * [rejected] - true: only payments rejected at least once; false: never rejected.
   /// * [skip]
   /// * [limit]
   /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
@@ -712,6 +721,7 @@ class CustomerPaymentsApi {
     int? method,
     AmountMin? amountMin,
     AmountMax? amountMax,
+    bool? rejected,
     int? skip = 0,
     int? limit = 20,
     CancelToken? cancelToken,
@@ -770,6 +780,12 @@ class CustomerPaymentsApi {
           _serializers,
           amountMax,
           const FullType(AmountMax),
+        ),
+      if (rejected != null)
+        r'rejected': encodeQueryParameter(
+          _serializers,
+          rejected,
+          const FullType(bool),
         ),
       if (skip != null)
         r'skip': encodeQueryParameter(_serializers, skip, const FullType(int)),
