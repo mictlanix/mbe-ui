@@ -61,7 +61,7 @@ The back office gets "Aprobación de entregas" in the Logística group: the deli
 | **New source (4)** | `presentation/delivery_order_approval/{delivery_order_approval_screen, delivery_order_approval_queue_controller, approval_dialogs, approval_target}.dart`, plus the generated part |
 | **New tests (4)** | unit: `delivery_order_approval_queue_controller_test`; widget: `delivery_order_approval_screen_test`, `approval_dialogs_test`; live: `integration_test/delivery_order_approval_quickstart_test.dart` |
 | **Edited source (≈9)** | `domain/repositories/delivery_order_admin_repository.dart`, `data/delivery_order_admin_repository_impl.dart`, `presentation/delivery_orders/delivery_order_actions.dart`, `presentation/delivery_orders/delivery_order_detail_screen.dart`, `core/navigation/nav_destinations.dart`, `app/router/app_router.dart`, `core/errors/localize_problem.dart`, both `.arb` files, `specs/058-localized-api-errors/contracts/code-scope.tsv` |
-| **Edited tests (≈6)** | `delivery_order_admin_repository_impl_test`, `delivery_order_actions_test`, `delivery_order_detail_screen_test`, `problem_fixtures` (`catalog_coverage_test` reads the TSV and isn't edited), `nav_destinations_test`, `app_router_test` |
+| **Edited tests (≈6)** | `delivery_order_admin_repository_impl_test`, `delivery_order_actions_test`, `delivery_order_detail_screen_test`, `problem_fixtures`, `catalog_coverage_test` (it pins the number of `IN` rows in the TSV, 109 → 110), `nav_destinations_test`, `app_router_test` |
 
 ## Constitution Check
 
