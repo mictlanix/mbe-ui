@@ -47,7 +47,7 @@ Names (customer, ship-to, warehouse) need Customers and Warehouses read; without
 
 ## Manual checks (quickstart.md)
 
-**Not run yet:**
+**Not run yet**; tracked in #247:
 
 - The compact tier and the filter bottom sheet on a real window.
 - The largest text size.
