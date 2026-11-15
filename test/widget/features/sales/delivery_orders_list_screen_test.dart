@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:decimal/decimal.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,8 +15,13 @@ import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/config/app_settings_provider.dart';
+import 'package:mbe_ui/core/documents/data/document_source_impl.dart';
+import 'package:mbe_ui/core/documents/data/printing_document_output.dart';
+import 'package:mbe_ui/core/documents/domain/document_kind.dart';
+import 'package:mbe_ui/core/documents/presentation/document_preview_dialog.dart';
 import 'package:mbe_ui/core/domain/address_type.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
@@ -31,6 +38,8 @@ import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_control
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_orders_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+
+import '../../../unit/core/documents/document_fakes.dart';
 
 class _MockDeliveryOrderAdminRepository extends Mock
     implements DeliveryOrderAdminRepository {}
@@ -99,6 +108,40 @@ void main() {
     status: status,
     type: type,
   );
+
+  /// The full order [getById] answers for a list press: one line per
+  /// warehouse in [warehouses].
+  DeliveryOrder fullOrder(int id, List<int> warehouses, {int? serial}) =>
+      DeliveryOrder(
+        id: id,
+        facilityId: 1,
+        serial: serial ?? 1500 + id,
+        customerId: 7,
+        salesOrderIds: const [8841],
+        shipToId: 11,
+        date: DateTime(2026, 11, 15),
+        priority: 0,
+        status: DeliveryOrderStatus.approved,
+        type: FulfillmentType.delivery,
+        createdAt: DateTime(2026, 11, 14),
+        modifiedAt: DateTime(2026, 11, 14),
+        lines: [
+          for (var i = 0; i < warehouses.length; i++)
+            DeliveryOrderLine(
+              id: i + 1,
+              salesOrderDetailId: i + 101,
+              productId: i + 1,
+              productCode: 'P-${i + 1}',
+              productName: 'Producto ${i + 1}',
+              warehouseId: warehouses[i],
+              quantity: Decimal.parse('1'),
+              committed: Decimal.zero,
+              delivered: Decimal.zero,
+              returned: Decimal.zero,
+              open: Decimal.parse('1'),
+            ),
+        ],
+      );
 
   void stubList(Future<DeliveryOrderPage> Function(_Request) answer) {
     when(
@@ -176,6 +219,7 @@ void main() {
     int? facilityId = 1,
     Size surface = const Size(1400, 1000),
     bool settle = true,
+    FakeDocumentSource? documents,
   }) async {
     tester.view.physicalSize = surface;
     tester.view.devicePixelRatio = 1;
@@ -189,6 +233,10 @@ void main() {
         who ?? access(),
         userFacilityIdProvider.overrideWithValue(facilityId),
         deliveryOrderAdminRepositoryProvider.overrideWithValue(repository),
+        documentSourceProvider.overrideWithValue(
+          documents ?? FakeDocumentSource(),
+        ),
+        documentOutputProvider.overrideWithValue(FakeDocumentOutput()),
         inputDebounceProvider.overrideWithValue(
           const Duration(milliseconds: 100),
         ),
@@ -619,6 +667,154 @@ void main() {
       expect(find.text(l10n.deliveryOrdersNoFacilityMessage), findsOneWidget);
       expect(key('delivery_orders_table'), findsNothing);
       expect(requests, isEmpty);
+    });
+  });
+
+  group('print the ticket (spec 064 US2)', () {
+    // Every status at once, whatever the server's own filter would keep.
+    void serveEvery(List<DeliveryOrderSummary> rows) => stubList(
+      (_) async => DeliveryOrderPage(items: rows, total: rows.length),
+    );
+
+    Finder ticket(int id) => key('delivery_order_view_ticket_$id');
+
+    testWidgets('the icon is on rows past approval, cancelled included, and '
+        'not on a draft or an order awaiting approval', (tester) async {
+      serveEvery([
+        row(1, status: DeliveryOrderStatus.draft),
+        row(2, serial: 902, status: DeliveryOrderStatus.pendingApproval),
+        row(3, serial: 903, status: DeliveryOrderStatus.approved),
+        row(4, serial: 904, status: DeliveryOrderStatus.inPreparation),
+        row(5, serial: 905, status: DeliveryOrderStatus.cancelled),
+      ]);
+      await pumpList(tester);
+
+      expect(ticket(1), findsNothing);
+      expect(ticket(2), findsNothing);
+      expect(ticket(3), findsOneWidget);
+      expect(ticket(4), findsOneWidget);
+      expect(ticket(5), findsOneWidget);
+      expect(find.byTooltip(l10n.deliveryOrderViewTicket), findsNWidgets(3));
+    });
+
+    testWidgets('no icon without Delivery Orders read', (tester) async {
+      serveEvery([row(3, serial: 903, status: DeliveryOrderStatus.approved)]);
+      await pumpList(
+        tester,
+        who: accessControlProvider.overrideWithValue(accessFor(noPrivileges)),
+      );
+
+      expect(ticket(3), findsNothing);
+    });
+
+    testWidgets('a one-warehouse order is looked up once, then its ticket '
+        'opens unlimited in the preview', (tester) async {
+      serveEvery([row(3, serial: 903, status: DeliveryOrderStatus.approved)]);
+      when(
+        () => repository.getById(3),
+      ).thenAnswer((_) async => fullOrder(3, [2, 2], serial: 903));
+      final documents = FakeDocumentSource();
+      await pumpList(tester, documents: documents);
+
+      await tester.tap(ticket(3));
+      await tester.pumpAndSettle();
+
+      verify(() => repository.getById(3)).called(1);
+      expect(find.byType(DocumentPreviewDialog), findsOneWidget);
+      expect(documents.fetched, hasLength(1));
+      expect(documents.fetched.single.kind, DocumentKind.deliveryTicket);
+      expect(documents.fetched.single.recordId, 3);
+      expect(documents.fetched.single.warehouseId, isNull);
+      expect(documents.fetched.single.title, 'Ticket de entrega · 903');
+    });
+
+    testWidgets('a failed lookup shows its message and opens nothing', (
+      tester,
+    ) async {
+      serveEvery([row(3, serial: 903, status: DeliveryOrderStatus.approved)]);
+      when(() => repository.getById(3)).thenThrow(
+        AppError.server(
+          statusCode: 409,
+          problem: ApiProblem(
+            codeName: 'delivery_order.not_approved',
+            code: api.ErrorCode.deliveryOrderPeriodNotApproved,
+            params: const {'status': 'DRAFT'},
+          ),
+        ),
+      );
+      final documents = FakeDocumentSource();
+      await pumpList(tester, documents: documents);
+
+      await tester.tap(ticket(3));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.apiErrorDeliveryOrderNotApproved), findsOneWidget);
+      expect(find.byType(DocumentPreviewDialog), findsNothing);
+      expect(documents.fetched, isEmpty);
+    });
+
+    testWidgets('pressing again during the lookup starts nothing new', (
+      tester,
+    ) async {
+      serveEvery([row(3, serial: 903, status: DeliveryOrderStatus.approved)]);
+      final gate = Completer<DeliveryOrder>();
+      when(() => repository.getById(3)).thenAnswer((_) => gate.future);
+      final documents = FakeDocumentSource();
+      await pumpList(tester, documents: documents);
+      final press = tester.widget<IconButton>(ticket(3)).onPressed!;
+
+      press();
+      press();
+      await tester.pump();
+      gate.complete(fullOrder(3, [2], serial: 903));
+      await tester.pumpAndSettle();
+
+      verify(() => repository.getById(3)).called(1);
+      expect(documents.fetched, hasLength(1));
+    });
+
+    testWidgets('the icon doesn\'t open the order, the row tap still does', (
+      tester,
+    ) async {
+      serveEvery([row(3, serial: 903, status: DeliveryOrderStatus.approved)]);
+      when(
+        () => repository.getById(3),
+      ).thenAnswer((_) async => fullOrder(3, [2], serial: 903));
+      final router = await pumpList(tester);
+
+      await tester.tap(ticket(3));
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, '/sales/delivery-orders');
+
+      await tester.tap(key('document_preview_close'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('903'));
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, '/sales/delivery-orders/3');
+    });
+
+    testWidgets('closing the preview leaves the list as it was and reloads '
+        'nothing (FR-040, FR-041)', (tester) async {
+      serveEvery([row(3, serial: 903, status: DeliveryOrderStatus.approved)]);
+      when(
+        () => repository.getById(3),
+      ).thenAnswer((_) async => fullOrder(3, [2], serial: 903));
+      final router = await pumpList(
+        tester,
+        location: '/sales/delivery-orders?search=903',
+      );
+      final before = requests.length;
+      final uri = router.state.uri.toString();
+
+      await tester.tap(ticket(3));
+      await tester.pumpAndSettle();
+      await tester.tap(key('document_preview_close'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DocumentPreviewDialog), findsNothing);
+      expect(requests.length, before);
+      expect(router.state.uri.toString(), uri);
+      expect(ticket(3), findsOneWidget);
     });
   });
 }

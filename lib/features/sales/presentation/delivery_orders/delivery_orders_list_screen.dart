@@ -15,6 +15,7 @@ import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/navigation/list_search_submit.dart';
+import 'package:mbe_ui/core/widgets/catalog_action_icons.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
@@ -29,6 +30,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/facility_list_item.dart'
 import 'package:mbe_ui/features/sales/domain/entities/delivery_order.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_name_cells.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_print.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_status_chip.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_orders_filter.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_orders_list_controller.dart';
@@ -43,7 +45,8 @@ const deliveryOrdersPath = '/sales/delivery-orders';
 ///
 /// A standard list screen (filter row, list, pagination) with no create
 /// action: orders are created only in the POS. A delivery order is a
-/// document, so a row carries no icons and its tap opens the detail screen.
+/// document, so a row has no Edit and its tap opens the detail screen. The
+/// one icon a printable row carries is its ticket (spec 064 FR-002).
 class DeliveryOrdersListScreen extends ConsumerWidget {
   const DeliveryOrdersListScreen({super.key, required this.query});
 
@@ -80,7 +83,8 @@ class DeliveryOrdersListScreen extends ConsumerWidget {
       );
     }
 
-    final isAdministrator = ref.watch(accessControlProvider).isAdministrator;
+    final access = ref.watch(accessControlProvider);
+    final isAdministrator = access.isAdministrator;
     final filter = DeliveryOrdersFilter.fromQuery(
       query,
       isAdministrator: isAdministrator,
@@ -213,7 +217,28 @@ class DeliveryOrdersListScreen extends ConsumerWidget {
                     .toUri(deliveryOrdersPath)
                     .toString(),
               ),
-              // A delivery order has no row icons: the tap is the way in.
+              // A delivery order has no Edit: the row tap is the way in, and the
+              // only icon is the ticket of an order past approval (spec 064).
+              rowActionsBuilder: (context, o) => buildCatalogRowActions(
+                editTooltip: l10n.editActionTooltip,
+                extraActions: [
+                  if (canPrintDeliveryOrder(access, o.status))
+                    CatalogRowAction(
+                      key: Key('delivery_order_view_ticket_${o.id}'),
+                      icon: Icons.receipt_long_outlined,
+                      tooltip: l10n.deliveryOrderViewTicket,
+                      onPressed: () => openDeliveryTicket(
+                        context,
+                        ref,
+                        orderId: o.id,
+                        // Printable orders always have a serial; the id is
+                        // only a fallback.
+                        folio: '${o.serial ?? o.id}',
+                        facilityId: o.facilityId,
+                      ),
+                    ),
+                ],
+              ),
               onRowTap: (o) => context.push('$deliveryOrdersPath/${o.id}'),
             ),
           ),

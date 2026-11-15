@@ -440,7 +440,7 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
       orderId: order.id,
       folio: _serialOf(order, AppLocalizations.of(context)!),
       facilityId: order.facilityId,
-      warehouseIds: {for (final line in order.lines) line.warehouseId}.toList(),
+      warehouseIds: distinctWarehouses(order.lines),
     );
   }
 
