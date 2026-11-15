@@ -10,13 +10,45 @@ DeliveryOrdersFilter _decode(ListQuery query, {bool admin = false}) =>
 /// Spec 061 data-model §2, research R3: the list's whole view state lives in
 /// the URL.
 void main() {
-  test('no facets decode to every status, nothing narrowed, page 0', () {
+  test('no facets decode to the active statuses, nothing narrowed, page 0 '
+      '(FR-003, mbe-api#312)', () {
     final filter = _decode(const ListQuery());
 
     expect(filter, const DeliveryOrdersFilter());
     expect(filter.status, isNull);
+    expect(filter.everyStatus, isFalse);
+    expect(filter.requestStatuses, DeliveryOrderStatus.active);
     expect(filter.activeFilterCount, 0);
     expect(filter.isNarrowed, isFalse);
+  });
+
+  test('"Todas" is status=all: every status, one badge, cleared back to '
+      'active', () {
+    final filter = _decode(const ListQuery().withFacet('status', 'all'));
+
+    expect(filter.everyStatus, isTrue);
+    expect(filter.requestStatuses, isNull);
+    expect(filter.toQuery().facet('status'), 'all');
+    expect(filter.activeFilterCount, 1);
+    expect(filter.cleared().requestStatuses, DeliveryOrderStatus.active);
+  });
+
+  test('a chosen status asks for that status alone', () {
+    const filter = DeliveryOrdersFilter(status: DeliveryOrderStatus.delivered);
+
+    expect(filter.requestStatuses, [DeliveryOrderStatus.delivered]);
+  });
+
+  test('the active statuses are every non-terminal one', () {
+    expect(DeliveryOrderStatus.active, [
+      DeliveryOrderStatus.draft,
+      DeliveryOrderStatus.pendingApproval,
+      DeliveryOrderStatus.approved,
+      DeliveryOrderStatus.readyForPickup,
+      DeliveryOrderStatus.inPreparation,
+      DeliveryOrderStatus.inTransit,
+      DeliveryOrderStatus.failed,
+    ]);
   });
 
   test('a full filter round-trips through the URL', () {

@@ -31,7 +31,6 @@ import 'package:mbe_ui/features/sales/presentation/payments/payment_link_provide
 import 'package:mbe_ui/features/sales/presentation/payments/payment_widgets.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payments_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/reverse_application_flow.dart';
-import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// "Ver pago": one payment and what was done with it (spec 054 US2).
@@ -149,12 +148,11 @@ class _PaymentBody extends ConsumerWidget {
         !payment.isVerified &&
         access.can(SystemObject.paymentsVerification, AccessRight.update);
 
-    // spec 059 FR-005: money left to apply, on a payment of the user's own
-    // facility — the server lists only that facility's outstanding orders
-    // (mbe-api#308), so another facility's payment can't be applied from here.
+    // spec 059 FR-005: money left to apply. Another facility's payment only
+    // reaches this screen for a Payments Editor reader, whom the server lets
+    // list that facility's outstanding orders (mbe-api#308).
     final canApply =
         compareAmounts(payment.unapplied, '0.01') > 0 &&
-        payment.facilityId == ref.watch(userFacilityIdProvider) &&
         access.can(SystemObject.customerPayments, AccessRight.create);
 
     return SingleChildScrollView(
@@ -328,6 +326,13 @@ class _PaymentBody extends ConsumerWidget {
                       : _EmployeeName(employeeId: payment.verifierId!),
                 ),
               ),
+              if (payment.lastRejection case final rejection?)
+                FormGridChild(
+                  _Labeled(
+                    label: l10n.paymentFieldLastRejection,
+                    child: PaymentRejectionDetails(rejection: rejection),
+                  ),
+                ),
               // spec 055 FR-001: the ticket of a credit payment or advance.
               // At the end of the grid, like the cash cut on its session, and
               // absent — not disabled — for any other type or without

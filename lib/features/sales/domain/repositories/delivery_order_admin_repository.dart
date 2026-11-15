@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:mbe_ui/features/sales/domain/entities/deliverable_lines.dart';
 import 'package:mbe_ui/features/sales/domain/entities/delivery_order.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 
@@ -17,8 +18,11 @@ abstract class DeliveryOrderAdminRepository {
   /// `GET /delivery-orders?status=&customer=&facility=&fulfillment_type=
   /// &sales_order=&date_from=&date_to=&search=&skip=&limit=`. Never sends
   /// `mine`.
+  ///
+  /// [statuses] repeats `status` (mbe-api#312); `null` or empty is every
+  /// status.
   Future<DeliveryOrderPage> list({
-    DeliveryOrderStatus? status,
+    List<DeliveryOrderStatus>? statuses,
     int? customer,
     int? facility,
     FulfillmentType? type,
@@ -32,6 +36,14 @@ abstract class DeliveryOrderAdminRepository {
 
   /// `GET /delivery-orders/{id}`.
   Future<DeliveryOrder> getById(int id);
+
+  /// `GET /delivery-orders/deliverable-lines?customer=&sales_order=`: every
+  /// line of [salesOrder] that still has something to deliver, as the server
+  /// counts it (mbe-api#313). Pages until the whole sale is read.
+  Future<List<DeliverableLine>> deliverableLines({
+    required int customer,
+    required int salesOrder,
+  });
 
   /// `GET /delivery-orders/{id}/events` — the status history.
   Future<List<DeliveryOrderEvent>> events(int id);

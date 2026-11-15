@@ -51,6 +51,7 @@ void main() {
         dateFrom: any(named: 'dateFrom'),
         dateTo: any(named: 'dateTo'),
         methodCode: any(named: 'methodCode'),
+        rejected: any(named: 'rejected'),
         skip: any(named: 'skip'),
         limit: any(named: 'limit'),
       ),
@@ -135,6 +136,28 @@ void main() {
     expect(page.pageIndex, 1);
   });
 
+  test('the rejected facet is sent as given (mbe-api#310)', () async {
+    stubPage([_payment(1)]);
+
+    await container().read(
+      verificationQueueControllerProvider(
+        const PaymentVerificationFilter(rejected: false),
+      ).future,
+    );
+
+    verify(
+      () => repository.listUnverified(
+        facilityId: null,
+        dateFrom: null,
+        dateTo: null,
+        methodCode: PaymentMethod.eft.code,
+        rejected: false,
+        skip: 0,
+        limit: 20,
+      ),
+    ).called(1);
+  });
+
   test('a page left empty steps back to the last page with rows', () async {
     // Page index 2 was the last, and its only row has just been verified:
     // the server now has 40 rows (2 pages), so index 2 is empty.
@@ -144,6 +167,7 @@ void main() {
         dateFrom: any(named: 'dateFrom'),
         dateTo: any(named: 'dateTo'),
         methodCode: any(named: 'methodCode'),
+        rejected: any(named: 'rejected'),
         skip: 40,
         limit: any(named: 'limit'),
       ),
@@ -156,6 +180,7 @@ void main() {
         dateFrom: any(named: 'dateFrom'),
         dateTo: any(named: 'dateTo'),
         methodCode: any(named: 'methodCode'),
+        rejected: any(named: 'rejected'),
         skip: 20,
         limit: any(named: 'limit'),
       ),

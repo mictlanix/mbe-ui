@@ -47,6 +47,7 @@ CashSession _session({
   List<PaymentMethodTotal> payments = const [
     PaymentMethodTotal(method: 1, total: '3240'),
   ],
+  String? expectedCash,
 }) => CashSession(
   cashSessionId: 1,
   cashDrawerId: 1,
@@ -57,6 +58,7 @@ CashSession _session({
   start: DateTime(2026, 8, 5, 9),
   openingAmount: openingAmount,
   paymentsByMethod: payments,
+  expectedCash: expectedCash,
 );
 
 ProviderContainer _containerFor(User user, CashSessionRepository repository) {
@@ -82,19 +84,28 @@ void main() {
   });
 
   group('CloseSessionFormController.loadSession', () {
-    test(
-      'computes expected cash as opening amount + cash-method total only',
-      () {
-        container
-            .read(closeSessionFormControllerProvider.notifier)
-            .loadSession(_session());
+    test('without a server figure, falls back to opening amount + cash-method '
+        'total only', () {
+      container
+          .read(closeSessionFormControllerProvider.notifier)
+          .loadSession(_session());
 
-        final state = container.read(closeSessionFormControllerProvider);
-        expect(state.cashSessionId, 1);
-        expect(Decimal.parse(state.expectedCash), Decimal.parse('3740'));
-        expect(state.countedTotal, '0');
-      },
-    );
+      final state = container.read(closeSessionFormControllerProvider);
+      expect(state.cashSessionId, 1);
+      expect(Decimal.parse(state.expectedCash), Decimal.parse('3740'));
+      expect(state.countedTotal, '0');
+    });
+
+    test("uses the server's expected cash when the session carries it "
+        '(mbe-api#239: net of change, expenses and refunds)', () {
+      container
+          .read(closeSessionFormControllerProvider.notifier)
+          .loadSession(_session(expectedCash: '1160.00'));
+
+      final state = container.read(closeSessionFormControllerProvider);
+      expect(Decimal.parse(state.expectedCash), Decimal.parse('1160'));
+      expect(Decimal.parse(state.difference), Decimal.parse('-1160'));
+    });
   });
 
   group('CloseSessionFormController.quantityChanged', () {

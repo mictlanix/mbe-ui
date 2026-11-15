@@ -311,6 +311,35 @@ void main() {
       expect(find.text('—'), findsNWidgets(4));
     });
 
+    testWidgets('a rejected payment shows its last rejection: when, who and '
+        'why (mbe-api#310)', (tester) async {
+      stubGet(
+        testPayment().copyWith(
+          lastRejection: PaymentRejection(
+            reason: 'Sin comprobante',
+            rejectedById: 5,
+            rejectedAt: DateTime(2026, 11, 14, 9, 30),
+          ),
+        ),
+      );
+
+      await pumpDetail(tester);
+
+      expect(find.text(l10n.paymentFieldLastRejection), findsOneWidget);
+      expect(find.text('2026-11-14 09:30 · Luis Reyes'), findsOneWidget);
+      expect(find.text('Sin comprobante'), findsOneWidget);
+    });
+
+    testWidgets('a payment never rejected has no last-rejection field', (
+      tester,
+    ) async {
+      stubGet(testPayment());
+
+      await pumpDetail(tester);
+
+      expect(find.text(l10n.paymentFieldLastRejection), findsNothing);
+    });
+
     testWidgets('an option or employee that cannot be resolved falls back to '
         'its number', (tester) async {
       // `mocks.options.get` throws for the unstubbed option.
@@ -785,7 +814,8 @@ void main() {
         }
       });
 
-      testWidgets('is hidden on another facility\'s payment', (tester) async {
+      testWidgets('is offered on another facility\'s payment to a Payments '
+          'Editor reader (mbe-api#308)', (tester) async {
         stubGet(testPayment(unapplied: '200.00').copyWith(facilityId: 3));
 
         await pumpDetail(
@@ -794,7 +824,7 @@ void main() {
         );
 
         expect(find.text('Pago 501'), findsOneWidget);
-        expect(find.byKey(applyButton), findsNothing);
+        expect(find.byKey(applyButton), findsOneWidget);
       });
 
       testWidgets('is hidden without Customer Payments create', (tester) async {
@@ -810,6 +840,7 @@ void main() {
         when(
           () => mocks.payments.listOutstandingOrders(
             customerId: any(named: 'customerId'),
+            facilityId: any(named: 'facilityId'),
             search: any(named: 'search'),
             skip: any(named: 'skip'),
             limit: any(named: 'limit'),

@@ -68,10 +68,12 @@ abstract class CustomerPaymentRepository {
 
   /// `GET /customer-payments/outstanding-orders` — one page of [customerId]'s
   /// outstanding orders, for choosing where to apply a payment (spec 059 R5).
-  /// The server lists only the caller's own facility's orders (mbe-api#308).
+  /// [facilityId] is the payment's facility: another facility's orders need
+  /// Payments Editor or Search Credits From All Stores read (mbe-api#308).
   /// [search] matches an order number or folio.
   Future<OutstandingOrderPage> listOutstandingOrders({
     required int customerId,
+    required int facilityId,
     String? search,
     int skip = 0,
     int limit = 20,
@@ -120,13 +122,16 @@ abstract class CustomerPaymentRepository {
   /// R2), newest first. It covers **every facility** on purpose: mbe-api gates
   /// it on Payments Verification read and verification is company-wide, so
   /// unlike [list] there is no required facility. [facilityId] only narrows.
-  /// [dateFrom]/[dateTo] are inclusive wall-clock days. The server's amount
+  /// [dateFrom]/[dateTo] are inclusive wall-clock days. [rejected] is
+  /// tri-state (mbe-api#310): `null` lists both, `true` only payments rejected
+  /// at least once, `false` only those never rejected. The server's amount
   /// range is deliberately not exposed.
   Future<CustomerPaymentListResult> listUnverified({
     int? facilityId,
     DateTime? dateFrom,
     DateTime? dateTo,
     int? methodCode,
+    bool? rejected,
     int skip = 0,
     int limit = 20,
   });

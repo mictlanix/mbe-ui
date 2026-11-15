@@ -27,7 +27,7 @@ Keys are the test contract. Strings live in both `.arb` files.
 ## C3. Payment view actions (FR-001 to FR-009, US1)
 
 - Applications table: a trailing action column. A live row shows an `IconButton` with key `payment_application_reverse_<applicationId>`, only with Customer Payments update. Reversed rows show no action.
-- Summary area: an `OutlinedButton.icon` with key `payment_apply_button`, shown when `unapplied > 0.01`, `payment.facilityId == userFacilityId`, and the user has Customer Payments create. Another facility's payment gets no apply button until mbe-api#308.
+- Summary area: an `OutlinedButton.icon` with key `payment_apply_button`, shown when `unapplied > 0.01`, `payment.facilityId == userFacilityId`, and the user has Customer Payments create. Another facility's payment gets no apply button until mbe-api#308. **Shipped 2026-11-14** (mbe-api PR #316): "Aplicar a pedido" is offered on another facility's payment, and the dialog lists that facility's orders (fix/consume-mbe-api-308-314).
 - After a successful reverse or apply, the detail, the applications and the list refresh, and a snackbar confirms.
 - The doc comment that says the view has no actions (payment_detail_screen.dart:35-37) is updated.
 

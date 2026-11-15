@@ -80,7 +80,7 @@ void main() {
     });
 
     final page = await repository.list(
-      status: DeliveryOrderStatus.cancelled,
+      statuses: [DeliveryOrderStatus.cancelled, DeliveryOrderStatus.draft],
       customer: 7,
       facility: 9,
       type: FulfillmentType.delivery,
@@ -92,7 +92,8 @@ void main() {
     );
 
     final query = requests.single.queryParameters;
-    expect(query['status'], 10);
+    // `status` repeats (mbe-api#312).
+    expect(requests.single.uri.queryParametersAll['status'], ['10', '0']);
     expect(query['customer'], 7);
     expect(query['facility'], 9);
     expect(query['fulfillment_type'], 1);

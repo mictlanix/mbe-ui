@@ -36,7 +36,7 @@ class _MockDeliveryOrderAdminRepository extends Mock
     implements DeliveryOrderAdminRepository {}
 
 typedef _Request = ({
-  DeliveryOrderStatus? status,
+  List<DeliveryOrderStatus>? statuses,
   FulfillmentType? type,
   DateTime? dateFrom,
   DateTime? dateTo,
@@ -103,7 +103,7 @@ void main() {
   void stubList(Future<DeliveryOrderPage> Function(_Request) answer) {
     when(
       () => repository.list(
-        status: any(named: 'status'),
+        statuses: any(named: 'statuses'),
         customer: any(named: 'customer'),
         facility: any(named: 'facility'),
         type: any(named: 'type'),
@@ -116,7 +116,7 @@ void main() {
       ),
     ).thenAnswer((i) {
       final request = (
-        status: i.namedArguments[#status] as DeliveryOrderStatus?,
+        statuses: i.namedArguments[#statuses] as List<DeliveryOrderStatus>?,
         type: i.namedArguments[#type] as FulfillmentType?,
         dateFrom: i.namedArguments[#dateFrom] as DateTime?,
         dateTo: i.namedArguments[#dateTo] as DateTime?,
@@ -134,7 +134,7 @@ void main() {
   void serve(List<DeliveryOrderSummary> all) => stubList((r) async {
     final kept = [
       for (final o in all)
-        if ((r.status == null || o.status == r.status) &&
+        if ((r.statuses == null || r.statuses!.contains(o.status)) &&
             (r.type == null || o.type == r.type) &&
             (r.search == null || '${o.serial}' == r.search))
           o,
@@ -256,15 +256,15 @@ void main() {
   );
 
   group('opening state and table', () {
-    testWidgets('opens on every status at the user\'s facility with the badge '
-        'at 0; a draft reads "Borrador"', (tester) async {
+    testWidgets('opens on the active statuses at the user\'s facility with the '
+        'badge at 0; a draft reads "Borrador"', (tester) async {
       serve([
         row(2, serial: 1532, sales: const [8790, 8812]),
         row(1, status: DeliveryOrderStatus.draft),
       ]);
       await pumpList(tester);
 
-      expect(requests.single.status, isNull);
+      expect(requests.single.statuses, DeliveryOrderStatus.active);
       expect(requests.single.facility, isNull);
       expect(badge(tester).isLabelVisible, isFalse);
       expect(badge(tester).label, isA<Text>());
@@ -387,10 +387,25 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(router.state.uri.queryParameters['status'], '9');
-      expect(requests.last.status, DeliveryOrderStatus.failed);
+      expect(requests.last.statuses, [DeliveryOrderStatus.failed]);
     });
 
-    testWidgets('the drawer offers "Todas" and the 11 statuses', (
+    testWidgets('"Todas" asks for every status and puts status=all in the URL '
+        '(mbe-api#312)', (tester) async {
+      serve([row(1)]);
+      final router = await pumpList(tester);
+      await openFilters(tester);
+
+      await tester.tap(key('delivery_orders_status_filter'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.deliveryOrderFilterAllStatuses).last);
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.queryParameters['status'], 'all');
+      expect(requests.last.statuses, isNull);
+    });
+
+    testWidgets('the drawer offers "Activas", "Todas" and the 11 statuses', (
       tester,
     ) async {
       serve([row(1)]);
@@ -400,6 +415,7 @@ void main() {
       await tester.tap(key('delivery_orders_status_filter'));
       await tester.pumpAndSettle();
 
+      expect(find.text(l10n.deliveryOrderFilterActiveStatuses), findsWidgets);
       expect(find.text(l10n.deliveryOrderFilterAllStatuses), findsWidgets);
       for (final label in [
         l10n.deliveryOrderStatusPendingApproval,
@@ -477,7 +493,7 @@ void main() {
 
       expect(router.state.uri.queryParameters, isEmpty);
       final last = requests.last;
-      expect(last.status, isNull);
+      expect(last.statuses, DeliveryOrderStatus.active);
       expect(last.type, isNull);
       expect(last.customer, isNull);
       expect(last.salesOrder, isNull);
@@ -587,7 +603,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(router.state.uri.queryParameters, isEmpty);
-      expect(requests.last.status, isNull);
+      expect(requests.last.statuses, DeliveryOrderStatus.active);
     });
 
     testWidgets('a user with no facility sees the notice and no request is '

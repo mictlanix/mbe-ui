@@ -404,8 +404,15 @@ void main() {
     note('logging in as admin${_write ? ' (WRITE mode)' : ' (read-only)'}');
     await login(_adminUser, _adminPass);
 
-    final opening = await admin.list(limit: 20);
-    note('list: ${opening.total} delivery orders at the admin\'s facility');
+    // The list opens on the active statuses (FR-003, mbe-api#312).
+    final opening = await admin.list(
+      statuses: DeliveryOrderStatus.active,
+      limit: 20,
+    );
+    note(
+      'list: ${opening.total} active delivery orders at the admin\'s '
+      'facility',
+    );
 
     // ---- 1: open from the navigation (US1-1) -----------------------------
     await step('1 "Órdenes de entrega" opens from the nav and loads', () async {
@@ -422,7 +429,7 @@ void main() {
         expect(find.text(l10n.deliveryOrdersEmpty), findsOneWidget);
         return;
       }
-      // Every status, newest first: the first page has the API's rows.
+      // Active statuses, newest first: the first page has the API's rows.
       final shown = chipsInTable().values.fold(0, (a, b) => a + b);
       expect(shown, opening.items.length, reason: 'rows on the first page');
       expect(byKey('delivery_orders_filter_button'), findsOneWidget);
@@ -452,7 +459,7 @@ void main() {
       await tapKey('filter_sheet_apply_button');
       await waitForList();
 
-      final filtered = await admin.list(status: status, limit: 20);
+      final filtered = await admin.list(statuses: [status], limit: 20);
       note('status ${status.name}: ${filtered.total} order(s)');
       if (filtered.items.isEmpty) {
         expect(find.text(l10n.deliveryOrdersEmpty), findsOneWidget);

@@ -63,6 +63,9 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
     'status': 'APPROVED',
     'action': 'approve',
   },
+  api.ErrorCode.deliveryOrderPeriodOnItinerary: {
+    'itinerary_ids': [12],
+  },
   api.ErrorCode.deliveryOrderPeriodProofIncomplete: {},
   api.ErrorCode.deliveryOrderPeriodQuantityExceedsRemaining: {
     'sales_order_line_id': 5,
@@ -83,6 +86,11 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.imagePeriodUnsupportedFormat: {},
   api.ErrorCode.incidencePeriodReasonRequired: {},
   api.ErrorCode.lockPeriodBusy: {'resource': 'warehouse'},
+  api.ErrorCode.paymentPeriodAlreadyApplied: {
+    'customer_payment_id': 300912,
+    'sales_order_id': 1047,
+    'sales_order_payment_id': 88,
+  },
   api.ErrorCode.paymentPeriodAlreadyVerified: {},
   api.ErrorCode.paymentPeriodApplicationReversed: {},
   api.ErrorCode.paymentPeriodCurrencyMismatch: {

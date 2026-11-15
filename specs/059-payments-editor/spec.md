@@ -17,7 +17,7 @@ This feature adds those actions. On a payment, staff can reverse an application,
 ### Session 2026-11-13
 
 - Q: Must recording a payment require an open cash session? → A: Only for cash. A cash payment needs one so the drawer count includes it. A transfer, card or check can be recorded without one.
-- Q (wireframes): The server lists outstanding orders from the user's own facility only. What happens on another facility's payment? → A: "Aplicar a pedido" is hidden on it until mbe-api#308 lets the list take a facility. Reversing it is still allowed.
+- Q (wireframes): The server lists outstanding orders from the user's own facility only. What happens on another facility's payment? → A: "Aplicar a pedido" is hidden on it until mbe-api#308 lets the list take a facility. Reversing it is still allowed. **Shipped 2026-11-14** (mbe-api PR #316): "Aplicar a pedido" is offered on another facility's payment, and the dialog lists that facility's orders (fix/consume-mbe-api-308-314).
 - Q (wireframes): The walk-in customer: leave it out of the picker, or refuse it on save? → A: Refuse on save, with the error under the field.
 - Q (wireframes): Offer "Registrar y aplicar"? → A: No. The payment view opens with "Aplicar a pedido" one tap away.
 - Q (wireframes): Show a count on the Pedidos "Pagos" action? → A: No. The list loads when it opens.
@@ -88,7 +88,7 @@ A supervisor is looking at order 1041 in Pedidos and sees it marked paid, but kn
 ### Edge Cases
 
 - **Reversing on an order that was already refunded.** The order stops being paid but the refund stays. The reverse dialog warns that the order has refunds before the user confirms.
-- **Another facility's payment.** A user without Payments Editor read can't open it (spec 055), so can't act on it. A Payments Editor can reverse its applications. "Aplicar a pedido" is hidden on it, because the outstanding-orders list covers only the user's own facility (mbe-api#308).
+- **Another facility's payment.** A user without Payments Editor read can't open it (spec 055), so can't act on it. A Payments Editor can reverse its applications. "Aplicar a pedido" is hidden on it, because the outstanding-orders list covers only the user's own facility (mbe-api#308). **Shipped 2026-11-14** (mbe-api PR #316): "Aplicar a pedido" is offered on another facility's payment, and the dialog lists that facility's orders (fix/consume-mbe-api-308-314).
 - **The order changed in between.** It was settled or cancelled, or its balance dropped below the amount, after the list loaded. The server refuses; the app shows the reason and reloads the outstanding orders.
 - **The payment changed in between.** Another user applied or reversed it meanwhile. The server refuses an amount above what is left; the app shows the reason and reloads the payment.
 - **Application already reversed.** A second reversal is refused with a message and the view reloads.

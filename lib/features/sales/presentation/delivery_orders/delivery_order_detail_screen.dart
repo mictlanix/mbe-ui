@@ -367,7 +367,8 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
     final isPickup = order.type == FulfillmentType.counterPickup;
     return [
       // Offered in En preparación even when the order may be on an open
-      // itinerary (mbe-api#311, accepted risk).
+      // itinerary: the server refuses that cancel with
+      // `delivery_order.on_itinerary` (mbe-api#311), shown as the refusal.
       if (canUpdate && _cancellable.contains(status))
         OutlinedButton(
           key: const Key('delivery_order_cancel'),

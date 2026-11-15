@@ -34,10 +34,10 @@ User _user({required bool administrator, int? facilityId}) => User(
   privileges: const [],
 );
 
-/// Spec 061 research R3, mbe-api#314: the server honours any `facility` from
-/// any reader, so a non-administrator's `facility` is dropped twice — when the
-/// URL is decoded and again when the request is built. Each site is pinned on
-/// its own here, so removing either one fails a test.
+/// Spec 061 research R3: a non-administrator's `facility` is dropped twice —
+/// when the URL is decoded and again when the request is built. The server
+/// checks it too since mbe-api#314; these stay as defence in depth. Each site
+/// is pinned on its own here, so removing either one fails a test.
 void main() {
   late MockDeliveryOrderAdminRepository repository;
 
@@ -45,7 +45,7 @@ void main() {
     repository = MockDeliveryOrderAdminRepository();
     when(
       () => repository.list(
-        status: any(named: 'status'),
+        statuses: any(named: 'statuses'),
         customer: any(named: 'customer'),
         facility: any(named: 'facility'),
         type: any(named: 'type'),
@@ -83,7 +83,7 @@ void main() {
 
   void verifyFacility(int? facility) => verify(
     () => repository.list(
-      status: any(named: 'status'),
+      statuses: any(named: 'statuses'),
       customer: any(named: 'customer'),
       facility: facility,
       type: any(named: 'type'),
@@ -156,7 +156,7 @@ void main() {
     }
     verifyNever(
       () => repository.list(
-        status: any(named: 'status'),
+        statuses: any(named: 'statuses'),
         customer: any(named: 'customer'),
         facility: any(named: 'facility'),
         type: any(named: 'type'),

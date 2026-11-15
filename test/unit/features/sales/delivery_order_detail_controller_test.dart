@@ -157,7 +157,7 @@ void main() {
 
   When<Future<DeliveryOrderPage>> whenList() => when(
     () => repository.list(
-      status: any(named: 'status'),
+      statuses: any(named: 'statuses'),
       customer: any(named: 'customer'),
       facility: any(named: 'facility'),
       type: any(named: 'type'),
@@ -310,7 +310,7 @@ void main() {
       expect(result.children, isEmpty);
       verifyNever(
         () => repository.list(
-          status: any(named: 'status'),
+          statuses: any(named: 'statuses'),
           customer: any(named: 'customer'),
           facility: any(named: 'facility'),
           type: any(named: 'type'),

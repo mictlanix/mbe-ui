@@ -14,12 +14,12 @@ const _pageSize = 20;
 /// Fetches and holds the "Órdenes de entrega" page (spec 061 FR-003, FR-004,
 /// research R3): server paging, newest first, filtered by the URL facets.
 ///
-/// **The facility is dropped here too.** mbe-api honours any `facility` from
-/// any reader (mbe-api#314), so a non-administrator's request never carries
-/// one, whatever [DeliveryOrdersFilter] holds. [DeliveryOrdersFilter.fromQuery]
-/// already drops it; this second drop reads `isAdministrator` on its own, so a
-/// filter built any other way still can't widen the list. Never merge the two
-/// sites into one.
+/// **The facility is dropped here too.** A non-administrator's request never
+/// carries one, whatever [DeliveryOrdersFilter] holds. mbe-api checks it too
+/// since mbe-api#314; the client drops stay as defence in depth.
+/// [DeliveryOrdersFilter.fromQuery] already drops it; this second drop reads
+/// `isAdministrator` on its own, so a filter built any other way still can't
+/// widen the list. Never merge the two sites into one.
 ///
 /// A user with no facility gets an empty page and no request, administrators
 /// included, as in Pedidos.
@@ -54,7 +54,7 @@ class DeliveryOrdersListController extends _$DeliveryOrdersListController {
     final result = await ref
         .read(deliveryOrderAdminRepositoryProvider)
         .list(
-          status: filter.status,
+          statuses: filter.requestStatuses,
           type: filter.type,
           dateFrom: filter.dateFrom,
           dateTo: filter.dateTo,

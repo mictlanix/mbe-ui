@@ -113,6 +113,18 @@ enum DeliveryOrderStatus {
 
   final int value;
 
+  /// The non-terminal statuses: every order still in play. "Activas" in the
+  /// Órdenes de entrega list (spec 061 FR-003).
+  static const active = <DeliveryOrderStatus>[
+    draft,
+    pendingApproval,
+    approved,
+    readyForPickup,
+    inPreparation,
+    inTransit,
+    failed,
+  ];
+
   static DeliveryOrderStatus fromApi(api.DeliveryOrderStatus value) {
     final code = int.tryParse(value.name.replaceFirst('number', ''));
     for (final status in DeliveryOrderStatus.values) {

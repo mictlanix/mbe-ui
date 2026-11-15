@@ -25,7 +25,7 @@ This is a new navigation destination, first in the Logística group (decided aft
 └──────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- **Filter row.** `CatalogFilterBar` with a `CatalogSearchBar`, which takes digits only (FR-005, spec edge case "Text search"). The badged filters button opens `showCatalogFilterSheet`. The badge reads nothing on first load, because the list opens on every status until mbe-api#312 ships (FR-003, plan R3). There is no Create action, because orders are created only in the POS (spec Assumptions).
+- **Filter row.** `CatalogFilterBar` with a `CatalogSearchBar`, which takes digits only (FR-005, spec edge case "Text search"). The badged filters button opens `showCatalogFilterSheet`. The badge reads nothing on first load, because the list opens on every status until mbe-api#312 ships (FR-003, plan R3). There is no Create action, because orders are created only in the POS (spec Assumptions). **Shipped 2026-11-14** (mbe-api PR #315): the list opens on "Activas"; "Todas" is `status=all` (fix/consume-mbe-api-308-314).
 - **Table.** `DataTableView<DeliveryOrderSummary>`, newest first (FR-002).
   - Folio shows "Borrador" when the order has none.
   - Destino and Cliente are truncated with a tooltip (§VI secondary text).
@@ -56,12 +56,12 @@ This is a new navigation destination, first in the Logística group (decided aft
                                             └───────────────────────────────────────┘
 ```
 
-- **Estado.** A dropdown: "Todas" (the default), then each of the 11 statuses (FR-004). "Activas" is added, and becomes the default, when mbe-api#312 ships.
+- **Estado.** A dropdown: "Todas" (the default), then each of the 11 statuses (FR-004). "Activas" is added, and becomes the default, when mbe-api#312 ships. **Shipped 2026-11-14** (mbe-api PR #315): the list opens on "Activas"; "Todas" is `status=all` (fix/consume-mbe-api-308-314).
 - **Tipo.** Todos, Entrega or Recoge en tienda.
 - **Fecha programada.** `DateRangeFilterChip`.
 - **Cliente.** `CatalogEntityPicker` over customers. It's offered only to users with Customers read; see Open Question 6.
 - **Pedido.** A numeric field holding the sales-order id. The server filters by id, not by folio.
-- **Sucursal.** Offered only to administrators, and defaults to the user's facility. Anyone else's `facility` URL key is ignored, because the server doesn't check it (mbe-api#314, plan R3).
+- **Sucursal.** Offered only to administrators, and defaults to the user's facility. Anyone else's `facility` URL key is ignored, because the server doesn't check it (mbe-api#314, plan R3). **Fixed 2026-11-14** (mbe-api PR #321): the server checks the facility on the list and on every read and write by id. The client drop stays as defence in depth (fix/consume-mbe-api-308-314).
 - **"Limpiar todo".** Returns to every status, every type, any date, no customer, no sale, the user's facility.
 
 ### State: empty
@@ -174,7 +174,7 @@ The draft looks the same, but without "Editar encabezado", "Agregar línea", the
 
 - **Read-only.** The header and lines can't be edited.
 - **Parent link.** "De la orden 1498" shows because this order is a partial delivery's child (spec edge case "Partial delivery's child order").
-- **Actions.** The only one is "Cancelar orden" (FR-018). It stays offered even when the order is on an open trip, which is the known server gap mbe-api#311.
+- **Actions.** The only one is "Cancelar orden" (FR-018). It stays offered even when the order is on an open trip, which is the known server gap mbe-api#311. **Fixed 2026-11-14** (mbe-api PR #320): the server refuses that cancel with `delivery_order.on_itinerary`, shown as a localized refusal (fix/consume-mbe-api-308-314).
 
 ### State: Fallida
 
@@ -346,7 +346,7 @@ Both are simple confirmations naming the folio and customer. Neither has a body 
 ```
 
 - **Step 1.** The customer's completed sales at the order's facility, newest first, 20 at a time. Tapping a sale goes to step 2.
-- **Step 2.** That sale's lines that still have quantity left, computed on the client until mbe-api#313 ships. Lines already on the order are left out (FR-014).
+- **Step 2.** That sale's lines that still have quantity left, computed on the client until mbe-api#313 ships. Lines already on the order are left out (FR-014). **Shipped 2026-11-14** (mbe-api PR #318): step 2 reads `GET /delivery-orders/deliverable-lines`; the client computation is deleted (fix/consume-mbe-api-308-314).
 - **Multiple lines.** Several lines can get a quantity in one pass. "Agregar" sends one add per filled row, in sequence, and stops at the first error.
 - **Gate.** Offered only with Delivery Orders update and Sales Orders read (contract C7).
 

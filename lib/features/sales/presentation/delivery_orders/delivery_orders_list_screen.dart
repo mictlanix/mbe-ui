@@ -267,27 +267,34 @@ class _DeliveryOrdersFiltersPanel extends ConsumerWidget {
         // Rebuilt when the value changes: a dropdown reads its initial value
         // only once.
         KeyedSubtree(
-          key: ValueKey(('status', filter.status)),
-          child: DropdownButtonFormField<DeliveryOrderStatus?>(
+          key: ValueKey(('status', filter.statusFacet)),
+          // Keyed by the `status` URL value: `null` is Activas, the opening
+          // state (FR-003, mbe-api#312).
+          child: DropdownButtonFormField<String?>(
             key: const Key('delivery_orders_status_filter'),
-            initialValue: filter.status,
+            initialValue: filter.statusFacet,
             isExpanded: true,
             decoration: InputDecoration(
               labelText: l10n.deliveryOrderFilterStatus,
             ),
             items: [
-              DropdownMenuItem<DeliveryOrderStatus?>(
+              DropdownMenuItem<String?>(
                 value: null,
+                child: Text(l10n.deliveryOrderFilterActiveStatuses),
+              ),
+              DropdownMenuItem<String?>(
+                value: const DeliveryOrdersFilter(
+                  everyStatus: true,
+                ).statusFacet,
                 child: Text(l10n.deliveryOrderFilterAllStatuses),
               ),
               for (final status in DeliveryOrderStatus.values)
-                DropdownMenuItem<DeliveryOrderStatus?>(
-                  value: status,
+                DropdownMenuItem<String?>(
+                  value: status.value.toString(),
                   child: Text(deliveryOrderStatusLabel(l10n, status)),
                 ),
             ],
-            onChanged: (status) =>
-                goTo(query.withFacet('status', status?.value.toString())),
+            onChanged: (value) => goTo(query.withFacet('status', value)),
           ),
         ),
         KeyedSubtree(

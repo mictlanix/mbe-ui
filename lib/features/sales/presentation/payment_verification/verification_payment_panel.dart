@@ -131,6 +131,13 @@ class VerificationPaymentPanel extends ConsumerWidget {
               ),
               // Plain text, not a link: the session's own screen has its own
               // gate, and this panel opens nothing.
+              if (payment.lastRejection case final rejection?)
+                FormGridChild(
+                  labeled(
+                    l10n.paymentFieldLastRejection,
+                    PaymentRejectionDetails(rejection: rejection),
+                  ),
+                ),
               FormGridChild(
                 labeled(
                   l10n.paymentFieldCashSession,

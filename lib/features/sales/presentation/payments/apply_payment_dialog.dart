@@ -111,6 +111,7 @@ class _ApplyPaymentDialogState extends ConsumerState<_ApplyPaymentDialog> {
           .read(customerPaymentRepositoryProvider)
           .listOutstandingOrders(
             customerId: widget.payment.customerId,
+            facilityId: widget.payment.facilityId,
             search: _search.text,
             limit: 50,
           );

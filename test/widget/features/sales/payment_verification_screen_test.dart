@@ -88,6 +88,7 @@ void main() {
           dateFrom: any(named: 'dateFrom'),
           dateTo: any(named: 'dateTo'),
           methodCode: any(named: 'methodCode'),
+          rejected: any(named: 'rejected'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
@@ -191,6 +192,32 @@ void main() {
       expect(find.text('#4'), findsOneWidget);
     });
 
+    testWidgets('a rejected payment carries the rejection mark, with date and '
+        'reason in its tooltip (mbe-api#310)', (tester) async {
+      stubQueue([
+        _row(9131).copyWith(
+          lastRejection: PaymentRejection(
+            reason: 'Sin comprobante',
+            rejectedById: 12,
+            rejectedAt: DateTime(2026, 11, 14, 9, 30),
+          ),
+        ),
+        _row(9132),
+      ]);
+      await pump(tester);
+
+      final icon = find.byKey(const Key('payment_icon_rejected'));
+      expect(icon, findsOneWidget);
+      expect(
+        tester
+            .widget<Tooltip>(
+              find.ancestor(of: icon, matching: find.byType(Tooltip)).first,
+            )
+            .message,
+        'Rechazado · 2026-11-14 09:30 · Sin comprobante',
+      );
+    });
+
     testWidgets('a missing reference shows a dash', (tester) async {
       stubQueue([_row(9131, reference: null)]);
       await pump(tester);
@@ -268,6 +295,31 @@ void main() {
           dateFrom: null,
           dateTo: null,
           methodCode: null,
+          skip: 0,
+          limit: 20,
+        ),
+      ).called(1);
+    });
+
+    testWidgets('the "Rechazos" chips write rejected= and send it '
+        '(mbe-api#310)', (tester) async {
+      stubQueue([_row(1)]);
+      final router = await pump(tester);
+      await openSheet(tester);
+
+      await tester.tap(
+        find.byKey(const Key('verification_filter_rejected_yes')),
+      );
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.queryParameters['rejected'], 'true');
+      verify(
+        () => mocks.payments.listUnverified(
+          facilityId: null,
+          dateFrom: null,
+          dateTo: null,
+          methodCode: 3,
+          rejected: true,
           skip: 0,
           limit: 20,
         ),
@@ -388,6 +440,7 @@ void main() {
           dateFrom: any(named: 'dateFrom'),
           dateTo: any(named: 'dateTo'),
           methodCode: any(named: 'methodCode'),
+          rejected: any(named: 'rejected'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
@@ -505,6 +558,7 @@ void main() {
           dateFrom: any(named: 'dateFrom'),
           dateTo: any(named: 'dateTo'),
           methodCode: any(named: 'methodCode'),
+          rejected: any(named: 'rejected'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
@@ -523,6 +577,7 @@ void main() {
           dateFrom: any(named: 'dateFrom'),
           dateTo: any(named: 'dateTo'),
           methodCode: any(named: 'methodCode'),
+          rejected: any(named: 'rejected'),
           skip: any(named: 'skip'),
           limit: any(named: 'limit'),
         ),
