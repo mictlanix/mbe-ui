@@ -6748,4 +6748,57 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get apiErrorDeliveryOrderNotPendingApproval =>
       'Esta orden ya no está pendiente de aprobación.';
+
+  @override
+  String get navForDelivery => 'Por entregar';
+
+  @override
+  String get forDeliveryPeriodLabel => 'Periodo';
+
+  @override
+  String get forDeliveryPeriodEarlier => 'Anteriores';
+
+  @override
+  String get forDeliveryPeriodYesterday => 'Ayer';
+
+  @override
+  String get forDeliveryPeriodToday => 'Hoy';
+
+  @override
+  String get forDeliveryPeriodTomorrow => 'Mañana';
+
+  @override
+  String get forDeliveryPeriodDayAfter => 'Pasado mañana';
+
+  @override
+  String get forDeliveryPeriodLater => 'Posteriores';
+
+  @override
+  String forDeliveryPeriodOptionDated(String label, String date, int total) {
+    return '$label · $date ($total)';
+  }
+
+  @override
+  String forDeliveryPeriodOptionUndated(String label, int total) {
+    return '$label ($total)';
+  }
+
+  @override
+  String get forDeliveryNoDate => 'Sin fecha';
+
+  @override
+  String get forDeliveryEmpty =>
+      'No hay entregas pendientes para este periodo.';
+
+  @override
+  String get forDeliveryColumnPriority => 'Prio.';
+
+  @override
+  String get forDeliveryColumnProduct => 'Producto';
+
+  @override
+  String get forDeliveryColumnWarehouse => 'Almacén';
+
+  @override
+  String get forDeliveryColumnOpenQuantity => 'Pendiente';
 }

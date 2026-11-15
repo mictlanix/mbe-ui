@@ -61,7 +61,9 @@ import 'package:mbe_ui/features/sales/domain/repositories/customer_refund_reposi
     show RefundListResult;
 import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/features/sales/data/delivery_itinerary_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/delivery_order_admin_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/repositories/delivery_itinerary_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_admin_repository.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/sales_quote_repository_impl.dart';
@@ -81,6 +83,9 @@ class MockFacilityRepository extends Mock implements FacilityRepository {}
 
 class MockDeliveryOrderAdminRepository extends Mock
     implements DeliveryOrderAdminRepository {}
+
+class MockDeliveryItineraryRepository extends Mock
+    implements DeliveryItineraryRepository {}
 
 class MockUserRepository extends Mock implements UserRepository {}
 
@@ -335,6 +340,18 @@ const _deliveryOrderApprovalReaderUser = User(
   privileges: [
     Privilege(systemObject: SystemObject.deliveryOrderApproval, rawValue: 2),
   ],
+);
+
+/// Holds read on `forDeliver` (91) alone — the gate for spec 063's
+/// `/sales/for-delivery` route. It is its own privilege: Delivery Orders (71)
+/// read must not open it, and it must not open the orders.
+const _forDeliverReaderUser = User(
+  userId: 'for-deliver-reader',
+  email: 'for-deliver-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [Privilege(systemObject: SystemObject.forDeliver, rawValue: 2)],
 );
 
 /// Holds read on `salesOrders` (7) alone — no `pos` — the gate for
@@ -749,6 +766,16 @@ void main() {
       () => deliveryOrderAdminRepository.events(any()),
     ).thenAnswer((_) async => const []);
 
+    // 063-for-delivery-queue: the queue has no facility notice and fetches
+    // eagerly; an empty answer is enough to show it opened.
+    final deliveryItineraryRepository = MockDeliveryItineraryRepository();
+    when(
+      () => deliveryItineraryRepository.pendingDeliveries(
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const {});
+
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
 
@@ -811,6 +838,9 @@ void main() {
         ),
         deliveryOrderAdminRepositoryProvider.overrideWithValue(
           deliveryOrderAdminRepository,
+        ),
+        deliveryItineraryRepositoryProvider.overrideWithValue(
+          deliveryItineraryRepository,
         ),
       ],
     );
@@ -1514,6 +1544,62 @@ void main() {
         shell.navigationShell.currentIndex,
         NavBranch.deliveryOrderApproval,
       );
+    });
+  });
+
+  group('063-for-delivery-queue — /sales/for-delivery gates on forDeliver (91) '
+      'read', () {
+    testWidgets('a user with forDeliver:read reaches the queue', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _forDeliverReaderUser,
+        '/sales/for-delivery',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/sales/for-delivery');
+      expect(
+        find.byKey(const Key('for_delivery_filter_button')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a user without forDeliver:read is redirected home', (
+      tester,
+    ) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/sales/for-delivery');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('deliveryOrders:read alone does not open the queue', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _deliveryOrdersReaderUser,
+        '/sales/for-delivery',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('forDeliver:read alone does not open an order', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _forDeliverReaderUser,
+        '/sales/delivery-orders/9',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('activates shell branch NavBranch.forDelivery (28)', (
+      tester,
+    ) async {
+      await pumpAt(tester, _forDeliverReaderUser, '/sales/for-delivery');
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.forDelivery, 28);
+      expect(shell.navigationShell.currentIndex, NavBranch.forDelivery);
     });
   });
 

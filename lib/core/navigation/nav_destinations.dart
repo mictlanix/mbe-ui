@@ -91,6 +91,12 @@ class NavBranch {
   // `kNavigationTree` (this destination sits right after `deliveryOrders` in
   // the Logística group there).
   static const int deliveryOrderApproval = 27;
+
+  // 063-for-delivery-queue: appended last, same rationale as `cashSessions`
+  // above — display order comes from position within `kNavigationTree` (this
+  // destination sits right after `deliveryOrderApproval` in the Logística
+  // group there).
+  static const int forDelivery = 28;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -395,6 +401,19 @@ const List<NavItem> kNavigationTree = [
           AccessRight.read,
         ),
       ),
+      // 063-for-delivery-queue: right after Aprobación de entregas. Gated on
+      // SystemObject 91 (`forDeliver`) read, matching the server's GET
+      // /delivery-itineraries/deliveries. The queue has no actions; opening
+      // an order from a row needs 71 read, checked on the screen.
+      NavDestination(
+        id: 'for-delivery',
+        label: _forDeliveryLabel,
+        icon: Icons.local_shipping_outlined,
+        selectedIcon: Icons.local_shipping,
+        route: '/sales/for-delivery',
+        branchIndex: NavBranch.forDelivery,
+        gate: PrivilegeGate(SystemObject.forDeliver, AccessRight.read),
+      ),
       NavDestination(
         id: 'vehicles',
         label: _vehiclesLabel,
@@ -451,6 +470,7 @@ String _salesQuotesLabel(AppLocalizations l10n) => l10n.salesQuotesMenuTitle;
 String _deliveryOrdersLabel(AppLocalizations l10n) => l10n.navDeliveryOrders;
 String _deliveryOrderApprovalLabel(AppLocalizations l10n) =>
     l10n.navDeliveryOrderApproval;
+String _forDeliveryLabel(AppLocalizations l10n) => l10n.navForDelivery;
 String _paymentsLabel(AppLocalizations l10n) => l10n.paymentsMenuTitle;
 String _paymentVerificationLabel(AppLocalizations l10n) =>
     l10n.paymentVerificationMenuTitle;

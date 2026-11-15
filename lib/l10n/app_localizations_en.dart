@@ -6695,4 +6695,56 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get apiErrorDeliveryOrderNotPendingApproval =>
       'This order is no longer pending approval.';
+
+  @override
+  String get navForDelivery => 'For delivery';
+
+  @override
+  String get forDeliveryPeriodLabel => 'Period';
+
+  @override
+  String get forDeliveryPeriodEarlier => 'Earlier';
+
+  @override
+  String get forDeliveryPeriodYesterday => 'Yesterday';
+
+  @override
+  String get forDeliveryPeriodToday => 'Today';
+
+  @override
+  String get forDeliveryPeriodTomorrow => 'Tomorrow';
+
+  @override
+  String get forDeliveryPeriodDayAfter => 'Day after tomorrow';
+
+  @override
+  String get forDeliveryPeriodLater => 'Later';
+
+  @override
+  String forDeliveryPeriodOptionDated(String label, String date, int total) {
+    return '$label · $date ($total)';
+  }
+
+  @override
+  String forDeliveryPeriodOptionUndated(String label, int total) {
+    return '$label ($total)';
+  }
+
+  @override
+  String get forDeliveryNoDate => 'No date';
+
+  @override
+  String get forDeliveryEmpty => 'No deliveries pending for this period.';
+
+  @override
+  String get forDeliveryColumnPriority => 'Prio.';
+
+  @override
+  String get forDeliveryColumnProduct => 'Product';
+
+  @override
+  String get forDeliveryColumnWarehouse => 'Warehouse';
+
+  @override
+  String get forDeliveryColumnOpenQuantity => 'Pending';
 }

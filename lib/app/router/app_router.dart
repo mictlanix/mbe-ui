@@ -45,6 +45,8 @@ import 'package:mbe_ui/features/pricing/presentation/pricing_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/advanced_search_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/for_delivery/pending_deliveries_filter.dart';
+import 'package:mbe_ui/features/sales/presentation/for_delivery/pending_deliveries_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_workspace_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/payment_verification/payment_verification_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payment_detail_screen.dart';
@@ -400,6 +402,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: deliveryOrderApprovalPath,
                 builder: (context, state) => DeliveryOrderApprovalScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
+              ),
+            ],
+          ),
+          // 063-for-delivery-queue: appended last (index 28), same rationale
+          // as `payments` above. Gated on SystemObject 91 (`forDeliver`)
+          // read, see `_routeGate`. A row opens the top-level
+          // `/sales/delivery-orders/:deliveryOrderId` route.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: forDeliveryPath,
+                builder: (context, state) => PendingDeliveriesScreen(
                   query: ListQuery.fromUri(state.uri),
                 ),
               ),
@@ -861,6 +877,13 @@ NavGate? _routeGate(String location) {
   // not open this screen.
   if (location.startsWith(deliveryOrderApprovalPath)) {
     return PrivilegeGate(SystemObject.deliveryOrderApproval, AccessRight.read);
+  }
+  // 063-for-delivery-queue: SystemObject 91 (`forDeliver`) read, matching the
+  // server's GET /delivery-itineraries/deliveries. `/sales/for-delivery`
+  // shares no prefix with the delivery order paths, and 71 read must not
+  // open this screen.
+  if (location.startsWith(forDeliveryPath)) {
+    return PrivilegeGate(SystemObject.forDeliver, AccessRight.read);
   }
   // 061-delivery-orders: SystemObject 71 (`deliveryOrders`) read, matching
   // the server's GET /delivery-orders. The prefix covers the list and every
