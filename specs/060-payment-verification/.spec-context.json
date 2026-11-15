@@ -1,0 +1,17 @@
+{
+  "workflow": "speckit",
+  "specName": "Payment Verification",
+  "branch": "",
+  "currentStep": "specify",
+  "status": "completed",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-15T14:31:35.888Z"
+    }
+  ],
+  "telemetryInstanceId": "8ca4c840-ba73-4416-adb2-15c9e194b457"
+}
