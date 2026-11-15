@@ -51,6 +51,75 @@ void main() {
       ]);
     });
 
+    test('delivery order documents use their routes (spec 064)', () async {
+      final requests = <(String, Map<String, dynamic>)>[];
+      final source = _sourceWith((options) async {
+        requests.add((options.path, options.queryParameters));
+        return _pdfResponse(_pdf([1]), filename: 'x.pdf');
+      });
+
+      await source.fetch(_ref(DocumentKind.deliveryTicket, 30242));
+      await source.fetch(
+        DocumentRef(
+          kind: DocumentKind.deliveryTicket,
+          recordId: 30242,
+          title: 'title',
+          warehouseId: 3,
+        ),
+      );
+      await source.fetch(_ref(DocumentKind.deliveryOrderDocument, 30242));
+
+      expect(requests[0].$1, '/api/v1/delivery-orders/30242/ticket');
+      expect(requests[0].$2, isNot(contains('warehouse')));
+      expect(requests[1].$1, '/api/v1/delivery-orders/30242/ticket');
+      expect(requests[1].$2, {'warehouse': 3});
+      expect(requests[2].$1, '/api/v1/delivery-orders/30242/document');
+      expect(requests[2].$2, isNot(contains('warehouse')));
+    });
+
+    test('delivery order documents take the server\'s file name', () async {
+      final source = _sourceWith(
+        (options) async =>
+            _pdfResponse(_pdf([1]), filename: 'entrega-00030242.pdf'),
+      );
+
+      final document = await source.fetch(
+        _ref(DocumentKind.deliveryTicket, 30242),
+      );
+
+      expect(document.filename, 'entrega-00030242.pdf');
+    });
+
+    test('delivery order documents fall back to their padded names', () async {
+      final source = _sourceWith((options) async => _pdfResponse(_pdf([1])));
+
+      expect(
+        (await source.fetch(_ref(DocumentKind.deliveryTicket, 12))).filename,
+        'entrega-00000012.pdf',
+      );
+      expect(
+        (await source.fetch(
+          _ref(DocumentKind.deliveryOrderDocument, 12),
+        )).filename,
+        'orden-entrega-00000012.pdf',
+      );
+    });
+
+    test('a delivery ticket that is not a PDF is a ServerError', () async {
+      final source = _sourceWith(
+        (options) async => ResponseBody.fromBytes(
+          Uint8List.fromList(utf8.encode('<html>login</html>')),
+          200,
+          headers: _pdfHeaders(),
+        ),
+      );
+
+      await expectLater(
+        () => source.fetch(_ref(DocumentKind.deliveryTicket, 42)),
+        throwsA(isA<ServerError>()),
+      );
+    });
+
     test('takes the file name from Content-Disposition', () async {
       final source = _sourceWith(
         (options) async =>

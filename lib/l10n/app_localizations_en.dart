@@ -6776,4 +6776,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forDeliveryColumnOpenQuantity => 'Pending';
+
+  @override
+  String get deliveryOrderViewTicket => 'View ticket';
+
+  @override
+  String get deliveryOrderViewLetter => 'View letter format';
+
+  @override
+  String get deliveryTicketScopeTitle => 'Which lines to print?';
+
+  @override
+  String get deliveryTicketScopeAll => 'All warehouses';
+
+  @override
+  String documentDeliveryTicketTitle(String folio) {
+    return 'Delivery ticket · $folio';
+  }
+
+  @override
+  String documentDeliveryTicketWarehouseTitle(String folio, String warehouse) {
+    return 'Delivery ticket · $folio · $warehouse';
+  }
+
+  @override
+  String documentDeliveryOrderLetterTitle(String folio) {
+    return 'Delivery order · $folio (letter)';
+  }
+
+  @override
+  String get apiErrorDeliveryOrderNotApproved =>
+      'The delivery order isn\'t approved yet, so it can\'t be printed.';
+
+  @override
+  String get apiErrorDeliveryOrderUnknownWarehouse =>
+      'The chosen warehouse doesn\'t exist.';
+
+  @override
+  String get apiErrorDeliveryOrderNoLinesFromWarehouse =>
+      'No line of this order leaves from the chosen warehouse.';
 }

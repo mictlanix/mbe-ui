@@ -44,6 +44,8 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.deliveryOrderPeriodLineRepeated,
   api.ErrorCode.deliveryOrderPeriodMixedNotAllowed,
   api.ErrorCode.deliveryOrderPeriodNoLines,
+  api.ErrorCode.deliveryOrderPeriodNoLinesFromWarehouse,
+  api.ErrorCode.deliveryOrderPeriodNotApproved,
   api.ErrorCode.deliveryOrderPeriodNotEditable,
   api.ErrorCode.deliveryOrderPeriodNotFailed,
   api.ErrorCode.deliveryOrderPeriodNotPendingApproval,
@@ -54,6 +56,7 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.deliveryOrderPeriodSalesOrderFullyDelivered,
   api.ErrorCode.deliveryOrderPeriodSalesOrderNotDeliverable,
   api.ErrorCode.deliveryOrderPeriodSalesOrderUnpaid,
+  api.ErrorCode.deliveryOrderPeriodUnknownWarehouse,
   api.ErrorCode.documentPeriodNotEditable,
   api.ErrorCode.emailPeriodNotConfigured,
   api.ErrorCode.emailPeriodSendFailed,
@@ -246,6 +249,10 @@ String? localizeProblem(
       l10n.apiErrorDeliveryOrderMixedNotAllowed,
     api.ErrorCode.deliveryOrderPeriodNoLines =>
       l10n.apiErrorDeliveryOrderNoLines,
+    api.ErrorCode.deliveryOrderPeriodNoLinesFromWarehouse =>
+      l10n.apiErrorDeliveryOrderNoLinesFromWarehouse,
+    api.ErrorCode.deliveryOrderPeriodNotApproved =>
+      l10n.apiErrorDeliveryOrderNotApproved,
     api.ErrorCode.deliveryOrderPeriodNotEditable =>
       l10n.apiErrorDeliveryOrderNotEditable,
     api.ErrorCode.deliveryOrderPeriodNotFailed =>
@@ -269,6 +276,8 @@ String? localizeProblem(
       l10n.apiErrorDeliveryOrderSalesOrderNotDeliverable,
     api.ErrorCode.deliveryOrderPeriodSalesOrderUnpaid =>
       l10n.apiErrorDeliveryOrderSalesOrderUnpaid,
+    api.ErrorCode.deliveryOrderPeriodUnknownWarehouse =>
+      l10n.apiErrorDeliveryOrderUnknownWarehouse,
     api.ErrorCode.documentPeriodNotEditable => l10n.apiErrorDocumentNotEditable,
     api.ErrorCode.emailPeriodNotConfigured => l10n.apiErrorEmailNotConfigured,
     api.ErrorCode.emailPeriodSendFailed => l10n.apiErrorEmailSendFailed,

@@ -6830,4 +6830,43 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get forDeliveryColumnOpenQuantity => 'Pendiente';
+
+  @override
+  String get deliveryOrderViewTicket => 'Ver ticket';
+
+  @override
+  String get deliveryOrderViewLetter => 'Ver formato carta';
+
+  @override
+  String get deliveryTicketScopeTitle => '¿Qué líneas imprimir?';
+
+  @override
+  String get deliveryTicketScopeAll => 'Todos los almacenes';
+
+  @override
+  String documentDeliveryTicketTitle(String folio) {
+    return 'Ticket de entrega · $folio';
+  }
+
+  @override
+  String documentDeliveryTicketWarehouseTitle(String folio, String warehouse) {
+    return 'Ticket de entrega · $folio · $warehouse';
+  }
+
+  @override
+  String documentDeliveryOrderLetterTitle(String folio) {
+    return 'Orden de entrega · $folio (carta)';
+  }
+
+  @override
+  String get apiErrorDeliveryOrderNotApproved =>
+      'La orden de entrega aún no está aprobada; no se puede imprimir.';
+
+  @override
+  String get apiErrorDeliveryOrderUnknownWarehouse =>
+      'El almacén elegido no existe.';
+
+  @override
+  String get apiErrorDeliveryOrderNoLinesFromWarehouse =>
+      'Ninguna línea de esta orden sale del almacén elegido.';
 }
