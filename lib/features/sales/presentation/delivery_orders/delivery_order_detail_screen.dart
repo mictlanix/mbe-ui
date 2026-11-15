@@ -377,6 +377,15 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
           icon: const Icon(Icons.receipt_long_outlined),
           label: Text(l10n.deliveryOrderViewTicket),
         ),
+      // The Letter format is the secondary print action: a text button next
+      // to the ticket (spec 064 FR-001).
+      if (canPrint)
+        TextButton.icon(
+          key: const Key('delivery_order_view_letter'),
+          onPressed: _viewLetter,
+          icon: const Icon(Icons.description_outlined),
+          label: Text(l10n.deliveryOrderViewLetter),
+        ),
       // Offered in En preparación even when the order may be on an open
       // itinerary: the server refuses that cancel with
       // `delivery_order.on_itinerary` (mbe-api#311), shown as the refusal.
@@ -441,6 +450,16 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
       folio: _serialOf(order, AppLocalizations.of(context)!),
       facilityId: order.facilityId,
       warehouseIds: distinctWarehouses(order.lines),
+    );
+  }
+
+  Future<void> _viewLetter() {
+    final order = _order;
+    return openDeliveryLetter(
+      context,
+      ref,
+      orderId: order.id,
+      folio: _serialOf(order, AppLocalizations.of(context)!),
     );
   }
 

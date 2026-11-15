@@ -2079,6 +2079,100 @@ void main() {
       });
     });
 
+    group('Letter format (US4)', () {
+      for (final status in printable) {
+        testWidgets('is offered with the ticket when the order is '
+            '${status.name}', (tester) async {
+          await pumpDetail(tester, detail: detailOf(_order(status: status)));
+          expect(key('delivery_order_view_letter'), findsOneWidget);
+        });
+      }
+
+      testWidgets('is absent for a draft', (tester) async {
+        await pumpDetail(
+          tester,
+          detail: detailOf(
+            _order(status: DeliveryOrderStatus.draft, serial: null),
+          ),
+        );
+        expect(key('delivery_order_view_letter'), findsNothing);
+      });
+
+      testWidgets('is absent for an order awaiting approval', (tester) async {
+        await pumpDetail(
+          tester,
+          detail: detailOf(_order(status: DeliveryOrderStatus.pendingApproval)),
+        );
+        expect(key('delivery_order_view_letter'), findsNothing);
+      });
+
+      testWidgets('is absent without Delivery Orders read', (tester) async {
+        await pumpDetail(
+          tester,
+          detail: detailOf(_order()),
+          access: accessControlProvider.overrideWithValue(
+            accessFor(noPrivileges),
+          ),
+        );
+        expect(key('delivery_order_view_letter'), findsNothing);
+      });
+
+      testWidgets('is the quieter button, right after "Ver ticket"', (
+        tester,
+      ) async {
+        await pumpDetail(tester, detail: detailOf(_order()));
+
+        expect(
+          find.descendant(
+            of: key('delivery_order_actions'),
+            matching: find.byType(OutlinedButton),
+          ),
+          findsOneWidget,
+        );
+        expect(
+          tester.widget(key('delivery_order_view_letter')),
+          isA<TextButton>(),
+        );
+        expect(
+          tester.getTopLeft(key('delivery_order_view_ticket')).dx,
+          lessThan(tester.getTopLeft(key('delivery_order_view_letter')).dx),
+        );
+      });
+
+      testWidgets('opens the Letter document with no warehouse choice, even '
+          'for an order from two warehouses', (tester) async {
+        final documents = FakeDocumentSource();
+        await pumpDetail(
+          tester,
+          detail: detailOf(
+            _order(
+              status: DeliveryOrderStatus.approved,
+              lines: [_line(1), _line(2, warehouse: 4)],
+            ),
+            sales: const {101: 8841, 102: 8841},
+          ),
+          documents: documents,
+        );
+
+        await tester.tap(key('delivery_order_view_letter'));
+        await tester.pumpAndSettle();
+
+        expect(key('delivery_ticket_scope_dialog'), findsNothing);
+        expect(find.byType(DocumentPreviewDialog), findsOneWidget);
+        expect(documents.fetched, hasLength(1));
+        expect(
+          documents.fetched.single.kind,
+          DocumentKind.deliveryOrderDocument,
+        );
+        expect(documents.fetched.single.recordId, 9);
+        expect(documents.fetched.single.warehouseId, isNull);
+        expect(
+          tester.widget<Text>(key('document_preview_title')).data,
+          'Orden de entrega · 1532 (carta)',
+        );
+      });
+    });
+
     // Refusals reach the preview through its shared error banner, which
     // builds the text from the server's code (constitution §III), so each of
     // the three codes this feature adds reads in the user's language.

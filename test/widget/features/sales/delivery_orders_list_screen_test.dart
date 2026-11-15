@@ -719,6 +719,15 @@ void main() {
       expect(find.byTooltip(l10n.deliveryOrderViewTicket), findsNWidgets(3));
     });
 
+    testWidgets('a row never offers the Letter format', (tester) async {
+      serveEvery([row(3, serial: 903, status: DeliveryOrderStatus.approved)]);
+      await pumpList(tester);
+
+      expect(ticket(3), findsOneWidget);
+      expect(find.byTooltip(l10n.deliveryOrderViewLetter), findsNothing);
+      expect(find.text(l10n.deliveryOrderViewLetter), findsNothing);
+    });
+
     testWidgets('no icon without Delivery Orders read', (tester) async {
       serveEvery([row(3, serial: 903, status: DeliveryOrderStatus.approved)]);
       await pumpList(

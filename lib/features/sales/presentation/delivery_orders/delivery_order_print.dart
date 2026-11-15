@@ -127,3 +127,25 @@ Future<void> openDeliveryTicket(
     inFlight.remove(orderId);
   }
 }
+
+/// Opens the Letter-size delivery order of [orderId] in the shared preview
+/// (spec 064 contracts U4). It always has every line, so there is no warehouse
+/// choice (FR-014). The shared preview already ignores a repeated press.
+Future<void> openDeliveryLetter(
+  BuildContext context,
+  WidgetRef ref, {
+  required int orderId,
+  required String folio,
+}) {
+  final l10n = AppLocalizations.of(context)!;
+  return ref
+      .read(documentActionsProvider)
+      .preview(
+        context,
+        DocumentRef(
+          kind: DocumentKind.deliveryOrderDocument,
+          recordId: orderId,
+          title: l10n.documentDeliveryOrderLetterTitle(folio),
+        ),
+      );
+}
