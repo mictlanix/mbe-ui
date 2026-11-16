@@ -22,6 +22,15 @@ A receipt is in one of three states:
 
 There is no purchase-order screen in the new MBE yet. A receipt is linked to a purchase order only by the server: by the complementary action, by the future Purchasing work, or because it is a legacy receipt.
 
+## Clarifications
+
+### Session 2026-11-16
+
+- Q: The server applies the facility rule only on confirm and cancel, so a non-administrator could create a draft in another facility's warehouse that they can never confirm. Which warehouses can a non-administrator pick? → A: In Nueva entrada and Editar encabezado, a non-administrator is offered only the warehouses of their own facility. The list's warehouse filter still offers every warehouse. Administrators are offered every warehouse everywhere.
+- Q: A draft has no folio until it is confirmed. How is a draft identified? → A: By its internal number with a "Borrador" prefix. The title is "Entrada · Borrador #{id}", and the list's Folio column shows "Borrador #{id}" until the receipt is confirmed.
+- Q: Cost warnings come back only in the confirm or cancel response. Does their notice disappear on its own or stay until read? → A: It stays. It is a band on the detail screen with a close button, shown until the clerk dismisses it or leaves the receipt.
+- Q: Which warehouse does Nueva entrada start with? → A: The user's point-of-sale warehouse when they have one, and empty otherwise. The user can always change it.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Find a receipt (Priority: P1)
@@ -51,7 +60,7 @@ Goods arrive. The clerk creates a receipt, chooses the destination warehouse and
 
 **Acceptance Scenarios**:
 
-1. **Given** a user with create access to receipts, **When** they choose New receipt and a destination warehouse, **Then** a draft opens with no folio and no lines.
+1. **Given** a user with create access to receipts, **When** they choose New receipt and a destination warehouse, **Then** a draft opens titled "Entrada · Borrador #{internal number}", with no folio and no lines.
 2. **Given** a draft, **When** the user adds a stockable product with a quantity greater than 0, **Then** a line is added showing the product's code and name as they were when the line was added.
 3. **Given** a draft that already has a line for a product, **When** the user adds the same product again, **Then** that line's quantity grows by the new amount and no second line appears.
 4. **Given** a draft, **When** the user edits a line's quantity or deletes a line, **Then** the receipt shows the change as the server returns it.
@@ -68,15 +77,16 @@ Before confirming, the clerk notices the wrong warehouse was chosen, or wants to
 
 **Why this priority**: Mistakes in the destination are common and cheap to fix before confirming, but impossible to fix after.
 
-**Independent Test**: On a draft, change the warehouse to one of another facility and edit the notes. After reopening the draft, both changes are kept, and the receipt shows the new facility.
+**Independent Test**: As an administrator, change a draft's warehouse to one of another facility and edit the notes. After reopening the draft, both changes are kept, and the receipt shows the new facility. As a non-administrator, check that the picker offers only their own facility's warehouses.
 
 **Acceptance Scenarios**:
 
 1. **Given** a draft, **When** the user changes its warehouse, **Then** the receipt shows the new warehouse and the facility it belongs to.
 2. **Given** a draft, **When** the user enters notes longer than 500 characters, **Then** they cannot save until the notes are shortened.
-3. **Given** a draft, **When** the user chooses an in-transit warehouse, **Then** the server's refusal is shown and the warehouse is unchanged.
-4. **Given** a draft linked to a purchase order, **When** the user looks at its warehouse, **Then** it cannot be changed, because the server keeps a linked receipt's warehouse fixed.
-5. **Given** a completed or cancelled receipt, **When** the user opens it, **Then** the header cannot be edited.
+3. **Given** a non-administrator, **When** they open the warehouse picker to create a receipt or edit a draft, **Then** only the warehouses of their own facility are offered.
+4. **Given** a draft, **When** the user chooses an in-transit warehouse, **Then** the server's refusal is shown and the warehouse is unchanged.
+5. **Given** a draft linked to a purchase order, **When** the user looks at its warehouse, **Then** it cannot be changed, because the server keeps a linked receipt's warehouse fixed.
+6. **Given** a completed or cancelled receipt, **When** the user opens it, **Then** the header cannot be edited.
 
 ---
 
@@ -126,7 +136,7 @@ When a supplier delivers a purchase order in parts, the clerk opens a receipt of
 - Another clerk confirms or cancels a draft while it is open. The next action is refused with the server's reason, and the screen reloads the receipt in its new state.
 - A user can read receipts but not update them: every receipt opens read-only, with no New, edit, confirm or line actions.
 - The user leaves a draft with unsaved edits in the header or a line: they are warned before losing them, as in other back-office forms.
-- Confirming a receipt linked to a purchase order also updates product costs on the server and may return cost warnings (a product priced at 0, or a cost not restored on cancel). Until mbe-api#322 gives them codes, they are shown as one generic Spanish notice, and they never block.
+- Confirming a receipt linked to a purchase order also updates product costs on the server and may return cost warnings (a product priced at 0, or a cost not restored on cancel). Until mbe-api#322 gives them codes, they are shown as one generic Spanish notice band that stays until the clerk dismisses it or leaves the receipt, and they never block.
 - A cancelled receipt opens read-only and offers no actions. The server refuses a complementary receipt started from a cancelled receipt, so the action is not offered there.
 
 ## Requirements *(mandatory)*
@@ -138,11 +148,12 @@ When a supplier delivers a purchase order in parts, the clerk opens a receipt of
 - **FR-001**: The back office MUST offer an Entradas de almacén list to users with read access to receipts (system object 15), newest first and paginated.
 - **FR-002**: The list MUST show the receipts the server returns for the user's scope. The UI MUST NOT widen or narrow that scope itself.
 - **FR-003**: The list MUST filter by state (draft, completed, cancelled) and by warehouse, through the shared filter drawer.
-- **FR-004**: Each row MUST show the folio (or that it has none yet), warehouse, facility, linked purchase order when present, state, creator and creation date.
+- **FR-004**: Each row MUST show the folio, warehouse, facility, linked purchase order when present, state, creator and creation date. A draft, which has no folio, MUST show "Borrador #{internal number}" in the Folio column instead.
+- **FR-004a**: The detail screen's title MUST be "Entrada {folio}" for a confirmed or cancelled receipt, and "Entrada · Borrador #{internal number}" for a draft, so two open drafts can always be told apart.
 
 **Header**
 
-- **FR-005**: Users with create access MUST be able to start a receipt by choosing a destination warehouse and, optionally, entering notes.
+- **FR-005**: Users with create access MUST be able to start a receipt by choosing a destination warehouse and, optionally, entering notes. The warehouse MUST start as the user's point-of-sale warehouse when they have one, and empty otherwise. The user can always change it.
 - **FR-006**: On a draft, users with update access MUST be able to change the notes and, when the receipt is not linked to a purchase order, the warehouse. Notes MUST be limited to 500 characters.
 - **FR-007**: The receipt MUST show its facility, which follows its warehouse, and its linked purchase order as read-only information.
 
@@ -159,12 +170,12 @@ When a supplier delivers a purchase order in parts, the clerk opens a receipt of
 - **FR-013**: Users with the delete right MUST be able to cancel a draft or a completed receipt after accepting a confirmation prompt that, for a completed receipt, says its stock will be taken back out of the warehouse.
 - **FR-014**: Users with create access MUST be able to request the complementary receipt of a receipt linked to a purchase order. The draft the server returns, existing or new, MUST open.
 - **FR-015**: Over-receipt warnings MUST be shown on a linked receipt after opening it, saving a line and confirming, one per order line taken above its ordered quantity, naming the product code, the excess, the total received and the quantity ordered. They MUST be computed from the line figures the server returns (this receipt's quantities summed per order line, plus quantity received elsewhere, against quantity ordered), in Spanish. They MUST NOT block any action.
-- **FR-015a**: The server's warning texts are English with no code, so the UI MUST NOT show them. When a confirm or cancel returns more warnings than the over-receipt ones the UI computed (the cost warnings), the UI MUST show one generic Spanish notice that product costs were updated with exceptions. Coded warnings are requested in mictlanix/mbe-api#322. When they ship, the UI should switch to them.
+- **FR-015a**: The server's warning texts are English with no code, so the UI MUST NOT show them. When a confirm or cancel returns more warnings than the over-receipt ones the UI computed (the cost warnings), the UI MUST show one generic Spanish notice that product costs were updated with exceptions. The notice MUST stay on the detail screen as a band with a close button until the clerk dismisses it or leaves the receipt, because reopening the receipt does not bring it back. Coded warnings are requested in mictlanix/mbe-api#322. When they ship, the UI should switch to them.
 
 **Across the feature**
 
 - **FR-016**: Actions the user's rights do not allow MUST be absent, never shown disabled, mirroring the server: read on 15 to see, create on 15 to start a receipt or a complementary receipt, update on 15 to edit the header and lines and to confirm, delete on 15 to cancel. A control that lists other records also needs that record's read right (warehouses to choose or filter a warehouse, products to add a line).
-- **FR-017**: The facility rule (a non-administrator acts only on receipts of their own facility) MUST be left to the server, and its refusal MUST be shown.
+- **FR-017**: The facility rule (a non-administrator acts only on receipts of their own facility) MUST be enforced by the server, and its refusal MUST be shown. To keep a non-administrator from creating a draft they can't confirm, the warehouse picker in Nueva entrada and Editar encabezado MUST offer a non-administrator only the warehouses of their own facility. Administrators MUST be offered every warehouse. The list's warehouse filter MUST offer every warehouse to everyone, since reading is not limited by facility.
 - **FR-018**: Every server refusal MUST be shown with the localized text for its error code, never a raw server message or a generic failure. This includes insufficient stock on cancel, the in-transit warehouse, a fixed warehouse, a non-stockable product, a receipt of another facility, a receipt already cancelled, and a complementary receipt that is unavailable.
 - **FR-021**: The Complementary receipt action MUST be offered only on a receipt that is linked to a purchase order and not cancelled.
 - **FR-019**: After every change the screen MUST show the receipt as the server returned it.
