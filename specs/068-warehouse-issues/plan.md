@@ -36,10 +36,10 @@ The work happens in two steps:
 **Constraints**: Spanish UI text built from codes (§III), one formatting surface (§V), rights mirrored with `can(16, …)` (§IV), and pagination plus the filter drawer on the list (§VI).
 
 **Scale/Scope**:
-- 2 screens and 6 dialogs (new issue, header, add line, line quantity, and the remove/confirm/cancel prompts).
+- 2 screens and 7 dialogs (new issue, header, add line, line quantity, and the remove, confirm and cancel prompts).
 - 1 nav destination and 9 endpoints.
 - 0 new error codes.
-- 1 refactor step: 12 receipt symbols move to shared files, touching about 10 lib files and 4 test files.
+- 1 refactor step: 12 receipt symbols and 5 shared l10n keys move to shared names, touching about 10 lib files and the receipts tests.
 
 ## Constitution Check
 

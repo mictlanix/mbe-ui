@@ -14,7 +14,12 @@ Sources: mbe-api `docs/specs/04-inventory.md` §2 and Common Patterns, `app/serv
   | `ReceiptWarehouseScope`, `receiptWarehouseScope`, `receiptWarehouseOptions`, `receiptFilterWarehouseOptions`, `receiptStartingWarehouse` (`receipt_warehouse_options.dart`) | `InventoryWarehouseScope`, `inventoryWarehouseScope`, `inventoryWarehouseOptions`, `inventoryFilterWarehouseOptions`, `inventoryStartingWarehouse` (`presentation/shared/inventory_warehouse_options.dart`) |
   | `InventoryReceiptsFilter` (`inventory_receipts_filter.dart`) | `InventoryDocumentsFilter` (`presentation/shared/inventory_documents_filter.dart`) |
 
-  - The l10n keys `inventoryReceiptStatusDraft/Completed/Cancelled` become `inventoryDocumentStatusDraft/Completed/Cancelled` ("Borrador", "Confirmada", "Cancelada"; "salida" is feminine like "entrada", so the labels fit both).
+  - These l10n keys become `inventoryDocument…`, since both documents use them:
+    - `inventoryReceiptStatusDraft/Completed/Cancelled` become `inventoryDocumentStatus…` ("Borrador", "Confirmada", "Cancelada"; "salida" is feminine like "entrada", so the labels fit both).
+    - `inventoryReceiptDraftFolio` becomes `inventoryDocumentDraftFolio` ("Borrador #{id}").
+    - `inventoryReceiptNoFacility` becomes `inventoryDocumentNoFacility`.
+
+    Every other issue string is its own `inventoryIssue…` key. Issue code never uses an `inventoryReceipt…` key, so changing receipt text can't change issue text.
   - The chip's test key `inventory_receipt_status_chip` becomes `inventory_document_status_chip`.
   - The moved tests (`inventory_receipts_filter_test`, `receipt_warehouse_options_test`, `inventory_receipt_status_chip_test`) are renamed with their subjects. The rest of the 067 suite must pass unchanged, apart from imports and names, before any issue code is written. That is the guard that the move changed nothing.
 - **Rationale**: FR-018 asks that the two screens look and behave alike. One status chip, one warehouse scope and one filter guarantee that, where copies would drift. These pieces are already document-agnostic (verified by reading them). Only their names say "receipt". Transfers and counts (04 §3, §5) will reuse them.
