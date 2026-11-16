@@ -239,7 +239,7 @@ code	supplier_payment.facility_not_nameable	422	—	OUT
 code	supplier_payment.legacy_not_applicable	409	—	OUT		
 code	supplier_payment.order_before_cutoff	409	purchase_order_id: int	OUT		
 code	supplier_payment.order_other_supplier	409	purchase_order_id: int	OUT		
-code	taxpayer_batch.in_use	409	action: str (`update` or `delete`)	OUT		
+code	taxpayer_batch.in_use	409	action: str (`update` or `delete`)	IN	PUT /taxpayer-issuers/{}/batches/{}; DELETE /taxpayer-issuers/{}/batches/{}	
 code	taxpayer_certificate.holder_mismatch	422	certificate_taxpayer: str, taxpayer: str	IN	POST /taxpayer-certificates	reachable from 1 UI route(s)
 code	taxpayer_issuer.unknown	422	taxpayer: str	IN	POST /taxpayer-certificates	reachable from 1 UI route(s)
 code	user.no_cash_drawer	422	—	IN	POST /cash-sessions	reachable from 1 UI route(s)
@@ -270,7 +270,7 @@ validation_type	supplier_payment_cash_has_date	422	—	OUT		app/schemas/supplier
 validation_type	supplier_payment_cash_has_facility	422	—	OUT		app/schemas/supplier_payments.py
 validation_type	supplier_payment_date_in_future	422	date: datetime	OUT		app/schemas/supplier_payments.py
 validation_type	supplier_payment_duplicate_order	422	—	OUT		app/schemas/supplier_payments.py
-validation_type	taxpayer_batch_series_blank	422	—	OUT		app/schemas/fiscal.py
+validation_type	taxpayer_batch_series_blank	422	—	IN	POST /taxpayer-issuers/{}/batches; PUT /taxpayer-issuers/{}/batches/{}	app/schemas/fiscal.py
 validation_type	user_id_not_alphanumeric	422	—	IN	POST /users [UserCreate.validate_username]; POST /users [UserCreate]	app/schemas/user.py ; reachable via request body
 resource	cash_drawer		resource.not_found	IN	DELETE /cash-drawers/{}; GET /cash-drawers/{}	
 resource	cash_session		resource.not_found	IN	GET /cash-sessions/{}; GET /cash-sessions/{}/ticket	
@@ -294,7 +294,8 @@ resource	sales_order_line		resource.not_found	IN	DELETE /sales-orders/{}/lines/{
 resource	sales_quote		resource.not_found	IN	DELETE /sales-quotes/{}/lines/{}; GET /sales-quotes/{}	
 resource	sales_quote_line		resource.not_found	IN	DELETE /sales-quotes/{}/lines/{}; PUT /sales-quotes/{}/lines/{}	
 resource	supplier		resource.not_found	IN	DELETE /suppliers/{}; GET /suppliers/{}	
-resource	taxpayer_issuer		resource.not_found	IN	DELETE /taxpayer-issuers/{}; GET /taxpayer-issuers/{}	
+resource	taxpayer_batch		resource.not_found	IN	PUT /taxpayer-issuers/{}/batches/{}; DELETE /taxpayer-issuers/{}/batches/{}	
+resource	taxpayer_issuer		resource.not_found	IN	DELETE /taxpayer-issuers/{}; GET /taxpayer-issuers/{}; GET /taxpayer-issuers/{}/batches; POST /taxpayer-issuers/{}/batches	
 resource	taxpayer_recipient		resource.not_found	IN	DELETE /taxpayer-recipients/{}; GET /taxpayer-recipients/{}	
 resource	user		resource.not_found	IN	DELETE /users/{}; GET /auth/me	
 resource	user_profile		resource.not_found	IN	DELETE /user-profiles/{}; GET /user-profiles/{}	
@@ -308,6 +309,7 @@ resource	point_of_sale		resource.already_exists	IN	POST /points-of-sale; PUT /po
 resource	product		resource.already_exists	IN	POST /products; POST /products/{}/image	
 resource	product_price		resource.already_exists	IN	POST /product-prices	
 resource	supplier		resource.already_exists	IN	POST /suppliers; PUT /suppliers/{}	
+resource	taxpayer_batch		resource.already_exists	IN	POST /taxpayer-issuers/{}/batches; PUT /taxpayer-issuers/{}/batches/{}	
 resource	taxpayer_certificate		resource.already_exists	IN	POST /taxpayer-certificates	
 resource	user		resource.already_exists	IN	POST /users	
 resource	user_profile		resource.already_exists	IN	POST /user-profiles; PUT /user-profiles/{}	

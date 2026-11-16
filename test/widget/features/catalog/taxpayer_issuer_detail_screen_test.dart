@@ -16,11 +16,15 @@ import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
 import 'package:mbe_ui/features/catalog/data/sat_catalog_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/taxpayer_batch_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_certificate_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_issuer_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/fiscal_document_kind.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_batch.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_certificate.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_issuer.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/sat_catalog_repository.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_batch_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_certificate_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/taxpayer_issuer_repository.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_issuer_detail_screen.dart';
@@ -34,6 +38,9 @@ class MockSatCatalogRepository extends Mock implements SatCatalogRepository {}
 
 class MockTaxpayerCertificateRepository extends Mock
     implements TaxpayerCertificateRepository {}
+
+class MockTaxpayerBatchRepository extends Mock
+    implements TaxpayerBatchRepository {}
 
 const _fullAccessUser = User(
   userId: 'editor',
@@ -66,14 +73,19 @@ void main() {
   late MockTaxpayerIssuerRepository repository;
   late MockSatCatalogRepository satRepository;
   late MockTaxpayerCertificateRepository certificateRepository;
+  late MockTaxpayerBatchRepository batchRepository;
 
   setUp(() {
     repository = MockTaxpayerIssuerRepository();
     satRepository = MockSatCatalogRepository();
     certificateRepository = MockTaxpayerCertificateRepository();
+    batchRepository = MockTaxpayerBatchRepository();
     when(
       () => certificateRepository.listForIssuer(any()),
     ).thenAnswer((_) async => const <TaxpayerCertificate>[]);
+    when(
+      () => batchRepository.listForIssuer(any()),
+    ).thenAnswer((_) async => const <TaxpayerBatch>[]);
   });
 
   Future<void> pumpScreen(
@@ -110,6 +122,7 @@ void main() {
           taxpayerCertificateRepositoryProvider.overrideWithValue(
             certificateRepository,
           ),
+          taxpayerBatchRepositoryProvider.overrideWithValue(batchRepository),
           accessControlProvider.overrideWithValue(_accessFor(signedInAs)),
         ],
         child: MaterialApp(
@@ -162,6 +175,65 @@ void main() {
 
     final l10n = await AppLocalizations.delegate.load(const Locale('en'));
     expect(find.text(l10n.certificatesSectionTitle), findsOneWidget);
+  });
+
+  testWidgets('the Series section is ABSENT on the create form (spec 065 '
+      'FR-005)', (tester) async {
+    await pumpScreen(tester, signedInAs: _fullAccessUser);
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l10n.taxpayerBatchesSectionTitle), findsNothing);
+    verifyNever(() => batchRepository.listForIssuer(any()));
+  });
+
+  testWidgets('the Series section IS present on an existing issuer, after '
+      'Certificates (spec 065 FR-001)', (tester) async {
+    await pumpScreen(tester, signedInAs: _fullAccessUser, rfc: 'XAXX010101000');
+
+    final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+    expect(find.text(l10n.taxpayerBatchesSectionTitle), findsOneWidget);
+    expect(
+      tester.getTopLeft(find.text(l10n.taxpayerBatchesSectionTitle)).dy,
+      greaterThan(
+        tester.getTopLeft(find.text(l10n.certificatesSectionTitle)).dy,
+      ),
+    );
+    verify(() => batchRepository.listForIssuer('XAXX010101000')).called(1);
+  });
+
+  testWidgets('on a phone both embedded tables fit without a layout error '
+      '(spec 065 compact tier)', (tester) async {
+    when(() => batchRepository.listForIssuer(any())).thenAnswer(
+      (_) async => [
+        const TaxpayerBatch(
+          taxpayerBatchId: 1,
+          taxpayer: 'XAXX010101000',
+          series: 'A',
+          typeCode: 0,
+          kind: FiscalDocumentKind.invoice,
+          template: TaxpayerBatchTemplate(name: 'Factura'),
+          inUse: true,
+        ),
+      ],
+    );
+    await pumpScreen(
+      tester,
+      signedInAs: _fullAccessUser,
+      rfc: 'XAXX010101000',
+      certificates: [
+        TaxpayerCertificate(
+          taxpayerCertificateId: '00001000000203341766',
+          taxpayer: 'XAXX010101000',
+          validFrom: DateTime(2025, 1, 1),
+          validTo: DateTime(2029, 1, 1),
+          status: EntityStatus.active,
+        ),
+      ],
+      size: const Size(400, 2400),
+    );
+
+    expect(tester.takeException(), isNull);
+    expect(find.byKey(const Key('taxpayer_batches_table')), findsOneWidget);
   });
 
   // Spec 049 US5 (FR-020, FR-021, C5): the embedded table lines up with the
@@ -289,6 +361,7 @@ void main() {
           taxpayerCertificateRepositoryProvider.overrideWithValue(
             certificateRepository,
           ),
+          taxpayerBatchRepositoryProvider.overrideWithValue(batchRepository),
           accessControlProvider.overrideWithValue(_accessFor(_fullAccessUser)),
         ],
         child: MaterialApp.router(

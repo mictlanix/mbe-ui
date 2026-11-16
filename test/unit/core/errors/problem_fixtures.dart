@@ -185,6 +185,7 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
     'start': '2026-01-01',
     'end': '2025-12-31',
   },
+  api.ErrorCode.taxpayerBatchPeriodInUse: {'action': 'update'},
   api.ErrorCode.taxpayerCertificatePeriodHolderMismatch: {
     'certificate_taxpayer': 'ACME SA',
     'taxpayer': 'BETA SA',

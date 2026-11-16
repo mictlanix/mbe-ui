@@ -6869,4 +6869,181 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get apiErrorDeliveryOrderNoLinesFromWarehouse =>
       'Ninguna línea de esta orden sale del almacén elegido.';
+
+  @override
+  String get taxpayerBatchesSectionTitle => 'Series';
+
+  @override
+  String taxpayerBatchesSectionTitleWithCount(int count) {
+    return 'Series ($count)';
+  }
+
+  @override
+  String get taxpayerBatchesEmpty =>
+      'Este emisor no tiene series. Sin una serie del tipo correspondiente no puede emitir ese documento.';
+
+  @override
+  String get taxpayerBatchColumnSeries => 'Serie';
+
+  @override
+  String get taxpayerBatchColumnType => 'Tipo';
+
+  @override
+  String get taxpayerBatchColumnTemplate => 'Plantilla';
+
+  @override
+  String get taxpayerBatchColumnInUse => 'En uso';
+
+  @override
+  String get taxpayerBatchDialogCreateTitle => 'Nueva serie';
+
+  @override
+  String get taxpayerBatchDialogViewTitle => 'Ver serie';
+
+  @override
+  String get taxpayerBatchDialogEditTitle => 'Editar serie';
+
+  @override
+  String get taxpayerBatchSeriesLabel => 'Serie';
+
+  @override
+  String get taxpayerBatchTypeLabel => 'Tipo de documento';
+
+  @override
+  String get taxpayerBatchTemplateNameLabel => 'Nombre de plantilla';
+
+  @override
+  String get taxpayerBatchLogoLabel => 'Logo (nombre de archivo)';
+
+  @override
+  String get taxpayerBatchHeaderHeightLabel => 'Alto de encabezado (mm)';
+
+  @override
+  String get taxpayerBatchFooterHeightLabel => 'Alto de pie (mm)';
+
+  @override
+  String get taxpayerBatchInUseNote =>
+      'Ya hay documentos emitidos con esta serie; solo puede cambiar la plantilla.';
+
+  @override
+  String get taxpayerBatchAccountsTitle => 'Cuentas bancarias';
+
+  @override
+  String get taxpayerBatchAccountBank => 'Banco';
+
+  @override
+  String get taxpayerBatchAccountNumber => 'Cuenta';
+
+  @override
+  String get taxpayerBatchAccountClabe => 'CLABE';
+
+  @override
+  String get taxpayerBatchAccountCurrency => 'Moneda';
+
+  @override
+  String get taxpayerBatchAddAccount => 'Agregar cuenta';
+
+  @override
+  String get taxpayerBatchMoveAccountUp => 'Subir';
+
+  @override
+  String get taxpayerBatchMoveAccountDown => 'Bajar';
+
+  @override
+  String get taxpayerBatchRemoveAccount => 'Quitar cuenta';
+
+  @override
+  String get taxpayerBatchNoAccounts => 'Sin cuentas bancarias';
+
+  @override
+  String get taxpayerBatchCloseButton => 'Cerrar';
+
+  @override
+  String get taxpayerBatchDeleteTitle => '¿Eliminar la serie?';
+
+  @override
+  String taxpayerBatchDeleteMessage(String series, String type) {
+    return 'Se eliminará la serie $series ($type).';
+  }
+
+  @override
+  String get taxpayerBatchSeriesRequiredError => 'Escribe la serie.';
+
+  @override
+  String get taxpayerBatchSeriesTooLongError =>
+      'La serie puede tener hasta 10 caracteres.';
+
+  @override
+  String get taxpayerBatchTypeRequiredError => 'Elige el tipo de documento.';
+
+  @override
+  String get taxpayerBatchTemplateNameRequiredError =>
+      'Escribe el nombre de la plantilla.';
+
+  @override
+  String get taxpayerBatchTemplateNameTooLongError =>
+      'El nombre de la plantilla puede tener hasta 50 caracteres.';
+
+  @override
+  String get taxpayerBatchHeightInvalidError =>
+      'Escribe un número entero, 0 o más.';
+
+  @override
+  String get fiscalDocumentKindInvoice => 'Factura';
+
+  @override
+  String get fiscalDocumentKindExpense => 'Egreso';
+
+  @override
+  String get fiscalDocumentKindPayment => 'Pago';
+
+  @override
+  String get fiscalDocumentKindTransfer => 'Traslado';
+
+  @override
+  String get fiscalDocumentKindCreditNote => 'Nota de crédito';
+
+  @override
+  String get fiscalDocumentKindPaymentReceipt => 'Recibo de pago';
+
+  @override
+  String get fiscalDocumentKindAdvancePaymentsApplied =>
+      'Aplicación de anticipos';
+
+  @override
+  String fiscalDocumentKindUnknown(int code) {
+    return 'Tipo desconocido ($code)';
+  }
+
+  @override
+  String get apiErrorTaxpayerBatchInUseUpdate =>
+      'La serie ya se usa en documentos emitidos; solo puede cambiar su plantilla.';
+
+  @override
+  String get apiErrorTaxpayerBatchInUseDelete =>
+      'La serie ya se usa en documentos emitidos y no se puede eliminar.';
+
+  @override
+  String get apiValidationTaxpayerBatchSeriesBlank =>
+      'La serie no puede quedar en blanco.';
+
+  @override
+  String apiResourceTaxpayerBatch(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'series',
+      one: 'serie',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderTaxpayerBatch => 'feminine';
+
+  @override
+  String get taxpayerBatchSaveFailed => 'No se pudo guardar la serie.';
+
+  @override
+  String get taxpayerBatchDeleteFailed => 'No se pudo eliminar la serie.';
 }

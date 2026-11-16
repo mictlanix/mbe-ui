@@ -109,6 +109,36 @@ void main() {
     );
   });
 
+  group('taxpayer_batch.in_use (spec 065)', () {
+    test('names the refused action', () {
+      expect(
+        es(api.ErrorCode.taxpayerBatchPeriodInUse, {'action': 'update'}),
+        'La serie ya se usa en documentos emitidos; solo puede cambiar su '
+        'plantilla.',
+      );
+      expect(
+        es(api.ErrorCode.taxpayerBatchPeriodInUse, {'action': 'delete'}),
+        'La serie ya se usa en documentos emitidos y no se puede eliminar.',
+      );
+      expect(
+        en(api.ErrorCode.taxpayerBatchPeriodInUse, {'action': 'delete'}),
+        "The series is already used by issued documents and can't be "
+        'deleted.',
+      );
+    });
+
+    test('still shows a message when the action is missing or unexpected', () {
+      for (final params in <Map<String, Object?>>[
+        const {},
+        const {'action': 'archive'},
+        const {'action': 7},
+      ]) {
+        expect(es(api.ErrorCode.taxpayerBatchPeriodInUse, params), isNotNull);
+        expect(en(api.ErrorCode.taxpayerBatchPeriodInUse, params), isNotNull);
+      }
+    });
+  });
+
   test('csd refusals name what is wrong with the files', () {
     expect(
       es(api.ErrorCode.csdPeriodKeyMismatch),

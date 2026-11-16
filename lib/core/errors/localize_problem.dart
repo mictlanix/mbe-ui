@@ -118,6 +118,7 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.serverPeriodError,
   api.ErrorCode.statePeriodTransitionInvalid,
   api.ErrorCode.supplierAgreementPeriodEndBeforeStart,
+  api.ErrorCode.taxpayerBatchPeriodInUse,
   api.ErrorCode.taxpayerCertificatePeriodHolderMismatch,
   api.ErrorCode.taxpayerIssuerPeriodUnknown,
   api.ErrorCode.userPeriodNoCashDrawer,
@@ -138,6 +139,7 @@ const Set<String> localizedValidationTypes = {
   'profile_duplicate_system_object',
   'profile_unknown_system_object',
   'supplier_agreement_end_before_start',
+  'taxpayer_batch_series_blank',
   'user_id_not_alphanumeric',
 };
 
@@ -416,6 +418,12 @@ String? localizeProblem(
       _date(problem, 'start', fmt),
       l10n.apiErrorSupplierAgreementEndBeforeStart,
     ),
+    // The refused action picks the sentence; a missing or unexpected `action`
+    // reads as the update one, so a message always shows (spec 065 R9).
+    api.ErrorCode.taxpayerBatchPeriodInUse =>
+      problem.stringParam('action') == 'delete'
+          ? l10n.apiErrorTaxpayerBatchInUseDelete
+          : l10n.apiErrorTaxpayerBatchInUseUpdate,
     api.ErrorCode.taxpayerCertificatePeriodHolderMismatch => _ap2(
       problem.stringParam('certificate_taxpayer'),
       problem.stringParam('taxpayer'),
@@ -457,6 +465,7 @@ String? localizeValidationType(String type, AppLocalizations l10n) {
       l10n.apiValidationProfileUnknownSystemObject,
     'supplier_agreement_end_before_start' =>
       l10n.apiValidationSupplierAgreementEndBeforeStart,
+    'taxpayer_batch_series_blank' => l10n.apiValidationTaxpayerBatchSeriesBlank,
     'user_id_not_alphanumeric' => l10n.apiValidationUserIdNotAlphanumeric,
     _ => null,
   };
@@ -508,6 +517,7 @@ String resourceNoun(String? resource, AppLocalizations l10n, {int count = 1}) =>
       'stock_movement' => l10n.apiResourceStockMovement(count),
       'supplier' => l10n.apiResourceSupplier(count),
       'supplier_payment' => l10n.apiResourceSupplierPayment(count),
+      'taxpayer_batch' => l10n.apiResourceTaxpayerBatch(count),
       'taxpayer_certificate' => l10n.apiResourceTaxpayerCertificate(count),
       'taxpayer_issuer' => l10n.apiResourceTaxpayerIssuer(count),
       'taxpayer_recipient' => l10n.apiResourceTaxpayerRecipient(count),
@@ -564,6 +574,7 @@ String resourceGender(String? resource, AppLocalizations l10n) =>
       'stock_movement' => l10n.apiResourceGenderStockMovement,
       'supplier' => l10n.apiResourceGenderSupplier,
       'supplier_payment' => l10n.apiResourceGenderSupplierPayment,
+      'taxpayer_batch' => l10n.apiResourceGenderTaxpayerBatch,
       'taxpayer_certificate' => l10n.apiResourceGenderTaxpayerCertificate,
       'taxpayer_issuer' => l10n.apiResourceGenderTaxpayerIssuer,
       'taxpayer_recipient' => l10n.apiResourceGenderTaxpayerRecipient,
