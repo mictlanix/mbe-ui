@@ -3,7 +3,7 @@
   "specName": "Taxpayer Batches (Folio Series)",
   "branch": "065-taxpayer-batches",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -397,8 +397,25 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-16T01:51:33.083Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-16T03:00:07.585Z"
     }
   ],
   "telemetryInstanceId": "b916b92c-4ce6-4d1f-9bd6-1635d208ab7a",
-  "currentTask": "T043"
+  "currentTask": null,
+  "verified": [
+    {
+      "what": "flutter analyze clean; flutter test 4,864 passed (7 pre-existing golden/screenshot failures, also on main, tracked in #209); live integration_test/taxpayer_batches_quickstart_test.dart every step passed on issuer CAG190523ES5, including an in-use series (PR #254, merged 3c847a4e)"
+    }
+  ],
+  "concerns": [
+    {
+      "note": "T043 manual checks (phone layout by hand, a DataTable2 fixed-width assertion seen once during the live resize, in-use race across two sessions, issuer deleted while the dialog is open, read-only account, English) not yet run; tracked in mictlanix/mbe-ui#253"
+    }
+  ]
 }

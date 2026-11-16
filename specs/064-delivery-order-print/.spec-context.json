@@ -1,0 +1,28 @@
+{
+  "workflow": "speckit",
+  "specName": "Delivery Order Print",
+  "branch": "chore/064-065-mark-complete",
+  "status": "completed",
+  "currentStep": "implement",
+  "history": [
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-16T03:00:07.245Z"
+    }
+  ],
+  "verified": [
+    {
+      "what": "flutter analyze clean; flutter test 4,770 passed (7 pre-existing golden/screenshot failures, also on main, tracked in #209); live integration_test/delivery_order_print_quickstart_test.dart 4 passed, 1 skipped (no two-warehouse order on the local tenant) (PR #252, merged b059950a)"
+    }
+  ],
+  "telemetryInstanceId": "1fe227de-f99c-4a3d-a2c1-3ed83fdbcd1b",
+  "concerns": [
+    {
+      "note": "T024 manual checks (two-warehouse choice end to end, ticket and letter content, pickup ticket, cancelled stamp, English, browser and thermal printer, SC-001) not yet run; tracked in mictlanix/mbe-ui#251"
+    }
+  ],
+  "currentTask": null
+}
