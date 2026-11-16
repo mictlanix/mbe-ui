@@ -13,7 +13,7 @@ Let administrators maintain an issuer's folio series from the taxpayer issuer de
   - A row tap opens it read-only, with an in-place Editar toggle.
   - The Edit icon opens it editable.
   - "Nuevo" creates a series.
-  - Delete lives inside the dialog through the shared `RecordFormActions`.
+  - Delete lives inside the dialog, behind the shared delete confirmation.
   - An in-use series has its series and type locked up front, and only the template stays editable.
   - Bank accounts are an ordered, repeatable group in the template.
 - **Domain.** A new `FiscalDocumentKind` enum maps the type codes 0/1/2/3/100/101/200 to localized labels. An unknown code still renders.
@@ -71,8 +71,8 @@ Let administrators maintain an issuer's folio series from the taxpayer issuer de
 | **II. Riverpod** | `taxpayerBatchRepositoryProvider`, plus a family `TaxpayerBatchesController(rfc)` and a family `TaxpayerBatchDialogController(rfc, existing)`. Tests override the repository | PASS |
 | **III. Contract-driven API** | Generated methods only, no hand DTOs, and errors go through the existing `_toAppError`. **API error text:** every code the four endpoints return is covered; two are flipped to IN and a resource noun is added (research R9, contracts/consumed-endpoints.md). Recognition (in-use, duplicate, issuer gone) is keyed on `code`. No mbe-api change is needed (R12) | PASS |
 | **IV. Deny-by-default RBAC** | Taxpayers (24): the route is already gated on read; create gates "Nuevo", update gates the Edit icon and the Editar toggle, and delete gates Eliminar. All of these are also behind the parent's `readOnly` (research R3). Hidden, not disabled | PASS |
-| **V. Material 3** | `ResponsiveDialog`, `ResponsiveFormGrid`, `RecordFormActions`, `DataTableView`, `buildCatalogRowActions`, `FormErrorBanner` and `ListFailedView`. No new shared widgets | PASS |
-| **VI. Layout and actions** | The issuer stays a full screen (it owns child collections). A series has 6 own fields, and its bank accounts are a repeating group inside the template value rather than a child collection, so a dialog is right (research R1). A row tap opens read-only "Ver serie" with an in-place Editar; the Edit icon is the only row action; Delete lives on the record surface with confirmation; the section is divider-delimited; the dialog is fullscreen on compact and drops the Plantilla column | PASS |
+| **V. Material 3** | `ResponsiveDialog`, `ResponsiveFormGrid`, `showRecordDeleteConfirmation`, `DataTableView`, `buildCatalogRowActions`, `FormErrorBanner` and `ListFailedView`. No new shared widgets | PASS |
+| **VI. Layout and actions** | The issuer stays a full screen (it owns child collections). A series has 6 own fields, and its bank accounts are a repeating group inside the template value rather than a child collection, so a dialog is right (research R1). A row tap opens read-only "Ver serie" with an in-place Editar; the Edit icon is the only row action; Delete lives on the record surface (a body button) with confirmation; the section is divider-delimited; the dialog is fullscreen on compact and drops the Plantilla column | PASS |
 | **VII. Server-rendered documents** | Not touched. The template only feeds mbe-api's PDF renderer | PASS |
 | **Workflow gates** | Consumed endpoints and their error codes are listed (contracts/consumed-endpoints.md). No codegen re-run needed. RBAC object documented | PASS |
 

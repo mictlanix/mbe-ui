@@ -110,7 +110,7 @@ An administrator removes a series that was created by mistake and never used.
 
 **Creating and editing**
 
-- **FR-006**: Users MUST be able to create a series with: prefix (required, 1–10 characters after trimming), document type (required, one of the seven), template name (required, 1–50 characters), logo file name (optional), header height (whole number ≥ 0, default 0), footer height (whole number ≥ 0, default 15), and zero or more bank accounts.
+- **FR-006**: Users MUST be able to create a series with: prefix (required, 1–10 characters after trimming), document type (required, one of the seven), template name (required, 1–50 characters), logo file name (optional), header height (whole number of millimetres ≥ 0, default 0), footer height (whole number of millimetres ≥ 0, default 15), and zero or more bank accounts.
 - **FR-007**: Each bank account MUST have bank, account number, CLABE and currency fields, all optional text. Users MUST be able to add, remove and reorder accounts before saving. Accounts whose fields are all blank MUST be dropped on save.
 - **FR-008**: The form MUST validate the limits in FR-006 before sending, and keep the user's input when the server refuses a save.
 - **FR-009**: Users MUST be able to edit an existing series. For a series not in use, all fields MUST be editable.
@@ -125,7 +125,7 @@ An administrator removes a series that was created by mistake and never used.
 
 **Access control**
 
-- **FR-015**: Viewing the section MUST require Taxpayers read right; adding MUST require Taxpayers create; editing MUST require Taxpayers update; deleting MUST require Taxpayers delete. Actions the user lacks the right for MUST be hidden, not shown disabled. A user with read but not update right MUST still be able to open a series and see its details.
+- **FR-015**: Viewing the section MUST require Taxpayers read right; adding MUST require Taxpayers create; editing MUST require Taxpayers update; deleting MUST require Taxpayers delete. Actions the user lacks the right for MUST be hidden, not shown disabled. The add, edit and delete actions are also offered only on an editable render of the issuer, as the Certificates section's "Agregar" is: a View render of the issuer offers none of them, whatever the user's rights. A user with read but not update right MUST still be able to open a series and see its details.
 
 **Errors and language**
 

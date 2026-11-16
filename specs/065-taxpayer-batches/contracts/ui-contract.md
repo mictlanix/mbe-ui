@@ -62,13 +62,14 @@ Titled "Cuentas bancarias", delimited by a divider.
 
 ### Actions
 
-The shared `RecordFormActions`, keyed `taxpayer_batch_form_actions`. Close or Cancel is the dialog's own secondary action.
+`ResponsiveDialog`'s own two actions carry Save, Editar, Cancelar and Cerrar (so the dialog is fullscreen with the primary action in the top bar on compact). The shared `RecordFormActions` is not used: it would repeat those buttons inside the dialog. Eliminar is a warning-styled `OutlinedButton` at the bottom of the body (key `taxpayer_batch_delete_button`), behind `showRecordDeleteConfirmation`, the pattern `RecordFormActions` documents for "dialogs that carry their own Delete button".
 
-| Mode | Actions |
-|---|---|
-| create | Guardar |
-| view | Editar (only when `!parentReadOnly && can(update)`; switches mode in place) |
-| edit | Eliminar (only when `can(delete) && !locked`; confirmation names series and type, confirm key `confirm_delete_taxpayer_batch_button`), then Guardar |
+| Mode | Primary | Secondary | In the body |
+|---|---|---|---|
+| create | Guardar (`taxpayer_batch_save_button`) | Cancelar (`taxpayer_batch_cancel_button`) | none |
+| view, user may update on an editable issuer | Editar (`taxpayer_batch_edit_button`, switches mode in place) | Cerrar (`taxpayer_batch_close_button`) | none |
+| view, otherwise | Cerrar | none | none |
+| edit | Guardar | Cancelar | Eliminar, only when `can(delete) && !locked`; confirmation names series and type, confirm key `confirm_delete_taxpayer_batch_button` |
 
 ### Outcomes
 

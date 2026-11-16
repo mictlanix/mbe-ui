@@ -154,7 +154,7 @@ The existing issuer form and Certificados section are unchanged. The new section
 - **Form.** `ResponsiveFormGrid` with at most 2 columns (§VI).
 - **Tipo.** A dropdown of the 7 localized kinds, with nothing preselected (FR-006).
 - **Defaults.** Header height 0, footer height 15 (FR-006).
-- **Actions.** `RecordFormActions` (create → Save only). Cancelar is the dialog's secondary action.
+- **Actions.** The dialog's own primary and secondary actions (Guardar, Cancelar).
 
 ### State: create with bank accounts (and a validation error)
 
@@ -207,7 +207,7 @@ The existing issuer form and Certificados section are unchanged. The new section
 └──────────────────────────────────────────────────────────────┘
 ```
 
-- `RecordFormActions` in view mode. Editar appears only with update right on an editable parent, and switches to edit in place (§VI, FR-015).
+- The dialog's own actions in view mode. Editar is the primary action and appears only with update right on an editable parent, and switches to edit in place (§VI, FR-015).
 - With no accounts, the group shows "Sin cuentas bancarias".
 
 ### State: edit, series in use (locked)
@@ -240,7 +240,7 @@ The existing issuer form and Certificados section are unchanged. The new section
 │                       [ Cancelar ]  [ Eliminar ]  [ Guardar ] │
 ```
 
-- Eliminar is the warning-styled button from `RecordFormActions`, placed before Save (§VI order). It appears only with delete right (FR-013, FR-015).
+- Eliminar is a warning-styled button at the bottom of the body, behind the shared confirmation. It appears only with delete right (FR-013, FR-015).
 
 ### State: delete confirmation
 
@@ -308,6 +308,8 @@ The existing issuer form and Certificados section are unchanged. The new section
 - Nothing is dropped.
 
 ## Open Questions
+
+> **Resolved at implementation (tasks T041).** Questions 1 and 3 stood as assumed. Question 2 was left out, as assumed. Question 4: "+ Nuevo", the edit icon and Editar follow the issuer screen's editable render, and spec FR-015 now says so. Question 5: both height fields carry an "mm" suffix, and spec FR-006 now says so. The header-height hint (option c) was not added.
 
 1. **Logo: free text or a picker of known image files?** The spec says it is a file name, not an upload. With free text, a typo silently prints no logo. Options: (a) free text, (b) a dropdown of images the server knows (needs an API endpoint that doesn't exist). The wireframe assumes **(a)**. **→ spec**, already stated in Assumptions. If the risk matters, an mbe-api issue for (b) is the follow-up.
 2. **Should the empty state suggest which types are missing even when some series exist?** For example: "Sin serie para: Nota de crédito, Recibo de pago". It helps diagnose "issuer has no series" errors for a specific type. Options: (a) no, the plain list only, (b) a muted line under the table listing uncovered types. The wireframe assumes **(a)**, because the spec doesn't ask for it. **→ spec** if wanted. It would be a small FR addition to US1.

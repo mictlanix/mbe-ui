@@ -18,14 +18,15 @@ Phase 0 for [plan.md](plan.md). The spec has no open clarifications, so the deci
 - **Decision.**
   - Tapping a row opens the dialog read-only, titled "Ver serie".
   - The row's Edit icon opens it editable, titled "Editar serie".
-  - The dialog's action area is the shared `RecordFormActions`:
-    - `view` mode shows Edit, which switches the dialog to editable in place.
-    - `edit` mode shows Delete (behind the shared confirmation), then Save.
-    - `create` mode shows Save only.
+  - The dialog's own actions (`ResponsiveDialog` primary and secondary) carry the mode:
+    - `view` mode shows Editar, which switches the dialog to editable in place, and Cerrar.
+    - `edit` mode shows Guardar and Cancelar, and a warning-styled Eliminar at the bottom of the body, behind the shared delete confirmation.
+    - `create` mode shows Guardar and Cancelar.
+  - Built this way rather than with `RecordFormActions`, which would repeat the dialog's own buttons inside it. `RecordFormActions` documents the body-button-plus-`showRecordDeleteConfirmation` form for dialogs that carry their own Delete.
 - **Rationale.**
   - §VI says a row click opens the record read-only, the read-only surface is labeled "View" with an in-place switch to edit, and delete lives on the record's own surface, never on the row.
   - The spec needs this too: FR-015 lets a reader without update see a series' full template, which the row doesn't show (logo, heights, accounts).
-  - `RecordFormActions` already enforces "absent, not disabled" and the delete confirmation.
+  - The shared `showRecordDeleteConfirmation` supplies the confirmation, and each action is simply not built when the user lacks the right ("absent, not disabled").
 - **Alternatives considered.**
   - Discount-style (no row tap, a hand-rolled delete button in the dialog): readers couldn't see the template, and §VI's row-click rule would be broken for a row with hidden detail.
   - A delete icon on the row: banned by §VI.
