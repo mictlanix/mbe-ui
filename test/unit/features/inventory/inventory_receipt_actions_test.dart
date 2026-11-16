@@ -7,11 +7,12 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_receipt_repository.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_actions.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_detail_controller.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_filter.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_documents_filter.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_list_controller.dart';
 
 import 'inventory_receipt_fixtures.dart';
@@ -25,7 +26,7 @@ var _listBuilds = 0;
 
 class _CountingList extends InventoryReceiptsListController {
   @override
-  Future<InventoryReceiptPage> build(InventoryReceiptsFilter filter) async {
+  Future<InventoryReceiptPage> build(InventoryDocumentsFilter filter) async {
     _listBuilds++;
     return const InventoryReceiptPage(
       items: [],
@@ -61,7 +62,7 @@ void main() {
       overrides: [
         inventoryReceiptRepositoryProvider.overrideWithValue(repository),
         inventoryReceiptsListControllerProvider(
-          const InventoryReceiptsFilter(),
+          const InventoryDocumentsFilter(),
         ).overrideWith(_CountingList.new),
       ],
     );
@@ -69,13 +70,13 @@ void main() {
     // The screens keep these alive.
     container.listen(detail, (_, _) {});
     container.listen(
-      inventoryReceiptsListControllerProvider(const InventoryReceiptsFilter()),
+      inventoryReceiptsListControllerProvider(const InventoryDocumentsFilter()),
       (_, _) {},
     );
     await container.read(detail.future);
     await container.read(
       inventoryReceiptsListControllerProvider(
-        const InventoryReceiptsFilter(),
+        const InventoryDocumentsFilter(),
       ).future,
     );
     clearInteractions(repository);
@@ -165,14 +166,17 @@ void main() {
       ]) {
         test('re-fetches the receipt after $codeName', () async {
           when(c.call).thenAnswer((_) async => throw _refusal(codeName, code));
-          when(
-            () => repository.get(_id),
-          ).thenAnswer((_) async => aReceipt(status: ReceiptStatus.completed));
+          when(() => repository.get(_id)).thenAnswer(
+            (_) async => aReceipt(status: InventoryDocumentStatus.completed),
+          );
 
           expect(await c.act(actions()), isNotNull);
 
           verify(() => repository.get(_id)).called(1);
-          expect(container.read(detail).value?.status, ReceiptStatus.completed);
+          expect(
+            container.read(detail).value?.status,
+            InventoryDocumentStatus.completed,
+          );
         });
       }
     });

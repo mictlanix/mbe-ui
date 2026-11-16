@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/core/design/text_scale.dart';
-import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 
 import '../../../unit/features/inventory/inventory_receipt_fixtures.dart';
 import 'inventory_harness.dart';
@@ -31,9 +31,13 @@ void main() {
         id: 32020,
         serial: 2983,
         purchaseOrderId: 11049,
-        status: ReceiptStatus.completed,
+        status: InventoryDocumentStatus.completed,
       ),
-      aReceiptSummary(id: 32054, serial: 2986, status: ReceiptStatus.cancelled),
+      aReceiptSummary(
+        id: 32054,
+        serial: 2986,
+        status: InventoryDocumentStatus.cancelled,
+      ),
     ]);
     await harness.pump(tester, surface: desktop);
 

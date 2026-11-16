@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_receipt_repository.dart';
 
@@ -25,7 +26,7 @@ class InventoryReceiptRepositoryImpl implements InventoryReceiptRepository {
 
   @override
   Future<InventoryReceiptPage> list({
-    ReceiptStatus? status,
+    InventoryDocumentStatus? status,
     int? warehouseId,
     required int skip,
     required int limit,
@@ -174,10 +175,14 @@ void _setQuantity(api.Quantity5Builder builder, Decimal value) {
 
 /// A `paid` status never occurs on a receipt, so it is a mapping error
 /// rather than a guess.
-ReceiptStatus _status(api.DocumentStatus status) {
-  if (status == api.DocumentStatus.draft) return ReceiptStatus.draft;
-  if (status == api.DocumentStatus.completed) return ReceiptStatus.completed;
-  if (status == api.DocumentStatus.cancelled) return ReceiptStatus.cancelled;
+InventoryDocumentStatus _status(api.DocumentStatus status) {
+  if (status == api.DocumentStatus.draft) return InventoryDocumentStatus.draft;
+  if (status == api.DocumentStatus.completed) {
+    return InventoryDocumentStatus.completed;
+  }
+  if (status == api.DocumentStatus.cancelled) {
+    return InventoryDocumentStatus.cancelled;
+  }
   throw AppError.server(message: 'Unexpected receipt status: ${status.name}');
 }
 

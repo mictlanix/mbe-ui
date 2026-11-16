@@ -4,9 +4,10 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_receipt_repository.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_filter.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_documents_filter.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_list_controller.dart';
 
 import 'inventory_receipt_fixtures.dart';
@@ -57,8 +58,8 @@ void main() {
 
   test('the filter reaches the repository, 20 per page', () async {
     serve([for (var i = 50; i >= 1; i--) aReceiptSummary(id: i)]);
-    const filter = InventoryReceiptsFilter(
-      status: ReceiptStatus.completed,
+    const filter = InventoryDocumentsFilter(
+      status: InventoryDocumentStatus.completed,
       warehouseId: 3,
       pageIndex: 1,
     );
@@ -73,7 +74,7 @@ void main() {
     expect(page.pageIndex, 1);
     verify(
       () => repository.list(
-        status: ReceiptStatus.completed,
+        status: InventoryDocumentStatus.completed,
         warehouseId: 3,
         skip: 20,
         limit: 20,
@@ -86,7 +87,7 @@ void main() {
 
     final page = await container().read(
       inventoryReceiptsListControllerProvider(
-        const InventoryReceiptsFilter(pageIndex: 7),
+        const InventoryDocumentsFilter(pageIndex: 7),
       ).future,
     );
 
@@ -102,7 +103,7 @@ void main() {
     whenList().thenAnswer((_) async => throw const AppError.network());
     final c = container();
     final provider = inventoryReceiptsListControllerProvider(
-      const InventoryReceiptsFilter(),
+      const InventoryDocumentsFilter(),
     );
     c.listen(provider, (_, _) {});
 

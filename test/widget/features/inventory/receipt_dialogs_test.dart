@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -166,7 +167,8 @@ void main() {
 
     testWidgets('Confirmar confirms and closes', (tester) async {
       when(() => h.receipts.confirm(318)).thenAnswer(
-        (_) async => aReceipt(serial: 1043, status: ReceiptStatus.completed),
+        (_) async =>
+            aReceipt(serial: 1043, status: InventoryDocumentStatus.completed),
       );
       await open(tester);
 
@@ -200,7 +202,7 @@ void main() {
     ) async {
       await open(
         tester,
-        aReceipt(serial: 1043, status: ReceiptStatus.completed),
+        aReceipt(serial: 1043, status: InventoryDocumentStatus.completed),
       );
 
       expect(
@@ -220,9 +222,9 @@ void main() {
     });
 
     testWidgets('Cancelar entrada cancels and closes', (tester) async {
-      when(
-        () => h.receipts.cancel(318),
-      ).thenAnswer((_) async => aReceipt(status: ReceiptStatus.cancelled));
+      when(() => h.receipts.cancel(318)).thenAnswer(
+        (_) async => aReceipt(status: InventoryDocumentStatus.cancelled),
+      );
       await open(tester, aReceipt());
 
       await tester.tap(key('inventory_receipt_cancel_submit'));

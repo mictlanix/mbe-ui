@@ -15,8 +15,8 @@ import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_actions.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/receipt_name_cells.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/receipt_warehouse_options.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_name_cells.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_warehouse_options.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// The longest note a receipt takes.
@@ -148,7 +148,7 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
                 spacing: spacing.sm,
                 children: [
                   Flexible(
-                    child: ReceiptWarehouseName(
+                    child: InventoryWarehouseName(
                       warehouseId: receipt.warehouseId,
                     ),
                   ),
@@ -211,7 +211,7 @@ class _WarehousePicker extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final scope = ref.watch(receiptWarehouseScopeProvider);
+    final scope = ref.watch(inventoryWarehouseScopeProvider);
     final current =
         ref.watch(warehouseDisplayNameProvider(receipt.warehouseId)).value ??
         '#${receipt.warehouseId}';
@@ -221,7 +221,7 @@ class _WarehousePicker extends ConsumerWidget {
       enabled: enabled,
       displayStringForOption: (w) => w.name,
       optionSubtitle: (w) => w.facilityName,
-      optionsBuilder: (search) => receiptWarehouseOptions(
+      optionsBuilder: (search) => inventoryWarehouseOptions(
         ref.read(warehouseRepositoryProvider),
         scope,
         search,

@@ -1,22 +1,22 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/core/navigation/list_query.dart';
-import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_filter.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_documents_filter.dart';
 
 /// Spec 067 research R9 (T008): the list's view state lives in the URL.
 void main() {
   test('no facets: nothing narrowed, page 0', () {
-    final filter = InventoryReceiptsFilter.fromQuery(const ListQuery());
+    final filter = InventoryDocumentsFilter.fromQuery(const ListQuery());
 
-    expect(filter, const InventoryReceiptsFilter());
+    expect(filter, const InventoryDocumentsFilter());
     expect(filter.activeFilterCount, 0);
     expect(filter.isNarrowed, isFalse);
   });
 
   test('a full filter round-trips through the URL', () {
-    const filter = InventoryReceiptsFilter(
-      status: ReceiptStatus.completed,
+    const filter = InventoryDocumentsFilter(
+      status: InventoryDocumentStatus.completed,
       warehouseId: 3,
       pageIndex: 2,
     );
@@ -25,24 +25,24 @@ void main() {
     expect(query.facet('status'), 'completed');
     expect(query.facet('warehouse'), '3');
     expect(query.pageIndex, 2);
-    expect(InventoryReceiptsFilter.fromQuery(query), filter);
+    expect(InventoryDocumentsFilter.fromQuery(query), filter);
   });
 
   test('every status round-trips through its wire value', () {
-    for (final status in ReceiptStatus.values) {
-      final filter = InventoryReceiptsFilter(status: status);
-      expect(InventoryReceiptsFilter.fromQuery(filter.toQuery()), filter);
+    for (final status in InventoryDocumentStatus.values) {
+      final filter = InventoryDocumentsFilter(status: status);
+      expect(InventoryDocumentsFilter.fromQuery(filter.toQuery()), filter);
     }
     expect(
-      const InventoryReceiptsFilter(
-        status: ReceiptStatus.cancelled,
+      const InventoryDocumentsFilter(
+        status: InventoryDocumentStatus.cancelled,
       ).toQuery().facet('status'),
       'cancelled',
     );
   });
 
   test('an unknown status and a non-numeric warehouse are ignored', () {
-    final filter = InventoryReceiptsFilter.fromQuery(
+    final filter = InventoryDocumentsFilter.fromQuery(
       const ListQuery().withFacet('status', 'paid').withFacet('warehouse', 'x'),
     );
 
@@ -53,14 +53,14 @@ void main() {
 
   test('the badge counts each facet in use, not the page', () {
     expect(
-      const InventoryReceiptsFilter(
-        status: ReceiptStatus.draft,
+      const InventoryDocumentsFilter(
+        status: InventoryDocumentStatus.draft,
         pageIndex: 4,
       ).activeFilterCount,
       1,
     );
-    const both = InventoryReceiptsFilter(
-      status: ReceiptStatus.draft,
+    const both = InventoryDocumentsFilter(
+      status: InventoryDocumentStatus.draft,
       warehouseId: 3,
     );
     expect(both.activeFilterCount, 2);
@@ -68,12 +68,12 @@ void main() {
   });
 
   test('cleared() empties every facet and goes back to page 1', () {
-    const filter = InventoryReceiptsFilter(
-      status: ReceiptStatus.draft,
+    const filter = InventoryDocumentsFilter(
+      status: InventoryDocumentStatus.draft,
       warehouseId: 3,
       pageIndex: 2,
     );
 
-    expect(filter.cleared(), const InventoryReceiptsFilter());
+    expect(filter.cleared(), const InventoryDocumentsFilter());
   });
 }

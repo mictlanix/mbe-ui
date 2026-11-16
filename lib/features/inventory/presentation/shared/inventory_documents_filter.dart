@@ -1,30 +1,32 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:mbe_ui/core/navigation/list_query.dart';
-import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 
-part 'inventory_receipts_filter.freezed.dart';
+part 'inventory_documents_filter.freezed.dart';
 
 /// The "Entradas de almacén" list's addressable view state (spec 067
 /// research R9). Every field lives in the URL, so Back from a receipt returns
 /// to the same page and filters. There is no search box: the endpoint has
 /// none.
 @freezed
-abstract class InventoryReceiptsFilter with _$InventoryReceiptsFilter {
-  const InventoryReceiptsFilter._();
+abstract class InventoryDocumentsFilter with _$InventoryDocumentsFilter {
+  const InventoryDocumentsFilter._();
 
-  const factory InventoryReceiptsFilter({
-    ReceiptStatus? status,
+  const factory InventoryDocumentsFilter({
+    InventoryDocumentStatus? status,
     int? warehouseId,
     @Default(0) int pageIndex,
   }) = _InventoryReceiptsFilter;
 
   /// An unknown `status` or a non-numeric `warehouse` is ignored.
-  factory InventoryReceiptsFilter.fromQuery(ListQuery query) {
+  factory InventoryDocumentsFilter.fromQuery(ListQuery query) {
     final status = query.facet('status');
     final warehouse = query.facet('warehouse');
-    return InventoryReceiptsFilter(
-      status: ReceiptStatus.values.where((s) => s.name == status).firstOrNull,
+    return InventoryDocumentsFilter(
+      status: InventoryDocumentStatus.values
+          .where((s) => s.name == status)
+          .firstOrNull,
       warehouseId: warehouse == null ? null : int.tryParse(warehouse),
       pageIndex: query.pageIndex,
     );
@@ -43,5 +45,5 @@ abstract class InventoryReceiptsFilter with _$InventoryReceiptsFilter {
   bool get isNarrowed => activeFilterCount > 0;
 
   /// "Limpiar todo": every facet emptied, back to page 1.
-  InventoryReceiptsFilter cleared() => const InventoryReceiptsFilter();
+  InventoryDocumentsFilter cleared() => const InventoryDocumentsFilter();
 }

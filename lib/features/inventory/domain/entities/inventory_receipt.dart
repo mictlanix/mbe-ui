@@ -2,13 +2,10 @@ import 'package:decimal/decimal.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/over_receipt.dart';
 
 part 'inventory_receipt.freezed.dart';
-
-/// The state of a warehouse receipt (spec 067 data-model). Only a draft is
-/// editable.
-enum ReceiptStatus { draft, completed, cancelled }
 
 /// One row of the receipts list.
 @freezed
@@ -22,7 +19,7 @@ abstract class InventoryReceiptSummary with _$InventoryReceiptSummary {
     /// Null until the receipt is confirmed. The "Borrador #{id}" text for a
     /// draft is built by the presentation layer from l10n.
     int? serial,
-    required ReceiptStatus status,
+    required InventoryDocumentStatus status,
     required int creatorId,
     required DateTime createdAt,
   }) = _InventoryReceiptSummary;
@@ -63,7 +60,7 @@ abstract class InventoryReceipt with _$InventoryReceipt {
     required int warehouseId,
     int? purchaseOrderId,
     int? serial,
-    required ReceiptStatus status,
+    required InventoryDocumentStatus status,
     required int creatorId,
     required DateTime createdAt,
 
@@ -78,7 +75,7 @@ abstract class InventoryReceipt with _$InventoryReceipt {
     @Default(0) int serverWarningCount,
   }) = _InventoryReceipt;
 
-  bool get isDraft => status == ReceiptStatus.draft;
+  bool get isDraft => status == InventoryDocumentStatus.draft;
   bool get isLinked => purchaseOrderId != null;
 
   List<OverReceipt> get overReceipts => computeOverReceipts(lines);

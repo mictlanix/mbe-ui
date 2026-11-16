@@ -1,5 +1,6 @@
 import 'package:decimal/decimal.dart';
 
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 
 /// Warehouse receipts (spec 067), over the generated `InventoryReceiptsApi`.
@@ -9,7 +10,7 @@ abstract class InventoryReceiptRepository {
   /// `GET /inventory-receipts?status&warehouse&skip&limit`. The server orders
   /// newest first.
   Future<InventoryReceiptPage> list({
-    ReceiptStatus? status,
+    InventoryDocumentStatus? status,
     int? warehouseId,
     required int skip,
     required int limit,

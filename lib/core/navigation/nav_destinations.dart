@@ -107,6 +107,11 @@ class NavBranch {
   // above — display order comes from position within `kNavigationTree` (the
   // Inventario group sits between Logística and Facturación there).
   static const int inventoryReceipts = 30;
+
+  // 068-warehouse-issues: appended last, same rationale as `cashSessions`
+  // above — display order comes from position within `kNavigationTree` (the
+  // second destination of the Inventario group there).
+  static const int inventoryIssues = 31;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -444,8 +449,8 @@ const List<NavItem> kNavigationTree = [
       ),
     ],
   ),
-  // Inventario (spec 067): warehouse receipts. Its own group, between
-  // Logística and Facturación; issues and transfers will join it.
+  // Inventario (spec 067): warehouse receipts, and (spec 068) issues. Its own
+  // group, between Logística and Facturación; transfers will join it.
   NavGroup(
     id: 'inventory',
     label: _inventoryLabel,
@@ -461,6 +466,18 @@ const List<NavItem> kNavigationTree = [
         route: '/inventory/receipts',
         branchIndex: NavBranch.inventoryReceipts,
         gate: PrivilegeGate(SystemObject.inventoryReceipts, AccessRight.read),
+      ),
+      // Gated on SystemObject 16 (`inventoryIssues`) read, matching the
+      // server's GET /inventory-issues. Creating and editing need 16 create
+      // and update, checked on the screens.
+      NavDestination(
+        id: 'inventory-issues',
+        label: _inventoryIssuesLabel,
+        icon: Icons.outbox_outlined,
+        selectedIcon: Icons.outbox,
+        route: '/inventory/issues',
+        branchIndex: NavBranch.inventoryIssues,
+        gate: PrivilegeGate(SystemObject.inventoryIssues, AccessRight.read),
       ),
     ],
   ),
@@ -494,6 +511,7 @@ String _logisticsLabel(AppLocalizations l10n) => l10n.logisticsGroupTitle;
 String _inventoryLabel(AppLocalizations l10n) => l10n.navInventoryGroup;
 String _inventoryReceiptsLabel(AppLocalizations l10n) =>
     l10n.navInventoryReceipts;
+String _inventoryIssuesLabel(AppLocalizations l10n) => l10n.navInventoryIssues;
 String _invoicingLabel(AppLocalizations l10n) => l10n.navInvoicingGroup;
 String _fiscalDocumentsLabel(AppLocalizations l10n) => l10n.navFiscalDocuments;
 String _usersLabel(AppLocalizations l10n) => l10n.usersMenuTitle;
