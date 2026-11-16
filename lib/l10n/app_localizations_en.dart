@@ -7676,4 +7676,315 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fiscalDocumentRelationRemoveTooltip => 'Remove relation';
+
+  @override
+  String get navInventoryGroup => 'Inventory';
+
+  @override
+  String get navInventoryReceipts => 'Warehouse receipts';
+
+  @override
+  String inventoryReceiptTitle(String folio) {
+    return 'Receipt $folio';
+  }
+
+  @override
+  String inventoryReceiptTitleDraft(String id) {
+    return 'Receipt · Draft #$id';
+  }
+
+  @override
+  String inventoryReceiptDraftFolio(String id) {
+    return 'Draft #$id';
+  }
+
+  @override
+  String get inventoryReceiptStatusDraft => 'Draft';
+
+  @override
+  String get inventoryReceiptStatusCompleted => 'Confirmed';
+
+  @override
+  String get inventoryReceiptStatusCancelled => 'Cancelled';
+
+  @override
+  String get inventoryReceiptColFolio => 'Folio';
+
+  @override
+  String get inventoryReceiptColWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryReceiptColFacility => 'Facility';
+
+  @override
+  String get inventoryReceiptColPurchaseOrder => 'Purchase order';
+
+  @override
+  String get inventoryReceiptColStatus => 'Status';
+
+  @override
+  String get inventoryReceiptColCreator => 'Created by';
+
+  @override
+  String get inventoryReceiptColDate => 'Date';
+
+  @override
+  String get inventoryReceiptFacetStatus => 'Status';
+
+  @override
+  String get inventoryReceiptFacetWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryReceiptFacetAll => 'All';
+
+  @override
+  String get inventoryReceiptEmpty => 'There are no warehouse receipts';
+
+  @override
+  String get inventoryReceiptFilteredEmpty => 'No receipt matches the filters.';
+
+  @override
+  String get inventoryReceiptFactStatus => 'Status';
+
+  @override
+  String get inventoryReceiptFactFolio => 'Folio';
+
+  @override
+  String get inventoryReceiptFactWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryReceiptFactFacility => 'Facility';
+
+  @override
+  String get inventoryReceiptFactPurchaseOrder => 'Purchase order';
+
+  @override
+  String get inventoryReceiptFactComment => 'Notes';
+
+  @override
+  String get inventoryReceiptFactCreatedBy => 'Created by';
+
+  @override
+  String get inventoryReceiptFactModifiedBy => 'Modified by';
+
+  @override
+  String get inventoryReceiptLinesTitle => 'Lines';
+
+  @override
+  String get inventoryReceiptLineColCode => 'Code';
+
+  @override
+  String get inventoryReceiptLineColProduct => 'Product';
+
+  @override
+  String get inventoryReceiptLineColQuantity => 'Quantity received';
+
+  @override
+  String get inventoryReceiptLineColOrdered => 'Ordered';
+
+  @override
+  String get inventoryReceiptLineColElsewhere => 'Received in other receipts';
+
+  @override
+  String get inventoryReceiptLinesEmpty => 'Add the products received.';
+
+  @override
+  String get inventoryReceiptNoFacility =>
+      'Your user has no facility assigned.';
+
+  @override
+  String get inventoryReceiptNewAction => 'New receipt';
+
+  @override
+  String get inventoryReceiptEditHeader => 'Edit header';
+
+  @override
+  String get inventoryReceiptAddProduct => 'Add product';
+
+  @override
+  String get inventoryReceiptConfirm => 'Confirm';
+
+  @override
+  String get inventoryReceiptCancel => 'Cancel receipt';
+
+  @override
+  String get inventoryReceiptComplementary => 'Complementary receipt';
+
+  @override
+  String get inventoryReceiptLineEditTooltip => 'Edit quantity';
+
+  @override
+  String get inventoryReceiptLineRemoveTooltip => 'Remove line';
+
+  @override
+  String get inventoryReceiptNewTitle => 'New receipt';
+
+  @override
+  String get inventoryReceiptNewSubmit => 'Create';
+
+  @override
+  String get inventoryReceiptEditHeaderTitle => 'Edit header';
+
+  @override
+  String get inventoryReceiptFieldWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryReceiptFieldComment => 'Notes';
+
+  @override
+  String get inventoryReceiptFieldProduct => 'Product';
+
+  @override
+  String get inventoryReceiptFieldQuantity => 'Quantity';
+
+  @override
+  String get inventoryReceiptWarehouseFixed => 'Fixed: purchase order';
+
+  @override
+  String get inventoryReceiptAddProductTitle => 'Add product';
+
+  @override
+  String get inventoryReceiptAddProductSubmit => 'Add';
+
+  @override
+  String get inventoryReceiptLineQuantityTitle => 'Line quantity';
+
+  @override
+  String inventoryReceiptRemoveTitle(String product) {
+    return 'Remove $product from the receipt?';
+  }
+
+  @override
+  String get inventoryReceiptRemoveBody =>
+      'The line is removed from the draft.';
+
+  @override
+  String get inventoryReceiptRemoveAction => 'Remove';
+
+  @override
+  String get inventoryReceiptConfirmTitle => 'Confirm receipt';
+
+  @override
+  String get inventoryReceiptConfirmBody =>
+      'Confirming the receipt assigns a folio and adds the stock to the warehouse. It can\'t be edited afterwards.';
+
+  @override
+  String get inventoryReceiptConfirmAction => 'Confirm';
+
+  @override
+  String get inventoryReceiptBack => 'Back';
+
+  @override
+  String get inventoryReceiptCancelTitle => 'Cancel receipt';
+
+  @override
+  String get inventoryReceiptCancelDraftBody =>
+      'Cancelling the draft adds no stock to the warehouse.';
+
+  @override
+  String get inventoryReceiptCancelCompletedBody =>
+      'Cancelling the receipt removes from the warehouse the stock it added.';
+
+  @override
+  String get inventoryReceiptCancelAction => 'Cancel receipt';
+
+  @override
+  String inventoryReceiptOverReceipt(
+    String code,
+    String excess,
+    String received,
+    String ordered,
+  ) {
+    return 'Over-received $code: $excess (received $received of $ordered ordered)';
+  }
+
+  @override
+  String get inventoryReceiptCostNotice =>
+      'Costs were updated with exceptions.';
+
+  @override
+  String get inventoryReceiptCostNoticeClose => 'Close';
+
+  @override
+  String inventoryReceiptRefusalProduct(String code) {
+    return 'Product: $code';
+  }
+
+  @override
+  String get inventoryReceiptQuantityInvalid =>
+      'Enter a quantity greater than 0.';
+
+  @override
+  String get inventoryReceiptBackToList => 'Back to warehouse receipts';
+
+  @override
+  String get apiErrorInventoryReceiptWarehouseFixed =>
+      'A purchase order\'s receipt can\'t move to another warehouse.';
+
+  @override
+  String get apiErrorInventoryReceiptComplementaryNoPurchaseOrder =>
+      'The receipt isn\'t linked to a purchase order.';
+
+  @override
+  String get apiErrorInventoryReceiptComplementaryPurchaseOrderCancelled =>
+      'The purchase order is cancelled.';
+
+  @override
+  String get apiErrorInventoryReceiptComplementaryPurchaseOrderNotCompleted =>
+      'The purchase order isn\'t completed yet.';
+
+  @override
+  String get apiErrorInventoryReceiptComplementaryPurchaseOrderFullyReceived =>
+      'The purchase order was already fully received in this warehouse.';
+
+  @override
+  String get apiErrorInventoryReceiptComplementaryUnavailable =>
+      'No complementary receipt can be created for this receipt.';
+
+  @override
+  String apiErrorInventoryDocumentInsufficientStock(
+    String requested,
+    String available,
+  ) {
+    return 'Not enough stock: $requested required, $available available.';
+  }
+
+  @override
+  String apiErrorInventoryDocumentNoLines(String gender, String resource) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'feminine': 'The $resource has no lines.',
+      'other': 'The $resource has no lines.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String apiErrorInventoryDocumentLineWithoutQuantity(String product) {
+    return 'Line $product has no quantity.';
+  }
+
+  @override
+  String apiErrorInventoryDocumentAlreadyCancelled(
+    String gender,
+    String resource,
+  ) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'feminine': 'The $resource is already cancelled.',
+      'other': 'The $resource is already cancelled.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String apiErrorProductNotStockable(String product) {
+    return 'Product $product isn\'t stockable.';
+  }
+
+  @override
+  String get apiErrorFacilityNoInTransitLocation =>
+      'The facility has no in-transit location configured.';
+
+  @override
+  String get apiErrorStatusFilterUnsupported =>
+      'The status filter isn\'t valid.';
 }

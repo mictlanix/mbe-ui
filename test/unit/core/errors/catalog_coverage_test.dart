@@ -38,10 +38,15 @@ void main() {
     'fiscal_document.unknown_usage',
     'fiscal_document.version_not_printable',
     'image.too_large',
+    'inventory_document.already_cancelled',
+    'inventory_document.insufficient_stock',
+    'inventory_document.line_without_quantity',
+    'inventory_document.no_lines',
     'payment.currency_mismatch',
     'payment.exceeds_order_balance',
     'payment.exceeds_unapplied',
     'product.lookup_too_many',
+    'product.not_stockable',
     'product_price.references_not_found',
     'refund.line_invoiced',
     'resource.already_exists',
@@ -106,7 +111,7 @@ void main() {
         missing.add(cells[1]);
       }
     }
-    expect(checked, 143);
+    expect(checked, 152);
     expect(missing, isEmpty);
   });
 

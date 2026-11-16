@@ -31,13 +31,13 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.csdPeriodKeyNotEncrypted,
   api.ErrorCode.csdPeriodKeyNotRsa,
   api.ErrorCode.csdPeriodKeyUnreadable,
+  api.ErrorCode.customerDiscountPeriodProductNotFound,
   api.ErrorCode.customerPeriodCreditHold,
   api.ErrorCode.customerPeriodCreditLimitExceeded,
   api.ErrorCode.customerPeriodCreditLimitReached,
   api.ErrorCode.customerPeriodDefaultNotDeletable,
   api.ErrorCode.customerPeriodNoCreditLimit,
   api.ErrorCode.customerPeriodWalkInNoCredit,
-  api.ErrorCode.customerDiscountPeriodProductNotFound,
   api.ErrorCode.deliveryOrderPeriodInsufficientNotice,
   api.ErrorCode.deliveryOrderPeriodLineAlreadyPresent,
   api.ErrorCode.deliveryOrderPeriodLineNotDeliverable,
@@ -61,6 +61,7 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.emailPeriodNotConfigured,
   api.ErrorCode.emailPeriodSendFailed,
   api.ErrorCode.facilityPeriodNoDispatchWarehouse,
+  api.ErrorCode.facilityPeriodNoInTransitLocation,
   api.ErrorCode.facilityPeriodOtherFacility,
   api.ErrorCode.facilityPeriodRequired,
   api.ErrorCode.fiscalDocumentPeriodAlreadyRelated,
@@ -95,6 +96,12 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.imagePeriodTooLarge,
   api.ErrorCode.imagePeriodUnsupportedFormat,
   api.ErrorCode.incidencePeriodReasonRequired,
+  api.ErrorCode.inventoryDocumentPeriodAlreadyCancelled,
+  api.ErrorCode.inventoryDocumentPeriodInsufficientStock,
+  api.ErrorCode.inventoryDocumentPeriodLineWithoutQuantity,
+  api.ErrorCode.inventoryDocumentPeriodNoLines,
+  api.ErrorCode.inventoryReceiptPeriodComplementaryUnavailable,
+  api.ErrorCode.inventoryReceiptPeriodWarehouseFixed,
   api.ErrorCode.lockPeriodBusy,
   api.ErrorCode.paymentPeriodAlreadyApplied,
   api.ErrorCode.paymentPeriodAlreadyVerified,
@@ -115,6 +122,7 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.productPeriodLookupCriteriaRequired,
   api.ErrorCode.productPeriodLookupTooMany,
   api.ErrorCode.productPeriodMergeWithItself,
+  api.ErrorCode.productPeriodNotStockable,
   api.ErrorCode.productPricePeriodDuplicateEntry,
   api.ErrorCode.productPricePeriodReferencesNotFound,
   api.ErrorCode.quotePeriodAlreadyCancelled,
@@ -146,6 +154,7 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.salesOrderPeriodZeroPricedLines,
   api.ErrorCode.serverPeriodError,
   api.ErrorCode.statePeriodTransitionInvalid,
+  api.ErrorCode.statusFilterPeriodUnsupported,
   api.ErrorCode.supplierAgreementPeriodEndBeforeStart,
   api.ErrorCode.taxpayerBatchPeriodInUse,
   api.ErrorCode.taxpayerCertificatePeriodHolderMismatch,
@@ -209,6 +218,8 @@ String? localizeProblem(
     api.ErrorCode.serverPeriodError => l10n.apiErrorServerError,
     api.ErrorCode.statePeriodTransitionInvalid =>
       l10n.apiErrorStateTransitionInvalid,
+    api.ErrorCode.statusFilterPeriodUnsupported =>
+      l10n.apiErrorStatusFilterUnsupported,
     api.ErrorCode.resourcePeriodNotFound => _ap1(
       problem.stringParam('resource'),
       (r) => l10n.apiErrorResourceNotFound(
@@ -316,6 +327,8 @@ String? localizeProblem(
     api.ErrorCode.emailPeriodSendFailed => l10n.apiErrorEmailSendFailed,
     api.ErrorCode.facilityPeriodNoDispatchWarehouse =>
       l10n.apiErrorFacilityNoDispatchWarehouse,
+    api.ErrorCode.facilityPeriodNoInTransitLocation =>
+      l10n.apiErrorFacilityNoInTransitLocation,
     api.ErrorCode.facilityPeriodOtherFacility => _ap1(
       problem.stringParam('resource'),
       (r) => l10n.apiErrorFacilityOtherFacility(
@@ -411,6 +424,45 @@ String? localizeProblem(
       l10n.apiErrorImageUnsupportedFormat,
     api.ErrorCode.incidencePeriodReasonRequired =>
       l10n.apiErrorIncidenceReasonRequired,
+    api.ErrorCode.inventoryDocumentPeriodAlreadyCancelled => _ap1(
+      problem.stringParam('resource'),
+      (r) => l10n.apiErrorInventoryDocumentAlreadyCancelled(
+        resourceGender(r, l10n),
+        resourceNoun(r, l10n),
+      ),
+    ),
+    api.ErrorCode.inventoryDocumentPeriodInsufficientStock => _ap2(
+      _quantity(problem, 'requested', fmt),
+      _quantity(problem, 'available', fmt),
+      l10n.apiErrorInventoryDocumentInsufficientStock,
+    ),
+    api.ErrorCode.inventoryDocumentPeriodLineWithoutQuantity => _ap1(
+      problem.stringParam('product_code'),
+      l10n.apiErrorInventoryDocumentLineWithoutQuantity,
+    ),
+    api.ErrorCode.inventoryDocumentPeriodNoLines => _ap1(
+      problem.stringParam('resource'),
+      (r) => l10n.apiErrorInventoryDocumentNoLines(
+        resourceGender(r, l10n),
+        resourceNoun(r, l10n),
+      ),
+    ),
+    // The reason picks the sentence; a missing or unknown one reads as the
+    // generic sentence, so a message always shows (spec 067).
+    api.ErrorCode.inventoryReceiptPeriodComplementaryUnavailable =>
+      switch (problem.stringParam('reason')) {
+        'no_purchase_order' =>
+          l10n.apiErrorInventoryReceiptComplementaryNoPurchaseOrder,
+        'purchase_order_cancelled' =>
+          l10n.apiErrorInventoryReceiptComplementaryPurchaseOrderCancelled,
+        'purchase_order_not_completed' =>
+          l10n.apiErrorInventoryReceiptComplementaryPurchaseOrderNotCompleted,
+        'purchase_order_fully_received' =>
+          l10n.apiErrorInventoryReceiptComplementaryPurchaseOrderFullyReceived,
+        _ => l10n.apiErrorInventoryReceiptComplementaryUnavailable,
+      },
+    api.ErrorCode.inventoryReceiptPeriodWarehouseFixed =>
+      l10n.apiErrorInventoryReceiptWarehouseFixed,
     api.ErrorCode.lockPeriodBusy => l10n.apiErrorLockBusy,
     api.ErrorCode.paymentPeriodAlreadyApplied =>
       l10n.apiErrorPaymentAlreadyApplied,
@@ -459,6 +511,10 @@ String? localizeProblem(
     ),
     api.ErrorCode.productPeriodMergeWithItself =>
       l10n.apiErrorProductMergeWithItself,
+    api.ErrorCode.productPeriodNotStockable => _ap1(
+      problem.stringParam('product_code'),
+      l10n.apiErrorProductNotStockable,
+    ),
     api.ErrorCode.productPricePeriodDuplicateEntry =>
       l10n.apiErrorProductPriceDuplicateEntry,
     api.ErrorCode.productPricePeriodReferencesNotFound => _ap1(

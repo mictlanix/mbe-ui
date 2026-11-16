@@ -46,6 +46,8 @@ import 'package:mbe_ui/features/sales/presentation/capture/advanced_search_scree
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_detail_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_detail_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_list_screen.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_documents_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/for_delivery/pending_deliveries_filter.dart';
 import 'package:mbe_ui/features/sales/presentation/for_delivery/pending_deliveries_screen.dart';
@@ -437,6 +439,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 067-warehouse-receipts: appended last (index 30), same rationale
+          // as `payments` above. Gated on SystemObject 15 (`inventoryReceipts`)
+          // read, see `_routeGate`. A row opens the top-level
+          // `/inventory/receipts/:receiptId` route.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: inventoryReceiptsPath,
+                builder: (context, state) => InventoryReceiptsListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -639,6 +655,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           fiscalDocumentId: int.tryParse(
             state.pathParameters['fiscalDocumentId'] ?? '',
           ),
+        ),
+      ),
+      // 067-warehouse-receipts: a receipt's own full screen, gated on
+      // SystemObject 15 (`inventoryReceipts`) read by the `_routeGate` prefix.
+      // A non-numeric id parses to `null`, which the screen shows as not
+      // found.
+      GoRoute(
+        path: '$inventoryReceiptsPath/:receiptId',
+        builder: (context, state) => InventoryReceiptDetailScreen(
+          receiptId: int.tryParse(state.pathParameters['receiptId'] ?? ''),
         ),
       ),
       // 038-advanced-product-search: a top-level sibling, not a shell branch
@@ -917,6 +943,12 @@ NavGate? _routeGate(String location) {
   // and every `/invoicing/fiscal-documents/:fiscalDocumentId`.
   if (location.startsWith(fiscalDocumentsPath)) {
     return PrivilegeGate(SystemObject.fiscalDocuments, AccessRight.read);
+  }
+  // 067-warehouse-receipts: SystemObject 15 (`inventoryReceipts`) read,
+  // matching the server's GET /inventory-receipts. The prefix covers the list
+  // and every `/inventory/receipts/:id`.
+  if (location.startsWith(inventoryReceiptsPath)) {
+    return PrivilegeGate(SystemObject.inventoryReceipts, AccessRight.read);
   }
   // 061-delivery-orders: SystemObject 71 (`deliveryOrders`) read, matching
   // the server's GET /delivery-orders. The prefix covers the list and every
