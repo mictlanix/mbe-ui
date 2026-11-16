@@ -6,7 +6,7 @@
 
 - mbe-api is running locally with the dev tenant. `.env` holds `MBE_POS_*`, which is the admin account (see `test/integration/TEST_ACCOUNTS.md`).
 - After a DB reset, run `python3 tool/seed_test_accounts.py`. Step 1 uses `qanoaccess`.
-- **Issued documents** come from legacy data. The live test finds them at run time with `status=issued` (and `cancelled` for step 5), not from fixed ids.
+- **Issued documents** come from legacy data. The live test finds them at run time with `status=issued` (and `cancelled` for step 5), not from fixed ids. If the tenant has none, the PDF and XML checks fail with a message saying so; they never skip silently.
 - **Sealing** needs an issuer with an active certificate valid now, and an invoice series. Spec 065's quickstart used `CAG190523ES5`. The live test discovers the store's issuer and skips sealing with a printed reason when confirm returns `no_valid_certificate`.
 - **Draft source**: a customer with at least one taxpayer (RFC) and a completed sales order with invoiceable products. The live test discovers one: a recent `status=completed` order whose customer has taxpayers.
 
@@ -46,6 +46,7 @@ Run writes only against the dev tenant.
    - Open an issued invoice. Header, lines and totals show, and Total equals the list's total.
    - "Ver PDF" previews the document. Print and Descargar work.
    - "Descargar XML" opens a save dialog named `{RFC}-{serie}{folio:000000}.xml`, and the saved file is byte-identical to `GET /fiscal-documents/{id}/xml`.
+   - Time it (SC-001): from typing the folio in the list to the PDF on screen takes under 30 seconds.
 5. **Refusals (US2-5).**
    - Open a cancelled legacy document. The PDF shows the cancellation mark.
    - Open a pre-4.0 document if the tenant has one. Ver PDF shows "versión no imprimible" in Spanish.
@@ -67,6 +68,7 @@ Run writes only against the dev tenant.
    - Confirm a draft with no lines. It shows "La factura no tiene partidas" and stays a draft.
    - Confirm the real draft. It reads Sellado with "Factura {serie}{folio}", has no edit controls, and shows the "pendiente de timbrar" banner.
    - The list shows its total, and it equals the "Total (estimado)" the draft showed (research R11). The live test asserts this.
+   - Time it (SC-002): steps 6, 7 and 9 for one order, from Nueva factura to Sellado, take under 2 minutes.
 10. **Reopen (US5-3).** Reabrir: the invoice is a draft again with the same folio, and the Serie field is locked.
 11. **Relations (US6).** On the draft, "Agregar relación", 07, then pick an issued invoice of the same recipient.
     - It is listed. A 04 is now locked out by the type lock.

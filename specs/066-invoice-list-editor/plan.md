@@ -134,7 +134,7 @@ lib/features/invoicing/                                  # new module (R1)
     ├── fiscal_document_actions.dart                     # writes + invalidations (R6)
     ├── fiscal_document_status_chip.dart                 # C4
     ├── fiscal_document_labels.dart                      # terms, tax rate, relation type labels
-    ├── invoice_totals.dart                              # totals block
+    ├── invoice_totals.dart                              # totals block (T019)
     ├── new_invoice_dialog.dart                          # C6
     ├── invoice_header_dialog.dart                       # C7
     ├── invoice_line_dialog.dart                         # C8

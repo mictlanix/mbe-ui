@@ -63,7 +63,7 @@ From the list, the clerk opens a document and sees its header (issuer, recipient
 
 ### User Story 3 - Invoice sales orders (Priority: P1)
 
-The clerk starts a new invoice by choosing the customer and one of that customer's taxpayer records (RFC). The system fills in the store, issuer, series and default terms. The clerk then adds one or more completed sales orders. Each order contributes its invoiceable lines at the quantity not yet invoiced or refunded. Adding the same order twice adds nothing new.
+The clerk starts a new invoice by choosing the customer and one of that customer's taxpayer records (RFC). The system fills in the sucursal (facility), issuer, series and default terms. The clerk then adds one or more completed sales orders. Each order contributes its invoiceable lines at the quantity not yet invoiced or refunded. Adding the same order twice adds nothing new.
 
 **Why this priority**: Invoicing sales orders is the main way invoices are made (10,698 invoices in the last 24 months of legacy use).
 
@@ -73,7 +73,7 @@ The clerk starts a new invoice by choosing the customer and one of that customer
 
 1. **Given** a user who can create fiscal documents, **When** they choose New invoice, a customer and one of the customer's RFCs, **Then** a draft invoice opens with the issuer, series, store and default terms filled in.
 2. **Given** a customer with no taxpayer records, **When** the user picks the customer, **Then** no RFC can be chosen and the user is told the customer needs one first.
-3. **Given** a store whose issuer has no invoice series, **When** the user creates an invoice, **Then** the server's refusal ("the issuer has no invoice series") is shown and no draft is created.
+3. **Given** a sucursal whose issuer has no invoice series, **When** the user creates an invoice, **Then** the server's refusal ("the issuer has no invoice series") is shown and no draft is created.
 4. **Given** a draft, **When** the user adds a completed, non-cancelled sales order, **Then** its invoiceable lines are added at their remaining quantity, each showing which order it came from.
 5. **Given** a draft that already holds an order's lines, **When** the user adds that order again, **Then** no line is duplicated.
 6. **Given** a draft, **When** the user tries to add an order that is not completed, is cancelled, or has nothing left to invoice, **Then** they see the server's reason and the draft is unchanged.
@@ -82,7 +82,7 @@ The clerk starts a new invoice by choosing the customer and one of that customer
 
 ### User Story 4 - Edit an invoice draft (Priority: P2)
 
-On a draft, the clerk adjusts lines (quantity, price, discount, tax rate, description, comment), removes lines, and adds products by hand when they hold the standalone-invoice right. They also edit header fields: payment terms (PUE/PPD), payment form, CFDI usage, issue date, payment reference, notes and, with the extra right, the issuing store.
+On a draft, the clerk adjusts lines (quantity, price, discount, tax rate, description, comment), removes lines, and adds products by hand when they hold the standalone-invoice right. They also edit header fields: payment terms (PUE/PPD), payment form, CFDI usage, issue date, reference, notes and, with the extra right, the issuing sucursal (facility).
 
 **Why this priority**: Most invoices need small adjustments before they go out. Standalone invoices (service charges, concepts with no sales order) depend on manual lines.
 
@@ -98,7 +98,7 @@ On a draft, the clerk adjusts lines (quantity, price, discount, tax rate, descri
 6. **Given** a draft, **When** the user switches the terms to PPD, **Then** the payment form becomes 99 (to be defined) and cannot be changed while PPD is selected.
 7. **Given** a draft, **When** the user sets an issue date in the future or more than 72 hours ago, **Then** it is refused with a clear message.
 8. **Given** a draft that already has a folio (it was reopened), **When** the user looks at the series, **Then** it is shown but cannot be changed.
-9. **Given** a user without the issuing-store right, **When** they edit the header, **Then** the store cannot be changed.
+9. **Given** a user without the issuing-sucursal right, **When** they edit the header, **Then** the sucursal cannot be changed.
 
 ---
 
@@ -139,12 +139,12 @@ Some invoices must cite earlier ones: an invoice that replaces a cancelled one (
 ### Edge Cases
 
 - A document of a type other than invoice (credit note, payment receipt, legacy fee or rent receipt) appears in the list and opens read-only. This spec never offers to edit it.
-- A legacy draft invoice (never completed, never sealed) opens as a draft and can be edited like a new one, since the server treats it the same.
+- A legacy draft invoice (never completed, never sealed) opens as a draft and can be edited like a new one, since the server treats it the same. If it has no customer, the recipient and add-order controls are absent and the screen says the draft has no customer, because the customer can't be set afterwards; everything else stays editable.
 - A document of a version older than 4.0 shows its data. The XML downloads, but the PDF is refused with the server's version error.
 - An issued document whose stored XML is missing: both downloads fail with the server's "XML missing" error.
 - A date-range filter hides drafts, because a draft has no issue date yet; the filter says so.
 - Two clerks edit the same draft. The server applies each change as it arrives; after a refusal or a save, the screen shows the document as the server returned it.
-- The customer's RFC is the general public RFC (XAXX010101000). The recipient's postal code comes from the store, as the server sets it.
+- The customer's RFC is the general public RFC (XAXX010101000). The recipient's postal code comes from the sucursal, as the server sets it.
 - A sales order line whose quantity is fully invoiced or refunded is not added; if nothing remains on the whole order, the user is told.
 - A user can read fiscal documents but not update them: every document opens read-only, with no New, edit, confirm or reopen actions.
 - The user leaves a draft with unsaved edits in a line or header form: they are warned before losing them, as in other back-office forms.
@@ -177,7 +177,7 @@ Some invoices must cite earlier ones: an invoice that replaces a cancelled one (
 - **FR-014**: On a draft, users MUST be able to edit a line's quantity (greater than 0), unit price (0 or more), discount (0–100 %), tax rate (16 %, 0 % or exempt), internal code, description and comment, and to delete a line.
 - **FR-015**: On a draft, users MUST be able to edit the recipient (among the customer's RFCs), series, payment terms, payment form, CFDI usage, issue date, reference and notes. Choosing PPD MUST set the payment form to 99 and lock it.
 - **FR-016**: The series MUST NOT be changeable once the invoice has a folio.
-- **FR-017**: The issuing store MUST be changeable only by users who also hold update access on the issued-location right (system object 103).
+- **FR-017**: The issuing sucursal (facility) MUST be changeable only by users who also hold update access on the issued-location right (system object 103).
 - **FR-018**: On a draft, users MUST be able to add and remove related documents with relation type 04 (substitution) or 07 (application of an advance), one type per invoice.
 - **FR-019**: Users with update access MUST be able to confirm a draft, which leaves it sealed with its folio shown, or show the server's reason when it is refused.
 - **FR-020**: Users with update access MUST be able to reopen a sealed invoice after confirming the action. It returns to draft and keeps its folio.
@@ -186,7 +186,7 @@ Some invoices must cite earlier ones: an invoice that replaces a cancelled one (
 
 **Across the feature**
 
-- **FR-023**: Actions the user's rights do not allow MUST be hidden or disabled, mirroring the server's checks: read on 23 to see, create on 23 to start, update on 23 to edit, confirm and reopen, create on 56 for manual lines, update on 103 to change the store.
+- **FR-023**: Actions the user's rights do not allow MUST be absent, never shown disabled, mirroring the server's checks: read on 23 to see, create on 23 to start, update on 23 to edit, confirm and reopen, create on 56 for manual lines, update on 103 to change the sucursal. A control that lists other records also needs that record's read right: Customers to choose a customer, Sales orders to add an order, Taxpayers to filter by issuer or choose a series.
 - **FR-024**: Every server refusal MUST be shown with the localized text for its error code, never a raw server message or a generic failure.
 - **FR-025**: All user-facing text MUST be in Spanish, with amounts, dates and identifiers formatted by the app's shared formatting.
 
@@ -195,7 +195,7 @@ Some invoices must cite earlier ones: an invoice that replaces a cancelled one (
 - **Fiscal document**: A CFDI of any type (invoice, credit note, payment receipt and others). It has an issuer, a customer and recipient taxpayer, a series and folio, an issue date, a state, payment terms and form, CFDI usage, currency, totals, and, once stamped, a UUID.
 - **Invoice line**: A product on an invoice with SAT product and unit keys, quantity, unit price, discount, tax rate, description and comment. It may point to the sales order line it came from, which limits its quantity to what remains to invoice.
 - **Related document**: A link from an invoice to an earlier stamped CFDI, with relation type 04 or 07.
-- **Taxpayer issuer and series**: The store's RFC that issues the invoice, and the invoice series whose folios it uses (maintained in spec 065).
+- **Taxpayer issuer and series**: The sucursal's RFC that issues the invoice, and the invoice series whose folios it uses (maintained in spec 065).
 - **Customer taxpayer (recipient)**: One of the customer's RFC records, with the name, tax regime and postal code the invoice copies.
 
 ## Success Criteria *(mandatory)*
@@ -210,10 +210,10 @@ Some invoices must cite earlier ones: an invoice that replaces a cancelled one (
 
 ## Assumptions
 
-- Facturas is a new entry in the back office's navigation, next to the other sales-side screens. The editor is reached from it (New invoice, or opening a draft). Starting an invoice directly from a sales order screen is out of scope.
+- Facturas is the entry of a new "Facturación" group in the back office's navigation, placed after Ventas, where later fiscal screens (credit notes, cancellation, payment receipts) will join it. The editor is reached from it (New invoice, or opening a draft). Starting an invoice directly from a sales order screen is out of scope.
 - The list shows every fiscal document type because the server's list does. Only invoices are editable here. Credit notes (#56), payment receipts, cancellation (#52), stamping (#46) and email are out of scope.
 - Line discount is entered as a percentage (0–100 %) and sent as a fraction (0–1), as elsewhere in the back office.
-- The PDF preview, print and save use the app's existing document-printing flow (spec 044). The XML is saved the same way a file download is saved elsewhere in the app.
+- The PDF preview, print and save use the app's existing document-printing flow (spec 044). The app has no file-download helper yet, so the XML is saved through a new shared one (a save dialog on desktop, a browser download on web).
 - The server's rules (remaining quantities, the 72-hour window, PPD forcing form 99, relation checks, folio assignment) are enforced by the server. The UI mirrors only the rules a user can see while typing (field ranges, PPD lock, series lock, rights), and shows the server's reason for everything else.
 - The existing customer, product and sales-order pickers are reused to choose a customer, a product and an order.
 - Live verification uses legacy issued invoices already in the dev tenant for the PDF and XML. Sealing requires an issuer with an active certificate valid at the issue date, as seeded for spec 065.

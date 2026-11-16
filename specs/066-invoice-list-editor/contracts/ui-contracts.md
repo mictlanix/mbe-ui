@@ -38,6 +38,7 @@ Each contract states what a widget test asserts. Spanish labels are the `es` ARB
   - sealed: "Sellada, pendiente de timbrar. El timbrado aún no está disponible en este sistema."
   - non-invoice: "Este tipo de documento solo se puede consultar."
   - cancelled: "Cancelada el {fecha}."
+- **No-customer note**: on a legacy draft with no customer, the header shows "Este borrador no tiene cliente: no se puede cambiar el receptor ni agregar pedidos.", and Receptor and Agregar pedido are absent.
 - **Header facts**: emisor (RFC, name, regime), receptor (RFC, name, regime, CP), cliente (name via `customerDisplayNameProvider`, falls back to `#id`), sucursal, serie y folio, fecha de emisión ("al confirmar" when empty on a draft), método/forma de pago, uso CFDI, moneda, referencia, notas, UUID and fecha de timbrado (when stamped).
 - **Lines section**: a `DataTableView` on wide screens and cards on compact.
   - Columns: cantidad, unidad, clave SAT, descripción (+ clave interna, comentario), precio unitario, descuento %, IVA, importe.
