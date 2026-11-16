@@ -3,7 +3,7 @@
   "specName": "Invoice List, View, PDF and Editor",
   "branch": "066-invoice-list-editor",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -405,8 +405,21 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-16T11:28:42.904Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-16T12:51:46.492Z"
     }
   ],
   "telemetryInstanceId": "bbd26306-8c8b-4f85-b789-942dfd182e22",
-  "currentTask": "T043"
+  "currentTask": null,
+  "concerns": [
+    {
+      "note": "finished, unverified",
+      "step": "implement"
+    }
+  ]
 }
