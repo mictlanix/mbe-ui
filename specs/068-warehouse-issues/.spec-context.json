@@ -3,7 +3,7 @@
   "specName": "Warehouse Issues",
   "branch": "068-warehouse-issues",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -319,5 +319,11 @@
     }
   ],
   "telemetryInstanceId": "4678004f-928e-45f2-b660-0169fd5fec05",
-  "currentTask": "T032"
+  "currentTask": null,
+  "concerns": [
+    {
+      "note": "finished, unverified",
+      "step": "implement"
+    }
+  ]
 }
