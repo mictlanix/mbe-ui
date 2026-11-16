@@ -32,7 +32,18 @@ enum DocumentKind {
   /// `GET /customer-refunds/{id}/ticket` — the receipt of a confirmed refund
   /// (mbe-api#287, spec 057). An open or cancelled refund is a 409 on the
   /// server, so call sites offer it only for a completed one.
-  customerRefundReceipt(SystemObject.customerRefunds);
+  customerRefundReceipt(SystemObject.customerRefunds),
+
+  /// `GET /delivery-orders/{id}/ticket` — the 72 mm delivery ticket, or the
+  /// pickup ticket for a counter pickup (the server chooses, spec 064 FR-022).
+  /// DRAFT and PENDING_APPROVAL orders are a 409 on the server, so call sites
+  /// offer it only from approval on. Optionally limited to one warehouse's
+  /// lines (mbe-api spec 026).
+  deliveryTicket(SystemObject.deliveryOrders),
+
+  /// `GET /delivery-orders/{id}/document` — the Letter-size delivery order,
+  /// always with every line (mbe-api spec 026).
+  deliveryOrderDocument(SystemObject.deliveryOrders);
 
   const DocumentKind(this.gateObject);
 
@@ -52,6 +63,9 @@ enum DocumentKind {
     DocumentKind.salesQuote => 'cotizacion-${_pad(recordId, 8)}.pdf',
     DocumentKind.customerPaymentTicket => 'pago-${_pad(recordId, 8)}.pdf',
     DocumentKind.customerRefundReceipt => 'devolucion-${_pad(recordId, 8)}.pdf',
+    DocumentKind.deliveryTicket => 'entrega-${_pad(recordId, 8)}.pdf',
+    DocumentKind.deliveryOrderDocument =>
+      'orden-entrega-${_pad(recordId, 8)}.pdf',
   };
 
   static String _pad(int id, int width) => id.toString().padLeft(width, '0');

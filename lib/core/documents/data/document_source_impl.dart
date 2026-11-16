@@ -20,7 +20,8 @@ final documentSourceProvider = Provider<DocumentSource>((ref) {
 /// added (spec 044 contracts/consumed-endpoints.md), plus the quote document
 /// mbe-api spec 024 added (spec 053 contracts/consumed-endpoints.md E1), plus
 /// the payment ticket mbe-api#272 added (spec 055 research R4), plus the refund
-/// receipt mbe-api#287 added (spec 057 research R10).
+/// receipt mbe-api#287 added (spec 057 research R10), plus the delivery order
+/// ticket and Letter document mbe-api spec 026 added (spec 064 research R1).
 ///
 /// A PDF has no DTO, so there is no mapping: the bytes are returned exactly as
 /// the server sent them (FR-020). The generated methods already ask dio for
@@ -32,13 +33,15 @@ class DocumentSourceImpl implements DocumentSource {
       _cashSessions = api.CashSessionsApi(dio, appSerializers),
       _salesQuotes = api.SalesQuotesApi(dio, appSerializers),
       _customerPayments = api.CustomerPaymentsApi(dio, appSerializers),
-      _customerRefunds = api.CustomerRefundsApi(dio, appSerializers);
+      _customerRefunds = api.CustomerRefundsApi(dio, appSerializers),
+      _deliveryOrders = api.DeliveryOrdersApi(dio, appSerializers);
 
   final api.SalesOrdersApi _salesOrders;
   final api.CashSessionsApi _cashSessions;
   final api.SalesQuotesApi _salesQuotes;
   final api.CustomerPaymentsApi _customerPayments;
   final api.CustomerRefundsApi _customerRefunds;
+  final api.DeliveryOrdersApi _deliveryOrders;
 
   @override
   Future<RenderedDocument> fetch(DocumentRef ref) async {
@@ -73,6 +76,17 @@ class DocumentSourceImpl implements DocumentSource {
           _customerRefunds
               .printCustomerRefundTicketApiV1CustomerRefundsCustomerRefundIdTicketGet(
                 customerRefundId: ref.recordId,
+              ),
+        DocumentKind.deliveryTicket =>
+          _deliveryOrders
+              .printDeliveryOrderTicketApiV1DeliveryOrdersDeliveryOrderIdTicketGet(
+                deliveryOrderId: ref.recordId,
+                warehouse: ref.warehouseId,
+              ),
+        DocumentKind.deliveryOrderDocument =>
+          _deliveryOrders
+              .printDeliveryOrderDocumentApiV1DeliveryOrdersDeliveryOrderIdDocumentGet(
+                deliveryOrderId: ref.recordId,
               ),
       };
 

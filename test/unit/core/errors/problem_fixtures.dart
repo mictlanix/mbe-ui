@@ -57,6 +57,8 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.deliveryOrderPeriodLineRepeated: {'sales_order_line_id': 5},
   api.ErrorCode.deliveryOrderPeriodMixedNotAllowed: {},
   api.ErrorCode.deliveryOrderPeriodNoLines: {},
+  api.ErrorCode.deliveryOrderPeriodNoLinesFromWarehouse: {'warehouse_id': 2},
+  api.ErrorCode.deliveryOrderPeriodNotApproved: {'status': 'DRAFT'},
   api.ErrorCode.deliveryOrderPeriodNotEditable: {'status': 'APPROVED'},
   api.ErrorCode.deliveryOrderPeriodNotFailed: {'status': 'APPROVED'},
   api.ErrorCode.deliveryOrderPeriodNotPendingApproval: {
@@ -76,6 +78,7 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.deliveryOrderPeriodSalesOrderFullyDelivered: {},
   api.ErrorCode.deliveryOrderPeriodSalesOrderNotDeliverable: {},
   api.ErrorCode.deliveryOrderPeriodSalesOrderUnpaid: {},
+  api.ErrorCode.deliveryOrderPeriodUnknownWarehouse: {'warehouse_id': 99},
   api.ErrorCode.documentPeriodNotEditable: {'status': 'COMPLETED'},
   api.ErrorCode.emailPeriodNotConfigured: {},
   api.ErrorCode.emailPeriodSendFailed: {},

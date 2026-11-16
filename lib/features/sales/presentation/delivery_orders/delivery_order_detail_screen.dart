@@ -29,6 +29,7 @@ import 'package:mbe_ui/features/sales/presentation/delivery_orders/add_line_dial
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_detail_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_dialogs.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_name_cells.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_print.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_status_chip.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_orders_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/header_dialog.dart';
@@ -360,12 +361,31 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
   List<Widget> _actionButtons({
     required bool canUpdate,
     required bool canDecide,
+    required bool canPrint,
   }) {
     final l10n = AppLocalizations.of(context)!;
     final order = _order;
     final status = order.status;
     final isPickup = order.type == FulfillmentType.counterPickup;
     return [
+      // Print comes first, so the filled status action stays rightmost
+      // (spec 064 research R8).
+      if (canPrint)
+        OutlinedButton.icon(
+          key: const Key('delivery_order_view_ticket'),
+          onPressed: _viewTicket,
+          icon: const Icon(Icons.receipt_long_outlined),
+          label: Text(l10n.deliveryOrderViewTicket),
+        ),
+      // The Letter format is the secondary print action: a text button next
+      // to the ticket (spec 064 FR-001).
+      if (canPrint)
+        TextButton.icon(
+          key: const Key('delivery_order_view_letter'),
+          onPressed: _viewLetter,
+          icon: const Icon(Icons.description_outlined),
+          label: Text(l10n.deliveryOrderViewLetter),
+        ),
       // Offered in En preparación even when the order may be on an open
       // itinerary: the server refuses that cancel with
       // `delivery_order.on_itinerary` (mbe-api#311), shown as the refusal.
@@ -421,6 +441,28 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
     ];
   }
 
+  Future<void> _viewTicket() {
+    final order = _order;
+    return openDeliveryTicket(
+      context,
+      ref,
+      orderId: order.id,
+      folio: _serialOf(order, AppLocalizations.of(context)!),
+      facilityId: order.facilityId,
+      warehouseIds: distinctWarehouses(order.lines),
+    );
+  }
+
+  Future<void> _viewLetter() {
+    final order = _order;
+    return openDeliveryLetter(
+      context,
+      ref,
+      orderId: order.id,
+      folio: _serialOf(order, AppLocalizations.of(context)!),
+    );
+  }
+
   /// Where "Cancelar orden" is offered (FR-018, data-model §3).
   static const _cancellable = {
     DeliveryOrderStatus.draft,
@@ -452,7 +494,11 @@ class _DeliveryOrderBodyState extends ConsumerState<_DeliveryOrderBody> {
       SystemObject.deliveryOrderApproval,
       AccessRight.update,
     );
-    final buttons = _actionButtons(canUpdate: canUpdate, canDecide: canDecide);
+    final buttons = _actionButtons(
+      canUpdate: canUpdate,
+      canDecide: canDecide,
+      canPrint: canPrintDeliveryOrder(access, order.status),
+    );
 
     return SingleChildScrollView(
       padding: EdgeInsets.all(spacing.screenMargin),

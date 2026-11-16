@@ -14,7 +14,16 @@ class DocumentRef {
     required this.kind,
     required this.recordId,
     required this.title,
-  }) : assert(recordId > 0, 'recordId must be a real record id');
+    this.warehouseId,
+  }) : assert(recordId > 0, 'recordId must be a real record id'),
+       assert(
+         warehouseId == null || warehouseId > 0,
+         'warehouseId must be a real warehouse id',
+       ),
+       assert(
+         warehouseId == null || kind == DocumentKind.deliveryTicket,
+         'only a delivery ticket can be limited to a warehouse',
+       );
 
   final DocumentKind kind;
 
@@ -25,18 +34,26 @@ class DocumentRef {
   /// The localized preview title, built by the call site.
   final String title;
 
+  /// Limits a [DocumentKind.deliveryTicket] to the lines from this warehouse
+  /// (spec 064 R2). Null prints every line. It is part of the identity: the
+  /// tickets of one order for two warehouses are different documents.
+  final int? warehouseId;
+
   @override
   bool operator ==(Object other) =>
       other is DocumentRef &&
       other.kind == kind &&
       other.recordId == recordId &&
-      other.title == title;
+      other.title == title &&
+      other.warehouseId == warehouseId;
 
   @override
-  int get hashCode => Object.hash(kind, recordId, title);
+  int get hashCode => Object.hash(kind, recordId, title, warehouseId);
 
   @override
-  String toString() => 'DocumentRef($kind, $recordId, "$title")';
+  String toString() =>
+      'DocumentRef($kind, $recordId, "$title"'
+      '${warehouseId == null ? '' : ', warehouse $warehouseId'})';
 }
 
 /// The bytes mbe-api returned, exactly as returned (FR-020, FR-021).

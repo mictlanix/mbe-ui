@@ -28,6 +28,10 @@ void main() {
     'customer_payments_api.dart': [
       'printCustomerPaymentTicketApiV1CustomerPaymentsCustomerPaymentIdTicketGet',
     ],
+    'delivery_orders_api.dart': [
+      'printDeliveryOrderTicketApiV1DeliveryOrdersDeliveryOrderIdTicketGet',
+      'printDeliveryOrderDocumentApiV1DeliveryOrdersDeliveryOrderIdDocumentGet',
+    ],
   };
 
   for (final entry in methods.entries) {

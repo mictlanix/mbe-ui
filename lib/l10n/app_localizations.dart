@@ -11280,6 +11280,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pending'**
   String get forDeliveryColumnOpenQuantity;
+
+  /// spec 064: detail button and list row action that open the delivery ticket (U1, U2)
+  ///
+  /// In en, this message translates to:
+  /// **'View ticket'**
+  String get deliveryOrderViewTicket;
+
+  /// spec 064: detail button that opens the Letter-size delivery order (U1)
+  ///
+  /// In en, this message translates to:
+  /// **'View letter format'**
+  String get deliveryOrderViewLetter;
+
+  /// spec 064: title of the warehouse chooser (U5)
+  ///
+  /// In en, this message translates to:
+  /// **'Which lines to print?'**
+  String get deliveryTicketScopeTitle;
+
+  /// spec 064: chooser option that prints every line (U5)
+  ///
+  /// In en, this message translates to:
+  /// **'All warehouses'**
+  String get deliveryTicketScopeAll;
+
+  /// spec 064: preview title of the delivery or pickup ticket
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery ticket · {folio}'**
+  String documentDeliveryTicketTitle(String folio);
+
+  /// spec 064: preview title of a ticket limited to one warehouse
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery ticket · {folio} · {warehouse}'**
+  String documentDeliveryTicketWarehouseTitle(String folio, String warehouse);
+
+  /// spec 064: preview title of the Letter-size delivery order
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery order · {folio} (letter)'**
+  String documentDeliveryOrderLetterTitle(String folio);
+
+  /// spec 064: mbe-api error code `delivery_order.not_approved` (R9)
+  ///
+  /// In en, this message translates to:
+  /// **'The delivery order isn\'t approved yet, so it can\'t be printed.'**
+  String get apiErrorDeliveryOrderNotApproved;
+
+  /// spec 064: mbe-api error code `delivery_order.unknown_warehouse` (R9)
+  ///
+  /// In en, this message translates to:
+  /// **'The chosen warehouse doesn\'t exist.'**
+  String get apiErrorDeliveryOrderUnknownWarehouse;
+
+  /// spec 064: mbe-api error code `delivery_order.no_lines_from_warehouse` (R9)
+  ///
+  /// In en, this message translates to:
+  /// **'No line of this order leaves from the chosen warehouse.'**
+  String get apiErrorDeliveryOrderNoLinesFromWarehouse;
 }
 
 class _AppLocalizationsDelegate
