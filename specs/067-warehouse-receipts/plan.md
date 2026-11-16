@@ -44,7 +44,7 @@ The feature copies the delivery-orders screens (spec 061) for the document shape
 | **VI. List and record surface** | Pass (reading recorded) | **List:** a filter row, a table and pagination. The endpoint has no free-text search, so the filter row has no search box (§VI allows this) and holds the status and warehouse facets in the drawer plus the "Nueva entrada" action. **Surface:** a full detail screen at `/inventory/receipts/:id`, because a receipt owns a child collection (lines) and the complementary action navigates between receipts. **No row Edit icon, no View toggle:** this follows the document reading recorded in specs 056, 057, 060, 061 and 066. A receipt has a status lifecycle and only a draft is editable, so the row tap opens the detail, and a draft is edited in place. Draft line rows use `buildCatalogRowActions` with ✎ and 🗑, within the two-icon limit. **AppBar actions:** empty; every action is in the body's action area. **Delete:** none; Cancel is a status action. |
 | **VII. Online-only** | Pass | No caching or printing. |
 
-No deviation needs Complexity Tracking.
+One deviation, the §VI document reading, is recorded in Complexity Tracking.
 
 **Post-design re-check (after Phase 1)**: Pass, unchanged. The design adds no shared widget and no new layer. The over-receipt calculator is pure domain code with unit tests. The only new shared change is the error messages in `localize_problem.dart` and the `.arb` files, which §III requires.
 
@@ -117,6 +117,6 @@ integration_test/inventory_receipts_quickstart_test.dart
 
 ## Complexity Tracking
 
-No constitution violations need justification.
-
-**Note on §VI (analysis finding I3).** Read literally, §VI asks every list row for an Edit icon and a read-only View mode, and bans per-row Delete icons. This feature doesn't follow that wording for receipts: list rows have no icons, a draft is edited in place on its detail screen, and draft line rows carry ✎ and 🗑. It applies the document reading that specs 056, 057, 060, 061 and 066 recorded: a document with a status lifecycle, editable only in draft, is not a catalog record, so the catalog row rules don't apply to it. The constitution is deliberately left unchanged. This note records that the reading is relied on here too.
+| Violation | Why Needed | Simpler Alternative Rejected Because |
+|-----------|------------|-------------------------------------|
+| §VI row rules read as catalog-only (analysis finding I3): receipt list rows have no Edit icon and no read-only View toggle, and draft line rows carry ✎ and 🗑. | A receipt is a document with a status lifecycle, editable only in draft, not a catalog record. A draft is edited in place on its detail screen, and its lines are a child collection edited there. This is the reading specs 056, 057, 060, 061 and 066 recorded. The constitution is deliberately left unchanged. | Following the catalog wording literally would put a row Edit icon and a View toggle on every receipt, though confirmed and cancelled receipts (most of the list) can't be edited, so both would lead to a form with nothing to change. Removing 🗑 from line rows would leave no way to remove a line from a draft except a separate screen. |

@@ -38,7 +38,7 @@ SystemObject: **InventoryReceipts (15)**. Related reads: Warehouses (4) for the 
   - Orden de compra, when linked.
   - Notas.
   - Creado por and date, Modificado por and date.
-- **Warnings band** (`receipt_warnings.dart`): when `overReceipts` is non-empty, a warning-toned banner lists one line per entry: "Se recibió de más {code}: {excess} (recibido {received} de {ordered} ordenado)". It is never blocking.
+- **Warnings band** (`receipt_warnings.dart`): on a draft or confirmed receipt (never a cancelled one, FR-015), when `overReceipts` is non-empty, a warning-toned banner lists one line per entry: "Se recibió de más {code}: {excess} (recibido {received} de {ordered} ordenado)". It is never blocking.
 - **Lines table**: Código, Producto, Cantidad recibida (right). When the receipt is linked, it also shows Ordenado and Recibido en otras entradas (right). Hand-added lines show "—" in both.
   - On a draft with update, rows have ✎ (quantity dialog) and 🗑 (remove prompt) via `buildCatalogRowActions`.
   - Empty draft: "Agrega los productos recibidos."
