@@ -2,28 +2,28 @@
 
 **Spec**: [spec.md](./spec.md) | **Drawn**: 2026-11-16 | **Fidelity**: low
 
-These wireframes were drawn from the spec. They were drawn *after* the plan, because `/speckit-plan` ran first. Where the drawing disagrees with [contracts/ui-contract.md](contracts/ui-contract.md), the Open Questions say so. Layout is indicative, not prescriptive. Every dimension, colour and spacing resolves through the design tokens, per constitution §V.
+These wireframes were drawn from the spec. They were drawn *after* the plan, because `/speckit-plan` ran first. Open Questions 2, 3 and 5 were settled by `/speckit-clarify` on 2026-11-16, and the drawings and ui-contract.md now agree. Layout is indicative, not prescriptive. Every dimension, colour and spacing resolves through the design tokens, per constitution §V.
 
 ## Screen: Entradas de almacén list (`/inventory/receipts`)
 
 ### State: populated
 
 ```
-┌ Inventario ▸ Entradas de almacén ───────────────────────────────────────────────┐
-│                                                   [⚲ Filtros ②]  [＋ Nueva entrada] │
-├────────┬──────────────┬─────────────┬───────────┬────────────┬────────────┬───────┤
-│  Folio │ Almacén      │ Sucursal    │ Orden c.  │ Estado     │ Creado por │ Fecha │
-├────────┼──────────────┼─────────────┼───────────┼────────────┼────────────┼───────┤
-│      — │ Bodega Norte │ Matriz      │           │ (Borrador) │ J. Pérez   │ 16/11 │
-│   1043 │ Bodega Norte │ Matriz      │ 5512      │(Confirmada)│ A. Ruiz    │ 15/11 │
-│   1042 │ Piso venta   │ Sucursal 2  │           │ (Cancelada)│ J. Pérez   │ 14/11 │
-├────────┴──────────────┴─────────────┴───────────┴────────────┴────────────┴───────┤
-│                                              1–20 de 134   ‹  1  2  3 … 7  ›       │
-└──────────────────────────────────────────────────────────────────────────────────┘
+┌ Inventario ▸ Entradas de almacén ──────────────────────────────────────────────────────┐
+│                                                       [⚲ Filtros ②]  [＋ Nueva entrada] │
+├───────────────┬──────────────┬────────────┬──────────┬─────────────┬───────────┬───────┤
+│         Folio │ Almacén      │ Sucursal   │ Orden c. │ Estado      │ Creado por│ Fecha │
+├───────────────┼──────────────┼────────────┼──────────┼─────────────┼───────────┼───────┤
+│ Borrador #318 │ Bodega Norte │ Matriz     │          │ (Borrador)  │ J. Pérez  │ 16/11 │
+│          1043 │ Bodega Norte │ Matriz     │ 5512     │ (Confirmada)│ A. Ruiz   │ 15/11 │
+│          1042 │ Piso venta   │ Sucursal 2 │          │ (Cancelada) │ J. Pérez  │ 14/11 │
+├───────────────┴──────────────┴────────────┴──────────┴─────────────┴───────────┴───────┤
+│                                             1–20 de 134   ‹  1  2  3 … 7  ›            │
+└────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 - Filter row: `CatalogFilterBar` with **no search control** (FR-003; the endpoint has no search). Its actions slot holds a `Badge.count` + `IconButton.outlined(tune)` and the "Nueva entrada" `FilledButton.icon` (FR-005; shown only with create on 15 and read on 4).
-- Table: `DataTableView`. Folio is right-aligned, "—" for a draft. Estado is a `StatusChip` (`InventoryReceiptStatusChip`). Names come from the warehouse, facility and employee display-name lookups (FR-004). The row tap opens the detail. There are **no row icons** (the document reading, plan §VI).
+- Table: `DataTableView`. Folio is right-aligned, "Borrador #{id}" for a draft (FR-004). Estado is a `StatusChip` (`InventoryReceiptStatusChip`). Names come from the warehouse, facility and employee display-name lookups (FR-004). The row tap opens the detail. There are **no row icons** (the document reading, plan §VI).
 - Pagination: `CatalogPagination`, newest first (FR-001).
 
 ### State: filter drawer open
@@ -70,7 +70,7 @@ These wireframes were drawn from the spec. They were drawn *after* the plan, bec
 │ 1043 · Bodega Norte          │
 │ (Confirmada)   OC 5512  15/11│
 ├──────────────────────────────┤
-│ — · Bodega Norte             │
+│ Borrador #318 · Bodega Norte │
 │ (Borrador)              16/11│
 └──────────────────────────────┘
 ```
@@ -129,16 +129,16 @@ These wireframes were drawn from the spec. They were drawn *after* the plan, bec
 ┌ ← Entrada 1043 ──────────────────────────────────────────────────────────────────┐
 │ Estado (Confirmada)  Folio 1043  Almacén Bodega Norte  Sucursal Matriz  OC 5512   │
 ├──────────────────────────────────────────────────────────────────────────────────┤
+│ ⓘ Se actualizaron los costos con excepciones.                                 [✕] │
+├──────────────────────────────────────────────────────────────────────────────────┤
 │ Código │ Producto            │ Recibida │ Ordenado │ Otras entradas               │
 │ A-100  │ Tornillo 1/4 caja   │        8 │       10 │              0               │
 ├──────────────────────────────────────────────────────────────────────────────────┤
 │ [Cancelar] [Entrada complementaria]                                               │
 └──────────────────────────────────────────────────────────────────────────────────┘
-  ╭───────────────────────────────────────────────╮
-  │ Se actualizaron los costos con excepciones.   │   ← SnackBar, once (FR-015a)
-  ╰───────────────────────────────────────────────╯
 ```
 
+- Cost notice band: shown after a confirm or cancel that returned cost warnings. It stays until ✕ or until the user leaves the receipt (FR-015a). Same feature-local notice widget as the over-receipt band (Open Question 1).
 - No edit actions and no line icons (US2 #6). Cancelar needs delete on 15 (FR-013). Complementaria needs create on 15 and a link (FR-014, FR-021).
 
 ### State: cancelled / read-only user
@@ -199,7 +199,7 @@ These wireframes were drawn from the spec. They were drawn *after* the plan, bec
 └─────────────────────────────────┘   └────────────────────────────────────┘
 ```
 
-- Nueva entrada: `CatalogEntityPicker<Warehouse>` plus a notes field with `maxLength` 500 (FR-005). It has an unsaved-changes guard. An in-transit warehouse is refused here with `warehouse.in_transit_location`.
+- Nueva entrada: `CatalogEntityPicker<Warehouse>` plus a notes field with `maxLength` 500 (FR-005). The warehouse starts as the user's point-of-sale warehouse, and non-administrators are offered only their own facility's warehouses (FR-005, FR-017). It has an unsaved-changes guard. An in-transit warehouse is refused here with `warehouse.in_transit_location`.
 - Editar encabezado: the warehouse is a picker when not linked, and read-only text when linked (FR-006).
 
 ```
@@ -229,8 +229,8 @@ These wireframes were drawn from the spec. They were drawn *after* the plan, bec
    - (b) add a shared warning-tone banner beside `ErrorBanner`.
 
    The wireframe assumed **(a)**, as the plan does. (b) is the better fit once issues and transfers also warn.
-2. **A draft's title.** ui-contract.md says "Entrada (borrador)", but two open drafts would then look the same. The wireframe assumed **"Entrada · Borrador #{id}"**, using the internal id until a folio exists. *This differs from ui-contract.md.*
-3. **Preselecting the warehouse in Nueva entrada.** The spec is silent. Options: (a) empty; (b) the user's POS warehouse. The wireframe assumed **(a)**.
+2. **A draft's title.** ~~Open~~ **Resolved 2026-11-16 (spec clarification 2, FR-004/FR-004a):** "Entrada · Borrador #{id}" on the detail, and "Borrador #{id}" in the list's Folio column. ui-contract.md was updated to match.
+3. **Preselecting the warehouse in Nueva entrada.** **Resolved 2026-11-16 (spec clarification 4, FR-005):** it starts with the user's point-of-sale warehouse when they have one, and empty otherwise. Non-administrators are offered only their own facility's warehouses (clarification 1, FR-017).
 4. **Sucursal column on the list.** It repeats what the warehouse already implies. Options: (a) keep it, as FR-004 says; (b) drop it and show "Almacén · Sucursal" in one cell. The wireframe assumed **(a)**.
-5. **Cost-warning notice.** A SnackBar disappears, and a GET won't bring the notice back. Options: (a) a SnackBar; (b) a dismissible band on the detail until the user leaves. The wireframe assumed **(a)**, as the plan does.
+5. **Cost-warning notice.** **Resolved 2026-11-16 (spec clarification 3, FR-015a):** a band on the detail screen with a close button, which stays until the clerk closes it or leaves the receipt. The drawing above shows it.
 6. **Compact tier.** §VI defers the phone tier. The drawings show how the screens would reflow, but nothing here builds a compact layout beyond what `DataTableView` and the action area already do. The wireframe assumed **no compact-specific work in this feature**.

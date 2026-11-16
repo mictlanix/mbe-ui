@@ -21,7 +21,7 @@ SystemObject: **InventoryReceipts (15)**. Related reads: Warehouses (4) for the 
   | Folio | Almacén | Sucursal | Orden de compra | Estado | Creado por | Fecha |
   |---|---|---|---|---|---|---|
 
-  - Folio is the serial, or "—" for a draft (right-aligned).
+  - Folio is the serial (right-aligned), or "Borrador #{id}" for a draft (FR-004).
   - Orden de compra is the PO id, or empty.
   - Estado is `InventoryReceiptStatusChip`.
   - Fecha is the creation date-time.
@@ -32,7 +32,7 @@ SystemObject: **InventoryReceipts (15)**. Related reads: Warehouses (4) for the 
 
 ## Detail screen
 
-- **Title**: "Entrada {serial}", or "Entrada (borrador)" for a draft. The AppBar has no actions.
+- **Title** (FR-004a): "Entrada {serial}" for a confirmed or cancelled receipt, or "Entrada · Borrador #{id}" for a draft. The AppBar has no actions.
 - **Header facts** (`FactStripRow` / `ResponsiveFormGrid`, read-only):
   - Estado (chip), Folio, Almacén, Sucursal.
   - Orden de compra, when linked.
@@ -51,15 +51,15 @@ SystemObject: **InventoryReceipts (15)**. Related reads: Warehouses (4) for the 
 
   Each is shown per the data-model availability table and absent otherwise.
 - After any action: the screen shows the returned receipt. A refusal shows in the `ErrorBanner` above the action area. `document.not_editable`, `already_cancelled` and `lock.busy` also trigger a re-fetch.
-- After confirm or cancel, when `hasUnmappedWarnings`: a SnackBar shows "Se actualizaron los costos con excepciones."
+- After confirm or cancel, when `hasUnmappedWarnings`: a notice band above the lines shows "Se actualizaron los costos con excepciones." with a close button (FR-015a). It stays until closed or until the user leaves the receipt.
 - After complementary: push `/inventory/receipts/{returnedId}`.
 
 ## Dialogs
 
 | Dialog | Fields | Submit | Guard |
 |---|---|---|---|
-| Nueva entrada | Almacén (required), Notas (≤ 500, counter) | "Crear"; on success, push detail | `hasUnsavedChanges` |
-| Editar encabezado | Almacén (read-only text when linked), Notas (≤ 500) | "Guardar"; send only changed fields (research R8) | `hasUnsavedChanges` |
+| Nueva entrada | Almacén (required; starts with the user's point-of-sale warehouse, else empty; own-facility warehouses only for non-administrators), Notas (≤ 500, counter) | "Crear"; on success, push detail | `hasUnsavedChanges` (the starting warehouse alone doesn't count as a change) |
+| Editar encabezado | Almacén (read-only text when linked; own-facility warehouses only for non-administrators), Notas (≤ 500) | "Guardar"; send only changed fields (research R8) | `hasUnsavedChanges` |
 | Agregar producto | Producto (stockable, active), Cantidad (> 0) | "Agregar"; the dialog stays open on refusal | `hasUnsavedChanges` |
 | Cantidad de la partida | Cantidad (> 0), prefilled | "Guardar" | `hasUnsavedChanges` |
 | Quitar partida | — | "Quitar" | — |

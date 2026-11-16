@@ -26,7 +26,10 @@ Sources: mbe-api `docs/specs/04-inventory.md` §1, `app/services/inventory_docum
 
 ## R5. Pickers
 
-- **Warehouse**: `CatalogEntityPicker<Warehouse>` fed by `warehouseRepositoryProvider.list(search:, status: active, limit: 10)`. Each option shows the warehouse name with the facility as its subtitle. It is shown only with read on Warehouses (4). The warehouse record has no in-transit flag, so the picker cannot hide in-transit warehouses. The server refuses one with `warehouse.in_transit_location`, shown in the dialog. (Live check in quickstart step 4: whether the warehouse list returns in-transit rows at all.)
+- **Warehouse (Nueva entrada, Editar encabezado)**: `CatalogEntityPicker<Warehouse>` fed by `warehouseRepositoryProvider.list(search:, status: active, facilityId:, limit: 10)`. Each option shows the warehouse name with the facility as its subtitle. It is shown only with read on Warehouses (4).
+  - **Own facility only for non-administrators** (spec FR-017, clarification 1): `facilityId` is the session user's `UserSettings.facilityId` when `!accessControl.isAdministrator`, and null (every warehouse) for administrators. A non-administrator with no facility in their settings is offered no warehouses, and the dialog says their user has no sucursal assigned. The server applies the facility rule only on confirm and cancel, so without this filter a non-administrator could build a draft they can never confirm.
+  - **Starting value** (spec FR-005, clarification 4): Nueva entrada starts with the warehouse of the user's point of sale (`UserSettings.pointSaleId` → `pointSaleRepositoryProvider.get(...).warehouseId`, as `default_warehouse_controller.dart` does for the POS). It starts empty when the user has no point of sale, or when that lookup fails (for example, no read right on points of sale). The lookup is called from the inventory feature through the catalog repository, not by importing the sales controller, which keeps the feature layers separate.
+- **Warehouse (list filter)**: the same picker without `facilityId`, for everyone. Reading is not limited by facility. The warehouse record has no in-transit flag, so the picker cannot hide in-transit warehouses. The server refuses one with `warehouse.in_transit_location`, shown in the dialog. (Live check in quickstart step 4: whether the warehouse list returns in-transit rows at all.)
 - **Product**: the `add_product_dialog.dart` pattern (spec 066). `CatalogEntityPicker<Product>` is fed by `productRepositoryProvider.list(search:, status: EntityStatus.active, stockable: true, limit: 10)`. `ProductRepository.list` already takes `stockable`. The product picker needs read on Products.
 - **Quantity**: entered through `fmt.field.quantity` / `parseQuantity` and validated as greater than 0 before sending. The server's `Quantity5` takes a decimal string.
 
@@ -38,7 +41,7 @@ Sources: mbe-api `docs/specs/04-inventory.md` §1, `app/services/inventory_docum
   - `received = elsewhere + sum`. Emit a warning when `received > ordered`, with `excess = received − ordered` and the product code of the group's first line.
 
   This mirrors `over_receipt_warnings` in mbe-api. The detail screen shows the list in a warning-toned banner whenever the receipt is a draft or completed, after load, save and confirm. It never blocks.
-- **Cost notice**: The confirm and cancel actions compare `response.warnings.length` with the number of computed over-receipts. When the server sent more, the screen shows one transient notice: "Se actualizaron los costos con excepciones." It appears once, after that action, because a later GET does not repeat the cost warnings.
+- **Cost notice** (spec FR-015a, clarification 3): The confirm and cancel actions compare `response.warnings.length` with the number of computed over-receipts. When the server sent more, the detail screen shows a notice band, "Se actualizaron los costos con excepciones.", with a close button. The band lives in the detail screen's local UI state (a `Notifier` keyed by receipt id, not persisted). It stays until the clerk closes it or leaves the receipt, because a later GET does not repeat the cost warnings. It never blocks.
 - **Rationale**: §III forbids server prose on screen. The over-receipt figures are already on the lines. The two cost warnings (a product priced at 0, a cost not restored) cannot be rebuilt client-side.
 - **Exit**: when mictlanix/mbe-api#322 ships coded warnings, map those codes and delete `computeOverReceipts`.
 - **Alternatives**: Showing the raw English text, or blocking on #322, were both rejected by the user on 2026-11-16.
@@ -60,7 +63,7 @@ Sources: mbe-api `docs/specs/04-inventory.md` §1, `app/services/inventory_docum
 - **Decision**:
   - Facets: status (Borrador, Confirmada, Cancelada, sent as `draft`/`completed`/`cancelled`) and warehouse (picker). Both live in the URL query (`ListQuery`) as in other lists.
   - There is no search box, because the endpoint has none. The server's `DocumentStatus` also has `paid`, which receipts never use, so it is not offered.
-  - Columns: Folio (`serial`, or "—" for a draft), Almacén, Sucursal, Orden de compra, Estado (chip), Creado por, Fecha. Names come from `warehouseDisplayNameProvider`, `facilityDisplayNameProvider` and `employeeDisplayNameProvider`. `creator` is an `employee.employee_id` in mbe-api.
+  - Columns: Folio (`serial`, or "Borrador #{id}" for a draft, per spec FR-004 and clarification 2), Almacén, Sucursal, Orden de compra, Estado (chip), Creado por, Fecha. Names come from `warehouseDisplayNameProvider`, `facilityDisplayNameProvider` and `employeeDisplayNameProvider`. `creator` is an `employee.employee_id` in mbe-api.
   - Newest first is the server's order. Page size 20.
 - **Scope**: The UI sends no scope parameter. The server applies "the user's POS warehouse or the user's own receipts", and widens to all receipts for administrators and the delete right (FR-002).
 

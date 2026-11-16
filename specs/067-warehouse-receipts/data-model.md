@@ -41,6 +41,7 @@ The summary's fields, plus:
 | serverWarningCount | int | `warnings.length` | Only the count is kept; the text is never shown (FR-015a) |
 
 Derived values:
+- `displayFolio` = `serial` when set, or `"Borrador #{id}"` for a draft (FR-004, FR-004a). The list's Folio column and the detail title both use it.
 - `isDraft` = `status == draft`.
 - `isLinked` = `purchaseOrderId != null`.
 - `overReceipts` = `computeOverReceipts(lines)`.
@@ -93,6 +94,7 @@ Unit cases:
 | Quantity > 0 | add-line and quantity dialogs | request validation (`request.malformed`) |
 | Notes ≤ 500 chars | new-receipt and header dialogs (`maxLength`) | request validation |
 | Warehouse required on create | new-receipt dialog | request validation |
+| Non-administrators pick only their own facility's warehouses | new-receipt and header pickers (`facilityId` = the user's facility) | `facility.other_facility`, on confirm or cancel |
 | Warehouse fixed on a PO-linked receipt | header dialog shows it read-only | `inventory_receipt.warehouse_fixed` |
 | Product stockable | picker filter `stockable: true` | `product.not_stockable` |
 | Edits only on drafts | actions absent unless `isDraft` | `document.not_editable` |

@@ -37,13 +37,14 @@ Expected: all pass. The coverage test lists the 9 new codes in both locales.
    - Filter Estado = Confirmada, then Almacén = W1. The badge shows 2, and the rows match.
    - As the administrator: every receipt appears.
 3. **Create.**
-   - As the non-administrator: Nueva entrada → W1, with notes. The detail opens as "Entrada (borrador)" with no folio.
+   - As the non-administrator: Nueva entrada starts with their point-of-sale warehouse (W1). The picker offers only their own facility's warehouses (W2 is not offered). Keep W1 and add notes. The detail opens as "Entrada · Borrador #{id}", and the list shows "Borrador #{id}" in the Folio column.
+   - As the administrator: the picker offers W2 as well.
    - A note longer than 500 characters can't be submitted.
 4. **In-transit warehouse.** In the warehouse picker, look for the facility's in-transit warehouse.
    - If it is listed, choose it. The server's `warehouse.in_transit_location` message appears in Spanish, and the warehouse is unchanged.
    - Record whether the list includes in-transit rows (research R5).
 5. **Header.**
-   - Editar encabezado → change the warehouse to W2. The Sucursal changes to W2's facility.
+   - As the administrator: Editar encabezado → change the warehouse to W2. The Sucursal changes to W2's facility.
    - Clear the notes, save, and reopen: no note is shown (research R8).
    - Switch the warehouse back to W1.
 6. **Lines.**
@@ -67,7 +68,7 @@ Expected: all pass. The coverage test lists the 9 new codes in both locales.
    - Cancel the receipt from step 7: P1 in W1 is back to the noted value.
    - Confirm a new receipt of P1 × 5, issue or sell 3 from W1, then cancel: the insufficient-stock message shows the quantities and "Producto: P1", and the receipt stays Confirmada.
    - As `qareadonly`: no New, edit, Confirm, Cancel or Complementary actions anywhere (SC-004).
-   - As the non-administrator, on a draft in W2 (another facility): Confirm shows `facility.other_facility` in Spanish.
+   - As the non-administrator, on a draft in W2 that the administrator created (another facility): Confirm shows `facility.other_facility` in Spanish.
 10. **Largest text level.** Set the text size to the largest level. The list and the lines table don't clip or scroll sideways at 1280 px.
 
 ## Done when
