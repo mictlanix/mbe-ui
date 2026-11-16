@@ -142,6 +142,7 @@ Some invoices must cite earlier ones: an invoice that replaces a cancelled one (
 - A legacy draft invoice (never completed, never sealed) opens as a draft and can be edited like a new one, since the server treats it the same.
 - A document of a version older than 4.0 shows its data. The XML downloads, but the PDF is refused with the server's version error.
 - An issued document whose stored XML is missing: both downloads fail with the server's "XML missing" error.
+- A date-range filter hides drafts, because a draft has no issue date yet; the filter says so.
 - Two clerks edit the same draft. The server applies each change as it arrives; after a refusal or a save, the screen shows the document as the server returned it.
 - The customer's RFC is the general public RFC (XAXX010101000). The recipient's postal code comes from the store, as the server sets it.
 - A sales order line whose quantity is fully invoiced or refunded is not added; if nothing remains on the whole order, the user is told.
@@ -173,15 +174,15 @@ Some invoices must cite earlier ones: an invoice that replaces a cancelled one (
 - **FR-011**: Only invoices (type Ingreso) in the draft state MUST be editable. Every other type and state MUST open read-only.
 - **FR-012**: On a draft, users MUST be able to add a completed, non-cancelled sales order, whose invoiceable lines are added at their remaining quantity.
 - **FR-013**: On a draft, users with create access to standalone fiscal documents (system object 56) MUST be able to add a product line by hand. Without that right the action MUST NOT be offered.
-- **FR-014**: On a draft, users MUST be able to edit a line's quantity (greater than 0), unit price (0 or more), discount (0–100 %), tax rate (16 %, 0 % or exempt), description and comment, and to delete a line.
-- **FR-015**: On a draft, users MUST be able to edit the payment terms, payment form, CFDI usage, issue date, payment reference and notes. Choosing PPD MUST set the payment form to 99 and lock it.
+- **FR-014**: On a draft, users MUST be able to edit a line's quantity (greater than 0), unit price (0 or more), discount (0–100 %), tax rate (16 %, 0 % or exempt), internal code, description and comment, and to delete a line.
+- **FR-015**: On a draft, users MUST be able to edit the recipient (among the customer's RFCs), series, payment terms, payment form, CFDI usage, issue date, reference and notes. Choosing PPD MUST set the payment form to 99 and lock it.
 - **FR-016**: The series MUST NOT be changeable once the invoice has a folio.
 - **FR-017**: The issuing store MUST be changeable only by users who also hold update access on the issued-location right (system object 103).
 - **FR-018**: On a draft, users MUST be able to add and remove related documents with relation type 04 (substitution) or 07 (application of an advance), one type per invoice.
 - **FR-019**: Users with update access MUST be able to confirm a draft, which leaves it sealed with its folio shown, or show the server's reason when it is refused.
 - **FR-020**: Users with update access MUST be able to reopen a sealed invoice after confirming the action. It returns to draft and keeps its folio.
 - **FR-021**: Confirm and reopen MUST ask for confirmation before running, since confirm uses a folio and reopen discards the sealed XML.
-- **FR-022**: After every change, the screen MUST show the document exactly as the server returned it, including recalculated totals.
+- **FR-022**: After every change, the screen MUST show the document as the server returns it. A draft's subtotal, discount, tax and total MUST be computed with the same rules the server uses when sealing, and labelled as an estimate. A sealed or issued document MUST show the server's total.
 
 **Across the feature**
 
