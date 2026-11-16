@@ -31,7 +31,7 @@ Expected: all pass. The coverage test lists the 9 new codes in both locales.
 
 1. **Nav and gate.**
    - As the administrator: "Inventario → Entradas de almacén" appears between Logística and Facturación.
-   - As `qanoaccess`: the group is absent, and `/inventory/receipts` shows the no-access screen.
+   - As `qanoaccess`: the group is absent, and `/inventory/receipts` is redirected to the home page (the app's route gate).
 2. **List scope and filters.**
    - As the non-administrator: only receipts for their POS warehouse or created by them appear, newest first.
    - Filter Estado = Confirmada, then Almacén = W1. The badge shows 2, and the rows match.

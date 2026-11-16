@@ -83,9 +83,10 @@ class InventoryReceiptRepositoryImpl implements InventoryReceiptRepository {
       receiptUpdate: api.ReceiptUpdate((b) {
         b.warehouse = warehouseId;
         // simplified: a cleared note goes as "" because the generated client
-        // drops a null field, and the server shows an empty note as none;
-        // if the live check (T030) shows it keeps "", fall back to a raw
-        // `dio.put` with {"comment": null} deserialized with appSerializers.
+        // drops a null field. The live check (T030, 2026-11-16) showed the
+        // server stores "" and `_toReceipt` shows it as no note; should a
+        // stored "" ever matter, fall back to a raw `dio.put` with
+        // {"comment": null} deserialized with appSerializers.
         b.comment = clearComment ? '' : comment;
       }),
     ),

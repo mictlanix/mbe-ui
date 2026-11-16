@@ -46,7 +46,7 @@ A warehouse clerk opens "Entradas de almacén" and sees the receipts that concer
 1. **Given** a user with read access to receipts, **When** they open Entradas de almacén, **Then** they see receipts newest first, one page at a time, limited to the scope the server grants them.
 2. **Given** the list, **When** the user filters by state (draft, completed, cancelled) or warehouse, **Then** only matching receipts are shown, and the filter button shows how many filters are active.
 3. **Given** an administrator or a user with the delete right on receipts, **When** they open the list, **Then** they see every receipt and can filter by any warehouse.
-4. **Given** a user without read access to receipts, **When** they look at the navigation, **Then** Entradas de almacén is not offered, and opening its address directly shows the no-access screen.
+4. **Given** a user without read access to receipts, **When** they look at the navigation, **Then** Entradas de almacén is not offered, and opening its address directly is redirected to the home page (the app's route gate).
 
 ---
 
