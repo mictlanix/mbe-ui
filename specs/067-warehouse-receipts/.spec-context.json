@@ -3,7 +3,7 @@
   "specName": "Warehouse Receipts",
   "branch": "067-warehouse-receipts",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -343,5 +343,11 @@
     }
   ],
   "telemetryInstanceId": "5bfd5995-63de-4024-bf08-04bfbd8a72ba",
-  "currentTask": "T035"
+  "currentTask": null,
+  "concerns": [
+    {
+      "note": "finished, unverified",
+      "step": "implement"
+    }
+  ]
 }
