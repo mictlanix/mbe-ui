@@ -75,7 +75,7 @@ code	expense_voucher.not_confirmed	409	status: enum:DocumentStatus, action: str=
 code	expense_voucher.total_not_positive	409	—	OUT		
 code	expense_voucher.unknown_category	422	expense_id: int	OUT		
 code	facility.no_dispatch_warehouse	422	facility_id: int	IN	POST /delivery-orders; POST /delivery-orders/{}/lines	reachable from 2 UI route(s)
-code	facility.no_in_transit_location	422	facility_ids: list[int]	OUT		
+code	facility.no_in_transit_location	422	facility_ids: list[int]	IN	POST /inventory-receipts	reachable from the Entradas de almacén screens (spec 067)
 code	facility.other_facility	403	resource: str, required?: list[{system_object: int, right: int}]	IN	GET /credit-notes; GET /customer-payments	reachable from 4 UI route(s)
 code	facility.required	422	—	IN	POST /customer-refunds	reachable from 1 UI route(s)
 code	fiscal_document.already_related	409	relation_id: int	IN	POST /fiscal-documents/{}/relations	reachable from the Facturas screens (spec 066)
@@ -131,12 +131,12 @@ code	inventory_count_line.not_stockable	422	— (an `errors[]` item)	OUT
 code	inventory_count_line.product_reference	422	— (an `errors[]` item)	OUT		
 code	inventory_count_line.product_unknown	422	— (an `errors[]` item)	OUT		
 code	inventory_count_line.repeated	422	— (an `errors[]` item)	OUT		
-code	inventory_document.already_cancelled	409	resource: str (`inventory_receipt`, `inventory_issue`, `inventory_transfer` or `inventory_count`)	OUT		
-code	inventory_document.insufficient_stock	409	product_id: int, warehouse_id: int, requested: decimal, available: decimal	OUT		
-code	inventory_document.line_without_quantity	422	product_code: str	OUT		
-code	inventory_document.no_lines	409	resource: str (`inventory_receipt`, `inventory_issue`, `inventory_transfer` or `inventory_count`)	OUT		
-code	inventory_receipt.warehouse_fixed	409	—	OUT		
-code	inventory_receipt.complementary_unavailable	409	reason: str enum (no_purchase_order, purchase_order_cancelled, purchase_order_not_completed, purchase_order_fully_received)	OUT		
+code	inventory_document.already_cancelled	409	resource: str (`inventory_receipt`, `inventory_issue`, `inventory_transfer` or `inventory_count`)	IN	POST /inventory-receipts/{}/cancel	reachable from the Entradas de almacén screens (spec 067)
+code	inventory_document.insufficient_stock	409	product_id: int, warehouse_id: int, requested: decimal, available: decimal	IN	POST /inventory-receipts/{}/cancel	reachable from the Entradas de almacén screens (spec 067)
+code	inventory_document.line_without_quantity	422	product_code: str	IN	POST /inventory-receipts/{}/confirm	reachable from the Entradas de almacén screens (spec 067)
+code	inventory_document.no_lines	409	resource: str (`inventory_receipt`, `inventory_issue`, `inventory_transfer` or `inventory_count`)	IN	POST /inventory-receipts/{}/confirm	reachable from the Entradas de almacén screens (spec 067)
+code	inventory_receipt.warehouse_fixed	409	—	IN	PUT /inventory-receipts/{}	reachable from the Entradas de almacén screens (spec 067)
+code	inventory_receipt.complementary_unavailable	409	reason: str enum (no_purchase_order, purchase_order_cancelled, purchase_order_not_completed, purchase_order_fully_received)	IN	POST /inventory-receipts/{}/complementary	reachable from the Entradas de almacén screens (spec 067)
 code	inventory_transfer.line_repeated	422	line_id: int	OUT		
 code	inventory_transfer.not_in_transit	409	—	OUT		
 code	inventory_transfer.over_received	409	product_code: str, received: decimal, outstanding: decimal	OUT		
@@ -173,7 +173,7 @@ code	product.lookup_criteria_required	422	—	IN	GET /sales-orders/product-looku
 code	product.lookup_too_many	422	max: int	IN	GET /sales-orders/product-lookup	reachable from 1 UI route(s)
 code	product.merge_with_itself	400	—	IN	GET /products/merge/preview; POST /products/merge	reachable from 2 UI route(s)
 code	product.not_purchasable	422	product_id: int, product_code: str	OUT		
-code	product.not_stockable	422	product_code: str	OUT		
+code	product.not_stockable	422	product_code: str	IN	POST /inventory-receipts/{}/lines	reachable from the Entradas de almacén screens (spec 067)
 code	product_price.duplicate_entry	400	product_id: int, price_list_id: int	IN	PUT /product-prices	reachable from 1 UI route(s)
 code	product_price.references_not_found	404	resource: str (product	IN	PUT /product-prices	reachable from 1 UI route(s)
 code	purchase_order.already_cancelled	409	—	OUT		
@@ -227,7 +227,7 @@ code	sales_order.paid_cannot_cancel	409	—	IN	POST /sales-orders/{}/cancel	reac
 code	sales_order.zero_priced_lines	409	— (dict `detail` kept: message, lines)	IN	POST /sales-orders/{}/confirm	reachable from 1 UI route(s)
 code	server.error	500	—	IN	every route (unhandled exception)	generic/framework
 code	state.transition_invalid	409	resource: str, from: enum, to: enum, required?: enum	IN	POST /delivery-orders/{}/cancel; POST /delivery-orders/{}/pickup; POST /delivery-orders/{}/ready-for-pickup; POST /delivery-orders/approval/{}/approve; POST /delivery-orders/approval/{}/reject	reachable from 3 UI route(s)
-code	status_filter.unsupported	422	allowed: list[str]	OUT		
+code	status_filter.unsupported	422	allowed: list[str]	IN	GET /inventory-receipts	reachable from the Entradas de almacén screens (spec 067)
 code	supplier_agreement.end_before_start	422	start: date, end: date	IN	POST /suppliers/{}/agreements	reachable from 1 UI route(s)
 code	supplier_payment.already_cancelled	409	—	OUT		
 code	supplier_payment.amount_exceeds_balance	409	purchase_order_id: int, balance: decimal	OUT		

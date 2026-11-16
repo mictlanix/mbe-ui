@@ -28,6 +28,9 @@ import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/repositories/inventory_receipt_repository.dart';
 import 'package:mbe_ui/features/invoicing/data/fiscal_document_repository_impl.dart';
 import 'package:mbe_ui/features/invoicing/domain/repositories/fiscal_document_repository.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
@@ -91,6 +94,9 @@ class MockDeliveryItineraryRepository extends Mock
 
 class MockFiscalDocumentRepository extends Mock
     implements FiscalDocumentRepository {}
+
+class MockInventoryReceiptRepository extends Mock
+    implements InventoryReceiptRepository {}
 
 class MockUserRepository extends Mock implements UserRepository {}
 
@@ -358,6 +364,19 @@ const _fiscalDocumentsReaderUser = User(
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.fiscalDocuments, rawValue: 2),
+  ],
+);
+
+/// Holds read on `inventoryReceipts` (15) alone — the gate for spec 067's
+/// `/inventory/receipts` routes.
+const _inventoryReceiptsReaderUser = User(
+  userId: 'inventory-receipts-reader',
+  email: 'inventory-receipts-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.inventoryReceipts, rawValue: 2),
   ],
 );
 
@@ -811,6 +830,28 @@ void main() {
       () => fiscalDocumentRepository.getById(any()),
     ).thenThrow(const AppError.notFound());
 
+    // 067-warehouse-receipts: the list fetches eagerly; an empty page is
+    // enough to show it opened. A receipt is not found.
+    final inventoryReceiptRepository = MockInventoryReceiptRepository();
+    when(
+      () => inventoryReceiptRepository.list(
+        status: any(named: 'status'),
+        warehouseId: any(named: 'warehouseId'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer(
+      (_) async => const InventoryReceiptPage(
+        items: [],
+        total: 0,
+        pageIndex: 0,
+        pageSize: 20,
+      ),
+    );
+    when(
+      () => inventoryReceiptRepository.get(any()),
+    ).thenThrow(const AppError.notFound());
+
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
 
@@ -879,6 +920,9 @@ void main() {
         ),
         fiscalDocumentRepositoryProvider.overrideWithValue(
           fiscalDocumentRepository,
+        ),
+        inventoryReceiptRepositoryProvider.overrideWithValue(
+          inventoryReceiptRepository,
         ),
       ],
     );
@@ -1509,6 +1553,83 @@ void main() {
       final shell = tester.widget<AppShell>(find.byType(AppShell));
       expect(NavBranch.fiscalDocuments, 29);
       expect(shell.navigationShell.currentIndex, NavBranch.fiscalDocuments);
+    });
+  });
+
+  group('067-warehouse-receipts — /inventory/receipts gates on '
+      'inventoryReceipts (15) read', () {
+    testWidgets('a user with inventoryReceipts:read reaches the list', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _inventoryReceiptsReaderUser,
+        '/inventory/receipts',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/inventory/receipts');
+      expect(
+        find.byKey(const Key('inventory_receipts_filter_button')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a user without inventoryReceipts:read is redirected home', (
+      tester,
+    ) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/inventory/receipts');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a user with inventoryReceipts:read reaches a receipt (here '
+        'not found)', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _inventoryReceiptsReaderUser,
+        '/inventory/receipts/9',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/inventory/receipts/9');
+      expect(
+        find.byKey(const Key('inventory_receipt_not_found')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a user without inventoryReceipts:read is redirected from a '
+        'receipt', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/inventory/receipts/9',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a non-numeric id gives the not-found state', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _inventoryReceiptsReaderUser,
+        '/inventory/receipts/abc',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/inventory/receipts/abc');
+      expect(
+        find.byKey(const Key('inventory_receipt_not_found')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('activates shell branch NavBranch.inventoryReceipts (30)', (
+      tester,
+    ) async {
+      await pumpAt(tester, _inventoryReceiptsReaderUser, '/inventory/receipts');
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.inventoryReceipts, 30);
+      expect(shell.navigationShell.currentIndex, NavBranch.inventoryReceipts);
     });
   });
 

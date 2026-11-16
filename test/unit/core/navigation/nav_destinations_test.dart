@@ -644,4 +644,49 @@ void main() {
       expect(NavBranch.fiscalDocuments, 29);
     });
   });
+
+  group('Entradas de almacén destination (spec 067 ui-contract)', () {
+    test('a user without InventoryReceipts read has no Inventario group', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.fiscalDocuments, rawValue: 2),
+        ],
+      );
+      expect(ids, isNot(contains('inventory-receipts')));
+    });
+
+    test('a user with InventoryReceipts read has the entry, on branch 30 at '
+        '/inventory/receipts, in its Inventario group between Logística and '
+        'Facturación', () {
+      expect(
+        visibleIds(
+          multiCurrency: false,
+          administrator: false,
+          privileges: const [
+            Privilege(
+              systemObject: SystemObject.inventoryReceipts,
+              rawValue: 2,
+            ),
+          ],
+        ),
+        contains('inventory-receipts'),
+      );
+      final groupIds = [
+        for (final g in kNavigationTree.whereType<NavGroup>()) g.id,
+      ];
+      expect(groupIds.indexOf('inventory'), groupIds.indexOf('logistics') + 1);
+      expect(groupIds.indexOf('invoicing'), groupIds.indexOf('inventory') + 1);
+      final entry = kNavigationTree
+          .whereType<NavGroup>()
+          .firstWhere((g) => g.id == 'inventory')
+          .children
+          .single;
+      expect(entry.id, 'inventory-receipts');
+      expect(entry.route, '/inventory/receipts');
+      expect(entry.branchIndex, NavBranch.inventoryReceipts);
+      expect(NavBranch.inventoryReceipts, 30);
+    });
+  });
 }

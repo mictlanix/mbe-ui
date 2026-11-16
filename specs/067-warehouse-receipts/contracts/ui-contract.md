@@ -66,7 +66,7 @@ SystemObject: **InventoryReceipts (15)**. Related reads: Warehouses (4) for the 
 | Confirmar entrada | Explanation text, plus the over-receipt list when present | "Confirmar" | — |
 | Cancelar entrada | Draft or completed wording (research R11) | "Cancelar entrada" | — |
 
-Refusals inside a dialog show in the dialog's `FormErrorBanner`, and the dialog stays open.
+Refusals inside a dialog show in an `ErrorBanner` inside the dialog (the delivery-order and invoicing dialogs do the same), and the dialog stays open.
 
 ## Spanish labels (new `.arb` keys, prefix `inventoryReceipt…`)
 

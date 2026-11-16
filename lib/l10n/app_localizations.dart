@@ -12813,6 +12813,527 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove relation'**
   String get fiscalDocumentRelationRemoveTooltip;
+
+  /// spec 067: navigation group
+  ///
+  /// In en, this message translates to:
+  /// **'Inventory'**
+  String get navInventoryGroup;
+
+  /// spec 067: navigation destination
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse receipts'**
+  String get navInventoryReceipts;
+
+  /// spec 067: detail title, confirmed or cancelled
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt {folio}'**
+  String inventoryReceiptTitle(String folio);
+
+  /// spec 067: detail title of a draft
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt · Draft #{id}'**
+  String inventoryReceiptTitleDraft(String id);
+
+  /// spec 067: list folio of a draft
+  ///
+  /// In en, this message translates to:
+  /// **'Draft #{id}'**
+  String inventoryReceiptDraftFolio(String id);
+
+  /// spec 067: status label
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get inventoryReceiptStatusDraft;
+
+  /// spec 067: status label
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get inventoryReceiptStatusCompleted;
+
+  /// spec 067: status label
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get inventoryReceiptStatusCancelled;
+
+  /// spec 067: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get inventoryReceiptColFolio;
+
+  /// spec 067: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryReceiptColWarehouse;
+
+  /// spec 067: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get inventoryReceiptColFacility;
+
+  /// spec 067: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase order'**
+  String get inventoryReceiptColPurchaseOrder;
+
+  /// spec 067: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get inventoryReceiptColStatus;
+
+  /// spec 067: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get inventoryReceiptColCreator;
+
+  /// spec 067: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get inventoryReceiptColDate;
+
+  /// spec 067: filter facet
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get inventoryReceiptFacetStatus;
+
+  /// spec 067: filter facet
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryReceiptFacetWarehouse;
+
+  /// spec 067: filter facet, no selection
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get inventoryReceiptFacetAll;
+
+  /// spec 067: list empty state
+  ///
+  /// In en, this message translates to:
+  /// **'There are no warehouse receipts'**
+  String get inventoryReceiptEmpty;
+
+  /// spec 067: list filtered-empty state
+  ///
+  /// In en, this message translates to:
+  /// **'No receipt matches the filters.'**
+  String get inventoryReceiptFilteredEmpty;
+
+  /// spec 067: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get inventoryReceiptFactStatus;
+
+  /// spec 067: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get inventoryReceiptFactFolio;
+
+  /// spec 067: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryReceiptFactWarehouse;
+
+  /// spec 067: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get inventoryReceiptFactFacility;
+
+  /// spec 067: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase order'**
+  String get inventoryReceiptFactPurchaseOrder;
+
+  /// spec 067: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get inventoryReceiptFactComment;
+
+  /// spec 067: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get inventoryReceiptFactCreatedBy;
+
+  /// spec 067: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Modified by'**
+  String get inventoryReceiptFactModifiedBy;
+
+  /// spec 067: detail lines section title
+  ///
+  /// In en, this message translates to:
+  /// **'Lines'**
+  String get inventoryReceiptLinesTitle;
+
+  /// spec 067: lines table header
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get inventoryReceiptLineColCode;
+
+  /// spec 067: lines table header
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get inventoryReceiptLineColProduct;
+
+  /// spec 067: lines table header
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity received'**
+  String get inventoryReceiptLineColQuantity;
+
+  /// spec 067: lines table header, linked receipts
+  ///
+  /// In en, this message translates to:
+  /// **'Ordered'**
+  String get inventoryReceiptLineColOrdered;
+
+  /// spec 067: lines table header, linked receipts
+  ///
+  /// In en, this message translates to:
+  /// **'Received in other receipts'**
+  String get inventoryReceiptLineColElsewhere;
+
+  /// spec 067: empty draft lines text
+  ///
+  /// In en, this message translates to:
+  /// **'Add the products received.'**
+  String get inventoryReceiptLinesEmpty;
+
+  /// spec 067: shown when the user has no facility
+  ///
+  /// In en, this message translates to:
+  /// **'Your user has no facility assigned.'**
+  String get inventoryReceiptNoFacility;
+
+  /// spec 067: list action
+  ///
+  /// In en, this message translates to:
+  /// **'New receipt'**
+  String get inventoryReceiptNewAction;
+
+  /// spec 067: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get inventoryReceiptEditHeader;
+
+  /// spec 067: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get inventoryReceiptAddProduct;
+
+  /// spec 067: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get inventoryReceiptConfirm;
+
+  /// spec 067: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel receipt'**
+  String get inventoryReceiptCancel;
+
+  /// spec 067: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Complementary receipt'**
+  String get inventoryReceiptComplementary;
+
+  /// spec 067: line row icon tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Edit quantity'**
+  String get inventoryReceiptLineEditTooltip;
+
+  /// spec 067: line row icon tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Remove line'**
+  String get inventoryReceiptLineRemoveTooltip;
+
+  /// spec 067: new-receipt dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'New receipt'**
+  String get inventoryReceiptNewTitle;
+
+  /// spec 067: new-receipt dialog submit
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get inventoryReceiptNewSubmit;
+
+  /// spec 067: header dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get inventoryReceiptEditHeaderTitle;
+
+  /// spec 067: dialog field label
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryReceiptFieldWarehouse;
+
+  /// spec 067: dialog field label
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get inventoryReceiptFieldComment;
+
+  /// spec 067: dialog field label
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get inventoryReceiptFieldProduct;
+
+  /// spec 067: dialog field label
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get inventoryReceiptFieldQuantity;
+
+  /// spec 067: read-only warehouse hint on a linked receipt
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed: purchase order'**
+  String get inventoryReceiptWarehouseFixed;
+
+  /// spec 067: add-line dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get inventoryReceiptAddProductTitle;
+
+  /// spec 067: add-line dialog submit
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get inventoryReceiptAddProductSubmit;
+
+  /// spec 067: line quantity dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Line quantity'**
+  String get inventoryReceiptLineQuantityTitle;
+
+  /// spec 067: remove-line prompt title
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {product} from the receipt?'**
+  String inventoryReceiptRemoveTitle(String product);
+
+  /// spec 067: remove-line prompt body
+  ///
+  /// In en, this message translates to:
+  /// **'The line is removed from the draft.'**
+  String get inventoryReceiptRemoveBody;
+
+  /// spec 067: remove-line prompt button
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get inventoryReceiptRemoveAction;
+
+  /// spec 067: confirm prompt title
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm receipt'**
+  String get inventoryReceiptConfirmTitle;
+
+  /// spec 067: confirm prompt body (R11)
+  ///
+  /// In en, this message translates to:
+  /// **'Confirming the receipt assigns a folio and adds the stock to the warehouse. It can\'t be edited afterwards.'**
+  String get inventoryReceiptConfirmBody;
+
+  /// spec 067: confirm prompt button
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get inventoryReceiptConfirmAction;
+
+  /// spec 067: prompt dismiss button
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get inventoryReceiptBack;
+
+  /// spec 067: cancel prompt title
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel receipt'**
+  String get inventoryReceiptCancelTitle;
+
+  /// spec 067: cancel prompt body for a draft (R11)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelling the draft adds no stock to the warehouse.'**
+  String get inventoryReceiptCancelDraftBody;
+
+  /// spec 067: cancel prompt body for a confirmed receipt (R11)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelling the receipt removes from the warehouse the stock it added.'**
+  String get inventoryReceiptCancelCompletedBody;
+
+  /// spec 067: cancel prompt button
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel receipt'**
+  String get inventoryReceiptCancelAction;
+
+  /// spec 067: over-receipt warning line
+  ///
+  /// In en, this message translates to:
+  /// **'Over-received {code}: {excess} (received {received} of {ordered} ordered)'**
+  String inventoryReceiptOverReceipt(
+    String code,
+    String excess,
+    String received,
+    String ordered,
+  );
+
+  /// spec 067: cost notice after confirm or cancel
+  ///
+  /// In en, this message translates to:
+  /// **'Costs were updated with exceptions.'**
+  String get inventoryReceiptCostNotice;
+
+  /// spec 067: cost notice close tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get inventoryReceiptCostNoticeClose;
+
+  /// spec 067: product added to the insufficient-stock refusal
+  ///
+  /// In en, this message translates to:
+  /// **'Product: {code}'**
+  String inventoryReceiptRefusalProduct(String code);
+
+  /// spec 067: error under a receipt quantity field that is not above 0
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity greater than 0.'**
+  String get inventoryReceiptQuantityInvalid;
+
+  /// spec 067: button on the receipt not-found and load-failed views
+  ///
+  /// In en, this message translates to:
+  /// **'Back to warehouse receipts'**
+  String get inventoryReceiptBackToList;
+
+  /// spec 067: mbe-api error code `inventory_receipt.warehouse_fixed`
+  ///
+  /// In en, this message translates to:
+  /// **'A purchase order\'s receipt can\'t move to another warehouse.'**
+  String get apiErrorInventoryReceiptWarehouseFixed;
+
+  /// spec 067: mbe-api error code `inventory_receipt.complementary_unavailable`, reason no_purchase_order
+  ///
+  /// In en, this message translates to:
+  /// **'The receipt isn\'t linked to a purchase order.'**
+  String get apiErrorInventoryReceiptComplementaryNoPurchaseOrder;
+
+  /// spec 067: mbe-api error code `inventory_receipt.complementary_unavailable`, reason purchase_order_cancelled
+  ///
+  /// In en, this message translates to:
+  /// **'The purchase order is cancelled.'**
+  String get apiErrorInventoryReceiptComplementaryPurchaseOrderCancelled;
+
+  /// spec 067: mbe-api error code `inventory_receipt.complementary_unavailable`, reason purchase_order_not_completed
+  ///
+  /// In en, this message translates to:
+  /// **'The purchase order isn\'t completed yet.'**
+  String get apiErrorInventoryReceiptComplementaryPurchaseOrderNotCompleted;
+
+  /// spec 067: mbe-api error code `inventory_receipt.complementary_unavailable`, reason purchase_order_fully_received
+  ///
+  /// In en, this message translates to:
+  /// **'The purchase order was already fully received in this warehouse.'**
+  String get apiErrorInventoryReceiptComplementaryPurchaseOrderFullyReceived;
+
+  /// spec 067: mbe-api error code `inventory_receipt.complementary_unavailable`, unknown or missing reason
+  ///
+  /// In en, this message translates to:
+  /// **'No complementary receipt can be created for this receipt.'**
+  String get apiErrorInventoryReceiptComplementaryUnavailable;
+
+  /// spec 067: mbe-api error code `inventory_document.insufficient_stock`
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough stock: {requested} required, {available} available.'**
+  String apiErrorInventoryDocumentInsufficientStock(
+    String requested,
+    String available,
+  );
+
+  /// spec 067: mbe-api error code `inventory_document.no_lines`
+  ///
+  /// In en, this message translates to:
+  /// **'{gender, select, feminine{The {resource} has no lines.} other{The {resource} has no lines.}}'**
+  String apiErrorInventoryDocumentNoLines(String gender, String resource);
+
+  /// spec 067: mbe-api error code `inventory_document.line_without_quantity`
+  ///
+  /// In en, this message translates to:
+  /// **'Line {product} has no quantity.'**
+  String apiErrorInventoryDocumentLineWithoutQuantity(String product);
+
+  /// spec 067: mbe-api error code `inventory_document.already_cancelled`
+  ///
+  /// In en, this message translates to:
+  /// **'{gender, select, feminine{The {resource} is already cancelled.} other{The {resource} is already cancelled.}}'**
+  String apiErrorInventoryDocumentAlreadyCancelled(
+    String gender,
+    String resource,
+  );
+
+  /// spec 067: mbe-api error code `product.not_stockable`
+  ///
+  /// In en, this message translates to:
+  /// **'Product {product} isn\'t stockable.'**
+  String apiErrorProductNotStockable(String product);
+
+  /// spec 067: mbe-api error code `facility.no_in_transit_location`
+  ///
+  /// In en, this message translates to:
+  /// **'The facility has no in-transit location configured.'**
+  String get apiErrorFacilityNoInTransitLocation;
+
+  /// spec 067: mbe-api error code `status_filter.unsupported`
+  ///
+  /// In en, this message translates to:
+  /// **'The status filter isn\'t valid.'**
+  String get apiErrorStatusFilterUnsupported;
 }
 
 class _AppLocalizationsDelegate

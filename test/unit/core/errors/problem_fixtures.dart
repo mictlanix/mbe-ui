@@ -83,6 +83,9 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.emailPeriodNotConfigured: {},
   api.ErrorCode.emailPeriodSendFailed: {},
   api.ErrorCode.facilityPeriodNoDispatchWarehouse: {'facility_id': 2},
+  api.ErrorCode.facilityPeriodNoInTransitLocation: {
+    'facility_ids': [2],
+  },
   api.ErrorCode.facilityPeriodOtherFacility: {'resource': 'sales_order'},
   api.ErrorCode.facilityPeriodRequired: {},
   api.ErrorCode.fiscalDocumentPeriodAlreadyRelated: {'relation_id': 4},
@@ -126,6 +129,25 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.imagePeriodTooLarge: {'max_bytes': 5242880},
   api.ErrorCode.imagePeriodUnsupportedFormat: {},
   api.ErrorCode.incidencePeriodReasonRequired: {},
+  api.ErrorCode.inventoryDocumentPeriodAlreadyCancelled: {
+    'resource': 'inventory_receipt',
+  },
+  api.ErrorCode.inventoryDocumentPeriodInsufficientStock: {
+    'product_id': 7,
+    'warehouse_id': 3,
+    'requested': '5.00000',
+    'available': '2.00000',
+  },
+  api.ErrorCode.inventoryDocumentPeriodLineWithoutQuantity: {
+    'product_code': 'PT-001',
+  },
+  api.ErrorCode.inventoryDocumentPeriodNoLines: {
+    'resource': 'inventory_receipt',
+  },
+  api.ErrorCode.inventoryReceiptPeriodComplementaryUnavailable: {
+    'reason': 'no_purchase_order',
+  },
+  api.ErrorCode.inventoryReceiptPeriodWarehouseFixed: {},
   api.ErrorCode.lockPeriodBusy: {'resource': 'warehouse'},
   api.ErrorCode.paymentPeriodAlreadyApplied: {
     'customer_payment_id': 300912,
@@ -165,6 +187,7 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.productPeriodLookupCriteriaRequired: {},
   api.ErrorCode.productPeriodLookupTooMany: {'max': 200},
   api.ErrorCode.productPeriodMergeWithItself: {},
+  api.ErrorCode.productPeriodNotStockable: {'product_code': 'PT-001'},
   api.ErrorCode.productPricePeriodDuplicateEntry: {
     'product_id': 7,
     'price_list_id': 2,
@@ -219,6 +242,9 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.salesOrderPeriodZeroPricedLines: {},
   api.ErrorCode.serverPeriodError: {},
   api.ErrorCode.statePeriodTransitionInvalid: {},
+  api.ErrorCode.statusFilterPeriodUnsupported: {
+    'allowed': ['draft', 'completed', 'cancelled'],
+  },
   api.ErrorCode.supplierAgreementPeriodEndBeforeStart: {
     'start': '2026-01-01',
     'end': '2025-12-31',

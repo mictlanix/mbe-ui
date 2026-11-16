@@ -7731,4 +7731,316 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get fiscalDocumentRelationRemoveTooltip => 'Quitar relación';
+
+  @override
+  String get navInventoryGroup => 'Inventario';
+
+  @override
+  String get navInventoryReceipts => 'Entradas de almacén';
+
+  @override
+  String inventoryReceiptTitle(String folio) {
+    return 'Entrada $folio';
+  }
+
+  @override
+  String inventoryReceiptTitleDraft(String id) {
+    return 'Entrada · Borrador #$id';
+  }
+
+  @override
+  String inventoryReceiptDraftFolio(String id) {
+    return 'Borrador #$id';
+  }
+
+  @override
+  String get inventoryReceiptStatusDraft => 'Borrador';
+
+  @override
+  String get inventoryReceiptStatusCompleted => 'Confirmada';
+
+  @override
+  String get inventoryReceiptStatusCancelled => 'Cancelada';
+
+  @override
+  String get inventoryReceiptColFolio => 'Folio';
+
+  @override
+  String get inventoryReceiptColWarehouse => 'Almacén';
+
+  @override
+  String get inventoryReceiptColFacility => 'Sucursal';
+
+  @override
+  String get inventoryReceiptColPurchaseOrder => 'Orden de compra';
+
+  @override
+  String get inventoryReceiptColStatus => 'Estado';
+
+  @override
+  String get inventoryReceiptColCreator => 'Creado por';
+
+  @override
+  String get inventoryReceiptColDate => 'Fecha';
+
+  @override
+  String get inventoryReceiptFacetStatus => 'Estado';
+
+  @override
+  String get inventoryReceiptFacetWarehouse => 'Almacén';
+
+  @override
+  String get inventoryReceiptFacetAll => 'Todos';
+
+  @override
+  String get inventoryReceiptEmpty => 'No hay entradas de almacén';
+
+  @override
+  String get inventoryReceiptFilteredEmpty =>
+      'Ninguna entrada coincide con los filtros.';
+
+  @override
+  String get inventoryReceiptFactStatus => 'Estado';
+
+  @override
+  String get inventoryReceiptFactFolio => 'Folio';
+
+  @override
+  String get inventoryReceiptFactWarehouse => 'Almacén';
+
+  @override
+  String get inventoryReceiptFactFacility => 'Sucursal';
+
+  @override
+  String get inventoryReceiptFactPurchaseOrder => 'Orden de compra';
+
+  @override
+  String get inventoryReceiptFactComment => 'Notas';
+
+  @override
+  String get inventoryReceiptFactCreatedBy => 'Creado por';
+
+  @override
+  String get inventoryReceiptFactModifiedBy => 'Modificado por';
+
+  @override
+  String get inventoryReceiptLinesTitle => 'Partidas';
+
+  @override
+  String get inventoryReceiptLineColCode => 'Código';
+
+  @override
+  String get inventoryReceiptLineColProduct => 'Producto';
+
+  @override
+  String get inventoryReceiptLineColQuantity => 'Cantidad recibida';
+
+  @override
+  String get inventoryReceiptLineColOrdered => 'Ordenado';
+
+  @override
+  String get inventoryReceiptLineColElsewhere => 'Recibido en otras entradas';
+
+  @override
+  String get inventoryReceiptLinesEmpty => 'Agrega los productos recibidos.';
+
+  @override
+  String get inventoryReceiptNoFacility =>
+      'Tu usuario no tiene una sucursal asignada.';
+
+  @override
+  String get inventoryReceiptNewAction => 'Nueva entrada';
+
+  @override
+  String get inventoryReceiptEditHeader => 'Editar encabezado';
+
+  @override
+  String get inventoryReceiptAddProduct => 'Agregar producto';
+
+  @override
+  String get inventoryReceiptConfirm => 'Confirmar';
+
+  @override
+  String get inventoryReceiptCancel => 'Cancelar';
+
+  @override
+  String get inventoryReceiptComplementary => 'Entrada complementaria';
+
+  @override
+  String get inventoryReceiptLineEditTooltip => 'Editar cantidad';
+
+  @override
+  String get inventoryReceiptLineRemoveTooltip => 'Quitar partida';
+
+  @override
+  String get inventoryReceiptNewTitle => 'Nueva entrada';
+
+  @override
+  String get inventoryReceiptNewSubmit => 'Crear';
+
+  @override
+  String get inventoryReceiptEditHeaderTitle => 'Editar encabezado';
+
+  @override
+  String get inventoryReceiptFieldWarehouse => 'Almacén';
+
+  @override
+  String get inventoryReceiptFieldComment => 'Notas';
+
+  @override
+  String get inventoryReceiptFieldProduct => 'Producto';
+
+  @override
+  String get inventoryReceiptFieldQuantity => 'Cantidad';
+
+  @override
+  String get inventoryReceiptWarehouseFixed => 'Fijo: orden de compra';
+
+  @override
+  String get inventoryReceiptAddProductTitle => 'Agregar producto';
+
+  @override
+  String get inventoryReceiptAddProductSubmit => 'Agregar';
+
+  @override
+  String get inventoryReceiptLineQuantityTitle => 'Cantidad de la partida';
+
+  @override
+  String inventoryReceiptRemoveTitle(String product) {
+    return '¿Quitar $product de la entrada?';
+  }
+
+  @override
+  String get inventoryReceiptRemoveBody =>
+      'Se elimina la partida del borrador.';
+
+  @override
+  String get inventoryReceiptRemoveAction => 'Quitar';
+
+  @override
+  String get inventoryReceiptConfirmTitle => 'Confirmar entrada';
+
+  @override
+  String get inventoryReceiptConfirmBody =>
+      'Confirmar la entrada asigna un folio y agrega las existencias al almacén. Después ya no se puede editar.';
+
+  @override
+  String get inventoryReceiptConfirmAction => 'Confirmar';
+
+  @override
+  String get inventoryReceiptBack => 'Volver';
+
+  @override
+  String get inventoryReceiptCancelTitle => 'Cancelar entrada';
+
+  @override
+  String get inventoryReceiptCancelDraftBody =>
+      'Cancelar el borrador no agrega existencias al almacén.';
+
+  @override
+  String get inventoryReceiptCancelCompletedBody =>
+      'Cancelar la entrada retira del almacén las existencias que agregó.';
+
+  @override
+  String get inventoryReceiptCancelAction => 'Cancelar entrada';
+
+  @override
+  String inventoryReceiptOverReceipt(
+    String code,
+    String excess,
+    String received,
+    String ordered,
+  ) {
+    return 'Se recibió de más $code: $excess (recibido $received de $ordered ordenado)';
+  }
+
+  @override
+  String get inventoryReceiptCostNotice =>
+      'Se actualizaron los costos con excepciones.';
+
+  @override
+  String get inventoryReceiptCostNoticeClose => 'Cerrar';
+
+  @override
+  String inventoryReceiptRefusalProduct(String code) {
+    return 'Producto: $code';
+  }
+
+  @override
+  String get inventoryReceiptQuantityInvalid =>
+      'Escribe una cantidad mayor que 0.';
+
+  @override
+  String get inventoryReceiptBackToList => 'Volver a entradas de almacén';
+
+  @override
+  String get apiErrorInventoryReceiptWarehouseFixed =>
+      'El almacén de una entrada de orden de compra no se puede cambiar.';
+
+  @override
+  String get apiErrorInventoryReceiptComplementaryNoPurchaseOrder =>
+      'La entrada no está ligada a una orden de compra.';
+
+  @override
+  String get apiErrorInventoryReceiptComplementaryPurchaseOrderCancelled =>
+      'La orden de compra está cancelada.';
+
+  @override
+  String get apiErrorInventoryReceiptComplementaryPurchaseOrderNotCompleted =>
+      'La orden de compra aún no está completada.';
+
+  @override
+  String get apiErrorInventoryReceiptComplementaryPurchaseOrderFullyReceived =>
+      'La orden de compra ya se recibió completa en este almacén.';
+
+  @override
+  String get apiErrorInventoryReceiptComplementaryUnavailable =>
+      'No se puede crear una entrada complementaria para esta entrada.';
+
+  @override
+  String apiErrorInventoryDocumentInsufficientStock(
+    String requested,
+    String available,
+  ) {
+    return 'No hay existencias suficientes: se requieren $requested y hay $available disponibles.';
+  }
+
+  @override
+  String apiErrorInventoryDocumentNoLines(String gender, String resource) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'feminine': 'La $resource no tiene partidas.',
+      'other': 'El $resource no tiene partidas.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String apiErrorInventoryDocumentLineWithoutQuantity(String product) {
+    return 'La partida $product no tiene cantidad.';
+  }
+
+  @override
+  String apiErrorInventoryDocumentAlreadyCancelled(
+    String gender,
+    String resource,
+  ) {
+    String _temp0 = intl.Intl.selectLogic(gender, {
+      'feminine': 'La $resource ya está cancelada.',
+      'other': 'El $resource ya está cancelado.',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String apiErrorProductNotStockable(String product) {
+    return 'El producto $product no maneja existencias.';
+  }
+
+  @override
+  String get apiErrorFacilityNoInTransitLocation =>
+      'La sucursal no tiene almacén de tránsito configurado.';
+
+  @override
+  String get apiErrorStatusFilterUnsupported =>
+      'El filtro de estado no es válido.';
 }

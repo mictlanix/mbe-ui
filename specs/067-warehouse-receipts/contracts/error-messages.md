@@ -35,5 +35,5 @@ These are the codes the 9 inventory-receipt endpoints can return, measured from 
 Rules:
 - `{Resource}` uses the existing `resourceNoun`/`resourceGender` helpers. `inventory_receipt` is already registered, so the message agrees in gender ("La entrada de almacén … cancelada").
 - `{requested}` and `{available}` are formatted with `fmt.display.quantity`.
-- A missing or mistyped param falls back to the param-less wording, and never fails (§III resilience). `test/unit/core/errors/catalog_coverage_test.dart` covers every new member in both locales.
-- `insufficient_stock` on the detail screen: the cancel refusal banner adds "Producto: {code}" by looking up `product_id` in the receipt's lines (research R7). The shared message stays generic.
+- A missing or mistyped param never fails (§III resilience). Following spec 058's convention, the five codes whose sentence needs a param (`inventory_document.already_cancelled`, `.insufficient_stock`, `.line_without_quantity`, `.no_lines`, `product.not_stockable`) have no message without it, and the shared message path falls back as it does for every such code; they are listed in `needParams`. The other four codes are fixed sentences. The server always sends these params. `test/unit/core/errors/catalog_coverage_test.dart` covers every new member in both locales.
+- `insufficient_stock` on the detail screen: a line under the cancel refusal banner adds "Producto: {code}" (the shared `ErrorBanner` takes no extra lines) by looking up `product_id` in the receipt's lines (research R7). The shared message stays generic.
