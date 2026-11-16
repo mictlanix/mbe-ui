@@ -6815,4 +6815,181 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get apiErrorDeliveryOrderNoLinesFromWarehouse =>
       'No line of this order leaves from the chosen warehouse.';
+
+  @override
+  String get taxpayerBatchesSectionTitle => 'Series';
+
+  @override
+  String taxpayerBatchesSectionTitleWithCount(int count) {
+    return 'Series ($count)';
+  }
+
+  @override
+  String get taxpayerBatchesEmpty =>
+      'This issuer has no series. Without a series of the right type it can\'t issue that document.';
+
+  @override
+  String get taxpayerBatchColumnSeries => 'Series';
+
+  @override
+  String get taxpayerBatchColumnType => 'Type';
+
+  @override
+  String get taxpayerBatchColumnTemplate => 'Template';
+
+  @override
+  String get taxpayerBatchColumnInUse => 'In use';
+
+  @override
+  String get taxpayerBatchDialogCreateTitle => 'New series';
+
+  @override
+  String get taxpayerBatchDialogViewTitle => 'View series';
+
+  @override
+  String get taxpayerBatchDialogEditTitle => 'Edit series';
+
+  @override
+  String get taxpayerBatchSeriesLabel => 'Series';
+
+  @override
+  String get taxpayerBatchTypeLabel => 'Document type';
+
+  @override
+  String get taxpayerBatchTemplateNameLabel => 'Template name';
+
+  @override
+  String get taxpayerBatchLogoLabel => 'Logo (file name)';
+
+  @override
+  String get taxpayerBatchHeaderHeightLabel => 'Header height (mm)';
+
+  @override
+  String get taxpayerBatchFooterHeightLabel => 'Footer height (mm)';
+
+  @override
+  String get taxpayerBatchInUseNote =>
+      'Documents have already been issued with this series; only the template can change.';
+
+  @override
+  String get taxpayerBatchAccountsTitle => 'Bank accounts';
+
+  @override
+  String get taxpayerBatchAccountBank => 'Bank';
+
+  @override
+  String get taxpayerBatchAccountNumber => 'Account';
+
+  @override
+  String get taxpayerBatchAccountClabe => 'CLABE';
+
+  @override
+  String get taxpayerBatchAccountCurrency => 'Currency';
+
+  @override
+  String get taxpayerBatchAddAccount => 'Add account';
+
+  @override
+  String get taxpayerBatchMoveAccountUp => 'Move up';
+
+  @override
+  String get taxpayerBatchMoveAccountDown => 'Move down';
+
+  @override
+  String get taxpayerBatchRemoveAccount => 'Remove account';
+
+  @override
+  String get taxpayerBatchNoAccounts => 'No bank accounts';
+
+  @override
+  String get taxpayerBatchCloseButton => 'Close';
+
+  @override
+  String get taxpayerBatchDeleteTitle => 'Delete series?';
+
+  @override
+  String taxpayerBatchDeleteMessage(String series, String type) {
+    return 'Series $series ($type) will be deleted.';
+  }
+
+  @override
+  String get taxpayerBatchSeriesRequiredError => 'Enter the series.';
+
+  @override
+  String get taxpayerBatchSeriesTooLongError =>
+      'The series can have at most 10 characters.';
+
+  @override
+  String get taxpayerBatchTypeRequiredError => 'Choose the document type.';
+
+  @override
+  String get taxpayerBatchTemplateNameRequiredError =>
+      'Enter the template name.';
+
+  @override
+  String get taxpayerBatchTemplateNameTooLongError =>
+      'The template name can have at most 50 characters.';
+
+  @override
+  String get taxpayerBatchHeightInvalidError =>
+      'Enter a whole number, 0 or more.';
+
+  @override
+  String get fiscalDocumentKindInvoice => 'Invoice';
+
+  @override
+  String get fiscalDocumentKindExpense => 'Expense';
+
+  @override
+  String get fiscalDocumentKindPayment => 'Payment';
+
+  @override
+  String get fiscalDocumentKindTransfer => 'Transfer';
+
+  @override
+  String get fiscalDocumentKindCreditNote => 'Credit note';
+
+  @override
+  String get fiscalDocumentKindPaymentReceipt => 'Payment receipt';
+
+  @override
+  String get fiscalDocumentKindAdvancePaymentsApplied =>
+      'Advance payments applied';
+
+  @override
+  String fiscalDocumentKindUnknown(int code) {
+    return 'Unknown type ($code)';
+  }
+
+  @override
+  String get apiErrorTaxpayerBatchInUseUpdate =>
+      'The series is already used by issued documents; only its template can change.';
+
+  @override
+  String get apiErrorTaxpayerBatchInUseDelete =>
+      'The series is already used by issued documents and can\'t be deleted.';
+
+  @override
+  String get apiValidationTaxpayerBatchSeriesBlank =>
+      'The series can\'t be blank.';
+
+  @override
+  String apiResourceTaxpayerBatch(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'series',
+      one: 'series',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderTaxpayerBatch => 'feminine';
+
+  @override
+  String get taxpayerBatchSaveFailed => 'The series couldn\'t be saved.';
+
+  @override
+  String get taxpayerBatchDeleteFailed => 'The series couldn\'t be deleted.';
 }

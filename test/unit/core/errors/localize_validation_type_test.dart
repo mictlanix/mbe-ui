@@ -14,7 +14,7 @@ void main() {
     test(
       'renders every known type in both languages, with no placeholders',
       () {
-        expect(localizedValidationTypes, hasLength(8));
+        expect(localizedValidationTypes, hasLength(9));
         for (final type in localizedValidationTypes) {
           final en = localizeValidationType(type, env.en);
           final es = localizeValidationType(type, env.es);
@@ -45,6 +45,17 @@ void main() {
         expect(localizeValidationType('password_policy', env.es), isNull);
       },
     );
+
+    test('a blank taxpayer series reads as the form needs it (spec 065)', () {
+      expect(
+        localizeValidationType('taxpayer_batch_series_blank', env.es),
+        'La serie no puede quedar en blanco.',
+      );
+      expect(
+        localizeValidationType('taxpayer_batch_series_blank', env.en),
+        "The series can't be blank.",
+      );
+    });
 
     test('an unknown type has no message', () {
       expect(localizeValidationType('future_rule', env.es), isNull);

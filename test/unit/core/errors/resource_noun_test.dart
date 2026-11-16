@@ -28,6 +28,14 @@ void main() {
       expect(resourceGender('customer_address', env.es), 'feminine');
     });
 
+    test('a taxpayer series is a feminine noun, the same in the plural '
+        '(spec 065)', () {
+      expect(resourceNoun('taxpayer_batch', env.es), 'serie');
+      expect(resourceNoun('taxpayer_batch', env.es, count: 2), 'series');
+      expect(resourceNoun('taxpayer_batch', env.en), 'series');
+      expect(resourceGender('taxpayer_batch', env.es), 'feminine');
+    });
+
     test('a kind the app has no noun for is the generic noun, never the '
         "server's internal name", () {
       expect(resourceNoun('some_new_table', env.en), 'record');

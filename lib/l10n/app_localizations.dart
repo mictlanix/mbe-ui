@@ -11340,6 +11340,312 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No line of this order leaves from the chosen warehouse.'**
   String get apiErrorDeliveryOrderNoLinesFromWarehouse;
+
+  /// spec 065: Series section title on the taxpayer issuer detail
+  ///
+  /// In en, this message translates to:
+  /// **'Series'**
+  String get taxpayerBatchesSectionTitle;
+
+  /// spec 065: Series section title with the number of series
+  ///
+  /// In en, this message translates to:
+  /// **'Series ({count})'**
+  String taxpayerBatchesSectionTitleWithCount(int count);
+
+  /// spec 065: empty state of the Series section
+  ///
+  /// In en, this message translates to:
+  /// **'This issuer has no series. Without a series of the right type it can\'t issue that document.'**
+  String get taxpayerBatchesEmpty;
+
+  /// spec 065: Series table column
+  ///
+  /// In en, this message translates to:
+  /// **'Series'**
+  String get taxpayerBatchColumnSeries;
+
+  /// spec 065: Series table column: the document type
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get taxpayerBatchColumnType;
+
+  /// spec 065: Series table column: the print template name
+  ///
+  /// In en, this message translates to:
+  /// **'Template'**
+  String get taxpayerBatchColumnTemplate;
+
+  /// spec 065: Series table column and tooltip: documents already use the series
+  ///
+  /// In en, this message translates to:
+  /// **'In use'**
+  String get taxpayerBatchColumnInUse;
+
+  /// spec 065: series dialog title in create mode
+  ///
+  /// In en, this message translates to:
+  /// **'New series'**
+  String get taxpayerBatchDialogCreateTitle;
+
+  /// spec 065: series dialog title in read-only mode
+  ///
+  /// In en, this message translates to:
+  /// **'View series'**
+  String get taxpayerBatchDialogViewTitle;
+
+  /// spec 065: series dialog title in edit mode
+  ///
+  /// In en, this message translates to:
+  /// **'Edit series'**
+  String get taxpayerBatchDialogEditTitle;
+
+  /// spec 065: series field label
+  ///
+  /// In en, this message translates to:
+  /// **'Series'**
+  String get taxpayerBatchSeriesLabel;
+
+  /// spec 065: document type field label
+  ///
+  /// In en, this message translates to:
+  /// **'Document type'**
+  String get taxpayerBatchTypeLabel;
+
+  /// spec 065: template name field label
+  ///
+  /// In en, this message translates to:
+  /// **'Template name'**
+  String get taxpayerBatchTemplateNameLabel;
+
+  /// spec 065: logo file name field label
+  ///
+  /// In en, this message translates to:
+  /// **'Logo (file name)'**
+  String get taxpayerBatchLogoLabel;
+
+  /// spec 065: header height field label
+  ///
+  /// In en, this message translates to:
+  /// **'Header height (mm)'**
+  String get taxpayerBatchHeaderHeightLabel;
+
+  /// spec 065: footer height field label
+  ///
+  /// In en, this message translates to:
+  /// **'Footer height (mm)'**
+  String get taxpayerBatchFooterHeightLabel;
+
+  /// spec 065: note shown when the series is locked
+  ///
+  /// In en, this message translates to:
+  /// **'Documents have already been issued with this series; only the template can change.'**
+  String get taxpayerBatchInUseNote;
+
+  /// spec 065: bank accounts group title
+  ///
+  /// In en, this message translates to:
+  /// **'Bank accounts'**
+  String get taxpayerBatchAccountsTitle;
+
+  /// spec 065: bank account field label
+  ///
+  /// In en, this message translates to:
+  /// **'Bank'**
+  String get taxpayerBatchAccountBank;
+
+  /// spec 065: bank account number field label
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get taxpayerBatchAccountNumber;
+
+  /// spec 065: bank account CLABE field label
+  ///
+  /// In en, this message translates to:
+  /// **'CLABE'**
+  String get taxpayerBatchAccountClabe;
+
+  /// spec 065: bank account currency field label
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get taxpayerBatchAccountCurrency;
+
+  /// spec 065: button to add a bank account row
+  ///
+  /// In en, this message translates to:
+  /// **'Add account'**
+  String get taxpayerBatchAddAccount;
+
+  /// spec 065: tooltip to move a bank account up
+  ///
+  /// In en, this message translates to:
+  /// **'Move up'**
+  String get taxpayerBatchMoveAccountUp;
+
+  /// spec 065: tooltip to move a bank account down
+  ///
+  /// In en, this message translates to:
+  /// **'Move down'**
+  String get taxpayerBatchMoveAccountDown;
+
+  /// spec 065: tooltip to remove a bank account row
+  ///
+  /// In en, this message translates to:
+  /// **'Remove account'**
+  String get taxpayerBatchRemoveAccount;
+
+  /// spec 065: bank accounts group when empty in read-only mode
+  ///
+  /// In en, this message translates to:
+  /// **'No bank accounts'**
+  String get taxpayerBatchNoAccounts;
+
+  /// spec 065: close button of the read-only series dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get taxpayerBatchCloseButton;
+
+  /// spec 065: delete confirmation title
+  ///
+  /// In en, this message translates to:
+  /// **'Delete series?'**
+  String get taxpayerBatchDeleteTitle;
+
+  /// spec 065: delete confirmation message
+  ///
+  /// In en, this message translates to:
+  /// **'Series {series} ({type}) will be deleted.'**
+  String taxpayerBatchDeleteMessage(String series, String type);
+
+  /// spec 065: client validation: series blank
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the series.'**
+  String get taxpayerBatchSeriesRequiredError;
+
+  /// spec 065: client validation: series longer than 10
+  ///
+  /// In en, this message translates to:
+  /// **'The series can have at most 10 characters.'**
+  String get taxpayerBatchSeriesTooLongError;
+
+  /// spec 065: client validation: no document type
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the document type.'**
+  String get taxpayerBatchTypeRequiredError;
+
+  /// spec 065: client validation: template name blank
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the template name.'**
+  String get taxpayerBatchTemplateNameRequiredError;
+
+  /// spec 065: client validation: template name longer than 50
+  ///
+  /// In en, this message translates to:
+  /// **'The template name can have at most 50 characters.'**
+  String get taxpayerBatchTemplateNameTooLongError;
+
+  /// spec 065: client validation: height not a whole number >= 0
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a whole number, 0 or more.'**
+  String get taxpayerBatchHeightInvalidError;
+
+  /// spec 065: label of the fiscal document kind Invoice
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice'**
+  String get fiscalDocumentKindInvoice;
+
+  /// spec 065: label of the fiscal document kind Expense
+  ///
+  /// In en, this message translates to:
+  /// **'Expense'**
+  String get fiscalDocumentKindExpense;
+
+  /// spec 065: label of the fiscal document kind Payment
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get fiscalDocumentKindPayment;
+
+  /// spec 065: label of the fiscal document kind Transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer'**
+  String get fiscalDocumentKindTransfer;
+
+  /// spec 065: label of the fiscal document kind CreditNote
+  ///
+  /// In en, this message translates to:
+  /// **'Credit note'**
+  String get fiscalDocumentKindCreditNote;
+
+  /// spec 065: label of the fiscal document kind PaymentReceipt
+  ///
+  /// In en, this message translates to:
+  /// **'Payment receipt'**
+  String get fiscalDocumentKindPaymentReceipt;
+
+  /// spec 065: label of the fiscal document kind AdvancePaymentsApplied
+  ///
+  /// In en, this message translates to:
+  /// **'Advance payments applied'**
+  String get fiscalDocumentKindAdvancePaymentsApplied;
+
+  /// spec 065: label of a fiscal document type code this app does not know
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown type ({code})'**
+  String fiscalDocumentKindUnknown(int code);
+
+  /// spec 065: mbe-api error code `taxpayer_batch.in_use` with action `update`
+  ///
+  /// In en, this message translates to:
+  /// **'The series is already used by issued documents; only its template can change.'**
+  String get apiErrorTaxpayerBatchInUseUpdate;
+
+  /// spec 065: mbe-api error code `taxpayer_batch.in_use` with action `delete`
+  ///
+  /// In en, this message translates to:
+  /// **'The series is already used by issued documents and can\'t be deleted.'**
+  String get apiErrorTaxpayerBatchInUseDelete;
+
+  /// spec 065: mbe-api request-validation type `taxpayer_batch_series_blank`
+  ///
+  /// In en, this message translates to:
+  /// **'The series can\'t be blank.'**
+  String get apiValidationTaxpayerBatchSeriesBlank;
+
+  /// Record noun for the API resource name `taxpayer_batch` (spec 065), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{series} other{series}}'**
+  String apiResourceTaxpayerBatch(int count);
+
+  /// Grammatical gender of the noun for `taxpayer_batch` in Spanish: `feminine` or `masculine` (spec 065)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderTaxpayerBatch;
+
+  /// spec 065: banner headline when saving a series fails
+  ///
+  /// In en, this message translates to:
+  /// **'The series couldn\'t be saved.'**
+  String get taxpayerBatchSaveFailed;
+
+  /// spec 065: banner headline when deleting a series fails
+  ///
+  /// In en, this message translates to:
+  /// **'The series couldn\'t be deleted.'**
+  String get taxpayerBatchDeleteFailed;
 }
 
 class _AppLocalizationsDelegate
