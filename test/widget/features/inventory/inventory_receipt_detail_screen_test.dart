@@ -10,6 +10,7 @@ import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -29,7 +30,10 @@ void main() {
 
   setUp(() => h = InventoryHarness());
 
-  final completed = aReceipt(serial: 1043, status: ReceiptStatus.completed);
+  final completed = aReceipt(
+    serial: 1043,
+    status: InventoryDocumentStatus.completed,
+  );
 
   String title(WidgetTester tester) => tester
       .widget<Text>(
@@ -47,7 +51,7 @@ void main() {
       await h.pumpReceipt(tester, aReceipt(comment: 'Sin factura'));
 
       expect(title(tester), l10n.inventoryReceiptTitleDraft('318'));
-      expect(key('inventory_receipt_status_chip'), findsOneWidget);
+      expect(key('inventory_document_status_chip'), findsOneWidget);
       expect(tester.widget<Text>(key('inventory_receipt_serial')).data, '—');
       expect(find.text('Almacén 3'), findsOneWidget);
       expect(find.text('Sucursal 2'), findsOneWidget);
@@ -202,7 +206,7 @@ void main() {
 
       expect(title(tester), l10n.inventoryReceiptTitle('1043'));
       expect(tester.widget<Text>(key('inventory_receipt_serial')).data, '1043');
-      expect(find.text(l10n.inventoryReceiptStatusCompleted), findsOneWidget);
+      expect(find.text(l10n.inventoryDocumentStatusCompleted), findsOneWidget);
       expect(key('inventory_receipt_confirm'), findsNothing);
       expect(key('inventory_receipt_edit_header'), findsNothing);
       expect(key('inventory_receipt_line_edit_900'), findsNothing);
@@ -285,7 +289,7 @@ void main() {
     testWidgets('is absent on a cancelled receipt', (tester) async {
       await h.pumpReceipt(
         tester,
-        aReceipt(serial: 1043, status: ReceiptStatus.cancelled),
+        aReceipt(serial: 1043, status: InventoryDocumentStatus.cancelled),
       );
       expect(key('inventory_receipt_edit_header'), findsNothing);
     });
@@ -326,14 +330,15 @@ void main() {
 
     testWidgets('success shows Cancelada', (tester) async {
       when(() => h.receipts.cancel(318)).thenAnswer(
-        (_) async => aReceipt(serial: 1043, status: ReceiptStatus.cancelled),
+        (_) async =>
+            aReceipt(serial: 1043, status: InventoryDocumentStatus.cancelled),
       );
       await h.pumpReceipt(tester, completed);
 
       await cancel(tester);
 
       verify(() => h.receipts.cancel(318)).called(1);
-      expect(find.text(l10n.inventoryReceiptStatusCancelled), findsOneWidget);
+      expect(find.text(l10n.inventoryDocumentStatusCancelled), findsOneWidget);
       expect(key('inventory_receipt_cancel'), findsNothing);
     });
 
@@ -349,7 +354,7 @@ void main() {
     testWidgets('is absent on a cancelled receipt', (tester) async {
       await h.pumpReceipt(
         tester,
-        aReceipt(serial: 1043, status: ReceiptStatus.cancelled),
+        aReceipt(serial: 1043, status: InventoryDocumentStatus.cancelled),
       );
       expect(key('inventory_receipt_actions'), findsNothing);
     });
@@ -380,7 +385,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('SERVER TEXT'), findsNothing);
-      expect(find.text(l10n.inventoryReceiptStatusCompleted), findsOneWidget);
+      expect(find.text(l10n.inventoryDocumentStatusCompleted), findsOneWidget);
     });
 
     testWidgets('already_cancelled shows its message and refreshes', (
@@ -393,12 +398,14 @@ void main() {
       );
       when(() => h.receipts.cancel(318)).thenAnswer((_) async => throw refusal);
       await h.pumpReceipt(tester, completed);
-      h.stubReceipt(aReceipt(serial: 1043, status: ReceiptStatus.cancelled));
+      h.stubReceipt(
+        aReceipt(serial: 1043, status: InventoryDocumentStatus.cancelled),
+      );
 
       await cancel(tester);
 
       expect(find.text(localized(refusal)), findsOneWidget);
-      expect(find.text(l10n.inventoryReceiptStatusCancelled), findsOneWidget);
+      expect(find.text(l10n.inventoryDocumentStatusCancelled), findsOneWidget);
       expect(key('inventory_receipt_cancel'), findsNothing);
     });
   });
@@ -407,7 +414,7 @@ void main() {
     /// A draft linked to order 5512: line 900 on order line 1 (ordered 10,
     /// 5 received elsewhere, 8 here: 3 over) and hand-added line 901.
     InventoryReceipt linked({
-      ReceiptStatus status = ReceiptStatus.draft,
+      InventoryDocumentStatus status = InventoryDocumentStatus.draft,
       int? serial,
       int serverWarningCount = 0,
     }) => aReceipt(
@@ -450,7 +457,7 @@ void main() {
     testWidgets('no over-receipt band on a cancelled receipt', (tester) async {
       await h.pumpReceipt(
         tester,
-        linked(status: ReceiptStatus.cancelled, serial: 1043),
+        linked(status: InventoryDocumentStatus.cancelled, serial: 1043),
       );
       expect(key('receipt_over_receipt_band'), findsNothing);
     });
@@ -459,7 +466,7 @@ void main() {
         'still works', (tester) async {
       when(() => h.receipts.confirm(318)).thenAnswer(
         (_) async => linked(
-          status: ReceiptStatus.completed,
+          status: InventoryDocumentStatus.completed,
           serial: 1043,
           serverWarningCount: 1,
         ),
@@ -479,7 +486,7 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(() => h.receipts.confirm(318)).called(1);
-      expect(find.text(l10n.inventoryReceiptStatusCompleted), findsOneWidget);
+      expect(find.text(l10n.inventoryDocumentStatusCompleted), findsOneWidget);
       // One server warning, matched by the one over-receipt: no notice.
       expect(key('receipt_cost_notice_band'), findsNothing);
     });
@@ -489,7 +496,7 @@ void main() {
       when(() => h.receipts.confirm(318)).thenAnswer(
         (_) async => aReceipt(
           serial: 1043,
-          status: ReceiptStatus.completed,
+          status: InventoryDocumentStatus.completed,
           serverWarningCount: 1,
         ),
       );
@@ -513,7 +520,7 @@ void main() {
       when(() => h.receipts.cancel(318)).thenAnswer(
         (_) async => aReceipt(
           serial: 1043,
-          status: ReceiptStatus.cancelled,
+          status: InventoryDocumentStatus.cancelled,
           serverWarningCount: 2,
         ),
       );
@@ -545,7 +552,7 @@ void main() {
       testWidgets('is absent on a cancelled receipt', (tester) async {
         await h.pumpReceipt(
           tester,
-          linked(status: ReceiptStatus.cancelled, serial: 1043),
+          linked(status: InventoryDocumentStatus.cancelled, serial: 1043),
         );
         expect(key('inventory_receipt_complementary'), findsNothing);
       });
@@ -561,7 +568,7 @@ void main() {
           h.stubReceipt(draft);
           await h.pumpReceipt(
             tester,
-            linked(status: ReceiptStatus.completed, serial: 1043),
+            linked(status: InventoryDocumentStatus.completed, serial: 1043),
           );
 
           await tester.tap(key('inventory_receipt_complementary'));
@@ -590,7 +597,7 @@ void main() {
           ).thenAnswer((_) async => throw refusal);
           await h.pumpReceipt(
             tester,
-            linked(status: ReceiptStatus.completed, serial: 1043),
+            linked(status: InventoryDocumentStatus.completed, serial: 1043),
           );
 
           await tester.tap(key('inventory_receipt_complementary'));

@@ -10,12 +10,12 @@ import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
 
-part 'receipt_warehouse_options.g.dart';
+part 'inventory_warehouse_options.g.dart';
 
 /// Which warehouses Nueva entrada and Editar encabezado offer (spec 067
 /// FR-017, research R5).
-class ReceiptWarehouseScope {
-  const ReceiptWarehouseScope({this.facilityId, this.noFacility = false});
+class InventoryWarehouseScope {
+  const InventoryWarehouseScope({this.facilityId, this.noFacility = false});
 
   /// The facility the options are limited to; `null` offers every warehouse
   /// (an administrator).
@@ -31,25 +31,25 @@ UserSettings? _settings(Ref ref) {
   return state is AuthAuthenticated ? state.user.settings : null;
 }
 
-/// The session user's [ReceiptWarehouseScope]: every warehouse for an
+/// The session user's [InventoryWarehouseScope]: every warehouse for an
 /// administrator, their own facility's for anyone else.
 @riverpod
-ReceiptWarehouseScope receiptWarehouseScope(Ref ref) {
+InventoryWarehouseScope inventoryWarehouseScope(Ref ref) {
   if (ref.watch(accessControlProvider).isAdministrator) {
-    return const ReceiptWarehouseScope();
+    return const InventoryWarehouseScope();
   }
   final facilityId = _settings(ref)?.facilityId;
   return facilityId == null
-      ? const ReceiptWarehouseScope(noFacility: true)
-      : ReceiptWarehouseScope(facilityId: facilityId);
+      ? const InventoryWarehouseScope(noFacility: true)
+      : InventoryWarehouseScope(facilityId: facilityId);
 }
 
 /// The active warehouses within [scope] matching [search], for the dialogs'
 /// `CatalogEntityPicker<Warehouse>`. Empty, with no request, when the scope
 /// has no facility.
-Future<List<Warehouse>> receiptWarehouseOptions(
+Future<List<Warehouse>> inventoryWarehouseOptions(
   WarehouseRepository repository,
-  ReceiptWarehouseScope scope,
+  InventoryWarehouseScope scope,
   String search,
 ) async {
   if (scope.noFacility) return const [];
@@ -64,10 +64,14 @@ Future<List<Warehouse>> receiptWarehouseOptions(
 
 /// The list filter's options: every active warehouse, for everyone, since
 /// reading is not limited by facility (FR-017).
-Future<List<Warehouse>> receiptFilterWarehouseOptions(
+Future<List<Warehouse>> inventoryFilterWarehouseOptions(
   WarehouseRepository repository,
   String search,
-) => receiptWarehouseOptions(repository, const ReceiptWarehouseScope(), search);
+) => inventoryWarehouseOptions(
+  repository,
+  const InventoryWarehouseScope(),
+  search,
+);
 
 /// The warehouse Nueva entrada starts with (FR-005): the user's point-of-sale
 /// warehouse. `null` when the user has no point of sale, when a lookup fails,
@@ -75,10 +79,10 @@ Future<List<Warehouse>> receiptFilterWarehouseOptions(
 /// facility, so the starting value is always one the picker would offer.
 /// Its name comes from `warehouseDisplayNameProvider`.
 @riverpod
-Future<int?> receiptStartingWarehouse(Ref ref) async {
+Future<int?> inventoryStartingWarehouse(Ref ref) async {
   final pointSaleId = _settings(ref)?.pointSaleId;
   if (pointSaleId == null) return null;
-  final scope = ref.watch(receiptWarehouseScopeProvider);
+  final scope = ref.watch(inventoryWarehouseScopeProvider);
   if (scope.noFacility) return null;
   try {
     final pointSale = await ref

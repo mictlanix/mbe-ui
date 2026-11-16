@@ -17,13 +17,14 @@ import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_status_chip.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_filter.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_document_status_chip.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_documents_filter.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_list_controller.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/new_receipt_dialog.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/receipt_name_cells.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/receipt_warehouse_options.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_name_cells.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_warehouse_options.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 const inventoryReceiptsPath = '/inventory/receipts';
@@ -50,7 +51,7 @@ class InventoryReceiptsListScreen extends ConsumerWidget {
     final canCreate =
         access.can(SystemObject.inventoryReceipts, AccessRight.create) &&
         access.can(SystemObject.warehouses, AccessRight.read);
-    final filter = InventoryReceiptsFilter.fromQuery(query);
+    final filter = InventoryDocumentsFilter.fromQuery(query);
     final pageAsync = ref.watch(
       inventoryReceiptsListControllerProvider(filter),
     );
@@ -126,7 +127,7 @@ class InventoryReceiptsListScreen extends ConsumerWidget {
                   numeric: true,
                   cellBuilder: (context, r) => Text(
                     r.serial == null
-                        ? l10n.inventoryReceiptDraftFolio('${r.id}')
+                        ? l10n.inventoryDocumentDraftFolio('${r.id}')
                         : '${r.serial}',
                     key: Key('inventory_receipt_folio_${r.id}'),
                     textAlign: TextAlign.end,
@@ -136,14 +137,14 @@ class InventoryReceiptsListScreen extends ConsumerWidget {
                   label: l10n.inventoryReceiptColWarehouse,
                   size: ColumnSize.M,
                   cellBuilder: (context, r) =>
-                      ReceiptWarehouseName(warehouseId: r.warehouseId),
+                      InventoryWarehouseName(warehouseId: r.warehouseId),
                 ),
                 if (!compact)
                   DataTableColumn(
                     label: l10n.inventoryReceiptColFacility,
                     size: ColumnSize.M,
                     cellBuilder: (context, r) =>
-                        ReceiptFacilityName(facilityId: r.facilityId),
+                        InventoryFacilityName(facilityId: r.facilityId),
                   ),
                 DataTableColumn.text(
                   label: l10n.inventoryReceiptColPurchaseOrder,
@@ -154,14 +155,14 @@ class InventoryReceiptsListScreen extends ConsumerWidget {
                   label: l10n.inventoryReceiptColStatus,
                   size: ColumnSize.S,
                   cellBuilder: (context, r) =>
-                      InventoryReceiptStatusChip(status: r.status),
+                      InventoryDocumentStatusChip(status: r.status),
                 ),
                 if (!compact)
                   DataTableColumn(
                     label: l10n.inventoryReceiptColCreator,
                     size: ColumnSize.M,
                     cellBuilder: (context, r) =>
-                        ReceiptEmployeeName(employeeId: r.creatorId),
+                        InventoryEmployeeName(employeeId: r.creatorId),
                   ),
                 DataTableColumn(
                   label: l10n.inventoryReceiptColDate,
@@ -200,7 +201,7 @@ class _InventoryReceiptsFiltersPanel extends ConsumerWidget {
     final canReadWarehouses = ref
         .watch(accessControlProvider)
         .can(SystemObject.warehouses, AccessRight.read);
-    final filter = InventoryReceiptsFilter.fromQuery(query);
+    final filter = InventoryDocumentsFilter.fromQuery(query);
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final spacing = theme.spacing;
@@ -237,10 +238,10 @@ class _InventoryReceiptsFiltersPanel extends ConsumerWidget {
                   selected: filter.status == null,
                   onSelected: (_) => goTo(query.withFacet('status', null)),
                 ),
-                for (final status in ReceiptStatus.values)
+                for (final status in InventoryDocumentStatus.values)
                   ChoiceChip(
                     key: Key('inventory_receipts_status_${status.name}'),
-                    label: Text(inventoryReceiptStatusLabel(l10n, status)),
+                    label: Text(inventoryDocumentStatusLabel(l10n, status)),
                     selected: filter.status == status,
                     // Tapping the selected chip again clears the facet.
                     onSelected: (selected) => goTo(
@@ -257,7 +258,7 @@ class _InventoryReceiptsFiltersPanel extends ConsumerWidget {
             label: l10n.inventoryReceiptFacetWarehouse,
             displayStringForOption: (w) => w.name,
             optionSubtitle: (w) => w.facilityName,
-            optionsBuilder: (search) => receiptFilterWarehouseOptions(
+            optionsBuilder: (search) => inventoryFilterWarehouseOptions(
               ref.read(warehouseRepositoryProvider),
               search,
             ),

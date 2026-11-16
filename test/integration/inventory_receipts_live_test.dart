@@ -13,6 +13,7 @@ import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 
 /// Spec 067's repository calls against a live mbe-api (quickstart.md, task
@@ -137,7 +138,7 @@ void main() {
       });
 
       await step('status filter: only that status', () async {
-        for (final status in ReceiptStatus.values) {
+        for (final status in InventoryDocumentStatus.values) {
           final page = await receipts.list(status: status, skip: 0, limit: 50);
           expect(page.items.every((r) => r.status == status), isTrue);
         }
@@ -148,14 +149,16 @@ void main() {
         final page = await receipts.list(warehouseId: w1, skip: 0, limit: 50);
         expect(page.items.every((r) => r.warehouseId == w1), isTrue);
         final both = await receipts.list(
-          status: ReceiptStatus.completed,
+          status: InventoryDocumentStatus.completed,
           warehouseId: w1,
           skip: 0,
           limit: 50,
         );
         expect(
           both.items.every(
-            (r) => r.warehouseId == w1 && r.status == ReceiptStatus.completed,
+            (r) =>
+                r.warehouseId == w1 &&
+                r.status == InventoryDocumentStatus.completed,
           ),
           isTrue,
         );
@@ -175,7 +178,7 @@ void main() {
       InventoryReceipt? linked;
       await step('discover a purchase-order receipt', () async {
         final page = await receipts.list(
-          status: ReceiptStatus.completed,
+          status: InventoryDocumentStatus.completed,
           skip: 0,
           limit: 100,
         );
@@ -273,7 +276,7 @@ void main() {
         InventoryReceipt? draft;
         await step('create a draft with notes', () async {
           draft = await receipts.create(warehouseId: w1, comment: tag);
-          expect(draft!.status, ReceiptStatus.draft);
+          expect(draft!.status, InventoryDocumentStatus.draft);
           expect(draft!.serial, isNull);
           expect(draft!.comment, tag);
           expect(draft!.warehouseId, w1);
@@ -348,7 +351,7 @@ void main() {
             () async {
               before = await onHand(p1.productId);
               final r = await receipts.confirm(id);
-              expect(r.status, ReceiptStatus.completed);
+              expect(r.status, InventoryDocumentStatus.completed);
               expect(r.serial, isNotNull);
               final after = await onHand(p1.productId);
               expect(after, before + Decimal.fromInt(5));
@@ -358,7 +361,7 @@ void main() {
 
           await step('cancel the confirmed receipt: stock restored', () async {
             final r = await receipts.cancel(id);
-            expect(r.status, ReceiptStatus.cancelled);
+            expect(r.status, InventoryDocumentStatus.cancelled);
             expect(await onHand(p1.productId), before);
             return null;
           });
@@ -375,7 +378,7 @@ void main() {
               expect(_code(e), 'inventory_document.no_lines');
             }
             final r = await receipts.cancel(empty.id);
-            expect(r.status, ReceiptStatus.cancelled);
+            expect(r.status, InventoryDocumentStatus.cancelled);
             return '#${empty.id} cancelled';
           },
         );
@@ -415,7 +418,10 @@ void main() {
             expect(_code(e), 'inventory_document.insufficient_stock');
             expect(e.problem!.params['product_id'], productId);
           }
-          expect((await receipts.get(r.id)).status, ReceiptStatus.completed);
+          expect(
+            (await receipts.get(r.id)).status,
+            InventoryDocumentStatus.completed,
+          );
           return '#${r.id} (product $productId) stays Confirmada';
         });
 
@@ -425,7 +431,7 @@ void main() {
           await step('complementary: a draft or a coded refusal', () async {
             try {
               final r = await receipts.complementary(linked!.id);
-              expect(r.status, ReceiptStatus.draft);
+              expect(r.status, InventoryDocumentStatus.draft);
               expect(r.purchaseOrderId, linked!.purchaseOrderId);
               final again = await receipts.complementary(linked!.id);
               expect(again.id, r.id, reason: 'the same draft the second time');

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/core/widgets/status_chip.dart';
-import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_status_chip.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_document_status_chip.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 Widget _wrap(Widget child) => MaterialApp(
@@ -14,23 +14,23 @@ Widget _wrap(Widget child) => MaterialApp(
 );
 
 const _spanish = {
-  ReceiptStatus.draft: 'Borrador',
-  ReceiptStatus.completed: 'Confirmada',
-  ReceiptStatus.cancelled: 'Cancelada',
+  InventoryDocumentStatus.draft: 'Borrador',
+  InventoryDocumentStatus.completed: 'Confirmada',
+  InventoryDocumentStatus.cancelled: 'Cancelada',
 };
 
 /// Spec 067.
 void main() {
-  for (final status in ReceiptStatus.values) {
+  for (final status in InventoryDocumentStatus.values) {
     testWidgets('${status.name} renders its Spanish label', (tester) async {
       await tester.pumpWidget(
-        _wrap(InventoryReceiptStatusChip(status: status)),
+        _wrap(InventoryDocumentStatusChip(status: status)),
       );
       await tester.pumpAndSettle();
 
-      expect(find.byType(StatusChip<ReceiptStatus>), findsOneWidget);
+      expect(find.byType(StatusChip<InventoryDocumentStatus>), findsOneWidget);
       expect(
-        find.byKey(const Key('inventory_receipt_status_chip')),
+        find.byKey(const Key('inventory_document_status_chip')),
         findsOneWidget,
       );
       expect(find.text(_spanish[status]!), findsOneWidget);

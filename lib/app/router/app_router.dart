@@ -46,6 +46,8 @@ import 'package:mbe_ui/features/sales/presentation/capture/advanced_search_scree
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_detail_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/issues/inventory_issue_detail_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/issues/inventory_issues_list_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_detail_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_list_screen.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_documents_list_screen.dart';
@@ -453,6 +455,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 068-warehouse-issues: appended last (index 31), same rationale as
+          // `payments` above. Gated on SystemObject 16 (`inventoryIssues`)
+          // read, see `_routeGate`. A row opens the top-level
+          // `/inventory/issues/:id` route.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: inventoryIssuesPath,
+                builder: (context, state) => InventoryIssuesListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -665,6 +681,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '$inventoryReceiptsPath/:receiptId',
         builder: (context, state) => InventoryReceiptDetailScreen(
           receiptId: int.tryParse(state.pathParameters['receiptId'] ?? ''),
+        ),
+      ),
+      // 068-warehouse-issues: an issue's own full screen, gated on
+      // SystemObject 16 (`inventoryIssues`) read by the `_routeGate` prefix.
+      // A non-numeric id parses to `null`, which the screen shows as not
+      // found.
+      GoRoute(
+        path: '$inventoryIssuesPath/:id',
+        builder: (context, state) => InventoryIssueDetailScreen(
+          issueId: int.tryParse(state.pathParameters['id'] ?? ''),
         ),
       ),
       // 038-advanced-product-search: a top-level sibling, not a shell branch
@@ -949,6 +975,12 @@ NavGate? _routeGate(String location) {
   // and every `/inventory/receipts/:id`.
   if (location.startsWith(inventoryReceiptsPath)) {
     return PrivilegeGate(SystemObject.inventoryReceipts, AccessRight.read);
+  }
+  // 068-warehouse-issues: SystemObject 16 (`inventoryIssues`) read, matching
+  // the server's GET /inventory-issues. The prefix covers the list and every
+  // `/inventory/issues/:id`.
+  if (location.startsWith(inventoryIssuesPath)) {
+    return PrivilegeGate(SystemObject.inventoryIssues, AccessRight.read);
   }
   // 061-delivery-orders: SystemObject 71 (`deliveryOrders`) read, matching
   // the server's GET /delivery-orders. The prefix covers the list and every

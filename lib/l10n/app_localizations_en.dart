@@ -7694,18 +7694,18 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String inventoryReceiptDraftFolio(String id) {
+  String inventoryDocumentDraftFolio(String id) {
     return 'Draft #$id';
   }
 
   @override
-  String get inventoryReceiptStatusDraft => 'Draft';
+  String get inventoryDocumentStatusDraft => 'Draft';
 
   @override
-  String get inventoryReceiptStatusCompleted => 'Confirmed';
+  String get inventoryDocumentStatusCompleted => 'Confirmed';
 
   @override
-  String get inventoryReceiptStatusCancelled => 'Cancelled';
+  String get inventoryDocumentStatusCancelled => 'Cancelled';
 
   @override
   String get inventoryReceiptColFolio => 'Folio';
@@ -7789,7 +7789,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inventoryReceiptLinesEmpty => 'Add the products received.';
 
   @override
-  String get inventoryReceiptNoFacility =>
+  String get inventoryDocumentNoFacility =>
       'Your user has no facility assigned.';
 
   @override
@@ -7916,6 +7916,200 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inventoryReceiptBackToList => 'Back to warehouse receipts';
+
+  @override
+  String get navInventoryIssues => 'Warehouse issues';
+
+  @override
+  String inventoryIssueTitle(String folio) {
+    return 'Issue $folio';
+  }
+
+  @override
+  String inventoryIssueTitleDraft(String id) {
+    return 'Issue · Draft #$id';
+  }
+
+  @override
+  String get inventoryIssueColFolio => 'Folio';
+
+  @override
+  String get inventoryIssueColWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryIssueColFacility => 'Facility';
+
+  @override
+  String get inventoryIssueColStatus => 'Status';
+
+  @override
+  String get inventoryIssueColCreator => 'Created by';
+
+  @override
+  String get inventoryIssueColDate => 'Date';
+
+  @override
+  String get inventoryIssueFacetStatus => 'Status';
+
+  @override
+  String get inventoryIssueFacetWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryIssueFacetAll => 'All';
+
+  @override
+  String get inventoryIssueEmpty => 'There are no warehouse issues';
+
+  @override
+  String get inventoryIssueFilteredEmpty => 'No issue matches the filters.';
+
+  @override
+  String get inventoryIssueFactStatus => 'Status';
+
+  @override
+  String get inventoryIssueFactFolio => 'Folio';
+
+  @override
+  String get inventoryIssueFactWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryIssueFactFacility => 'Facility';
+
+  @override
+  String inventoryIssueFactSupplierReturn(String id) {
+    return 'Supplier return #$id';
+  }
+
+  @override
+  String get inventoryIssueFactComment => 'Reason / notes';
+
+  @override
+  String get inventoryIssueFactCreatedBy => 'Created by';
+
+  @override
+  String get inventoryIssueFactModifiedBy => 'Modified by';
+
+  @override
+  String get inventoryIssueLinesTitle => 'Lines';
+
+  @override
+  String get inventoryIssueLineColCode => 'Code';
+
+  @override
+  String get inventoryIssueLineColProduct => 'Product';
+
+  @override
+  String get inventoryIssueLineColQuantity => 'Quantity';
+
+  @override
+  String get inventoryIssueLinesEmpty =>
+      'Add the products that leave the warehouse.';
+
+  @override
+  String get inventoryIssueNewAction => 'New issue';
+
+  @override
+  String get inventoryIssueEditHeader => 'Edit header';
+
+  @override
+  String get inventoryIssueAddProduct => 'Add product';
+
+  @override
+  String get inventoryIssueConfirm => 'Confirm';
+
+  @override
+  String get inventoryIssueCancel => 'Cancel';
+
+  @override
+  String get inventoryIssueLineEditTooltip => 'Edit quantity';
+
+  @override
+  String get inventoryIssueLineRemoveTooltip => 'Remove line';
+
+  @override
+  String get inventoryIssueNewTitle => 'New issue';
+
+  @override
+  String get inventoryIssueNewSubmit => 'Create';
+
+  @override
+  String get inventoryIssueEditHeaderTitle => 'Edit header';
+
+  @override
+  String get inventoryIssueFieldWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryIssueFieldComment => 'Reason / notes';
+
+  @override
+  String get inventoryIssueFieldCommentHint =>
+      'e.g. shrinkage, damage, internal use';
+
+  @override
+  String get inventoryIssueFieldProduct => 'Product';
+
+  @override
+  String get inventoryIssueFieldQuantity => 'Quantity';
+
+  @override
+  String get inventoryIssueAddProductTitle => 'Add product';
+
+  @override
+  String get inventoryIssueAddProductSubmit => 'Add';
+
+  @override
+  String get inventoryIssueLineQuantityTitle => 'Line quantity';
+
+  @override
+  String inventoryIssueRemoveTitle(String product) {
+    return 'Remove $product from the issue?';
+  }
+
+  @override
+  String get inventoryIssueRemoveBody => 'The line is deleted from the draft.';
+
+  @override
+  String get inventoryIssueRemoveAction => 'Remove';
+
+  @override
+  String get inventoryIssueConfirmTitle => 'Confirm issue';
+
+  @override
+  String inventoryIssueConfirmBody(String warehouse) {
+    return 'Confirming assigns a folio and takes the stock out of $warehouse. It can\'t be edited afterwards.';
+  }
+
+  @override
+  String get inventoryIssueConfirmAction => 'Confirm';
+
+  @override
+  String get inventoryIssueCancelTitle => 'Cancel issue';
+
+  @override
+  String get inventoryIssueCancelDraftBody => 'Cancel the draft';
+
+  @override
+  String inventoryIssueCancelCompletedBody(String folio, String warehouse) {
+    return 'Cancelling issue $folio puts back into $warehouse the stock it took out.';
+  }
+
+  @override
+  String get inventoryIssueCancelAction => 'Cancel issue';
+
+  @override
+  String inventoryIssueRefusalProductWarehouse(String code, String warehouse) {
+    return 'Product: $code · Warehouse: $warehouse';
+  }
+
+  @override
+  String get inventoryIssueQuantityInvalid =>
+      'Enter a quantity greater than 0.';
+
+  @override
+  String get inventoryIssueBackToList => 'Back to warehouse issues';
+
+  @override
+  String get inventoryIssueBack => 'Back';
 
   @override
   String get apiErrorInventoryReceiptWarehouseFixed =>

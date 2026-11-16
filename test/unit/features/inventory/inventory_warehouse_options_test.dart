@@ -14,7 +14,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/point_sale.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/point_sale_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/receipt_warehouse_options.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_warehouse_options.dart';
 
 class MockWarehouseRepository extends Mock implements WarehouseRepository {}
 
@@ -103,9 +103,9 @@ void main() {
   }
 
   Future<List<Warehouse>> options(ProviderContainer c, String search) =>
-      receiptWarehouseOptions(
+      inventoryWarehouseOptions(
         warehouses,
-        c.read(receiptWarehouseScopeProvider),
+        c.read(inventoryWarehouseScopeProvider),
         search,
       );
 
@@ -128,7 +128,7 @@ void main() {
   test('a non-administrator gets their own facility', () async {
     final c = await container(_user(administrator: false, facilityId: 2));
 
-    expect(c.read(receiptWarehouseScopeProvider).noFacility, isFalse);
+    expect(c.read(inventoryWarehouseScopeProvider).noFacility, isFalse);
     await options(c, '');
     verifyList(facilityId: 2);
   });
@@ -137,7 +137,7 @@ void main() {
       'options', () async {
     final c = await container(_user(administrator: false));
 
-    expect(c.read(receiptWarehouseScopeProvider).noFacility, isTrue);
+    expect(c.read(inventoryWarehouseScopeProvider).noFacility, isTrue);
     expect(await options(c, ''), isEmpty);
     verifyNever(
       () => warehouses.list(
@@ -152,7 +152,7 @@ void main() {
   test('the filter variant never limits by facility', () async {
     await container(_user(administrator: false, facilityId: 2));
 
-    await receiptFilterWarehouseOptions(warehouses, 'a');
+    await inventoryFilterWarehouseOptions(warehouses, 'a');
     verifyList(facilityId: null, search: 'a');
   });
 
@@ -162,13 +162,13 @@ void main() {
         _user(administrator: false, facilityId: 2, pointSaleId: 11),
       );
 
-      expect(await c.read(receiptStartingWarehouseProvider.future), 3);
+      expect(await c.read(inventoryStartingWarehouseProvider.future), 3);
     });
 
     test('is null with no point of sale', () async {
       final c = await container(_user(administrator: false, facilityId: 2));
 
-      expect(await c.read(receiptStartingWarehouseProvider.future), isNull);
+      expect(await c.read(inventoryStartingWarehouseProvider.future), isNull);
       verifyNever(() => pointSales.get(pointSaleId: any(named: 'pointSaleId')));
     });
 
@@ -180,7 +180,7 @@ void main() {
         _user(administrator: false, facilityId: 2, pointSaleId: 11),
       );
 
-      expect(await c.read(receiptStartingWarehouseProvider.future), isNull);
+      expect(await c.read(inventoryStartingWarehouseProvider.future), isNull);
     });
 
     test('is null for a non-administrator when the warehouse is in another '
@@ -192,12 +192,15 @@ void main() {
       final user = await container(
         _user(administrator: false, facilityId: 2, pointSaleId: 11),
       );
-      expect(await user.read(receiptStartingWarehouseProvider.future), isNull);
+      expect(
+        await user.read(inventoryStartingWarehouseProvider.future),
+        isNull,
+      );
 
       final admin = await container(
         _user(administrator: true, facilityId: 2, pointSaleId: 11),
       );
-      expect(await admin.read(receiptStartingWarehouseProvider.future), 3);
+      expect(await admin.read(inventoryStartingWarehouseProvider.future), 3);
     });
   });
 }

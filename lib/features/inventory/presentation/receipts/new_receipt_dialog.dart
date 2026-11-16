@@ -10,7 +10,7 @@ import 'package:mbe_ui/core/widgets/responsive_dialog.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_actions.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/receipt_warehouse_options.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_warehouse_options.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// The longest note a receipt takes.
@@ -83,8 +83,8 @@ class _NewReceiptDialogState extends ConsumerState<_NewReceiptDialog> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final spacing = Theme.of(context).spacing;
-    final scope = ref.watch(receiptWarehouseScopeProvider);
-    final start = ref.watch(receiptStartingWarehouseProvider).value;
+    final scope = ref.watch(inventoryWarehouseScopeProvider);
+    final start = ref.watch(inventoryStartingWarehouseProvider).value;
     final startName = start == null
         ? null
         : (ref.watch(warehouseDisplayNameProvider(start)).value ?? '#$start');
@@ -102,7 +102,7 @@ class _NewReceiptDialogState extends ConsumerState<_NewReceiptDialog> {
         children: [
           if (scope.noFacility)
             Text(
-              l10n.inventoryReceiptNoFacility,
+              l10n.inventoryDocumentNoFacility,
               key: const Key('new_inventory_receipt_no_facility'),
             ),
           CatalogEntityPicker<Warehouse>(
@@ -111,7 +111,7 @@ class _NewReceiptDialogState extends ConsumerState<_NewReceiptDialog> {
             enabled: !_busy,
             displayStringForOption: (w) => w.name,
             optionSubtitle: (w) => w.facilityName,
-            optionsBuilder: (search) => receiptWarehouseOptions(
+            optionsBuilder: (search) => inventoryWarehouseOptions(
               ref.read(warehouseRepositoryProvider),
               scope,
               search,

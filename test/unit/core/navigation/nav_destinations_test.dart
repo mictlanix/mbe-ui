@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -682,11 +683,57 @@ void main() {
           .whereType<NavGroup>()
           .firstWhere((g) => g.id == 'inventory')
           .children
-          .single;
+          .first;
       expect(entry.id, 'inventory-receipts');
       expect(entry.route, '/inventory/receipts');
       expect(entry.branchIndex, NavBranch.inventoryReceipts);
       expect(NavBranch.inventoryReceipts, 30);
+    });
+  });
+
+  group('Salidas de almacén destination (spec 068 ui-contract)', () {
+    NavGroup inventoryGroup() => kNavigationTree
+        .whereType<NavGroup>()
+        .firstWhere((g) => g.id == 'inventory');
+
+    test('a user without InventoryIssues read has no Salidas entry', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.inventoryReceipts, rawValue: 2),
+        ],
+      );
+      expect(ids, contains('inventory-receipts'));
+      expect(ids, isNot(contains('inventory-issues')));
+    });
+
+    test('a user with InventoryIssues read has the entry, and the group stays '
+        'when they can read only that one', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.inventoryIssues, rawValue: 2),
+        ],
+      );
+      expect(ids, contains('inventory-issues'));
+      expect(ids, isNot(contains('inventory-receipts')));
+    });
+
+    test('it is the second entry of Inventario, after Entradas, on branch 31 '
+        'at /inventory/issues', () {
+      final children = inventoryGroup().children;
+      expect(
+        [for (final c in children) c.id],
+        ['inventory-receipts', 'inventory-issues'],
+      );
+      final entry = children[1];
+      expect(entry.route, '/inventory/issues');
+      expect(entry.branchIndex, NavBranch.inventoryIssues);
+      expect(NavBranch.inventoryIssues, 31);
+      expect(entry.icon, Icons.outbox_outlined);
+      expect(entry.selectedIcon, Icons.outbox);
     });
   });
 }

@@ -20,16 +20,17 @@ import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/fact_strip_row.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart' show toAppError;
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 import 'package:mbe_ui/features/inventory/domain/over_receipt.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/add_receipt_line_dialog.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_actions.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_detail_controller.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_status_chip.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_document_status_chip.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_list_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/receipt_dialogs.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/receipt_header_dialog.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/receipt_name_cells.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_name_cells.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/receipt_warnings.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -329,7 +330,7 @@ class _ReceiptBodyState extends ConsumerState<_ReceiptBody> {
     final canEdit =
         receipt.isDraft &&
         access.can(SystemObject.inventoryReceipts, AccessRight.update);
-    final notCancelled = receipt.status != ReceiptStatus.cancelled;
+    final notCancelled = receipt.status != InventoryDocumentStatus.cancelled;
     final buttons = _actionButtons(
       canEdit: canEdit,
       canReadProducts: access.can(SystemObject.products, AccessRight.read),
@@ -423,7 +424,7 @@ class _HeaderFacts extends ConsumerWidget {
     Widget byAt(int employeeId, DateTime at) => Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Flexible(child: ReceiptEmployeeName(employeeId: employeeId)),
+        Flexible(child: InventoryEmployeeName(employeeId: employeeId)),
         Text(' · ${fmt.display.dateTime(at)}'),
       ],
     );
@@ -437,7 +438,7 @@ class _HeaderFacts extends ConsumerWidget {
           facts: [
             CompactField(
               label: l10n.inventoryReceiptFactStatus,
-              child: InventoryReceiptStatusChip(status: receipt.status),
+              child: InventoryDocumentStatusChip(status: receipt.status),
             ),
             CompactField(
               label: l10n.inventoryReceiptFactFolio,
@@ -450,11 +451,11 @@ class _HeaderFacts extends ConsumerWidget {
             ),
             CompactField(
               label: l10n.inventoryReceiptFactWarehouse,
-              child: ReceiptWarehouseName(warehouseId: receipt.warehouseId),
+              child: InventoryWarehouseName(warehouseId: receipt.warehouseId),
             ),
             CompactField(
               label: l10n.inventoryReceiptFactFacility,
-              child: ReceiptFacilityName(facilityId: receipt.facilityId),
+              child: InventoryFacilityName(facilityId: receipt.facilityId),
             ),
             if (receipt.purchaseOrderId != null)
               CompactField(

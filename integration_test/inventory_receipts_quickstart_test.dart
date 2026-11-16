@@ -29,6 +29,7 @@ import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_detail_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -463,7 +464,7 @@ void main() {
       );
       expect((badge.label! as Text).data, '2');
       final expected = await receipts.list(
-        status: ReceiptStatus.completed,
+        status: InventoryDocumentStatus.completed,
         warehouseId: w1,
         skip: 0,
         limit: 20,
@@ -480,7 +481,7 @@ void main() {
     await step('8 a linked receipt shows Ordenado and the fully-received '
         'reason', () async {
       final page = await receipts.list(
-        status: ReceiptStatus.completed,
+        status: InventoryDocumentStatus.completed,
         skip: 0,
         limit: 100,
       );
@@ -584,14 +585,14 @@ void main() {
         draftId = int.parse(location().split('/').last);
         await pumpUntil(find.text(l10n.inventoryReceiptTitleDraft('$draftId')));
         final r = await receipts.get(draftId!);
-        expect(r.status, ReceiptStatus.draft);
+        expect(r.status, InventoryDocumentStatus.draft);
         expect(r.warehouseId, w1);
         expect(r.comment, tag);
         await go(_list);
         await waitForList();
         expect(
           tester.widget<Text>(byKey('inventory_receipt_folio_$draftId')).data,
-          l10n.inventoryReceiptDraftFolio('$draftId'),
+          l10n.inventoryDocumentDraftFolio('$draftId'),
         );
       });
 
@@ -700,7 +701,7 @@ void main() {
         await pumpUntil(byKey('inventory_receipt_confirm_dialog'));
         await tapKey('inventory_receipt_confirm_submit');
         await pumpUntilGone(byKey('inventory_receipt_confirm_dialog'));
-        await waitForStatusLabel(l10n.inventoryReceiptStatusCompleted);
+        await waitForStatusLabel(l10n.inventoryDocumentStatusCompleted);
         final r = await receipts.get(id);
         expect(r.serial, isNotNull);
         await pumpUntil(find.text(l10n.inventoryReceiptTitle('${r.serial}')));
@@ -733,8 +734,11 @@ void main() {
         await pumpUntil(byKey('inventory_receipt_cancel_dialog'));
         await tapKey('inventory_receipt_cancel_submit');
         await pumpUntilGone(byKey('inventory_receipt_cancel_dialog'));
-        await waitForStatusLabel(l10n.inventoryReceiptStatusCancelled);
-        expect((await receipts.get(empty.id)).status, ReceiptStatus.cancelled);
+        await waitForStatusLabel(l10n.inventoryDocumentStatusCancelled);
+        expect(
+          (await receipts.get(empty.id)).status,
+          InventoryDocumentStatus.cancelled,
+        );
       });
 
       await step('9b cancel the step-7 receipt: stock back', () async {
@@ -744,7 +748,7 @@ void main() {
         await pumpUntil(byKey('inventory_receipt_cancel_dialog'));
         await tapKey('inventory_receipt_cancel_submit');
         await pumpUntilGone(byKey('inventory_receipt_cancel_dialog'));
-        await waitForStatusLabel(l10n.inventoryReceiptStatusCancelled);
+        await waitForStatusLabel(l10n.inventoryDocumentStatusCancelled);
         expect(await onHand(p1.productId), stockBefore);
       });
 
@@ -763,7 +767,7 @@ void main() {
 
         InventoryReceipt? stuck;
         final mine = await receipts.list(
-          status: ReceiptStatus.completed,
+          status: InventoryDocumentStatus.completed,
           warehouseId: w1,
           skip: 0,
           limit: 50,
@@ -826,8 +830,11 @@ void main() {
           ),
         );
         expect(find.textContaining('Not enough stock'), findsNothing);
-        expect(inFacts(l10n.inventoryReceiptStatusCompleted), findsOneWidget);
-        expect((await receipts.get(stuck.id)).status, ReceiptStatus.completed);
+        expect(inFacts(l10n.inventoryDocumentStatusCompleted), findsOneWidget);
+        expect(
+          (await receipts.get(stuck.id)).status,
+          InventoryDocumentStatus.completed,
+        );
       });
     }
 

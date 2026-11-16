@@ -17,7 +17,7 @@ mixin _$InventoryReceiptSummary {
 
  int get id; int get facilityId; int get warehouseId; int? get purchaseOrderId;/// Null until the receipt is confirmed. The "Borrador #{id}" text for a
 /// draft is built by the presentation layer from l10n.
- int? get serial; ReceiptStatus get status; int get creatorId; DateTime get createdAt;
+ int? get serial; InventoryDocumentStatus get status; int get creatorId; DateTime get createdAt;
 /// Create a copy of InventoryReceiptSummary
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -53,7 +53,7 @@ abstract mixin class $InventoryReceiptSummaryCopyWith<$Res>  {
   factory $InventoryReceiptSummaryCopyWith(InventoryReceiptSummary value, $Res Function(InventoryReceiptSummary) _then) = _$InventoryReceiptSummaryCopyWithImpl;
 @useResult
 $Res call({
- int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, ReceiptStatus status, int creatorId, DateTime createdAt
+ int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt
 });
 
 
@@ -78,7 +78,7 @@ as int,warehouseId: null == warehouseId ? _self.warehouseId : warehouseId // ign
 as int,purchaseOrderId: freezed == purchaseOrderId ? _self.purchaseOrderId : purchaseOrderId // ignore: cast_nullable_to_non_nullable
 as int?,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
 as int?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as ReceiptStatus,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
+as InventoryDocumentStatus,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
@@ -165,7 +165,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  ReceiptStatus status,  int creatorId,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _InventoryReceiptSummary() when $default != null:
 return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt);case _:
@@ -186,7 +186,7 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderI
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  ReceiptStatus status,  int creatorId,  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _InventoryReceiptSummary():
 return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt);case _:
@@ -206,7 +206,7 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderI
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  ReceiptStatus status,  int creatorId,  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _InventoryReceiptSummary() when $default != null:
 return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt);case _:
@@ -231,7 +231,7 @@ class _InventoryReceiptSummary implements InventoryReceiptSummary {
 /// Null until the receipt is confirmed. The "Borrador #{id}" text for a
 /// draft is built by the presentation layer from l10n.
 @override final  int? serial;
-@override final  ReceiptStatus status;
+@override final  InventoryDocumentStatus status;
 @override final  int creatorId;
 @override final  DateTime createdAt;
 
@@ -267,7 +267,7 @@ abstract mixin class _$InventoryReceiptSummaryCopyWith<$Res> implements $Invento
   factory _$InventoryReceiptSummaryCopyWith(_InventoryReceiptSummary value, $Res Function(_InventoryReceiptSummary) _then) = __$InventoryReceiptSummaryCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, ReceiptStatus status, int creatorId, DateTime createdAt
+ int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt
 });
 
 
@@ -292,7 +292,7 @@ as int,warehouseId: null == warehouseId ? _self.warehouseId : warehouseId // ign
 as int,purchaseOrderId: freezed == purchaseOrderId ? _self.purchaseOrderId : purchaseOrderId // ignore: cast_nullable_to_non_nullable
 as int?,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
 as int?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as ReceiptStatus,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
+as InventoryDocumentStatus,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
@@ -595,7 +595,7 @@ as Decimal?,
 /// @nodoc
 mixin _$InventoryReceipt {
 
- int get id; int get facilityId; int get warehouseId; int? get purchaseOrderId; int? get serial; ReceiptStatus get status; int get creatorId; DateTime get createdAt;/// An empty string is treated as no note by the mapper.
+ int get id; int get facilityId; int get warehouseId; int? get purchaseOrderId; int? get serial; InventoryDocumentStatus get status; int get creatorId; DateTime get createdAt;/// An empty string is treated as no note by the mapper.
  String? get comment; int get updaterId; DateTime get modifiedAt; List<InventoryReceiptLine> get lines;/// Only the count of the server's `warnings[]` is kept; their text is
 /// never shown (spec FR-015a).
  int get serverWarningCount;
@@ -634,7 +634,7 @@ abstract mixin class $InventoryReceiptCopyWith<$Res>  {
   factory $InventoryReceiptCopyWith(InventoryReceipt value, $Res Function(InventoryReceipt) _then) = _$InventoryReceiptCopyWithImpl;
 @useResult
 $Res call({
- int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, ReceiptStatus status, int creatorId, DateTime createdAt, String? comment, int updaterId, DateTime modifiedAt, List<InventoryReceiptLine> lines, int serverWarningCount
+ int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt, String? comment, int updaterId, DateTime modifiedAt, List<InventoryReceiptLine> lines, int serverWarningCount
 });
 
 
@@ -659,7 +659,7 @@ as int,warehouseId: null == warehouseId ? _self.warehouseId : warehouseId // ign
 as int,purchaseOrderId: freezed == purchaseOrderId ? _self.purchaseOrderId : purchaseOrderId // ignore: cast_nullable_to_non_nullable
 as int?,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
 as int?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as ReceiptStatus,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
+as InventoryDocumentStatus,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,comment: freezed == comment ? _self.comment : comment // ignore: cast_nullable_to_non_nullable
 as String?,updaterId: null == updaterId ? _self.updaterId : updaterId // ignore: cast_nullable_to_non_nullable
@@ -751,7 +751,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  ReceiptStatus status,  int creatorId,  DateTime createdAt,  String? comment,  int updaterId,  DateTime modifiedAt,  List<InventoryReceiptLine> lines,  int serverWarningCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? comment,  int updaterId,  DateTime modifiedAt,  List<InventoryReceiptLine> lines,  int serverWarningCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _InventoryReceipt() when $default != null:
 return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.comment,_that.updaterId,_that.modifiedAt,_that.lines,_that.serverWarningCount);case _:
@@ -772,7 +772,7 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderI
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  ReceiptStatus status,  int creatorId,  DateTime createdAt,  String? comment,  int updaterId,  DateTime modifiedAt,  List<InventoryReceiptLine> lines,  int serverWarningCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? comment,  int updaterId,  DateTime modifiedAt,  List<InventoryReceiptLine> lines,  int serverWarningCount)  $default,) {final _that = this;
 switch (_that) {
 case _InventoryReceipt():
 return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.comment,_that.updaterId,_that.modifiedAt,_that.lines,_that.serverWarningCount);case _:
@@ -792,7 +792,7 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderI
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  ReceiptStatus status,  int creatorId,  DateTime createdAt,  String? comment,  int updaterId,  DateTime modifiedAt,  List<InventoryReceiptLine> lines,  int serverWarningCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? comment,  int updaterId,  DateTime modifiedAt,  List<InventoryReceiptLine> lines,  int serverWarningCount)?  $default,) {final _that = this;
 switch (_that) {
 case _InventoryReceipt() when $default != null:
 return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.comment,_that.updaterId,_that.modifiedAt,_that.lines,_that.serverWarningCount);case _:
@@ -815,7 +815,7 @@ class _InventoryReceipt extends InventoryReceipt {
 @override final  int warehouseId;
 @override final  int? purchaseOrderId;
 @override final  int? serial;
-@override final  ReceiptStatus status;
+@override final  InventoryDocumentStatus status;
 @override final  int creatorId;
 @override final  DateTime createdAt;
 /// An empty string is treated as no note by the mapper.
@@ -865,7 +865,7 @@ abstract mixin class _$InventoryReceiptCopyWith<$Res> implements $InventoryRecei
   factory _$InventoryReceiptCopyWith(_InventoryReceipt value, $Res Function(_InventoryReceipt) _then) = __$InventoryReceiptCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, ReceiptStatus status, int creatorId, DateTime createdAt, String? comment, int updaterId, DateTime modifiedAt, List<InventoryReceiptLine> lines, int serverWarningCount
+ int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt, String? comment, int updaterId, DateTime modifiedAt, List<InventoryReceiptLine> lines, int serverWarningCount
 });
 
 
@@ -890,7 +890,7 @@ as int,warehouseId: null == warehouseId ? _self.warehouseId : warehouseId // ign
 as int,purchaseOrderId: freezed == purchaseOrderId ? _self.purchaseOrderId : purchaseOrderId // ignore: cast_nullable_to_non_nullable
 as int?,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
 as int?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as ReceiptStatus,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
+as InventoryDocumentStatus,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,comment: freezed == comment ? _self.comment : comment // ignore: cast_nullable_to_non_nullable
 as String?,updaterId: null == updaterId ? _self.updaterId : updaterId // ignore: cast_nullable_to_non_nullable

@@ -7749,18 +7749,18 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String inventoryReceiptDraftFolio(String id) {
+  String inventoryDocumentDraftFolio(String id) {
     return 'Borrador #$id';
   }
 
   @override
-  String get inventoryReceiptStatusDraft => 'Borrador';
+  String get inventoryDocumentStatusDraft => 'Borrador';
 
   @override
-  String get inventoryReceiptStatusCompleted => 'Confirmada';
+  String get inventoryDocumentStatusCompleted => 'Confirmada';
 
   @override
-  String get inventoryReceiptStatusCancelled => 'Cancelada';
+  String get inventoryDocumentStatusCancelled => 'Cancelada';
 
   @override
   String get inventoryReceiptColFolio => 'Folio';
@@ -7845,7 +7845,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get inventoryReceiptLinesEmpty => 'Agrega los productos recibidos.';
 
   @override
-  String get inventoryReceiptNoFacility =>
+  String get inventoryDocumentNoFacility =>
       'Tu usuario no tiene una sucursal asignada.';
 
   @override
@@ -7972,6 +7972,201 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get inventoryReceiptBackToList => 'Volver a entradas de almacén';
+
+  @override
+  String get navInventoryIssues => 'Salidas de almacén';
+
+  @override
+  String inventoryIssueTitle(String folio) {
+    return 'Salida $folio';
+  }
+
+  @override
+  String inventoryIssueTitleDraft(String id) {
+    return 'Salida · Borrador #$id';
+  }
+
+  @override
+  String get inventoryIssueColFolio => 'Folio';
+
+  @override
+  String get inventoryIssueColWarehouse => 'Almacén';
+
+  @override
+  String get inventoryIssueColFacility => 'Sucursal';
+
+  @override
+  String get inventoryIssueColStatus => 'Estado';
+
+  @override
+  String get inventoryIssueColCreator => 'Creado por';
+
+  @override
+  String get inventoryIssueColDate => 'Fecha';
+
+  @override
+  String get inventoryIssueFacetStatus => 'Estado';
+
+  @override
+  String get inventoryIssueFacetWarehouse => 'Almacén';
+
+  @override
+  String get inventoryIssueFacetAll => 'Todos';
+
+  @override
+  String get inventoryIssueEmpty => 'No hay salidas de almacén';
+
+  @override
+  String get inventoryIssueFilteredEmpty =>
+      'Ninguna salida coincide con los filtros.';
+
+  @override
+  String get inventoryIssueFactStatus => 'Estado';
+
+  @override
+  String get inventoryIssueFactFolio => 'Folio';
+
+  @override
+  String get inventoryIssueFactWarehouse => 'Almacén';
+
+  @override
+  String get inventoryIssueFactFacility => 'Sucursal';
+
+  @override
+  String inventoryIssueFactSupplierReturn(String id) {
+    return 'Devolución a proveedor #$id';
+  }
+
+  @override
+  String get inventoryIssueFactComment => 'Motivo / notas';
+
+  @override
+  String get inventoryIssueFactCreatedBy => 'Creado por';
+
+  @override
+  String get inventoryIssueFactModifiedBy => 'Modificado por';
+
+  @override
+  String get inventoryIssueLinesTitle => 'Partidas';
+
+  @override
+  String get inventoryIssueLineColCode => 'Código';
+
+  @override
+  String get inventoryIssueLineColProduct => 'Producto';
+
+  @override
+  String get inventoryIssueLineColQuantity => 'Cantidad';
+
+  @override
+  String get inventoryIssueLinesEmpty =>
+      'Agrega los productos que salen del almacén.';
+
+  @override
+  String get inventoryIssueNewAction => 'Nueva salida';
+
+  @override
+  String get inventoryIssueEditHeader => 'Editar encabezado';
+
+  @override
+  String get inventoryIssueAddProduct => 'Agregar producto';
+
+  @override
+  String get inventoryIssueConfirm => 'Confirmar';
+
+  @override
+  String get inventoryIssueCancel => 'Cancelar';
+
+  @override
+  String get inventoryIssueLineEditTooltip => 'Editar cantidad';
+
+  @override
+  String get inventoryIssueLineRemoveTooltip => 'Quitar partida';
+
+  @override
+  String get inventoryIssueNewTitle => 'Nueva salida';
+
+  @override
+  String get inventoryIssueNewSubmit => 'Crear';
+
+  @override
+  String get inventoryIssueEditHeaderTitle => 'Editar encabezado';
+
+  @override
+  String get inventoryIssueFieldWarehouse => 'Almacén';
+
+  @override
+  String get inventoryIssueFieldComment => 'Motivo / notas';
+
+  @override
+  String get inventoryIssueFieldCommentHint =>
+      'p. ej. merma, daño, consumo interno';
+
+  @override
+  String get inventoryIssueFieldProduct => 'Producto';
+
+  @override
+  String get inventoryIssueFieldQuantity => 'Cantidad';
+
+  @override
+  String get inventoryIssueAddProductTitle => 'Agregar producto';
+
+  @override
+  String get inventoryIssueAddProductSubmit => 'Agregar';
+
+  @override
+  String get inventoryIssueLineQuantityTitle => 'Cantidad de la partida';
+
+  @override
+  String inventoryIssueRemoveTitle(String product) {
+    return '¿Quitar $product de la salida?';
+  }
+
+  @override
+  String get inventoryIssueRemoveBody => 'Se elimina la partida del borrador.';
+
+  @override
+  String get inventoryIssueRemoveAction => 'Quitar';
+
+  @override
+  String get inventoryIssueConfirmTitle => 'Confirmar salida';
+
+  @override
+  String inventoryIssueConfirmBody(String warehouse) {
+    return 'Confirmar asigna un folio y retira las existencias de $warehouse. Después ya no se puede editar.';
+  }
+
+  @override
+  String get inventoryIssueConfirmAction => 'Confirmar';
+
+  @override
+  String get inventoryIssueCancelTitle => 'Cancelar salida';
+
+  @override
+  String get inventoryIssueCancelDraftBody => 'Cancelar el borrador';
+
+  @override
+  String inventoryIssueCancelCompletedBody(String folio, String warehouse) {
+    return 'Cancelar la salida $folio regresa a $warehouse las existencias que retiró.';
+  }
+
+  @override
+  String get inventoryIssueCancelAction => 'Cancelar salida';
+
+  @override
+  String inventoryIssueRefusalProductWarehouse(String code, String warehouse) {
+    return 'Producto: $code · Almacén: $warehouse';
+  }
+
+  @override
+  String get inventoryIssueQuantityInvalid =>
+      'Escribe una cantidad mayor que 0.';
+
+  @override
+  String get inventoryIssueBackToList => 'Volver a salidas de almacén';
+
+  @override
+  String get inventoryIssueBack => 'Volver';
 
   @override
   String get apiErrorInventoryReceiptWarehouseFixed =>

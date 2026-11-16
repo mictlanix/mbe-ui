@@ -12842,25 +12842,25 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Draft #{id}'**
-  String inventoryReceiptDraftFolio(String id);
+  String inventoryDocumentDraftFolio(String id);
 
   /// spec 067: status label
   ///
   /// In en, this message translates to:
   /// **'Draft'**
-  String get inventoryReceiptStatusDraft;
+  String get inventoryDocumentStatusDraft;
 
   /// spec 067: status label
   ///
   /// In en, this message translates to:
   /// **'Confirmed'**
-  String get inventoryReceiptStatusCompleted;
+  String get inventoryDocumentStatusCompleted;
 
   /// spec 067: status label
   ///
   /// In en, this message translates to:
   /// **'Cancelled'**
-  String get inventoryReceiptStatusCancelled;
+  String get inventoryDocumentStatusCancelled;
 
   /// spec 067: list column
   ///
@@ -13028,7 +13028,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Your user has no facility assigned.'**
-  String get inventoryReceiptNoFacility;
+  String get inventoryDocumentNoFacility;
 
   /// spec 067: list action
   ///
@@ -13250,6 +13250,360 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to warehouse receipts'**
   String get inventoryReceiptBackToList;
+
+  /// spec 068: navigation destination
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse issues'**
+  String get navInventoryIssues;
+
+  /// spec 068: detail title, confirmed or cancelled
+  ///
+  /// In en, this message translates to:
+  /// **'Issue {folio}'**
+  String inventoryIssueTitle(String folio);
+
+  /// spec 068: detail title of a draft
+  ///
+  /// In en, this message translates to:
+  /// **'Issue · Draft #{id}'**
+  String inventoryIssueTitleDraft(String id);
+
+  /// spec 068: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get inventoryIssueColFolio;
+
+  /// spec 068: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryIssueColWarehouse;
+
+  /// spec 068: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get inventoryIssueColFacility;
+
+  /// spec 068: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get inventoryIssueColStatus;
+
+  /// spec 068: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get inventoryIssueColCreator;
+
+  /// spec 068: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get inventoryIssueColDate;
+
+  /// spec 068: filter facet
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get inventoryIssueFacetStatus;
+
+  /// spec 068: filter facet
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryIssueFacetWarehouse;
+
+  /// spec 068: filter facet: no value
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get inventoryIssueFacetAll;
+
+  /// spec 068: empty list
+  ///
+  /// In en, this message translates to:
+  /// **'There are no warehouse issues'**
+  String get inventoryIssueEmpty;
+
+  /// spec 068: filtered-empty list
+  ///
+  /// In en, this message translates to:
+  /// **'No issue matches the filters.'**
+  String get inventoryIssueFilteredEmpty;
+
+  /// spec 068: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get inventoryIssueFactStatus;
+
+  /// spec 068: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get inventoryIssueFactFolio;
+
+  /// spec 068: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryIssueFactWarehouse;
+
+  /// spec 068: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get inventoryIssueFactFacility;
+
+  /// spec 068: detail fact, only when the issue is linked to a supplier return
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier return #{id}'**
+  String inventoryIssueFactSupplierReturn(String id);
+
+  /// spec 068: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Reason / notes'**
+  String get inventoryIssueFactComment;
+
+  /// spec 068: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get inventoryIssueFactCreatedBy;
+
+  /// spec 068: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Modified by'**
+  String get inventoryIssueFactModifiedBy;
+
+  /// spec 068: lines table title
+  ///
+  /// In en, this message translates to:
+  /// **'Lines'**
+  String get inventoryIssueLinesTitle;
+
+  /// spec 068: lines table column
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get inventoryIssueLineColCode;
+
+  /// spec 068: lines table column
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get inventoryIssueLineColProduct;
+
+  /// spec 068: lines table column
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get inventoryIssueLineColQuantity;
+
+  /// spec 068: empty draft lines
+  ///
+  /// In en, this message translates to:
+  /// **'Add the products that leave the warehouse.'**
+  String get inventoryIssueLinesEmpty;
+
+  /// spec 068: list action
+  ///
+  /// In en, this message translates to:
+  /// **'New issue'**
+  String get inventoryIssueNewAction;
+
+  /// spec 068: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get inventoryIssueEditHeader;
+
+  /// spec 068: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get inventoryIssueAddProduct;
+
+  /// spec 068: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get inventoryIssueConfirm;
+
+  /// spec 068: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get inventoryIssueCancel;
+
+  /// spec 068: line action tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Edit quantity'**
+  String get inventoryIssueLineEditTooltip;
+
+  /// spec 068: line action tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Remove line'**
+  String get inventoryIssueLineRemoveTooltip;
+
+  /// spec 068: new-issue dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'New issue'**
+  String get inventoryIssueNewTitle;
+
+  /// spec 068: new-issue dialog submit
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get inventoryIssueNewSubmit;
+
+  /// spec 068: header dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get inventoryIssueEditHeaderTitle;
+
+  /// spec 068: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryIssueFieldWarehouse;
+
+  /// spec 068: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Reason / notes'**
+  String get inventoryIssueFieldComment;
+
+  /// spec 068: hint of the notes field
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. shrinkage, damage, internal use'**
+  String get inventoryIssueFieldCommentHint;
+
+  /// spec 068: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get inventoryIssueFieldProduct;
+
+  /// spec 068: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get inventoryIssueFieldQuantity;
+
+  /// spec 068: add-line dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get inventoryIssueAddProductTitle;
+
+  /// spec 068: add-line dialog submit
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get inventoryIssueAddProductSubmit;
+
+  /// spec 068: quantity dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Line quantity'**
+  String get inventoryIssueLineQuantityTitle;
+
+  /// spec 068: remove-line prompt title
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {product} from the issue?'**
+  String inventoryIssueRemoveTitle(String product);
+
+  /// spec 068: remove-line prompt body
+  ///
+  /// In en, this message translates to:
+  /// **'The line is deleted from the draft.'**
+  String get inventoryIssueRemoveBody;
+
+  /// spec 068: remove-line prompt action
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get inventoryIssueRemoveAction;
+
+  /// spec 068: confirm prompt title
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm issue'**
+  String get inventoryIssueConfirmTitle;
+
+  /// spec 068: confirm prompt body
+  ///
+  /// In en, this message translates to:
+  /// **'Confirming assigns a folio and takes the stock out of {warehouse}. It can\'t be edited afterwards.'**
+  String inventoryIssueConfirmBody(String warehouse);
+
+  /// spec 068: confirm prompt action
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get inventoryIssueConfirmAction;
+
+  /// spec 068: cancel prompt title
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel issue'**
+  String get inventoryIssueCancelTitle;
+
+  /// spec 068: cancel prompt body for a draft
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel the draft'**
+  String get inventoryIssueCancelDraftBody;
+
+  /// spec 068: cancel prompt body for a confirmed issue
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelling issue {folio} puts back into {warehouse} the stock it took out.'**
+  String inventoryIssueCancelCompletedBody(String folio, String warehouse);
+
+  /// spec 068: cancel prompt action
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel issue'**
+  String get inventoryIssueCancelAction;
+
+  /// spec 068: product and warehouse added to the insufficient-stock refusal
+  ///
+  /// In en, this message translates to:
+  /// **'Product: {code} · Warehouse: {warehouse}'**
+  String inventoryIssueRefusalProductWarehouse(String code, String warehouse);
+
+  /// spec 068: error under an issue quantity field that is not above 0
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity greater than 0.'**
+  String get inventoryIssueQuantityInvalid;
+
+  /// spec 068: button on the issue not-found and load-failed views
+  ///
+  /// In en, this message translates to:
+  /// **'Back to warehouse issues'**
+  String get inventoryIssueBackToList;
+
+  /// spec 068: prompt dismiss button
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get inventoryIssueBack;
 
   /// spec 067: mbe-api error code `inventory_receipt.warehouse_fixed`
   ///

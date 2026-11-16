@@ -3,7 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
-import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_filter.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_documents_filter.dart';
 
 part 'inventory_receipts_list_controller.g.dart';
 
@@ -17,7 +17,7 @@ const _pageSize = 20;
 class InventoryReceiptsListController
     extends _$InventoryReceiptsListController {
   @override
-  Future<InventoryReceiptPage> build(InventoryReceiptsFilter filter) =>
+  Future<InventoryReceiptPage> build(InventoryDocumentsFilter filter) =>
       fetchClampedPage(
         pageIndex: filter.pageIndex,
         pageSize: _pageSize,
@@ -25,7 +25,7 @@ class InventoryReceiptsListController
       );
 
   Future<InventoryReceiptPage> _fetch(
-    InventoryReceiptsFilter filter,
+    InventoryDocumentsFilter filter,
     int pageIndex,
   ) async {
     final result = await ref

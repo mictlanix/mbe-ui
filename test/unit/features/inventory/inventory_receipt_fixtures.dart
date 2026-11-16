@@ -1,5 +1,6 @@
 import 'package:decimal/decimal.dart';
 
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 
 /// A summary for tests; override what the case is about.
@@ -8,7 +9,7 @@ InventoryReceiptSummary aReceiptSummary({
   int warehouseId = 3,
   int? purchaseOrderId,
   int? serial,
-  ReceiptStatus status = ReceiptStatus.draft,
+  InventoryDocumentStatus status = InventoryDocumentStatus.draft,
 }) => InventoryReceiptSummary(
   id: id,
   facilityId: 2,
@@ -26,7 +27,7 @@ InventoryReceipt aReceipt({
   int warehouseId = 3,
   int? purchaseOrderId,
   int? serial,
-  ReceiptStatus status = ReceiptStatus.draft,
+  InventoryDocumentStatus status = InventoryDocumentStatus.draft,
   String? comment,
   List<InventoryReceiptLine>? lines,
   int serverWarningCount = 0,

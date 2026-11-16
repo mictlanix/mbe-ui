@@ -35,8 +35,8 @@ class _ResolvedName extends ConsumerWidget {
 }
 
 /// A warehouse's name (Warehouses read).
-class ReceiptWarehouseName extends StatelessWidget {
-  const ReceiptWarehouseName({super.key, required this.warehouseId});
+class InventoryWarehouseName extends StatelessWidget {
+  const InventoryWarehouseName({super.key, required this.warehouseId});
 
   final int warehouseId;
 
@@ -48,8 +48,8 @@ class ReceiptWarehouseName extends StatelessWidget {
 }
 
 /// A facility's name (Facilities read).
-class ReceiptFacilityName extends StatelessWidget {
-  const ReceiptFacilityName({super.key, required this.facilityId});
+class InventoryFacilityName extends StatelessWidget {
+  const InventoryFacilityName({super.key, required this.facilityId});
 
   final int facilityId;
 
@@ -61,8 +61,8 @@ class ReceiptFacilityName extends StatelessWidget {
 }
 
 /// An employee's name: a receipt's `creator` and `updater` are employee ids.
-class ReceiptEmployeeName extends StatelessWidget {
-  const ReceiptEmployeeName({super.key, required this.employeeId});
+class InventoryEmployeeName extends StatelessWidget {
+  const InventoryEmployeeName({super.key, required this.employeeId});
 
   final int employeeId;
 

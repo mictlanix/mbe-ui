@@ -5,7 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
-import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import '../../../unit/features/inventory/inventory_receipt_fixtures.dart';
@@ -41,7 +41,7 @@ void main() {
       id: 320,
       serial: 1043,
       purchaseOrderId: 5512,
-      status: ReceiptStatus.completed,
+      status: InventoryDocumentStatus.completed,
     ),
   ];
 
@@ -63,14 +63,14 @@ void main() {
     ]) {
       expect(find.text(header), findsWidgets, reason: header);
     }
-    expect(find.text(l10n.inventoryReceiptDraftFolio('318')), findsOneWidget);
+    expect(find.text(l10n.inventoryDocumentDraftFolio('318')), findsOneWidget);
     expect(find.text('1043'), findsOneWidget);
     expect(find.text('5512'), findsOneWidget);
     expect(find.text('Almacén 3'), findsNWidgets(2));
     expect(find.text('Sucursal 2'), findsNWidgets(2));
     expect(find.text('Empleado 5'), findsNWidgets(2));
-    expect(find.text(l10n.inventoryReceiptStatusDraft), findsOneWidget);
-    expect(find.text(l10n.inventoryReceiptStatusCompleted), findsOneWidget);
+    expect(find.text(l10n.inventoryDocumentStatusDraft), findsOneWidget);
+    expect(find.text(l10n.inventoryDocumentStatusCompleted), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -129,7 +129,7 @@ void main() {
         location: '/inventory/receipts?status=draft&warehouse=3',
       );
 
-      expect(h.requests.last.status, ReceiptStatus.draft);
+      expect(h.requests.last.status, InventoryDocumentStatus.draft);
       expect(h.requests.last.warehouseId, 3);
       expect(badge(tester).isLabelVisible, isTrue);
       expect(
@@ -152,7 +152,7 @@ void main() {
 
       expect(router.state.uri.queryParameters['status'], 'completed');
       expect(router.state.uri.queryParameters.containsKey('page'), isFalse);
-      expect(h.requests.last.status, ReceiptStatus.completed);
+      expect(h.requests.last.status, InventoryDocumentStatus.completed);
     });
 
     testWidgets('a picked warehouse reaches the repository, from every '

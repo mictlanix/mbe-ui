@@ -8,7 +8,7 @@ import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
-import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 
 const _jsonHeaders = {
   Headers.contentTypeHeader: [Headers.jsonContentType],
@@ -78,7 +78,7 @@ void main() {
       });
 
       final page = await repository.list(
-        status: ReceiptStatus.completed,
+        status: InventoryDocumentStatus.completed,
         warehouseId: 3,
         skip: 40,
         limit: 20,
@@ -94,9 +94,9 @@ void main() {
       expect(page.pageIndex, 2);
       expect(page.pageSize, 20);
       expect(page.items.map((r) => r.status), [
-        ReceiptStatus.draft,
-        ReceiptStatus.completed,
-        ReceiptStatus.cancelled,
+        InventoryDocumentStatus.draft,
+        InventoryDocumentStatus.completed,
+        InventoryDocumentStatus.cancelled,
       ]);
       expect(page.items.first.serial, isNull);
     },

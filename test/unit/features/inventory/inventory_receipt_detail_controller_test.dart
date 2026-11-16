@@ -4,7 +4,7 @@ import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
-import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_receipt_repository.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_detail_controller.dart';
 
@@ -59,13 +59,16 @@ void main() {
     when(() => repository.get(318)).thenAnswer((_) async => aReceipt());
     listen();
     await container.read(provider.future);
-    when(
-      () => repository.get(318),
-    ).thenAnswer((_) async => aReceipt(status: ReceiptStatus.completed));
+    when(() => repository.get(318)).thenAnswer(
+      (_) async => aReceipt(status: InventoryDocumentStatus.completed),
+    );
 
     await container.read(provider.notifier).refresh();
 
-    expect(container.read(provider).value?.status, ReceiptStatus.completed);
+    expect(
+      container.read(provider).value?.status,
+      InventoryDocumentStatus.completed,
+    );
     verify(() => repository.get(318)).called(2);
   });
 }

@@ -122,7 +122,7 @@ void main() {
     await tester.tap(key('inventory_receipts_new_button'));
     await tester.pumpAndSettle();
 
-    expect(find.text(l10n.inventoryReceiptNoFacility), findsOneWidget);
+    expect(find.text(l10n.inventoryDocumentNoFacility), findsOneWidget);
     await tester.enterText(warehouseField(), 'Alm');
     await tester.pumpAndSettle();
     verifyNever(
