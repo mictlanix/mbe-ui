@@ -31,6 +31,7 @@ description: "Task list for 067-warehouse-receipts"
 - **Spacing tokens, not literals** (`Theme.of(context).spacing`). No automated guard catches a literal, so check it in review.
 - **Never match or show server prose** (§III). Show refusals through `AppError.localizedMessage` / `ErrorBanner`, which build the text from the error's `code`. Recognition keys on the code. The server's `warnings[]` text is never shown (spec FR-015a); only its count is used.
 - **Status names come from l10n**, never from `enum.name`.
+- **Row icons (§VI document reading).** List rows have no icons, and only draft line rows get ✎ and 🗑. This is intentional; see the note under Complexity Tracking in plan.md. Don't add a row Edit icon or a View toggle.
 - **Rights.** Every control follows the availability table in data-model.md and the rights lines in contracts/ui-contract.md. A missing right means the control is absent, never disabled. Document the system-object code (InventoryReceipts = 15; Warehouses = 4) in a comment where a route, nav entry or control is gated.
 - **Simplifications.** Any shortcut carries a comment `// simplified: <ceiling>, <what to do when it binds>`.
 - **Mirror, don't copy blindly.** Closest precedents:

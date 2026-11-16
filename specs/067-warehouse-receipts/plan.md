@@ -118,3 +118,5 @@ integration_test/inventory_receipts_quickstart_test.dart
 ## Complexity Tracking
 
 No constitution violations need justification.
+
+**Note on §VI (analysis finding I3).** Read literally, §VI asks every list row for an Edit icon and a read-only View mode, and bans per-row Delete icons. This feature doesn't follow that wording for receipts: list rows have no icons, a draft is edited in place on its detail screen, and draft line rows carry ✎ and 🗑. It applies the document reading that specs 056, 057, 060, 061 and 066 recorded: a document with a status lifecycle, editable only in draft, is not a catalog record, so the catalog row rules don't apply to it. The constitution is deliberately left unchanged. This note records that the reading is relied on here too.
