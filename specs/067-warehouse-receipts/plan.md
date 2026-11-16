@@ -87,6 +87,7 @@ lib/features/inventory/
     ├── add_receipt_line_dialog.dart
     ├── receipt_dialogs.dart                     # quantity, remove line, confirm, cancel prompts
     ├── receipt_warnings.dart                    # over-receipt list + cost notice
+    ├── receipt_warehouse_options.dart           # own-facility picker options + starting warehouse (R5)
     └── inventory_receipt_status_chip.dart
 
 lib/app/router/app_router.dart                    # new branch + detail route + _routeGate clause
@@ -94,8 +95,8 @@ lib/core/navigation/nav_destinations.dart         # NavBranch.inventoryReceipts 
 lib/core/errors/localize_problem.dart             # 9 new codes (contracts/error-messages.md)
 lib/l10n/app_es.arb, app_en.arb                   # screen strings + error messages
 
-test/unit/features/inventory/                     # over_receipt, filter, controllers, actions, repository impl
-test/widget/features/inventory/                   # list, detail, dialogs (inventory_harness.dart)
+test/unit/features/inventory/                     # over_receipt, filter, warehouse options, controllers, actions, repository impl (inventory_receipt_fixtures.dart)
+test/widget/features/inventory/                   # list, detail, dialogs, warnings, status chip (inventory_harness.dart)
 test/integration/inventory_receipts_live_test.dart
 integration_test/inventory_receipts_quickstart_test.dart
 ```

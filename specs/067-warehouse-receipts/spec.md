@@ -60,7 +60,7 @@ Goods arrive. The clerk creates a receipt, chooses the destination warehouse and
 
 **Acceptance Scenarios**:
 
-1. **Given** a user with create access to receipts, **When** they choose New receipt and a destination warehouse, **Then** a draft opens titled "Entrada · Borrador #{internal number}", with no folio and no lines.
+1. **Given** a user with create access to receipts, **When** they choose Nueva entrada and a destination warehouse, **Then** a draft opens titled "Entrada · Borrador #{internal number}", with no folio and no lines.
 2. **Given** a draft, **When** the user adds a stockable product with a quantity greater than 0, **Then** a line is added showing the product's code and name as they were when the line was added.
 3. **Given** a draft that already has a line for a product, **When** the user adds the same product again, **Then** that line's quantity grows by the new amount and no second line appears.
 4. **Given** a draft, **When** the user edits a line's quantity or deletes a line, **Then** the receipt shows the change as the server returns it.
@@ -153,7 +153,7 @@ When a supplier delivers a purchase order in parts, the clerk opens a receipt of
 
 **Header**
 
-- **FR-005**: Users with create access MUST be able to start a receipt by choosing a destination warehouse and, optionally, entering notes. The warehouse MUST start as the user's point-of-sale warehouse when they have one, and empty otherwise. The user can always change it.
+- **FR-005**: Users with create access MUST be able to start a receipt by choosing a destination warehouse and, optionally, entering notes. The warehouse MUST start as the user's point-of-sale warehouse when they have one, and empty otherwise. For a non-administrator, the point-of-sale warehouse is used only when it belongs to their own facility (FR-017); otherwise the field starts empty. The user can always change it.
 - **FR-006**: On a draft, users with update access MUST be able to change the notes and, when the receipt is not linked to a purchase order, the warehouse. Notes MUST be limited to 500 characters.
 - **FR-007**: The receipt MUST show its facility, which follows its warehouse, and its linked purchase order as read-only information.
 
@@ -169,7 +169,7 @@ When a supplier delivers a purchase order in parts, the clerk opens a receipt of
 - **FR-012**: Users with update access MUST be able to confirm a draft after accepting a confirmation prompt. On success the receipt MUST show its folio and the Completed state and become read-only.
 - **FR-013**: Users with the delete right MUST be able to cancel a draft or a completed receipt after accepting a confirmation prompt that, for a completed receipt, says its stock will be taken back out of the warehouse.
 - **FR-014**: Users with create access MUST be able to request the complementary receipt of a receipt linked to a purchase order. The draft the server returns, existing or new, MUST open.
-- **FR-015**: Over-receipt warnings MUST be shown on a linked receipt after opening it, saving a line and confirming, one per order line taken above its ordered quantity, naming the product code, the excess, the total received and the quantity ordered. They MUST be computed from the line figures the server returns (this receipt's quantities summed per order line, plus quantity received elsewhere, against quantity ordered), in Spanish. They MUST NOT block any action.
+- **FR-015**: Over-receipt warnings MUST be shown on a linked draft or confirmed receipt (not on a cancelled one) after opening it, saving a line and confirming, one per order line taken above its ordered quantity, naming the product code, the excess, the total received and the quantity ordered. They MUST be computed from the line figures the server returns (this receipt's quantities summed per order line, plus quantity received elsewhere, against quantity ordered), in Spanish. They MUST NOT block any action.
 - **FR-015a**: The server's warning texts are English with no code, so the UI MUST NOT show them. When a confirm or cancel returns more warnings than the over-receipt ones the UI computed (the cost warnings), the UI MUST show one generic Spanish notice that product costs were updated with exceptions. The notice MUST stay on the detail screen as a band with a close button until the clerk dismisses it or leaves the receipt, because reopening the receipt does not bring it back. Coded warnings are requested in mictlanix/mbe-api#322. When they ship, the UI should switch to them.
 
 **Across the feature**

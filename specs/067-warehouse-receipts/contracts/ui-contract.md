@@ -58,8 +58,8 @@ SystemObject: **InventoryReceipts (15)**. Related reads: Warehouses (4) for the 
 
 | Dialog | Fields | Submit | Guard |
 |---|---|---|---|
-| Nueva entrada | Almacén (required; starts with the user's point-of-sale warehouse, else empty; own-facility warehouses only for non-administrators), Notas (≤ 500, counter) | "Crear"; on success, push detail | `hasUnsavedChanges` (the starting warehouse alone doesn't count as a change) |
-| Editar encabezado | Almacén (read-only text when linked; own-facility warehouses only for non-administrators), Notas (≤ 500) | "Guardar"; send only changed fields (research R8) | `hasUnsavedChanges` |
+| Nueva entrada | Almacén (required; starts with the user's point-of-sale warehouse, else empty, and empty for a non-administrator when that warehouse is in another facility; own-facility warehouses only for non-administrators), Notas (≤ 500, counter) | "Crear"; on success, push detail | `hasUnsavedChanges` (the starting warehouse alone doesn't count as a change) |
+| Editar encabezado | Almacén (a picker only with read on Warehouses (4); read-only text when linked or without that right; own-facility warehouses only for non-administrators), Notas (≤ 500) | "Guardar"; send only changed fields (research R8) | `hasUnsavedChanges` |
 | Agregar producto | Producto (stockable, active), Cantidad (> 0) | "Agregar"; the dialog stays open on refusal | `hasUnsavedChanges` |
 | Cantidad de la partida | Cantidad (> 0), prefilled | "Guardar" | `hasUnsavedChanges` |
 | Quitar partida | — | "Quitar" | — |
