@@ -1,0 +1,24 @@
+{
+  "workflow": "speckit",
+  "specName": "Warehouse Receipts",
+  "branch": "067-warehouse-receipts",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-16T13:03:25.000Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-16T13:07:20.604Z"
+    }
+  ],
+  "telemetryInstanceId": "5bfd5995-63de-4024-bf08-04bfbd8a72ba"
+}
