@@ -8,12 +8,12 @@
 /// instead of failing (spec edge case).
 enum FiscalDocumentKind {
   invoice(0),
-  expense(1),
-  payment(2),
-  transfer(3),
+  feeReceipt(1),
+  rentReceipt(2),
+  debitNote(3),
   creditNote(100),
-  paymentReceipt(101),
-  advancePaymentsApplied(200);
+  advancePaymentsApplied(101),
+  paymentReceipt(200);
 
   const FiscalDocumentKind(this.code);
 

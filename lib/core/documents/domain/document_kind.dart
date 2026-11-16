@@ -43,7 +43,13 @@ enum DocumentKind {
 
   /// `GET /delivery-orders/{id}/document` — the Letter-size delivery order,
   /// always with every line (mbe-api spec 026).
-  deliveryOrderDocument(SystemObject.deliveryOrders);
+  deliveryOrderDocument(SystemObject.deliveryOrders),
+
+  /// `GET /fiscal-documents/{id}/pdf` — the Letter-size CFDI of a stamped
+  /// invoice (mbe-api spec 020, spec 066 research R9). A never-issued,
+  /// unstamped or pre-4.0 document is a 409 on the server with its own code,
+  /// so the preview shows that reason.
+  fiscalDocument(SystemObject.fiscalDocuments);
 
   const DocumentKind(this.gateObject);
 
@@ -66,6 +72,7 @@ enum DocumentKind {
     DocumentKind.deliveryTicket => 'entrega-${_pad(recordId, 8)}.pdf',
     DocumentKind.deliveryOrderDocument =>
       'orden-entrega-${_pad(recordId, 8)}.pdf',
+    DocumentKind.fiscalDocument => 'factura-$recordId.pdf',
   };
 
   static String _pad(int id, int width) => id.toString().padLeft(width, '0');

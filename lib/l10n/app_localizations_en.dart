@@ -6938,13 +6938,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fiscalDocumentKindInvoice => 'Invoice';
 
   @override
-  String get fiscalDocumentKindExpense => 'Expense';
+  String get fiscalDocumentKindFeeReceipt => 'Fee receipt';
 
   @override
-  String get fiscalDocumentKindPayment => 'Payment';
+  String get fiscalDocumentKindRentReceipt => 'Rent receipt';
 
   @override
-  String get fiscalDocumentKindTransfer => 'Transfer';
+  String get fiscalDocumentKindDebitNote => 'Debit note';
 
   @override
   String get fiscalDocumentKindCreditNote => 'Credit note';
@@ -6992,4 +6992,688 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get taxpayerBatchDeleteFailed => 'The series couldn\'t be deleted.';
+
+  @override
+  String get navInvoicingGroup => 'Invoicing';
+
+  @override
+  String get navFiscalDocuments => 'Invoices';
+
+  @override
+  String fiscalDocumentTitle(String folio) {
+    return 'Invoice $folio';
+  }
+
+  @override
+  String fiscalDocumentTitleKind(String kind, String folio) {
+    return '$kind $folio';
+  }
+
+  @override
+  String fiscalDocumentTitleDraft(int id) {
+    return 'Draft #$id';
+  }
+
+  @override
+  String get fiscalDocumentDraftFolio => 'Draft';
+
+  @override
+  String get fiscalDocumentsEmpty => 'There are no invoices yet.';
+
+  @override
+  String get fiscalDocumentsSearchHint => 'Folio, UUID, recipient RFC or name';
+
+  @override
+  String get fiscalDocumentBackToList => 'Back to invoices';
+
+  @override
+  String get fiscalDocumentNotFound => 'We could not find this document.';
+
+  @override
+  String get fiscalDocumentLoadFailed => 'The document could not be loaded.';
+
+  @override
+  String get fiscalDocumentStatusDraft => 'Draft';
+
+  @override
+  String get fiscalDocumentStatusSealed => 'Sealed';
+
+  @override
+  String get fiscalDocumentStatusIssued => 'Stamped';
+
+  @override
+  String get fiscalDocumentStatusCancelled => 'Cancelled';
+
+  @override
+  String get fiscalDocumentColFolio => 'Folio';
+
+  @override
+  String get fiscalDocumentColType => 'Type';
+
+  @override
+  String get fiscalDocumentColIssuer => 'Issuer';
+
+  @override
+  String get fiscalDocumentColRecipient => 'Recipient';
+
+  @override
+  String get fiscalDocumentColIssued => 'Issue date';
+
+  @override
+  String get fiscalDocumentColStatus => 'Status';
+
+  @override
+  String get fiscalDocumentColTotal => 'Total';
+
+  @override
+  String get fiscalDocumentFacetStatus => 'Status';
+
+  @override
+  String get fiscalDocumentFacetType => 'Type';
+
+  @override
+  String get fiscalDocumentFacetIssuer => 'Issuer';
+
+  @override
+  String get fiscalDocumentFacetIssued => 'Issue date';
+
+  @override
+  String get fiscalDocumentFacetAll => 'All';
+
+  @override
+  String get fiscalDocumentDateFacetHelper =>
+      'Drafts have no issue date and do not appear when filtering by date.';
+
+  @override
+  String get fiscalDocumentBannerSealed =>
+      'Sealed, waiting to be stamped. Stamping is not available in this system yet.';
+
+  @override
+  String get fiscalDocumentBannerReadOnlyKind =>
+      'This type of document can only be viewed.';
+
+  @override
+  String fiscalDocumentBannerCancelled(String date) {
+    return 'Cancelled on $date.';
+  }
+
+  @override
+  String get fiscalDocumentNoCustomerNote =>
+      'This draft has no customer: the recipient cannot be changed and orders cannot be added.';
+
+  @override
+  String get fiscalDocumentFactIssuer => 'Issuer';
+
+  @override
+  String get fiscalDocumentFactRecipient => 'Recipient';
+
+  @override
+  String get fiscalDocumentFactCustomer => 'Customer';
+
+  @override
+  String get fiscalDocumentFactFacility => 'Facility';
+
+  @override
+  String get fiscalDocumentFactSeriesFolio => 'Series and folio';
+
+  @override
+  String get fiscalDocumentFactIssued => 'Issue date';
+
+  @override
+  String get fiscalDocumentFactPaymentTerms => 'Payment method';
+
+  @override
+  String get fiscalDocumentFactPaymentForm => 'Payment form';
+
+  @override
+  String get fiscalDocumentFactUsage => 'CFDI use';
+
+  @override
+  String get fiscalDocumentFactCurrency => 'Currency';
+
+  @override
+  String get fiscalDocumentFactReference => 'Reference';
+
+  @override
+  String get fiscalDocumentFactComment => 'Notes';
+
+  @override
+  String get fiscalDocumentFactUuid => 'UUID';
+
+  @override
+  String get fiscalDocumentFactStamped => 'Stamp date';
+
+  @override
+  String get fiscalDocumentFactRegime => 'Regime';
+
+  @override
+  String get fiscalDocumentFactPostalCode => 'Postal code';
+
+  @override
+  String get fiscalDocumentFactIssuedOnConfirm => 'when confirmed';
+
+  @override
+  String get fiscalDocumentTermsPue => 'Payment in a single installment (PUE)';
+
+  @override
+  String get fiscalDocumentTermsPpd =>
+      'Payment in installments or deferred (PPD)';
+
+  @override
+  String get fiscalDocumentLinesTitle => 'Lines';
+
+  @override
+  String get fiscalDocumentLineQuantity => 'Quantity';
+
+  @override
+  String get fiscalDocumentLineUnit => 'Unit';
+
+  @override
+  String get fiscalDocumentLineSatKey => 'SAT key';
+
+  @override
+  String get fiscalDocumentLineDescription => 'Description';
+
+  @override
+  String get fiscalDocumentLinePrice => 'Unit price';
+
+  @override
+  String get fiscalDocumentLineDiscount => 'Discount';
+
+  @override
+  String get fiscalDocumentLineTax => 'VAT';
+
+  @override
+  String get fiscalDocumentLineAmount => 'Amount';
+
+  @override
+  String fiscalDocumentLineInternalCode(String code) {
+    return 'Internal code: $code';
+  }
+
+  @override
+  String get fiscalDocumentLineFromOrder => 'Order';
+
+  @override
+  String get fiscalDocumentLinesEmpty => 'The invoice has no lines.';
+
+  @override
+  String get fiscalDocumentTaxIva16 => '16 %';
+
+  @override
+  String get fiscalDocumentTaxZero => '0 %';
+
+  @override
+  String get fiscalDocumentTaxExempt => 'Exempt';
+
+  @override
+  String fiscalDocumentTaxOther(String rate) {
+    return '$rate';
+  }
+
+  @override
+  String get fiscalDocumentRelationsTitle => 'Related documents';
+
+  @override
+  String get fiscalDocumentTotalSubtotal => 'Subtotal';
+
+  @override
+  String get fiscalDocumentTotalDiscount => 'Discount';
+
+  @override
+  String get fiscalDocumentTotalTax => 'VAT';
+
+  @override
+  String get fiscalDocumentTotalTotal => 'Total';
+
+  @override
+  String get fiscalDocumentTotalEstimated => 'Total (estimated)';
+
+  @override
+  String get fiscalDocumentRelationSubstitution =>
+      '04 · Substitution of a cancelled CFDI';
+
+  @override
+  String get fiscalDocumentRelationAdvance => '07 · Application of an advance';
+
+  @override
+  String get fiscalDocumentRelationCreditNote => '01 · Credit note';
+
+  @override
+  String get fiscalDocumentNewAction => 'New invoice';
+
+  @override
+  String get fiscalDocumentEditHeader => 'Edit header';
+
+  @override
+  String get fiscalDocumentAddOrder => 'Add order';
+
+  @override
+  String get fiscalDocumentAddProduct => 'Add product';
+
+  @override
+  String get fiscalDocumentAddRelation => 'Add relation';
+
+  @override
+  String get fiscalDocumentConfirmAction => 'Confirm';
+
+  @override
+  String get fiscalDocumentReopenAction => 'Reopen';
+
+  @override
+  String get fiscalDocumentViewPdf => 'View PDF';
+
+  @override
+  String get fiscalDocumentDownloadXml => 'Download XML';
+
+  @override
+  String get fiscalDocumentNewTitle => 'New invoice';
+
+  @override
+  String get fiscalDocumentNewCustomer => 'Customer';
+
+  @override
+  String get fiscalDocumentNewRecipient => 'Recipient RFC';
+
+  @override
+  String get fiscalDocumentNewNoTaxpayers =>
+      'This customer has no registered RFC.';
+
+  @override
+  String get fiscalDocumentNewCreate => 'Create';
+
+  @override
+  String get fiscalDocumentHeaderTitle => 'Edit header';
+
+  @override
+  String get fiscalDocumentHeaderRecipient => 'Recipient (RFC)';
+
+  @override
+  String get fiscalDocumentHeaderSeries => 'Series';
+
+  @override
+  String get fiscalDocumentHeaderUsage => 'CFDI use';
+
+  @override
+  String get fiscalDocumentHeaderTerms => 'Payment method';
+
+  @override
+  String get fiscalDocumentHeaderForm => 'Payment form';
+
+  @override
+  String get fiscalDocumentHeaderIssued => 'Issue date';
+
+  @override
+  String get fiscalDocumentHeaderFacility => 'Facility';
+
+  @override
+  String get fiscalDocumentHeaderReference => 'Reference';
+
+  @override
+  String get fiscalDocumentHeaderComment => 'Notes';
+
+  @override
+  String get fiscalDocumentHeaderSeriesLocked =>
+      'The series cannot change once the folio is assigned.';
+
+  @override
+  String get fiscalDocumentHeaderFormPpd => '99 — To be defined';
+
+  @override
+  String get fiscalDocumentHeaderIssuedHelper =>
+      'Empty: the confirmation date is used. If set, it must be within the last 72 hours.';
+
+  @override
+  String get fiscalDocumentHeaderIssuedOutOfRange =>
+      'The date must be within the last 72 hours and not in the future.';
+
+  @override
+  String get fiscalDocumentHeaderSaved => 'Header updated.';
+
+  @override
+  String get fiscalDocumentLineDialogTitle => 'Edit line';
+
+  @override
+  String get fiscalDocumentLineFieldQuantity => 'Quantity';
+
+  @override
+  String get fiscalDocumentLineFieldPrice => 'Unit price';
+
+  @override
+  String get fiscalDocumentLineFieldDiscount => 'Discount %';
+
+  @override
+  String get fiscalDocumentLineFieldTax => 'VAT';
+
+  @override
+  String get fiscalDocumentLineFieldCode => 'Internal code';
+
+  @override
+  String get fiscalDocumentLineFieldName => 'Description';
+
+  @override
+  String get fiscalDocumentLineFieldComment => 'Comment';
+
+  @override
+  String get fiscalDocumentLineNameHelper =>
+      'If left blank, it resets to the product name.';
+
+  @override
+  String get fiscalDocumentLineQuantityInvalid =>
+      'Enter a quantity greater than 0.';
+
+  @override
+  String get fiscalDocumentLinePriceInvalid => 'Enter a price of 0 or more.';
+
+  @override
+  String get fiscalDocumentLineDiscountInvalid =>
+      'Enter a discount between 0 and 100.';
+
+  @override
+  String get fiscalDocumentLineCodeTooLong =>
+      'The internal code can be up to 35 characters.';
+
+  @override
+  String get fiscalDocumentRemoveLineTitle => 'Remove line';
+
+  @override
+  String get fiscalDocumentRemoveLineBody =>
+      'Remove this line from the invoice?';
+
+  @override
+  String get fiscalDocumentRemoveAction => 'Remove';
+
+  @override
+  String get fiscalDocumentAddOrderTitle => 'Add order';
+
+  @override
+  String get fiscalDocumentAddOrderSearch => 'Search orders';
+
+  @override
+  String get fiscalDocumentAddOrderEmpty =>
+      'The customer has no completed orders.';
+
+  @override
+  String fiscalDocumentOrderAdded(String folio) {
+    return 'The lines of order $folio were added.';
+  }
+
+  @override
+  String get fiscalDocumentAddProductTitle => 'Add product';
+
+  @override
+  String get fiscalDocumentAddProductPicker => 'Product';
+
+  @override
+  String get fiscalDocumentProductAdded => 'Product added.';
+
+  @override
+  String get fiscalDocumentAddRelationTitle => 'Add relation';
+
+  @override
+  String get fiscalDocumentRelationType => 'Relation type';
+
+  @override
+  String get fiscalDocumentRelationDocument => 'Document';
+
+  @override
+  String get fiscalDocumentRelationSearch => 'Search documents';
+
+  @override
+  String get fiscalDocumentRelationEmpty => 'There are no documents to relate.';
+
+  @override
+  String get fiscalDocumentRelationAdded => 'Relation added.';
+
+  @override
+  String get fiscalDocumentRemoveRelationTitle => 'Remove relation';
+
+  @override
+  String get fiscalDocumentRemoveRelationBody =>
+      'Remove this related document?';
+
+  @override
+  String get fiscalDocumentConfirmTitle => 'Confirm invoice';
+
+  @override
+  String fiscalDocumentConfirmBody(String series) {
+    return 'The next folio of series $series will be assigned and the invoice will be sealed. After that it can only be reopened while it is not stamped.';
+  }
+
+  @override
+  String fiscalDocumentConfirmed(String folio) {
+    return 'Invoice $folio sealed.';
+  }
+
+  @override
+  String get fiscalDocumentReopenTitle => 'Reopen invoice';
+
+  @override
+  String fiscalDocumentReopenBody(String folio) {
+    return 'The invoice goes back to draft and keeps folio $folio. The seal is discarded.';
+  }
+
+  @override
+  String fiscalDocumentReopened(String folio) {
+    return 'Invoice $folio reopened.';
+  }
+
+  @override
+  String get fiscalDocumentXmlSaved => 'XML saved.';
+
+  @override
+  String get fiscalDocumentUnknownResult =>
+      'We do not know if it completed: the connection was lost. The document was refreshed.';
+
+  @override
+  String get apiErrorFiscalDocumentNotIssued =>
+      'This document has not been stamped yet, so it has no PDF or XML.';
+
+  @override
+  String apiErrorFiscalDocumentVersionNotPrintable(String version) {
+    return 'This document is CFDI version $version and cannot be printed.';
+  }
+
+  @override
+  String get apiErrorFiscalDocumentNotStamped =>
+      'This document is not stamped, so its PDF cannot be generated.';
+
+  @override
+  String get apiErrorFiscalDocumentXmlUnavailable =>
+      'The XML of this document is not available.';
+
+  @override
+  String get apiErrorFiscalDocumentIssuerHasNoSeries =>
+      'The issuer has no series for this type of document. Create one on the issuer and try again.';
+
+  @override
+  String apiErrorFiscalDocumentSeriesNotOfType(String batch) {
+    return 'Series $batch is not for this type of document.';
+  }
+
+  @override
+  String get apiErrorFiscalDocumentRecipientNotLinked =>
+      'That RFC is not registered on the customer.';
+
+  @override
+  String get apiErrorFiscalDocumentFieldNotForType =>
+      'Some fields do not apply to this type of document.';
+
+  @override
+  String get apiErrorFiscalDocumentUnknownFacility =>
+      'The chosen facility does not exist.';
+
+  @override
+  String get apiErrorFiscalDocumentSeriesLocked =>
+      'The series cannot be changed because the invoice already has a folio.';
+
+  @override
+  String apiErrorFiscalDocumentUnknownUsage(String usage) {
+    return 'CFDI use $usage does not exist.';
+  }
+
+  @override
+  String get apiErrorFiscalDocumentIssueDateOutOfRange =>
+      'The issue date must be within the last 72 hours and not in the future.';
+
+  @override
+  String get apiErrorFiscalDocumentNotDraft =>
+      'This invoice is no longer a draft and cannot be changed.';
+
+  @override
+  String get apiErrorFiscalDocumentNotSealed =>
+      'Only a sealed invoice that is not stamped yet can be reopened.';
+
+  @override
+  String get apiErrorFiscalDocumentTypeNotSupported =>
+      'This type of document cannot be changed here.';
+
+  @override
+  String get apiErrorFiscalDocumentOrderNotInvoiceable =>
+      'That order cannot be invoiced: it must be completed and not cancelled.';
+
+  @override
+  String get apiErrorFiscalDocumentNoInvoiceableLines =>
+      'That order has no lines left to invoice.';
+
+  @override
+  String get apiErrorFiscalDocumentProductUnpriced =>
+      'The product is not on the customer’s price list.';
+
+  @override
+  String apiErrorFiscalDocumentQuantityExceedsInvoiceable(String remaining) {
+    return 'Only $remaining are left to invoice on this order line.';
+  }
+
+  @override
+  String apiErrorFiscalDocumentQuantityExceedsInvoiceableLine(
+    String line,
+    String remaining,
+  ) {
+    return 'Line $line: only $remaining are left to invoice on this order line.';
+  }
+
+  @override
+  String get apiErrorFiscalDocumentRelationNotAllowed =>
+      'That document cannot be related to this invoice: it must have the same issuer and recipient and the status the relation type requires.';
+
+  @override
+  String get apiErrorFiscalDocumentAlreadyRelated =>
+      'That document is already related to this invoice.';
+
+  @override
+  String get apiErrorFiscalDocumentRelationTypesMixed =>
+      'An invoice can only have relations of one type.';
+
+  @override
+  String get apiErrorFiscalDocumentNoLines => 'The invoice has no lines.';
+
+  @override
+  String apiErrorFiscalDocumentLineMissingSatKey(String line) {
+    return 'Line $line: the SAT product key or unit is missing.';
+  }
+
+  @override
+  String apiErrorFiscalDocumentLineQuantityNotPositive(String line) {
+    return 'Line $line: the quantity must be greater than 0.';
+  }
+
+  @override
+  String get apiErrorFiscalDocumentRecipientIncomplete =>
+      'The recipient’s tax data is incomplete (name, regime or postal code).';
+
+  @override
+  String get apiErrorFiscalDocumentNoValidCertificate =>
+      'The issuer has no valid certificate to seal with.';
+
+  @override
+  String apiErrorFiscalDocumentSeriesMissing(String batch) {
+    return 'Series $batch no longer exists.';
+  }
+
+  @override
+  String get apiErrorFiscalDocumentCertificateCannotSign =>
+      'The issuer’s certificate cannot sign this document.';
+
+  @override
+  String get apiValidationFiscalDocumentTaxRateInvalid =>
+      'The VAT rate must be 16 %, 0 % or exempt.';
+
+  @override
+  String get apiValidationFiscalDocumentPaymentFormUnknown =>
+      'The payment form is not valid.';
+
+  @override
+  String apiResourceFiscalDocumentLine(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'invoice lines',
+      one: 'invoice line',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderFiscalDocumentLine => 'feminine';
+
+  @override
+  String apiResourceFiscalDocumentRelation(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'related documents',
+      one: 'related document',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderFiscalDocumentRelation => 'masculine';
+
+  @override
+  String fiscalDocumentAddOrderIntro(String customer) {
+    return 'Completed orders of $customer. Pick the one to invoice.';
+  }
+
+  @override
+  String get fiscalDocumentAddOrderColFolio => 'Order';
+
+  @override
+  String get fiscalDocumentAddOrderColDate => 'Date';
+
+  @override
+  String get fiscalDocumentAddOrderColTotal => 'Total';
+
+  @override
+  String get fiscalDocumentAddOrderLoadMore => 'Load more';
+
+  @override
+  String get fiscalDocumentHeaderIssuedOnConfirm => 'When confirmed';
+
+  @override
+  String get fiscalDocumentHeaderPickIssued => 'Pick date and time';
+
+  @override
+  String get fiscalDocumentHeaderReferenceTooLong =>
+      'The reference can be up to 25 characters.';
+
+  @override
+  String get fiscalDocumentHeaderCommentTooLong =>
+      'The notes can be up to 1000 characters.';
+
+  @override
+  String get fiscalDocumentHeaderTermsPue => 'PUE';
+
+  @override
+  String get fiscalDocumentHeaderTermsPpd => 'PPD';
+
+  @override
+  String get fiscalDocumentLineEditTooltip => 'Edit line';
+
+  @override
+  String get fiscalDocumentLineRemoveTooltip => 'Remove line';
+
+  @override
+  String get fiscalDocumentRelationRemoveTooltip => 'Remove relation';
 }

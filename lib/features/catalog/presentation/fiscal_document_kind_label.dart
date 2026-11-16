@@ -8,13 +8,13 @@ String fiscalDocumentKindLabel(
   FiscalDocumentKind kind,
 ) => switch (kind) {
   FiscalDocumentKind.invoice => l10n.fiscalDocumentKindInvoice,
-  FiscalDocumentKind.expense => l10n.fiscalDocumentKindExpense,
-  FiscalDocumentKind.payment => l10n.fiscalDocumentKindPayment,
-  FiscalDocumentKind.transfer => l10n.fiscalDocumentKindTransfer,
+  FiscalDocumentKind.feeReceipt => l10n.fiscalDocumentKindFeeReceipt,
+  FiscalDocumentKind.rentReceipt => l10n.fiscalDocumentKindRentReceipt,
+  FiscalDocumentKind.debitNote => l10n.fiscalDocumentKindDebitNote,
   FiscalDocumentKind.creditNote => l10n.fiscalDocumentKindCreditNote,
-  FiscalDocumentKind.paymentReceipt => l10n.fiscalDocumentKindPaymentReceipt,
   FiscalDocumentKind.advancePaymentsApplied =>
     l10n.fiscalDocumentKindAdvancePaymentsApplied,
+  FiscalDocumentKind.paymentReceipt => l10n.fiscalDocumentKindPaymentReceipt,
 };
 
 /// The label of a series' document type: the kind's name, or a generic

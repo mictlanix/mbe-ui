@@ -160,17 +160,58 @@ void main() {
     });
 
     test('maps every kind to its own wire number', () async {
-      final sent = <int>[];
+      final sent = <FiscalDocumentKind, int>{};
+      late FiscalDocumentKind current;
       final repository = _repositoryWith((options) async {
-        sent.add((options.data as Map<String, dynamic>)['type'] as int);
+        sent[current] = (options.data as Map<String, dynamic>)['type'] as int;
         return _json(_batchJson(), 201);
       });
 
       for (final kind in FiscalDocumentKind.values) {
+        current = kind;
         await repository.create(_rfc, _draft(kind: kind));
       }
 
-      expect(sent, [0, 1, 2, 3, 100, 101, 200]);
+      // Keyed by kind, so a pair of swapped arms fails (spec 066 R2).
+      expect(sent, {
+        for (final kind in FiscalDocumentKind.values) kind: kind.code,
+      });
+      expect(sent[FiscalDocumentKind.paymentReceipt], 200);
+      expect(sent[FiscalDocumentKind.advancePaymentsApplied], 101);
+    });
+
+    test(
+      'update sends 200 for a payment receipt and 101 for advances',
+      () async {
+        final sent = <int>[];
+        final repository = _repositoryWith((options) async {
+          sent.add((options.data as Map<String, dynamic>)['type'] as int);
+          return _json(_batchJson(), 200);
+        });
+
+        await repository.update(
+          _rfc,
+          7,
+          _draft(kind: FiscalDocumentKind.paymentReceipt),
+        );
+        await repository.update(
+          _rfc,
+          7,
+          _draft(kind: FiscalDocumentKind.advancePaymentsApplied),
+        );
+
+        expect(sent, [200, 101]);
+      },
+    );
+
+    test('a response with type 200 reads back as a payment receipt', () async {
+      final repository = _repositoryWith(
+        (options) async => _json([_batchJson(type: 200)], 200),
+      );
+
+      final batches = await repository.listForIssuer(_rfc);
+
+      expect(batches.single.kind, FiscalDocumentKind.paymentReceipt);
     });
 
     test('a duplicate series surfaces as resource.already_exists', () async {

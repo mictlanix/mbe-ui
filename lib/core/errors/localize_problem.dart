@@ -63,6 +63,35 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.facilityPeriodNoDispatchWarehouse,
   api.ErrorCode.facilityPeriodOtherFacility,
   api.ErrorCode.facilityPeriodRequired,
+  api.ErrorCode.fiscalDocumentPeriodAlreadyRelated,
+  api.ErrorCode.fiscalDocumentPeriodCertificateCannotSign,
+  api.ErrorCode.fiscalDocumentPeriodFieldNotForType,
+  api.ErrorCode.fiscalDocumentPeriodIssueDateOutOfRange,
+  api.ErrorCode.fiscalDocumentPeriodIssuerHasNoSeries,
+  api.ErrorCode.fiscalDocumentPeriodLineMissingSatKey,
+  api.ErrorCode.fiscalDocumentPeriodLineQuantityNotPositive,
+  api.ErrorCode.fiscalDocumentPeriodNoInvoiceableLines,
+  api.ErrorCode.fiscalDocumentPeriodNoLines,
+  api.ErrorCode.fiscalDocumentPeriodNoValidCertificate,
+  api.ErrorCode.fiscalDocumentPeriodNotDraft,
+  api.ErrorCode.fiscalDocumentPeriodNotIssued,
+  api.ErrorCode.fiscalDocumentPeriodNotSealed,
+  api.ErrorCode.fiscalDocumentPeriodNotStamped,
+  api.ErrorCode.fiscalDocumentPeriodOrderNotInvoiceable,
+  api.ErrorCode.fiscalDocumentPeriodProductUnpriced,
+  api.ErrorCode.fiscalDocumentPeriodQuantityExceedsInvoiceable,
+  api.ErrorCode.fiscalDocumentPeriodRecipientIncomplete,
+  api.ErrorCode.fiscalDocumentPeriodRecipientNotLinked,
+  api.ErrorCode.fiscalDocumentPeriodRelationNotAllowed,
+  api.ErrorCode.fiscalDocumentPeriodRelationTypesMixed,
+  api.ErrorCode.fiscalDocumentPeriodSeriesLocked,
+  api.ErrorCode.fiscalDocumentPeriodSeriesMissing,
+  api.ErrorCode.fiscalDocumentPeriodSeriesNotOfType,
+  api.ErrorCode.fiscalDocumentPeriodTypeNotSupported,
+  api.ErrorCode.fiscalDocumentPeriodUnknownFacility,
+  api.ErrorCode.fiscalDocumentPeriodUnknownUsage,
+  api.ErrorCode.fiscalDocumentPeriodVersionNotPrintable,
+  api.ErrorCode.fiscalDocumentPeriodXmlUnavailable,
   api.ErrorCode.imagePeriodTooLarge,
   api.ErrorCode.imagePeriodUnsupportedFormat,
   api.ErrorCode.incidencePeriodReasonRequired,
@@ -134,6 +163,8 @@ const Set<api.ErrorCode> localizedErrorCodes = {
 const Set<String> localizedValidationTypes = {
   'contact_name_blank',
   'email_address_invalid',
+  'fiscal_document_payment_form_unknown',
+  'fiscal_document_tax_rate_invalid',
   'product_barcode_invalid',
   'product_code_has_whitespace',
   'profile_duplicate_system_object',
@@ -293,6 +324,85 @@ String? localizeProblem(
       ),
     ),
     api.ErrorCode.facilityPeriodRequired => l10n.apiErrorFacilityRequired,
+    api.ErrorCode.fiscalDocumentPeriodAlreadyRelated =>
+      l10n.apiErrorFiscalDocumentAlreadyRelated,
+    api.ErrorCode.fiscalDocumentPeriodCertificateCannotSign =>
+      l10n.apiErrorFiscalDocumentCertificateCannotSign,
+    api.ErrorCode.fiscalDocumentPeriodFieldNotForType =>
+      l10n.apiErrorFiscalDocumentFieldNotForType,
+    api.ErrorCode.fiscalDocumentPeriodIssueDateOutOfRange =>
+      l10n.apiErrorFiscalDocumentIssueDateOutOfRange,
+    api.ErrorCode.fiscalDocumentPeriodIssuerHasNoSeries =>
+      l10n.apiErrorFiscalDocumentIssuerHasNoSeries,
+    api.ErrorCode.fiscalDocumentPeriodLineMissingSatKey => _ap1(
+      _count(problem, 'line', fmt),
+      l10n.apiErrorFiscalDocumentLineMissingSatKey,
+    ),
+    api.ErrorCode.fiscalDocumentPeriodLineQuantityNotPositive => _ap1(
+      _count(problem, 'line', fmt),
+      l10n.apiErrorFiscalDocumentLineQuantityNotPositive,
+    ),
+    api.ErrorCode.fiscalDocumentPeriodNoInvoiceableLines =>
+      l10n.apiErrorFiscalDocumentNoInvoiceableLines,
+    api.ErrorCode.fiscalDocumentPeriodNoLines =>
+      l10n.apiErrorFiscalDocumentNoLines,
+    api.ErrorCode.fiscalDocumentPeriodNoValidCertificate =>
+      l10n.apiErrorFiscalDocumentNoValidCertificate,
+    api.ErrorCode.fiscalDocumentPeriodNotDraft =>
+      l10n.apiErrorFiscalDocumentNotDraft,
+    api.ErrorCode.fiscalDocumentPeriodNotIssued =>
+      l10n.apiErrorFiscalDocumentNotIssued,
+    api.ErrorCode.fiscalDocumentPeriodNotSealed =>
+      l10n.apiErrorFiscalDocumentNotSealed,
+    api.ErrorCode.fiscalDocumentPeriodNotStamped =>
+      l10n.apiErrorFiscalDocumentNotStamped,
+    api.ErrorCode.fiscalDocumentPeriodOrderNotInvoiceable =>
+      l10n.apiErrorFiscalDocumentOrderNotInvoiceable,
+    api.ErrorCode.fiscalDocumentPeriodProductUnpriced =>
+      l10n.apiErrorFiscalDocumentProductUnpriced,
+    api.ErrorCode.fiscalDocumentPeriodQuantityExceedsInvoiceable =>
+      problem.intParam('line') == null
+          ? _ap1(
+              _quantity(problem, 'remaining', fmt),
+              l10n.apiErrorFiscalDocumentQuantityExceedsInvoiceable,
+            )
+          : _ap2(
+              _count(problem, 'line', fmt),
+              _quantity(problem, 'remaining', fmt),
+              l10n.apiErrorFiscalDocumentQuantityExceedsInvoiceableLine,
+            ),
+    api.ErrorCode.fiscalDocumentPeriodRecipientIncomplete =>
+      l10n.apiErrorFiscalDocumentRecipientIncomplete,
+    api.ErrorCode.fiscalDocumentPeriodRecipientNotLinked =>
+      l10n.apiErrorFiscalDocumentRecipientNotLinked,
+    api.ErrorCode.fiscalDocumentPeriodRelationNotAllowed =>
+      l10n.apiErrorFiscalDocumentRelationNotAllowed,
+    api.ErrorCode.fiscalDocumentPeriodRelationTypesMixed =>
+      l10n.apiErrorFiscalDocumentRelationTypesMixed,
+    api.ErrorCode.fiscalDocumentPeriodSeriesLocked =>
+      l10n.apiErrorFiscalDocumentSeriesLocked,
+    api.ErrorCode.fiscalDocumentPeriodSeriesMissing => _ap1(
+      problem.stringParam('batch'),
+      l10n.apiErrorFiscalDocumentSeriesMissing,
+    ),
+    api.ErrorCode.fiscalDocumentPeriodSeriesNotOfType => _ap1(
+      problem.stringParam('batch'),
+      l10n.apiErrorFiscalDocumentSeriesNotOfType,
+    ),
+    api.ErrorCode.fiscalDocumentPeriodTypeNotSupported =>
+      l10n.apiErrorFiscalDocumentTypeNotSupported,
+    api.ErrorCode.fiscalDocumentPeriodUnknownFacility =>
+      l10n.apiErrorFiscalDocumentUnknownFacility,
+    api.ErrorCode.fiscalDocumentPeriodUnknownUsage => _ap1(
+      problem.stringParam('usage'),
+      l10n.apiErrorFiscalDocumentUnknownUsage,
+    ),
+    api.ErrorCode.fiscalDocumentPeriodVersionNotPrintable => _ap1(
+      problem.stringParam('version'),
+      l10n.apiErrorFiscalDocumentVersionNotPrintable,
+    ),
+    api.ErrorCode.fiscalDocumentPeriodXmlUnavailable =>
+      l10n.apiErrorFiscalDocumentXmlUnavailable,
     api.ErrorCode.imagePeriodTooLarge => _ap1(
       _size(problem, 'max_bytes', fmt),
       l10n.apiErrorImageTooLarge,
@@ -457,6 +567,10 @@ String? localizeValidationType(String type, AppLocalizations l10n) {
   return switch (type) {
     'contact_name_blank' => l10n.apiValidationContactNameBlank,
     'email_address_invalid' => l10n.apiValidationEmailAddressInvalid,
+    'fiscal_document_payment_form_unknown' =>
+      l10n.apiValidationFiscalDocumentPaymentFormUnknown,
+    'fiscal_document_tax_rate_invalid' =>
+      l10n.apiValidationFiscalDocumentTaxRateInvalid,
     'product_barcode_invalid' => l10n.apiValidationProductBarcodeInvalid,
     'product_code_has_whitespace' => l10n.apiValidationProductCodeHasWhitespace,
     'profile_duplicate_system_object' =>
@@ -499,6 +613,10 @@ String resourceNoun(String? resource, AppLocalizations l10n, {int count = 1}) =>
       'expense_voucher' => l10n.apiResourceExpenseVoucher(count),
       'facility' => l10n.apiResourceFacility(count),
       'fiscal_document' => l10n.apiResourceFiscalDocument(count),
+      'fiscal_document_line' => l10n.apiResourceFiscalDocumentLine(count),
+      'fiscal_document_relation' => l10n.apiResourceFiscalDocumentRelation(
+        count,
+      ),
       'inventory_issue' => l10n.apiResourceInventoryIssue(count),
       'inventory_receipt' => l10n.apiResourceInventoryReceipt(count),
       'inventory_transfer' => l10n.apiResourceInventoryTransfer(count),
@@ -556,6 +674,9 @@ String resourceGender(String? resource, AppLocalizations l10n) =>
       'expense_voucher' => l10n.apiResourceGenderExpenseVoucher,
       'facility' => l10n.apiResourceGenderFacility,
       'fiscal_document' => l10n.apiResourceGenderFiscalDocument,
+      'fiscal_document_line' => l10n.apiResourceGenderFiscalDocumentLine,
+      'fiscal_document_relation' =>
+        l10n.apiResourceGenderFiscalDocumentRelation,
       'inventory_issue' => l10n.apiResourceGenderInventoryIssue,
       'inventory_receipt' => l10n.apiResourceGenderInventoryReceipt,
       'inventory_transfer' => l10n.apiResourceGenderInventoryTransfer,

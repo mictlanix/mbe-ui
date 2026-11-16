@@ -6,7 +6,7 @@
 
 - mbe-api is running locally with the dev tenant. `.env` holds `MBE_POS_*`, which is the admin account (see `test/integration/TEST_ACCOUNTS.md`).
 - After a DB reset, run `python3 tool/seed_test_accounts.py`. Step 1 uses `qanoaccess`.
-- **Issued documents** come from legacy data. The live test finds them at run time with `status=issued` (and `cancelled` for step 5), not from fixed ids. If the tenant has none, the PDF and XML checks fail with a message saying so; they never skip silently.
+- **Issued documents** come from legacy data. The live test (`test/integration/fiscal_documents_live_test.dart`) finds them at run time with `status=issued` (and `cancelled` for step 5), not from fixed ids. If the tenant has none, the PDF and XML checks fail with a message saying so; they never skip silently.
 - **Sealing** needs an issuer with an active certificate valid now, and an invoice series. Spec 065's quickstart used `CAG190523ES5`. The live test discovers the store's issuer and skips sealing with a printed reason when confirm returns `no_valid_certificate`.
 - **Draft source**: a customer with at least one taxpayer (RFC) and a completed sales order with invoiceable products. The live test discovers one: a recent `status=completed` order whose customer has taxpayers.
 
@@ -14,8 +14,9 @@
 
 ```bash
 flutter test test/unit test/widget
-# Live, against a running mbe-api (read-only by default)
-flutter test integration_test/fiscal_documents_quickstart_test.dart -d macos \
+# Live, against a running mbe-api (read-only by default). It drives the
+# repositories with a real Dio, so it needs no device.
+flutter test test/integration/fiscal_documents_live_test.dart \
   --dart-define-from-file=.env.settings \
   --dart-define=MBE_POS_USERNAME=... --dart-define=MBE_POS_PASSWORD=...
 # ...add this to also create, edit, seal and reopen an invoice

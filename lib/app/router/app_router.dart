@@ -45,6 +45,8 @@ import 'package:mbe_ui/features/pricing/presentation/pricing_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/advanced_search_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
+import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_detail_screen.dart';
+import 'package:mbe_ui/features/invoicing/presentation/fiscal_documents_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/for_delivery/pending_deliveries_filter.dart';
 import 'package:mbe_ui/features/sales/presentation/for_delivery/pending_deliveries_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/orders/order_workspace_screen.dart';
@@ -421,6 +423,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 066-invoice-list-editor: appended last (index 29), same rationale
+          // as `payments` above. Gated on SystemObject 23 (`fiscalDocuments`)
+          // read, see `_routeGate`. A row opens the top-level
+          // `/invoicing/fiscal-documents/:fiscalDocumentId` route.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: fiscalDocumentsPath,
+                builder: (context, state) => FiscalDocumentsListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -611,6 +627,17 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => DeliveryOrderDetailScreen(
           deliveryOrderId: int.tryParse(
             state.pathParameters['deliveryOrderId'] ?? '',
+          ),
+        ),
+      ),
+      // 066-invoice-list-editor: a document's own full screen, gated on
+      // SystemObject 23 (`fiscalDocuments`) read by the `_routeGate` prefix. A
+      // non-numeric id parses to `null`, which the screen shows as not found.
+      GoRoute(
+        path: '$fiscalDocumentsPath/:fiscalDocumentId',
+        builder: (context, state) => FiscalDocumentDetailScreen(
+          fiscalDocumentId: int.tryParse(
+            state.pathParameters['fiscalDocumentId'] ?? '',
           ),
         ),
       ),
@@ -884,6 +911,12 @@ NavGate? _routeGate(String location) {
   // open this screen.
   if (location.startsWith(forDeliveryPath)) {
     return PrivilegeGate(SystemObject.forDeliver, AccessRight.read);
+  }
+  // 066-invoice-list-editor: SystemObject 23 (`fiscalDocuments`) read,
+  // matching the server's GET /fiscal-documents. The prefix covers the list
+  // and every `/invoicing/fiscal-documents/:fiscalDocumentId`.
+  if (location.startsWith(fiscalDocumentsPath)) {
+    return PrivilegeGate(SystemObject.fiscalDocuments, AccessRight.read);
   }
   // 061-delivery-orders: SystemObject 71 (`deliveryOrders`) read, matching
   // the server's GET /delivery-orders. The prefix covers the list and every

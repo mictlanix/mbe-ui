@@ -523,7 +523,7 @@ void main() {
       expect(c.state().clientErrors['type'], TaxpayerBatchFieldError.required);
       verifyNever(() => repository.update(any(), any(), any()));
 
-      c.notifier.kindChanged(FiscalDocumentKind.expense);
+      c.notifier.kindChanged(FiscalDocumentKind.feeReceipt);
       expect(c.state().clientErrors.containsKey('type'), isFalse);
     });
 

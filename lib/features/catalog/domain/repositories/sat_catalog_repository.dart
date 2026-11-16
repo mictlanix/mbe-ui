@@ -32,6 +32,14 @@ abstract class SatCatalogRepository {
     int skip = 0,
     int limit = 20,
   });
+
+  /// Backs the invoice header's "Uso del CFDI" picker (spec 066 research R8).
+  /// Same `SatCatalogResponse` shape as the others; needs only a login.
+  Future<SatCatalogListResult> listCfdiUsages({
+    String? search,
+    int skip = 0,
+    int limit = 20,
+  });
 }
 
 class SatCatalogListResult {

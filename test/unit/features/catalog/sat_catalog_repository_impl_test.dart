@@ -148,6 +148,47 @@ void main() {
       });
     },
   );
+
+  group('SatCatalogRepositoryImpl.listCfdiUsages (spec 066 research R8)', () {
+    test('200 maps to SatCatalogItems, from the CFDI usages route', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode({
+            'items': [_satJson('G01', 'Adquisición de mercancías')],
+            'total': 1,
+          }),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      final result = await repository.listCfdiUsages();
+
+      expect(captured!.path, '/api/v1/sat/cfdi-usages');
+      expect(result.items.single.code, 'G01');
+      expect(result.total, 1);
+    });
+
+    test('forwards search/skip/limit as query params', () async {
+      RequestOptions? captured;
+      final repository = _repositoryWith((options) async {
+        captured = options;
+        return ResponseBody.fromString(
+          jsonEncode({'items': [], 'total': 0}),
+          200,
+          headers: _jsonHeaders,
+        );
+      });
+
+      await repository.listCfdiUsages(search: 'G0', skip: 20, limit: 10);
+
+      expect(captured!.queryParameters['search'], 'G0');
+      expect(captured!.queryParameters['skip'], 20);
+      expect(captured!.queryParameters['limit'], 10);
+    });
+  });
 }
 
 Map<String, Object?> _satJson(String id, String description) => {

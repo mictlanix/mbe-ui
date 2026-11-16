@@ -86,7 +86,7 @@ void main() {
     testWidgets('lists the series by type then series, with type names, the '
         'lock only on in-use rows and a count in the title', (tester) async {
       stubList([
-        aBatch(id: 1, series: 'P', typeCode: 101, templateName: 'Recibo'),
+        aBatch(id: 1, series: 'P', typeCode: 200, templateName: 'Recibo'),
         aBatch(id: 2, series: 'B', typeCode: 0, templateName: 'Sucursal'),
         aBatch(id: 3, series: 'NC', typeCode: 100, inUse: true),
         aBatch(id: 4, series: 'A', typeCode: 0, inUse: true),

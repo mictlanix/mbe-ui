@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
+import 'package:mbe_ui/core/widgets/app_side_sheet.dart'
+    show confirmDiscardChanges;
 
 /// One of a [ResponsiveDialog]'s two actions.
 class ResponsiveDialogAction {
@@ -47,6 +49,7 @@ class ResponsiveDialog extends StatelessWidget {
     this.secondaryAction,
     this.dismissible = true,
     this.maxWidth = 560,
+    this.hasUnsavedChanges,
   });
 
   final String title;
@@ -60,11 +63,23 @@ class ResponsiveDialog extends StatelessWidget {
   /// The widest the dialog gets on a wide screen.
   final double maxWidth;
 
+  /// Whether the user has edited something. While it answers `true`, leaving
+  /// by back, Escape, the barrier or the compact close control asks "discard
+  /// changes?" first (spec 066). A caller's own Cancel button should use
+  /// `Navigator.maybePop` so it asks too. `null` never asks.
+  final bool Function()? hasUnsavedChanges;
+
   @override
   Widget build(BuildContext context) {
     final compact = LayoutBreakpoints.isCompact(context);
     return PopScope(
-      canPop: dismissible,
+      canPop: dismissible && !(hasUnsavedChanges?.call() ?? false),
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop || !dismissible) return;
+        if (await confirmDiscardChanges(context) && context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
       child: compact
           ? Dialog.fullscreen(child: _compact(context))
           : Dialog(
@@ -137,7 +152,7 @@ class ResponsiveDialog extends StatelessWidget {
                 icon: const Icon(Icons.close),
                 tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                 onPressed: dismissible
-                    ? () => Navigator.of(context).pop()
+                    ? () => Navigator.of(context).maybePop()
                     : null,
               ),
               Expanded(

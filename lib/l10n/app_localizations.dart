@@ -11563,23 +11563,23 @@ abstract class AppLocalizations {
   /// **'Invoice'**
   String get fiscalDocumentKindInvoice;
 
-  /// spec 065: label of the fiscal document kind Expense
+  /// spec 065: label of the fiscal document kind FeeReceipt
   ///
   /// In en, this message translates to:
-  /// **'Expense'**
-  String get fiscalDocumentKindExpense;
+  /// **'Fee receipt'**
+  String get fiscalDocumentKindFeeReceipt;
 
-  /// spec 065: label of the fiscal document kind Payment
+  /// spec 065: label of the fiscal document kind RentReceipt
   ///
   /// In en, this message translates to:
-  /// **'Payment'**
-  String get fiscalDocumentKindPayment;
+  /// **'Rent receipt'**
+  String get fiscalDocumentKindRentReceipt;
 
-  /// spec 065: label of the fiscal document kind Transfer
+  /// spec 065: label of the fiscal document kind DebitNote
   ///
   /// In en, this message translates to:
-  /// **'Transfer'**
-  String get fiscalDocumentKindTransfer;
+  /// **'Debit note'**
+  String get fiscalDocumentKindDebitNote;
 
   /// spec 065: label of the fiscal document kind CreditNote
   ///
@@ -11646,6 +11646,1173 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The series couldn\'t be deleted.'**
   String get taxpayerBatchDeleteFailed;
+
+  /// spec 066: navInvoicingGroup
+  ///
+  /// In en, this message translates to:
+  /// **'Invoicing'**
+  String get navInvoicingGroup;
+
+  /// spec 066: navFiscalDocuments
+  ///
+  /// In en, this message translates to:
+  /// **'Invoices'**
+  String get navFiscalDocuments;
+
+  /// spec 066: fiscalDocumentTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice {folio}'**
+  String fiscalDocumentTitle(String folio);
+
+  /// spec 066: fiscalDocumentTitleKind
+  ///
+  /// In en, this message translates to:
+  /// **'{kind} {folio}'**
+  String fiscalDocumentTitleKind(String kind, String folio);
+
+  /// spec 066: fiscalDocumentTitleDraft
+  ///
+  /// In en, this message translates to:
+  /// **'Draft #{id}'**
+  String fiscalDocumentTitleDraft(int id);
+
+  /// spec 066: fiscalDocumentDraftFolio
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get fiscalDocumentDraftFolio;
+
+  /// spec 066: fiscalDocumentsEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'There are no invoices yet.'**
+  String get fiscalDocumentsEmpty;
+
+  /// spec 066: fiscalDocumentsSearchHint
+  ///
+  /// In en, this message translates to:
+  /// **'Folio, UUID, recipient RFC or name'**
+  String get fiscalDocumentsSearchHint;
+
+  /// spec 066: fiscalDocumentBackToList
+  ///
+  /// In en, this message translates to:
+  /// **'Back to invoices'**
+  String get fiscalDocumentBackToList;
+
+  /// spec 066: fiscalDocumentNotFound
+  ///
+  /// In en, this message translates to:
+  /// **'We could not find this document.'**
+  String get fiscalDocumentNotFound;
+
+  /// spec 066: fiscalDocumentLoadFailed
+  ///
+  /// In en, this message translates to:
+  /// **'The document could not be loaded.'**
+  String get fiscalDocumentLoadFailed;
+
+  /// spec 066: fiscalDocumentStatusDraft
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get fiscalDocumentStatusDraft;
+
+  /// spec 066: fiscalDocumentStatusSealed
+  ///
+  /// In en, this message translates to:
+  /// **'Sealed'**
+  String get fiscalDocumentStatusSealed;
+
+  /// spec 066: fiscalDocumentStatusIssued
+  ///
+  /// In en, this message translates to:
+  /// **'Stamped'**
+  String get fiscalDocumentStatusIssued;
+
+  /// spec 066: fiscalDocumentStatusCancelled
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get fiscalDocumentStatusCancelled;
+
+  /// spec 066: fiscalDocumentColFolio
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get fiscalDocumentColFolio;
+
+  /// spec 066: fiscalDocumentColType
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get fiscalDocumentColType;
+
+  /// spec 066: fiscalDocumentColIssuer
+  ///
+  /// In en, this message translates to:
+  /// **'Issuer'**
+  String get fiscalDocumentColIssuer;
+
+  /// spec 066: fiscalDocumentColRecipient
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient'**
+  String get fiscalDocumentColRecipient;
+
+  /// spec 066: fiscalDocumentColIssued
+  ///
+  /// In en, this message translates to:
+  /// **'Issue date'**
+  String get fiscalDocumentColIssued;
+
+  /// spec 066: fiscalDocumentColStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get fiscalDocumentColStatus;
+
+  /// spec 066: fiscalDocumentColTotal
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get fiscalDocumentColTotal;
+
+  /// spec 066: fiscalDocumentFacetStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get fiscalDocumentFacetStatus;
+
+  /// spec 066: fiscalDocumentFacetType
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get fiscalDocumentFacetType;
+
+  /// spec 066: fiscalDocumentFacetIssuer
+  ///
+  /// In en, this message translates to:
+  /// **'Issuer'**
+  String get fiscalDocumentFacetIssuer;
+
+  /// spec 066: fiscalDocumentFacetIssued
+  ///
+  /// In en, this message translates to:
+  /// **'Issue date'**
+  String get fiscalDocumentFacetIssued;
+
+  /// spec 066: fiscalDocumentFacetAll
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get fiscalDocumentFacetAll;
+
+  /// spec 066: fiscalDocumentDateFacetHelper
+  ///
+  /// In en, this message translates to:
+  /// **'Drafts have no issue date and do not appear when filtering by date.'**
+  String get fiscalDocumentDateFacetHelper;
+
+  /// spec 066: fiscalDocumentBannerSealed
+  ///
+  /// In en, this message translates to:
+  /// **'Sealed, waiting to be stamped. Stamping is not available in this system yet.'**
+  String get fiscalDocumentBannerSealed;
+
+  /// spec 066: fiscalDocumentBannerReadOnlyKind
+  ///
+  /// In en, this message translates to:
+  /// **'This type of document can only be viewed.'**
+  String get fiscalDocumentBannerReadOnlyKind;
+
+  /// spec 066: fiscalDocumentBannerCancelled
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled on {date}.'**
+  String fiscalDocumentBannerCancelled(String date);
+
+  /// spec 066: fiscalDocumentNoCustomerNote
+  ///
+  /// In en, this message translates to:
+  /// **'This draft has no customer: the recipient cannot be changed and orders cannot be added.'**
+  String get fiscalDocumentNoCustomerNote;
+
+  /// spec 066: fiscalDocumentFactIssuer
+  ///
+  /// In en, this message translates to:
+  /// **'Issuer'**
+  String get fiscalDocumentFactIssuer;
+
+  /// spec 066: fiscalDocumentFactRecipient
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient'**
+  String get fiscalDocumentFactRecipient;
+
+  /// spec 066: fiscalDocumentFactCustomer
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get fiscalDocumentFactCustomer;
+
+  /// spec 066: fiscalDocumentFactFacility
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get fiscalDocumentFactFacility;
+
+  /// spec 066: fiscalDocumentFactSeriesFolio
+  ///
+  /// In en, this message translates to:
+  /// **'Series and folio'**
+  String get fiscalDocumentFactSeriesFolio;
+
+  /// spec 066: fiscalDocumentFactIssued
+  ///
+  /// In en, this message translates to:
+  /// **'Issue date'**
+  String get fiscalDocumentFactIssued;
+
+  /// spec 066: fiscalDocumentFactPaymentTerms
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get fiscalDocumentFactPaymentTerms;
+
+  /// spec 066: fiscalDocumentFactPaymentForm
+  ///
+  /// In en, this message translates to:
+  /// **'Payment form'**
+  String get fiscalDocumentFactPaymentForm;
+
+  /// spec 066: fiscalDocumentFactUsage
+  ///
+  /// In en, this message translates to:
+  /// **'CFDI use'**
+  String get fiscalDocumentFactUsage;
+
+  /// spec 066: fiscalDocumentFactCurrency
+  ///
+  /// In en, this message translates to:
+  /// **'Currency'**
+  String get fiscalDocumentFactCurrency;
+
+  /// spec 066: fiscalDocumentFactReference
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get fiscalDocumentFactReference;
+
+  /// spec 066: fiscalDocumentFactComment
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get fiscalDocumentFactComment;
+
+  /// spec 066: fiscalDocumentFactUuid
+  ///
+  /// In en, this message translates to:
+  /// **'UUID'**
+  String get fiscalDocumentFactUuid;
+
+  /// spec 066: fiscalDocumentFactStamped
+  ///
+  /// In en, this message translates to:
+  /// **'Stamp date'**
+  String get fiscalDocumentFactStamped;
+
+  /// spec 066: fiscalDocumentFactRegime
+  ///
+  /// In en, this message translates to:
+  /// **'Regime'**
+  String get fiscalDocumentFactRegime;
+
+  /// spec 066: fiscalDocumentFactPostalCode
+  ///
+  /// In en, this message translates to:
+  /// **'Postal code'**
+  String get fiscalDocumentFactPostalCode;
+
+  /// spec 066: fiscalDocumentFactIssuedOnConfirm
+  ///
+  /// In en, this message translates to:
+  /// **'when confirmed'**
+  String get fiscalDocumentFactIssuedOnConfirm;
+
+  /// spec 066: fiscalDocumentTermsPue
+  ///
+  /// In en, this message translates to:
+  /// **'Payment in a single installment (PUE)'**
+  String get fiscalDocumentTermsPue;
+
+  /// spec 066: fiscalDocumentTermsPpd
+  ///
+  /// In en, this message translates to:
+  /// **'Payment in installments or deferred (PPD)'**
+  String get fiscalDocumentTermsPpd;
+
+  /// spec 066: fiscalDocumentLinesTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Lines'**
+  String get fiscalDocumentLinesTitle;
+
+  /// spec 066: fiscalDocumentLineQuantity
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get fiscalDocumentLineQuantity;
+
+  /// spec 066: fiscalDocumentLineUnit
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get fiscalDocumentLineUnit;
+
+  /// spec 066: fiscalDocumentLineSatKey
+  ///
+  /// In en, this message translates to:
+  /// **'SAT key'**
+  String get fiscalDocumentLineSatKey;
+
+  /// spec 066: fiscalDocumentLineDescription
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get fiscalDocumentLineDescription;
+
+  /// spec 066: fiscalDocumentLinePrice
+  ///
+  /// In en, this message translates to:
+  /// **'Unit price'**
+  String get fiscalDocumentLinePrice;
+
+  /// spec 066: fiscalDocumentLineDiscount
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get fiscalDocumentLineDiscount;
+
+  /// spec 066: fiscalDocumentLineTax
+  ///
+  /// In en, this message translates to:
+  /// **'VAT'**
+  String get fiscalDocumentLineTax;
+
+  /// spec 066: fiscalDocumentLineAmount
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get fiscalDocumentLineAmount;
+
+  /// spec 066: fiscalDocumentLineInternalCode
+  ///
+  /// In en, this message translates to:
+  /// **'Internal code: {code}'**
+  String fiscalDocumentLineInternalCode(String code);
+
+  /// spec 066: fiscalDocumentLineFromOrder
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get fiscalDocumentLineFromOrder;
+
+  /// spec 066: fiscalDocumentLinesEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'The invoice has no lines.'**
+  String get fiscalDocumentLinesEmpty;
+
+  /// spec 066: fiscalDocumentTaxIva16
+  ///
+  /// In en, this message translates to:
+  /// **'16 %'**
+  String get fiscalDocumentTaxIva16;
+
+  /// spec 066: fiscalDocumentTaxZero
+  ///
+  /// In en, this message translates to:
+  /// **'0 %'**
+  String get fiscalDocumentTaxZero;
+
+  /// spec 066: fiscalDocumentTaxExempt
+  ///
+  /// In en, this message translates to:
+  /// **'Exempt'**
+  String get fiscalDocumentTaxExempt;
+
+  /// spec 066: fiscalDocumentTaxOther
+  ///
+  /// In en, this message translates to:
+  /// **'{rate}'**
+  String fiscalDocumentTaxOther(String rate);
+
+  /// spec 066: fiscalDocumentRelationsTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Related documents'**
+  String get fiscalDocumentRelationsTitle;
+
+  /// spec 066: fiscalDocumentTotalSubtotal
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal'**
+  String get fiscalDocumentTotalSubtotal;
+
+  /// spec 066: fiscalDocumentTotalDiscount
+  ///
+  /// In en, this message translates to:
+  /// **'Discount'**
+  String get fiscalDocumentTotalDiscount;
+
+  /// spec 066: fiscalDocumentTotalTax
+  ///
+  /// In en, this message translates to:
+  /// **'VAT'**
+  String get fiscalDocumentTotalTax;
+
+  /// spec 066: fiscalDocumentTotalTotal
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get fiscalDocumentTotalTotal;
+
+  /// spec 066: fiscalDocumentTotalEstimated
+  ///
+  /// In en, this message translates to:
+  /// **'Total (estimated)'**
+  String get fiscalDocumentTotalEstimated;
+
+  /// spec 066: fiscalDocumentRelationSubstitution
+  ///
+  /// In en, this message translates to:
+  /// **'04 · Substitution of a cancelled CFDI'**
+  String get fiscalDocumentRelationSubstitution;
+
+  /// spec 066: fiscalDocumentRelationAdvance
+  ///
+  /// In en, this message translates to:
+  /// **'07 · Application of an advance'**
+  String get fiscalDocumentRelationAdvance;
+
+  /// spec 066: fiscalDocumentRelationCreditNote
+  ///
+  /// In en, this message translates to:
+  /// **'01 · Credit note'**
+  String get fiscalDocumentRelationCreditNote;
+
+  /// spec 066: fiscalDocumentNewAction
+  ///
+  /// In en, this message translates to:
+  /// **'New invoice'**
+  String get fiscalDocumentNewAction;
+
+  /// spec 066: fiscalDocumentEditHeader
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get fiscalDocumentEditHeader;
+
+  /// spec 066: fiscalDocumentAddOrder
+  ///
+  /// In en, this message translates to:
+  /// **'Add order'**
+  String get fiscalDocumentAddOrder;
+
+  /// spec 066: fiscalDocumentAddProduct
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get fiscalDocumentAddProduct;
+
+  /// spec 066: fiscalDocumentAddRelation
+  ///
+  /// In en, this message translates to:
+  /// **'Add relation'**
+  String get fiscalDocumentAddRelation;
+
+  /// spec 066: fiscalDocumentConfirmAction
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get fiscalDocumentConfirmAction;
+
+  /// spec 066: fiscalDocumentReopenAction
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen'**
+  String get fiscalDocumentReopenAction;
+
+  /// spec 066: fiscalDocumentViewPdf
+  ///
+  /// In en, this message translates to:
+  /// **'View PDF'**
+  String get fiscalDocumentViewPdf;
+
+  /// spec 066: fiscalDocumentDownloadXml
+  ///
+  /// In en, this message translates to:
+  /// **'Download XML'**
+  String get fiscalDocumentDownloadXml;
+
+  /// spec 066: fiscalDocumentNewTitle
+  ///
+  /// In en, this message translates to:
+  /// **'New invoice'**
+  String get fiscalDocumentNewTitle;
+
+  /// spec 066: fiscalDocumentNewCustomer
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get fiscalDocumentNewCustomer;
+
+  /// spec 066: fiscalDocumentNewRecipient
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient RFC'**
+  String get fiscalDocumentNewRecipient;
+
+  /// spec 066: fiscalDocumentNewNoTaxpayers
+  ///
+  /// In en, this message translates to:
+  /// **'This customer has no registered RFC.'**
+  String get fiscalDocumentNewNoTaxpayers;
+
+  /// spec 066: fiscalDocumentNewCreate
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get fiscalDocumentNewCreate;
+
+  /// spec 066: fiscalDocumentHeaderTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get fiscalDocumentHeaderTitle;
+
+  /// spec 066: fiscalDocumentHeaderRecipient
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient (RFC)'**
+  String get fiscalDocumentHeaderRecipient;
+
+  /// spec 066: fiscalDocumentHeaderSeries
+  ///
+  /// In en, this message translates to:
+  /// **'Series'**
+  String get fiscalDocumentHeaderSeries;
+
+  /// spec 066: fiscalDocumentHeaderUsage
+  ///
+  /// In en, this message translates to:
+  /// **'CFDI use'**
+  String get fiscalDocumentHeaderUsage;
+
+  /// spec 066: fiscalDocumentHeaderTerms
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get fiscalDocumentHeaderTerms;
+
+  /// spec 066: fiscalDocumentHeaderForm
+  ///
+  /// In en, this message translates to:
+  /// **'Payment form'**
+  String get fiscalDocumentHeaderForm;
+
+  /// spec 066: fiscalDocumentHeaderIssued
+  ///
+  /// In en, this message translates to:
+  /// **'Issue date'**
+  String get fiscalDocumentHeaderIssued;
+
+  /// spec 066: fiscalDocumentHeaderFacility
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get fiscalDocumentHeaderFacility;
+
+  /// spec 066: fiscalDocumentHeaderReference
+  ///
+  /// In en, this message translates to:
+  /// **'Reference'**
+  String get fiscalDocumentHeaderReference;
+
+  /// spec 066: fiscalDocumentHeaderComment
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get fiscalDocumentHeaderComment;
+
+  /// spec 066: fiscalDocumentHeaderSeriesLocked
+  ///
+  /// In en, this message translates to:
+  /// **'The series cannot change once the folio is assigned.'**
+  String get fiscalDocumentHeaderSeriesLocked;
+
+  /// spec 066: fiscalDocumentHeaderFormPpd
+  ///
+  /// In en, this message translates to:
+  /// **'99 — To be defined'**
+  String get fiscalDocumentHeaderFormPpd;
+
+  /// spec 066: fiscalDocumentHeaderIssuedHelper
+  ///
+  /// In en, this message translates to:
+  /// **'Empty: the confirmation date is used. If set, it must be within the last 72 hours.'**
+  String get fiscalDocumentHeaderIssuedHelper;
+
+  /// spec 066: fiscalDocumentHeaderIssuedOutOfRange
+  ///
+  /// In en, this message translates to:
+  /// **'The date must be within the last 72 hours and not in the future.'**
+  String get fiscalDocumentHeaderIssuedOutOfRange;
+
+  /// spec 066: fiscalDocumentHeaderSaved
+  ///
+  /// In en, this message translates to:
+  /// **'Header updated.'**
+  String get fiscalDocumentHeaderSaved;
+
+  /// spec 066: fiscalDocumentLineDialogTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Edit line'**
+  String get fiscalDocumentLineDialogTitle;
+
+  /// spec 066: fiscalDocumentLineFieldQuantity
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get fiscalDocumentLineFieldQuantity;
+
+  /// spec 066: fiscalDocumentLineFieldPrice
+  ///
+  /// In en, this message translates to:
+  /// **'Unit price'**
+  String get fiscalDocumentLineFieldPrice;
+
+  /// spec 066: fiscalDocumentLineFieldDiscount
+  ///
+  /// In en, this message translates to:
+  /// **'Discount %'**
+  String get fiscalDocumentLineFieldDiscount;
+
+  /// spec 066: fiscalDocumentLineFieldTax
+  ///
+  /// In en, this message translates to:
+  /// **'VAT'**
+  String get fiscalDocumentLineFieldTax;
+
+  /// spec 066: fiscalDocumentLineFieldCode
+  ///
+  /// In en, this message translates to:
+  /// **'Internal code'**
+  String get fiscalDocumentLineFieldCode;
+
+  /// spec 066: fiscalDocumentLineFieldName
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get fiscalDocumentLineFieldName;
+
+  /// spec 066: fiscalDocumentLineFieldComment
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get fiscalDocumentLineFieldComment;
+
+  /// spec 066: fiscalDocumentLineNameHelper
+  ///
+  /// In en, this message translates to:
+  /// **'If left blank, it resets to the product name.'**
+  String get fiscalDocumentLineNameHelper;
+
+  /// spec 066: fiscalDocumentLineQuantityInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity greater than 0.'**
+  String get fiscalDocumentLineQuantityInvalid;
+
+  /// spec 066: fiscalDocumentLinePriceInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a price of 0 or more.'**
+  String get fiscalDocumentLinePriceInvalid;
+
+  /// spec 066: fiscalDocumentLineDiscountInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a discount between 0 and 100.'**
+  String get fiscalDocumentLineDiscountInvalid;
+
+  /// spec 066: fiscalDocumentLineCodeTooLong
+  ///
+  /// In en, this message translates to:
+  /// **'The internal code can be up to 35 characters.'**
+  String get fiscalDocumentLineCodeTooLong;
+
+  /// spec 066: fiscalDocumentRemoveLineTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Remove line'**
+  String get fiscalDocumentRemoveLineTitle;
+
+  /// spec 066: fiscalDocumentRemoveLineBody
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this line from the invoice?'**
+  String get fiscalDocumentRemoveLineBody;
+
+  /// spec 066: fiscalDocumentRemoveAction
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get fiscalDocumentRemoveAction;
+
+  /// spec 066: fiscalDocumentAddOrderTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add order'**
+  String get fiscalDocumentAddOrderTitle;
+
+  /// spec 066: fiscalDocumentAddOrderSearch
+  ///
+  /// In en, this message translates to:
+  /// **'Search orders'**
+  String get fiscalDocumentAddOrderSearch;
+
+  /// spec 066: fiscalDocumentAddOrderEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'The customer has no completed orders.'**
+  String get fiscalDocumentAddOrderEmpty;
+
+  /// spec 066: fiscalDocumentOrderAdded
+  ///
+  /// In en, this message translates to:
+  /// **'The lines of order {folio} were added.'**
+  String fiscalDocumentOrderAdded(String folio);
+
+  /// spec 066: fiscalDocumentAddProductTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get fiscalDocumentAddProductTitle;
+
+  /// spec 066: fiscalDocumentAddProductPicker
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get fiscalDocumentAddProductPicker;
+
+  /// spec 066: fiscalDocumentProductAdded
+  ///
+  /// In en, this message translates to:
+  /// **'Product added.'**
+  String get fiscalDocumentProductAdded;
+
+  /// spec 066: fiscalDocumentAddRelationTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add relation'**
+  String get fiscalDocumentAddRelationTitle;
+
+  /// spec 066: fiscalDocumentRelationType
+  ///
+  /// In en, this message translates to:
+  /// **'Relation type'**
+  String get fiscalDocumentRelationType;
+
+  /// spec 066: fiscalDocumentRelationDocument
+  ///
+  /// In en, this message translates to:
+  /// **'Document'**
+  String get fiscalDocumentRelationDocument;
+
+  /// spec 066: fiscalDocumentRelationSearch
+  ///
+  /// In en, this message translates to:
+  /// **'Search documents'**
+  String get fiscalDocumentRelationSearch;
+
+  /// spec 066: fiscalDocumentRelationEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'There are no documents to relate.'**
+  String get fiscalDocumentRelationEmpty;
+
+  /// spec 066: fiscalDocumentRelationAdded
+  ///
+  /// In en, this message translates to:
+  /// **'Relation added.'**
+  String get fiscalDocumentRelationAdded;
+
+  /// spec 066: fiscalDocumentRemoveRelationTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Remove relation'**
+  String get fiscalDocumentRemoveRelationTitle;
+
+  /// spec 066: fiscalDocumentRemoveRelationBody
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this related document?'**
+  String get fiscalDocumentRemoveRelationBody;
+
+  /// spec 066: fiscalDocumentConfirmTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm invoice'**
+  String get fiscalDocumentConfirmTitle;
+
+  /// spec 066: fiscalDocumentConfirmBody
+  ///
+  /// In en, this message translates to:
+  /// **'The next folio of series {series} will be assigned and the invoice will be sealed. After that it can only be reopened while it is not stamped.'**
+  String fiscalDocumentConfirmBody(String series);
+
+  /// spec 066: fiscalDocumentConfirmed
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice {folio} sealed.'**
+  String fiscalDocumentConfirmed(String folio);
+
+  /// spec 066: fiscalDocumentReopenTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen invoice'**
+  String get fiscalDocumentReopenTitle;
+
+  /// spec 066: fiscalDocumentReopenBody
+  ///
+  /// In en, this message translates to:
+  /// **'The invoice goes back to draft and keeps folio {folio}. The seal is discarded.'**
+  String fiscalDocumentReopenBody(String folio);
+
+  /// spec 066: fiscalDocumentReopened
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice {folio} reopened.'**
+  String fiscalDocumentReopened(String folio);
+
+  /// spec 066: fiscalDocumentXmlSaved
+  ///
+  /// In en, this message translates to:
+  /// **'XML saved.'**
+  String get fiscalDocumentXmlSaved;
+
+  /// spec 066: fiscalDocumentUnknownResult
+  ///
+  /// In en, this message translates to:
+  /// **'We do not know if it completed: the connection was lost. The document was refreshed.'**
+  String get fiscalDocumentUnknownResult;
+
+  /// mbe-api error code `fiscal_document.not_issued` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'This document has not been stamped yet, so it has no PDF or XML.'**
+  String get apiErrorFiscalDocumentNotIssued;
+
+  /// mbe-api error code `fiscal_document.version_not_printable` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'This document is CFDI version {version} and cannot be printed.'**
+  String apiErrorFiscalDocumentVersionNotPrintable(String version);
+
+  /// mbe-api error code `fiscal_document.not_stamped` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'This document is not stamped, so its PDF cannot be generated.'**
+  String get apiErrorFiscalDocumentNotStamped;
+
+  /// mbe-api error code `fiscal_document.xml_unavailable` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'The XML of this document is not available.'**
+  String get apiErrorFiscalDocumentXmlUnavailable;
+
+  /// mbe-api error code `fiscal_document.issuer_has_no_series` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'The issuer has no series for this type of document. Create one on the issuer and try again.'**
+  String get apiErrorFiscalDocumentIssuerHasNoSeries;
+
+  /// mbe-api error code `fiscal_document.series_not_of_type` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'Series {batch} is not for this type of document.'**
+  String apiErrorFiscalDocumentSeriesNotOfType(String batch);
+
+  /// mbe-api error code `fiscal_document.recipient_not_linked` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'That RFC is not registered on the customer.'**
+  String get apiErrorFiscalDocumentRecipientNotLinked;
+
+  /// mbe-api error code `fiscal_document.field_not_for_type` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'Some fields do not apply to this type of document.'**
+  String get apiErrorFiscalDocumentFieldNotForType;
+
+  /// mbe-api error code `fiscal_document.unknown_facility` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'The chosen facility does not exist.'**
+  String get apiErrorFiscalDocumentUnknownFacility;
+
+  /// mbe-api error code `fiscal_document.series_locked` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'The series cannot be changed because the invoice already has a folio.'**
+  String get apiErrorFiscalDocumentSeriesLocked;
+
+  /// mbe-api error code `fiscal_document.unknown_usage` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'CFDI use {usage} does not exist.'**
+  String apiErrorFiscalDocumentUnknownUsage(String usage);
+
+  /// mbe-api error code `fiscal_document.issue_date_out_of_range` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'The issue date must be within the last 72 hours and not in the future.'**
+  String get apiErrorFiscalDocumentIssueDateOutOfRange;
+
+  /// mbe-api error code `fiscal_document.not_draft` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'This invoice is no longer a draft and cannot be changed.'**
+  String get apiErrorFiscalDocumentNotDraft;
+
+  /// mbe-api error code `fiscal_document.not_sealed` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'Only a sealed invoice that is not stamped yet can be reopened.'**
+  String get apiErrorFiscalDocumentNotSealed;
+
+  /// mbe-api error code `fiscal_document.type_not_supported` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'This type of document cannot be changed here.'**
+  String get apiErrorFiscalDocumentTypeNotSupported;
+
+  /// mbe-api error code `fiscal_document.order_not_invoiceable` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'That order cannot be invoiced: it must be completed and not cancelled.'**
+  String get apiErrorFiscalDocumentOrderNotInvoiceable;
+
+  /// mbe-api error code `fiscal_document.no_invoiceable_lines` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'That order has no lines left to invoice.'**
+  String get apiErrorFiscalDocumentNoInvoiceableLines;
+
+  /// mbe-api error code `fiscal_document.product_unpriced` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'The product is not on the customer’s price list.'**
+  String get apiErrorFiscalDocumentProductUnpriced;
+
+  /// mbe-api error code `fiscal_document.quantity_exceeds_invoiceable` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'Only {remaining} are left to invoice on this order line.'**
+  String apiErrorFiscalDocumentQuantityExceedsInvoiceable(String remaining);
+
+  /// mbe-api error code `fiscal_document.quantity_exceeds_invoiceable` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'Line {line}: only {remaining} are left to invoice on this order line.'**
+  String apiErrorFiscalDocumentQuantityExceedsInvoiceableLine(
+    String line,
+    String remaining,
+  );
+
+  /// mbe-api error code `fiscal_document.relation_not_allowed` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'That document cannot be related to this invoice: it must have the same issuer and recipient and the status the relation type requires.'**
+  String get apiErrorFiscalDocumentRelationNotAllowed;
+
+  /// mbe-api error code `fiscal_document.already_related` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'That document is already related to this invoice.'**
+  String get apiErrorFiscalDocumentAlreadyRelated;
+
+  /// mbe-api error code `fiscal_document.relation_types_mixed` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'An invoice can only have relations of one type.'**
+  String get apiErrorFiscalDocumentRelationTypesMixed;
+
+  /// mbe-api error code `fiscal_document.no_lines` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'The invoice has no lines.'**
+  String get apiErrorFiscalDocumentNoLines;
+
+  /// mbe-api error code `fiscal_document.line_missing_sat_key` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'Line {line}: the SAT product key or unit is missing.'**
+  String apiErrorFiscalDocumentLineMissingSatKey(String line);
+
+  /// mbe-api error code `fiscal_document.line_quantity_not_positive` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'Line {line}: the quantity must be greater than 0.'**
+  String apiErrorFiscalDocumentLineQuantityNotPositive(String line);
+
+  /// mbe-api error code `fiscal_document.recipient_incomplete` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'The recipient’s tax data is incomplete (name, regime or postal code).'**
+  String get apiErrorFiscalDocumentRecipientIncomplete;
+
+  /// mbe-api error code `fiscal_document.no_valid_certificate` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'The issuer has no valid certificate to seal with.'**
+  String get apiErrorFiscalDocumentNoValidCertificate;
+
+  /// mbe-api error code `fiscal_document.series_missing` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'Series {batch} no longer exists.'**
+  String apiErrorFiscalDocumentSeriesMissing(String batch);
+
+  /// mbe-api error code `fiscal_document.certificate_cannot_sign` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'The issuer’s certificate cannot sign this document.'**
+  String get apiErrorFiscalDocumentCertificateCannotSign;
+
+  /// mbe-api request-validation type `fiscal_document_tax_rate_invalid` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'The VAT rate must be 16 %, 0 % or exempt.'**
+  String get apiValidationFiscalDocumentTaxRateInvalid;
+
+  /// mbe-api request-validation type `fiscal_document_payment_form_unknown` (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'The payment form is not valid.'**
+  String get apiValidationFiscalDocumentPaymentFormUnknown;
+
+  /// Record noun for the API resource name `fiscal_document_line` (spec 066), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{invoice line} other{invoice lines}}'**
+  String apiResourceFiscalDocumentLine(int count);
+
+  /// Grammatical gender of the noun for `fiscal_document_line` in Spanish (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderFiscalDocumentLine;
+
+  /// Record noun for the API resource name `fiscal_document_relation` (spec 066), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{related document} other{related documents}}'**
+  String apiResourceFiscalDocumentRelation(int count);
+
+  /// Grammatical gender of the noun for `fiscal_document_relation` in Spanish (spec 066)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderFiscalDocumentRelation;
+
+  /// spec 066: fiscalDocumentAddOrderIntro
+  ///
+  /// In en, this message translates to:
+  /// **'Completed orders of {customer}. Pick the one to invoice.'**
+  String fiscalDocumentAddOrderIntro(String customer);
+
+  /// spec 066: fiscalDocumentAddOrderColFolio
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get fiscalDocumentAddOrderColFolio;
+
+  /// spec 066: fiscalDocumentAddOrderColDate
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get fiscalDocumentAddOrderColDate;
+
+  /// spec 066: fiscalDocumentAddOrderColTotal
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get fiscalDocumentAddOrderColTotal;
+
+  /// spec 066: fiscalDocumentAddOrderLoadMore
+  ///
+  /// In en, this message translates to:
+  /// **'Load more'**
+  String get fiscalDocumentAddOrderLoadMore;
+
+  /// spec 066: fiscalDocumentHeaderIssuedOnConfirm
+  ///
+  /// In en, this message translates to:
+  /// **'When confirmed'**
+  String get fiscalDocumentHeaderIssuedOnConfirm;
+
+  /// spec 066: fiscalDocumentHeaderPickIssued
+  ///
+  /// In en, this message translates to:
+  /// **'Pick date and time'**
+  String get fiscalDocumentHeaderPickIssued;
+
+  /// spec 066: fiscalDocumentHeaderReferenceTooLong
+  ///
+  /// In en, this message translates to:
+  /// **'The reference can be up to 25 characters.'**
+  String get fiscalDocumentHeaderReferenceTooLong;
+
+  /// spec 066: fiscalDocumentHeaderCommentTooLong
+  ///
+  /// In en, this message translates to:
+  /// **'The notes can be up to 1000 characters.'**
+  String get fiscalDocumentHeaderCommentTooLong;
+
+  /// spec 066: fiscalDocumentHeaderTermsPue
+  ///
+  /// In en, this message translates to:
+  /// **'PUE'**
+  String get fiscalDocumentHeaderTermsPue;
+
+  /// spec 066: fiscalDocumentHeaderTermsPpd
+  ///
+  /// In en, this message translates to:
+  /// **'PPD'**
+  String get fiscalDocumentHeaderTermsPpd;
+
+  /// spec 066: fiscalDocumentLineEditTooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Edit line'**
+  String get fiscalDocumentLineEditTooltip;
+
+  /// spec 066: fiscalDocumentLineRemoveTooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Remove line'**
+  String get fiscalDocumentLineRemoveTooltip;
+
+  /// spec 066: fiscalDocumentRelationRemoveTooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Remove relation'**
+  String get fiscalDocumentRelationRemoveTooltip;
 }
 
 class _AppLocalizationsDelegate

@@ -14,7 +14,7 @@ void main() {
     test(
       'renders every known type in both languages, with no placeholders',
       () {
-        expect(localizedValidationTypes, hasLength(9));
+        expect(localizedValidationTypes, hasLength(11));
         for (final type in localizedValidationTypes) {
           final en = localizeValidationType(type, env.en);
           final es = localizeValidationType(type, env.es);
