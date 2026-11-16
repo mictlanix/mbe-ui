@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Warehouse Issues",
   "branch": "068-warehouse-issues",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,20 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-16T15:41:39.512Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-16T15:57:47.622Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-16T17:49:32.712Z"
     }
   ],
   "telemetryInstanceId": "4678004f-928e-45f2-b660-0169fd5fec05"
