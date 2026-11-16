@@ -65,7 +65,7 @@ Credit notes, payment receipts, cancellation, stamping and email are separate it
 
 ## Manual checks (quickstart.md)
 
-**Not run yet**:
+**Not run yet**; tracked in #256:
 
 - Step 1: `qanoaccess` has no entry and the URL is refused.
 - Step 3: the kind names in the list and on the issuer's Series section.
@@ -73,6 +73,7 @@ Credit notes, payment receipts, cancellation, stamping and email are separate it
 - Step 12: a user with 23 read but not update.
 - Step 13: the compact tier on a phone.
 - Step 14: the largest text size.
-- Plus timing SC-001 (find a document to PDF in under 30 s) and SC-002 (an invoice from an order to sealed in under 2 minutes).
+- The macOS save panel for the XML, and relations (the live run had no candidate).
+- Timing SC-001 (find a document to PDF in under 30 s) and SC-002 (an invoice from an order to sealed in under 2 minutes).
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
