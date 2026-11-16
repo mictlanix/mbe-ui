@@ -22,7 +22,7 @@ Credit notes, payment receipts, cancellation, stamping and email are separate it
 ## Worth knowing
 
 - **Stamping is pending (roadmap#46).** An invoice made here stops at **sealed**. The PDF and XML only exist for a stamped document, so today they work for **documents the legacy system issued**. A sealed invoice shows a banner saying so, and offers neither.
-- **A draft's total is an estimate.** The API's `total` comes from the stored XML, so it is null on a draft. The client mirrors mbe-api's `cfdi_invoice.line_amounts` (`invoice_amounts.dart`, round half away from zero) and labels it "Total (estimado)". Once sealed, the server's total is shown. The live write run compares the two after a confirm; **that comparison has not run yet** (see Tests).
+- **A draft's total is an estimate.** The API's `total` comes from the stored XML, so it is null on a draft. The client mirrors mbe-api's `cfdi_invoice.line_amounts` (`invoice_amounts.dart`, round half away from zero) and labels it "Total (estimado)". Once sealed, the server's total is shown. The live write run compared them after a confirm and they matched (see Tests).
 - **Spec 065 had the document-type names wrong.** The codes were right and the names weren't: 1, 2, 3 are fee receipt, rent receipt and debit note, and 101 and 200 were swapped. `FiscalDocumentKind` is renamed. `TaxpayerBatchRepositoryImpl._wireType` maps by member name, so its 101 and 200 arms are swapped too, with a test keyed by kind, so a payment-receipt series is written as 200. **Visible effect:** the Series section of a taxpayer issuer now reads 101 as "Aplicación de anticipos" and 200 as "Recibo de pago" (it read them the other way round).
 - **The order picker lists fully invoiced orders too**, since the API exposes no remaining quantity. Adding one is refused with `no_invoiceable_lines`, shown inline so another order can be picked.
 - **A document is read as a document** (§VI): no row Edit icon, a row tap opens it, and a draft is edited in place. Every edit control is absent, never disabled, without its right.
@@ -58,7 +58,10 @@ Credit notes, payment receipts, cancellation, stamping and email are separate it
 - `flutter test test/unit test/widget`: 5,034 passed, 1 skipped (the live test below, which needs credentials).
 - New tests cover: the amounts mirror (worked out by hand from the formula, including a half-cent case), the repository's wire traps (int type, `sealed_`, decimal strings, percent to fraction, relation type, PPD sending no form, wall-clock issue date, XML bytes and filename), the filter's URL round trip, the list and write controllers (including the unknown-result case), the file saver on every platform branch, the XML name, the kind rename (and the swapped 101/200 arms), all error codes and nouns, the nav entry and the three routes, and the widgets: list, detail (per state and per right), Nueva factura, Agregar pedido, Agregar producto, the line and header dialogs (including discard prompts), confirm and reopen with each refusal, and relations.
 - **Live (`test/integration/fiscal_documents_live_test.dart`, local mbe-api), read-only: 8 passed.** On legacy invoice GR4776: the list opens newest first; search by series+folio, UUID and recipient RFC finds it; status, type, issuer and date filters narrow; the detail's total equals the list's; the PDF starts with `%PDF-` (server name `CAG190523ES5-GR004776.pdf`); the XML is byte-identical to `GET /xml` and named `CAG190523ES5-GR004776.xml`, matching the client rule; a draft's PDF is refused with `fiscal_document.not_issued`.
-- **The write run (`MBE_WRITE=true`) has not run.** It creates, edits, seals and reopens an invoice (consuming a folio, so dev tenant only) and asserts the server's total equals the client estimate.
+- **Live write run (`MBE_WRITE=true`): 11 passed, 1 skipped.** It creates a draft for customer 1 (RFC XAXX010101000). The issue date round-trips with no time-zone shift. Adding order 344218 twice duplicates nothing. A quantity above what remains is refused, and a 10 % discount plus Exento moves the estimate from 32 to 28.8. It adds a manual product, PPD forces form 99, and an empty draft's confirm is refused with `no_lines`. Confirming seals folio **A5232**, and the **server's total (28.8) equals the client estimate**. Reopening keeps A5232. Skipped: relations, because no cancelled invoice of that issuer and RFC exists.
+  - The manual product (Truper nails) has no SAT key, so the server refused the first confirm with `line_missing_sat_key` (line 2). The test drops that line and retries once, and says so. This is tenant data, not the flow under test.
+  - Caveat: the sealed invoice had one line at Exento, so the estimate-vs-server comparison exercised discount rounding but not the 16 % path. The unit tests cover 16 %, tax-included and the half-cent case.
+  - Left on the dev tenant: drafts #63903 and #63905 (A5232 reopened), empty drafts #63904 and #63906, and folio A5232 consumed.
 
 ## Manual checks (quickstart.md)
 
@@ -70,6 +73,6 @@ Credit notes, payment receipts, cancellation, stamping and email are separate it
 - Step 12: a user with 23 read but not update.
 - Step 13: the compact tier on a phone.
 - Step 14: the largest text size.
-- Plus the live write run above, and timing SC-001 (find a document to PDF in under 30 s) and SC-002 (an invoice from an order to sealed in under 2 minutes).
+- Plus timing SC-001 (find a document to PDF in under 30 s) and SC-002 (an invoice from an order to sealed in under 2 minutes).
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)

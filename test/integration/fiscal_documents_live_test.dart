@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mbe_ui/core/documents/data/document_source_impl.dart';
 import 'package:mbe_ui/core/documents/domain/document_kind.dart';
 import 'package:mbe_ui/core/documents/domain/document_ref.dart';
+import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
@@ -400,9 +401,35 @@ void main() {
           var sealed = false;
           await step('confirm seals it, and the server total equals the '
               'estimate', () async {
-            final estimate = invoiceAmounts(draft.lines).total;
+            var dropped = '';
+            Future<FiscalDocument> confirmOnce() async {
+              try {
+                return await docs.confirm(draft.id);
+              } on AppError catch (e) {
+                // A catalog product with no SAT key can't be sealed; that is
+                // tenant data, not the flow under test. Drop that line once
+                // and retry, saying so.
+                final line = e.problem?.intParam('line');
+                if (e.problem?.codeName !=
+                        'fiscal_document.line_missing_sat_key' ||
+                    line == null ||
+                    dropped.isNotEmpty) {
+                  rethrow;
+                }
+                final bad = draft.lines[line - 1];
+                draft = await docs.removeLine(draft.id, bad.id);
+                dropped =
+                    ' (dropped line $line "${bad.productName}": no SAT key)';
+                return docs.confirm(draft.id);
+              }
+            }
+
             try {
-              final done = await docs.confirm(draft.id);
+              final estimateBefore = invoiceAmounts(draft.lines).total;
+              final done = await confirmOnce();
+              final estimate = dropped.isEmpty
+                  ? estimateBefore
+                  : invoiceAmounts(draft.lines).total;
               expect(done.status, FiscalDocumentStatus.sealed);
               expect(done.summary.serial, isNotNull);
               expect(
@@ -412,7 +439,7 @@ void main() {
               );
               sealed = true;
               draft = done;
-              return 'folio ${done.summary.folioLabel}, total $estimate';
+              return 'folio ${done.summary.folioLabel}, total $estimate$dropped';
             } on AppError catch (e) {
               final code = e.problem?.codeName ?? '';
               if (code == 'fiscal_document.no_valid_certificate' ||
