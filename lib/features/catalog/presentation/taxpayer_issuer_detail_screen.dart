@@ -11,9 +11,11 @@ import 'package:mbe_ui/core/domain/fiscal_certification_provider_label.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/form_error_banner.dart';
+import 'package:mbe_ui/core/design/design_theme_extensions.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/sat_catalog_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/sat_catalog_item.dart';
+import 'package:mbe_ui/features/catalog/presentation/taxpayer_batches_section.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_certificates_section.dart';
 import 'package:mbe_ui/features/catalog/presentation/taxpayer_issuer_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -310,6 +312,16 @@ class _TaxpayerIssuerDetailScreenState
                         // exposed on a read-only/View render, even to a
                         // create-privileged user (FR-025, constitution §VI
                         // row-click-is-read-only rule).
+                        readOnly: readOnly,
+                      ),
+                      // Series (spec 065): the issuer's folio series, under
+                      // the same rule — a series needs a saved issuer, and its
+                      // controls follow the same read-only flag.
+                      SizedBox(height: Theme.of(context).spacing.lg),
+                      const Divider(),
+                      SizedBox(height: Theme.of(context).spacing.md),
+                      TaxpayerBatchesSection(
+                        rfc: widget.rfc!,
                         readOnly: readOnly,
                       ),
                     ],
