@@ -1,0 +1,28 @@
+{
+  "workflow": "speckit",
+  "specName": "For Delivery Queue",
+  "branch": "chore/063-mark-complete",
+  "status": "completed",
+  "currentStep": "implement",
+  "history": [
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-16T12:59:00.929Z"
+    }
+  ],
+  "verified": [
+    {
+      "what": "flutter analyze clean; unit and widget tests pass; live read-only quickstart integration_test/for_delivery_quickstart_test.dart 4 passed, 1 skipped (no line scheduled for today) — per PR #248"
+    }
+  ],
+  "telemetryInstanceId": "6e558846-bd89-473d-863e-c06be7ba8292",
+  "concerns": [
+    {
+      "note": "T024 manual checks (Hoy with real data, return after a change, compact tier, largest text, SC-001) not yet run; tracked in mictlanix/mbe-ui#247"
+    }
+  ],
+  "currentTask": null
+}
