@@ -100,7 +100,7 @@ The goods arrive at the destination. The clerk there opens the transfer, which s
 1. **Given** a transfer in transit, **When** the user opens it, **Then** each line shows the quantity sent, received and outstanding.
 2. **Given** a user with update access and a transfer in transit, **When** they choose Recibir, **Then** a form lists every line with something outstanding, each filled in with its outstanding quantity.
 3. **Given** the receive form, **When** the user receives without changing anything, **Then** everything outstanding is received and the transfer becomes Received.
-4. **Given** the receive form, **When** the user lowers some quantities and receives, **Then** only those quantities are received, the transfer stays In transit, and those lines show what is still outstanding.
+4. **Given** the receive form, **When** the user lowers some quantities and receives, **Then** each line receives the quantity left in its field (lowered or not), the transfer stays In transit, and those lines show what is still outstanding.
 5. **Given** the receive form, **When** the user sets a line to 0, **Then** that line is left out of the receipt. When every line is 0, receiving is not offered.
 6. **Given** the receive form, **When** the user enters more than a line's outstanding quantity, **Then** they cannot receive until it is corrected.
 7. **Given** a non-administrator outside the destination's facility, **When** they try to receive, **Then** the server's refusal (document of another facility) is shown.
@@ -231,7 +231,7 @@ A branch sold goods it does not have, and the order will be served from another 
 - **FR-009**: Adding a product already on the transfer MUST result in one line with the combined quantity, as the server returns it.
 - **FR-010**: Each line MUST show the product code and name stored on the line and the quantity sent. Once dispatched, it MUST also show the quantity received and the quantity outstanding.
 - **FR-011**: The product picker for transfer lines SHOULD offer only stockable products. Any refusal of a non-stockable product MUST be shown.
-- **FR-012**: On a draft, users with update access MUST be able to add a completed sales order's stockable items (US8). The UI MUST say when products already on the transfer were skipped.
+- **FR-012**: On a draft, users with update access MUST be able to add a completed sales order's stockable items (US8). The UI MUST say how many products were added and that products already on the transfer were left unchanged. The server does not report which products it skipped.
 
 **Actions**
 
@@ -284,5 +284,5 @@ A branch sold goods it does not have, and the order will be served from another 
 - The sales-order picker reuses the order search already built for delivery orders, limited to completed, non-cancelled orders where the server allows that filter. The transfer does not keep a link to the order.
 - Lots, serials, expiry and FIFO are out of scope, as in the server.
 - Transfers are not printed in this spec. A printable transfer (packing slip) would be a separate roadmap item.
-- The generated client already has all transfer routes. The error codes specific to transfers (`inventory_transfer.*`, `facility.no_in_transit_location`, `warehouse.in_transit_location`) have no Spanish text yet and must get it.
+- The generated client already has all transfer routes. The four `inventory_transfer.*` error codes and `sales_order.not_confirmed` have no Spanish text yet and must get it. The in-transit warehouse codes (`facility.no_in_transit_location`, `warehouse.in_transit_location`) already have it.
 - Live verification needs, in the dev tenant, two warehouses in one facility and one in another, a facility with an in-transit warehouse, a stockable product with stock at the origin, and a completed sales order with stockable lines.

@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Inventory Transfers",
   "branch": "069-inventory-transfers",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,34 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-16T21:37:28.038Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-16T22:11:23.195Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-16T22:18:57.549Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-16T22:24:48.802Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-16T22:26:52.794Z"
     }
   ],
   "telemetryInstanceId": "84a2728d-856f-43ae-878d-c9b01a7496e2"
