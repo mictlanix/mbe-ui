@@ -1,0 +1,24 @@
+{
+  "workflow": "speckit",
+  "specName": "Invoice List, View, PDF and Editor",
+  "branch": "066-invoice-list-editor",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-16T07:52:54.000Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-16T07:54:38.711Z"
+    }
+  ],
+  "telemetryInstanceId": "bbd26306-8c8b-4f85-b789-942dfd182e22"
+}
