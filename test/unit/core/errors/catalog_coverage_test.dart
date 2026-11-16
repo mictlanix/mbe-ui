@@ -30,6 +30,13 @@ void main() {
     'delivery_order.insufficient_notice',
     'delivery_order.quantity_exceeds_remaining',
     'facility.other_facility',
+    'fiscal_document.line_missing_sat_key',
+    'fiscal_document.line_quantity_not_positive',
+    'fiscal_document.quantity_exceeds_invoiceable',
+    'fiscal_document.series_missing',
+    'fiscal_document.series_not_of_type',
+    'fiscal_document.unknown_usage',
+    'fiscal_document.version_not_printable',
     'image.too_large',
     'payment.currency_mismatch',
     'payment.exceeds_order_balance',
@@ -99,7 +106,7 @@ void main() {
         missing.add(cells[1]);
       }
     }
-    expect(checked, 114);
+    expect(checked, 143);
     expect(missing, isEmpty);
   });
 

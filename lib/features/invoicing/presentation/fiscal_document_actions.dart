@@ -1,0 +1,99 @@
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/features/invoicing/data/fiscal_document_repository_impl.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_document.dart';
+import 'package:mbe_ui/features/invoicing/domain/repositories/fiscal_document_repository.dart';
+import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_detail_controller.dart';
+import 'package:mbe_ui/features/invoicing/presentation/fiscal_documents_list_controller.dart';
+
+part 'fiscal_document_actions.g.dart';
+
+/// Every write on a fiscal document (spec 066 R6).
+///
+/// Each method answers the [AppError] the server refused with, or `null` when
+/// it went through, rather than throwing: the dialog that asked shows the
+/// refusal where the user is looking. A [NetworkError] means the request may
+/// or may not have landed, so the screen words it as an unknown result.
+///
+/// The detail is always invalidated, so the screen refetches what the server
+/// now holds and never takes the document from the write's response. The list
+/// is invalidated too unless the server refused, since only then is it known
+/// that nothing changed.
+///
+/// Keep-alive because a write outlives the dialog that started it.
+@Riverpod(keepAlive: true)
+class FiscalDocumentActions extends _$FiscalDocumentActions {
+  @override
+  void build() {}
+
+  /// `POST /fiscal-documents`. Answers the new document's id, or the refusal.
+  Future<({AppError? error, int? id})> create(NewInvoice invoice) async {
+    try {
+      final doc = await ref
+          .read(fiscalDocumentRepositoryProvider)
+          .create(invoice);
+      ref.invalidate(fiscalDocumentsListControllerProvider);
+      return (error: null, id: doc.id);
+    } on AppError catch (e) {
+      if (e is NetworkError) {
+        ref.invalidate(fiscalDocumentsListControllerProvider);
+      }
+      return (error: e, id: null);
+    }
+  }
+
+  /// `PUT /fiscal-documents/{id}`.
+  Future<AppError?> updateHeader(int id, InvoiceHeaderPatch patch) =>
+      _run(id, (r) => r.updateHeader(id, patch));
+
+  /// `POST /fiscal-documents/{id}/sales-orders`.
+  Future<AppError?> addSalesOrder(int id, int salesOrderId) =>
+      _run(id, (r) => r.addSalesOrder(id, salesOrderId));
+
+  /// `POST /fiscal-documents/{id}/lines`.
+  Future<AppError?> addProduct(int id, int productId) =>
+      _run(id, (r) => r.addProduct(id, productId));
+
+  /// `PUT /fiscal-documents/{id}/lines/{lineId}`.
+  Future<AppError?> updateLine(int id, int lineId, InvoiceLinePatch patch) =>
+      _run(id, (r) => r.updateLine(id, lineId, patch));
+
+  /// `DELETE /fiscal-documents/{id}/lines/{lineId}`.
+  Future<AppError?> removeLine(int id, int lineId) =>
+      _run(id, (r) => r.removeLine(id, lineId));
+
+  /// `POST /fiscal-documents/{id}/relations`.
+  Future<AppError?> addRelation(
+    int id,
+    int documentId,
+    InvoiceRelationType type,
+  ) => _run(id, (r) => r.addRelation(id, documentId, type));
+
+  /// `DELETE /fiscal-documents/{id}/relations/{relationId}`.
+  Future<AppError?> removeRelation(int id, int relationId) =>
+      _run(id, (r) => r.removeRelation(id, relationId));
+
+  /// `POST /fiscal-documents/{id}/confirm`.
+  Future<AppError?> confirm(int id) => _run(id, (r) => r.confirm(id));
+
+  /// `POST /fiscal-documents/{id}/reopen`.
+  Future<AppError?> reopen(int id) => _run(id, (r) => r.reopen(id));
+
+  Future<AppError?> _run(
+    int id,
+    Future<Object?> Function(FiscalDocumentRepository repository) write,
+  ) async {
+    AppError? error;
+    try {
+      await write(ref.read(fiscalDocumentRepositoryProvider));
+    } on AppError catch (e) {
+      error = e;
+    }
+    ref.invalidate(fiscalDocumentDetailProvider(id));
+    if (error == null || error is NetworkError) {
+      ref.invalidate(fiscalDocumentsListControllerProvider);
+    }
+    return error;
+  }
+}

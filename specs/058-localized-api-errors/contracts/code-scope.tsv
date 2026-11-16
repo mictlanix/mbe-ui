@@ -78,50 +78,50 @@ code	facility.no_dispatch_warehouse	422	facility_id: int	IN	POST /delivery-order
 code	facility.no_in_transit_location	422	facility_ids: list[int]	OUT		
 code	facility.other_facility	403	resource: str, required?: list[{system_object: int, right: int}]	IN	GET /credit-notes; GET /customer-payments	reachable from 4 UI route(s)
 code	facility.required	422	—	IN	POST /customer-refunds	reachable from 1 UI route(s)
-code	fiscal_document.already_related	409	relation_id: int	OUT		
+code	fiscal_document.already_related	409	relation_id: int	IN	POST /fiscal-documents/{}/relations	reachable from the Facturas screens (spec 066)
 code	fiscal_document.amount_exceeds_balance	422	balance: decimal	OUT		
 code	fiscal_document.amounts_exceed_payment	422	—	OUT		
 code	fiscal_document.amounts_not_equal_payment	422	—	OUT		
-code	fiscal_document.certificate_cannot_sign	422	—	OUT		
+code	fiscal_document.certificate_cannot_sign	422	—	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
 code	fiscal_document.credit_exceeds_invoice	422	invoice_id: int, remaining: decimal	OUT		
 code	fiscal_document.credit_quantity_exceeds_line	422	max: decimal	OUT		
-code	fiscal_document.field_not_for_type	422	fields: list[str], type: enum:FiscalDocumentType	OUT		
+code	fiscal_document.field_not_for_type	422	fields: list[str], type: enum:FiscalDocumentType	IN	PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 066)
 code	fiscal_document.invoice_already_on_receipt	409	invoice_id: int	OUT		
 code	fiscal_document.invoice_not_creditable	422	invoice_id: int	OUT		
 code	fiscal_document.invoice_not_payable	422	invoice_id: int	OUT		
-code	fiscal_document.issue_date_out_of_range	422	—	OUT		
-code	fiscal_document.issuer_has_no_series	422	type: enum:FiscalDocumentType	OUT		
-code	fiscal_document.line_missing_sat_key	422	line: int	OUT		
-code	fiscal_document.line_quantity_not_positive	422	line: int	OUT		
-code	fiscal_document.no_invoiceable_lines	422	—	OUT		
-code	fiscal_document.no_lines	422	—	OUT		
-code	fiscal_document.no_valid_certificate	422	—	OUT		
-code	fiscal_document.not_draft	409	—	OUT		
+code	fiscal_document.issue_date_out_of_range	422	—	IN	PUT /fiscal-documents/{}; POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
+code	fiscal_document.issuer_has_no_series	422	type: enum:FiscalDocumentType	IN	POST /fiscal-documents	reachable from the Facturas screens (spec 066)
+code	fiscal_document.line_missing_sat_key	422	line: int	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
+code	fiscal_document.line_quantity_not_positive	422	line: int	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
+code	fiscal_document.no_invoiceable_lines	422	—	IN	POST /fiscal-documents/{}/sales-orders	reachable from the Facturas screens (spec 066)
+code	fiscal_document.no_lines	422	—	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
+code	fiscal_document.no_valid_certificate	422	—	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
+code	fiscal_document.not_draft	409	—	IN	PUT /fiscal-documents/{}; POST /fiscal-documents/{}/lines	reachable from the Facturas screens (spec 066)
 code	fiscal_document.not_emailable	409	—	OUT		
-code	fiscal_document.not_issued	409	—	OUT		
-code	fiscal_document.not_sealed	409	—	OUT		
-code	fiscal_document.not_stamped	409	—	OUT		
-code	fiscal_document.order_not_invoiceable	422	sales_order_id: int	OUT		
+code	fiscal_document.not_issued	409	—	IN	GET /fiscal-documents/{}/pdf; GET /fiscal-documents/{}/xml	reachable from the Facturas screens (spec 066)
+code	fiscal_document.not_sealed	409	—	IN	POST /fiscal-documents/{}/reopen	reachable from the Facturas screens (spec 066)
+code	fiscal_document.not_stamped	409	—	IN	GET /fiscal-documents/{}/pdf	reachable from the Facturas screens (spec 066)
+code	fiscal_document.order_not_invoiceable	422	sales_order_id: int	IN	POST /fiscal-documents/{}/sales-orders	reachable from the Facturas screens (spec 066)
 code	fiscal_document.payment_already_receipted	409	fiscal_document_id: int	OUT		
 code	fiscal_document.payment_date_out_of_range	422	—	OUT		
 code	fiscal_document.payment_form_required	422	type: enum:FiscalDocumentType	OUT		
 code	fiscal_document.payment_other_customer	422	customer_payment_id: int	OUT		
-code	fiscal_document.product_unpriced	422	product_id: int	OUT		
-code	fiscal_document.quantity_exceeds_invoiceable	422	remaining: decimal, line?: int	OUT		
+code	fiscal_document.product_unpriced	422	product_id: int	IN	POST /fiscal-documents/{}/lines	reachable from the Facturas screens (spec 066)
+code	fiscal_document.quantity_exceeds_invoiceable	422	remaining: decimal, line?: int	IN	PUT /fiscal-documents/{}/lines/{}; POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
 code	fiscal_document.receipt_needs_payment_data	422	—	OUT		
 code	fiscal_document.receipt_pays_no_invoice	422	—	OUT		
-code	fiscal_document.recipient_incomplete	422	—	OUT		
-code	fiscal_document.recipient_not_linked	422	customer_id: int, recipient: str	OUT		
-code	fiscal_document.relation_not_allowed	422	relation_type: str	OUT		
-code	fiscal_document.relation_types_mixed	422	—	OUT		
-code	fiscal_document.series_locked	409	—	OUT		
-code	fiscal_document.series_missing	422	batch: str	OUT		
-code	fiscal_document.series_not_of_type	422	batch: str, type: enum:FiscalDocumentType	OUT		
-code	fiscal_document.type_not_supported	409	type: enum:FiscalDocumentType	OUT		
-code	fiscal_document.unknown_facility	422	facility_id: int	OUT		
-code	fiscal_document.unknown_usage	422	usage: str	OUT		
-code	fiscal_document.version_not_printable	409	version: str	OUT		
-code	fiscal_document.xml_unavailable	409	—	OUT		
+code	fiscal_document.recipient_incomplete	422	—	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
+code	fiscal_document.recipient_not_linked	422	customer_id: int, recipient: str	IN	POST /fiscal-documents; PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 066)
+code	fiscal_document.relation_not_allowed	422	relation_type: str	IN	POST /fiscal-documents/{}/relations	reachable from the Facturas screens (spec 066)
+code	fiscal_document.relation_types_mixed	422	—	IN	POST /fiscal-documents/{}/relations	reachable from the Facturas screens (spec 066)
+code	fiscal_document.series_locked	409	—	IN	PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 066)
+code	fiscal_document.series_missing	422	batch: str	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
+code	fiscal_document.series_not_of_type	422	batch: str, type: enum:FiscalDocumentType	IN	PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 066)
+code	fiscal_document.type_not_supported	409	type: enum:FiscalDocumentType	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
+code	fiscal_document.unknown_facility	422	facility_id: int	IN	PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 066)
+code	fiscal_document.unknown_usage	422	usage: str	IN	PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 066)
+code	fiscal_document.version_not_printable	409	version: str	IN	GET /fiscal-documents/{}/pdf	reachable from the Facturas screens (spec 066)
+code	fiscal_document.xml_unavailable	409	—	IN	GET /fiscal-documents/{}/xml	reachable from the Facturas screens (spec 066)
 code	image.too_large	422	max_bytes: int	IN	POST /delivery-orders/{}/pickup; POST /facilities/{}/logo; POST /products/{}/image	reachable from 3 UI route(s)
 code	image.unsupported_format	422	—	IN	POST /delivery-orders/{}/pickup; POST /facilities/{}/logo; POST /products/{}/image	reachable from 3 UI route(s)
 code	incidence.reason_required	422	—	IN	DELETE /facilities/{}; DELETE /products/{}	reachable from 10 UI route(s)
@@ -254,8 +254,8 @@ validation_type	password_policy	422	failed: list[str]	IN	POST /auth/change-passw
 validation_type	contact_name_blank	422	—	IN	POST /contacts [ContactCreate.validate_name]; POST /contacts [ContactCreate]	app/schemas/core.py ; reachable via request body
 validation_type	email_address_invalid	422	value: str (the rejected address as sent)	IN	POST /sales-quotes/{}/email [QuoteEmailRequest._valid_and_distinct]; POST /sales-quotes/{}/email [QuoteEmailRequest]	app/schemas/sales_quote.py ; reachable via request body
 validation_type	fiscal_document_payment_date_in_future	422	date: date	OUT		app/schemas/fiscal.py
-validation_type	fiscal_document_payment_form_unknown	422	payment_form: int	OUT		app/schemas/fiscal.py
-validation_type	fiscal_document_tax_rate_invalid	422	tax_rate: decimal	OUT		app/schemas/fiscal.py
+validation_type	fiscal_document_payment_form_unknown	422	payment_form: int	IN	POST /fiscal-documents/{}/lines; PUT /fiscal-documents/{}/lines/{}	reachable from the Facturas screens (spec 066)
+validation_type	fiscal_document_tax_rate_invalid	422	tax_rate: decimal	IN	POST /fiscal-documents/{}/lines; PUT /fiscal-documents/{}/lines/{}	reachable from the Facturas screens (spec 066)
 validation_type	inventory_count_product_reference	422	—	OUT		app/schemas/inventory.py
 validation_type	inventory_transfer_duplicate_line	422	—	OUT		app/schemas/inventory.py
 validation_type	product_barcode_invalid	422	—	IN	POST /products [_validate_bar_code]; PUT /products/{} [_validate_bar_code]	app/schemas/product.py ; reachable via request body

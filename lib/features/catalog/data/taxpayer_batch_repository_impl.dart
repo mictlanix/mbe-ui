@@ -105,12 +105,12 @@ class TaxpayerBatchRepositoryImpl implements TaxpayerBatchRepository {
 /// touched, so presentation never sees it.
 FiscalDocumentType _wireType(FiscalDocumentKind kind) => switch (kind) {
   FiscalDocumentKind.invoice => FiscalDocumentType.number0,
-  FiscalDocumentKind.expense => FiscalDocumentType.number1,
-  FiscalDocumentKind.payment => FiscalDocumentType.number2,
-  FiscalDocumentKind.transfer => FiscalDocumentType.number3,
+  FiscalDocumentKind.feeReceipt => FiscalDocumentType.number1,
+  FiscalDocumentKind.rentReceipt => FiscalDocumentType.number2,
+  FiscalDocumentKind.debitNote => FiscalDocumentType.number3,
   FiscalDocumentKind.creditNote => FiscalDocumentType.number100,
-  FiscalDocumentKind.paymentReceipt => FiscalDocumentType.number101,
-  FiscalDocumentKind.advancePaymentsApplied => FiscalDocumentType.number200,
+  FiscalDocumentKind.advancePaymentsApplied => FiscalDocumentType.number101,
+  FiscalDocumentKind.paymentReceipt => FiscalDocumentType.number200,
 };
 
 /// The wire template: a blank logo is sent as `null`, accounts keep their

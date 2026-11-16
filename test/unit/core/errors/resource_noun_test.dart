@@ -36,6 +36,27 @@ void main() {
       expect(resourceGender('taxpayer_batch', env.es), 'feminine');
     });
 
+    test('invoice lines and related documents (spec 066)', () {
+      expect(
+        resourceNoun('fiscal_document_line', env.es),
+        'partida de factura',
+      );
+      expect(
+        resourceNoun('fiscal_document_line', env.es, count: 2),
+        'partidas de factura',
+      );
+      expect(resourceGender('fiscal_document_line', env.es), 'feminine');
+      expect(
+        resourceNoun('fiscal_document_relation', env.es),
+        'documento relacionado',
+      );
+      expect(
+        resourceNoun('fiscal_document_relation', env.en, count: 2),
+        'related documents',
+      );
+      expect(resourceGender('fiscal_document_relation', env.es), 'masculine');
+    });
+
     test('a kind the app has no noun for is the generic noun, never the '
         "server's internal name", () {
       expect(resourceNoun('some_new_table', env.en), 'record');

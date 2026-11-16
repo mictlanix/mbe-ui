@@ -607,4 +607,41 @@ void main() {
       expect(NavBranch.forDelivery, 28);
     });
   });
+
+  group('Facturas destination (spec 066 C1)', () {
+    test('a user without FiscalDocuments read has no Facturación group', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.deliveryOrders, rawValue: 2),
+        ],
+      );
+      expect(ids, isNot(contains('fiscal-documents')));
+    });
+
+    test('a user with FiscalDocuments read has the entry, on branch 29 at '
+        '/invoicing/fiscal-documents, in its own Facturación group', () {
+      final privileges = const [
+        Privilege(systemObject: SystemObject.fiscalDocuments, rawValue: 2),
+      ];
+      expect(
+        visibleIds(
+          multiCurrency: false,
+          administrator: false,
+          privileges: privileges,
+        ),
+        contains('fiscal-documents'),
+      );
+      final entry = kNavigationTree
+          .whereType<NavGroup>()
+          .firstWhere((g) => g.id == 'invoicing')
+          .children
+          .single;
+      expect(entry.id, 'fiscal-documents');
+      expect(entry.route, '/invoicing/fiscal-documents');
+      expect(entry.branchIndex, NavBranch.fiscalDocuments);
+      expect(NavBranch.fiscalDocuments, 29);
+    });
+  });
 }

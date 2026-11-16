@@ -120,6 +120,81 @@ void main() {
       );
     });
 
+    test('a fiscal document PDF uses its route, the server\'s name and a '
+        'padded-free fallback (spec 066)', () async {
+      final paths = <String>[];
+      final names = <String?>[];
+      var withHeader = true;
+      final source = _sourceWith((options) async {
+        paths.add(options.path);
+        return withHeader
+            ? _pdfResponse(_pdf([1]), filename: 'GR-004776.pdf')
+            : _pdfResponse(_pdf([1]));
+      });
+
+      names.add(
+        (await source.fetch(_ref(DocumentKind.fiscalDocument, 7))).filename,
+      );
+      withHeader = false;
+      names.add(
+        (await source.fetch(_ref(DocumentKind.fiscalDocument, 7))).filename,
+      );
+
+      expect(paths, everyElement('/api/v1/fiscal-documents/7/pdf'));
+      expect(names, ['GR-004776.pdf', 'factura-7.pdf']);
+    });
+
+    test('a fiscal document body that is not a PDF is a ServerError', () async {
+      final source = _sourceWith(
+        (options) async => ResponseBody.fromBytes(
+          Uint8List.fromList(utf8.encode('<html>login</html>')),
+          200,
+          headers: _pdfHeaders(),
+        ),
+      );
+
+      await expectLater(
+        () => source.fetch(_ref(DocumentKind.fiscalDocument, 7)),
+        throwsA(isA<ServerError>()),
+      );
+    });
+
+    test('a 409 for an unstamped or old-version document keeps its code, so '
+        'the preview can localize it (spec 066)', () async {
+      for (final code in [
+        'fiscal_document.not_stamped',
+        'fiscal_document.version_not_printable',
+        'fiscal_document.not_issued',
+      ]) {
+        final source = _sourceWith(
+          (options) async => ResponseBody.fromBytes(
+            Uint8List.fromList(
+              utf8.encode(
+                jsonEncode({
+                  'detail': 'x',
+                  'code': code,
+                  'params': {'version': '3.3'},
+                }),
+              ),
+            ),
+            409,
+            headers: {
+              Headers.contentTypeHeader: ['application/json'],
+            },
+          ),
+        );
+
+        await expectLater(
+          () => source.fetch(_ref(DocumentKind.fiscalDocument, 7)),
+          throwsA(
+            isA<ServerError>()
+                .having((e) => e.statusCode, 'statusCode', 409)
+                .having((e) => e.problem?.codeName, 'code', code),
+          ),
+        );
+      }
+    });
+
     test('takes the file name from Content-Disposition', () async {
       final source = _sourceWith(
         (options) async =>

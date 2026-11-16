@@ -97,6 +97,11 @@ class NavBranch {
   // destination sits right after `deliveryOrderApproval` in the Logística
   // group there).
   static const int forDelivery = 28;
+
+  // 066-invoice-list-editor: appended last, same rationale as `cashSessions`
+  // above — display order comes from position within `kNavigationTree` (the
+  // Facturación group is the last one there).
+  static const int fiscalDocuments = 29;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -434,6 +439,26 @@ const List<NavItem> kNavigationTree = [
       ),
     ],
   ),
+  // Facturación (spec 066): fiscal documents. Its own group, last in the tree, since invoices
+  // are not sales documents; credit notes and payment receipts will join.
+  NavGroup(
+    id: 'invoicing',
+    label: _invoicingLabel,
+    children: [
+      // Gated on SystemObject 23 (`fiscalDocuments`) read, matching the
+      // server's GET /fiscal-documents. Creating and editing need 23 create
+      // and update, checked on the screens.
+      NavDestination(
+        id: 'fiscal-documents',
+        label: _fiscalDocumentsLabel,
+        icon: Icons.description_outlined,
+        selectedIcon: Icons.description,
+        route: '/invoicing/fiscal-documents',
+        branchIndex: NavBranch.fiscalDocuments,
+        gate: PrivilegeGate(SystemObject.fiscalDocuments, AccessRight.read),
+      ),
+    ],
+  ),
 ];
 
 // Label resolvers kept as top-level tear-offs so [kNavigationTree] stays const.
@@ -441,6 +466,8 @@ String _homeLabel(AppLocalizations l10n) => l10n.homeMenuTitle;
 String _catalogsLabel(AppLocalizations l10n) => l10n.catalogsGroupTitle;
 String _salesLabel(AppLocalizations l10n) => l10n.salesGroupTitle;
 String _logisticsLabel(AppLocalizations l10n) => l10n.logisticsGroupTitle;
+String _invoicingLabel(AppLocalizations l10n) => l10n.navInvoicingGroup;
+String _fiscalDocumentsLabel(AppLocalizations l10n) => l10n.navFiscalDocuments;
 String _usersLabel(AppLocalizations l10n) => l10n.usersMenuTitle;
 String _userProfilesLabel(AppLocalizations l10n) => l10n.userProfilesMenuTitle;
 String _productsLabel(AppLocalizations l10n) => l10n.productsTitle;

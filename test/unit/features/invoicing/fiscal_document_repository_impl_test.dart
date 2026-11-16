@@ -1,0 +1,385 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:decimal/decimal.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import 'package:mbe_ui/features/invoicing/data/fiscal_document_repository_impl.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_document.dart';
+
+const _jsonHeaders = {
+  Headers.contentTypeHeader: [Headers.jsonContentType],
+};
+
+ResponseBody _json(Object body, [int status = 200]) =>
+    ResponseBody.fromString(jsonEncode(body), status, headers: _jsonHeaders);
+
+Map<String, Object?> _lineJson({
+  int id = 10,
+  String quantity = '2.0000',
+  String price = '100.0000000',
+  String discount = '0.1000',
+  String taxRate = '0.16',
+  int? orderDetail = 5,
+}) => {
+  'fiscal_document_detail_id': id,
+  'product_service': '01010101',
+  'product_code': 'P-1',
+  'product_name': 'Tornillo',
+  'unit_of_measurement': 'H87',
+  'unit_of_measurement_name': 'Pieza',
+  'quantity': quantity,
+  'price': price,
+  'discount': discount,
+  'tax_rate': taxRate,
+  'tax_included': false,
+  'comment': null,
+  'product': 3,
+  'order_detail': orderDetail,
+};
+
+Map<String, Object?> _docJson({
+  String status = 'draft',
+  int type = 0,
+  int paymentTerms = 0,
+  int? serial,
+  String? total,
+  List<Object?>? lines,
+  List<Object?>? relations,
+}) => {
+  'fiscal_document_id': 7,
+  'type': type,
+  'version': '4.0',
+  'batch': 'A',
+  'serial': serial,
+  'issuer': 'XAXX010101000',
+  'issuer_name': 'Emisor',
+  'recipient': 'XEXX010101000',
+  'recipient_name': 'Receptor',
+  'issued': '2026-11-16T10:30:00',
+  'stamp_uuid': null,
+  'status': status,
+  'total': total,
+  'payment_method': 99,
+  'payment_terms': paymentTerms,
+  'currency': 100,
+  'exchange_rate': '1.0000',
+  'issued_location': '64000',
+  'customer': 4,
+  'facility': 2,
+  'lines': lines ?? [_lineJson()],
+  'relations': relations,
+};
+
+Map<String, Object?> _summaryJson({
+  int id = 1,
+  String status = 'issued',
+  String? total = '232.00',
+}) => {
+  'fiscal_document_id': id,
+  'type': 0,
+  'version': '4.0',
+  'batch': 'GR',
+  'serial': 4776,
+  'issuer': 'XAXX010101000',
+  'issuer_name': 'Emisor',
+  'recipient': 'XEXX010101000',
+  'recipient_name': 'Receptor',
+  'issued': '2026-11-16T10:30:00',
+  'stamp_uuid': 'AAAA-BBBB',
+  'status': status,
+  'total': total,
+};
+
+FiscalDocumentRepositoryImpl _repo(
+  Future<ResponseBody> Function(RequestOptions) handler,
+) {
+  final dio = Dio(BaseOptions(baseUrl: 'http://test'))
+    ..httpClientAdapter = _Adapter(handler);
+  return FiscalDocumentRepositoryImpl(dio);
+}
+
+void main() {
+  group('list', () {
+    test('sends the filters, maps rows and a null total', () async {
+      late RequestOptions captured;
+      final repo = _repo((o) async {
+        captured = o;
+        return _json({
+          'items': [
+            _summaryJson(),
+            _summaryJson(id: 2, status: 'sealed', total: null),
+          ],
+          'total': 2,
+        });
+      });
+
+      final page = await repo.list(
+        search: 'GR4776',
+        issuer: 'XAXX010101000',
+        type: 100,
+        status: FiscalDocumentStatus.sealed,
+        dateFrom: DateTime(2026, 11, 1),
+        dateTo: DateTime(2026, 11, 16),
+        skip: 20,
+        limit: 20,
+      );
+
+      final q = captured.queryParameters;
+      expect(q['search'], 'GR4776');
+      expect(q['issuer'], 'XAXX010101000');
+      expect(q['type'], 100);
+      expect(q['status'], 'sealed');
+      expect(q['skip'], 20);
+      expect(q['limit'], 20);
+      expect(page.total, 2);
+      expect(page.items[0].status, FiscalDocumentStatus.issued);
+      expect(page.items[0].total, Decimal.parse('232'));
+      expect(page.items[0].folioLabel, 'GR4776');
+      expect(page.items[1].status, FiscalDocumentStatus.sealed);
+      expect(page.items[1].total, isNull);
+    });
+  });
+
+  group('getById', () {
+    test('maps ints, decimal strings, tax rate and relation type', () async {
+      final repo = _repo(
+        (o) async => _json(
+          _docJson(
+            status: 'sealed',
+            paymentTerms: 1,
+            serial: 12,
+            lines: [_lineJson(taxRate: '-1')],
+            relations: [
+              {
+                'fiscal_document_relation_id': 3,
+                'relation': 99,
+                'type': '04',
+                'stamp_uuid': 'U',
+                'batch': 'A',
+                'serial': 1,
+              },
+              {'fiscal_document_relation_id': 4, 'relation': 98, 'type': null},
+            ],
+          ),
+        ),
+      );
+
+      final doc = await repo.getById(7);
+
+      expect(doc.status, FiscalDocumentStatus.sealed);
+      expect(doc.paymentTerms, InvoicePaymentTerms.ppd);
+      expect(doc.paymentForm, 99);
+      expect(doc.currencyCode, 100);
+      expect(doc.summary.total, isNull);
+      expect(doc.canReopen, isTrue);
+      final line = doc.lines.single;
+      expect(line.quantity, Decimal.parse('2'));
+      expect(line.discountRate, Decimal.parse('0.1'));
+      expect(line.tax, InvoiceTaxRate.exempt);
+      expect(line.orderLineId, 5);
+      expect(doc.relations[0].type, InvoiceRelationType.substitution);
+      expect(doc.relations[1].type, isNull);
+      expect(doc.relationType, InvoiceRelationType.substitution);
+    });
+
+    test('a document with no relations key has none', () async {
+      final repo = _repo((o) async => _json(_docJson()));
+      expect((await repo.getById(7)).relations, isEmpty);
+    });
+  });
+
+  group('writes', () {
+    test('create sends the customer and RFC', () async {
+      late RequestOptions c;
+      final repo = _repo((o) async {
+        c = o;
+        return _json(_docJson(), 201);
+      });
+      await repo.create(
+        const NewInvoice(customerId: 4, recipientRfc: 'XEXX010101000'),
+      );
+      expect(c.method, 'POST');
+      expect(c.path, '/api/v1/fiscal-documents');
+      expect(c.data, {'customer': 4, 'recipient': 'XEXX010101000'});
+    });
+
+    test('updateHeader sends only the changed fields', () async {
+      late RequestOptions c;
+      final repo = _repo((o) async {
+        c = o;
+        return _json(_docJson());
+      });
+      await repo.updateHeader(
+        7,
+        const InvoiceHeaderPatch(reference: 'OC-1', usage: 'G03'),
+      );
+      expect(c.method, 'PUT');
+      expect(c.data, {'reference': 'OC-1', 'usage': 'G03'});
+    });
+
+    test('PPD sends the terms and no payment form', () async {
+      late RequestOptions c;
+      final repo = _repo((o) async {
+        c = o;
+        return _json(_docJson());
+      });
+      await repo.updateHeader(
+        7,
+        const InvoiceHeaderPatch(
+          paymentTerms: InvoicePaymentTerms.ppd,
+          paymentForm: 3,
+        ),
+      );
+      final body = c.data as Map<String, dynamic>;
+      expect(body['payment_terms'], 1);
+      expect(body.containsKey('payment_method'), isFalse);
+    });
+
+    test('updateHeader sends the issue date as wall-clock time', () async {
+      late RequestOptions c;
+      final repo = _repo((o) async {
+        c = o;
+        return _json(_docJson());
+      });
+      await repo.updateHeader(
+        7,
+        InvoiceHeaderPatch(issued: DateTime(2026, 11, 16, 9, 30)),
+      );
+      final sent = (c.data as Map<String, dynamic>)['issued'] as String;
+      expect(sent, startsWith('2026-11-16T09:30:00'));
+      expect(sent, isNot(contains('Z')));
+    });
+
+    test(
+      'updateLine turns a percentage into a fraction and wraps values',
+      () async {
+        late RequestOptions c;
+        final repo = _repo((o) async {
+          c = o;
+          return _json(_docJson());
+        });
+        await repo.updateLine(
+          7,
+          10,
+          InvoiceLinePatch(
+            quantity: Decimal.parse('3'),
+            price: Decimal.parse('12.5'),
+            discountPercent: Decimal.parse('10'),
+            taxRate: InvoiceTaxRate.exempt,
+            productName: '',
+          ),
+        );
+        expect(c.method, 'PUT');
+        expect(c.path, '/api/v1/fiscal-documents/7/lines/10');
+        final body = c.data as Map<String, dynamic>;
+        expect(Decimal.parse('${body['quantity']}'), Decimal.parse('3'));
+        expect(Decimal.parse('${body['price']}'), Decimal.parse('12.5'));
+        expect(Decimal.parse('${body['discount']}'), Decimal.parse('0.1'));
+        expect(Decimal.parse('${body['tax_rate']}'), Decimal.fromInt(-1));
+        // A blank name is sent blank so the server resets it.
+        expect(body['product_name'], '');
+        expect(body.containsKey('comment'), isFalse);
+      },
+    );
+
+    test('add order, add product, remove line, confirm and reopen hit their '
+        'endpoints', () async {
+      final calls = <String>[];
+      final repo = _repo((o) async {
+        calls.add('${o.method} ${o.path}');
+        return _json(_docJson());
+      });
+      await repo.addSalesOrder(7, 55);
+      await repo.addProduct(7, 3);
+      await repo.removeLine(7, 10);
+      await repo.confirm(7);
+      await repo.reopen(7);
+      expect(calls, [
+        'POST /api/v1/fiscal-documents/7/sales-orders',
+        'POST /api/v1/fiscal-documents/7/lines',
+        'DELETE /api/v1/fiscal-documents/7/lines/10',
+        'POST /api/v1/fiscal-documents/7/confirm',
+        'POST /api/v1/fiscal-documents/7/reopen',
+      ]);
+    });
+
+    test('relations send 04 or 07 and delete by relation id', () async {
+      final sent = <RequestOptions>[];
+      final repo = _repo((o) async {
+        sent.add(o);
+        return _json(_docJson());
+      });
+      await repo.addRelation(7, 99, InvoiceRelationType.substitution);
+      await repo.addRelation(7, 98, InvoiceRelationType.advanceApplication);
+      await repo.removeRelation(7, 3);
+      expect(sent[0].data, {'relation': 99, 'type': '04'});
+      expect(sent[1].data, {'relation': 98, 'type': '07'});
+      expect(sent[2].path, '/api/v1/fiscal-documents/7/relations/3');
+    });
+
+    test('a refusal keeps its code', () async {
+      final repo = _repo(
+        (o) async => _json({
+          'detail': 'no lines',
+          'code': 'fiscal_document.no_lines',
+          'params': <String, Object?>{},
+        }, 422),
+      );
+      await expectLater(
+        repo.confirm(7),
+        throwsA(
+          isA<Object>().having((e) => '$e', 'text', contains('no_lines')),
+        ),
+      );
+    });
+  });
+
+  group('downloadXml', () {
+    test('returns the bytes and the server filename when present', () async {
+      final repo = _repo(
+        (o) async => ResponseBody.fromBytes(
+          utf8.encode('<xml/>'),
+          200,
+          headers: {
+            Headers.contentTypeHeader: ['application/xml'],
+            'content-disposition': ['attachment; filename="../A-000012.xml"'],
+          },
+        ),
+      );
+      final xml = await repo.downloadXml(7);
+      expect(utf8.decode(xml.bytes), '<xml/>');
+      expect(xml.filename, 'A-000012.xml');
+    });
+
+    test('has no filename without the header', () async {
+      final repo = _repo(
+        (o) async => ResponseBody.fromBytes(
+          utf8.encode('<xml/>'),
+          200,
+          headers: {
+            Headers.contentTypeHeader: ['application/xml'],
+          },
+        ),
+      );
+      expect((await repo.downloadXml(7)).filename, isNull);
+    });
+  });
+}
+
+class _Adapter implements HttpClientAdapter {
+  _Adapter(this._handler);
+
+  final Future<ResponseBody> Function(RequestOptions) _handler;
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) => _handler(options);
+
+  @override
+  void close({bool force = false}) {}
+}

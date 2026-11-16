@@ -28,6 +28,8 @@ import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
+import 'package:mbe_ui/features/invoicing/data/fiscal_document_repository_impl.dart';
+import 'package:mbe_ui/features/invoicing/domain/repositories/fiscal_document_repository.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/expense_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/vehicle_repository_impl.dart';
@@ -86,6 +88,9 @@ class MockDeliveryOrderAdminRepository extends Mock
 
 class MockDeliveryItineraryRepository extends Mock
     implements DeliveryItineraryRepository {}
+
+class MockFiscalDocumentRepository extends Mock
+    implements FiscalDocumentRepository {}
 
 class MockUserRepository extends Mock implements UserRepository {}
 
@@ -345,6 +350,17 @@ const _deliveryOrderApprovalReaderUser = User(
 /// Holds read on `forDeliver` (91) alone — the gate for spec 063's
 /// `/sales/for-delivery` route. It is its own privilege: Delivery Orders (71)
 /// read must not open it, and it must not open the orders.
+const _fiscalDocumentsReaderUser = User(
+  userId: 'fiscal-documents-reader',
+  email: 'fiscal-documents-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.fiscalDocuments, rawValue: 2),
+  ],
+);
+
 const _forDeliverReaderUser = User(
   userId: 'for-deliver-reader',
   email: 'for-deliver-reader@example.com',
@@ -776,6 +792,25 @@ void main() {
       ),
     ).thenAnswer((_) async => const {});
 
+    // 066-invoice-list-editor: the list fetches eagerly; an empty page is
+    // enough to show it opened. A document is not found.
+    final fiscalDocumentRepository = MockFiscalDocumentRepository();
+    when(
+      () => fiscalDocumentRepository.list(
+        search: any(named: 'search'),
+        issuer: any(named: 'issuer'),
+        type: any(named: 'type'),
+        status: any(named: 'status'),
+        dateFrom: any(named: 'dateFrom'),
+        dateTo: any(named: 'dateTo'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const FiscalDocumentPage(items: [], total: 0));
+    when(
+      () => fiscalDocumentRepository.getById(any()),
+    ).thenThrow(const AppError.notFound());
+
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
 
@@ -841,6 +876,9 @@ void main() {
         ),
         deliveryItineraryRepositoryProvider.overrideWithValue(
           deliveryItineraryRepository,
+        ),
+        fiscalDocumentRepositoryProvider.overrideWithValue(
+          fiscalDocumentRepository,
         ),
       ],
     );
@@ -1389,6 +1427,88 @@ void main() {
 
       expect(handle.router.state.uri.path, '/sales/refunds/abc');
       expect(find.byKey(const Key('refund_not_found')), findsOneWidget);
+    });
+  });
+
+  group('066-invoice-list-editor — /invoicing/fiscal-documents gates on '
+      'fiscalDocuments (23) read', () {
+    testWidgets('a user with fiscalDocuments:read reaches the list', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _fiscalDocumentsReaderUser,
+        '/invoicing/fiscal-documents',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/invoicing/fiscal-documents');
+      expect(find.byKey(const Key('fiscal_documents_search')), findsOneWidget);
+    });
+
+    testWidgets('a user without fiscalDocuments:read is redirected home', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/invoicing/fiscal-documents',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a user with fiscalDocuments:read reaches a document (here '
+        'not found)', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _fiscalDocumentsReaderUser,
+        '/invoicing/fiscal-documents/9',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/invoicing/fiscal-documents/9');
+      expect(
+        find.byKey(const Key('fiscal_document_not_found')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a user without fiscalDocuments:read is redirected from a '
+        'document', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/invoicing/fiscal-documents/9',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a non-numeric id gives the not-found state', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _fiscalDocumentsReaderUser,
+        '/invoicing/fiscal-documents/abc',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/invoicing/fiscal-documents/abc');
+      expect(
+        find.byKey(const Key('fiscal_document_not_found')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('activates shell branch NavBranch.fiscalDocuments (29)', (
+      tester,
+    ) async {
+      await pumpAt(
+        tester,
+        _fiscalDocumentsReaderUser,
+        '/invoicing/fiscal-documents',
+      );
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.fiscalDocuments, 29);
+      expect(shell.navigationShell.currentIndex, NavBranch.fiscalDocuments);
     });
   });
 

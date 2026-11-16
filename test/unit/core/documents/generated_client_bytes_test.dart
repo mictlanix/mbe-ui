@@ -28,6 +28,9 @@ void main() {
     'customer_payments_api.dart': [
       'printCustomerPaymentTicketApiV1CustomerPaymentsCustomerPaymentIdTicketGet',
     ],
+    'fiscal_documents_api.dart': [
+      'printFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdPdfGet',
+    ],
     'delivery_orders_api.dart': [
       'printDeliveryOrderTicketApiV1DeliveryOrdersDeliveryOrderIdTicketGet',
       'printDeliveryOrderDocumentApiV1DeliveryOrdersDeliveryOrderIdDocumentGet',
