@@ -19,8 +19,11 @@ part 'delivery_order_response.g.dart';
 /// * [facility]
 /// * [serial]
 /// * [customer]
+/// * [customerDisplayName] - The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
 /// * [salesOrders]
 /// * [shipTo]
+/// * [shipToLabel]
+/// * [facilityName]
 /// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [priority]
 /// * [status]
@@ -48,11 +51,21 @@ abstract class DeliveryOrderResponse
   @BuiltValueField(wireName: r'customer')
   int get customer;
 
+  /// The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
+  @BuiltValueField(wireName: r'customer_display_name')
+  String? get customerDisplayName;
+
   @BuiltValueField(wireName: r'sales_orders')
   BuiltList<int>? get salesOrders;
 
   @BuiltValueField(wireName: r'ship_to')
   int? get shipTo;
+
+  @BuiltValueField(wireName: r'ship_to_label')
+  String? get shipToLabel;
+
+  @BuiltValueField(wireName: r'facility_name')
+  String? get facilityName;
 
   /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'date')
@@ -149,6 +162,13 @@ class _$DeliveryOrderResponseSerializer
       object.customer,
       specifiedType: const FullType(int),
     );
+    if (object.customerDisplayName != null) {
+      yield r'customer_display_name';
+      yield serializers.serialize(
+        object.customerDisplayName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     if (object.salesOrders != null) {
       yield r'sales_orders';
       yield serializers.serialize(
@@ -163,6 +183,20 @@ class _$DeliveryOrderResponseSerializer
             object.shipTo,
             specifiedType: const FullType.nullable(int),
           );
+    if (object.shipToLabel != null) {
+      yield r'ship_to_label';
+      yield serializers.serialize(
+        object.shipToLabel,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.facilityName != null) {
+      yield r'facility_name';
+      yield serializers.serialize(
+        object.facilityName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'date';
     yield object.date == null
         ? null
@@ -294,6 +328,16 @@ class _$DeliveryOrderResponseSerializer
                   as int;
           result.customer = valueDes;
           break;
+        case r'customer_display_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.customerDisplayName = valueDes;
+          break;
         case r'sales_orders':
           final valueDes =
               serializers.deserialize(
@@ -315,6 +359,26 @@ class _$DeliveryOrderResponseSerializer
                   as int?;
           if (valueDes == null) continue;
           result.shipTo = valueDes;
+          break;
+        case r'ship_to_label':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.shipToLabel = valueDes;
+          break;
+        case r'facility_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.facilityName = valueDes;
           break;
         case r'date':
           final valueDes =

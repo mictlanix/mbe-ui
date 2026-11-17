@@ -494,6 +494,7 @@ import 'package:mbe_api_client/src/model/warehouse_create.dart';
 import 'package:mbe_api_client/src/model/warehouse_response.dart';
 import 'package:mbe_api_client/src/model/warehouse_summary.dart';
 import 'package:mbe_api_client/src/model/warehouse_update.dart';
+import 'package:mbe_api_client/src/model/warning_part.dart';
 
 part 'serializers.g.dart';
 
@@ -978,6 +979,7 @@ part 'serializers.g.dart';
   WarehouseResponse,
   WarehouseSummary,
   WarehouseUpdate,
+  WarningPart,
 ])
 Serializers serializers =
     (_$serializers.toBuilder()
@@ -1342,6 +1344,10 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(InventoryIssueLineResponse)]),
             () => ListBuilder<InventoryIssueLineResponse>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [FullType(WarningPart)]),
+            () => ListBuilder<WarningPart>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(OrderApplicationResponse)]),

@@ -6,6 +6,7 @@
 import 'package:mbe_api_client/src/model/inventory_receipt_line_response.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/model/document_status.dart';
+import 'package:mbe_api_client/src/model/warning_part.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -71,7 +72,7 @@ abstract class InventoryReceiptResponse
   BuiltList<InventoryReceiptLineResponse>? get lines;
 
   @BuiltValueField(wireName: r'warnings')
-  BuiltList<String>? get warnings;
+  BuiltList<WarningPart>? get warnings;
 
   InventoryReceiptResponse._();
 
@@ -179,7 +180,7 @@ class _$InventoryReceiptResponseSerializer
       yield r'warnings';
       yield serializers.serialize(
         object.warnings,
-        specifiedType: const FullType(BuiltList, [FullType(String)]),
+        specifiedType: const FullType(BuiltList, [FullType(WarningPart)]),
       );
     }
   }
@@ -313,10 +314,10 @@ class _$InventoryReceiptResponseSerializer
               serializers.deserialize(
                     value,
                     specifiedType: const FullType.nullable(BuiltList, [
-                      FullType(String),
+                      FullType(WarningPart),
                     ]),
                   )
-                  as BuiltList<String>?;
+                  as BuiltList<WarningPart>?;
           if (valueDes == null) continue;
           result.warnings.replace(valueDes);
           break;

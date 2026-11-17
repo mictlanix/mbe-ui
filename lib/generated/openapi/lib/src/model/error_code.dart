@@ -436,6 +436,9 @@ class ErrorCode extends EnumClass {
   @BuiltValueEnumConst(wireName: r'inventory_receipt.complementary_unavailable')
   static const ErrorCode inventoryReceiptPeriodComplementaryUnavailable =
       _$inventoryReceiptPeriodComplementaryUnavailable;
+  @BuiltValueEnumConst(wireName: r'inventory_receipt.over_received')
+  static const ErrorCode inventoryReceiptPeriodOverReceived =
+      _$inventoryReceiptPeriodOverReceived;
   @BuiltValueEnumConst(wireName: r'inventory_transfer.line_repeated')
   static const ErrorCode inventoryTransferPeriodLineRepeated =
       _$inventoryTransferPeriodLineRepeated;
@@ -551,6 +554,12 @@ class ErrorCode extends EnumClass {
   @BuiltValueEnumConst(wireName: r'product_price.references_not_found')
   static const ErrorCode productPricePeriodReferencesNotFound =
       _$productPricePeriodReferencesNotFound;
+  @BuiltValueEnumConst(wireName: r'purchase_cost.not_restored')
+  static const ErrorCode purchaseCostPeriodNotRestored =
+      _$purchaseCostPeriodNotRestored;
+  @BuiltValueEnumConst(wireName: r'purchase_cost.zero_price')
+  static const ErrorCode purchaseCostPeriodZeroPrice =
+      _$purchaseCostPeriodZeroPrice;
   @BuiltValueEnumConst(wireName: r'purchase_order.already_cancelled')
   static const ErrorCode purchaseOrderPeriodAlreadyCancelled =
       _$purchaseOrderPeriodAlreadyCancelled;

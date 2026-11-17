@@ -532,6 +532,7 @@ doc/WarehouseResponse.md
 doc/WarehouseSummary.md
 doc/WarehouseUpdate.md
 doc/WarehousesApi.md
+doc/WarningPart.md
 lib/mbe_api_client.dart
 lib/src/api.dart
 lib/src/api/accounts_payable_api.dart
@@ -1072,5 +1073,6 @@ lib/src/model/warehouse_create.dart
 lib/src/model/warehouse_response.dart
 lib/src/model/warehouse_summary.dart
 lib/src/model/warehouse_update.dart
+lib/src/model/warning_part.dart
 lib/src/serializers.dart
 pubspec.yaml

@@ -14,7 +14,9 @@ part 'in_transit_line.g.dart';
 /// * [inventoryTransferId]
 /// * [serial]
 /// * [warehouse]
+/// * [warehouseName]
 /// * [warehouseTo]
+/// * [warehouseToName]
 /// * [transferDetailId]
 /// * [product]
 /// * [productCode]
@@ -32,8 +34,14 @@ abstract class InTransitLine
   @BuiltValueField(wireName: r'warehouse')
   int get warehouse;
 
+  @BuiltValueField(wireName: r'warehouse_name')
+  String? get warehouseName;
+
   @BuiltValueField(wireName: r'warehouse_to')
   int get warehouseTo;
+
+  @BuiltValueField(wireName: r'warehouse_to_name')
+  String? get warehouseToName;
 
   @BuiltValueField(wireName: r'transfer_detail_id')
   int get transferDetailId;
@@ -92,11 +100,25 @@ class _$InTransitLineSerializer implements PrimitiveSerializer<InTransitLine> {
       object.warehouse,
       specifiedType: const FullType(int),
     );
+    if (object.warehouseName != null) {
+      yield r'warehouse_name';
+      yield serializers.serialize(
+        object.warehouseName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'warehouse_to';
     yield serializers.serialize(
       object.warehouseTo,
       specifiedType: const FullType(int),
     );
+    if (object.warehouseToName != null) {
+      yield r'warehouse_to_name';
+      yield serializers.serialize(
+        object.warehouseToName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'transfer_detail_id';
     yield serializers.serialize(
       object.transferDetailId,
@@ -175,11 +197,31 @@ class _$InTransitLineSerializer implements PrimitiveSerializer<InTransitLine> {
                   as int;
           result.warehouse = valueDes;
           break;
+        case r'warehouse_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.warehouseName = valueDes;
+          break;
         case r'warehouse_to':
           final valueDes =
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
           result.warehouseTo = valueDes;
+          break;
+        case r'warehouse_to_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.warehouseToName = valueDes;
           break;
         case r'transfer_detail_id':
           final valueDes =

@@ -541,3 +541,4 @@ export 'package:mbe_api_client/src/model/warehouse_create.dart';
 export 'package:mbe_api_client/src/model/warehouse_response.dart';
 export 'package:mbe_api_client/src/model/warehouse_summary.dart';
 export 'package:mbe_api_client/src/model/warehouse_update.dart';
+export 'package:mbe_api_client/src/model/warning_part.dart';

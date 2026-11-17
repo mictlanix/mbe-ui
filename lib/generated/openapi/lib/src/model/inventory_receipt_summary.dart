@@ -20,6 +20,9 @@ part 'inventory_receipt_summary.g.dart';
 /// * [status]
 /// * [creator]
 /// * [creationTime] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
+/// * [warehouseName]
+/// * [facilityName]
+/// * [creatorName]
 @BuiltValue()
 abstract class InventoryReceiptSummary
     implements Built<InventoryReceiptSummary, InventoryReceiptSummaryBuilder> {
@@ -48,6 +51,15 @@ abstract class InventoryReceiptSummary
   /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'creation_time')
   DateTime get creationTime;
+
+  @BuiltValueField(wireName: r'warehouse_name')
+  String? get warehouseName;
+
+  @BuiltValueField(wireName: r'facility_name')
+  String? get facilityName;
+
+  @BuiltValueField(wireName: r'creator_name')
+  String? get creatorName;
 
   InventoryReceiptSummary._();
 
@@ -123,6 +135,27 @@ class _$InventoryReceiptSummarySerializer
       object.creationTime,
       specifiedType: const FullType(DateTime),
     );
+    if (object.warehouseName != null) {
+      yield r'warehouse_name';
+      yield serializers.serialize(
+        object.warehouseName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.facilityName != null) {
+      yield r'facility_name';
+      yield serializers.serialize(
+        object.facilityName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.creatorName != null) {
+      yield r'creator_name';
+      yield serializers.serialize(
+        object.creatorName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
   }
 
   @override
@@ -211,6 +244,36 @@ class _$InventoryReceiptSummarySerializer
                   )
                   as DateTime;
           result.creationTime = valueDes;
+          break;
+        case r'warehouse_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.warehouseName = valueDes;
+          break;
+        case r'facility_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.facilityName = valueDes;
+          break;
+        case r'creator_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.creatorName = valueDes;
           break;
         default:
           unhandled.add(key);

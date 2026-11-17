@@ -987,6 +987,7 @@ Class | Method | HTTP request | Description
  - [WarehouseResponse](doc/WarehouseResponse.md)
  - [WarehouseSummary](doc/WarehouseSummary.md)
  - [WarehouseUpdate](doc/WarehouseUpdate.md)
+ - [WarningPart](doc/WarningPart.md)
 
 
 ## Documentation For Authorization

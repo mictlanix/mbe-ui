@@ -15,13 +15,16 @@ part 'pending_delivery_line.g.dart';
 /// * [deliveryOrderDetail]
 /// * [serial]
 /// * [customer]
+/// * [customerDisplayName] - The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
 /// * [shipTo]
+/// * [shipToLabel]
 /// * [date] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [priority]
 /// * [product]
 /// * [productCode]
 /// * [productName]
 /// * [warehouse]
+/// * [warehouseName]
 /// * [openQuantity]
 @BuiltValue()
 abstract class PendingDeliveryLine
@@ -38,8 +41,15 @@ abstract class PendingDeliveryLine
   @BuiltValueField(wireName: r'customer')
   int get customer;
 
+  /// The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing.
+  @BuiltValueField(wireName: r'customer_display_name')
+  String? get customerDisplayName;
+
   @BuiltValueField(wireName: r'ship_to')
   int? get shipTo;
+
+  @BuiltValueField(wireName: r'ship_to_label')
+  String? get shipToLabel;
 
   /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
   @BuiltValueField(wireName: r'date')
@@ -59,6 +69,9 @@ abstract class PendingDeliveryLine
 
   @BuiltValueField(wireName: r'warehouse')
   int get warehouse;
+
+  @BuiltValueField(wireName: r'warehouse_name')
+  String? get warehouseName;
 
   @BuiltValueField(wireName: r'open_quantity')
   String get openQuantity;
@@ -114,6 +127,13 @@ class _$PendingDeliveryLineSerializer
       object.customer,
       specifiedType: const FullType(int),
     );
+    if (object.customerDisplayName != null) {
+      yield r'customer_display_name';
+      yield serializers.serialize(
+        object.customerDisplayName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'ship_to';
     yield object.shipTo == null
         ? null
@@ -121,6 +141,13 @@ class _$PendingDeliveryLineSerializer
             object.shipTo,
             specifiedType: const FullType.nullable(int),
           );
+    if (object.shipToLabel != null) {
+      yield r'ship_to_label';
+      yield serializers.serialize(
+        object.shipToLabel,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'date';
     yield object.date == null
         ? null
@@ -153,6 +180,13 @@ class _$PendingDeliveryLineSerializer
       object.warehouse,
       specifiedType: const FullType(int),
     );
+    if (object.warehouseName != null) {
+      yield r'warehouse_name';
+      yield serializers.serialize(
+        object.warehouseName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'open_quantity';
     yield serializers.serialize(
       object.openQuantity,
@@ -213,6 +247,16 @@ class _$PendingDeliveryLineSerializer
                   as int;
           result.customer = valueDes;
           break;
+        case r'customer_display_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.customerDisplayName = valueDes;
+          break;
         case r'ship_to':
           final valueDes =
               serializers.deserialize(
@@ -222,6 +266,16 @@ class _$PendingDeliveryLineSerializer
                   as int?;
           if (valueDes == null) continue;
           result.shipTo = valueDes;
+          break;
+        case r'ship_to_label':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.shipToLabel = valueDes;
           break;
         case r'date':
           final valueDes =
@@ -268,6 +322,16 @@ class _$PendingDeliveryLineSerializer
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
           result.warehouse = valueDes;
+          break;
+        case r'warehouse_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.warehouseName = valueDes;
           break;
         case r'open_quantity':
           final valueDes =
