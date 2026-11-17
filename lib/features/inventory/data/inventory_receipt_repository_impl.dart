@@ -9,6 +9,7 @@ import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
+import 'package:mbe_ui/features/inventory/domain/receipt_cost_warning.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_receipt_repository.dart';
 
@@ -196,6 +197,9 @@ InventoryReceiptSummary _summary(api.InventoryReceiptSummary s) =>
       status: _status(s.status),
       creatorId: s.creator,
       createdAt: s.creationTime,
+      warehouseName: s.warehouseName,
+      facilityName: s.facilityName,
+      creatorName: s.creatorName,
     );
 
 InventoryReceipt _toReceipt(api.InventoryReceiptResponse r) => InventoryReceipt(
@@ -211,8 +215,27 @@ InventoryReceipt _toReceipt(api.InventoryReceiptResponse r) => InventoryReceipt(
   updaterId: r.updater,
   modifiedAt: r.modificationTime,
   lines: r.lines?.map(_line).toList() ?? [],
-  serverWarningCount: r.warnings?.length ?? 0,
+  costWarnings: [
+    for (final w in r.warnings ?? <api.WarningPart>[])
+      if (w.code != api.ErrorCode.inventoryReceiptPeriodOverReceived)
+        _costWarning(w),
+  ],
 );
+
+ReceiptCostWarning _costWarning(api.WarningPart w) {
+  String? param(String key) => w.params[key]?.value.toString();
+  return (
+    kind: switch (w.code) {
+      api.ErrorCode.purchaseCostPeriodZeroPrice =>
+        ReceiptCostWarningKind.zeroPrice,
+      api.ErrorCode.purchaseCostPeriodNotRestored =>
+        ReceiptCostWarningKind.notRestored,
+      _ => ReceiptCostWarningKind.other,
+    },
+    productCode: param('product_code') ?? param('product_id') ?? '',
+    receipt: param('receipt'),
+  );
+}
 
 InventoryReceiptLine _line(api.InventoryReceiptLineResponse l) =>
     InventoryReceiptLine(

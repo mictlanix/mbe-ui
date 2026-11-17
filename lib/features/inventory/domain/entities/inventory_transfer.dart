@@ -29,6 +29,13 @@ abstract class InventoryTransferSummary with _$InventoryTransferSummary {
     required InventoryTransferStatus status,
     required int creatorId,
     required DateTime createdAt,
+
+    /// Server-joined names (mbe-api#327–#330), null when the row is gone.
+    /// The name cells fall back to a per-id lookup when one is null.
+    String? warehouseName,
+    String? warehouseToName,
+    String? facilityName,
+    String? creatorName,
   }) = _InventoryTransferSummary;
 }
 
@@ -124,5 +131,9 @@ abstract class InTransitLineItem with _$InTransitLineItem {
     String? productCode,
     String? productName,
     required Decimal quantityOutstanding,
+
+    /// Server-joined names (mbe-api#330), null when the row is gone.
+    String? warehouseName,
+    String? warehouseToName,
   }) = _InTransitLineItem;
 }

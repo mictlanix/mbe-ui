@@ -2,6 +2,7 @@ import 'package:decimal/decimal.dart';
 
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/receipt_cost_warning.dart';
 
 /// A summary for tests; override what the case is about.
 InventoryReceiptSummary aReceiptSummary({
@@ -30,7 +31,7 @@ InventoryReceipt aReceipt({
   InventoryDocumentStatus status = InventoryDocumentStatus.draft,
   String? comment,
   List<InventoryReceiptLine>? lines,
-  int serverWarningCount = 0,
+  List<ReceiptCostWarning> costWarnings = const [],
 }) => InventoryReceipt(
   id: id,
   facilityId: 2,
@@ -44,7 +45,7 @@ InventoryReceipt aReceipt({
   updaterId: 5,
   modifiedAt: DateTime(2026, 11, 16, 10, 2),
   lines: lines ?? [aReceiptLine()],
-  serverWarningCount: serverWarningCount,
+  costWarnings: costWarnings,
 );
 
 /// A line for tests; override what the case is about.

@@ -12,6 +12,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/receipt_cost_warning.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import '../../../unit/features/inventory/inventory_receipt_fixtures.dart';
@@ -416,12 +417,10 @@ void main() {
     InventoryReceipt linked({
       InventoryDocumentStatus status = InventoryDocumentStatus.draft,
       int? serial,
-      int serverWarningCount = 0,
     }) => aReceipt(
       purchaseOrderId: 5512,
       status: status,
       serial: serial,
-      serverWarningCount: serverWarningCount,
       lines: [
         aReceiptLine(purchaseOrderLineId: 1, ordered: '10', elsewhere: '5'),
         aReceiptLine(id: 901, productId: 8),
@@ -465,11 +464,8 @@ void main() {
     testWidgets('the confirm prompt lists the over-receipts and confirming '
         'still works', (tester) async {
       when(() => h.receipts.confirm(318)).thenAnswer(
-        (_) async => linked(
-          status: InventoryDocumentStatus.completed,
-          serial: 1043,
-          serverWarningCount: 1,
-        ),
+        (_) async =>
+            linked(status: InventoryDocumentStatus.completed, serial: 1043),
       );
       await h.pumpReceipt(tester, linked());
 
@@ -487,18 +483,25 @@ void main() {
 
       verify(() => h.receipts.confirm(318)).called(1);
       expect(find.text(l10n.inventoryDocumentStatusCompleted), findsOneWidget);
-      // One server warning, matched by the one over-receipt: no notice.
+      // No cost warnings in the response: no notice.
       expect(key('receipt_cost_notice_band'), findsNothing);
     });
 
-    testWidgets('a confirm with extra warnings shows the cost notice until '
+    testWidgets('a confirm with cost warnings shows the cost notice until '
         'closed', (tester) async {
       when(() => h.receipts.confirm(318)).thenAnswer(
-        (_) async => aReceipt(
-          serial: 1043,
-          status: InventoryDocumentStatus.completed,
-          serverWarningCount: 1,
-        ),
+        (_) async =>
+            aReceipt(
+              serial: 1043,
+              status: InventoryDocumentStatus.completed,
+              costWarnings: const [
+                (
+                  kind: ReceiptCostWarningKind.zeroPrice,
+                  productCode: 'A1',
+                  receipt: null,
+                ),
+              ],
+            ),
       );
       await h.pumpReceipt(tester, aReceipt());
 
@@ -508,20 +511,29 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(key('receipt_cost_notice_band'), findsOneWidget);
-      expect(find.text(l10n.inventoryReceiptCostNotice), findsOneWidget);
+      expect(
+        find.text(l10n.inventoryReceiptCostZeroPrice('A1')),
+        findsOneWidget,
+      );
       await tester.tap(key('receipt_cost_notice_close'));
       await tester.pumpAndSettle();
       expect(key('receipt_cost_notice_band'), findsNothing);
     });
 
-    testWidgets('a cancel with extra warnings shows the cost notice', (
+    testWidgets('a cancel with cost warnings shows the cost notice', (
       tester,
     ) async {
       when(() => h.receipts.cancel(318)).thenAnswer(
         (_) async => aReceipt(
           serial: 1043,
           status: InventoryDocumentStatus.cancelled,
-          serverWarningCount: 2,
+          costWarnings: const [
+            (
+              kind: ReceiptCostWarningKind.notRestored,
+              productCode: 'B2',
+              receipt: '1044',
+            ),
+          ],
         ),
       );
       await h.pumpReceipt(tester, completed);
@@ -532,6 +544,10 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(key('receipt_cost_notice_band'), findsOneWidget);
+      expect(
+        find.text(l10n.inventoryReceiptCostNotRestored('B2', '1044')),
+        findsOneWidget,
+      );
     });
 
     group('Entrada complementaria', () {

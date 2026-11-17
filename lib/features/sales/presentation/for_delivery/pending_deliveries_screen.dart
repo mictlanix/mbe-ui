@@ -115,8 +115,10 @@ class PendingDeliveriesScreen extends ConsumerWidget {
                 DataTableColumn(
                   label: l10n.deliveryOrderColumnCustomer,
                   size: ColumnSize.L,
-                  cellBuilder: (context, l) =>
-                      DeliveryOrderCustomerName(customerId: l.customerId),
+                  cellBuilder: (context, l) => DeliveryOrderCustomerName(
+                    customerId: l.customerId,
+                    name: l.customerName,
+                  ),
                 ),
                 if (!compact)
                   DataTableColumn(
@@ -125,6 +127,7 @@ class PendingDeliveriesScreen extends ConsumerWidget {
                     cellBuilder: (context, l) => DeliveryOrderCustomerAddress(
                       customerId: l.customerId,
                       shipToId: l.shipToId,
+                      label: l.shipToLabel,
                     ),
                   ),
                 DataTableColumn(
@@ -150,8 +153,10 @@ class PendingDeliveriesScreen extends ConsumerWidget {
                 DataTableColumn(
                   label: l10n.forDeliveryColumnWarehouse,
                   size: ColumnSize.M,
-                  cellBuilder: (context, l) =>
-                      WarehouseNameById(warehouseId: l.warehouseId),
+                  cellBuilder: (context, l) => WarehouseNameById(
+                    warehouseId: l.warehouseId,
+                    name: l.warehouseName,
+                  ),
                 ),
                 DataTableColumn(
                   label: l10n.forDeliveryColumnOpenQuantity,

@@ -116,8 +116,10 @@ class DeliveryOrderApprovalScreen extends ConsumerWidget {
           DataTableColumn(
             label: l10n.deliveryOrderColumnCustomer,
             size: ColumnSize.L,
-            cellBuilder: (context, o) =>
-                DeliveryOrderCustomerName(customerId: o.customerId),
+            cellBuilder: (context, o) => DeliveryOrderCustomerName(
+              customerId: o.customerId,
+              name: o.customerName,
+            ),
           ),
           if (!compact)
             DataTableColumn(
@@ -140,6 +142,8 @@ class DeliveryOrderApprovalScreen extends ConsumerWidget {
                 customerId: o.customerId,
                 facilityId: o.facilityId,
                 shipToId: o.shipToId,
+                shipToLabel: o.shipToLabel,
+                facilityName: o.facilityName,
               ),
             ),
           if (!compact)

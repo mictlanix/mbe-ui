@@ -181,6 +181,9 @@ InventoryIssueSummary _summary(api.InventoryIssueSummary s) =>
       status: _status(s.status),
       creatorId: s.creator,
       createdAt: s.creationTime,
+      warehouseName: s.warehouseName,
+      facilityName: s.facilityName,
+      creatorName: s.creatorName,
     );
 
 InventoryIssue _toIssue(api.InventoryIssueResponse r) => InventoryIssue(

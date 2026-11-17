@@ -252,7 +252,10 @@ class _ApproveFacts extends ConsumerWidget {
       children: [
         fact(
           l10n.deliveryOrderColumnCustomer,
-          DeliveryOrderCustomerName(customerId: target.customerId),
+          DeliveryOrderCustomerName(
+            customerId: target.customerId,
+            name: target.customerName,
+          ),
         ),
         fact(
           l10n.deliveryOrderColumnType,

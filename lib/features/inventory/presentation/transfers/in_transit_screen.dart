@@ -215,14 +215,18 @@ class _InTransitBody extends ConsumerWidget {
             DataTableColumn(
               label: l10n.inventoryTransferColSource,
               size: ColumnSize.M,
-              cellBuilder: (context, r) =>
-                  InventoryWarehouseName(warehouseId: r.warehouseId),
+              cellBuilder: (context, r) => InventoryWarehouseName(
+                warehouseId: r.warehouseId,
+                name: r.warehouseName,
+              ),
             ),
             DataTableColumn(
               label: l10n.inventoryTransferColDestination,
               size: ColumnSize.M,
-              cellBuilder: (context, r) =>
-                  InventoryWarehouseName(warehouseId: r.warehouseToId),
+              cellBuilder: (context, r) => InventoryWarehouseName(
+                warehouseId: r.warehouseToId,
+                name: r.warehouseToName,
+              ),
             ),
             DataTableColumn(
               label: l10n.inventoryTransferLineColCode,

@@ -13233,6 +13233,18 @@ abstract class AppLocalizations {
   /// **'Close'**
   String get inventoryReceiptCostNoticeClose;
 
+  /// mbe-api#322: purchase_cost.zero_price warning
+  ///
+  /// In en, this message translates to:
+  /// **'{code} is priced at 0; its cost was not changed.'**
+  String inventoryReceiptCostZeroPrice(String code);
+
+  /// mbe-api#322: purchase_cost.not_restored warning
+  ///
+  /// In en, this message translates to:
+  /// **'The cost of {code} was not restored: receipt {receipt} changed it since.'**
+  String inventoryReceiptCostNotRestored(String code, String receipt);
+
   /// spec 067: product added to the insufficient-stock refusal
   ///
   /// In en, this message translates to:

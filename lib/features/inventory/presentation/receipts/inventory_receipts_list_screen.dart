@@ -136,15 +136,19 @@ class InventoryReceiptsListScreen extends ConsumerWidget {
                 DataTableColumn(
                   label: l10n.inventoryReceiptColWarehouse,
                   size: ColumnSize.M,
-                  cellBuilder: (context, r) =>
-                      InventoryWarehouseName(warehouseId: r.warehouseId),
+                  cellBuilder: (context, r) => InventoryWarehouseName(
+                    warehouseId: r.warehouseId,
+                    name: r.warehouseName,
+                  ),
                 ),
                 if (!compact)
                   DataTableColumn(
                     label: l10n.inventoryReceiptColFacility,
                     size: ColumnSize.M,
-                    cellBuilder: (context, r) =>
-                        InventoryFacilityName(facilityId: r.facilityId),
+                    cellBuilder: (context, r) => InventoryFacilityName(
+                      facilityId: r.facilityId,
+                      name: r.facilityName,
+                    ),
                   ),
                 DataTableColumn.text(
                   label: l10n.inventoryReceiptColPurchaseOrder,
@@ -161,8 +165,10 @@ class InventoryReceiptsListScreen extends ConsumerWidget {
                   DataTableColumn(
                     label: l10n.inventoryReceiptColCreator,
                     size: ColumnSize.M,
-                    cellBuilder: (context, r) =>
-                        InventoryEmployeeName(employeeId: r.creatorId),
+                    cellBuilder: (context, r) => InventoryEmployeeName(
+                      employeeId: r.creatorId,
+                      name: r.creatorName,
+                    ),
                   ),
                 DataTableColumn(
                   label: l10n.inventoryReceiptColDate,

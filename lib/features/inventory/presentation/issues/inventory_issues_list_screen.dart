@@ -132,15 +132,19 @@ class InventoryIssuesListScreen extends ConsumerWidget {
                 DataTableColumn(
                   label: l10n.inventoryIssueColWarehouse,
                   size: ColumnSize.M,
-                  cellBuilder: (context, r) =>
-                      InventoryWarehouseName(warehouseId: r.warehouseId),
+                  cellBuilder: (context, r) => InventoryWarehouseName(
+                    warehouseId: r.warehouseId,
+                    name: r.warehouseName,
+                  ),
                 ),
                 if (!compact)
                   DataTableColumn(
                     label: l10n.inventoryIssueColFacility,
                     size: ColumnSize.M,
-                    cellBuilder: (context, r) =>
-                        InventoryFacilityName(facilityId: r.facilityId),
+                    cellBuilder: (context, r) => InventoryFacilityName(
+                      facilityId: r.facilityId,
+                      name: r.facilityName,
+                    ),
                   ),
                 DataTableColumn(
                   label: l10n.inventoryIssueColStatus,
@@ -152,8 +156,10 @@ class InventoryIssuesListScreen extends ConsumerWidget {
                   DataTableColumn(
                     label: l10n.inventoryIssueColCreator,
                     size: ColumnSize.M,
-                    cellBuilder: (context, r) =>
-                        InventoryEmployeeName(employeeId: r.creatorId),
+                    cellBuilder: (context, r) => InventoryEmployeeName(
+                      employeeId: r.creatorId,
+                      name: r.creatorName,
+                    ),
                   ),
                 DataTableColumn(
                   label: l10n.inventoryIssueColDate,

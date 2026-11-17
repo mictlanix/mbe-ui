@@ -32,6 +32,9 @@ Map<String, Object?> _line({
   'product_name': 'Cemento gris 50 kg',
   'warehouse': 3,
   'open_quantity': quantity,
+  'customer_display_name': 'Ferretería Acme',
+  'ship_to_label': shipTo == null ? null : 'Av. Juárez 120, Centro, Puebla',
+  'warehouse_name': 'Bodega Norte',
 };
 
 Map<String, Object?> _bucket(
@@ -127,6 +130,9 @@ void main() {
     expect(line.productName, 'Cemento gris 50 kg');
     expect(line.warehouseId, 3);
     expect(line.openQuantity, '3.2500');
+    expect(line.customerName, 'Ferretería Acme');
+    expect(line.shipToLabel, 'Av. Juárez 120, Centro, Puebla');
+    expect(line.warehouseName, 'Bodega Norte');
   });
 
   test('a line with no serial, ship-to or date maps those to null', () async {
@@ -151,6 +157,7 @@ void main() {
 
     expect(line.serial, isNull);
     expect(line.shipToId, isNull);
+    expect(line.shipToLabel, isNull);
     expect(line.scheduledDate, isNull);
   });
 

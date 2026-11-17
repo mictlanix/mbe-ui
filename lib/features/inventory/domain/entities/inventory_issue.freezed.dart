@@ -17,7 +17,9 @@ mixin _$InventoryIssueSummary {
 
  int get id; int get facilityId; int get warehouseId;/// Null until the issue is confirmed. The "Borrador #{id}" text for a
 /// draft is built by the presentation layer from l10n.
- int? get serial; InventoryDocumentStatus get status; int get creatorId; DateTime get createdAt;
+ int? get serial; InventoryDocumentStatus get status; int get creatorId; DateTime get createdAt;/// Server-joined names (mbe-api#327–#330), null when the row is gone.
+/// The name cells fall back to a per-id lookup when one is null.
+ String? get warehouseName; String? get facilityName; String? get creatorName;
 /// Create a copy of InventoryIssueSummary
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,20 +31,20 @@ $InventoryIssueSummaryCopyWith<InventoryIssueSummary> get copyWith => _$Inventor
 @override
 bool operator ==(Object other) {
   final _this = this as InventoryIssueSummary;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is InventoryIssueSummary&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.warehouseId, _this.warehouseId) || other.warehouseId == _this.warehouseId)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.creatorId, _this.creatorId) || other.creatorId == _this.creatorId)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is InventoryIssueSummary&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.warehouseId, _this.warehouseId) || other.warehouseId == _this.warehouseId)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.creatorId, _this.creatorId) || other.creatorId == _this.creatorId)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.warehouseName, _this.warehouseName) || other.warehouseName == _this.warehouseName)&&(identical(other.facilityName, _this.facilityName) || other.facilityName == _this.facilityName)&&(identical(other.creatorName, _this.creatorName) || other.creatorName == _this.creatorName));
 }
 
 
 @override
 int get hashCode {
   final _this = this as InventoryIssueSummary;
-  return Object.hash(runtimeType,_this.id,_this.facilityId,_this.warehouseId,_this.serial,_this.status,_this.creatorId,_this.createdAt);
+  return Object.hash(runtimeType,_this.id,_this.facilityId,_this.warehouseId,_this.serial,_this.status,_this.creatorId,_this.createdAt,_this.warehouseName,_this.facilityName,_this.creatorName);
 }
 
 @override
 String toString() {
   final _this = this as InventoryIssueSummary;
-  return 'InventoryIssueSummary(id: ${_this.id}, facilityId: ${_this.facilityId}, warehouseId: ${_this.warehouseId}, serial: ${_this.serial}, status: ${_this.status}, creatorId: ${_this.creatorId}, createdAt: ${_this.createdAt})';
+  return 'InventoryIssueSummary(id: ${_this.id}, facilityId: ${_this.facilityId}, warehouseId: ${_this.warehouseId}, serial: ${_this.serial}, status: ${_this.status}, creatorId: ${_this.creatorId}, createdAt: ${_this.createdAt}, warehouseName: ${_this.warehouseName}, facilityName: ${_this.facilityName}, creatorName: ${_this.creatorName})';
 }
 
 
@@ -53,7 +55,7 @@ abstract mixin class $InventoryIssueSummaryCopyWith<$Res>  {
   factory $InventoryIssueSummaryCopyWith(InventoryIssueSummary value, $Res Function(InventoryIssueSummary) _then) = _$InventoryIssueSummaryCopyWithImpl;
 @useResult
 $Res call({
- int id, int facilityId, int warehouseId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt
+ int id, int facilityId, int warehouseId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt, String? warehouseName, String? facilityName, String? creatorName
 });
 
 
@@ -70,7 +72,7 @@ class _$InventoryIssueSummaryCopyWithImpl<$Res>
 
 /// Create a copy of InventoryIssueSummary
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,Object? warehouseName = freezed,Object? facilityName = freezed,Object? creatorName = freezed,}) {
   return _then(InventoryIssueSummary(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -79,7 +81,10 @@ as int,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullabl
 as int?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as InventoryDocumentStatus,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,warehouseName: freezed == warehouseName ? _self.warehouseName : warehouseName // ignore: cast_nullable_to_non_nullable
+as String?,facilityName: freezed == facilityName ? _self.facilityName : facilityName // ignore: cast_nullable_to_non_nullable
+as String?,creatorName: freezed == creatorName ? _self.creatorName : creatorName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -164,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? warehouseName,  String? facilityName,  String? creatorName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _InventoryIssueSummary() when $default != null:
-return $default(_that.id,_that.facilityId,_that.warehouseId,_that.serial,_that.status,_that.creatorId,_that.createdAt);case _:
+return $default(_that.id,_that.facilityId,_that.warehouseId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.warehouseName,_that.facilityName,_that.creatorName);case _:
   return orElse();
 
 }
@@ -185,10 +190,10 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.serial,_that.s
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? warehouseName,  String? facilityName,  String? creatorName)  $default,) {final _that = this;
 switch (_that) {
 case _InventoryIssueSummary():
-return $default(_that.id,_that.facilityId,_that.warehouseId,_that.serial,_that.status,_that.creatorId,_that.createdAt);case _:
+return $default(_that.id,_that.facilityId,_that.warehouseId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.warehouseName,_that.facilityName,_that.creatorName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +210,10 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.serial,_that.s
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int warehouseId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int warehouseId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? warehouseName,  String? facilityName,  String? creatorName)?  $default,) {final _that = this;
 switch (_that) {
 case _InventoryIssueSummary() when $default != null:
-return $default(_that.id,_that.facilityId,_that.warehouseId,_that.serial,_that.status,_that.creatorId,_that.createdAt);case _:
+return $default(_that.id,_that.facilityId,_that.warehouseId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.warehouseName,_that.facilityName,_that.creatorName);case _:
   return null;
 
 }
@@ -220,7 +225,7 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.serial,_that.s
 
 
 class _InventoryIssueSummary implements InventoryIssueSummary {
-  const _InventoryIssueSummary({required this.id, required this.facilityId, required this.warehouseId, this.serial, required this.status, required this.creatorId, required this.createdAt});
+  const _InventoryIssueSummary({required this.id, required this.facilityId, required this.warehouseId, this.serial, required this.status, required this.creatorId, required this.createdAt, this.warehouseName, this.facilityName, this.creatorName});
   
 
 @override final  int id;
@@ -232,6 +237,11 @@ class _InventoryIssueSummary implements InventoryIssueSummary {
 @override final  InventoryDocumentStatus status;
 @override final  int creatorId;
 @override final  DateTime createdAt;
+/// Server-joined names (mbe-api#327–#330), null when the row is gone.
+/// The name cells fall back to a per-id lookup when one is null.
+@override final  String? warehouseName;
+@override final  String? facilityName;
+@override final  String? creatorName;
 
 /// Create a copy of InventoryIssueSummary
 /// with the given fields replaced by the non-null parameter values.
@@ -243,18 +253,18 @@ _$InventoryIssueSummaryCopyWith<_InventoryIssueSummary> get copyWith => __$Inven
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _InventoryIssueSummary&&(identical(other.id, id) || other.id == id)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.warehouseId, warehouseId) || other.warehouseId == warehouseId)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.status, status) || other.status == status)&&(identical(other.creatorId, creatorId) || other.creatorId == creatorId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _InventoryIssueSummary&&(identical(other.id, id) || other.id == id)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.warehouseId, warehouseId) || other.warehouseId == warehouseId)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.status, status) || other.status == status)&&(identical(other.creatorId, creatorId) || other.creatorId == creatorId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.warehouseName, warehouseName) || other.warehouseName == warehouseName)&&(identical(other.facilityName, facilityName) || other.facilityName == facilityName)&&(identical(other.creatorName, creatorName) || other.creatorName == creatorName));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,facilityId,warehouseId,serial,status,creatorId,createdAt);
+    return Object.hash(runtimeType,id,facilityId,warehouseId,serial,status,creatorId,createdAt,warehouseName,facilityName,creatorName);
 }
 
 @override
 String toString() {
-    return 'InventoryIssueSummary(id: $id, facilityId: $facilityId, warehouseId: $warehouseId, serial: $serial, status: $status, creatorId: $creatorId, createdAt: $createdAt)';
+    return 'InventoryIssueSummary(id: $id, facilityId: $facilityId, warehouseId: $warehouseId, serial: $serial, status: $status, creatorId: $creatorId, createdAt: $createdAt, warehouseName: $warehouseName, facilityName: $facilityName, creatorName: $creatorName)';
 }
 
 
@@ -265,7 +275,7 @@ abstract mixin class _$InventoryIssueSummaryCopyWith<$Res> implements $Inventory
   factory _$InventoryIssueSummaryCopyWith(_InventoryIssueSummary value, $Res Function(_InventoryIssueSummary) _then) = __$InventoryIssueSummaryCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int facilityId, int warehouseId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt
+ int id, int facilityId, int warehouseId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt, String? warehouseName, String? facilityName, String? creatorName
 });
 
 
@@ -282,7 +292,7 @@ class __$InventoryIssueSummaryCopyWithImpl<$Res>
 
 /// Create a copy of InventoryIssueSummary
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,Object? warehouseName = freezed,Object? facilityName = freezed,Object? creatorName = freezed,}) {
   return _then(_InventoryIssueSummary(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -291,7 +301,10 @@ as int,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullabl
 as int?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as InventoryDocumentStatus,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,warehouseName: freezed == warehouseName ? _self.warehouseName : warehouseName // ignore: cast_nullable_to_non_nullable
+as String?,facilityName: freezed == facilityName ? _self.facilityName : facilityName // ignore: cast_nullable_to_non_nullable
+as String?,creatorName: freezed == creatorName ? _self.creatorName : creatorName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

@@ -4,6 +4,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/over_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/receipt_cost_warning.dart';
 
 part 'inventory_receipt.freezed.dart';
 
@@ -22,6 +23,12 @@ abstract class InventoryReceiptSummary with _$InventoryReceiptSummary {
     required InventoryDocumentStatus status,
     required int creatorId,
     required DateTime createdAt,
+
+    /// Server-joined names (mbe-api#327–#330), null when the row is gone.
+    /// The name cells fall back to a per-id lookup when one is null.
+    String? warehouseName,
+    String? facilityName,
+    String? creatorName,
   }) = _InventoryReceiptSummary;
 }
 
@@ -70,17 +77,14 @@ abstract class InventoryReceipt with _$InventoryReceipt {
     required DateTime modifiedAt,
     required List<InventoryReceiptLine> lines,
 
-    /// Only the count of the server's `warnings[]` is kept; their text is
-    /// never shown (spec FR-015a).
-    @Default(0) int serverWarningCount,
+    /// The cost warnings of a confirm or cancel response (mbe-api#322). The
+    /// server's over-receipt warnings are left out: [overReceipts] computes
+    /// the same figures from the lines, drafts included.
+    @Default(<ReceiptCostWarning>[]) List<ReceiptCostWarning> costWarnings,
   }) = _InventoryReceipt;
 
   bool get isDraft => status == InventoryDocumentStatus.draft;
   bool get isLinked => purchaseOrderId != null;
 
   List<OverReceipt> get overReceipts => computeOverReceipts(lines);
-
-  /// Cost warnings the server raised beyond the over-receipts this client
-  /// computes. Read only from a confirm or cancel response.
-  bool get hasUnmappedWarnings => serverWarningCount > overReceipts.length;
 }

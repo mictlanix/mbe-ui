@@ -22,8 +22,8 @@ enum PendingDeliveryPeriod {
 
 /// One delivery-order line still waiting to be loaded (data-model §2).
 ///
-/// Customer, ship-to and warehouse arrive as ids only; names are looked up
-/// by the screen.
+/// Customer, ship-to and warehouse names come joined by the server
+/// (mbe-api#326); the screen looks one up by id only when it is null.
 class PendingDeliveryLine {
   const PendingDeliveryLine({
     required this.deliveryOrderId,
@@ -38,6 +38,9 @@ class PendingDeliveryLine {
     required this.productName,
     required this.warehouseId,
     required this.openQuantity,
+    this.customerName,
+    this.shipToLabel,
+    this.warehouseName,
   });
 
   factory PendingDeliveryLine.fromResponse(api.PendingDeliveryLine r) =>
@@ -54,6 +57,9 @@ class PendingDeliveryLine {
         productName: r.productName,
         warehouseId: r.warehouse,
         openQuantity: r.openQuantity,
+        customerName: r.customerDisplayName,
+        shipToLabel: r.shipToLabel,
+        warehouseName: r.warehouseName,
       );
 
   final int deliveryOrderId;
@@ -70,6 +76,15 @@ class PendingDeliveryLine {
 
   /// The server's decimal string; format it with `display.quantity`.
   final String openQuantity;
+
+  /// Null when the row is gone.
+  final String? customerName;
+
+  /// Null when the address row is gone.
+  final String? shipToLabel;
+
+  /// Null when the row is gone.
+  final String? warehouseName;
 }
 
 /// One bucket of the response: its date (single-day periods only), its total

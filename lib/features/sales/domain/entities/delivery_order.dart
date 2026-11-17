@@ -27,6 +27,13 @@ abstract class DeliveryOrderSummary with _$DeliveryOrderSummary {
     required DeliveryOrderStatus status,
     required FulfillmentType type,
     int? parentId,
+
+    /// Server-joined names (mbe-api#324, #325). Null when the row is gone;
+    /// [shipToLabel] is also null for a counter pickup. The name cells fall
+    /// back to a per-id lookup when one is null.
+    String? customerName,
+    String? shipToLabel,
+    String? facilityName,
   }) = _DeliveryOrderSummary;
 
   factory DeliveryOrderSummary.fromResponse(api.DeliveryOrderSummary r) =>
@@ -42,6 +49,9 @@ abstract class DeliveryOrderSummary with _$DeliveryOrderSummary {
         status: DeliveryOrderStatus.fromApi(r.status),
         type: FulfillmentType.fromApi(r.fulfillmentType),
         parentId: r.parentDeliveryOrder,
+        customerName: r.customerDisplayName,
+        shipToLabel: r.shipToLabel,
+        facilityName: r.facilityName,
       );
 }
 
@@ -63,6 +73,13 @@ abstract class DeliveryOrder with _$DeliveryOrder {
     required DeliveryOrderStatus status,
     required FulfillmentType type,
     int? parentId,
+
+    /// Server-joined names (mbe-api#324, #325). Null when the row is gone;
+    /// [shipToLabel] is also null for a counter pickup. The name cells fall
+    /// back to a per-id lookup when one is null.
+    String? customerName,
+    String? shipToLabel,
+    String? facilityName,
     int? contactId,
     String? comment,
     String? rejectionReason,
@@ -85,6 +102,9 @@ abstract class DeliveryOrder with _$DeliveryOrder {
         status: DeliveryOrderStatus.fromApi(r.status),
         type: FulfillmentType.fromApi(r.fulfillmentType),
         parentId: r.parentDeliveryOrder,
+        customerName: r.customerDisplayName,
+        shipToLabel: r.shipToLabel,
+        facilityName: r.facilityName,
         contactId: r.contact,
         comment: r.comment,
         rejectionReason: r.rejectionReason,

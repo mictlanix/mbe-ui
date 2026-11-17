@@ -102,6 +102,26 @@ void main() {
     expect(find.byType(TextField), findsNothing);
   });
 
+  testWidgets("the server's names show as is, with no lookup "
+      '(mbe-api#327)', (tester) async {
+    h.serve([
+      aReceiptSummary().copyWith(
+        warehouseName: 'Centro',
+        facilityName: 'Matriz',
+        creatorName: 'Ana Ruiz',
+      ),
+    ]);
+    // Every lookup fails, so a name on screen came from the row.
+    await h.pump(tester, namesFail: true);
+
+    expect(find.text('Centro'), findsOneWidget);
+    expect(find.text('Matriz'), findsOneWidget);
+    expect(find.text('Ana Ruiz'), findsOneWidget);
+    for (final id in ['#3', '#2', '#5']) {
+      expect(find.text(id), findsNothing);
+    }
+  });
+
   testWidgets('a failed name lookup shows "#id"', (tester) async {
     h.serve(rows);
     await h.pump(tester, namesFail: true);

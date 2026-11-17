@@ -5,9 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/core/domain/address_type.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
+import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/address_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer.dart';
+import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_name_cells.dart';
 
@@ -103,6 +106,73 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('#3'), findsOneWidget);
+    });
+  });
+
+  group('server names (mbe-api#324–#326)', () {
+    // Every name lookup fails the test: a server name must not trigger one.
+    // The customer itself stays served by `pump`; its address differs from
+    // the label given below, so the label on screen came from the row.
+    final noLookups = [
+      customerDisplayNameProvider.overrideWith(
+        (ref, id) async => fail('customer name $id looked up'),
+      ),
+      facilityDisplayNameProvider.overrideWith(
+        (ref, id) async => fail('facility $id looked up'),
+      ),
+      warehouseDisplayNameProvider.overrideWith(
+        (ref, id) async => fail('warehouse $id looked up'),
+      ),
+    ];
+
+    testWidgets('each cell shows the name it is given, with no lookup', (
+      tester,
+    ) async {
+      await pump(
+        tester,
+        const Column(
+          children: [
+            DeliveryOrderCustomerName(customerId: 7, name: 'Ferretería Acme'),
+            DeliveryOrderShipTo(
+              type: FulfillmentType.delivery,
+              customerId: 7,
+              facilityId: 9,
+              shipToId: 11,
+              shipToLabel: 'Av. Reforma 5, Centro',
+            ),
+            DeliveryOrderShipTo(
+              type: FulfillmentType.counterPickup,
+              customerId: 7,
+              facilityId: 9,
+              shipToId: null,
+              facilityName: 'Matriz',
+            ),
+            WarehouseNameById(warehouseId: 3, name: 'Bodega Norte'),
+          ],
+        ),
+        noLookups,
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Ferretería Acme'), findsOneWidget);
+      expect(find.text('Av. Reforma 5, Centro'), findsOneWidget);
+      expect(find.text('Matriz'), findsOneWidget);
+      expect(find.text('Bodega Norte'), findsOneWidget);
+    });
+
+    testWidgets('a null name falls back to the lookup', (tester) async {
+      await pump(
+        tester,
+        const DeliveryOrderCustomerAddress(
+          customerId: 7,
+          shipToId: 11,
+          label: null,
+        ),
+        const [],
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Av. Juárez 120, Centro'), findsOneWidget);
     });
   });
 }

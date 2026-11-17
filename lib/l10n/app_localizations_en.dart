@@ -7906,6 +7906,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inventoryReceiptCostNoticeClose => 'Close';
 
   @override
+  String inventoryReceiptCostZeroPrice(String code) {
+    return '$code is priced at 0; its cost was not changed.';
+  }
+
+  @override
+  String inventoryReceiptCostNotRestored(String code, String receipt) {
+    return 'The cost of $code was not restored: receipt $receipt changed it since.';
+  }
+
+  @override
   String inventoryReceiptRefusalProduct(String code) {
     return 'Product: $code';
   }

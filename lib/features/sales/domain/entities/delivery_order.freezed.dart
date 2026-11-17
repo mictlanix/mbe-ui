@@ -16,7 +16,10 @@ T _$identity<T>(T value) => value;
 mixin _$DeliveryOrderSummary {
 
  int get id; int get facilityId;/// Null on a draft — the server assigns it on confirmation.
- int? get serial; int get customerId; List<int> get salesOrderIds; int? get shipToId; DateTime? get date; int get priority; DeliveryOrderStatus get status; FulfillmentType get type; int? get parentId;
+ int? get serial; int get customerId; List<int> get salesOrderIds; int? get shipToId; DateTime? get date; int get priority; DeliveryOrderStatus get status; FulfillmentType get type; int? get parentId;/// Server-joined names (mbe-api#324, #325). Null when the row is gone;
+/// [shipToLabel] is also null for a counter pickup. The name cells fall
+/// back to a per-id lookup when one is null.
+ String? get customerName; String? get shipToLabel; String? get facilityName;
 /// Create a copy of DeliveryOrderSummary
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,20 +31,20 @@ $DeliveryOrderSummaryCopyWith<DeliveryOrderSummary> get copyWith => _$DeliveryOr
 @override
 bool operator ==(Object other) {
   final _this = this as DeliveryOrderSummary;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeliveryOrderSummary&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&const DeepCollectionEquality().equals(other.salesOrderIds, _this.salesOrderIds)&&(identical(other.shipToId, _this.shipToId) || other.shipToId == _this.shipToId)&&(identical(other.date, _this.date) || other.date == _this.date)&&(identical(other.priority, _this.priority) || other.priority == _this.priority)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.parentId, _this.parentId) || other.parentId == _this.parentId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeliveryOrderSummary&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&const DeepCollectionEquality().equals(other.salesOrderIds, _this.salesOrderIds)&&(identical(other.shipToId, _this.shipToId) || other.shipToId == _this.shipToId)&&(identical(other.date, _this.date) || other.date == _this.date)&&(identical(other.priority, _this.priority) || other.priority == _this.priority)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.parentId, _this.parentId) || other.parentId == _this.parentId)&&(identical(other.customerName, _this.customerName) || other.customerName == _this.customerName)&&(identical(other.shipToLabel, _this.shipToLabel) || other.shipToLabel == _this.shipToLabel)&&(identical(other.facilityName, _this.facilityName) || other.facilityName == _this.facilityName));
 }
 
 
 @override
 int get hashCode {
   final _this = this as DeliveryOrderSummary;
-  return Object.hash(runtimeType,_this.id,_this.facilityId,_this.serial,_this.customerId,const DeepCollectionEquality().hash(_this.salesOrderIds),_this.shipToId,_this.date,_this.priority,_this.status,_this.type,_this.parentId);
+  return Object.hash(runtimeType,_this.id,_this.facilityId,_this.serial,_this.customerId,const DeepCollectionEquality().hash(_this.salesOrderIds),_this.shipToId,_this.date,_this.priority,_this.status,_this.type,_this.parentId,_this.customerName,_this.shipToLabel,_this.facilityName);
 }
 
 @override
 String toString() {
   final _this = this as DeliveryOrderSummary;
-  return 'DeliveryOrderSummary(id: ${_this.id}, facilityId: ${_this.facilityId}, serial: ${_this.serial}, customerId: ${_this.customerId}, salesOrderIds: ${_this.salesOrderIds}, shipToId: ${_this.shipToId}, date: ${_this.date}, priority: ${_this.priority}, status: ${_this.status}, type: ${_this.type}, parentId: ${_this.parentId})';
+  return 'DeliveryOrderSummary(id: ${_this.id}, facilityId: ${_this.facilityId}, serial: ${_this.serial}, customerId: ${_this.customerId}, salesOrderIds: ${_this.salesOrderIds}, shipToId: ${_this.shipToId}, date: ${_this.date}, priority: ${_this.priority}, status: ${_this.status}, type: ${_this.type}, parentId: ${_this.parentId}, customerName: ${_this.customerName}, shipToLabel: ${_this.shipToLabel}, facilityName: ${_this.facilityName})';
 }
 
 
@@ -52,7 +55,7 @@ abstract mixin class $DeliveryOrderSummaryCopyWith<$Res>  {
   factory $DeliveryOrderSummaryCopyWith(DeliveryOrderSummary value, $Res Function(DeliveryOrderSummary) _then) = _$DeliveryOrderSummaryCopyWithImpl;
 @useResult
 $Res call({
- int id, int facilityId, int? serial, int customerId, List<int> salesOrderIds, int? shipToId, DateTime? date, int priority, DeliveryOrderStatus status, FulfillmentType type, int? parentId
+ int id, int facilityId, int? serial, int customerId, List<int> salesOrderIds, int? shipToId, DateTime? date, int priority, DeliveryOrderStatus status, FulfillmentType type, int? parentId, String? customerName, String? shipToLabel, String? facilityName
 });
 
 
@@ -69,7 +72,7 @@ class _$DeliveryOrderSummaryCopyWithImpl<$Res>
 
 /// Create a copy of DeliveryOrderSummary
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? facilityId = null,Object? serial = freezed,Object? customerId = null,Object? salesOrderIds = null,Object? shipToId = freezed,Object? date = freezed,Object? priority = null,Object? status = null,Object? type = null,Object? parentId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? facilityId = null,Object? serial = freezed,Object? customerId = null,Object? salesOrderIds = null,Object? shipToId = freezed,Object? date = freezed,Object? priority = null,Object? status = null,Object? type = null,Object? parentId = freezed,Object? customerName = freezed,Object? shipToLabel = freezed,Object? facilityName = freezed,}) {
   return _then(DeliveryOrderSummary(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -82,7 +85,10 @@ as DateTime?,priority: null == priority ? _self.priority : priority // ignore: c
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as DeliveryOrderStatus,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as FulfillmentType,parentId: freezed == parentId ? _self.parentId : parentId // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,customerName: freezed == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
+as String?,shipToLabel: freezed == shipToLabel ? _self.shipToLabel : shipToLabel // ignore: cast_nullable_to_non_nullable
+as String?,facilityName: freezed == facilityName ? _self.facilityName : facilityName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -167,10 +173,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int? serial,  int customerId,  List<int> salesOrderIds,  int? shipToId,  DateTime? date,  int priority,  DeliveryOrderStatus status,  FulfillmentType type,  int? parentId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int? serial,  int customerId,  List<int> salesOrderIds,  int? shipToId,  DateTime? date,  int priority,  DeliveryOrderStatus status,  FulfillmentType type,  int? parentId,  String? customerName,  String? shipToLabel,  String? facilityName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DeliveryOrderSummary() when $default != null:
-return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.salesOrderIds,_that.shipToId,_that.date,_that.priority,_that.status,_that.type,_that.parentId);case _:
+return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.salesOrderIds,_that.shipToId,_that.date,_that.priority,_that.status,_that.type,_that.parentId,_that.customerName,_that.shipToLabel,_that.facilityName);case _:
   return orElse();
 
 }
@@ -188,10 +194,10 @@ return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.sa
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int? serial,  int customerId,  List<int> salesOrderIds,  int? shipToId,  DateTime? date,  int priority,  DeliveryOrderStatus status,  FulfillmentType type,  int? parentId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int? serial,  int customerId,  List<int> salesOrderIds,  int? shipToId,  DateTime? date,  int priority,  DeliveryOrderStatus status,  FulfillmentType type,  int? parentId,  String? customerName,  String? shipToLabel,  String? facilityName)  $default,) {final _that = this;
 switch (_that) {
 case _DeliveryOrderSummary():
-return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.salesOrderIds,_that.shipToId,_that.date,_that.priority,_that.status,_that.type,_that.parentId);case _:
+return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.salesOrderIds,_that.shipToId,_that.date,_that.priority,_that.status,_that.type,_that.parentId,_that.customerName,_that.shipToLabel,_that.facilityName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +214,10 @@ return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.sa
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int? serial,  int customerId,  List<int> salesOrderIds,  int? shipToId,  DateTime? date,  int priority,  DeliveryOrderStatus status,  FulfillmentType type,  int? parentId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int? serial,  int customerId,  List<int> salesOrderIds,  int? shipToId,  DateTime? date,  int priority,  DeliveryOrderStatus status,  FulfillmentType type,  int? parentId,  String? customerName,  String? shipToLabel,  String? facilityName)?  $default,) {final _that = this;
 switch (_that) {
 case _DeliveryOrderSummary() when $default != null:
-return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.salesOrderIds,_that.shipToId,_that.date,_that.priority,_that.status,_that.type,_that.parentId);case _:
+return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.salesOrderIds,_that.shipToId,_that.date,_that.priority,_that.status,_that.type,_that.parentId,_that.customerName,_that.shipToLabel,_that.facilityName);case _:
   return null;
 
 }
@@ -223,7 +229,7 @@ return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.sa
 
 
 class _DeliveryOrderSummary implements DeliveryOrderSummary {
-  const _DeliveryOrderSummary({required this.id, required this.facilityId, this.serial, required this.customerId,  List<int> salesOrderIds = const <int>[], this.shipToId, this.date, required this.priority, required this.status, required this.type, this.parentId}): _salesOrderIds = salesOrderIds;
+  const _DeliveryOrderSummary({required this.id, required this.facilityId, this.serial, required this.customerId,  List<int> salesOrderIds = const <int>[], this.shipToId, this.date, required this.priority, required this.status, required this.type, this.parentId, this.customerName, this.shipToLabel, this.facilityName}): _salesOrderIds = salesOrderIds;
   
 
 @override final  int id;
@@ -244,6 +250,12 @@ class _DeliveryOrderSummary implements DeliveryOrderSummary {
 @override final  DeliveryOrderStatus status;
 @override final  FulfillmentType type;
 @override final  int? parentId;
+/// Server-joined names (mbe-api#324, #325). Null when the row is gone;
+/// [shipToLabel] is also null for a counter pickup. The name cells fall
+/// back to a per-id lookup when one is null.
+@override final  String? customerName;
+@override final  String? shipToLabel;
+@override final  String? facilityName;
 
 /// Create a copy of DeliveryOrderSummary
 /// with the given fields replaced by the non-null parameter values.
@@ -255,18 +267,18 @@ _$DeliveryOrderSummaryCopyWith<_DeliveryOrderSummary> get copyWith => __$Deliver
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeliveryOrderSummary&&(identical(other.id, id) || other.id == id)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&const DeepCollectionEquality().equals(other.salesOrderIds, _salesOrderIds)&&(identical(other.shipToId, shipToId) || other.shipToId == shipToId)&&(identical(other.date, date) || other.date == date)&&(identical(other.priority, priority) || other.priority == priority)&&(identical(other.status, status) || other.status == status)&&(identical(other.type, type) || other.type == type)&&(identical(other.parentId, parentId) || other.parentId == parentId));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeliveryOrderSummary&&(identical(other.id, id) || other.id == id)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&const DeepCollectionEquality().equals(other.salesOrderIds, _salesOrderIds)&&(identical(other.shipToId, shipToId) || other.shipToId == shipToId)&&(identical(other.date, date) || other.date == date)&&(identical(other.priority, priority) || other.priority == priority)&&(identical(other.status, status) || other.status == status)&&(identical(other.type, type) || other.type == type)&&(identical(other.parentId, parentId) || other.parentId == parentId)&&(identical(other.customerName, customerName) || other.customerName == customerName)&&(identical(other.shipToLabel, shipToLabel) || other.shipToLabel == shipToLabel)&&(identical(other.facilityName, facilityName) || other.facilityName == facilityName));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,facilityId,serial,customerId,const DeepCollectionEquality().hash(_salesOrderIds),shipToId,date,priority,status,type,parentId);
+    return Object.hash(runtimeType,id,facilityId,serial,customerId,const DeepCollectionEquality().hash(_salesOrderIds),shipToId,date,priority,status,type,parentId,customerName,shipToLabel,facilityName);
 }
 
 @override
 String toString() {
-    return 'DeliveryOrderSummary(id: $id, facilityId: $facilityId, serial: $serial, customerId: $customerId, salesOrderIds: $salesOrderIds, shipToId: $shipToId, date: $date, priority: $priority, status: $status, type: $type, parentId: $parentId)';
+    return 'DeliveryOrderSummary(id: $id, facilityId: $facilityId, serial: $serial, customerId: $customerId, salesOrderIds: $salesOrderIds, shipToId: $shipToId, date: $date, priority: $priority, status: $status, type: $type, parentId: $parentId, customerName: $customerName, shipToLabel: $shipToLabel, facilityName: $facilityName)';
 }
 
 
@@ -277,7 +289,7 @@ abstract mixin class _$DeliveryOrderSummaryCopyWith<$Res> implements $DeliveryOr
   factory _$DeliveryOrderSummaryCopyWith(_DeliveryOrderSummary value, $Res Function(_DeliveryOrderSummary) _then) = __$DeliveryOrderSummaryCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int facilityId, int? serial, int customerId, List<int> salesOrderIds, int? shipToId, DateTime? date, int priority, DeliveryOrderStatus status, FulfillmentType type, int? parentId
+ int id, int facilityId, int? serial, int customerId, List<int> salesOrderIds, int? shipToId, DateTime? date, int priority, DeliveryOrderStatus status, FulfillmentType type, int? parentId, String? customerName, String? shipToLabel, String? facilityName
 });
 
 
@@ -294,7 +306,7 @@ class __$DeliveryOrderSummaryCopyWithImpl<$Res>
 
 /// Create a copy of DeliveryOrderSummary
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? facilityId = null,Object? serial = freezed,Object? customerId = null,Object? salesOrderIds = null,Object? shipToId = freezed,Object? date = freezed,Object? priority = null,Object? status = null,Object? type = null,Object? parentId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? facilityId = null,Object? serial = freezed,Object? customerId = null,Object? salesOrderIds = null,Object? shipToId = freezed,Object? date = freezed,Object? priority = null,Object? status = null,Object? type = null,Object? parentId = freezed,Object? customerName = freezed,Object? shipToLabel = freezed,Object? facilityName = freezed,}) {
   return _then(_DeliveryOrderSummary(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -307,7 +319,10 @@ as DateTime?,priority: null == priority ? _self.priority : priority // ignore: c
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as DeliveryOrderStatus,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as FulfillmentType,parentId: freezed == parentId ? _self.parentId : parentId // ignore: cast_nullable_to_non_nullable
-as int?,
+as int?,customerName: freezed == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
+as String?,shipToLabel: freezed == shipToLabel ? _self.shipToLabel : shipToLabel // ignore: cast_nullable_to_non_nullable
+as String?,facilityName: freezed == facilityName ? _self.facilityName : facilityName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -317,7 +332,10 @@ as int?,
 /// @nodoc
 mixin _$DeliveryOrder {
 
- int get id; int get facilityId; int? get serial; int get customerId; List<int> get salesOrderIds; int? get shipToId; DateTime? get date; int get priority; DeliveryOrderStatus get status; FulfillmentType get type; int? get parentId; int? get contactId; String? get comment; String? get rejectionReason; int? get proofId; DateTime get createdAt; DateTime get modifiedAt; List<DeliveryOrderLine> get lines;
+ int get id; int get facilityId; int? get serial; int get customerId; List<int> get salesOrderIds; int? get shipToId; DateTime? get date; int get priority; DeliveryOrderStatus get status; FulfillmentType get type; int? get parentId;/// Server-joined names (mbe-api#324, #325). Null when the row is gone;
+/// [shipToLabel] is also null for a counter pickup. The name cells fall
+/// back to a per-id lookup when one is null.
+ String? get customerName; String? get shipToLabel; String? get facilityName; int? get contactId; String? get comment; String? get rejectionReason; int? get proofId; DateTime get createdAt; DateTime get modifiedAt; List<DeliveryOrderLine> get lines;
 /// Create a copy of DeliveryOrder
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -329,20 +347,20 @@ $DeliveryOrderCopyWith<DeliveryOrder> get copyWith => _$DeliveryOrderCopyWithImp
 @override
 bool operator ==(Object other) {
   final _this = this as DeliveryOrder;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeliveryOrder&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&const DeepCollectionEquality().equals(other.salesOrderIds, _this.salesOrderIds)&&(identical(other.shipToId, _this.shipToId) || other.shipToId == _this.shipToId)&&(identical(other.date, _this.date) || other.date == _this.date)&&(identical(other.priority, _this.priority) || other.priority == _this.priority)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.parentId, _this.parentId) || other.parentId == _this.parentId)&&(identical(other.contactId, _this.contactId) || other.contactId == _this.contactId)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.rejectionReason, _this.rejectionReason) || other.rejectionReason == _this.rejectionReason)&&(identical(other.proofId, _this.proofId) || other.proofId == _this.proofId)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.modifiedAt, _this.modifiedAt) || other.modifiedAt == _this.modifiedAt)&&const DeepCollectionEquality().equals(other.lines, _this.lines));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DeliveryOrder&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&const DeepCollectionEquality().equals(other.salesOrderIds, _this.salesOrderIds)&&(identical(other.shipToId, _this.shipToId) || other.shipToId == _this.shipToId)&&(identical(other.date, _this.date) || other.date == _this.date)&&(identical(other.priority, _this.priority) || other.priority == _this.priority)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.type, _this.type) || other.type == _this.type)&&(identical(other.parentId, _this.parentId) || other.parentId == _this.parentId)&&(identical(other.customerName, _this.customerName) || other.customerName == _this.customerName)&&(identical(other.shipToLabel, _this.shipToLabel) || other.shipToLabel == _this.shipToLabel)&&(identical(other.facilityName, _this.facilityName) || other.facilityName == _this.facilityName)&&(identical(other.contactId, _this.contactId) || other.contactId == _this.contactId)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.rejectionReason, _this.rejectionReason) || other.rejectionReason == _this.rejectionReason)&&(identical(other.proofId, _this.proofId) || other.proofId == _this.proofId)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.modifiedAt, _this.modifiedAt) || other.modifiedAt == _this.modifiedAt)&&const DeepCollectionEquality().equals(other.lines, _this.lines));
 }
 
 
 @override
 int get hashCode {
   final _this = this as DeliveryOrder;
-  return Object.hash(runtimeType,_this.id,_this.facilityId,_this.serial,_this.customerId,const DeepCollectionEquality().hash(_this.salesOrderIds),_this.shipToId,_this.date,_this.priority,_this.status,_this.type,_this.parentId,_this.contactId,_this.comment,_this.rejectionReason,_this.proofId,_this.createdAt,_this.modifiedAt,const DeepCollectionEquality().hash(_this.lines));
+  return Object.hashAll([runtimeType,_this.id,_this.facilityId,_this.serial,_this.customerId,const DeepCollectionEquality().hash(_this.salesOrderIds),_this.shipToId,_this.date,_this.priority,_this.status,_this.type,_this.parentId,_this.customerName,_this.shipToLabel,_this.facilityName,_this.contactId,_this.comment,_this.rejectionReason,_this.proofId,_this.createdAt,_this.modifiedAt,const DeepCollectionEquality().hash(_this.lines)]);
 }
 
 @override
 String toString() {
   final _this = this as DeliveryOrder;
-  return 'DeliveryOrder(id: ${_this.id}, facilityId: ${_this.facilityId}, serial: ${_this.serial}, customerId: ${_this.customerId}, salesOrderIds: ${_this.salesOrderIds}, shipToId: ${_this.shipToId}, date: ${_this.date}, priority: ${_this.priority}, status: ${_this.status}, type: ${_this.type}, parentId: ${_this.parentId}, contactId: ${_this.contactId}, comment: ${_this.comment}, rejectionReason: ${_this.rejectionReason}, proofId: ${_this.proofId}, createdAt: ${_this.createdAt}, modifiedAt: ${_this.modifiedAt}, lines: ${_this.lines})';
+  return 'DeliveryOrder(id: ${_this.id}, facilityId: ${_this.facilityId}, serial: ${_this.serial}, customerId: ${_this.customerId}, salesOrderIds: ${_this.salesOrderIds}, shipToId: ${_this.shipToId}, date: ${_this.date}, priority: ${_this.priority}, status: ${_this.status}, type: ${_this.type}, parentId: ${_this.parentId}, customerName: ${_this.customerName}, shipToLabel: ${_this.shipToLabel}, facilityName: ${_this.facilityName}, contactId: ${_this.contactId}, comment: ${_this.comment}, rejectionReason: ${_this.rejectionReason}, proofId: ${_this.proofId}, createdAt: ${_this.createdAt}, modifiedAt: ${_this.modifiedAt}, lines: ${_this.lines})';
 }
 
 
@@ -353,7 +371,7 @@ abstract mixin class $DeliveryOrderCopyWith<$Res>  {
   factory $DeliveryOrderCopyWith(DeliveryOrder value, $Res Function(DeliveryOrder) _then) = _$DeliveryOrderCopyWithImpl;
 @useResult
 $Res call({
- int id, int facilityId, int? serial, int customerId, List<int> salesOrderIds, int? shipToId, DateTime? date, int priority, DeliveryOrderStatus status, FulfillmentType type, int? parentId, int? contactId, String? comment, String? rejectionReason, int? proofId, DateTime createdAt, DateTime modifiedAt, List<DeliveryOrderLine> lines
+ int id, int facilityId, int? serial, int customerId, List<int> salesOrderIds, int? shipToId, DateTime? date, int priority, DeliveryOrderStatus status, FulfillmentType type, int? parentId, String? customerName, String? shipToLabel, String? facilityName, int? contactId, String? comment, String? rejectionReason, int? proofId, DateTime createdAt, DateTime modifiedAt, List<DeliveryOrderLine> lines
 });
 
 
@@ -370,7 +388,7 @@ class _$DeliveryOrderCopyWithImpl<$Res>
 
 /// Create a copy of DeliveryOrder
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? facilityId = null,Object? serial = freezed,Object? customerId = null,Object? salesOrderIds = null,Object? shipToId = freezed,Object? date = freezed,Object? priority = null,Object? status = null,Object? type = null,Object? parentId = freezed,Object? contactId = freezed,Object? comment = freezed,Object? rejectionReason = freezed,Object? proofId = freezed,Object? createdAt = null,Object? modifiedAt = null,Object? lines = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? facilityId = null,Object? serial = freezed,Object? customerId = null,Object? salesOrderIds = null,Object? shipToId = freezed,Object? date = freezed,Object? priority = null,Object? status = null,Object? type = null,Object? parentId = freezed,Object? customerName = freezed,Object? shipToLabel = freezed,Object? facilityName = freezed,Object? contactId = freezed,Object? comment = freezed,Object? rejectionReason = freezed,Object? proofId = freezed,Object? createdAt = null,Object? modifiedAt = null,Object? lines = null,}) {
   return _then(DeliveryOrder(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -383,7 +401,10 @@ as DateTime?,priority: null == priority ? _self.priority : priority // ignore: c
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as DeliveryOrderStatus,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as FulfillmentType,parentId: freezed == parentId ? _self.parentId : parentId // ignore: cast_nullable_to_non_nullable
-as int?,contactId: freezed == contactId ? _self.contactId : contactId // ignore: cast_nullable_to_non_nullable
+as int?,customerName: freezed == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
+as String?,shipToLabel: freezed == shipToLabel ? _self.shipToLabel : shipToLabel // ignore: cast_nullable_to_non_nullable
+as String?,facilityName: freezed == facilityName ? _self.facilityName : facilityName // ignore: cast_nullable_to_non_nullable
+as String?,contactId: freezed == contactId ? _self.contactId : contactId // ignore: cast_nullable_to_non_nullable
 as int?,comment: freezed == comment ? _self.comment : comment // ignore: cast_nullable_to_non_nullable
 as String?,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
 as String?,proofId: freezed == proofId ? _self.proofId : proofId // ignore: cast_nullable_to_non_nullable
@@ -475,10 +496,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int? serial,  int customerId,  List<int> salesOrderIds,  int? shipToId,  DateTime? date,  int priority,  DeliveryOrderStatus status,  FulfillmentType type,  int? parentId,  int? contactId,  String? comment,  String? rejectionReason,  int? proofId,  DateTime createdAt,  DateTime modifiedAt,  List<DeliveryOrderLine> lines)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int? serial,  int customerId,  List<int> salesOrderIds,  int? shipToId,  DateTime? date,  int priority,  DeliveryOrderStatus status,  FulfillmentType type,  int? parentId,  String? customerName,  String? shipToLabel,  String? facilityName,  int? contactId,  String? comment,  String? rejectionReason,  int? proofId,  DateTime createdAt,  DateTime modifiedAt,  List<DeliveryOrderLine> lines)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DeliveryOrder() when $default != null:
-return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.salesOrderIds,_that.shipToId,_that.date,_that.priority,_that.status,_that.type,_that.parentId,_that.contactId,_that.comment,_that.rejectionReason,_that.proofId,_that.createdAt,_that.modifiedAt,_that.lines);case _:
+return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.salesOrderIds,_that.shipToId,_that.date,_that.priority,_that.status,_that.type,_that.parentId,_that.customerName,_that.shipToLabel,_that.facilityName,_that.contactId,_that.comment,_that.rejectionReason,_that.proofId,_that.createdAt,_that.modifiedAt,_that.lines);case _:
   return orElse();
 
 }
@@ -496,10 +517,10 @@ return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.sa
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int? serial,  int customerId,  List<int> salesOrderIds,  int? shipToId,  DateTime? date,  int priority,  DeliveryOrderStatus status,  FulfillmentType type,  int? parentId,  int? contactId,  String? comment,  String? rejectionReason,  int? proofId,  DateTime createdAt,  DateTime modifiedAt,  List<DeliveryOrderLine> lines)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int? serial,  int customerId,  List<int> salesOrderIds,  int? shipToId,  DateTime? date,  int priority,  DeliveryOrderStatus status,  FulfillmentType type,  int? parentId,  String? customerName,  String? shipToLabel,  String? facilityName,  int? contactId,  String? comment,  String? rejectionReason,  int? proofId,  DateTime createdAt,  DateTime modifiedAt,  List<DeliveryOrderLine> lines)  $default,) {final _that = this;
 switch (_that) {
 case _DeliveryOrder():
-return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.salesOrderIds,_that.shipToId,_that.date,_that.priority,_that.status,_that.type,_that.parentId,_that.contactId,_that.comment,_that.rejectionReason,_that.proofId,_that.createdAt,_that.modifiedAt,_that.lines);case _:
+return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.salesOrderIds,_that.shipToId,_that.date,_that.priority,_that.status,_that.type,_that.parentId,_that.customerName,_that.shipToLabel,_that.facilityName,_that.contactId,_that.comment,_that.rejectionReason,_that.proofId,_that.createdAt,_that.modifiedAt,_that.lines);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -516,10 +537,10 @@ return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.sa
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int? serial,  int customerId,  List<int> salesOrderIds,  int? shipToId,  DateTime? date,  int priority,  DeliveryOrderStatus status,  FulfillmentType type,  int? parentId,  int? contactId,  String? comment,  String? rejectionReason,  int? proofId,  DateTime createdAt,  DateTime modifiedAt,  List<DeliveryOrderLine> lines)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int? serial,  int customerId,  List<int> salesOrderIds,  int? shipToId,  DateTime? date,  int priority,  DeliveryOrderStatus status,  FulfillmentType type,  int? parentId,  String? customerName,  String? shipToLabel,  String? facilityName,  int? contactId,  String? comment,  String? rejectionReason,  int? proofId,  DateTime createdAt,  DateTime modifiedAt,  List<DeliveryOrderLine> lines)?  $default,) {final _that = this;
 switch (_that) {
 case _DeliveryOrder() when $default != null:
-return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.salesOrderIds,_that.shipToId,_that.date,_that.priority,_that.status,_that.type,_that.parentId,_that.contactId,_that.comment,_that.rejectionReason,_that.proofId,_that.createdAt,_that.modifiedAt,_that.lines);case _:
+return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.salesOrderIds,_that.shipToId,_that.date,_that.priority,_that.status,_that.type,_that.parentId,_that.customerName,_that.shipToLabel,_that.facilityName,_that.contactId,_that.comment,_that.rejectionReason,_that.proofId,_that.createdAt,_that.modifiedAt,_that.lines);case _:
   return null;
 
 }
@@ -531,7 +552,7 @@ return $default(_that.id,_that.facilityId,_that.serial,_that.customerId,_that.sa
 
 
 class _DeliveryOrder extends DeliveryOrder {
-  const _DeliveryOrder({required this.id, required this.facilityId, this.serial, required this.customerId,  List<int> salesOrderIds = const <int>[], this.shipToId, this.date, required this.priority, required this.status, required this.type, this.parentId, this.contactId, this.comment, this.rejectionReason, this.proofId, required this.createdAt, required this.modifiedAt,  List<DeliveryOrderLine> lines = const <DeliveryOrderLine>[]}): _salesOrderIds = salesOrderIds,_lines = lines,super._();
+  const _DeliveryOrder({required this.id, required this.facilityId, this.serial, required this.customerId,  List<int> salesOrderIds = const <int>[], this.shipToId, this.date, required this.priority, required this.status, required this.type, this.parentId, this.customerName, this.shipToLabel, this.facilityName, this.contactId, this.comment, this.rejectionReason, this.proofId, required this.createdAt, required this.modifiedAt,  List<DeliveryOrderLine> lines = const <DeliveryOrderLine>[]}): _salesOrderIds = salesOrderIds,_lines = lines,super._();
   
 
 @override final  int id;
@@ -551,6 +572,12 @@ class _DeliveryOrder extends DeliveryOrder {
 @override final  DeliveryOrderStatus status;
 @override final  FulfillmentType type;
 @override final  int? parentId;
+/// Server-joined names (mbe-api#324, #325). Null when the row is gone;
+/// [shipToLabel] is also null for a counter pickup. The name cells fall
+/// back to a per-id lookup when one is null.
+@override final  String? customerName;
+@override final  String? shipToLabel;
+@override final  String? facilityName;
 @override final  int? contactId;
 @override final  String? comment;
 @override final  String? rejectionReason;
@@ -575,18 +602,18 @@ _$DeliveryOrderCopyWith<_DeliveryOrder> get copyWith => __$DeliveryOrderCopyWith
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeliveryOrder&&(identical(other.id, id) || other.id == id)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&const DeepCollectionEquality().equals(other.salesOrderIds, _salesOrderIds)&&(identical(other.shipToId, shipToId) || other.shipToId == shipToId)&&(identical(other.date, date) || other.date == date)&&(identical(other.priority, priority) || other.priority == priority)&&(identical(other.status, status) || other.status == status)&&(identical(other.type, type) || other.type == type)&&(identical(other.parentId, parentId) || other.parentId == parentId)&&(identical(other.contactId, contactId) || other.contactId == contactId)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.proofId, proofId) || other.proofId == proofId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.modifiedAt, modifiedAt) || other.modifiedAt == modifiedAt)&&const DeepCollectionEquality().equals(other.lines, _lines));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeliveryOrder&&(identical(other.id, id) || other.id == id)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&const DeepCollectionEquality().equals(other.salesOrderIds, _salesOrderIds)&&(identical(other.shipToId, shipToId) || other.shipToId == shipToId)&&(identical(other.date, date) || other.date == date)&&(identical(other.priority, priority) || other.priority == priority)&&(identical(other.status, status) || other.status == status)&&(identical(other.type, type) || other.type == type)&&(identical(other.parentId, parentId) || other.parentId == parentId)&&(identical(other.customerName, customerName) || other.customerName == customerName)&&(identical(other.shipToLabel, shipToLabel) || other.shipToLabel == shipToLabel)&&(identical(other.facilityName, facilityName) || other.facilityName == facilityName)&&(identical(other.contactId, contactId) || other.contactId == contactId)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.rejectionReason, rejectionReason) || other.rejectionReason == rejectionReason)&&(identical(other.proofId, proofId) || other.proofId == proofId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.modifiedAt, modifiedAt) || other.modifiedAt == modifiedAt)&&const DeepCollectionEquality().equals(other.lines, _lines));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,facilityId,serial,customerId,const DeepCollectionEquality().hash(_salesOrderIds),shipToId,date,priority,status,type,parentId,contactId,comment,rejectionReason,proofId,createdAt,modifiedAt,const DeepCollectionEquality().hash(_lines));
+    return Object.hashAll([runtimeType,id,facilityId,serial,customerId,const DeepCollectionEquality().hash(_salesOrderIds),shipToId,date,priority,status,type,parentId,customerName,shipToLabel,facilityName,contactId,comment,rejectionReason,proofId,createdAt,modifiedAt,const DeepCollectionEquality().hash(_lines)]);
 }
 
 @override
 String toString() {
-    return 'DeliveryOrder(id: $id, facilityId: $facilityId, serial: $serial, customerId: $customerId, salesOrderIds: $salesOrderIds, shipToId: $shipToId, date: $date, priority: $priority, status: $status, type: $type, parentId: $parentId, contactId: $contactId, comment: $comment, rejectionReason: $rejectionReason, proofId: $proofId, createdAt: $createdAt, modifiedAt: $modifiedAt, lines: $lines)';
+    return 'DeliveryOrder(id: $id, facilityId: $facilityId, serial: $serial, customerId: $customerId, salesOrderIds: $salesOrderIds, shipToId: $shipToId, date: $date, priority: $priority, status: $status, type: $type, parentId: $parentId, customerName: $customerName, shipToLabel: $shipToLabel, facilityName: $facilityName, contactId: $contactId, comment: $comment, rejectionReason: $rejectionReason, proofId: $proofId, createdAt: $createdAt, modifiedAt: $modifiedAt, lines: $lines)';
 }
 
 
@@ -597,7 +624,7 @@ abstract mixin class _$DeliveryOrderCopyWith<$Res> implements $DeliveryOrderCopy
   factory _$DeliveryOrderCopyWith(_DeliveryOrder value, $Res Function(_DeliveryOrder) _then) = __$DeliveryOrderCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int facilityId, int? serial, int customerId, List<int> salesOrderIds, int? shipToId, DateTime? date, int priority, DeliveryOrderStatus status, FulfillmentType type, int? parentId, int? contactId, String? comment, String? rejectionReason, int? proofId, DateTime createdAt, DateTime modifiedAt, List<DeliveryOrderLine> lines
+ int id, int facilityId, int? serial, int customerId, List<int> salesOrderIds, int? shipToId, DateTime? date, int priority, DeliveryOrderStatus status, FulfillmentType type, int? parentId, String? customerName, String? shipToLabel, String? facilityName, int? contactId, String? comment, String? rejectionReason, int? proofId, DateTime createdAt, DateTime modifiedAt, List<DeliveryOrderLine> lines
 });
 
 
@@ -614,7 +641,7 @@ class __$DeliveryOrderCopyWithImpl<$Res>
 
 /// Create a copy of DeliveryOrder
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? facilityId = null,Object? serial = freezed,Object? customerId = null,Object? salesOrderIds = null,Object? shipToId = freezed,Object? date = freezed,Object? priority = null,Object? status = null,Object? type = null,Object? parentId = freezed,Object? contactId = freezed,Object? comment = freezed,Object? rejectionReason = freezed,Object? proofId = freezed,Object? createdAt = null,Object? modifiedAt = null,Object? lines = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? facilityId = null,Object? serial = freezed,Object? customerId = null,Object? salesOrderIds = null,Object? shipToId = freezed,Object? date = freezed,Object? priority = null,Object? status = null,Object? type = null,Object? parentId = freezed,Object? customerName = freezed,Object? shipToLabel = freezed,Object? facilityName = freezed,Object? contactId = freezed,Object? comment = freezed,Object? rejectionReason = freezed,Object? proofId = freezed,Object? createdAt = null,Object? modifiedAt = null,Object? lines = null,}) {
   return _then(_DeliveryOrder(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -627,7 +654,10 @@ as DateTime?,priority: null == priority ? _self.priority : priority // ignore: c
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as DeliveryOrderStatus,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as FulfillmentType,parentId: freezed == parentId ? _self.parentId : parentId // ignore: cast_nullable_to_non_nullable
-as int?,contactId: freezed == contactId ? _self.contactId : contactId // ignore: cast_nullable_to_non_nullable
+as int?,customerName: freezed == customerName ? _self.customerName : customerName // ignore: cast_nullable_to_non_nullable
+as String?,shipToLabel: freezed == shipToLabel ? _self.shipToLabel : shipToLabel // ignore: cast_nullable_to_non_nullable
+as String?,facilityName: freezed == facilityName ? _self.facilityName : facilityName // ignore: cast_nullable_to_non_nullable
+as String?,contactId: freezed == contactId ? _self.contactId : contactId // ignore: cast_nullable_to_non_nullable
 as int?,comment: freezed == comment ? _self.comment : comment // ignore: cast_nullable_to_non_nullable
 as String?,rejectionReason: freezed == rejectionReason ? _self.rejectionReason : rejectionReason // ignore: cast_nullable_to_non_nullable
 as String?,proofId: freezed == proofId ? _self.proofId : proofId // ignore: cast_nullable_to_non_nullable
