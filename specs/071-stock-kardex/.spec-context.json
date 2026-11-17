@@ -1,0 +1,24 @@
+{
+  "workflow": "speckit",
+  "specName": "Stock and Kardex",
+  "branch": "071-stock-kardex",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-17T19:52:26.000Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-17T19:57:02.143Z"
+    }
+  ],
+  "telemetryInstanceId": "35e7dc07-b0c6-4e92-bddf-71f690623e66"
+}
