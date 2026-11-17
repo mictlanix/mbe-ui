@@ -14321,6 +14321,608 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'There is no stock in transit.'**
   String get inventoryTransferInTransitEmpty;
+
+  /// spec 070: inventory_count.batch_invalid
+  ///
+  /// In en, this message translates to:
+  /// **'Some products in the list cannot be recorded. Check the marked rows.'**
+  String get apiErrorInventoryCountBatchInvalid;
+
+  /// spec 070: inventory_count.confirmed_cannot_cancel
+  ///
+  /// In en, this message translates to:
+  /// **'A confirmed count cannot be cancelled. Correct it with a new count.'**
+  String get apiErrorInventoryCountConfirmedCannotCancel;
+
+  /// spec 070: inventory_count_line.product_unknown
+  ///
+  /// In en, this message translates to:
+  /// **'The product does not exist.'**
+  String get apiErrorInventoryCountLineProductUnknown;
+
+  /// spec 070: inventory_count_line.not_stockable
+  ///
+  /// In en, this message translates to:
+  /// **'The product is not stockable.'**
+  String get apiErrorInventoryCountLineNotStockable;
+
+  /// spec 070: inventory_count_line.repeated
+  ///
+  /// In en, this message translates to:
+  /// **'The product is repeated in the list.'**
+  String get apiErrorInventoryCountLineRepeated;
+
+  /// spec 070: inventory_count_line.product_reference
+  ///
+  /// In en, this message translates to:
+  /// **'Name the product by its id or by its code, not both.'**
+  String get apiErrorInventoryCountLineProductReference;
+
+  /// Record noun for the API resource name `inventory_count` (spec 070), singular or plural
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{count} other{counts}}'**
+  String apiResourceInventoryCount(int count);
+
+  /// Grammatical gender of the noun for `inventory_count` in Spanish: `feminine` or `masculine` (spec 070)
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderInventoryCount;
+
+  /// spec 070: navigation destination
+  ///
+  /// In en, this message translates to:
+  /// **'Physical counts'**
+  String get navInventoryCounts;
+
+  /// spec 070: status label
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get inventoryCountStatusDraft;
+
+  /// spec 070: status label
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get inventoryCountStatusCompleted;
+
+  /// spec 070: status label
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get inventoryCountStatusCancelled;
+
+  /// spec 070: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get inventoryCountColFolio;
+
+  /// spec 070: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryCountColWarehouse;
+
+  /// spec 070: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get inventoryCountColFacility;
+
+  /// spec 070: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get inventoryCountColStatus;
+
+  /// spec 070: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get inventoryCountColCreatedBy;
+
+  /// spec 070: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get inventoryCountColDate;
+
+  /// spec 070: filter facet
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get inventoryCountFilterStatus;
+
+  /// spec 070: filter facet
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryCountFilterWarehouse;
+
+  /// spec 070: filter facet: no selection
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get inventoryCountFilterAll;
+
+  /// spec 070: list empty state
+  ///
+  /// In en, this message translates to:
+  /// **'There are no physical counts'**
+  String get inventoryCountListEmpty;
+
+  /// spec 070: list folio of a count with no serial
+  ///
+  /// In en, this message translates to:
+  /// **'Draft #{id}'**
+  String inventoryCountDraftFolio(String id);
+
+  /// spec 070: detail title of a draft
+  ///
+  /// In en, this message translates to:
+  /// **'Count · Draft #{id}'**
+  String inventoryCountTitleDraft(String id);
+
+  /// spec 070: detail title, completed
+  ///
+  /// In en, this message translates to:
+  /// **'Count {folio}'**
+  String inventoryCountTitle(String folio);
+
+  /// spec 070: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get inventoryCountFactComment;
+
+  /// spec 070: detail fact label: number of lines
+  ///
+  /// In en, this message translates to:
+  /// **'Lines'**
+  String get inventoryCountFactLines;
+
+  /// spec 070: lines table column
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get inventoryCountLineColCode;
+
+  /// spec 070: lines table column
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get inventoryCountLineColProduct;
+
+  /// spec 070: lines table column
+  ///
+  /// In en, this message translates to:
+  /// **'Counted'**
+  String get inventoryCountLineColCounted;
+
+  /// spec 070: lines table column, completed only
+  ///
+  /// In en, this message translates to:
+  /// **'Expected'**
+  String get inventoryCountLineColExpected;
+
+  /// spec 070: lines table column, completed only
+  ///
+  /// In en, this message translates to:
+  /// **'Difference'**
+  String get inventoryCountLineColDifference;
+
+  /// spec 070: line search hint
+  ///
+  /// In en, this message translates to:
+  /// **'Search by code or name'**
+  String get inventoryCountLinesSearchHint;
+
+  /// spec 070: empty draft text
+  ///
+  /// In en, this message translates to:
+  /// **'Record what you counted. Expected stock is shown on confirm.'**
+  String get inventoryCountDraftEmpty;
+
+  /// spec 070: quick entry label
+  ///
+  /// In en, this message translates to:
+  /// **'Quick entry'**
+  String get inventoryCountQuickEntryTitle;
+
+  /// spec 070: quick entry field
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get inventoryCountQuickEntryCode;
+
+  /// spec 070: quick entry field
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get inventoryCountQuickEntryQuantity;
+
+  /// spec 070: quick entry button
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get inventoryCountQuickEntrySubmit;
+
+  /// spec 070: quick entry feedback, new line
+  ///
+  /// In en, this message translates to:
+  /// **'{code} {name}: {newQty}'**
+  String inventoryCountQuickEntryFeedback(
+    String code,
+    String name,
+    String newQty,
+  );
+
+  /// spec 070: quick entry feedback, replaced quantity
+  ///
+  /// In en, this message translates to:
+  /// **'{code} {name}: {oldQty} → {newQty} (replaced)'**
+  String inventoryCountQuickEntryFeedbackReplaced(
+    String code,
+    String name,
+    String oldQty,
+    String newQty,
+  );
+
+  /// spec 070: action
+  ///
+  /// In en, this message translates to:
+  /// **'New count'**
+  String get inventoryCountActionNew;
+
+  /// spec 070: action
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get inventoryCountActionEditHeader;
+
+  /// spec 070: action
+  ///
+  /// In en, this message translates to:
+  /// **'Paste list'**
+  String get inventoryCountActionPaste;
+
+  /// spec 070: action
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get inventoryCountActionAddProduct;
+
+  /// spec 070: action
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get inventoryCountActionConfirm;
+
+  /// spec 070: action: cancel the draft
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get inventoryCountActionCancel;
+
+  /// spec 070: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'New count'**
+  String get inventoryCountDialogNewTitle;
+
+  /// spec 070: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get inventoryCountDialogEditTitle;
+
+  /// spec 070: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get inventoryCountDialogAddTitle;
+
+  /// spec 070: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Counted quantity'**
+  String get inventoryCountDialogQuantityTitle;
+
+  /// spec 070: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Remove line'**
+  String get inventoryCountDialogRemoveTitle;
+
+  /// spec 070: remove-line prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from the count?'**
+  String inventoryCountDialogRemoveBody(String name);
+
+  /// spec 070: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Paste list'**
+  String get inventoryCountDialogPasteTitle;
+
+  /// spec 070: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm count'**
+  String get inventoryCountDialogConfirmTitle;
+
+  /// spec 070: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel draft'**
+  String get inventoryCountDialogCancelTitle;
+
+  /// spec 070: field label
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryCountFieldWarehouse;
+
+  /// spec 070: field label
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get inventoryCountFieldComment;
+
+  /// spec 070: field label
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get inventoryCountFieldProduct;
+
+  /// spec 070: field label
+  ///
+  /// In en, this message translates to:
+  /// **'Counted'**
+  String get inventoryCountFieldCounted;
+
+  /// spec 070: dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get inventoryCountDialogCreate;
+
+  /// spec 070: dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get inventoryCountDialogSave;
+
+  /// spec 070: dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get inventoryCountDialogRecord;
+
+  /// spec 070: dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get inventoryCountDialogBack;
+
+  /// spec 070: dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get inventoryCountDialogClose;
+
+  /// spec 070: dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel draft'**
+  String get inventoryCountDialogCancelDraft;
+
+  /// spec 070: add-line dialog note
+  ///
+  /// In en, this message translates to:
+  /// **'Already counted: {qty}. It will be replaced.'**
+  String inventoryCountReplaceNote(String qty);
+
+  /// spec 070: confirm prompt
+  ///
+  /// In en, this message translates to:
+  /// **'On confirm, the stock of {warehouse} is set to the counted quantities and a folio is assigned. A confirmed count cannot be cancelled: correct it with a new count.'**
+  String inventoryCountConfirmBody(String warehouse);
+
+  /// spec 070: confirm checkbox
+  ///
+  /// In en, this message translates to:
+  /// **'Count as 0 the products with stock that are not in this count'**
+  String get inventoryCountConfirmIncludeUncounted;
+
+  /// spec 070: cancel-draft prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel draft #{id}. No stock is changed.'**
+  String inventoryCountCancelBody(String id);
+
+  /// spec 070: paste dialog instructions
+  ///
+  /// In en, this message translates to:
+  /// **'Paste two columns from your spreadsheet: code and quantity.'**
+  String get inventoryCountPasteInstructions;
+
+  /// spec 070: paste dialog live summary
+  ///
+  /// In en, this message translates to:
+  /// **'{n} rows read · {m} with problems'**
+  String inventoryCountPasteSummary(String n, String m);
+
+  /// spec 070: paste dialog problem line
+  ///
+  /// In en, this message translates to:
+  /// **'Row {row}: {reason}'**
+  String inventoryCountPasteProblemRow(int row, String reason);
+
+  /// spec 070: paste problem: wrong field count
+  ///
+  /// In en, this message translates to:
+  /// **'separate the code and the quantity'**
+  String get inventoryCountPasteProblemFieldCount;
+
+  /// spec 070: paste problem
+  ///
+  /// In en, this message translates to:
+  /// **'the code is missing'**
+  String get inventoryCountPasteProblemMissingCode;
+
+  /// spec 070: paste problem
+  ///
+  /// In en, this message translates to:
+  /// **'the quantity is not a number'**
+  String get inventoryCountPasteProblemNotANumber;
+
+  /// spec 070: paste problem
+  ///
+  /// In en, this message translates to:
+  /// **'the quantity is negative'**
+  String get inventoryCountPasteProblemNegative;
+
+  /// spec 070: paste problem
+  ///
+  /// In en, this message translates to:
+  /// **'the quantity has more than 4 decimals'**
+  String get inventoryCountPasteProblemTooManyDecimals;
+
+  /// spec 070: paste problem
+  ///
+  /// In en, this message translates to:
+  /// **'the code is repeated'**
+  String get inventoryCountPasteProblemRepeatedCode;
+
+  /// spec 070: paste dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get inventoryCountPasteSend;
+
+  /// spec 070: paste dialog progress title
+  ///
+  /// In en, this message translates to:
+  /// **'Sending…'**
+  String get inventoryCountPasteSending;
+
+  /// spec 070: paste dialog progress count
+  ///
+  /// In en, this message translates to:
+  /// **'{sent} of {total}'**
+  String inventoryCountPasteProgress(String sent, String total);
+
+  /// spec 070: paste dialog batch progress
+  ///
+  /// In en, this message translates to:
+  /// **'Batch {k} of {n}'**
+  String inventoryCountPasteBatch(int k, int n);
+
+  /// spec 070: paste dialog stop text
+  ///
+  /// In en, this message translates to:
+  /// **'Sending stopped. {applied} of {total} rows were applied.'**
+  String inventoryCountPasteStopped(String applied, String total);
+
+  /// spec 070: paste dialog rejected heading
+  ///
+  /// In en, this message translates to:
+  /// **'Codes rejected in batch {k}:'**
+  String inventoryCountPasteRejectedHeading(int k);
+
+  /// spec 070: paste dialog rejected code line
+  ///
+  /// In en, this message translates to:
+  /// **'{code}  {reason} (row {row})'**
+  String inventoryCountPasteRejectedLine(String code, String reason, int row);
+
+  /// spec 070: paste dialog safe-to-repaste note
+  ///
+  /// In en, this message translates to:
+  /// **'Fix your list and paste it again: quantities are replaced, not added.'**
+  String get inventoryCountPasteSafeNote;
+
+  /// spec 070: warnings band title
+  ///
+  /// In en, this message translates to:
+  /// **'Count confirmed with warnings'**
+  String get inventoryCountWarningsTitle;
+
+  /// spec 070: warnings band heading
+  ///
+  /// In en, this message translates to:
+  /// **'Counted below what is reserved:'**
+  String get inventoryCountWarningsNegativeHeading;
+
+  /// spec 070: warnings band heading
+  ///
+  /// In en, this message translates to:
+  /// **'Also corrected by another count of this warehouse:'**
+  String get inventoryCountWarningsCorrectedHeading;
+
+  /// spec 070: warnings band negative-available line
+  ///
+  /// In en, this message translates to:
+  /// **'{code}  counted {counted} · reserved {reserved} · available {available}'**
+  String inventoryCountWarningsNegativeLine(
+    String code,
+    String counted,
+    String reserved,
+    String available,
+  );
+
+  /// spec 070: warnings band corrected-by-other line
+  ///
+  /// In en, this message translates to:
+  /// **'{code}  count {serial}'**
+  String inventoryCountWarningsCorrectedLine(String code, String serial);
+
+  /// spec 070: warnings band dismiss tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss warnings'**
+  String get inventoryCountWarningsDismiss;
+
+  /// spec 070: counted quantity validation
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity of 0 or more, with up to 4 decimals.'**
+  String get inventoryCountQuantityInvalid;
+
+  /// spec 070: line edit icon tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Edit quantity'**
+  String get inventoryCountLineEditTooltip;
+
+  /// spec 070: line remove icon tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Remove line'**
+  String get inventoryCountLineRemoveTooltip;
+
+  /// spec 070: remove-line prompt button
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get inventoryCountRemoveAction;
+
+  /// spec 070: not-found back button
+  ///
+  /// In en, this message translates to:
+  /// **'Back to physical counts'**
+  String get inventoryCountBackToList;
+
+  /// spec 070: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Modified by'**
+  String get inventoryCountFactModifiedBy;
 }
 
 class _AppLocalizationsDelegate

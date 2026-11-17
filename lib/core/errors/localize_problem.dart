@@ -107,6 +107,12 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.inventoryTransferPeriodOverReceived,
   api.ErrorCode.inventoryTransferPeriodSameWarehouse,
   api.ErrorCode.lockPeriodBusy,
+  api.ErrorCode.inventoryCountPeriodBatchInvalid,
+  api.ErrorCode.inventoryCountPeriodConfirmedCannotCancel,
+  api.ErrorCode.inventoryCountLinePeriodProductUnknown,
+  api.ErrorCode.inventoryCountLinePeriodNotStockable,
+  api.ErrorCode.inventoryCountLinePeriodRepeated,
+  api.ErrorCode.inventoryCountLinePeriodProductReference,
   api.ErrorCode.paymentPeriodAlreadyApplied,
   api.ErrorCode.paymentPeriodAlreadyVerified,
   api.ErrorCode.paymentPeriodApplicationReversed,
@@ -481,6 +487,18 @@ String? localizeProblem(
     api.ErrorCode.inventoryTransferPeriodSameWarehouse =>
       l10n.apiErrorInventoryTransferSameWarehouse,
     api.ErrorCode.lockPeriodBusy => l10n.apiErrorLockBusy,
+    api.ErrorCode.inventoryCountPeriodBatchInvalid =>
+      l10n.apiErrorInventoryCountBatchInvalid,
+    api.ErrorCode.inventoryCountPeriodConfirmedCannotCancel =>
+      l10n.apiErrorInventoryCountConfirmedCannotCancel,
+    api.ErrorCode.inventoryCountLinePeriodProductUnknown =>
+      l10n.apiErrorInventoryCountLineProductUnknown,
+    api.ErrorCode.inventoryCountLinePeriodNotStockable =>
+      l10n.apiErrorInventoryCountLineNotStockable,
+    api.ErrorCode.inventoryCountLinePeriodRepeated =>
+      l10n.apiErrorInventoryCountLineRepeated,
+    api.ErrorCode.inventoryCountLinePeriodProductReference =>
+      l10n.apiErrorInventoryCountLineProductReference,
     api.ErrorCode.paymentPeriodAlreadyApplied =>
       l10n.apiErrorPaymentAlreadyApplied,
     api.ErrorCode.paymentPeriodAlreadyVerified =>
@@ -695,6 +713,7 @@ String resourceNoun(String? resource, AppLocalizations l10n, {int count = 1}) =>
         count,
       ),
       'inventory_issue' => l10n.apiResourceInventoryIssue(count),
+      'inventory_count' => l10n.apiResourceInventoryCount(count),
       'inventory_receipt' => l10n.apiResourceInventoryReceipt(count),
       'inventory_transfer' => l10n.apiResourceInventoryTransfer(count),
       'label' => l10n.apiResourceLabel(count),
@@ -755,6 +774,7 @@ String resourceGender(String? resource, AppLocalizations l10n) =>
       'fiscal_document_relation' =>
         l10n.apiResourceGenderFiscalDocumentRelation,
       'inventory_issue' => l10n.apiResourceGenderInventoryIssue,
+      'inventory_count' => l10n.apiResourceGenderInventoryCount,
       'inventory_receipt' => l10n.apiResourceGenderInventoryReceipt,
       'inventory_transfer' => l10n.apiResourceGenderInventoryTransfer,
       'label' => l10n.apiResourceGenderLabel,

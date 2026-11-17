@@ -156,6 +156,12 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
     'outstanding': '2.00000',
   },
   api.ErrorCode.inventoryTransferPeriodSameWarehouse: {},
+  api.ErrorCode.inventoryCountPeriodBatchInvalid: {},
+  api.ErrorCode.inventoryCountPeriodConfirmedCannotCancel: {},
+  api.ErrorCode.inventoryCountLinePeriodProductUnknown: {},
+  api.ErrorCode.inventoryCountLinePeriodNotStockable: {},
+  api.ErrorCode.inventoryCountLinePeriodRepeated: {},
+  api.ErrorCode.inventoryCountLinePeriodProductReference: {},
   api.ErrorCode.lockPeriodBusy: {'resource': 'warehouse'},
   api.ErrorCode.paymentPeriodAlreadyApplied: {
     'customer_payment_id': 300912,
