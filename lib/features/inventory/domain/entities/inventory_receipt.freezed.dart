@@ -17,7 +17,9 @@ mixin _$InventoryReceiptSummary {
 
  int get id; int get facilityId; int get warehouseId; int? get purchaseOrderId;/// Null until the receipt is confirmed. The "Borrador #{id}" text for a
 /// draft is built by the presentation layer from l10n.
- int? get serial; InventoryDocumentStatus get status; int get creatorId; DateTime get createdAt;
+ int? get serial; InventoryDocumentStatus get status; int get creatorId; DateTime get createdAt;/// Server-joined names (mbe-api#327–#330), null when the row is gone.
+/// The name cells fall back to a per-id lookup when one is null.
+ String? get warehouseName; String? get facilityName; String? get creatorName;
 /// Create a copy of InventoryReceiptSummary
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,20 +31,20 @@ $InventoryReceiptSummaryCopyWith<InventoryReceiptSummary> get copyWith => _$Inve
 @override
 bool operator ==(Object other) {
   final _this = this as InventoryReceiptSummary;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is InventoryReceiptSummary&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.warehouseId, _this.warehouseId) || other.warehouseId == _this.warehouseId)&&(identical(other.purchaseOrderId, _this.purchaseOrderId) || other.purchaseOrderId == _this.purchaseOrderId)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.creatorId, _this.creatorId) || other.creatorId == _this.creatorId)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is InventoryReceiptSummary&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.warehouseId, _this.warehouseId) || other.warehouseId == _this.warehouseId)&&(identical(other.purchaseOrderId, _this.purchaseOrderId) || other.purchaseOrderId == _this.purchaseOrderId)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.creatorId, _this.creatorId) || other.creatorId == _this.creatorId)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.warehouseName, _this.warehouseName) || other.warehouseName == _this.warehouseName)&&(identical(other.facilityName, _this.facilityName) || other.facilityName == _this.facilityName)&&(identical(other.creatorName, _this.creatorName) || other.creatorName == _this.creatorName));
 }
 
 
 @override
 int get hashCode {
   final _this = this as InventoryReceiptSummary;
-  return Object.hash(runtimeType,_this.id,_this.facilityId,_this.warehouseId,_this.purchaseOrderId,_this.serial,_this.status,_this.creatorId,_this.createdAt);
+  return Object.hash(runtimeType,_this.id,_this.facilityId,_this.warehouseId,_this.purchaseOrderId,_this.serial,_this.status,_this.creatorId,_this.createdAt,_this.warehouseName,_this.facilityName,_this.creatorName);
 }
 
 @override
 String toString() {
   final _this = this as InventoryReceiptSummary;
-  return 'InventoryReceiptSummary(id: ${_this.id}, facilityId: ${_this.facilityId}, warehouseId: ${_this.warehouseId}, purchaseOrderId: ${_this.purchaseOrderId}, serial: ${_this.serial}, status: ${_this.status}, creatorId: ${_this.creatorId}, createdAt: ${_this.createdAt})';
+  return 'InventoryReceiptSummary(id: ${_this.id}, facilityId: ${_this.facilityId}, warehouseId: ${_this.warehouseId}, purchaseOrderId: ${_this.purchaseOrderId}, serial: ${_this.serial}, status: ${_this.status}, creatorId: ${_this.creatorId}, createdAt: ${_this.createdAt}, warehouseName: ${_this.warehouseName}, facilityName: ${_this.facilityName}, creatorName: ${_this.creatorName})';
 }
 
 
@@ -53,7 +55,7 @@ abstract mixin class $InventoryReceiptSummaryCopyWith<$Res>  {
   factory $InventoryReceiptSummaryCopyWith(InventoryReceiptSummary value, $Res Function(InventoryReceiptSummary) _then) = _$InventoryReceiptSummaryCopyWithImpl;
 @useResult
 $Res call({
- int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt
+ int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt, String? warehouseName, String? facilityName, String? creatorName
 });
 
 
@@ -70,7 +72,7 @@ class _$InventoryReceiptSummaryCopyWithImpl<$Res>
 
 /// Create a copy of InventoryReceiptSummary
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? purchaseOrderId = freezed,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? purchaseOrderId = freezed,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,Object? warehouseName = freezed,Object? facilityName = freezed,Object? creatorName = freezed,}) {
   return _then(InventoryReceiptSummary(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -80,7 +82,10 @@ as int?,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullab
 as int?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as InventoryDocumentStatus,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,warehouseName: freezed == warehouseName ? _self.warehouseName : warehouseName // ignore: cast_nullable_to_non_nullable
+as String?,facilityName: freezed == facilityName ? _self.facilityName : facilityName // ignore: cast_nullable_to_non_nullable
+as String?,creatorName: freezed == creatorName ? _self.creatorName : creatorName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -165,10 +170,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? warehouseName,  String? facilityName,  String? creatorName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _InventoryReceiptSummary() when $default != null:
-return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt);case _:
+return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.warehouseName,_that.facilityName,_that.creatorName);case _:
   return orElse();
 
 }
@@ -186,10 +191,10 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderI
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? warehouseName,  String? facilityName,  String? creatorName)  $default,) {final _that = this;
 switch (_that) {
 case _InventoryReceiptSummary():
-return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt);case _:
+return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.warehouseName,_that.facilityName,_that.creatorName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -206,10 +211,10 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderI
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? warehouseName,  String? facilityName,  String? creatorName)?  $default,) {final _that = this;
 switch (_that) {
 case _InventoryReceiptSummary() when $default != null:
-return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt);case _:
+return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.warehouseName,_that.facilityName,_that.creatorName);case _:
   return null;
 
 }
@@ -221,7 +226,7 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderI
 
 
 class _InventoryReceiptSummary implements InventoryReceiptSummary {
-  const _InventoryReceiptSummary({required this.id, required this.facilityId, required this.warehouseId, this.purchaseOrderId, this.serial, required this.status, required this.creatorId, required this.createdAt});
+  const _InventoryReceiptSummary({required this.id, required this.facilityId, required this.warehouseId, this.purchaseOrderId, this.serial, required this.status, required this.creatorId, required this.createdAt, this.warehouseName, this.facilityName, this.creatorName});
   
 
 @override final  int id;
@@ -234,6 +239,11 @@ class _InventoryReceiptSummary implements InventoryReceiptSummary {
 @override final  InventoryDocumentStatus status;
 @override final  int creatorId;
 @override final  DateTime createdAt;
+/// Server-joined names (mbe-api#327–#330), null when the row is gone.
+/// The name cells fall back to a per-id lookup when one is null.
+@override final  String? warehouseName;
+@override final  String? facilityName;
+@override final  String? creatorName;
 
 /// Create a copy of InventoryReceiptSummary
 /// with the given fields replaced by the non-null parameter values.
@@ -245,18 +255,18 @@ _$InventoryReceiptSummaryCopyWith<_InventoryReceiptSummary> get copyWith => __$I
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _InventoryReceiptSummary&&(identical(other.id, id) || other.id == id)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.warehouseId, warehouseId) || other.warehouseId == warehouseId)&&(identical(other.purchaseOrderId, purchaseOrderId) || other.purchaseOrderId == purchaseOrderId)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.status, status) || other.status == status)&&(identical(other.creatorId, creatorId) || other.creatorId == creatorId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _InventoryReceiptSummary&&(identical(other.id, id) || other.id == id)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.warehouseId, warehouseId) || other.warehouseId == warehouseId)&&(identical(other.purchaseOrderId, purchaseOrderId) || other.purchaseOrderId == purchaseOrderId)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.status, status) || other.status == status)&&(identical(other.creatorId, creatorId) || other.creatorId == creatorId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.warehouseName, warehouseName) || other.warehouseName == warehouseName)&&(identical(other.facilityName, facilityName) || other.facilityName == facilityName)&&(identical(other.creatorName, creatorName) || other.creatorName == creatorName));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,facilityId,warehouseId,purchaseOrderId,serial,status,creatorId,createdAt);
+    return Object.hash(runtimeType,id,facilityId,warehouseId,purchaseOrderId,serial,status,creatorId,createdAt,warehouseName,facilityName,creatorName);
 }
 
 @override
 String toString() {
-    return 'InventoryReceiptSummary(id: $id, facilityId: $facilityId, warehouseId: $warehouseId, purchaseOrderId: $purchaseOrderId, serial: $serial, status: $status, creatorId: $creatorId, createdAt: $createdAt)';
+    return 'InventoryReceiptSummary(id: $id, facilityId: $facilityId, warehouseId: $warehouseId, purchaseOrderId: $purchaseOrderId, serial: $serial, status: $status, creatorId: $creatorId, createdAt: $createdAt, warehouseName: $warehouseName, facilityName: $facilityName, creatorName: $creatorName)';
 }
 
 
@@ -267,7 +277,7 @@ abstract mixin class _$InventoryReceiptSummaryCopyWith<$Res> implements $Invento
   factory _$InventoryReceiptSummaryCopyWith(_InventoryReceiptSummary value, $Res Function(_InventoryReceiptSummary) _then) = __$InventoryReceiptSummaryCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt
+ int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt, String? warehouseName, String? facilityName, String? creatorName
 });
 
 
@@ -284,7 +294,7 @@ class __$InventoryReceiptSummaryCopyWithImpl<$Res>
 
 /// Create a copy of InventoryReceiptSummary
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? purchaseOrderId = freezed,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? purchaseOrderId = freezed,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,Object? warehouseName = freezed,Object? facilityName = freezed,Object? creatorName = freezed,}) {
   return _then(_InventoryReceiptSummary(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -294,7 +304,10 @@ as int?,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullab
 as int?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as InventoryDocumentStatus,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,warehouseName: freezed == warehouseName ? _self.warehouseName : warehouseName // ignore: cast_nullable_to_non_nullable
+as String?,facilityName: freezed == facilityName ? _self.facilityName : facilityName // ignore: cast_nullable_to_non_nullable
+as String?,creatorName: freezed == creatorName ? _self.creatorName : creatorName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -596,9 +609,10 @@ as Decimal?,
 mixin _$InventoryReceipt {
 
  int get id; int get facilityId; int get warehouseId; int? get purchaseOrderId; int? get serial; InventoryDocumentStatus get status; int get creatorId; DateTime get createdAt;/// An empty string is treated as no note by the mapper.
- String? get comment; int get updaterId; DateTime get modifiedAt; List<InventoryReceiptLine> get lines;/// Only the count of the server's `warnings[]` is kept; their text is
-/// never shown (spec FR-015a).
- int get serverWarningCount;
+ String? get comment; int get updaterId; DateTime get modifiedAt; List<InventoryReceiptLine> get lines;/// The cost warnings of a confirm or cancel response (mbe-api#322). The
+/// server's over-receipt warnings are left out: [overReceipts] computes
+/// the same figures from the lines, drafts included.
+ List<ReceiptCostWarning> get costWarnings;
 /// Create a copy of InventoryReceipt
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -610,20 +624,20 @@ $InventoryReceiptCopyWith<InventoryReceipt> get copyWith => _$InventoryReceiptCo
 @override
 bool operator ==(Object other) {
   final _this = this as InventoryReceipt;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is InventoryReceipt&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.warehouseId, _this.warehouseId) || other.warehouseId == _this.warehouseId)&&(identical(other.purchaseOrderId, _this.purchaseOrderId) || other.purchaseOrderId == _this.purchaseOrderId)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.creatorId, _this.creatorId) || other.creatorId == _this.creatorId)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.updaterId, _this.updaterId) || other.updaterId == _this.updaterId)&&(identical(other.modifiedAt, _this.modifiedAt) || other.modifiedAt == _this.modifiedAt)&&const DeepCollectionEquality().equals(other.lines, _this.lines)&&(identical(other.serverWarningCount, _this.serverWarningCount) || other.serverWarningCount == _this.serverWarningCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is InventoryReceipt&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.warehouseId, _this.warehouseId) || other.warehouseId == _this.warehouseId)&&(identical(other.purchaseOrderId, _this.purchaseOrderId) || other.purchaseOrderId == _this.purchaseOrderId)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.creatorId, _this.creatorId) || other.creatorId == _this.creatorId)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.updaterId, _this.updaterId) || other.updaterId == _this.updaterId)&&(identical(other.modifiedAt, _this.modifiedAt) || other.modifiedAt == _this.modifiedAt)&&const DeepCollectionEquality().equals(other.lines, _this.lines)&&const DeepCollectionEquality().equals(other.costWarnings, _this.costWarnings));
 }
 
 
 @override
 int get hashCode {
   final _this = this as InventoryReceipt;
-  return Object.hash(runtimeType,_this.id,_this.facilityId,_this.warehouseId,_this.purchaseOrderId,_this.serial,_this.status,_this.creatorId,_this.createdAt,_this.comment,_this.updaterId,_this.modifiedAt,const DeepCollectionEquality().hash(_this.lines),_this.serverWarningCount);
+  return Object.hash(runtimeType,_this.id,_this.facilityId,_this.warehouseId,_this.purchaseOrderId,_this.serial,_this.status,_this.creatorId,_this.createdAt,_this.comment,_this.updaterId,_this.modifiedAt,const DeepCollectionEquality().hash(_this.lines),const DeepCollectionEquality().hash(_this.costWarnings));
 }
 
 @override
 String toString() {
   final _this = this as InventoryReceipt;
-  return 'InventoryReceipt(id: ${_this.id}, facilityId: ${_this.facilityId}, warehouseId: ${_this.warehouseId}, purchaseOrderId: ${_this.purchaseOrderId}, serial: ${_this.serial}, status: ${_this.status}, creatorId: ${_this.creatorId}, createdAt: ${_this.createdAt}, comment: ${_this.comment}, updaterId: ${_this.updaterId}, modifiedAt: ${_this.modifiedAt}, lines: ${_this.lines}, serverWarningCount: ${_this.serverWarningCount})';
+  return 'InventoryReceipt(id: ${_this.id}, facilityId: ${_this.facilityId}, warehouseId: ${_this.warehouseId}, purchaseOrderId: ${_this.purchaseOrderId}, serial: ${_this.serial}, status: ${_this.status}, creatorId: ${_this.creatorId}, createdAt: ${_this.createdAt}, comment: ${_this.comment}, updaterId: ${_this.updaterId}, modifiedAt: ${_this.modifiedAt}, lines: ${_this.lines}, costWarnings: ${_this.costWarnings})';
 }
 
 
@@ -634,7 +648,7 @@ abstract mixin class $InventoryReceiptCopyWith<$Res>  {
   factory $InventoryReceiptCopyWith(InventoryReceipt value, $Res Function(InventoryReceipt) _then) = _$InventoryReceiptCopyWithImpl;
 @useResult
 $Res call({
- int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt, String? comment, int updaterId, DateTime modifiedAt, List<InventoryReceiptLine> lines, int serverWarningCount
+ int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt, String? comment, int updaterId, DateTime modifiedAt, List<InventoryReceiptLine> lines, List<ReceiptCostWarning> costWarnings
 });
 
 
@@ -651,7 +665,7 @@ class _$InventoryReceiptCopyWithImpl<$Res>
 
 /// Create a copy of InventoryReceipt
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? purchaseOrderId = freezed,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,Object? comment = freezed,Object? updaterId = null,Object? modifiedAt = null,Object? lines = null,Object? serverWarningCount = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? purchaseOrderId = freezed,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,Object? comment = freezed,Object? updaterId = null,Object? modifiedAt = null,Object? lines = null,Object? costWarnings = null,}) {
   return _then(InventoryReceipt(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -665,8 +679,8 @@ as DateTime,comment: freezed == comment ? _self.comment : comment // ignore: cas
 as String?,updaterId: null == updaterId ? _self.updaterId : updaterId // ignore: cast_nullable_to_non_nullable
 as int,modifiedAt: null == modifiedAt ? _self.modifiedAt : modifiedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,lines: null == lines ? _self.lines : lines // ignore: cast_nullable_to_non_nullable
-as List<InventoryReceiptLine>,serverWarningCount: null == serverWarningCount ? _self.serverWarningCount : serverWarningCount // ignore: cast_nullable_to_non_nullable
-as int,
+as List<InventoryReceiptLine>,costWarnings: null == costWarnings ? _self.costWarnings : costWarnings // ignore: cast_nullable_to_non_nullable
+as List<ReceiptCostWarning>,
   ));
 }
 
@@ -751,10 +765,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? comment,  int updaterId,  DateTime modifiedAt,  List<InventoryReceiptLine> lines,  int serverWarningCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? comment,  int updaterId,  DateTime modifiedAt,  List<InventoryReceiptLine> lines,  List<ReceiptCostWarning> costWarnings)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _InventoryReceipt() when $default != null:
-return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.comment,_that.updaterId,_that.modifiedAt,_that.lines,_that.serverWarningCount);case _:
+return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.comment,_that.updaterId,_that.modifiedAt,_that.lines,_that.costWarnings);case _:
   return orElse();
 
 }
@@ -772,10 +786,10 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderI
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? comment,  int updaterId,  DateTime modifiedAt,  List<InventoryReceiptLine> lines,  int serverWarningCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? comment,  int updaterId,  DateTime modifiedAt,  List<InventoryReceiptLine> lines,  List<ReceiptCostWarning> costWarnings)  $default,) {final _that = this;
 switch (_that) {
 case _InventoryReceipt():
-return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.comment,_that.updaterId,_that.modifiedAt,_that.lines,_that.serverWarningCount);case _:
+return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.comment,_that.updaterId,_that.modifiedAt,_that.lines,_that.costWarnings);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -792,10 +806,10 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderI
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? comment,  int updaterId,  DateTime modifiedAt,  List<InventoryReceiptLine> lines,  int serverWarningCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int warehouseId,  int? purchaseOrderId,  int? serial,  InventoryDocumentStatus status,  int creatorId,  DateTime createdAt,  String? comment,  int updaterId,  DateTime modifiedAt,  List<InventoryReceiptLine> lines,  List<ReceiptCostWarning> costWarnings)?  $default,) {final _that = this;
 switch (_that) {
 case _InventoryReceipt() when $default != null:
-return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.comment,_that.updaterId,_that.modifiedAt,_that.lines,_that.serverWarningCount);case _:
+return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.comment,_that.updaterId,_that.modifiedAt,_that.lines,_that.costWarnings);case _:
   return null;
 
 }
@@ -807,7 +821,7 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.purchaseOrderI
 
 
 class _InventoryReceipt extends InventoryReceipt {
-  const _InventoryReceipt({required this.id, required this.facilityId, required this.warehouseId, this.purchaseOrderId, this.serial, required this.status, required this.creatorId, required this.createdAt, this.comment, required this.updaterId, required this.modifiedAt, required  List<InventoryReceiptLine> lines, this.serverWarningCount = 0}): _lines = lines,super._();
+  const _InventoryReceipt({required this.id, required this.facilityId, required this.warehouseId, this.purchaseOrderId, this.serial, required this.status, required this.creatorId, required this.createdAt, this.comment, required this.updaterId, required this.modifiedAt, required  List<InventoryReceiptLine> lines,  List<ReceiptCostWarning> costWarnings = const <ReceiptCostWarning>[]}): _lines = lines,_costWarnings = costWarnings,super._();
   
 
 @override final  int id;
@@ -829,9 +843,19 @@ class _InventoryReceipt extends InventoryReceipt {
   return EqualUnmodifiableListView(_lines);
 }
 
-/// Only the count of the server's `warnings[]` is kept; their text is
-/// never shown (spec FR-015a).
-@override@JsonKey() final  int serverWarningCount;
+/// The cost warnings of a confirm or cancel response (mbe-api#322). The
+/// server's over-receipt warnings are left out: [overReceipts] computes
+/// the same figures from the lines, drafts included.
+ final  List<ReceiptCostWarning> _costWarnings;
+/// The cost warnings of a confirm or cancel response (mbe-api#322). The
+/// server's over-receipt warnings are left out: [overReceipts] computes
+/// the same figures from the lines, drafts included.
+@override@JsonKey() List<ReceiptCostWarning> get costWarnings {
+  if (_costWarnings is EqualUnmodifiableListView) return _costWarnings;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_costWarnings);
+}
+
 
 /// Create a copy of InventoryReceipt
 /// with the given fields replaced by the non-null parameter values.
@@ -843,18 +867,18 @@ _$InventoryReceiptCopyWith<_InventoryReceipt> get copyWith => __$InventoryReceip
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _InventoryReceipt&&(identical(other.id, id) || other.id == id)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.warehouseId, warehouseId) || other.warehouseId == warehouseId)&&(identical(other.purchaseOrderId, purchaseOrderId) || other.purchaseOrderId == purchaseOrderId)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.status, status) || other.status == status)&&(identical(other.creatorId, creatorId) || other.creatorId == creatorId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.updaterId, updaterId) || other.updaterId == updaterId)&&(identical(other.modifiedAt, modifiedAt) || other.modifiedAt == modifiedAt)&&const DeepCollectionEquality().equals(other.lines, _lines)&&(identical(other.serverWarningCount, serverWarningCount) || other.serverWarningCount == serverWarningCount));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _InventoryReceipt&&(identical(other.id, id) || other.id == id)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.warehouseId, warehouseId) || other.warehouseId == warehouseId)&&(identical(other.purchaseOrderId, purchaseOrderId) || other.purchaseOrderId == purchaseOrderId)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.status, status) || other.status == status)&&(identical(other.creatorId, creatorId) || other.creatorId == creatorId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.updaterId, updaterId) || other.updaterId == updaterId)&&(identical(other.modifiedAt, modifiedAt) || other.modifiedAt == modifiedAt)&&const DeepCollectionEquality().equals(other.lines, _lines)&&const DeepCollectionEquality().equals(other.costWarnings, _costWarnings));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,facilityId,warehouseId,purchaseOrderId,serial,status,creatorId,createdAt,comment,updaterId,modifiedAt,const DeepCollectionEquality().hash(_lines),serverWarningCount);
+    return Object.hash(runtimeType,id,facilityId,warehouseId,purchaseOrderId,serial,status,creatorId,createdAt,comment,updaterId,modifiedAt,const DeepCollectionEquality().hash(_lines),const DeepCollectionEquality().hash(_costWarnings));
 }
 
 @override
 String toString() {
-    return 'InventoryReceipt(id: $id, facilityId: $facilityId, warehouseId: $warehouseId, purchaseOrderId: $purchaseOrderId, serial: $serial, status: $status, creatorId: $creatorId, createdAt: $createdAt, comment: $comment, updaterId: $updaterId, modifiedAt: $modifiedAt, lines: $lines, serverWarningCount: $serverWarningCount)';
+    return 'InventoryReceipt(id: $id, facilityId: $facilityId, warehouseId: $warehouseId, purchaseOrderId: $purchaseOrderId, serial: $serial, status: $status, creatorId: $creatorId, createdAt: $createdAt, comment: $comment, updaterId: $updaterId, modifiedAt: $modifiedAt, lines: $lines, costWarnings: $costWarnings)';
 }
 
 
@@ -865,7 +889,7 @@ abstract mixin class _$InventoryReceiptCopyWith<$Res> implements $InventoryRecei
   factory _$InventoryReceiptCopyWith(_InventoryReceipt value, $Res Function(_InventoryReceipt) _then) = __$InventoryReceiptCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt, String? comment, int updaterId, DateTime modifiedAt, List<InventoryReceiptLine> lines, int serverWarningCount
+ int id, int facilityId, int warehouseId, int? purchaseOrderId, int? serial, InventoryDocumentStatus status, int creatorId, DateTime createdAt, String? comment, int updaterId, DateTime modifiedAt, List<InventoryReceiptLine> lines, List<ReceiptCostWarning> costWarnings
 });
 
 
@@ -882,7 +906,7 @@ class __$InventoryReceiptCopyWithImpl<$Res>
 
 /// Create a copy of InventoryReceipt
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? purchaseOrderId = freezed,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,Object? comment = freezed,Object? updaterId = null,Object? modifiedAt = null,Object? lines = null,Object? serverWarningCount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? purchaseOrderId = freezed,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,Object? comment = freezed,Object? updaterId = null,Object? modifiedAt = null,Object? lines = null,Object? costWarnings = null,}) {
   return _then(_InventoryReceipt(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -896,8 +920,8 @@ as DateTime,comment: freezed == comment ? _self.comment : comment // ignore: cas
 as String?,updaterId: null == updaterId ? _self.updaterId : updaterId // ignore: cast_nullable_to_non_nullable
 as int,modifiedAt: null == modifiedAt ? _self.modifiedAt : modifiedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,lines: null == lines ? _self._lines : lines // ignore: cast_nullable_to_non_nullable
-as List<InventoryReceiptLine>,serverWarningCount: null == serverWarningCount ? _self.serverWarningCount : serverWarningCount // ignore: cast_nullable_to_non_nullable
-as int,
+as List<InventoryReceiptLine>,costWarnings: null == costWarnings ? _self._costWarnings : costWarnings // ignore: cast_nullable_to_non_nullable
+as List<ReceiptCostWarning>,
   ));
 }
 

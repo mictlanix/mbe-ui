@@ -31,6 +31,9 @@ Map<String, Object?> _orderJson({
   'creation_time': '2026-08-05T10:00:00.000',
   'modification_time': '2026-08-05T10:00:00.000',
   'lines': lines ?? [],
+  'customer_display_name': 'Ferretería Acme',
+  'ship_to_label': 'Av. Juárez 120, Centro, Puebla',
+  'facility_name': 'Matriz',
 };
 
 Map<String, Object?> _lineJson() => {
@@ -54,6 +57,10 @@ Map<String, Object?> _summaryJson(int id, int status, int type) => {
   'priority': 0,
   'status': status,
   'fulfillment_type': type,
+  // A counter pickup (type 0) has no ship-to label.
+  'customer_display_name': 'Ferretería Acme',
+  'ship_to_label': type == 0 ? null : 'Av. Juárez 120, Centro, Puebla',
+  'facility_name': 'Matriz',
 };
 
 final _png = Uint8List.fromList([
@@ -109,6 +116,11 @@ void main() {
     expect(page.items[0].type, FulfillmentType.counterPickup);
     expect(page.items[1].type, FulfillmentType.delivery);
     expect(page.items[0].serial, isNull);
+    // The server-joined names (mbe-api#324).
+    expect(page.items[1].customerName, 'Ferretería Acme');
+    expect(page.items[1].shipToLabel, 'Av. Juárez 120, Centro, Puebla');
+    expect(page.items[1].facilityName, 'Matriz');
+    expect(page.items[0].shipToLabel, isNull);
   });
 
   test('getById parses the four quantities and open as Decimal, with a null '
@@ -126,6 +138,9 @@ void main() {
     expect(order.serial, isNull);
     expect(order.isDraft, isTrue);
     expect(order.salesOrderIds, [42]);
+    expect(order.customerName, 'Ferretería Acme');
+    expect(order.shipToLabel, 'Av. Juárez 120, Centro, Puebla');
+    expect(order.facilityName, 'Matriz');
     final line = order.lines.single;
     expect(line.quantity, Decimal.parse('4.5'));
     expect(line.committed, Decimal.parse('4'));

@@ -14,6 +14,7 @@ class ApprovalTarget {
     required this.customerId,
     required this.type,
     required this.date,
+    this.customerName,
   });
 
   factory ApprovalTarget.fromSummary(DeliveryOrderSummary order) =>
@@ -23,6 +24,7 @@ class ApprovalTarget {
         customerId: order.customerId,
         type: order.type,
         date: order.date,
+        customerName: order.customerName,
       );
 
   factory ApprovalTarget.fromOrder(DeliveryOrder order) => ApprovalTarget(
@@ -31,6 +33,7 @@ class ApprovalTarget {
     customerId: order.customerId,
     type: order.type,
     date: order.date,
+    customerName: order.customerName,
   );
 
   final int id;
@@ -41,6 +44,9 @@ class ApprovalTarget {
   final int customerId;
   final FulfillmentType type;
   final DateTime? date;
+
+  /// The server's joined name (mbe-api#324, #325); null when the row is gone.
+  final String? customerName;
 
   /// The folio for a sentence, `#id` in the unreachable case of no serial.
   String get folio => serial == null ? '#$id' : '$serial';

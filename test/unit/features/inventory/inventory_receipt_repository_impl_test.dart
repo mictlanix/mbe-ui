@@ -8,6 +8,7 @@ import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/domain/receipt_cost_warning.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 
 const _jsonHeaders = {
@@ -68,6 +69,10 @@ void main() {
                   'status': status,
                   'creator': 5,
                   'creation_time': '2026-11-16T10:02:00.000',
+                  // A row whose creator is gone has no creator_name.
+                  'warehouse_name': 'Centro',
+                  'facility_name': 'Matriz',
+                  'creator_name': status == 'draft' ? 'Ana Ruiz' : null,
                 },
             ],
             'total': 41,
@@ -99,50 +104,84 @@ void main() {
         InventoryDocumentStatus.cancelled,
       ]);
       expect(page.items.first.serial, isNull);
+      expect(page.items.first.warehouseName, 'Centro');
+      expect(page.items.first.facilityName, 'Matriz');
+      expect(page.items.first.creatorName, 'Ana Ruiz');
+      expect(page.items.last.creatorName, isNull);
     },
   );
 
-  test(
-    'get maps lines to Decimal quantities, a null lines to empty, '
-    'keeps only the warning count, and reads an empty note as none',
-    () async {
-      final repository = _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode(
-            _receiptJson(
-              lines: [_lineJson(elsewhere: '2.5')],
-              warnings: ['cost exception: product 7', 'another'],
-              comment: '',
-              purchaseOrder: 5512,
-            ),
+  test('get maps lines to Decimal quantities, a null lines to empty, '
+      'maps the cost warnings by code (dropping over-receipts), and reads an '
+      'empty note as none', () async {
+    final repository = _repositoryWith(
+      (options) async => ResponseBody.fromString(
+        jsonEncode(
+          _receiptJson(
+            lines: [_lineJson(elsewhere: '2.5')],
+            warnings: [
+              {
+                'code': 'inventory_receipt.over_received',
+                'detail': 'Over-received A1 by 2',
+                'params': {'product_id': 7, 'product_code': 'A1'},
+              },
+              {
+                'code': 'purchase_cost.zero_price',
+                'detail': 'A1 is priced at 0',
+                'params': {'product_id': 7, 'product_code': 'A1'},
+              },
+              {
+                'code': 'purchase_cost.not_restored',
+                'detail': 'Cost of B2 not restored',
+                'params': {
+                  'product_id': 8,
+                  'product_code': 'B2',
+                  'receipt': '1044',
+                  'inventory_receipt_id': 410,
+                },
+              },
+            ],
+            comment: '',
+            purchaseOrder: 5512,
           ),
-          200,
-          headers: _jsonHeaders,
         ),
-      );
+        200,
+        headers: _jsonHeaders,
+      ),
+    );
 
-      final receipt = await repository.get(318);
+    final receipt = await repository.get(318);
 
-      expect(receipt.comment, isNull);
-      expect(receipt.isLinked, isTrue);
-      expect(receipt.serverWarningCount, 2);
-      final line = receipt.lines.single;
-      expect(line.quantity, Decimal.parse('8.5'));
-      expect(line.quantityOrdered, Decimal.parse('10'));
-      expect(line.quantityReceivedElsewhere, Decimal.parse('2.5'));
-      expect(line.purchaseOrderLineId, 12);
+    expect(receipt.comment, isNull);
+    expect(receipt.isLinked, isTrue);
+    expect(receipt.costWarnings, [
+      (
+        kind: ReceiptCostWarningKind.zeroPrice,
+        productCode: 'A1',
+        receipt: null,
+      ),
+      (
+        kind: ReceiptCostWarningKind.notRestored,
+        productCode: 'B2',
+        receipt: '1044',
+      ),
+    ]);
+    final line = receipt.lines.single;
+    expect(line.quantity, Decimal.parse('8.5'));
+    expect(line.quantityOrdered, Decimal.parse('10'));
+    expect(line.quantityReceivedElsewhere, Decimal.parse('2.5'));
+    expect(line.purchaseOrderLineId, 12);
 
-      final bare = await _repositoryWith(
-        (options) async => ResponseBody.fromString(
-          jsonEncode(_receiptJson()),
-          200,
-          headers: _jsonHeaders,
-        ),
-      ).get(318);
-      expect(bare.lines, isEmpty);
-      expect(bare.serverWarningCount, 0);
-    },
-  );
+    final bare = await _repositoryWith(
+      (options) async => ResponseBody.fromString(
+        jsonEncode(_receiptJson()),
+        200,
+        headers: _jsonHeaders,
+      ),
+    ).get(318);
+    expect(bare.lines, isEmpty);
+    expect(bare.costWarnings, isEmpty);
+  });
 
   test('a paid status is a mapping error, never guessed', () async {
     final repository = _repositoryWith(

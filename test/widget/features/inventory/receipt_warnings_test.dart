@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/features/inventory/domain/over_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/receipt_cost_warning.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/receipt_warnings.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -78,11 +79,28 @@ void main() {
           TextButton(
             key: const Key('show'),
             onPressed: () =>
-                ref.read(receiptCostNoticeProvider(id).notifier).show(),
+                ref.read(receiptCostNoticeProvider(id).notifier).show(const [
+                  (
+                    kind: ReceiptCostWarningKind.zeroPrice,
+                    productCode: 'A1',
+                    receipt: null,
+                  ),
+                  (
+                    kind: ReceiptCostWarningKind.notRestored,
+                    productCode: 'B2',
+                    receipt: '1044',
+                  ),
+                  (
+                    kind: ReceiptCostWarningKind.other,
+                    productCode: 'C3',
+                    receipt: null,
+                  ),
+                ]),
             child: const Text('show'),
           ),
-          if (ref.watch(receiptCostNoticeProvider(id)))
+          if (ref.watch(receiptCostNoticeProvider(id)).isNotEmpty)
             ReceiptCostNoticeBand(
+              warnings: ref.watch(receiptCostNoticeProvider(id)),
               onClose: () =>
                   ref.read(receiptCostNoticeProvider(id).notifier).dismiss(),
             ),
@@ -90,12 +108,23 @@ void main() {
       ),
     );
 
-    testWidgets('shows, and the close button dismisses it', (tester) async {
+    testWidgets('lists each warning, and the close button dismisses it', (
+      tester,
+    ) async {
       await pump(tester, notice(318));
       expect(key('receipt_cost_notice_band'), findsNothing);
 
       await tester.tap(key('show'));
       await tester.pumpAndSettle();
+      expect(
+        find.text(l10n.inventoryReceiptCostZeroPrice('A1')),
+        findsOneWidget,
+      );
+      expect(
+        find.text(l10n.inventoryReceiptCostNotRestored('B2', '1044')),
+        findsOneWidget,
+      );
+      // An unknown code falls back to the generic notice.
       expect(find.text(l10n.inventoryReceiptCostNotice), findsOneWidget);
 
       await tester.tap(key('receipt_cost_notice_close'));

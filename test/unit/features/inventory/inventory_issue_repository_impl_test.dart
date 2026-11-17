@@ -63,6 +63,10 @@ void main() {
                   'status': status,
                   'creator': 5,
                   'creation_time': '2026-11-16T10:02:00.000',
+                  // A row whose creator is gone has no creator_name.
+                  'warehouse_name': 'Centro',
+                  'facility_name': 'Matriz',
+                  'creator_name': status == 'draft' ? 'Ana Ruiz' : null,
                 },
             ],
             'total': 41,
@@ -94,6 +98,10 @@ void main() {
         InventoryDocumentStatus.cancelled,
       ]);
       expect(page.items.first.serial, isNull);
+      expect(page.items.first.warehouseName, 'Centro');
+      expect(page.items.first.facilityName, 'Matriz');
+      expect(page.items.first.creatorName, 'Ana Ruiz');
+      expect(page.items.last.creatorName, isNull);
     },
   );
 

@@ -6,13 +6,15 @@ import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/formatting/app_formatters.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/features/inventory/domain/over_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/receipt_cost_warning.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 part 'receipt_warnings.g.dart';
 
 // The receipt's non-blocking warnings (spec 067 FR-015, FR-015a, research
 // R6). Feature-local: no shared warning widget exists (wireframes Open
-// Question 1). The server's `warnings[]` text is never shown.
+// Question 1). The server's `warnings[]` English `detail` is never shown:
+// the text is built from each warning's code and params (mbe-api#322).
 
 /// "Se recibió de más {code}: {excess} (recibido {received} de {ordered}
 /// ordenado)", for the band and the confirm prompt.
@@ -73,11 +75,31 @@ class ReceiptOverReceiptBand extends ConsumerWidget {
   }
 }
 
-/// An info-toned band saying the costs were updated with exceptions, with a
-/// close button that calls [onClose].
-class ReceiptCostNoticeBand extends StatelessWidget {
-  const ReceiptCostNoticeBand({super.key, required this.onClose});
+/// One cost warning as a sentence. A code this client doesn't know yet
+/// falls back to the generic notice.
+String costWarningText(AppLocalizations l10n, ReceiptCostWarning warning) =>
+    switch (warning.kind) {
+      ReceiptCostWarningKind.zeroPrice => l10n.inventoryReceiptCostZeroPrice(
+        warning.productCode,
+      ),
+      ReceiptCostWarningKind.notRestored =>
+        l10n.inventoryReceiptCostNotRestored(
+          warning.productCode,
+          warning.receipt ?? '',
+        ),
+      ReceiptCostWarningKind.other => l10n.inventoryReceiptCostNotice,
+    };
 
+/// An info-toned band listing why each product's cost was left alone, with
+/// a close button that calls [onClose].
+class ReceiptCostNoticeBand extends StatelessWidget {
+  const ReceiptCostNoticeBand({
+    super.key,
+    required this.warnings,
+    required this.onClose,
+  });
+
+  final List<ReceiptCostWarning> warnings;
   final VoidCallback onClose;
 
   @override
@@ -101,9 +123,16 @@ class ReceiptCostNoticeBand extends StatelessWidget {
           children: [
             Icon(Icons.info_outline, color: color),
             Expanded(
-              child: Text(
-                l10n.inventoryReceiptCostNotice,
-                style: TextStyle(color: color),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: spacing.xs,
+                children: [
+                  // Distinct texts: two unknown codes read as one notice.
+                  for (final text in {
+                    for (final w in warnings) costWarningText(l10n, w),
+                  })
+                    Text(text, style: TextStyle(color: color)),
+                ],
               ),
             ),
             IconButton(
@@ -119,18 +148,18 @@ class ReceiptCostNoticeBand extends StatelessWidget {
   }
 }
 
-/// Whether receipt [receiptId]'s cost notice is showing (FR-015a). A later
-/// GET doesn't repeat the cost warnings, so this local state holds it until
-/// the clerk closes the band; being autodispose, it clears when the user
-/// leaves the receipt.
+/// Receipt [receiptId]'s cost warnings on show, empty when hidden (FR-015a).
+/// A later GET doesn't repeat them, so this local state holds them until the
+/// clerk closes the band; being autodispose, it clears when the user leaves
+/// the receipt.
 @riverpod
 class ReceiptCostNotice extends _$ReceiptCostNotice {
   @override
-  bool build(int receiptId) => false;
+  List<ReceiptCostWarning> build(int receiptId) => const [];
 
-  /// After a confirm or cancel reports `hasUnmappedWarnings`.
-  void show() => state = true;
+  /// After a confirm or cancel reports cost warnings.
+  void show(List<ReceiptCostWarning> warnings) => state = warnings;
 
   /// From the band's close button.
-  void dismiss() => state = false;
+  void dismiss() => state = const [];
 }

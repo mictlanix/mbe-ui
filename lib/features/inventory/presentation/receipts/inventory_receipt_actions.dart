@@ -5,6 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/receipt_cost_warning.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_receipt_repository.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_detail_controller.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_list_controller.dart';
@@ -15,9 +16,12 @@ part 'inventory_receipt_actions.g.dart';
 /// to navigate to.
 typedef ReceiptOpened = ({AppError? error, int? id});
 
-/// What `confirm` and `cancel` answer: the refusal, or whether the server
-/// raised cost warnings beyond the computed over-receipts (research R6).
-typedef ReceiptSettled = ({AppError? error, bool hasUnmappedWarnings});
+/// What `confirm` and `cancel` answer: the refusal, or the cost warnings the
+/// server raised (mbe-api#322).
+typedef ReceiptSettled = ({
+  AppError? error,
+  List<ReceiptCostWarning> costWarnings,
+});
 
 /// The refusals after which the receipt on screen is stale: someone else
 /// changed it meanwhile (spec edge case: concurrent edits, research R7).
@@ -117,7 +121,7 @@ class InventoryReceiptActions extends _$InventoryReceiptActions {
     final (:error, :receipt) = await _run(id, write);
     return (
       error: error,
-      hasUnmappedWarnings: receipt?.hasUnmappedWarnings ?? false,
+      costWarnings: receipt?.costWarnings ?? const <ReceiptCostWarning>[],
     );
   }
 

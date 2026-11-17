@@ -144,21 +144,27 @@ class InventoryTransfersListScreen extends ConsumerWidget {
                 DataTableColumn(
                   label: l10n.inventoryTransferColSource,
                   size: ColumnSize.M,
-                  cellBuilder: (context, r) =>
-                      InventoryWarehouseName(warehouseId: r.warehouseId),
+                  cellBuilder: (context, r) => InventoryWarehouseName(
+                    warehouseId: r.warehouseId,
+                    name: r.warehouseName,
+                  ),
                 ),
                 DataTableColumn(
                   label: l10n.inventoryTransferColDestination,
                   size: ColumnSize.M,
-                  cellBuilder: (context, r) =>
-                      InventoryWarehouseName(warehouseId: r.warehouseToId),
+                  cellBuilder: (context, r) => InventoryWarehouseName(
+                    warehouseId: r.warehouseToId,
+                    name: r.warehouseToName,
+                  ),
                 ),
                 if (!compact)
                   DataTableColumn(
                     label: l10n.inventoryTransferColFacility,
                     size: ColumnSize.M,
-                    cellBuilder: (context, r) =>
-                        InventoryFacilityName(facilityId: r.facilityId),
+                    cellBuilder: (context, r) => InventoryFacilityName(
+                      facilityId: r.facilityId,
+                      name: r.facilityName,
+                    ),
                   ),
                 DataTableColumn(
                   label: l10n.inventoryTransferColStatus,
@@ -170,8 +176,10 @@ class InventoryTransfersListScreen extends ConsumerWidget {
                   DataTableColumn(
                     label: l10n.inventoryTransferColCreator,
                     size: ColumnSize.M,
-                    cellBuilder: (context, r) =>
-                        InventoryEmployeeName(employeeId: r.creatorId),
+                    cellBuilder: (context, r) => InventoryEmployeeName(
+                      employeeId: r.creatorId,
+                      name: r.creatorName,
+                    ),
                   ),
                 DataTableColumn(
                   label: l10n.inventoryTransferColDate,

@@ -9,6 +9,7 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/receipt_cost_warning.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_receipt_repository.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_actions.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_detail_controller.dart';
@@ -227,35 +228,37 @@ void main() {
     expect(container.read(detail).value, aReceipt());
   });
 
-  group('hasUnmappedWarnings', () {
-    // One linked line received beyond its order: one computed over-receipt.
-    final overLines = [
-      aReceiptLine(purchaseOrderLineId: 1, quantity: '12', ordered: '10'),
-    ];
+  group('costWarnings', () {
+    const zeroPrice = (
+      kind: ReceiptCostWarningKind.zeroPrice,
+      productCode: 'A1',
+      receipt: null,
+    );
+    const notRestored = (
+      kind: ReceiptCostWarningKind.notRestored,
+      productCode: 'B2',
+      receipt: '1044',
+    );
 
-    test('is true when the server sent more warnings than computed', () async {
-      when(() => repository.confirm(_id)).thenAnswer(
-        (_) async => aReceipt(lines: overLines, serverWarningCount: 2),
-      );
+    test('carry the response\'s cost warnings', () async {
+      when(
+        () => repository.confirm(_id),
+      ).thenAnswer((_) async => aReceipt(costWarnings: [zeroPrice]));
       when(
         () => repository.cancel(_id),
-      ).thenAnswer((_) async => aReceipt(serverWarningCount: 1));
+      ).thenAnswer((_) async => aReceipt(costWarnings: [notRestored]));
 
-      expect((await actions().confirm(_id)).hasUnmappedWarnings, isTrue);
-      expect((await actions().cancel(_id)).hasUnmappedWarnings, isTrue);
+      expect((await actions().confirm(_id)).costWarnings, [zeroPrice]);
+      expect((await actions().cancel(_id)).costWarnings, [notRestored]);
     });
 
-    test('is false when every warning is a computed over-receipt', () async {
-      when(() => repository.confirm(_id)).thenAnswer(
-        (_) async => aReceipt(lines: overLines, serverWarningCount: 1),
-      );
-      when(() => repository.cancel(_id)).thenAnswer((_) async => aReceipt());
+    test('are empty when the response has none', () async {
+      when(() => repository.confirm(_id)).thenAnswer((_) async => aReceipt());
 
-      expect((await actions().confirm(_id)).hasUnmappedWarnings, isFalse);
-      expect((await actions().cancel(_id)).hasUnmappedWarnings, isFalse);
+      expect((await actions().confirm(_id)).costWarnings, isEmpty);
     });
 
-    test('is false on a refusal', () async {
+    test('are empty on a refusal', () async {
       when(
         () => repository.confirm(_id),
       ).thenAnswer((_) async => throw const AppError.network());
@@ -263,7 +266,7 @@ void main() {
       final result = await actions().confirm(_id);
 
       expect(result.error, isA<NetworkError>());
-      expect(result.hasUnmappedWarnings, isFalse);
+      expect(result.costWarnings, isEmpty);
     });
   });
 }

@@ -76,6 +76,10 @@ void main() {
                 'status': status,
                 'creator': 5,
                 'creation_time': '2026-11-16T10:02:00.000',
+                'warehouse_name': 'Centro',
+                'warehouse_to_name': 'Norte',
+                'facility_name': 'Matriz',
+                'creator_name': status == 'draft' ? 'Ana Ruiz' : null,
               },
           ],
           'total': 41,
@@ -100,6 +104,11 @@ void main() {
       expect(page.items.map((r) => r.status), InventoryTransferStatus.values);
       expect(page.items.first.serial, isNull);
       expect(page.items.first.warehouseToId, 4);
+      expect(page.items.first.warehouseName, 'Centro');
+      expect(page.items.first.warehouseToName, 'Norte');
+      expect(page.items.first.facilityName, 'Matriz');
+      expect(page.items.first.creatorName, 'Ana Ruiz');
+      expect(page.items.last.creatorName, isNull);
     },
   );
 
@@ -263,6 +272,8 @@ void main() {
             'product_code': 'A-100',
             'product_name': 'Tornillo',
             'quantity_outstanding': '5.5',
+            'warehouse_name': 'Centro',
+            'warehouse_to_name': 'Norte',
           },
         ],
       });
@@ -276,6 +287,8 @@ void main() {
     expect(view.lines.single.transferId, 412);
     expect(view.lines.single.lineId, 900);
     expect(view.lines.single.quantityOutstanding, Decimal.parse('5.5'));
+    expect(view.lines.single.warehouseName, 'Centro');
+    expect(view.lines.single.warehouseToName, 'Norte');
 
     final empty = await _repositoryWith(
       (options) async => _ok({'facility': 2}),

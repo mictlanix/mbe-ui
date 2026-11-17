@@ -19,7 +19,9 @@ mixin _$InventoryTransferSummary {
  int get facilityId;/// The origin.
  int get warehouseId;/// The destination.
  int get warehouseToId;/// Null until the transfer is dispatched.
- int? get serial; InventoryTransferStatus get status; int get creatorId; DateTime get createdAt;
+ int? get serial; InventoryTransferStatus get status; int get creatorId; DateTime get createdAt;/// Server-joined names (mbe-api#327–#330), null when the row is gone.
+/// The name cells fall back to a per-id lookup when one is null.
+ String? get warehouseName; String? get warehouseToName; String? get facilityName; String? get creatorName;
 /// Create a copy of InventoryTransferSummary
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -31,20 +33,20 @@ $InventoryTransferSummaryCopyWith<InventoryTransferSummary> get copyWith => _$In
 @override
 bool operator ==(Object other) {
   final _this = this as InventoryTransferSummary;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is InventoryTransferSummary&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.warehouseId, _this.warehouseId) || other.warehouseId == _this.warehouseId)&&(identical(other.warehouseToId, _this.warehouseToId) || other.warehouseToId == _this.warehouseToId)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.creatorId, _this.creatorId) || other.creatorId == _this.creatorId)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is InventoryTransferSummary&&(identical(other.id, _this.id) || other.id == _this.id)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.warehouseId, _this.warehouseId) || other.warehouseId == _this.warehouseId)&&(identical(other.warehouseToId, _this.warehouseToId) || other.warehouseToId == _this.warehouseToId)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.status, _this.status) || other.status == _this.status)&&(identical(other.creatorId, _this.creatorId) || other.creatorId == _this.creatorId)&&(identical(other.createdAt, _this.createdAt) || other.createdAt == _this.createdAt)&&(identical(other.warehouseName, _this.warehouseName) || other.warehouseName == _this.warehouseName)&&(identical(other.warehouseToName, _this.warehouseToName) || other.warehouseToName == _this.warehouseToName)&&(identical(other.facilityName, _this.facilityName) || other.facilityName == _this.facilityName)&&(identical(other.creatorName, _this.creatorName) || other.creatorName == _this.creatorName));
 }
 
 
 @override
 int get hashCode {
   final _this = this as InventoryTransferSummary;
-  return Object.hash(runtimeType,_this.id,_this.facilityId,_this.warehouseId,_this.warehouseToId,_this.serial,_this.status,_this.creatorId,_this.createdAt);
+  return Object.hash(runtimeType,_this.id,_this.facilityId,_this.warehouseId,_this.warehouseToId,_this.serial,_this.status,_this.creatorId,_this.createdAt,_this.warehouseName,_this.warehouseToName,_this.facilityName,_this.creatorName);
 }
 
 @override
 String toString() {
   final _this = this as InventoryTransferSummary;
-  return 'InventoryTransferSummary(id: ${_this.id}, facilityId: ${_this.facilityId}, warehouseId: ${_this.warehouseId}, warehouseToId: ${_this.warehouseToId}, serial: ${_this.serial}, status: ${_this.status}, creatorId: ${_this.creatorId}, createdAt: ${_this.createdAt})';
+  return 'InventoryTransferSummary(id: ${_this.id}, facilityId: ${_this.facilityId}, warehouseId: ${_this.warehouseId}, warehouseToId: ${_this.warehouseToId}, serial: ${_this.serial}, status: ${_this.status}, creatorId: ${_this.creatorId}, createdAt: ${_this.createdAt}, warehouseName: ${_this.warehouseName}, warehouseToName: ${_this.warehouseToName}, facilityName: ${_this.facilityName}, creatorName: ${_this.creatorName})';
 }
 
 
@@ -55,7 +57,7 @@ abstract mixin class $InventoryTransferSummaryCopyWith<$Res>  {
   factory $InventoryTransferSummaryCopyWith(InventoryTransferSummary value, $Res Function(InventoryTransferSummary) _then) = _$InventoryTransferSummaryCopyWithImpl;
 @useResult
 $Res call({
- int id, int facilityId, int warehouseId, int warehouseToId, int? serial, InventoryTransferStatus status, int creatorId, DateTime createdAt
+ int id, int facilityId, int warehouseId, int warehouseToId, int? serial, InventoryTransferStatus status, int creatorId, DateTime createdAt, String? warehouseName, String? warehouseToName, String? facilityName, String? creatorName
 });
 
 
@@ -72,7 +74,7 @@ class _$InventoryTransferSummaryCopyWithImpl<$Res>
 
 /// Create a copy of InventoryTransferSummary
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? warehouseToId = null,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? warehouseToId = null,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,Object? warehouseName = freezed,Object? warehouseToName = freezed,Object? facilityName = freezed,Object? creatorName = freezed,}) {
   return _then(InventoryTransferSummary(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -82,7 +84,11 @@ as int,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullabl
 as int?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as InventoryTransferStatus,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,warehouseName: freezed == warehouseName ? _self.warehouseName : warehouseName // ignore: cast_nullable_to_non_nullable
+as String?,warehouseToName: freezed == warehouseToName ? _self.warehouseToName : warehouseToName // ignore: cast_nullable_to_non_nullable
+as String?,facilityName: freezed == facilityName ? _self.facilityName : facilityName // ignore: cast_nullable_to_non_nullable
+as String?,creatorName: freezed == creatorName ? _self.creatorName : creatorName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -167,10 +173,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int warehouseToId,  int? serial,  InventoryTransferStatus status,  int creatorId,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int warehouseToId,  int? serial,  InventoryTransferStatus status,  int creatorId,  DateTime createdAt,  String? warehouseName,  String? warehouseToName,  String? facilityName,  String? creatorName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _InventoryTransferSummary() when $default != null:
-return $default(_that.id,_that.facilityId,_that.warehouseId,_that.warehouseToId,_that.serial,_that.status,_that.creatorId,_that.createdAt);case _:
+return $default(_that.id,_that.facilityId,_that.warehouseId,_that.warehouseToId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.warehouseName,_that.warehouseToName,_that.facilityName,_that.creatorName);case _:
   return orElse();
 
 }
@@ -188,10 +194,10 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.warehouseToId,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int warehouseToId,  int? serial,  InventoryTransferStatus status,  int creatorId,  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int facilityId,  int warehouseId,  int warehouseToId,  int? serial,  InventoryTransferStatus status,  int creatorId,  DateTime createdAt,  String? warehouseName,  String? warehouseToName,  String? facilityName,  String? creatorName)  $default,) {final _that = this;
 switch (_that) {
 case _InventoryTransferSummary():
-return $default(_that.id,_that.facilityId,_that.warehouseId,_that.warehouseToId,_that.serial,_that.status,_that.creatorId,_that.createdAt);case _:
+return $default(_that.id,_that.facilityId,_that.warehouseId,_that.warehouseToId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.warehouseName,_that.warehouseToName,_that.facilityName,_that.creatorName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -208,10 +214,10 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.warehouseToId,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int warehouseId,  int warehouseToId,  int? serial,  InventoryTransferStatus status,  int creatorId,  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int facilityId,  int warehouseId,  int warehouseToId,  int? serial,  InventoryTransferStatus status,  int creatorId,  DateTime createdAt,  String? warehouseName,  String? warehouseToName,  String? facilityName,  String? creatorName)?  $default,) {final _that = this;
 switch (_that) {
 case _InventoryTransferSummary() when $default != null:
-return $default(_that.id,_that.facilityId,_that.warehouseId,_that.warehouseToId,_that.serial,_that.status,_that.creatorId,_that.createdAt);case _:
+return $default(_that.id,_that.facilityId,_that.warehouseId,_that.warehouseToId,_that.serial,_that.status,_that.creatorId,_that.createdAt,_that.warehouseName,_that.warehouseToName,_that.facilityName,_that.creatorName);case _:
   return null;
 
 }
@@ -223,7 +229,7 @@ return $default(_that.id,_that.facilityId,_that.warehouseId,_that.warehouseToId,
 
 
 class _InventoryTransferSummary implements InventoryTransferSummary {
-  const _InventoryTransferSummary({required this.id, required this.facilityId, required this.warehouseId, required this.warehouseToId, this.serial, required this.status, required this.creatorId, required this.createdAt});
+  const _InventoryTransferSummary({required this.id, required this.facilityId, required this.warehouseId, required this.warehouseToId, this.serial, required this.status, required this.creatorId, required this.createdAt, this.warehouseName, this.warehouseToName, this.facilityName, this.creatorName});
   
 
 @override final  int id;
@@ -238,6 +244,12 @@ class _InventoryTransferSummary implements InventoryTransferSummary {
 @override final  InventoryTransferStatus status;
 @override final  int creatorId;
 @override final  DateTime createdAt;
+/// Server-joined names (mbe-api#327–#330), null when the row is gone.
+/// The name cells fall back to a per-id lookup when one is null.
+@override final  String? warehouseName;
+@override final  String? warehouseToName;
+@override final  String? facilityName;
+@override final  String? creatorName;
 
 /// Create a copy of InventoryTransferSummary
 /// with the given fields replaced by the non-null parameter values.
@@ -249,18 +261,18 @@ _$InventoryTransferSummaryCopyWith<_InventoryTransferSummary> get copyWith => __
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _InventoryTransferSummary&&(identical(other.id, id) || other.id == id)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.warehouseId, warehouseId) || other.warehouseId == warehouseId)&&(identical(other.warehouseToId, warehouseToId) || other.warehouseToId == warehouseToId)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.status, status) || other.status == status)&&(identical(other.creatorId, creatorId) || other.creatorId == creatorId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _InventoryTransferSummary&&(identical(other.id, id) || other.id == id)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.warehouseId, warehouseId) || other.warehouseId == warehouseId)&&(identical(other.warehouseToId, warehouseToId) || other.warehouseToId == warehouseToId)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.status, status) || other.status == status)&&(identical(other.creatorId, creatorId) || other.creatorId == creatorId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.warehouseName, warehouseName) || other.warehouseName == warehouseName)&&(identical(other.warehouseToName, warehouseToName) || other.warehouseToName == warehouseToName)&&(identical(other.facilityName, facilityName) || other.facilityName == facilityName)&&(identical(other.creatorName, creatorName) || other.creatorName == creatorName));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,id,facilityId,warehouseId,warehouseToId,serial,status,creatorId,createdAt);
+    return Object.hash(runtimeType,id,facilityId,warehouseId,warehouseToId,serial,status,creatorId,createdAt,warehouseName,warehouseToName,facilityName,creatorName);
 }
 
 @override
 String toString() {
-    return 'InventoryTransferSummary(id: $id, facilityId: $facilityId, warehouseId: $warehouseId, warehouseToId: $warehouseToId, serial: $serial, status: $status, creatorId: $creatorId, createdAt: $createdAt)';
+    return 'InventoryTransferSummary(id: $id, facilityId: $facilityId, warehouseId: $warehouseId, warehouseToId: $warehouseToId, serial: $serial, status: $status, creatorId: $creatorId, createdAt: $createdAt, warehouseName: $warehouseName, warehouseToName: $warehouseToName, facilityName: $facilityName, creatorName: $creatorName)';
 }
 
 
@@ -271,7 +283,7 @@ abstract mixin class _$InventoryTransferSummaryCopyWith<$Res> implements $Invent
   factory _$InventoryTransferSummaryCopyWith(_InventoryTransferSummary value, $Res Function(_InventoryTransferSummary) _then) = __$InventoryTransferSummaryCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int facilityId, int warehouseId, int warehouseToId, int? serial, InventoryTransferStatus status, int creatorId, DateTime createdAt
+ int id, int facilityId, int warehouseId, int warehouseToId, int? serial, InventoryTransferStatus status, int creatorId, DateTime createdAt, String? warehouseName, String? warehouseToName, String? facilityName, String? creatorName
 });
 
 
@@ -288,7 +300,7 @@ class __$InventoryTransferSummaryCopyWithImpl<$Res>
 
 /// Create a copy of InventoryTransferSummary
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? warehouseToId = null,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? facilityId = null,Object? warehouseId = null,Object? warehouseToId = null,Object? serial = freezed,Object? status = null,Object? creatorId = null,Object? createdAt = null,Object? warehouseName = freezed,Object? warehouseToName = freezed,Object? facilityName = freezed,Object? creatorName = freezed,}) {
   return _then(_InventoryTransferSummary(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,facilityId: null == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
@@ -298,7 +310,11 @@ as int,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullabl
 as int?,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as InventoryTransferStatus,creatorId: null == creatorId ? _self.creatorId : creatorId // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,warehouseName: freezed == warehouseName ? _self.warehouseName : warehouseName // ignore: cast_nullable_to_non_nullable
+as String?,warehouseToName: freezed == warehouseToName ? _self.warehouseToName : warehouseToName // ignore: cast_nullable_to_non_nullable
+as String?,facilityName: freezed == facilityName ? _self.facilityName : facilityName // ignore: cast_nullable_to_non_nullable
+as String?,creatorName: freezed == creatorName ? _self.creatorName : creatorName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -1456,7 +1472,8 @@ as Decimal,
 /// @nodoc
 mixin _$InTransitLineItem {
 
- int get transferId; int? get serial; int get warehouseId; int get warehouseToId; int get lineId; int get productId; String? get productCode; String? get productName; Decimal get quantityOutstanding;
+ int get transferId; int? get serial; int get warehouseId; int get warehouseToId; int get lineId; int get productId; String? get productCode; String? get productName; Decimal get quantityOutstanding;/// Server-joined names (mbe-api#330), null when the row is gone.
+ String? get warehouseName; String? get warehouseToName;
 /// Create a copy of InTransitLineItem
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1468,20 +1485,20 @@ $InTransitLineItemCopyWith<InTransitLineItem> get copyWith => _$InTransitLineIte
 @override
 bool operator ==(Object other) {
   final _this = this as InTransitLineItem;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is InTransitLineItem&&(identical(other.transferId, _this.transferId) || other.transferId == _this.transferId)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.warehouseId, _this.warehouseId) || other.warehouseId == _this.warehouseId)&&(identical(other.warehouseToId, _this.warehouseToId) || other.warehouseToId == _this.warehouseToId)&&(identical(other.lineId, _this.lineId) || other.lineId == _this.lineId)&&(identical(other.productId, _this.productId) || other.productId == _this.productId)&&(identical(other.productCode, _this.productCode) || other.productCode == _this.productCode)&&(identical(other.productName, _this.productName) || other.productName == _this.productName)&&(identical(other.quantityOutstanding, _this.quantityOutstanding) || other.quantityOutstanding == _this.quantityOutstanding));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is InTransitLineItem&&(identical(other.transferId, _this.transferId) || other.transferId == _this.transferId)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.warehouseId, _this.warehouseId) || other.warehouseId == _this.warehouseId)&&(identical(other.warehouseToId, _this.warehouseToId) || other.warehouseToId == _this.warehouseToId)&&(identical(other.lineId, _this.lineId) || other.lineId == _this.lineId)&&(identical(other.productId, _this.productId) || other.productId == _this.productId)&&(identical(other.productCode, _this.productCode) || other.productCode == _this.productCode)&&(identical(other.productName, _this.productName) || other.productName == _this.productName)&&(identical(other.quantityOutstanding, _this.quantityOutstanding) || other.quantityOutstanding == _this.quantityOutstanding)&&(identical(other.warehouseName, _this.warehouseName) || other.warehouseName == _this.warehouseName)&&(identical(other.warehouseToName, _this.warehouseToName) || other.warehouseToName == _this.warehouseToName));
 }
 
 
 @override
 int get hashCode {
   final _this = this as InTransitLineItem;
-  return Object.hash(runtimeType,_this.transferId,_this.serial,_this.warehouseId,_this.warehouseToId,_this.lineId,_this.productId,_this.productCode,_this.productName,_this.quantityOutstanding);
+  return Object.hash(runtimeType,_this.transferId,_this.serial,_this.warehouseId,_this.warehouseToId,_this.lineId,_this.productId,_this.productCode,_this.productName,_this.quantityOutstanding,_this.warehouseName,_this.warehouseToName);
 }
 
 @override
 String toString() {
   final _this = this as InTransitLineItem;
-  return 'InTransitLineItem(transferId: ${_this.transferId}, serial: ${_this.serial}, warehouseId: ${_this.warehouseId}, warehouseToId: ${_this.warehouseToId}, lineId: ${_this.lineId}, productId: ${_this.productId}, productCode: ${_this.productCode}, productName: ${_this.productName}, quantityOutstanding: ${_this.quantityOutstanding})';
+  return 'InTransitLineItem(transferId: ${_this.transferId}, serial: ${_this.serial}, warehouseId: ${_this.warehouseId}, warehouseToId: ${_this.warehouseToId}, lineId: ${_this.lineId}, productId: ${_this.productId}, productCode: ${_this.productCode}, productName: ${_this.productName}, quantityOutstanding: ${_this.quantityOutstanding}, warehouseName: ${_this.warehouseName}, warehouseToName: ${_this.warehouseToName})';
 }
 
 
@@ -1492,7 +1509,7 @@ abstract mixin class $InTransitLineItemCopyWith<$Res>  {
   factory $InTransitLineItemCopyWith(InTransitLineItem value, $Res Function(InTransitLineItem) _then) = _$InTransitLineItemCopyWithImpl;
 @useResult
 $Res call({
- int transferId, int? serial, int warehouseId, int warehouseToId, int lineId, int productId, String? productCode, String? productName, Decimal quantityOutstanding
+ int transferId, int? serial, int warehouseId, int warehouseToId, int lineId, int productId, String? productCode, String? productName, Decimal quantityOutstanding, String? warehouseName, String? warehouseToName
 });
 
 
@@ -1509,7 +1526,7 @@ class _$InTransitLineItemCopyWithImpl<$Res>
 
 /// Create a copy of InTransitLineItem
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? transferId = null,Object? serial = freezed,Object? warehouseId = null,Object? warehouseToId = null,Object? lineId = null,Object? productId = null,Object? productCode = freezed,Object? productName = freezed,Object? quantityOutstanding = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? transferId = null,Object? serial = freezed,Object? warehouseId = null,Object? warehouseToId = null,Object? lineId = null,Object? productId = null,Object? productCode = freezed,Object? productName = freezed,Object? quantityOutstanding = null,Object? warehouseName = freezed,Object? warehouseToName = freezed,}) {
   return _then(InTransitLineItem(
 transferId: null == transferId ? _self.transferId : transferId // ignore: cast_nullable_to_non_nullable
 as int,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
@@ -1520,7 +1537,9 @@ as int,productId: null == productId ? _self.productId : productId // ignore: cas
 as int,productCode: freezed == productCode ? _self.productCode : productCode // ignore: cast_nullable_to_non_nullable
 as String?,productName: freezed == productName ? _self.productName : productName // ignore: cast_nullable_to_non_nullable
 as String?,quantityOutstanding: null == quantityOutstanding ? _self.quantityOutstanding : quantityOutstanding // ignore: cast_nullable_to_non_nullable
-as Decimal,
+as Decimal,warehouseName: freezed == warehouseName ? _self.warehouseName : warehouseName // ignore: cast_nullable_to_non_nullable
+as String?,warehouseToName: freezed == warehouseToName ? _self.warehouseToName : warehouseToName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -1605,10 +1624,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int transferId,  int? serial,  int warehouseId,  int warehouseToId,  int lineId,  int productId,  String? productCode,  String? productName,  Decimal quantityOutstanding)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int transferId,  int? serial,  int warehouseId,  int warehouseToId,  int lineId,  int productId,  String? productCode,  String? productName,  Decimal quantityOutstanding,  String? warehouseName,  String? warehouseToName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _InTransitLineItem() when $default != null:
-return $default(_that.transferId,_that.serial,_that.warehouseId,_that.warehouseToId,_that.lineId,_that.productId,_that.productCode,_that.productName,_that.quantityOutstanding);case _:
+return $default(_that.transferId,_that.serial,_that.warehouseId,_that.warehouseToId,_that.lineId,_that.productId,_that.productCode,_that.productName,_that.quantityOutstanding,_that.warehouseName,_that.warehouseToName);case _:
   return orElse();
 
 }
@@ -1626,10 +1645,10 @@ return $default(_that.transferId,_that.serial,_that.warehouseId,_that.warehouseT
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int transferId,  int? serial,  int warehouseId,  int warehouseToId,  int lineId,  int productId,  String? productCode,  String? productName,  Decimal quantityOutstanding)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int transferId,  int? serial,  int warehouseId,  int warehouseToId,  int lineId,  int productId,  String? productCode,  String? productName,  Decimal quantityOutstanding,  String? warehouseName,  String? warehouseToName)  $default,) {final _that = this;
 switch (_that) {
 case _InTransitLineItem():
-return $default(_that.transferId,_that.serial,_that.warehouseId,_that.warehouseToId,_that.lineId,_that.productId,_that.productCode,_that.productName,_that.quantityOutstanding);case _:
+return $default(_that.transferId,_that.serial,_that.warehouseId,_that.warehouseToId,_that.lineId,_that.productId,_that.productCode,_that.productName,_that.quantityOutstanding,_that.warehouseName,_that.warehouseToName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1646,10 +1665,10 @@ return $default(_that.transferId,_that.serial,_that.warehouseId,_that.warehouseT
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int transferId,  int? serial,  int warehouseId,  int warehouseToId,  int lineId,  int productId,  String? productCode,  String? productName,  Decimal quantityOutstanding)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int transferId,  int? serial,  int warehouseId,  int warehouseToId,  int lineId,  int productId,  String? productCode,  String? productName,  Decimal quantityOutstanding,  String? warehouseName,  String? warehouseToName)?  $default,) {final _that = this;
 switch (_that) {
 case _InTransitLineItem() when $default != null:
-return $default(_that.transferId,_that.serial,_that.warehouseId,_that.warehouseToId,_that.lineId,_that.productId,_that.productCode,_that.productName,_that.quantityOutstanding);case _:
+return $default(_that.transferId,_that.serial,_that.warehouseId,_that.warehouseToId,_that.lineId,_that.productId,_that.productCode,_that.productName,_that.quantityOutstanding,_that.warehouseName,_that.warehouseToName);case _:
   return null;
 
 }
@@ -1661,7 +1680,7 @@ return $default(_that.transferId,_that.serial,_that.warehouseId,_that.warehouseT
 
 
 class _InTransitLineItem implements InTransitLineItem {
-  const _InTransitLineItem({required this.transferId, this.serial, required this.warehouseId, required this.warehouseToId, required this.lineId, required this.productId, this.productCode, this.productName, required this.quantityOutstanding});
+  const _InTransitLineItem({required this.transferId, this.serial, required this.warehouseId, required this.warehouseToId, required this.lineId, required this.productId, this.productCode, this.productName, required this.quantityOutstanding, this.warehouseName, this.warehouseToName});
   
 
 @override final  int transferId;
@@ -1673,6 +1692,9 @@ class _InTransitLineItem implements InTransitLineItem {
 @override final  String? productCode;
 @override final  String? productName;
 @override final  Decimal quantityOutstanding;
+/// Server-joined names (mbe-api#330), null when the row is gone.
+@override final  String? warehouseName;
+@override final  String? warehouseToName;
 
 /// Create a copy of InTransitLineItem
 /// with the given fields replaced by the non-null parameter values.
@@ -1684,18 +1706,18 @@ _$InTransitLineItemCopyWith<_InTransitLineItem> get copyWith => __$InTransitLine
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _InTransitLineItem&&(identical(other.transferId, transferId) || other.transferId == transferId)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.warehouseId, warehouseId) || other.warehouseId == warehouseId)&&(identical(other.warehouseToId, warehouseToId) || other.warehouseToId == warehouseToId)&&(identical(other.lineId, lineId) || other.lineId == lineId)&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.productCode, productCode) || other.productCode == productCode)&&(identical(other.productName, productName) || other.productName == productName)&&(identical(other.quantityOutstanding, quantityOutstanding) || other.quantityOutstanding == quantityOutstanding));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _InTransitLineItem&&(identical(other.transferId, transferId) || other.transferId == transferId)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.warehouseId, warehouseId) || other.warehouseId == warehouseId)&&(identical(other.warehouseToId, warehouseToId) || other.warehouseToId == warehouseToId)&&(identical(other.lineId, lineId) || other.lineId == lineId)&&(identical(other.productId, productId) || other.productId == productId)&&(identical(other.productCode, productCode) || other.productCode == productCode)&&(identical(other.productName, productName) || other.productName == productName)&&(identical(other.quantityOutstanding, quantityOutstanding) || other.quantityOutstanding == quantityOutstanding)&&(identical(other.warehouseName, warehouseName) || other.warehouseName == warehouseName)&&(identical(other.warehouseToName, warehouseToName) || other.warehouseToName == warehouseToName));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,transferId,serial,warehouseId,warehouseToId,lineId,productId,productCode,productName,quantityOutstanding);
+    return Object.hash(runtimeType,transferId,serial,warehouseId,warehouseToId,lineId,productId,productCode,productName,quantityOutstanding,warehouseName,warehouseToName);
 }
 
 @override
 String toString() {
-    return 'InTransitLineItem(transferId: $transferId, serial: $serial, warehouseId: $warehouseId, warehouseToId: $warehouseToId, lineId: $lineId, productId: $productId, productCode: $productCode, productName: $productName, quantityOutstanding: $quantityOutstanding)';
+    return 'InTransitLineItem(transferId: $transferId, serial: $serial, warehouseId: $warehouseId, warehouseToId: $warehouseToId, lineId: $lineId, productId: $productId, productCode: $productCode, productName: $productName, quantityOutstanding: $quantityOutstanding, warehouseName: $warehouseName, warehouseToName: $warehouseToName)';
 }
 
 
@@ -1706,7 +1728,7 @@ abstract mixin class _$InTransitLineItemCopyWith<$Res> implements $InTransitLine
   factory _$InTransitLineItemCopyWith(_InTransitLineItem value, $Res Function(_InTransitLineItem) _then) = __$InTransitLineItemCopyWithImpl;
 @override @useResult
 $Res call({
- int transferId, int? serial, int warehouseId, int warehouseToId, int lineId, int productId, String? productCode, String? productName, Decimal quantityOutstanding
+ int transferId, int? serial, int warehouseId, int warehouseToId, int lineId, int productId, String? productCode, String? productName, Decimal quantityOutstanding, String? warehouseName, String? warehouseToName
 });
 
 
@@ -1723,7 +1745,7 @@ class __$InTransitLineItemCopyWithImpl<$Res>
 
 /// Create a copy of InTransitLineItem
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? transferId = null,Object? serial = freezed,Object? warehouseId = null,Object? warehouseToId = null,Object? lineId = null,Object? productId = null,Object? productCode = freezed,Object? productName = freezed,Object? quantityOutstanding = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? transferId = null,Object? serial = freezed,Object? warehouseId = null,Object? warehouseToId = null,Object? lineId = null,Object? productId = null,Object? productCode = freezed,Object? productName = freezed,Object? quantityOutstanding = null,Object? warehouseName = freezed,Object? warehouseToName = freezed,}) {
   return _then(_InTransitLineItem(
 transferId: null == transferId ? _self.transferId : transferId // ignore: cast_nullable_to_non_nullable
 as int,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
@@ -1734,7 +1756,9 @@ as int,productId: null == productId ? _self.productId : productId // ignore: cas
 as int,productCode: freezed == productCode ? _self.productCode : productCode // ignore: cast_nullable_to_non_nullable
 as String?,productName: freezed == productName ? _self.productName : productName // ignore: cast_nullable_to_non_nullable
 as String?,quantityOutstanding: null == quantityOutstanding ? _self.quantityOutstanding : quantityOutstanding // ignore: cast_nullable_to_non_nullable
-as Decimal,
+as Decimal,warehouseName: freezed == warehouseName ? _self.warehouseName : warehouseName // ignore: cast_nullable_to_non_nullable
+as String?,warehouseToName: freezed == warehouseToName ? _self.warehouseToName : warehouseToName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

@@ -14,9 +14,11 @@ import 'package:mbe_ui/features/sales/presentation/capture/sale_customer_control
 /// The read-only names behind a delivery order's ids, shared by the list and
 /// the detail screen (spec 061 research R4, FR-025).
 ///
-/// Each resolves through the app's cached per-id providers and falls back to
-/// `#id` when the name can't be read: a missing catalog right, a deleted
-/// record or a failed request. While loading it shows `…`.
+/// A caller holding the server's joined name (mbe-api#324–#326) passes it as
+/// `name` and it is shown as is. Without one, each resolves through the app's
+/// cached per-id providers and falls back to `#id` when the name can't be
+/// read: a missing catalog right, a deleted record or a failed request.
+/// While loading it shows `…`.
 ///
 /// Every name is one line, ellipsized, with the full text in a tooltip
 /// (constitution §VI); pass `truncate: false` where the full text fits, such
@@ -37,6 +39,10 @@ class _NameText extends StatelessWidget {
   }
 }
 
+/// The server's [name] when it carries one, else what [lookup] resolves.
+String _serverOr(String? name, String Function() lookup) =>
+    name != null && name.isNotEmpty ? name : lookup();
+
 String _resolved(AsyncValue<String?> value, int id) => value.when(
   data: (name) => name ?? '#$id',
   loading: () => '…',
@@ -48,15 +54,23 @@ class DeliveryOrderCustomerName extends ConsumerWidget {
   const DeliveryOrderCustomerName({
     super.key,
     required this.customerId,
+    this.name,
     this.truncate = true,
   });
 
   final int customerId;
+  final String? name;
   final bool truncate;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => _NameText(
-    _resolved(ref.watch(customerDisplayNameProvider(customerId)), customerId),
+    _serverOr(
+      name,
+      () => _resolved(
+        ref.watch(customerDisplayNameProvider(customerId)),
+        customerId,
+      ),
+    ),
     truncate: truncate,
   );
 }
@@ -66,15 +80,23 @@ class DeliveryOrderFacilityName extends ConsumerWidget {
   const DeliveryOrderFacilityName({
     super.key,
     required this.facilityId,
+    this.name,
     this.truncate = true,
   });
 
   final int facilityId;
+  final String? name;
   final bool truncate;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => _NameText(
-    _resolved(ref.watch(facilityDisplayNameProvider(facilityId)), facilityId),
+    _serverOr(
+      name,
+      () => _resolved(
+        ref.watch(facilityDisplayNameProvider(facilityId)),
+        facilityId,
+      ),
+    ),
     truncate: truncate,
   );
 }
@@ -137,6 +159,8 @@ class DeliveryOrderShipTo extends ConsumerWidget {
     required this.customerId,
     required this.facilityId,
     required this.shipToId,
+    this.shipToLabel,
+    this.facilityName,
     this.truncate = true,
   });
 
@@ -144,6 +168,10 @@ class DeliveryOrderShipTo extends ConsumerWidget {
   final int customerId;
   final int facilityId;
   final int? shipToId;
+
+  /// The server's one-line address; null for a counter pickup.
+  final String? shipToLabel;
+  final String? facilityName;
   final bool truncate;
 
   @override
@@ -151,12 +179,14 @@ class DeliveryOrderShipTo extends ConsumerWidget {
     if (type == FulfillmentType.counterPickup) {
       return DeliveryOrderFacilityName(
         facilityId: facilityId,
+        name: facilityName,
         truncate: truncate,
       );
     }
     return DeliveryOrderCustomerAddress(
       customerId: customerId,
       shipToId: shipToId,
+      label: shipToLabel,
       truncate: truncate,
     );
   }
@@ -170,11 +200,15 @@ class DeliveryOrderCustomerAddress extends ConsumerWidget {
     super.key,
     required this.customerId,
     required this.shipToId,
+    this.label,
     this.truncate = true,
   });
 
   final int customerId;
   final int? shipToId;
+
+  /// The server's one-line address, when the row carries one.
+  final String? label;
   final bool truncate;
 
   @override
@@ -182,6 +216,10 @@ class DeliveryOrderCustomerAddress extends ConsumerWidget {
     final id = shipToId;
     if (id == null) {
       return _NameText(emptyValuePlaceholder, truncate: truncate);
+    }
+    final server = label;
+    if (server != null && server.isNotEmpty) {
+      return _NameText(server, truncate: truncate);
     }
     return _NameText(
       _fromCustomer(
@@ -201,15 +239,19 @@ class DeliveryOrderCustomerAddress extends ConsumerWidget {
 /// row carries no facility. `DeliveryOrderWarehouseName` needs the facility;
 /// this doesn't (spec 063 R7).
 class WarehouseNameById extends ConsumerWidget {
-  const WarehouseNameById({super.key, required this.warehouseId});
+  const WarehouseNameById({super.key, required this.warehouseId, this.name});
 
   final int warehouseId;
+  final String? name;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => _NameText(
-    _resolved(
-      ref.watch(warehouseDisplayNameProvider(warehouseId)),
-      warehouseId,
+    _serverOr(
+      name,
+      () => _resolved(
+        ref.watch(warehouseDisplayNameProvider(warehouseId)),
+        warehouseId,
+      ),
     ),
     truncate: true,
   );

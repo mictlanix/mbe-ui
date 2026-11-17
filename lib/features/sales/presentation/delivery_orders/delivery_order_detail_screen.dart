@@ -623,11 +623,17 @@ class _HeaderFacts extends ConsumerWidget {
         ),
         CompactField(
           label: l10n.deliveryOrderColumnCustomer,
-          child: DeliveryOrderCustomerName(customerId: order.customerId),
+          child: DeliveryOrderCustomerName(
+            customerId: order.customerId,
+            name: order.customerName,
+          ),
         ),
         CompactField(
           label: l10n.deliveryOrderFactFacility,
-          child: DeliveryOrderFacilityName(facilityId: order.facilityId),
+          child: DeliveryOrderFacilityName(
+            facilityId: order.facilityId,
+            name: order.facilityName,
+          ),
         ),
         CompactField(
           label: l10n.deliveryOrderColumnScheduled,
@@ -681,6 +687,8 @@ class _DetailBand extends ConsumerWidget {
               customerId: order.customerId,
               facilityId: order.facilityId,
               shipToId: order.shipToId,
+              shipToLabel: order.shipToLabel,
+              facilityName: order.facilityName,
               truncate: false,
             ),
           ),

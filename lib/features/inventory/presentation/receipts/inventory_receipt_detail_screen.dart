@@ -189,12 +189,14 @@ class _ReceiptBodyState extends ConsumerState<_ReceiptBody> {
   }
 
   /// A confirm's or cancel's outcome: its refusal, or the cost notice when
-  /// the server raised warnings beyond the over-receipts (FR-015a).
+  /// the server raised cost warnings (FR-015a, mbe-api#322).
   void _settled(ReceiptSettled? result) {
     if (!mounted || result == null) return;
     setState(() => _actionError = result.error);
-    if (result.hasUnmappedWarnings) {
-      ref.read(receiptCostNoticeProvider(_receipt.id).notifier).show();
+    if (result.costWarnings.isNotEmpty) {
+      ref
+          .read(receiptCostNoticeProvider(_receipt.id).notifier)
+          .show(result.costWarnings);
     }
   }
 
@@ -344,7 +346,7 @@ class _ReceiptBodyState extends ConsumerState<_ReceiptBody> {
           receipt.isLinked &&
           access.can(SystemObject.inventoryReceipts, AccessRight.create),
     );
-    final showCostNotice = ref.watch(receiptCostNoticeProvider(receipt.id));
+    final costWarnings = ref.watch(receiptCostNoticeProvider(receipt.id));
     // FR-015: never on a cancelled receipt.
     final overReceipts = notCancelled
         ? receipt.overReceipts
@@ -361,8 +363,9 @@ class _ReceiptBodyState extends ConsumerState<_ReceiptBody> {
         spacing: spacing.sectionGap,
         children: [
           _HeaderFacts(receipt: receipt),
-          if (showCostNotice)
+          if (costWarnings.isNotEmpty)
             ReceiptCostNoticeBand(
+              warnings: costWarnings,
               onClose: () => ref
                   .read(receiptCostNoticeProvider(receipt.id).notifier)
                   .dismiss(),

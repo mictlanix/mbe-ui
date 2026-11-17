@@ -229,6 +229,8 @@ class InventoryTransferRepositoryImpl implements InventoryTransferRepository {
               productCode: l.productCode,
               productName: l.productName,
               quantityOutstanding: Decimal.parse(l.quantityOutstanding),
+              warehouseName: l.warehouseName,
+              warehouseToName: l.warehouseToName,
             ),
         ],
       );
@@ -288,6 +290,10 @@ InventoryTransferSummary _summary(api.InventoryTransferSummary s) =>
       status: _status(s.status),
       creatorId: s.creator,
       createdAt: s.creationTime,
+      warehouseName: s.warehouseName,
+      warehouseToName: s.warehouseToName,
+      facilityName: s.facilityName,
+      creatorName: s.creatorName,
     );
 
 InventoryTransfer _toTransfer(api.InventoryTransferResponse r) =>
