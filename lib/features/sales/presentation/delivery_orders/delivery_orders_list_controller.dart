@@ -14,12 +14,12 @@ const _pageSize = 20;
 /// Fetches and holds the "Órdenes de entrega" page (spec 061 FR-003, FR-004,
 /// research R3): server paging, newest first, filtered by the URL facets.
 ///
-/// **The facility is dropped here too.** A non-administrator's request never
-/// carries one, whatever [DeliveryOrdersFilter] holds. mbe-api checks it too
-/// since mbe-api#314; the client drops stay as defence in depth.
-/// [DeliveryOrdersFilter.fromQuery] already drops it; this second drop reads
-/// `isAdministrator` on its own, so a filter built any other way still can't
-/// widen the list. Never merge the two sites into one.
+/// **The facility is dropped here too.** The request carries one only for a
+/// user who [seesEveryFacilitysDeliveryOrders], whatever [DeliveryOrdersFilter]
+/// holds. mbe-api checks it too since mbe-api#314; the client drops stay as
+/// defence in depth. [DeliveryOrdersFilter.fromQuery] already drops it; this
+/// second drop reads the access on its own, so a filter built any other way
+/// still can't widen the list. Never merge the two sites into one.
 ///
 /// A user with no facility gets an empty page and no request, administrators
 /// included, as in Pedidos.
@@ -27,7 +27,9 @@ const _pageSize = 20;
 class DeliveryOrdersListController extends _$DeliveryOrdersListController {
   @override
   Future<CatalogPage<DeliveryOrderSummary>> build(DeliveryOrdersFilter filter) {
-    final isAdministrator = ref.watch(accessControlProvider).isAdministrator;
+    final seesEveryFacility = seesEveryFacilitysDeliveryOrders(
+      ref.watch(accessControlProvider),
+    );
     final facilityId = ref.watch(userFacilityIdProvider);
     if (facilityId == null) {
       return Future.value(
@@ -42,13 +44,13 @@ class DeliveryOrdersListController extends _$DeliveryOrdersListController {
     return fetchClampedPage(
       pageIndex: filter.pageIndex,
       pageSize: _pageSize,
-      fetch: (pageIndex) => _fetch(filter, isAdministrator, pageIndex),
+      fetch: (pageIndex) => _fetch(filter, seesEveryFacility, pageIndex),
     );
   }
 
   Future<CatalogPage<DeliveryOrderSummary>> _fetch(
     DeliveryOrdersFilter filter,
-    bool isAdministrator,
+    bool seesEveryFacility,
     int pageIndex,
   ) async {
     final result = await ref
@@ -60,7 +62,7 @@ class DeliveryOrdersListController extends _$DeliveryOrdersListController {
           dateTo: filter.dateTo,
           customer: filter.customerId,
           salesOrder: filter.salesOrderId,
-          facility: isAdministrator ? filter.facilityId : null,
+          facility: seesEveryFacility ? filter.facilityId : null,
           search: filter.search,
           skip: pageIndex * _pageSize,
           limit: _pageSize,
