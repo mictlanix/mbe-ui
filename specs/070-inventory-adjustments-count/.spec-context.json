@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Physical Inventory Counts",
   "branch": "070-inventory-adjustments-count",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -18,6 +18,20 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-17T10:22:10.042Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-17T10:33:03.309Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-17T10:38:55.419Z"
     }
   ],
   "telemetryInstanceId": "970073cc-2a7f-44af-a523-f07bab31d536"
