@@ -5,7 +5,7 @@ import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_orders_filter.dart';
 
 DeliveryOrdersFilter _decode(ListQuery query, {bool admin = false}) =>
-    DeliveryOrdersFilter.fromQuery(query, isAdministrator: admin);
+    DeliveryOrdersFilter.fromQuery(query, seesEveryFacility: admin);
 
 /// Spec 061 data-model §2, research R3: the list's whole view state lives in
 /// the URL.
@@ -165,13 +165,13 @@ void main() {
   group('facility (mbe-api#314)', () {
     final query = const ListQuery().withFacet('facility', '5');
 
-    test('is ignored for a non-administrator', () {
+    test('is ignored for a user who sees only their facility', () {
       final filter = _decode(query);
       expect(filter.facilityId, isNull);
       expect(filter.activeFilterCount, 0);
     });
 
-    test('is decoded for an administrator', () {
+    test('is decoded for a user who sees every facility', () {
       expect(_decode(query, admin: true).facilityId, 5);
     });
   });

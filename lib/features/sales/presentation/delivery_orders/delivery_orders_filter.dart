@@ -1,9 +1,20 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:mbe_ui/core/access/access_control.dart';
+import 'package:mbe_ui/core/access/access_right.dart';
+import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payments_filter.dart';
 
 part 'delivery_orders_filter.freezed.dart';
+
+/// Whether [access] may list another facility's delivery orders: the
+/// server's rule since mbe-api#314, read on SearchCreditsFromAllStores (101)
+/// or DeliveryItineraries (87). Administrators pass through
+/// [AccessControlService.can].
+bool seesEveryFacilitysDeliveryOrders(AccessControlService access) =>
+    access.can(SystemObject.searchCreditsFromAllStores, AccessRight.read) ||
+    access.can(SystemObject.deliveryItineraries, AccessRight.read);
 
 /// The "Órdenes de entrega" list's addressable view state (spec 061
 /// data-model §2, research R3). Every field lives in the URL, so Back from an
@@ -34,19 +45,20 @@ abstract class DeliveryOrdersFilter with _$DeliveryOrdersFilter {
     int? customerId,
     int? salesOrderId,
 
-    /// Administrators only. Never set for anyone else by [fromQuery], and
-    /// dropped again by the list controller's fetch (research R3).
+    /// Only for a user who [seesEveryFacilitysDeliveryOrders]. Never set for
+    /// anyone else by [fromQuery], and dropped again by the list controller's
+    /// fetch (research R3).
     int? facilityId,
     @Default(0) int pageIndex,
   }) = _DeliveryOrdersFilter;
 
-  /// [isAdministrator] decides whether the `facility` key is read at all, so a
-  /// non-administrator's hand-typed `facility` never reaches the request.
+  /// [seesEveryFacility] decides whether the `facility` key is read at all, so
+  /// anyone else's hand-typed `facility` never reaches the request.
   /// mbe-api checks it too since mbe-api#314; this stays as defence in depth.
   /// The list controller drops it a second time on its own terms; keep both.
   factory DeliveryOrdersFilter.fromQuery(
     ListQuery query, {
-    required bool isAdministrator,
+    required bool seesEveryFacility,
   }) {
     var from = parsePaymentsDateFacet(query.facet('from'));
     var to = parsePaymentsDateFacet(query.facet('to'));
@@ -71,7 +83,7 @@ abstract class DeliveryOrdersFilter with _$DeliveryOrdersFilter {
       dateTo: to,
       customerId: _parseIntFacet(query.facet('customer')),
       salesOrderId: _parseIntFacet(query.facet('order')),
-      facilityId: isAdministrator
+      facilityId: seesEveryFacility
           ? _parseIntFacet(query.facet('facility'))
           : null,
       pageIndex: query.pageIndex,

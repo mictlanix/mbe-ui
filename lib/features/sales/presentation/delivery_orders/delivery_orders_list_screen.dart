@@ -84,10 +84,9 @@ class DeliveryOrdersListScreen extends ConsumerWidget {
     }
 
     final access = ref.watch(accessControlProvider);
-    final isAdministrator = access.isAdministrator;
     final filter = DeliveryOrdersFilter.fromQuery(
       query,
-      isAdministrator: isAdministrator,
+      seesEveryFacility: seesEveryFacilitysDeliveryOrders(access),
     );
     final pageAsync = ref.watch(deliveryOrdersListControllerProvider(filter));
     final fmt = ref.watch(formattersProvider);
@@ -263,14 +262,18 @@ class _DeliveryOrdersFiltersPanel extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final access = ref.watch(accessControlProvider);
-    final isAdministrator = access.isAdministrator;
+    final seesEveryFacility = seesEveryFacilitysDeliveryOrders(access);
+    // The picker lists facilities, which needs Facilities (29) read.
+    final canPickFacility =
+        seesEveryFacility &&
+        access.can(SystemObject.facilities, AccessRight.read);
     final canReadCustomers = access.can(
       SystemObject.customers,
       AccessRight.read,
     );
     final filter = DeliveryOrdersFilter.fromQuery(
       query,
-      isAdministrator: isAdministrator,
+      seesEveryFacility: seesEveryFacility,
     );
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
@@ -284,7 +287,7 @@ class _DeliveryOrdersFiltersPanel extends ConsumerWidget {
     final customerName = filter.customerId == null || !canReadCustomers
         ? null
         : ref.watch(customerDisplayNameProvider(filter.customerId!)).value;
-    final facilityName = filter.facilityId == null || !isAdministrator
+    final facilityName = filter.facilityId == null || !canPickFacility
         ? null
         : ref.watch(facilityDisplayNameProvider(filter.facilityId!)).value;
 
@@ -396,7 +399,7 @@ class _DeliveryOrdersFiltersPanel extends ConsumerWidget {
             }
           },
         ),
-        if (isAdministrator)
+        if (canPickFacility)
           Row(
             spacing: spacing.sm,
             children: [

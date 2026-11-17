@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
+import 'package:mbe_ui/core/access/privilege.dart';
+import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
 import 'package:mbe_ui/core/access/user_settings.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
@@ -24,17 +26,24 @@ class _FixedAuthNotifier extends AuthNotifier {
   Future<AuthState> build() async => _state;
 }
 
-User _user({required bool administrator, int? facilityId}) => User(
+User _user({
+  required bool administrator,
+  int? facilityId,
+  SystemObject? readOn,
+}) => User(
   userId: administrator ? 'admin-1' : 'user-1',
   email: 'user@example.com',
   administrator: administrator,
   status: EntityStatus.active,
   sessionVersion: 1,
   settings: facilityId == null ? null : UserSettings(facilityId: facilityId),
-  privileges: const [],
+  privileges: [
+    if (readOn != null) Privilege(systemObject: readOn, rawValue: 2),
+  ],
 );
 
-/// Spec 061 research R3: a non-administrator's `facility` is dropped twice —
+/// Spec 061 research R3: the `facility` of a user who sees only their own
+/// facility is dropped twice —
 /// when the URL is decoded and again when the request is built. The server
 /// checks it too since mbe-api#314; these stay as defence in depth. Each site
 /// is pinned on its own here, so removing either one fails a test.
@@ -104,10 +113,11 @@ void main() {
       final c = await container(
         user: _user(administrator: false, facilityId: 9),
       );
-      final isAdministrator = c.read(accessControlProvider).isAdministrator;
       final filter = DeliveryOrdersFilter.fromQuery(
         urlWithFacility,
-        isAdministrator: isAdministrator,
+        seesEveryFacility: seesEveryFacilitysDeliveryOrders(
+          c.read(accessControlProvider),
+        ),
       );
 
       expect(filter.facilityId, isNull);
@@ -127,18 +137,42 @@ void main() {
     });
   });
 
-  test('for an administrator a facility in the URL reaches the filter and '
-      'the request', () async {
-    final c = await container(user: _user(administrator: true, facilityId: 9));
-    final filter = DeliveryOrdersFilter.fromQuery(
-      urlWithFacility,
-      isAdministrator: c.read(accessControlProvider).isAdministrator,
-    );
+  // mbe-api#314: administrators, and read on SearchCreditsFromAllStores (101)
+  // or DeliveryItineraries (87).
+  for (final (label, user) in [
+    ('an administrator', _user(administrator: true, facilityId: 9)),
+    (
+      'read on SearchCreditsFromAllStores (101)',
+      _user(
+        administrator: false,
+        facilityId: 9,
+        readOn: SystemObject.searchCreditsFromAllStores,
+      ),
+    ),
+    (
+      'read on DeliveryItineraries (87)',
+      _user(
+        administrator: false,
+        facilityId: 9,
+        readOn: SystemObject.deliveryItineraries,
+      ),
+    ),
+  ]) {
+    test('for $label a facility in the URL reaches the filter and the '
+        'request', () async {
+      final c = await container(user: user);
+      final filter = DeliveryOrdersFilter.fromQuery(
+        urlWithFacility,
+        seesEveryFacility: seesEveryFacilitysDeliveryOrders(
+          c.read(accessControlProvider),
+        ),
+      );
 
-    expect(filter.facilityId, 5);
-    await load(c, filter);
-    verifyFacility(5);
-  });
+      expect(filter.facilityId, 5);
+      await load(c, filter);
+      verifyFacility(5);
+    });
+  }
 
   test('with no facility on the account, no request is sent, administrators '
       'included', () async {

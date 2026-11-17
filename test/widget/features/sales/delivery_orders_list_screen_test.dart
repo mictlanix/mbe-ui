@@ -187,32 +187,43 @@ void main() {
     return DeliveryOrderPage(items: kept, total: kept.length);
   });
 
-  Override access({bool customersRead = true, bool administrator = false}) =>
-      accessControlProvider.overrideWithValue(
-        AccessControlService(
-          AuthState.authenticated(
-            token: 't',
-            user: User(
-              userId: 'd',
-              email: 'd@example.com',
-              administrator: administrator,
-              status: EntityStatus.active,
-              sessionVersion: 1,
-              privileges: [
-                const Privilege(
-                  systemObject: SystemObject.deliveryOrders,
-                  rawValue: 2,
-                ),
-                if (customersRead)
-                  const Privilege(
-                    systemObject: SystemObject.customers,
-                    rawValue: 2,
-                  ),
-              ],
+  Override access({
+    bool customersRead = true,
+    bool administrator = false,
+    SystemObject? everyFacility,
+    bool facilitiesRead = false,
+  }) => accessControlProvider.overrideWithValue(
+    AccessControlService(
+      AuthState.authenticated(
+        token: 't',
+        user: User(
+          userId: 'd',
+          email: 'd@example.com',
+          administrator: administrator,
+          status: EntityStatus.active,
+          sessionVersion: 1,
+          privileges: [
+            const Privilege(
+              systemObject: SystemObject.deliveryOrders,
+              rawValue: 2,
             ),
-          ),
+            if (customersRead)
+              const Privilege(
+                systemObject: SystemObject.customers,
+                rawValue: 2,
+              ),
+            if (everyFacility != null)
+              Privilege(systemObject: everyFacility, rawValue: 2),
+            if (facilitiesRead)
+              const Privilege(
+                systemObject: SystemObject.facilities,
+                rawValue: 2,
+              ),
+          ],
         ),
-      );
+      ),
+    ),
+  );
 
   Future<GoRouter> pumpList(
     WidgetTester tester, {
@@ -580,8 +591,8 @@ void main() {
       expect(key('delivery_orders_sales_order_filter'), findsOneWidget);
     });
 
-    testWidgets('a non-administrator has no facility facet, and a facility in '
-        'the address is ignored', (tester) async {
+    testWidgets('a user who sees only their facility has no facility facet, '
+        'and a facility in the address is ignored', (tester) async {
       serve([row(1)]);
       await pumpList(tester, location: '/sales/delivery-orders?facility=5');
 
@@ -620,6 +631,41 @@ void main() {
 
       expect(router.state.uri.queryParameters.containsKey('facility'), isFalse);
       expect(requests.last.facility, isNull);
+    });
+  });
+
+  group('facility for 87 and 101 holders (mbe-ui#269, mbe-api#314)', () {
+    for (final object in [
+      SystemObject.deliveryItineraries,
+      SystemObject.searchCreditsFromAllStores,
+    ]) {
+      testWidgets('read on ${object.name} with Facilities read gets the '
+          'facet, and its facility reaches the request', (tester) async {
+        serve([row(1)]);
+        await pumpList(
+          tester,
+          who: access(everyFacility: object, facilitiesRead: true),
+          location: '/sales/delivery-orders?facility=5',
+        );
+        expect(requests.last.facility, 5);
+
+        await openFilters(tester);
+        expect(key('delivery_orders_facility_filter'), findsOneWidget);
+      });
+    }
+
+    testWidgets('without Facilities read there is no picker, but a facility '
+        'in the address still applies', (tester) async {
+      serve([row(1)]);
+      await pumpList(
+        tester,
+        who: access(everyFacility: SystemObject.deliveryItineraries),
+        location: '/sales/delivery-orders?facility=5',
+      );
+      expect(requests.last.facility, 5);
+
+      await openFilters(tester);
+      expect(key('delivery_orders_facility_filter'), findsNothing);
     });
   });
 
