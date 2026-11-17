@@ -17,8 +17,8 @@ What 070 adds to the 068 pattern: the quick-entry row and the Pegar lista dialog
 │         Folio │ Almacén      │ Sucursal   │ Estado      │ Creado por │ Fecha      │
 ├───────────────┼──────────────┼────────────┼─────────────┼────────────┼────────────┤
 │  Borrador #31 │ Bodega Norte │ Matriz     │ (Borrador)  │ J. Pérez   │ 2026-11-17 │
-│            12 │ Bodega Norte │ Matriz     │ (Confirmada)│ A. Ruiz    │ 2026-11-01 │
-│  Borrador #27 │ Piso venta   │ Sucursal 2 │ (Cancelada) │ J. Pérez   │ 2026-10-30 │
+│            12 │ Bodega Norte │ Matriz     │ (Confirmado)│ A. Ruiz    │ 2026-11-01 │
+│  Borrador #27 │ Piso venta   │ Sucursal 2 │ (Cancelado) │ J. Pérez   │ 2026-10-30 │
 ├───────────────┴──────────────┴────────────┴─────────────┴────────────┴────────────┤
 │                                           1–20 de 41   ‹  1  2  3  ›              │
 └───────────────────────────────────────────────────────────────────────────────────┘
@@ -41,7 +41,7 @@ What 070 adds to the 068 pattern: the quick-entry row and the Pegar lista dialog
 │ [＋ Nuevo]  [⚲ ②]             │
 ├──────────────────────────────┤
 │ 12 · Bodega Norte            │
-│ (Confirmada)       2026-11-01│
+│ (Confirmado)       2026-11-01│
 └──────────────────────────────┘
 ```
 
@@ -106,7 +106,7 @@ What 070 adds to the 068 pattern: the quick-entry row and the Pegar lista dialog
 
 ```
 ┌ ← Conteo 12 ────────────────────────────────────────────────────────────────────┐
-│ Estado (Confirmada)   Folio 12   Almacén Bodega Norte   Sucursal Matriz          │
+│ Estado (Confirmado)   Folio 12   Almacén Bodega Norte   Sucursal Matriz          │
 │ Comentario  Conteo mensual pasillo 3                     Partidas 3              │
 ├─────────────────────────────────────────────────────────────────────────────────┤
 │ ⚠ Conteo confirmado con avisos                                              ✕   │
@@ -144,7 +144,7 @@ What 070 adds to the 068 pattern: the quick-entry row and the Pegar lista dialog
 
 ### State: cancelled / read-only user / loading / not found
 
-- Cancelled: title stays "Conteo · Borrador #{id}" with the Cancelada chip, lines without Esperado or Diferencia, and no actions (FR-004a, FR-010).
+- Cancelled: title stays "Conteo · Borrador #{id}" with the Cancelado chip, lines without Esperado or Diferencia, and no actions (FR-004a, FR-010).
 - Read-only on 74: no Captura rápida row, no row icons, no actions (FR-015, SC-006).
 - Loading and not-found or forbidden: as in 068.
 

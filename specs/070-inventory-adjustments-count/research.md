@@ -24,7 +24,7 @@ Sources:
 - **Decision**: Add a `InventoryCountStatusChip` in `counts/` that uses `inventoryDocumentStatusColors` with new labels: `inventoryCountStatusDraft` "Borrador", `inventoryCountStatusCompleted` "Confirmado" and `inventoryCountStatusCancelled` "Cancelado". The count list's filter drawer uses the same labels. Each list screen builds its own state chips, so no shared code changes.
 - **Rationale**: The shared labels "Confirmada" and "Cancelada" agree with "entrada" and "salida". "Conteo" is masculine. Transfers solved the same problem with their own masculine labels (`inventoryTransferStatusCancelled` "Cancelado").
 - **Alternatives considered**: A label parameter on `InventoryDocumentStatusChip`. Rejected as a change to shipped shared code that only one caller needs; the chip is ten lines.
-- **Wireframe note**: the wireframes show "(Confirmada)" and "(Cancelada)" chips. They read "Confirmado" and "Cancelado" when built.
+- **Wireframe note**: the wireframes were updated on 2026-11-17 to show the masculine chips.
 
 ## R3. Writing lines
 

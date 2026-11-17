@@ -152,7 +152,7 @@ Before confirming, the supervisor notices that the wrong warehouse was chosen, o
 - Another user confirms or cancels a draft while it is open. The next action is refused with the server's reason, and the screen reloads the count in its new state.
 - A user tries to cancel a completed count through a stale screen. The server refuses (a confirmed count cannot be cancelled) and that reason is shown.
 - A user can read counts but not update them: every count opens read-only, with no New, edit, confirm or line actions.
-- The user leaves a draft with unsaved edits in the header or a line: they are warned before losing them, as in other back-office forms.
+- The user leaves a draft with unsaved edits in the header or a line, or closes Pegar lista with pasted text not yet sent: they are warned before losing them, as in other back-office forms.
 - Stock records include entries made by legacy adjustments. They remain in the stock history as they were; this spec does not show or change them.
 
 ## Requirements *(mandatory)*
@@ -171,7 +171,7 @@ Before confirming, the supervisor notices that the wrong warehouse was chosen, o
 
 - **FR-005**: Users with create access MUST be able to start a count by choosing a warehouse and, optionally, entering a comment. The warehouse MUST start as the user's point-of-sale warehouse when they have one, and empty otherwise. For a non-administrator, the point-of-sale warehouse is used only when it belongs to their own facility (FR-015); otherwise the field starts empty.
 - **FR-006**: On a draft, users with update access MUST be able to change the warehouse and the comment. The comment MUST stay optional, with the server's length limit.
-- **FR-007**: The count MUST show its facility, which follows its warehouse, as read-only information.
+- **FR-007**: The count MUST show its facility, which follows its warehouse, as read-only information, and the number of lines it holds ("Partidas").
 
 **Lines**
 
@@ -180,14 +180,14 @@ Before confirming, the supervisor notices that the wrong warehouse was chosen, o
 - **FR-010**: Each line MUST show the product code and name and the counted quantity. On a completed count, each line MUST also show the expected quantity and the difference; on a draft or a cancelled count, neither is shown.
 - **FR-011**: The product picker for count lines SHOULD offer only stockable products. Any refusal of a non-stockable or unknown product MUST be shown.
 - **FR-011a**: The user MUST be able to find a line on the count by product code or name.
-- **FR-011b**: Besides the product picker, a draft MUST offer a quick-entry row: the user types or scans a product code, types a quantity and presses Enter, and the line is set. After each entry the focus returns to the code field, ready for the next product.
-- **FR-011c**: On a draft, users with update access MUST be able to paste a list of product code and quantity pairs, one per row, in the column layout a spreadsheet copy produces. Before anything is sent, the screen MUST show how many rows were read and list every row it cannot read (missing code, quantity not a number, negative, or more than 4 decimals) and every code repeated in the paste. The user can send only when no row is unreadable or repeated.
-- **FR-011d**: A pasted list MUST be sent in batches of at most 2,000 rows, with progress shown. When the server refuses a batch, sending MUST stop and every bad row it names (unknown or non-stockable product) MUST be listed with its code. The screen MUST say how many rows were already applied. Because a line's quantity replaces the previous one, pasting the corrected list again is safe and the screen MUST say so.
+- **FR-011b**: Besides the product picker, a draft MUST offer a quick-entry row: the user types or scans a product code, types a quantity and presses Enter, and the line is set. The code is matched exactly (ignoring case), with no search by name; the product picker covers searching. After each entry the focus returns to the code field, ready for the next product.
+- **FR-011c**: On a draft, users with update access MUST be able to paste a list of product code and quantity pairs, one per row, in the column layout a spreadsheet copy produces: code and quantity separated by a tab, a semicolon or a comma. With a tab or semicolon separator, a decimal comma ("4,5") is accepted; a row whose separator is a comma and that also uses a decimal comma is reported as unreadable, not guessed. Before anything is sent, the screen MUST show how many rows were read and list every row it cannot read (missing code, quantity not a number, negative, or more than 4 decimals) and every code repeated in the paste. The user can send only when no row is unreadable or repeated.
+- **FR-011d**: A pasted list MUST be sent in batches of at most 2,000 rows, with progress shown. Once sending starts it cannot be stopped midway; it runs until every batch is applied or one is refused. When the server refuses a batch, sending MUST stop and every bad row it names (unknown or non-stockable product) MUST be listed with its code. The screen MUST say how many rows were already applied. Because a line's quantity replaces the previous one, pasting the corrected list again is safe and the screen MUST say so.
 
 **Actions**
 
 - **FR-012**: Users with update access MUST be able to confirm a draft after accepting a confirmation prompt that says the warehouse's stock will be set to the counted quantities and that a confirmed count cannot be cancelled. The prompt MUST offer an option, off by default, to count as 0 every product with stock in the warehouse that is not on the count. On success the count MUST show its folio, the Completed state and each line's expected quantity and difference, and become read-only.
-- **FR-013**: After a confirm, the screen MUST show the warnings the server returned: each product counted below its reservations, with its counted, reserved and available quantities, and each product corrected by another count, with that count's folio. The warnings MUST NOT be presented as errors, since the count is already confirmed.
+- **FR-013**: After a confirm, the screen MUST show the warnings the server returned: each product counted below its reservations, with its counted, reserved and available quantities, and each product corrected by another count, with that count's folio. The warnings MUST NOT be presented as errors, since the count is already confirmed. They are shown in a band the user can dismiss, and they are not shown again after the user leaves the count.
 - **FR-014**: Users with the delete right MUST be able to cancel a draft after accepting a confirmation prompt. A completed count MUST NOT offer a cancel action.
 
 **Across the feature**
