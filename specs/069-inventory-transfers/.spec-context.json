@@ -3,7 +3,7 @@
   "specName": "Inventory Transfers",
   "branch": "069-inventory-transfers",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -381,8 +381,21 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-16T23:34:51.899Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-17T00:43:16.904Z"
     }
   ],
   "telemetryInstanceId": "84a2728d-856f-43ae-878d-c9b01a7496e2",
-  "currentTask": "T042"
+  "currentTask": null,
+  "concerns": [
+    {
+      "note": "finished, unverified",
+      "step": "implement"
+    }
+  ]
 }
