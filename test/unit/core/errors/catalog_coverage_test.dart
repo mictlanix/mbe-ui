@@ -112,7 +112,7 @@ void main() {
         missing.add(cells[1]);
       }
     }
-    expect(checked, 157);
+    expect(checked, 163);
     expect(missing, isEmpty);
   });
 

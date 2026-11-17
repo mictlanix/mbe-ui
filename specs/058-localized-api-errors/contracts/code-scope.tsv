@@ -125,12 +125,12 @@ code	fiscal_document.xml_unavailable	409	—	IN	GET /fiscal-documents/{}/xml	rea
 code	image.too_large	422	max_bytes: int	IN	POST /delivery-orders/{}/pickup; POST /facilities/{}/logo; POST /products/{}/image	reachable from 3 UI route(s)
 code	image.unsupported_format	422	—	IN	POST /delivery-orders/{}/pickup; POST /facilities/{}/logo; POST /products/{}/image	reachable from 3 UI route(s)
 code	incidence.reason_required	422	—	IN	DELETE /facilities/{}; DELETE /products/{}	reachable from 10 UI route(s)
-code	inventory_count.batch_invalid	422	— (`errors[]`: index, product or product_code, reason, code)	OUT		
-code	inventory_count.confirmed_cannot_cancel	409	—	OUT		
-code	inventory_count_line.not_stockable	422	— (an `errors[]` item)	OUT		
-code	inventory_count_line.product_reference	422	— (an `errors[]` item)	OUT		
-code	inventory_count_line.product_unknown	422	— (an `errors[]` item)	OUT		
-code	inventory_count_line.repeated	422	— (an `errors[]` item)	OUT		
+code	inventory_count.batch_invalid	422	— (`errors[]`: index, product or product_code, reason, code)	IN	PUT /inventory-counts/{}/lines	reachable from the Conteos físicos screens (spec 070)
+code	inventory_count.confirmed_cannot_cancel	409	—	IN	POST /inventory-counts/{}/cancel	reachable from the Conteos físicos screens (spec 070)
+code	inventory_count_line.not_stockable	422	— (an `errors[]` item)	IN	PUT /inventory-counts/{}/lines	reachable from the Conteos físicos screens (spec 070)
+code	inventory_count_line.product_reference	422	— (an `errors[]` item)	IN	PUT /inventory-counts/{}/lines	reachable from the Conteos físicos screens (spec 070); the UI always sends exactly one reference, so it cannot trigger this
+code	inventory_count_line.product_unknown	422	— (an `errors[]` item)	IN	PUT /inventory-counts/{}/lines	reachable from the Conteos físicos screens (spec 070)
+code	inventory_count_line.repeated	422	— (an `errors[]` item)	IN	PUT /inventory-counts/{}/lines	reachable from the Conteos físicos screens (spec 070)
 code	inventory_document.already_cancelled	409	resource: str (`inventory_receipt`, `inventory_issue`, `inventory_transfer` or `inventory_count`)	IN	POST /inventory-receipts/{}/cancel	reachable from the Entradas de almacén screens (spec 067)
 code	inventory_document.insufficient_stock	409	product_id: int, warehouse_id: int, requested: decimal, available: decimal	IN	POST /inventory-receipts/{}/cancel	reachable from the Entradas de almacén screens (spec 067)
 code	inventory_document.line_without_quantity	422	product_code: str	IN	POST /inventory-receipts/{}/confirm	reachable from the Entradas de almacén screens (spec 067)
