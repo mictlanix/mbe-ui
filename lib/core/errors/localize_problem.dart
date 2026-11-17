@@ -102,6 +102,10 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.inventoryDocumentPeriodNoLines,
   api.ErrorCode.inventoryReceiptPeriodComplementaryUnavailable,
   api.ErrorCode.inventoryReceiptPeriodWarehouseFixed,
+  api.ErrorCode.inventoryTransferPeriodLineRepeated,
+  api.ErrorCode.inventoryTransferPeriodNotInTransit,
+  api.ErrorCode.inventoryTransferPeriodOverReceived,
+  api.ErrorCode.inventoryTransferPeriodSameWarehouse,
   api.ErrorCode.lockPeriodBusy,
   api.ErrorCode.paymentPeriodAlreadyApplied,
   api.ErrorCode.paymentPeriodAlreadyVerified,
@@ -150,6 +154,7 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.salesOrderPeriodInsufficientStock,
   api.ErrorCode.salesOrderPeriodMissingDeliveryDetails,
   api.ErrorCode.salesOrderPeriodNoLines,
+  api.ErrorCode.salesOrderPeriodNotConfirmed,
   api.ErrorCode.salesOrderPeriodPaidCannotCancel,
   api.ErrorCode.salesOrderPeriodZeroPricedLines,
   api.ErrorCode.serverPeriodError,
@@ -174,6 +179,7 @@ const Set<String> localizedValidationTypes = {
   'email_address_invalid',
   'fiscal_document_payment_form_unknown',
   'fiscal_document_tax_rate_invalid',
+  'inventory_transfer_duplicate_line',
   'product_barcode_invalid',
   'product_code_has_whitespace',
   'profile_duplicate_system_object',
@@ -463,6 +469,17 @@ String? localizeProblem(
       },
     api.ErrorCode.inventoryReceiptPeriodWarehouseFixed =>
       l10n.apiErrorInventoryReceiptWarehouseFixed,
+    api.ErrorCode.inventoryTransferPeriodLineRepeated =>
+      l10n.apiErrorInventoryTransferLineRepeated,
+    api.ErrorCode.inventoryTransferPeriodNotInTransit =>
+      l10n.apiErrorInventoryTransferNotInTransit,
+    api.ErrorCode.inventoryTransferPeriodOverReceived => _overReceived(
+      problem,
+      fmt,
+      l10n,
+    ),
+    api.ErrorCode.inventoryTransferPeriodSameWarehouse =>
+      l10n.apiErrorInventoryTransferSameWarehouse,
     api.ErrorCode.lockPeriodBusy => l10n.apiErrorLockBusy,
     api.ErrorCode.paymentPeriodAlreadyApplied =>
       l10n.apiErrorPaymentAlreadyApplied,
@@ -571,6 +588,8 @@ String? localizeProblem(
       l10n.apiErrorSalesOrderMissingDeliveryDetails,
     ),
     api.ErrorCode.salesOrderPeriodNoLines => l10n.apiErrorSalesOrderNoLines,
+    api.ErrorCode.salesOrderPeriodNotConfirmed =>
+      l10n.apiErrorSalesOrderNotConfirmed,
     api.ErrorCode.salesOrderPeriodPaidCannotCancel =>
       l10n.apiErrorSalesOrderPaidCannotCancel,
     api.ErrorCode.salesOrderPeriodZeroPricedLines => _withItems(
@@ -627,6 +646,8 @@ String? localizeValidationType(String type, AppLocalizations l10n) {
       l10n.apiValidationFiscalDocumentPaymentFormUnknown,
     'fiscal_document_tax_rate_invalid' =>
       l10n.apiValidationFiscalDocumentTaxRateInvalid,
+    'inventory_transfer_duplicate_line' =>
+      l10n.apiValidationInventoryTransferDuplicateLine,
     'product_barcode_invalid' => l10n.apiValidationProductBarcodeInvalid,
     'product_code_has_whitespace' => l10n.apiValidationProductCodeHasWhitespace,
     'profile_duplicate_system_object' =>
@@ -864,6 +885,23 @@ String? _ap1<A>(A? a, String Function(A) f) => a == null ? null : f(a);
 
 String? _ap2<A, B>(A? a, B? b, String Function(A, B) f) =>
     a == null || b == null ? null : f(a, b);
+
+/// `inventory_transfer.over_received`: the product and the two quantities.
+String? _overReceived(
+  ApiProblem problem,
+  AppFormatters fmt,
+  AppLocalizations l10n,
+) {
+  final code = problem.stringParam('product_code');
+  final received = _quantity(problem, 'received', fmt);
+  final outstanding = _quantity(problem, 'outstanding', fmt);
+  if (code == null || received == null || outstanding == null) return null;
+  return l10n.apiErrorInventoryTransferOverReceived(
+    code,
+    received,
+    outstanding,
+  );
+}
 
 /// A money param, through the formatter the rest of the app uses.
 String? _money(ApiProblem problem, String key, AppFormatters fmt) {

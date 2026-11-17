@@ -42,6 +42,7 @@ void main() {
     'inventory_document.insufficient_stock',
     'inventory_document.line_without_quantity',
     'inventory_document.no_lines',
+    'inventory_transfer.over_received',
     'payment.currency_mismatch',
     'payment.exceeds_order_balance',
     'payment.exceeds_unapplied',
@@ -111,7 +112,7 @@ void main() {
         missing.add(cells[1]);
       }
     }
-    expect(checked, 152);
+    expect(checked, 157);
     expect(missing, isEmpty);
   });
 

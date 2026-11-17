@@ -25,20 +25,27 @@ import 'package:mbe_ui/features/catalog/data/point_sale_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/facility_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/point_sale_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_issue_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/data/inventory_transfer_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_issue.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_transfer.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_issue_repository.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_receipt_repository.dart';
+import 'package:mbe_ui/features/inventory/domain/repositories/inventory_transfer_repository.dart';
 import 'package:mbe_ui/features/inventory/presentation/issues/inventory_issue_detail_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/issues/inventory_issues_list_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_detail_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_list_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/transfers/in_transit_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/transfers/inventory_transfer_detail_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/transfers/inventory_transfers_list_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 class MockInventoryReceiptRepository extends Mock
@@ -46,6 +53,11 @@ class MockInventoryReceiptRepository extends Mock
 
 class MockInventoryIssueRepository extends Mock
     implements InventoryIssueRepository {}
+
+class MockInventoryTransferRepository extends Mock
+    implements InventoryTransferRepository {}
+
+class MockFacilityRepository extends Mock implements FacilityRepository {}
 
 class MockWarehouseRepository extends Mock implements WarehouseRepository {}
 
@@ -67,6 +79,13 @@ typedef ReceiptListRequest = ({
   int skip,
 });
 
+/// One transfers `list` call's filter, as the list screen sent it.
+typedef TransferListRequest = ({
+  InventoryTransferStatus? status,
+  int? warehouseId,
+  int skip,
+});
+
 /// A warehouse for the pickers.
 Warehouse aWarehouse(int id, {int facilityId = 2}) => Warehouse(
   warehouseId: id,
@@ -77,7 +96,7 @@ Warehouse aWarehouse(int id, {int facilityId = 2}) => Warehouse(
   status: EntityStatus.active,
 );
 
-/// The Entradas (spec 067) and Salidas (spec 068) de almacén screens with
+/// The Entradas (067), Salidas (068) and Traspasos (069) screens with
 /// every repository mocked. The session user is configurable: its rights, whether it
 /// is an administrator, and its facility and point of sale.
 ///
@@ -86,7 +105,9 @@ Warehouse aWarehouse(int id, {int facilityId = 2}) => Warehouse(
 class InventoryHarness {
   final receipts = MockInventoryReceiptRepository();
   final issues = MockInventoryIssueRepository();
+  final transfers = MockInventoryTransferRepository();
   final warehouses = MockWarehouseRepository();
+  final facilities = MockFacilityRepository();
   final products = MockProductRepository();
   final pointSales = MockPointSaleRepository();
 
@@ -96,6 +117,9 @@ class InventoryHarness {
   /// Every issues `list` call, oldest first.
   final issueRequests = <ReceiptListRequest>[];
 
+  /// Every transfers `list` call, oldest first.
+  final transferRequests = <TransferListRequest>[];
+
   /// The last [pump]'s providers, for reading the formatters in a test.
   late ProviderContainer container;
 
@@ -104,6 +128,7 @@ class InventoryHarness {
   static User user({
     int receipts = 15,
     int issues = 0,
+    int transfers = 0,
     bool warehousesRead = true,
     bool productsRead = true,
     bool administrator = false,
@@ -124,6 +149,11 @@ class InventoryHarness {
         ),
       if (issues != 0)
         Privilege(systemObject: SystemObject.inventoryIssues, rawValue: issues),
+      if (transfers != 0)
+        Privilege(
+          systemObject: SystemObject.inventoryTransfers,
+          rawValue: transfers,
+        ),
       if (warehousesRead)
         const Privilege(systemObject: SystemObject.warehouses, rawValue: 2),
       if (productsRead)
@@ -149,6 +179,94 @@ class InventoryHarness {
     facilityId: facilityId,
     pointSaleId: pointSaleId,
   );
+
+  /// A session user holding only InventoryTransfers (17): [transfers] is its
+  /// raw right (15 = create, read, update and delete).
+  static User transferUser({
+    int transfers = 15,
+    bool warehousesRead = true,
+    bool productsRead = true,
+    bool administrator = false,
+    int? facilityId = 2,
+    int? pointSaleId,
+  }) => user(
+    receipts: 0,
+    transfers: transfers,
+    warehousesRead: warehousesRead,
+    productsRead: productsRead,
+    administrator: administrator,
+    facilityId: facilityId,
+    pointSaleId: pointSaleId,
+  );
+
+  /// Serves [rows] from the transfers `list`, recording each request.
+  void serveTransfers(List<InventoryTransferSummary> rows) => stubTransferList(
+    (_) async => CatalogPage(
+      items: rows,
+      total: rows.length,
+      pageIndex: 0,
+      pageSize: 20,
+    ),
+  );
+
+  void stubTransferList(
+    Future<InventoryTransferPage> Function(TransferListRequest request) answer,
+  ) {
+    when(
+      () => transfers.list(
+        status: any(named: 'status'),
+        warehouseId: any(named: 'warehouseId'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((i) {
+      final request = (
+        status: i.namedArguments[#status] as InventoryTransferStatus?,
+        warehouseId: i.namedArguments[#warehouseId] as int?,
+        skip: i.namedArguments[#skip] as int,
+      );
+      transferRequests.add(request);
+      return answer(request);
+    });
+  }
+
+  /// Answers [transfer] from `get`.
+  void stubTransfer(InventoryTransfer transfer) =>
+      when(() => transfers.get(transfer.id)).thenAnswer((_) async => transfer);
+
+  /// Pumps the app at [location] (the transfers list by default), as a
+  /// transfers user unless [who] is given.
+  Future<GoRouter> pumpTransfers(
+    WidgetTester tester, {
+    User? who,
+    String location = inventoryTransfersPath,
+    Size surface = const Size(1400, 1000),
+    bool namesFail = false,
+  }) => pump(
+    tester,
+    who: who ?? transferUser(),
+    location: location,
+    surface: surface,
+    namesFail: namesFail,
+  );
+
+  /// Pumps [transfer]'s detail screen, as a transfers user unless [who] is
+  /// given.
+  Future<GoRouter> pumpTransfer(
+    WidgetTester tester,
+    InventoryTransfer transfer, {
+    User? who,
+    Size surface = const Size(1400, 1000),
+  }) {
+    stubTransfer(transfer);
+    serveTransfers(const []);
+    return pump(
+      tester,
+      who: who ?? transferUser(),
+      location: '$inventoryTransfersPath/${transfer.id}',
+      surface: surface,
+    );
+  }
 
   /// Serves [rows] from the issues `list`, recording each request.
   void serveIssues(List<InventoryIssueSummary> rows) => stubIssueList(
@@ -308,7 +426,9 @@ class InventoryHarness {
         ),
         inventoryReceiptRepositoryProvider.overrideWithValue(receipts),
         inventoryIssueRepositoryProvider.overrideWithValue(issues),
+        inventoryTransferRepositoryProvider.overrideWithValue(transfers),
         warehouseRepositoryProvider.overrideWithValue(warehouses),
+        facilityRepositoryProvider.overrideWithValue(facilities),
         productRepositoryProvider.overrideWithValue(products),
         pointSaleRepositoryProvider.overrideWithValue(pointSales),
         inputDebounceProvider.overrideWithValue(
@@ -346,6 +466,22 @@ class InventoryHarness {
           path: '$inventoryIssuesPath/:id',
           builder: (_, s) => InventoryIssueDetailScreen(
             issueId: int.tryParse(s.pathParameters['id'] ?? ''),
+          ),
+        ),
+        GoRoute(
+          path: inventoryTransfersPath,
+          builder: (_, s) => Scaffold(
+            body: InventoryTransfersListScreen(query: ListQuery.fromUri(s.uri)),
+          ),
+        ),
+        GoRoute(
+          path: inTransitPath,
+          builder: (_, _) => const InTransitScreen(),
+        ),
+        GoRoute(
+          path: '$inventoryTransfersPath/:id',
+          builder: (_, s) => InventoryTransferDetailScreen(
+            transferId: int.tryParse(s.pathParameters['id'] ?? ''),
           ),
         ),
         GoRoute(

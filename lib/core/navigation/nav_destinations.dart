@@ -112,6 +112,11 @@ class NavBranch {
   // above — display order comes from position within `kNavigationTree` (the
   // second destination of the Inventario group there).
   static const int inventoryIssues = 31;
+
+  // 069-inventory-transfers: appended last, same rationale as `cashSessions`
+  // above — display order comes from position within `kNavigationTree` (the
+  // third destination of the Inventario group there).
+  static const int inventoryTransfers = 32;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -449,8 +454,8 @@ const List<NavItem> kNavigationTree = [
       ),
     ],
   ),
-  // Inventario (spec 067): warehouse receipts, and (spec 068) issues. Its own
-  // group, between Logística and Facturación; transfers will join it.
+  // Inventario (spec 067): warehouse receipts, (spec 068) issues and (spec
+  // 069) transfers. Its own group, between Logística and Facturación.
   NavGroup(
     id: 'inventory',
     label: _inventoryLabel,
@@ -478,6 +483,18 @@ const List<NavItem> kNavigationTree = [
         route: '/inventory/issues',
         branchIndex: NavBranch.inventoryIssues,
         gate: PrivilegeGate(SystemObject.inventoryIssues, AccessRight.read),
+      ),
+      // Gated on SystemObject 17 (`inventoryTransfers`) read, matching the
+      // server's GET /inventory-transfers. Creating, editing and the other
+      // actions need 17 create, update and delete, checked on the screens.
+      NavDestination(
+        id: 'inventory-transfers',
+        label: _inventoryTransfersLabel,
+        icon: Icons.swap_horiz_outlined,
+        selectedIcon: Icons.swap_horiz,
+        route: '/inventory/transfers',
+        branchIndex: NavBranch.inventoryTransfers,
+        gate: PrivilegeGate(SystemObject.inventoryTransfers, AccessRight.read),
       ),
     ],
   ),
@@ -512,6 +529,8 @@ String _inventoryLabel(AppLocalizations l10n) => l10n.navInventoryGroup;
 String _inventoryReceiptsLabel(AppLocalizations l10n) =>
     l10n.navInventoryReceipts;
 String _inventoryIssuesLabel(AppLocalizations l10n) => l10n.navInventoryIssues;
+String _inventoryTransfersLabel(AppLocalizations l10n) =>
+    l10n.navInventoryTransfers;
 String _invoicingLabel(AppLocalizations l10n) => l10n.navInvoicingGroup;
 String _fiscalDocumentsLabel(AppLocalizations l10n) => l10n.navFiscalDocuments;
 String _usersLabel(AppLocalizations l10n) => l10n.usersMenuTitle;
