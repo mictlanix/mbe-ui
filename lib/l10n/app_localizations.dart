@@ -13688,6 +13688,627 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The status filter isn\'t valid.'**
   String get apiErrorStatusFilterUnsupported;
+
+  /// spec 069: mbe-api error code `inventory_transfer.same_warehouse`
+  ///
+  /// In en, this message translates to:
+  /// **'The source and destination warehouses must be different.'**
+  String get apiErrorInventoryTransferSameWarehouse;
+
+  /// spec 069: mbe-api error code `inventory_transfer.not_in_transit`
+  ///
+  /// In en, this message translates to:
+  /// **'The transfer isn\'t in transit.'**
+  String get apiErrorInventoryTransferNotInTransit;
+
+  /// spec 069: mbe-api error code `inventory_transfer.over_received`
+  ///
+  /// In en, this message translates to:
+  /// **'{product_code}: trying to receive {received} but only {outstanding} are outstanding.'**
+  String apiErrorInventoryTransferOverReceived(
+    String product_code,
+    String received,
+    String outstanding,
+  );
+
+  /// spec 069: mbe-api error code `inventory_transfer.line_repeated`
+  ///
+  /// In en, this message translates to:
+  /// **'A line is being received more than once.'**
+  String get apiErrorInventoryTransferLineRepeated;
+
+  /// spec 069: mbe-api error code `sales_order.not_confirmed`
+  ///
+  /// In en, this message translates to:
+  /// **'The order isn\'t confirmed or is cancelled.'**
+  String get apiErrorSalesOrderNotConfirmed;
+
+  /// spec 069: mbe-api request-validation type `inventory_transfer_duplicate_line`
+  ///
+  /// In en, this message translates to:
+  /// **'A line is being received more than once.'**
+  String get apiValidationInventoryTransferDuplicateLine;
+
+  /// spec 069: navigation destination
+  ///
+  /// In en, this message translates to:
+  /// **'Transfers'**
+  String get navInventoryTransfers;
+
+  /// spec 069: detail title, dispatched or cancelled
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer {folio}'**
+  String inventoryTransferTitle(String folio);
+
+  /// spec 069: detail title of a draft
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer · Draft #{id}'**
+  String inventoryTransferTitleDraft(String id);
+
+  /// spec 069: status label (masculine in es, so not the shared inventoryDocumentStatusDraft)
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get inventoryTransferStatusDraft;
+
+  /// spec 069: status label
+  ///
+  /// In en, this message translates to:
+  /// **'In transit'**
+  String get inventoryTransferStatusInTransit;
+
+  /// spec 069: status label
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get inventoryTransferStatusReceived;
+
+  /// spec 069: status label (masculine in es: Cancelado)
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get inventoryTransferStatusCancelled;
+
+  /// spec 069: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get inventoryTransferColFolio;
+
+  /// spec 069: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get inventoryTransferColSource;
+
+  /// spec 069: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get inventoryTransferColDestination;
+
+  /// spec 069: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get inventoryTransferColFacility;
+
+  /// spec 069: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get inventoryTransferColStatus;
+
+  /// spec 069: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get inventoryTransferColCreator;
+
+  /// spec 069: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get inventoryTransferColDate;
+
+  /// spec 069: filter facet
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get inventoryTransferFacetStatus;
+
+  /// spec 069: filter facet, matches either end
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse (source or destination)'**
+  String get inventoryTransferFacetWarehouse;
+
+  /// spec 069: filter facet: no value
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get inventoryTransferFacetAll;
+
+  /// spec 069: empty list
+  ///
+  /// In en, this message translates to:
+  /// **'There are no transfers'**
+  String get inventoryTransferEmpty;
+
+  /// spec 069: filtered-empty list
+  ///
+  /// In en, this message translates to:
+  /// **'No transfer matches the filters.'**
+  String get inventoryTransferFilteredEmpty;
+
+  /// spec 069: list action opening the in-transit view
+  ///
+  /// In en, this message translates to:
+  /// **'In transit'**
+  String get inventoryTransferInTransitAction;
+
+  /// spec 069: list action
+  ///
+  /// In en, this message translates to:
+  /// **'New transfer'**
+  String get inventoryTransferNewAction;
+
+  /// spec 069: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get inventoryTransferFactStatus;
+
+  /// spec 069: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get inventoryTransferFactFolio;
+
+  /// spec 069: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get inventoryTransferFactSource;
+
+  /// spec 069: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get inventoryTransferFactDestination;
+
+  /// spec 069: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get inventoryTransferFactFacility;
+
+  /// spec 069: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get inventoryTransferFactNotes;
+
+  /// spec 069: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get inventoryTransferFactCreatedBy;
+
+  /// spec 069: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Modified by'**
+  String get inventoryTransferFactModifiedBy;
+
+  /// spec 069: lines table title
+  ///
+  /// In en, this message translates to:
+  /// **'Lines'**
+  String get inventoryTransferLinesTitle;
+
+  /// spec 069: lines table column
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get inventoryTransferLineColCode;
+
+  /// spec 069: lines table column
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get inventoryTransferLineColProduct;
+
+  /// spec 069: lines table column of a draft
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get inventoryTransferLineColQuantity;
+
+  /// spec 069: lines table column of a dispatched transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get inventoryTransferLineColSent;
+
+  /// spec 069: lines table column of a dispatched transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get inventoryTransferLineColReceived;
+
+  /// spec 069: lines table column of a dispatched transfer
+  ///
+  /// In en, this message translates to:
+  /// **'Outstanding'**
+  String get inventoryTransferLineColOutstanding;
+
+  /// spec 069: empty draft lines
+  ///
+  /// In en, this message translates to:
+  /// **'Add the products to be transferred.'**
+  String get inventoryTransferLinesEmpty;
+
+  /// spec 069: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get inventoryTransferEditHeader;
+
+  /// spec 069: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get inventoryTransferAddProduct;
+
+  /// spec 069: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Add from order'**
+  String get inventoryTransferAddFromOrder;
+
+  /// spec 069: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch'**
+  String get inventoryTransferDispatch;
+
+  /// spec 069: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Receive'**
+  String get inventoryTransferReceive;
+
+  /// spec 069: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Close outstanding'**
+  String get inventoryTransferClose;
+
+  /// spec 069: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get inventoryTransferCancel;
+
+  /// spec 069: line action tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Edit quantity'**
+  String get inventoryTransferLineEditTooltip;
+
+  /// spec 069: line action tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Remove line'**
+  String get inventoryTransferLineRemoveTooltip;
+
+  /// spec 069: new-transfer dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'New transfer'**
+  String get inventoryTransferNewTitle;
+
+  /// spec 069: new-transfer dialog submit
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get inventoryTransferNewSubmit;
+
+  /// spec 069: header dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get inventoryTransferEditHeaderTitle;
+
+  /// spec 069: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get inventoryTransferFieldSource;
+
+  /// spec 069: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get inventoryTransferFieldDestination;
+
+  /// spec 069: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get inventoryTransferFieldNotes;
+
+  /// spec 069: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get inventoryTransferFieldProduct;
+
+  /// spec 069: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get inventoryTransferFieldQuantity;
+
+  /// spec 069: add-line dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get inventoryTransferAddProductTitle;
+
+  /// spec 069: add-line dialog submit
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get inventoryTransferAddProductSubmit;
+
+  /// spec 069: quantity dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Line quantity'**
+  String get inventoryTransferLineQuantityTitle;
+
+  /// spec 069: error under a quantity field that is not above 0
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity greater than 0.'**
+  String get inventoryTransferQuantityInvalid;
+
+  /// spec 069: remove-line prompt title
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {product} from the transfer?'**
+  String inventoryTransferRemoveTitle(String product);
+
+  /// spec 069: remove-line prompt body
+  ///
+  /// In en, this message translates to:
+  /// **'The line is deleted from the draft.'**
+  String get inventoryTransferRemoveBody;
+
+  /// spec 069: remove-line prompt action
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get inventoryTransferRemoveAction;
+
+  /// spec 069: dispatch prompt title
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch transfer'**
+  String get inventoryTransferDispatchTitle;
+
+  /// spec 069: dispatch prompt body
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatching assigns a folio and takes the stock out of {source}. It stays in transit until {destination} receives it. It can\'t be edited afterwards.'**
+  String inventoryTransferDispatchBody(String source, String destination);
+
+  /// spec 069: dispatch prompt action
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch'**
+  String get inventoryTransferDispatchAction;
+
+  /// spec 069: close prompt title
+  ///
+  /// In en, this message translates to:
+  /// **'Close outstanding'**
+  String get inventoryTransferCloseTitle;
+
+  /// spec 069: close prompt body
+  ///
+  /// In en, this message translates to:
+  /// **'What is outstanding ({count} lines) goes back to {source} and the transfer becomes Received. If it was lost, record it afterwards with a warehouse issue.'**
+  String inventoryTransferCloseBody(int count, String source);
+
+  /// spec 069: close prompt action
+  ///
+  /// In en, this message translates to:
+  /// **'Close outstanding'**
+  String get inventoryTransferCloseAction;
+
+  /// spec 069: cancel prompt title
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel transfer'**
+  String get inventoryTransferCancelTitle;
+
+  /// spec 069: cancel prompt body for a draft
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel the draft'**
+  String get inventoryTransferCancelDraftBody;
+
+  /// spec 069: cancel prompt body for a dispatched transfer with nothing received
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelling transfer {folio} puts back into {source} what is in transit.'**
+  String inventoryTransferCancelDispatchedBody(String folio, String source);
+
+  /// spec 069: cancel prompt body for a dispatched transfer with some quantity received
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelling transfer {folio} puts back into {source} what is in transit and what {destination} already received.'**
+  String inventoryTransferCancelDispatchedReceivedBody(
+    String folio,
+    String source,
+    String destination,
+  );
+
+  /// spec 069: cancel prompt action
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel transfer'**
+  String get inventoryTransferCancelAction;
+
+  /// spec 069: prompt dismiss button
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get inventoryTransferBack;
+
+  /// spec 069: product and warehouse added to the insufficient-stock refusal
+  ///
+  /// In en, this message translates to:
+  /// **'Product: {code} · Warehouse: {warehouse}'**
+  String inventoryTransferRefusalProductWarehouse(
+    String code,
+    String warehouse,
+  );
+
+  /// spec 069: button on the transfer not-found and load-failed views
+  ///
+  /// In en, this message translates to:
+  /// **'Back to transfers'**
+  String get inventoryTransferBackToList;
+
+  /// spec 069: receive dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Receive transfer {folio}'**
+  String inventoryTransferReceiveTitle(String folio);
+
+  /// spec 069: receive dialog hint
+  ///
+  /// In en, this message translates to:
+  /// **'Leave 0 for what didn\'t arrive. What is outstanding can be received later.'**
+  String get inventoryTransferReceiveHint;
+
+  /// spec 069: receive dialog column and field label
+  ///
+  /// In en, this message translates to:
+  /// **'Receive'**
+  String get inventoryTransferReceiveColReceive;
+
+  /// spec 069: receive dialog hint of the quantity field
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum {outstanding}'**
+  String inventoryTransferReceiveMax(String outstanding);
+
+  /// spec 069: receive dialog submit
+  ///
+  /// In en, this message translates to:
+  /// **'Receive'**
+  String get inventoryTransferReceiveSubmit;
+
+  /// spec 069: receive dialog field error for an empty, unreadable or negative quantity
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity of 0 or more.'**
+  String get inventoryTransferReceiveInvalid;
+
+  /// spec 069: add-from-order dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Add from order'**
+  String get inventoryTransferFromOrderTitle;
+
+  /// spec 069: add-from-order dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get inventoryTransferFromOrderField;
+
+  /// spec 069: add-from-order picker option
+  ///
+  /// In en, this message translates to:
+  /// **'{folio} · {customer} · {date}'**
+  String inventoryTransferFromOrderOption(
+    String folio,
+    String customer,
+    String date,
+  );
+
+  /// spec 069: add-from-order dialog submit
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get inventoryTransferFromOrderSubmit;
+
+  /// spec 069: snackbar after adding lines from a sales order
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Added 1 product to the transfer.} other{Added {count} products to the transfer.}} Products already on it were left unchanged.'**
+  String inventoryTransferFromOrderAdded(int count);
+
+  /// spec 069: snackbar when the order added nothing
+  ///
+  /// In en, this message translates to:
+  /// **'The order\'s products were already on the transfer.'**
+  String get inventoryTransferFromOrderNone;
+
+  /// spec 069: in-transit screen title for an administrator
+  ///
+  /// In en, this message translates to:
+  /// **'In transit'**
+  String get inventoryTransferInTransitTitle;
+
+  /// spec 069: in-transit screen title with the facility name
+  ///
+  /// In en, this message translates to:
+  /// **'In transit · {facility}'**
+  String inventoryTransferInTransitTitleFacility(String facility);
+
+  /// spec 069: in-transit facility picker label
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get inventoryTransferInTransitFacilityField;
+
+  /// spec 069: in-transit facility reset
+  ///
+  /// In en, this message translates to:
+  /// **'My facility'**
+  String get inventoryTransferInTransitMyFacility;
+
+  /// spec 069: in-transit prompt for an administrator with no facility
+  ///
+  /// In en, this message translates to:
+  /// **'Select a facility.'**
+  String get inventoryTransferInTransitSelectFacility;
+
+  /// spec 069: in-transit table title
+  ///
+  /// In en, this message translates to:
+  /// **'By product'**
+  String get inventoryTransferInTransitByProduct;
+
+  /// spec 069: in-transit table title
+  ///
+  /// In en, this message translates to:
+  /// **'By transfer'**
+  String get inventoryTransferInTransitByTransfer;
+
+  /// spec 069: in-transit empty state
+  ///
+  /// In en, this message translates to:
+  /// **'There is no stock in transit.'**
+  String get inventoryTransferInTransitEmpty;
 }
 
 class _AppLocalizationsDelegate

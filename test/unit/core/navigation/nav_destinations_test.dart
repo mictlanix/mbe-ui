@@ -726,7 +726,7 @@ void main() {
       final children = inventoryGroup().children;
       expect(
         [for (final c in children) c.id],
-        ['inventory-receipts', 'inventory-issues'],
+        ['inventory-receipts', 'inventory-issues', 'inventory-transfers'],
       );
       final entry = children[1];
       expect(entry.route, '/inventory/issues');
@@ -734,6 +734,53 @@ void main() {
       expect(NavBranch.inventoryIssues, 31);
       expect(entry.icon, Icons.outbox_outlined);
       expect(entry.selectedIcon, Icons.outbox);
+    });
+  });
+
+  group('Traspasos destination (spec 069 ui-contract)', () {
+    NavGroup inventoryGroup() => kNavigationTree
+        .whereType<NavGroup>()
+        .firstWhere((g) => g.id == 'inventory');
+
+    test('a user without InventoryTransfers read has no Traspasos entry', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.inventoryIssues, rawValue: 2),
+        ],
+      );
+      expect(ids, contains('inventory-issues'));
+      expect(ids, isNot(contains('inventory-transfers')));
+    });
+
+    test('a user with InventoryTransfers read has the entry, and the group '
+        'stays when they can read only that one', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.inventoryTransfers, rawValue: 2),
+        ],
+      );
+      expect(ids, contains('inventory-transfers'));
+      expect(ids, isNot(contains('inventory-receipts')));
+      expect(ids, isNot(contains('inventory-issues')));
+    });
+
+    test('it is the third entry of Inventario, after Salidas, on branch 32 '
+        'at /inventory/transfers', () {
+      final children = inventoryGroup().children;
+      expect(
+        [for (final c in children) c.id],
+        ['inventory-receipts', 'inventory-issues', 'inventory-transfers'],
+      );
+      final entry = children[2];
+      expect(entry.route, '/inventory/transfers');
+      expect(entry.branchIndex, NavBranch.inventoryTransfers);
+      expect(NavBranch.inventoryTransfers, 32);
+      expect(entry.icon, Icons.swap_horiz_outlined);
+      expect(entry.selectedIcon, Icons.swap_horiz);
     });
   });
 }

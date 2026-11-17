@@ -48,6 +48,9 @@ import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_detail_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/issues/inventory_issue_detail_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/issues/inventory_issues_list_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/transfers/in_transit_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/transfers/inventory_transfer_detail_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/transfers/inventory_transfers_list_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_detail_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_list_screen.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_documents_list_screen.dart';
@@ -469,6 +472,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 069-inventory-transfers: appended last (index 32), same rationale
+          // as `payments` above. Gated on SystemObject 17
+          // (`inventoryTransfers`) read, see `_routeGate`. A row opens the
+          // top-level `/inventory/transfers/:id` route.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: inventoryTransfersPath,
+                builder: (context, state) => InventoryTransfersListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -691,6 +708,22 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '$inventoryIssuesPath/:id',
         builder: (context, state) => InventoryIssueDetailScreen(
           issueId: int.tryParse(state.pathParameters['id'] ?? ''),
+        ),
+      ),
+      // 069-inventory-transfers: En tránsito, under the same gate. Declared
+      // before `/:id`, or `in-transit` would be read as an id.
+      GoRoute(
+        path: inTransitPath,
+        builder: (context, state) => const InTransitScreen(),
+      ),
+      // 069-inventory-transfers: a transfer's own full screen, gated on
+      // SystemObject 17 (`inventoryTransfers`) read by the `_routeGate`
+      // prefix. A non-numeric id parses to `null`, which the screen shows as
+      // not found.
+      GoRoute(
+        path: '$inventoryTransfersPath/:id',
+        builder: (context, state) => InventoryTransferDetailScreen(
+          transferId: int.tryParse(state.pathParameters['id'] ?? ''),
         ),
       ),
       // 038-advanced-product-search: a top-level sibling, not a shell branch
@@ -981,6 +1014,12 @@ NavGate? _routeGate(String location) {
   // `/inventory/issues/:id`.
   if (location.startsWith(inventoryIssuesPath)) {
     return PrivilegeGate(SystemObject.inventoryIssues, AccessRight.read);
+  }
+  // 069-inventory-transfers: SystemObject 17 (`inventoryTransfers`) read,
+  // matching the server's GET /inventory-transfers. The prefix covers the
+  // list and every `/inventory/transfers/...` route.
+  if (location.startsWith(inventoryTransfersPath)) {
+    return PrivilegeGate(SystemObject.inventoryTransfers, AccessRight.read);
   }
   // 061-delivery-orders: SystemObject 71 (`deliveryOrders`) read, matching
   // the server's GET /delivery-orders. The prefix covers the list and every

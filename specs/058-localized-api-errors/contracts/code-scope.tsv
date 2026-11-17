@@ -137,10 +137,10 @@ code	inventory_document.line_without_quantity	422	product_code: str	IN	POST /inv
 code	inventory_document.no_lines	409	resource: str (`inventory_receipt`, `inventory_issue`, `inventory_transfer` or `inventory_count`)	IN	POST /inventory-receipts/{}/confirm	reachable from the Entradas de almacén screens (spec 067)
 code	inventory_receipt.warehouse_fixed	409	—	IN	PUT /inventory-receipts/{}	reachable from the Entradas de almacén screens (spec 067)
 code	inventory_receipt.complementary_unavailable	409	reason: str enum (no_purchase_order, purchase_order_cancelled, purchase_order_not_completed, purchase_order_fully_received)	IN	POST /inventory-receipts/{}/complementary	reachable from the Entradas de almacén screens (spec 067)
-code	inventory_transfer.line_repeated	422	line_id: int	OUT		
-code	inventory_transfer.not_in_transit	409	—	OUT		
-code	inventory_transfer.over_received	409	product_code: str, received: decimal, outstanding: decimal	OUT		
-code	inventory_transfer.same_warehouse	422	—	OUT		
+code	inventory_transfer.line_repeated	422	line_id: int	IN	POST /inventory-transfers/{}/receive	reachable from the Traspasos screens (spec 069)
+code	inventory_transfer.not_in_transit	409	—	IN	POST /inventory-transfers/{}/receive	reachable from the Traspasos screens (spec 069)
+code	inventory_transfer.over_received	409	product_code: str, received: decimal, outstanding: decimal	IN	POST /inventory-transfers/{}/receive	reachable from the Traspasos screens (spec 069)
+code	inventory_transfer.same_warehouse	422	—	IN	POST /inventory-transfers; PUT /inventory-transfers/{}	reachable from the Traspasos screens (spec 069)
 code	itinerary.cancelled	409	—	OUT		
 code	itinerary.lines_overcommitted	422	— (dict `detail` kept: message, lines)	OUT		
 code	itinerary.not_departed	409	status: enum:ItineraryStatus	OUT		
@@ -222,7 +222,7 @@ code	sales_order.has_payment_applications	409	application_ids: list[int]	IN	POST
 code	sales_order.insufficient_stock	409	— (dict `detail` kept: message, lines)	IN	POST /sales-orders/{}/confirm	reachable from 1 UI route(s)
 code	sales_order.missing_delivery_details	409	— (dict `detail` kept: message, missing)	IN	POST /sales-orders/{}/confirm	reachable from 1 UI route(s)
 code	sales_order.no_lines	409	—	IN	POST /sales-orders/{}/confirm	reachable from 1 UI route(s)
-code	sales_order.not_confirmed	409	sales_order_id: int	OUT		
+code	sales_order.not_confirmed	409	sales_order_id: int	IN	POST /inventory-transfers/{}/sales-order-items	reachable from the Traspasos screens (spec 069)
 code	sales_order.paid_cannot_cancel	409	—	IN	POST /sales-orders/{}/cancel	reachable from 1 UI route(s)
 code	sales_order.zero_priced_lines	409	— (dict `detail` kept: message, lines)	IN	POST /sales-orders/{}/confirm	reachable from 1 UI route(s)
 code	server.error	500	—	IN	every route (unhandled exception)	generic/framework
@@ -257,7 +257,7 @@ validation_type	fiscal_document_payment_date_in_future	422	date: date	OUT		app/s
 validation_type	fiscal_document_payment_form_unknown	422	payment_form: int	IN	POST /fiscal-documents/{}/lines; PUT /fiscal-documents/{}/lines/{}	reachable from the Facturas screens (spec 066)
 validation_type	fiscal_document_tax_rate_invalid	422	tax_rate: decimal	IN	POST /fiscal-documents/{}/lines; PUT /fiscal-documents/{}/lines/{}	reachable from the Facturas screens (spec 066)
 validation_type	inventory_count_product_reference	422	—	OUT		app/schemas/inventory.py
-validation_type	inventory_transfer_duplicate_line	422	—	OUT		app/schemas/inventory.py
+validation_type	inventory_transfer_duplicate_line	422	—	IN	POST /inventory-transfers/{}/receive	app/schemas/inventory.py; reachable from the Traspasos screens (spec 069)
 validation_type	product_barcode_invalid	422	—	IN	POST /products [_validate_bar_code]; PUT /products/{} [_validate_bar_code]	app/schemas/product.py ; reachable via request body
 validation_type	product_code_has_whitespace	422	—	IN	POST /products [_validate_code]; PUT /products/{} [_validate_code]	app/schemas/product.py ; reachable via request body
 validation_type	profile_duplicate_system_object	422	—	IN	POST /user-profiles [_reject_duplicate_objects]; PUT /user-profiles/{} [_reject_duplicate_objects]	app/schemas/user.py ; reachable via request body

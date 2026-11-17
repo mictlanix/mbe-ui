@@ -8238,4 +8238,369 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get apiErrorStatusFilterUnsupported =>
       'El filtro de estado no es válido.';
+
+  @override
+  String get apiErrorInventoryTransferSameWarehouse =>
+      'El almacén de origen y el de destino deben ser distintos.';
+
+  @override
+  String get apiErrorInventoryTransferNotInTransit =>
+      'El traspaso no está en tránsito.';
+
+  @override
+  String apiErrorInventoryTransferOverReceived(
+    String product_code,
+    String received,
+    String outstanding,
+  ) {
+    return '$product_code: se intentan recibir $received y solo hay $outstanding pendientes.';
+  }
+
+  @override
+  String get apiErrorInventoryTransferLineRepeated =>
+      'Una partida se recibe más de una vez.';
+
+  @override
+  String get apiErrorSalesOrderNotConfirmed =>
+      'El pedido no está confirmado o está cancelado.';
+
+  @override
+  String get apiValidationInventoryTransferDuplicateLine =>
+      'Una partida se recibe más de una vez.';
+
+  @override
+  String get navInventoryTransfers => 'Traspasos';
+
+  @override
+  String inventoryTransferTitle(String folio) {
+    return 'Traspaso $folio';
+  }
+
+  @override
+  String inventoryTransferTitleDraft(String id) {
+    return 'Traspaso · Borrador #$id';
+  }
+
+  @override
+  String get inventoryTransferStatusDraft => 'Borrador';
+
+  @override
+  String get inventoryTransferStatusInTransit => 'En tránsito';
+
+  @override
+  String get inventoryTransferStatusReceived => 'Recibido';
+
+  @override
+  String get inventoryTransferStatusCancelled => 'Cancelado';
+
+  @override
+  String get inventoryTransferColFolio => 'Folio';
+
+  @override
+  String get inventoryTransferColSource => 'Origen';
+
+  @override
+  String get inventoryTransferColDestination => 'Destino';
+
+  @override
+  String get inventoryTransferColFacility => 'Sucursal';
+
+  @override
+  String get inventoryTransferColStatus => 'Estado';
+
+  @override
+  String get inventoryTransferColCreator => 'Creado por';
+
+  @override
+  String get inventoryTransferColDate => 'Fecha';
+
+  @override
+  String get inventoryTransferFacetStatus => 'Estado';
+
+  @override
+  String get inventoryTransferFacetWarehouse => 'Almacén (origen o destino)';
+
+  @override
+  String get inventoryTransferFacetAll => 'Todos';
+
+  @override
+  String get inventoryTransferEmpty => 'No hay traspasos';
+
+  @override
+  String get inventoryTransferFilteredEmpty =>
+      'Ningún traspaso coincide con los filtros.';
+
+  @override
+  String get inventoryTransferInTransitAction => 'En tránsito';
+
+  @override
+  String get inventoryTransferNewAction => 'Nuevo traspaso';
+
+  @override
+  String get inventoryTransferFactStatus => 'Estado';
+
+  @override
+  String get inventoryTransferFactFolio => 'Folio';
+
+  @override
+  String get inventoryTransferFactSource => 'Origen';
+
+  @override
+  String get inventoryTransferFactDestination => 'Destino';
+
+  @override
+  String get inventoryTransferFactFacility => 'Sucursal';
+
+  @override
+  String get inventoryTransferFactNotes => 'Notas';
+
+  @override
+  String get inventoryTransferFactCreatedBy => 'Creado por';
+
+  @override
+  String get inventoryTransferFactModifiedBy => 'Modificado por';
+
+  @override
+  String get inventoryTransferLinesTitle => 'Partidas';
+
+  @override
+  String get inventoryTransferLineColCode => 'Código';
+
+  @override
+  String get inventoryTransferLineColProduct => 'Producto';
+
+  @override
+  String get inventoryTransferLineColQuantity => 'Cantidad';
+
+  @override
+  String get inventoryTransferLineColSent => 'Enviado';
+
+  @override
+  String get inventoryTransferLineColReceived => 'Recibido';
+
+  @override
+  String get inventoryTransferLineColOutstanding => 'Pendiente';
+
+  @override
+  String get inventoryTransferLinesEmpty =>
+      'Agrega los productos que se van a traspasar.';
+
+  @override
+  String get inventoryTransferEditHeader => 'Editar encabezado';
+
+  @override
+  String get inventoryTransferAddProduct => 'Agregar producto';
+
+  @override
+  String get inventoryTransferAddFromOrder => 'Agregar desde pedido';
+
+  @override
+  String get inventoryTransferDispatch => 'Despachar';
+
+  @override
+  String get inventoryTransferReceive => 'Recibir';
+
+  @override
+  String get inventoryTransferClose => 'Cerrar pendiente';
+
+  @override
+  String get inventoryTransferCancel => 'Cancelar';
+
+  @override
+  String get inventoryTransferLineEditTooltip => 'Editar cantidad';
+
+  @override
+  String get inventoryTransferLineRemoveTooltip => 'Quitar partida';
+
+  @override
+  String get inventoryTransferNewTitle => 'Nuevo traspaso';
+
+  @override
+  String get inventoryTransferNewSubmit => 'Crear';
+
+  @override
+  String get inventoryTransferEditHeaderTitle => 'Editar encabezado';
+
+  @override
+  String get inventoryTransferFieldSource => 'Origen';
+
+  @override
+  String get inventoryTransferFieldDestination => 'Destino';
+
+  @override
+  String get inventoryTransferFieldNotes => 'Notas';
+
+  @override
+  String get inventoryTransferFieldProduct => 'Producto';
+
+  @override
+  String get inventoryTransferFieldQuantity => 'Cantidad';
+
+  @override
+  String get inventoryTransferAddProductTitle => 'Agregar producto';
+
+  @override
+  String get inventoryTransferAddProductSubmit => 'Agregar';
+
+  @override
+  String get inventoryTransferLineQuantityTitle => 'Cantidad de la partida';
+
+  @override
+  String get inventoryTransferQuantityInvalid =>
+      'Escribe una cantidad mayor que 0.';
+
+  @override
+  String inventoryTransferRemoveTitle(String product) {
+    return '¿Quitar $product del traspaso?';
+  }
+
+  @override
+  String get inventoryTransferRemoveBody =>
+      'La partida se elimina del borrador.';
+
+  @override
+  String get inventoryTransferRemoveAction => 'Quitar';
+
+  @override
+  String get inventoryTransferDispatchTitle => 'Despachar traspaso';
+
+  @override
+  String inventoryTransferDispatchBody(String source, String destination) {
+    return 'Despachar asigna un folio y retira las existencias de $source. Quedan en tránsito hasta que $destination las reciba. Después ya no se puede editar.';
+  }
+
+  @override
+  String get inventoryTransferDispatchAction => 'Despachar';
+
+  @override
+  String get inventoryTransferCloseTitle => 'Cerrar pendiente';
+
+  @override
+  String inventoryTransferCloseBody(int count, String source) {
+    return 'Lo pendiente ($count partidas) regresa a $source y el traspaso queda como Recibido. Si se perdió, regístralo después con una salida de almacén.';
+  }
+
+  @override
+  String get inventoryTransferCloseAction => 'Cerrar pendiente';
+
+  @override
+  String get inventoryTransferCancelTitle => 'Cancelar traspaso';
+
+  @override
+  String get inventoryTransferCancelDraftBody => 'Cancelar el borrador';
+
+  @override
+  String inventoryTransferCancelDispatchedBody(String folio, String source) {
+    return 'Cancelar el traspaso $folio regresa a $source lo que está en tránsito.';
+  }
+
+  @override
+  String inventoryTransferCancelDispatchedReceivedBody(
+    String folio,
+    String source,
+    String destination,
+  ) {
+    return 'Cancelar el traspaso $folio regresa a $source lo que está en tránsito y lo que $destination ya recibió.';
+  }
+
+  @override
+  String get inventoryTransferCancelAction => 'Cancelar traspaso';
+
+  @override
+  String get inventoryTransferBack => 'Volver';
+
+  @override
+  String inventoryTransferRefusalProductWarehouse(
+    String code,
+    String warehouse,
+  ) {
+    return 'Producto: $code · Almacén: $warehouse';
+  }
+
+  @override
+  String get inventoryTransferBackToList => 'Volver a traspasos';
+
+  @override
+  String inventoryTransferReceiveTitle(String folio) {
+    return 'Recibir traspaso $folio';
+  }
+
+  @override
+  String get inventoryTransferReceiveHint =>
+      'Deja en 0 lo que no llegó. Lo pendiente se puede recibir después.';
+
+  @override
+  String get inventoryTransferReceiveColReceive => 'Recibir';
+
+  @override
+  String inventoryTransferReceiveMax(String outstanding) {
+    return 'Máximo $outstanding';
+  }
+
+  @override
+  String get inventoryTransferReceiveSubmit => 'Recibir';
+
+  @override
+  String get inventoryTransferReceiveInvalid =>
+      'Escribe una cantidad de 0 o más.';
+
+  @override
+  String get inventoryTransferFromOrderTitle => 'Agregar desde pedido';
+
+  @override
+  String get inventoryTransferFromOrderField => 'Pedido';
+
+  @override
+  String inventoryTransferFromOrderOption(
+    String folio,
+    String customer,
+    String date,
+  ) {
+    return '$folio · $customer · $date';
+  }
+
+  @override
+  String get inventoryTransferFromOrderSubmit => 'Agregar';
+
+  @override
+  String inventoryTransferFromOrderAdded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Se agregaron $count productos al traspaso.',
+      one: 'Se agregó 1 producto al traspaso.',
+    );
+    return '$_temp0 Los que ya estaban no se modificaron.';
+  }
+
+  @override
+  String get inventoryTransferFromOrderNone =>
+      'Los productos del pedido ya estaban en el traspaso.';
+
+  @override
+  String get inventoryTransferInTransitTitle => 'En tránsito';
+
+  @override
+  String inventoryTransferInTransitTitleFacility(String facility) {
+    return 'En tránsito · $facility';
+  }
+
+  @override
+  String get inventoryTransferInTransitFacilityField => 'Sucursal';
+
+  @override
+  String get inventoryTransferInTransitMyFacility => 'Mi sucursal';
+
+  @override
+  String get inventoryTransferInTransitSelectFacility =>
+      'Selecciona una sucursal.';
+
+  @override
+  String get inventoryTransferInTransitByProduct => 'Por producto';
+
+  @override
+  String get inventoryTransferInTransitByTransfer => 'Por traspaso';
+
+  @override
+  String get inventoryTransferInTransitEmpty => 'No hay mercancía en tránsito.';
 }

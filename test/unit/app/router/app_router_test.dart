@@ -29,11 +29,15 @@ import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_issue_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/data/inventory_transfer_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_issue.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_transfer.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_issue_repository.dart';
+import 'package:mbe_ui/features/inventory/domain/repositories/inventory_transfer_repository.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_receipt_repository.dart';
+import 'package:mbe_ui/features/inventory/presentation/transfers/in_transit_screen.dart';
 import 'package:mbe_ui/features/invoicing/data/fiscal_document_repository_impl.dart';
 import 'package:mbe_ui/features/invoicing/domain/repositories/fiscal_document_repository.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
@@ -103,6 +107,9 @@ class MockInventoryReceiptRepository extends Mock
 
 class MockInventoryIssueRepository extends Mock
     implements InventoryIssueRepository {}
+
+class MockInventoryTransferRepository extends Mock
+    implements InventoryTransferRepository {}
 
 class MockUserRepository extends Mock implements UserRepository {}
 
@@ -396,6 +403,19 @@ const _inventoryIssuesReaderUser = User(
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.inventoryIssues, rawValue: 2),
+  ],
+);
+
+/// Holds read on `inventoryTransfers` (17) alone — the gate for spec 069's
+/// `/inventory/transfers` routes.
+const _inventoryTransfersReaderUser = User(
+  userId: 'inventory-transfers-reader',
+  email: 'inventory-transfers-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.inventoryTransfers, rawValue: 2),
   ],
 );
 
@@ -892,6 +912,27 @@ void main() {
       () => inventoryIssueRepository.get(any()),
     ).thenThrow(const AppError.notFound());
 
+    // 069-inventory-transfers: the same, for transfers.
+    final inventoryTransferRepository = MockInventoryTransferRepository();
+    when(
+      () => inventoryTransferRepository.list(
+        status: any(named: 'status'),
+        warehouseId: any(named: 'warehouseId'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer(
+      (_) async => const InventoryTransferPage(
+        items: [],
+        total: 0,
+        pageIndex: 0,
+        pageSize: 20,
+      ),
+    );
+    when(
+      () => inventoryTransferRepository.get(any()),
+    ).thenThrow(const AppError.notFound());
+
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
 
@@ -966,6 +1007,9 @@ void main() {
         ),
         inventoryIssueRepositoryProvider.overrideWithValue(
           inventoryIssueRepository,
+        ),
+        inventoryTransferRepositoryProvider.overrideWithValue(
+          inventoryTransferRepository,
         ),
       ],
     );
@@ -1755,6 +1799,128 @@ void main() {
       final shell = tester.widget<AppShell>(find.byType(AppShell));
       expect(NavBranch.inventoryIssues, 31);
       expect(shell.navigationShell.currentIndex, NavBranch.inventoryIssues);
+    });
+  });
+
+  group('069-inventory-transfers — /inventory/transfers gates on '
+      'inventoryTransfers (17) read', () {
+    testWidgets('a user with inventoryTransfers:read reaches the list', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _inventoryTransfersReaderUser,
+        '/inventory/transfers',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/inventory/transfers');
+      expect(
+        find.byKey(const Key('inventory_transfers_filter_button')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a user without inventoryTransfers:read is redirected home', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/inventory/transfers',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('an issues-only reader is redirected home', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _inventoryIssuesReaderUser,
+        '/inventory/transfers',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a user with inventoryTransfers:read reaches a transfer '
+        '(here not found)', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _inventoryTransfersReaderUser,
+        '/inventory/transfers/9',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/inventory/transfers/9');
+      expect(
+        find.byKey(const Key('inventory_transfer_not_found')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a user without inventoryTransfers:read is redirected from '
+        'a transfer', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/inventory/transfers/9',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('in-transit is its own route, not read as an id', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _inventoryTransfersReaderUser,
+        '/inventory/transfers/in-transit',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/inventory/transfers/in-transit');
+      expect(find.byType(InTransitScreen), findsOneWidget);
+      expect(
+        find.byKey(const Key('inventory_transfer_not_found')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('a user without inventoryTransfers:read is redirected from '
+        'in-transit', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/inventory/transfers/in-transit',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a non-numeric id gives the not-found state', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _inventoryTransfersReaderUser,
+        '/inventory/transfers/abc',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/inventory/transfers/abc');
+      expect(
+        find.byKey(const Key('inventory_transfer_not_found')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('activates shell branch NavBranch.inventoryTransfers (32)', (
+      tester,
+    ) async {
+      await pumpAt(
+        tester,
+        _inventoryTransfersReaderUser,
+        '/inventory/transfers',
+      );
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.inventoryTransfers, 32);
+      expect(shell.navigationShell.currentIndex, NavBranch.inventoryTransfers);
     });
   });
 

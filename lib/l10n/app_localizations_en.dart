@@ -8181,4 +8181,369 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get apiErrorStatusFilterUnsupported =>
       'The status filter isn\'t valid.';
+
+  @override
+  String get apiErrorInventoryTransferSameWarehouse =>
+      'The source and destination warehouses must be different.';
+
+  @override
+  String get apiErrorInventoryTransferNotInTransit =>
+      'The transfer isn\'t in transit.';
+
+  @override
+  String apiErrorInventoryTransferOverReceived(
+    String product_code,
+    String received,
+    String outstanding,
+  ) {
+    return '$product_code: trying to receive $received but only $outstanding are outstanding.';
+  }
+
+  @override
+  String get apiErrorInventoryTransferLineRepeated =>
+      'A line is being received more than once.';
+
+  @override
+  String get apiErrorSalesOrderNotConfirmed =>
+      'The order isn\'t confirmed or is cancelled.';
+
+  @override
+  String get apiValidationInventoryTransferDuplicateLine =>
+      'A line is being received more than once.';
+
+  @override
+  String get navInventoryTransfers => 'Transfers';
+
+  @override
+  String inventoryTransferTitle(String folio) {
+    return 'Transfer $folio';
+  }
+
+  @override
+  String inventoryTransferTitleDraft(String id) {
+    return 'Transfer · Draft #$id';
+  }
+
+  @override
+  String get inventoryTransferStatusDraft => 'Draft';
+
+  @override
+  String get inventoryTransferStatusInTransit => 'In transit';
+
+  @override
+  String get inventoryTransferStatusReceived => 'Received';
+
+  @override
+  String get inventoryTransferStatusCancelled => 'Cancelled';
+
+  @override
+  String get inventoryTransferColFolio => 'Folio';
+
+  @override
+  String get inventoryTransferColSource => 'Source';
+
+  @override
+  String get inventoryTransferColDestination => 'Destination';
+
+  @override
+  String get inventoryTransferColFacility => 'Facility';
+
+  @override
+  String get inventoryTransferColStatus => 'Status';
+
+  @override
+  String get inventoryTransferColCreator => 'Created by';
+
+  @override
+  String get inventoryTransferColDate => 'Date';
+
+  @override
+  String get inventoryTransferFacetStatus => 'Status';
+
+  @override
+  String get inventoryTransferFacetWarehouse =>
+      'Warehouse (source or destination)';
+
+  @override
+  String get inventoryTransferFacetAll => 'All';
+
+  @override
+  String get inventoryTransferEmpty => 'There are no transfers';
+
+  @override
+  String get inventoryTransferFilteredEmpty =>
+      'No transfer matches the filters.';
+
+  @override
+  String get inventoryTransferInTransitAction => 'In transit';
+
+  @override
+  String get inventoryTransferNewAction => 'New transfer';
+
+  @override
+  String get inventoryTransferFactStatus => 'Status';
+
+  @override
+  String get inventoryTransferFactFolio => 'Folio';
+
+  @override
+  String get inventoryTransferFactSource => 'Source';
+
+  @override
+  String get inventoryTransferFactDestination => 'Destination';
+
+  @override
+  String get inventoryTransferFactFacility => 'Facility';
+
+  @override
+  String get inventoryTransferFactNotes => 'Notes';
+
+  @override
+  String get inventoryTransferFactCreatedBy => 'Created by';
+
+  @override
+  String get inventoryTransferFactModifiedBy => 'Modified by';
+
+  @override
+  String get inventoryTransferLinesTitle => 'Lines';
+
+  @override
+  String get inventoryTransferLineColCode => 'Code';
+
+  @override
+  String get inventoryTransferLineColProduct => 'Product';
+
+  @override
+  String get inventoryTransferLineColQuantity => 'Quantity';
+
+  @override
+  String get inventoryTransferLineColSent => 'Sent';
+
+  @override
+  String get inventoryTransferLineColReceived => 'Received';
+
+  @override
+  String get inventoryTransferLineColOutstanding => 'Outstanding';
+
+  @override
+  String get inventoryTransferLinesEmpty =>
+      'Add the products to be transferred.';
+
+  @override
+  String get inventoryTransferEditHeader => 'Edit header';
+
+  @override
+  String get inventoryTransferAddProduct => 'Add product';
+
+  @override
+  String get inventoryTransferAddFromOrder => 'Add from order';
+
+  @override
+  String get inventoryTransferDispatch => 'Dispatch';
+
+  @override
+  String get inventoryTransferReceive => 'Receive';
+
+  @override
+  String get inventoryTransferClose => 'Close outstanding';
+
+  @override
+  String get inventoryTransferCancel => 'Cancel';
+
+  @override
+  String get inventoryTransferLineEditTooltip => 'Edit quantity';
+
+  @override
+  String get inventoryTransferLineRemoveTooltip => 'Remove line';
+
+  @override
+  String get inventoryTransferNewTitle => 'New transfer';
+
+  @override
+  String get inventoryTransferNewSubmit => 'Create';
+
+  @override
+  String get inventoryTransferEditHeaderTitle => 'Edit header';
+
+  @override
+  String get inventoryTransferFieldSource => 'Source';
+
+  @override
+  String get inventoryTransferFieldDestination => 'Destination';
+
+  @override
+  String get inventoryTransferFieldNotes => 'Notes';
+
+  @override
+  String get inventoryTransferFieldProduct => 'Product';
+
+  @override
+  String get inventoryTransferFieldQuantity => 'Quantity';
+
+  @override
+  String get inventoryTransferAddProductTitle => 'Add product';
+
+  @override
+  String get inventoryTransferAddProductSubmit => 'Add';
+
+  @override
+  String get inventoryTransferLineQuantityTitle => 'Line quantity';
+
+  @override
+  String get inventoryTransferQuantityInvalid =>
+      'Enter a quantity greater than 0.';
+
+  @override
+  String inventoryTransferRemoveTitle(String product) {
+    return 'Remove $product from the transfer?';
+  }
+
+  @override
+  String get inventoryTransferRemoveBody =>
+      'The line is deleted from the draft.';
+
+  @override
+  String get inventoryTransferRemoveAction => 'Remove';
+
+  @override
+  String get inventoryTransferDispatchTitle => 'Dispatch transfer';
+
+  @override
+  String inventoryTransferDispatchBody(String source, String destination) {
+    return 'Dispatching assigns a folio and takes the stock out of $source. It stays in transit until $destination receives it. It can\'t be edited afterwards.';
+  }
+
+  @override
+  String get inventoryTransferDispatchAction => 'Dispatch';
+
+  @override
+  String get inventoryTransferCloseTitle => 'Close outstanding';
+
+  @override
+  String inventoryTransferCloseBody(int count, String source) {
+    return 'What is outstanding ($count lines) goes back to $source and the transfer becomes Received. If it was lost, record it afterwards with a warehouse issue.';
+  }
+
+  @override
+  String get inventoryTransferCloseAction => 'Close outstanding';
+
+  @override
+  String get inventoryTransferCancelTitle => 'Cancel transfer';
+
+  @override
+  String get inventoryTransferCancelDraftBody => 'Cancel the draft';
+
+  @override
+  String inventoryTransferCancelDispatchedBody(String folio, String source) {
+    return 'Cancelling transfer $folio puts back into $source what is in transit.';
+  }
+
+  @override
+  String inventoryTransferCancelDispatchedReceivedBody(
+    String folio,
+    String source,
+    String destination,
+  ) {
+    return 'Cancelling transfer $folio puts back into $source what is in transit and what $destination already received.';
+  }
+
+  @override
+  String get inventoryTransferCancelAction => 'Cancel transfer';
+
+  @override
+  String get inventoryTransferBack => 'Back';
+
+  @override
+  String inventoryTransferRefusalProductWarehouse(
+    String code,
+    String warehouse,
+  ) {
+    return 'Product: $code · Warehouse: $warehouse';
+  }
+
+  @override
+  String get inventoryTransferBackToList => 'Back to transfers';
+
+  @override
+  String inventoryTransferReceiveTitle(String folio) {
+    return 'Receive transfer $folio';
+  }
+
+  @override
+  String get inventoryTransferReceiveHint =>
+      'Leave 0 for what didn\'t arrive. What is outstanding can be received later.';
+
+  @override
+  String get inventoryTransferReceiveColReceive => 'Receive';
+
+  @override
+  String inventoryTransferReceiveMax(String outstanding) {
+    return 'Maximum $outstanding';
+  }
+
+  @override
+  String get inventoryTransferReceiveSubmit => 'Receive';
+
+  @override
+  String get inventoryTransferReceiveInvalid =>
+      'Enter a quantity of 0 or more.';
+
+  @override
+  String get inventoryTransferFromOrderTitle => 'Add from order';
+
+  @override
+  String get inventoryTransferFromOrderField => 'Order';
+
+  @override
+  String inventoryTransferFromOrderOption(
+    String folio,
+    String customer,
+    String date,
+  ) {
+    return '$folio · $customer · $date';
+  }
+
+  @override
+  String get inventoryTransferFromOrderSubmit => 'Add';
+
+  @override
+  String inventoryTransferFromOrderAdded(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Added $count products to the transfer.',
+      one: 'Added 1 product to the transfer.',
+    );
+    return '$_temp0 Products already on it were left unchanged.';
+  }
+
+  @override
+  String get inventoryTransferFromOrderNone =>
+      'The order\'s products were already on the transfer.';
+
+  @override
+  String get inventoryTransferInTransitTitle => 'In transit';
+
+  @override
+  String inventoryTransferInTransitTitleFacility(String facility) {
+    return 'In transit · $facility';
+  }
+
+  @override
+  String get inventoryTransferInTransitFacilityField => 'Facility';
+
+  @override
+  String get inventoryTransferInTransitMyFacility => 'My facility';
+
+  @override
+  String get inventoryTransferInTransitSelectFacility => 'Select a facility.';
+
+  @override
+  String get inventoryTransferInTransitByProduct => 'By product';
+
+  @override
+  String get inventoryTransferInTransitByTransfer => 'By transfer';
+
+  @override
+  String get inventoryTransferInTransitEmpty => 'There is no stock in transit.';
 }

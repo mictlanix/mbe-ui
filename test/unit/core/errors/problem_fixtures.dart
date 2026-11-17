@@ -148,6 +148,14 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
     'reason': 'no_purchase_order',
   },
   api.ErrorCode.inventoryReceiptPeriodWarehouseFixed: {},
+  api.ErrorCode.inventoryTransferPeriodLineRepeated: {'line_id': 12},
+  api.ErrorCode.inventoryTransferPeriodNotInTransit: {},
+  api.ErrorCode.inventoryTransferPeriodOverReceived: {
+    'product_code': 'PT-001',
+    'received': '5.00000',
+    'outstanding': '2.00000',
+  },
+  api.ErrorCode.inventoryTransferPeriodSameWarehouse: {},
   api.ErrorCode.lockPeriodBusy: {'resource': 'warehouse'},
   api.ErrorCode.paymentPeriodAlreadyApplied: {
     'customer_payment_id': 300912,
@@ -238,6 +246,7 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.salesOrderPeriodInsufficientStock: {},
   api.ErrorCode.salesOrderPeriodMissingDeliveryDetails: {},
   api.ErrorCode.salesOrderPeriodNoLines: {},
+  api.ErrorCode.salesOrderPeriodNotConfirmed: {'sales_order_id': 1047},
   api.ErrorCode.salesOrderPeriodPaidCannotCancel: {},
   api.ErrorCode.salesOrderPeriodZeroPricedLines: {},
   api.ErrorCode.serverPeriodError: {},
