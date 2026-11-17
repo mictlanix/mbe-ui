@@ -29,16 +29,21 @@ import 'package:mbe_ui/features/catalog/domain/repositories/facility_repository.
 import 'package:mbe_ui/features/catalog/domain/repositories/point_sale_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
+import 'package:mbe_ui/features/inventory/data/inventory_count_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_issue_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_transfer_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_count.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_issue.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_transfer.dart';
+import 'package:mbe_ui/features/inventory/domain/repositories/inventory_count_repository.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_issue_repository.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_receipt_repository.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_transfer_repository.dart';
+import 'package:mbe_ui/features/inventory/presentation/counts/inventory_count_detail_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/counts/inventory_counts_list_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/issues/inventory_issue_detail_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/issues/inventory_issues_list_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_detail_screen.dart';
@@ -56,6 +61,9 @@ class MockInventoryIssueRepository extends Mock
 
 class MockInventoryTransferRepository extends Mock
     implements InventoryTransferRepository {}
+
+class MockInventoryCountRepository extends Mock
+    implements InventoryCountRepository {}
 
 class MockFacilityRepository extends Mock implements FacilityRepository {}
 
@@ -96,9 +104,10 @@ Warehouse aWarehouse(int id, {int facilityId = 2}) => Warehouse(
   status: EntityStatus.active,
 );
 
-/// The Entradas (067), Salidas (068) and Traspasos (069) screens with
-/// every repository mocked. The session user is configurable: its rights, whether it
-/// is an administrator, and its facility and point of sale.
+/// The Entradas (067), Salidas (068), Traspasos (069) and Conteos físicos
+/// (070) screens with every repository mocked. The session user is
+/// configurable: its rights, whether it is an administrator, and its facility
+/// and point of sale.
 ///
 /// The display-name providers answer "Almacén {id}", "Sucursal {id}" and
 /// "Empleado {id}", or `null` (a failed lookup) with `namesFail`.
@@ -106,6 +115,7 @@ class InventoryHarness {
   final receipts = MockInventoryReceiptRepository();
   final issues = MockInventoryIssueRepository();
   final transfers = MockInventoryTransferRepository();
+  final counts = MockInventoryCountRepository();
   final warehouses = MockWarehouseRepository();
   final facilities = MockFacilityRepository();
   final products = MockProductRepository();
@@ -120,6 +130,9 @@ class InventoryHarness {
   /// Every transfers `list` call, oldest first.
   final transferRequests = <TransferListRequest>[];
 
+  /// Every counts `list` call, oldest first.
+  final countRequests = <ReceiptListRequest>[];
+
   /// The last [pump]'s providers, for reading the formatters in a test.
   late ProviderContainer container;
 
@@ -129,6 +142,7 @@ class InventoryHarness {
     int receipts = 15,
     int issues = 0,
     int transfers = 0,
+    int counts = 0,
     bool warehousesRead = true,
     bool productsRead = true,
     bool administrator = false,
@@ -153,6 +167,11 @@ class InventoryHarness {
         Privilege(
           systemObject: SystemObject.inventoryTransfers,
           rawValue: transfers,
+        ),
+      if (counts != 0)
+        Privilege(
+          systemObject: SystemObject.physicalCountAdjustment,
+          rawValue: counts,
         ),
       if (warehousesRead)
         const Privilege(systemObject: SystemObject.warehouses, rawValue: 2),
@@ -198,6 +217,93 @@ class InventoryHarness {
     facilityId: facilityId,
     pointSaleId: pointSaleId,
   );
+
+  /// A session user holding only PhysicalCountAdjustment (74): [counts] is
+  /// its raw right (15 = create, read, update and delete).
+  static User countUser({
+    int counts = 15,
+    bool warehousesRead = true,
+    bool productsRead = true,
+    bool administrator = false,
+    int? facilityId = 2,
+    int? pointSaleId,
+  }) => user(
+    receipts: 0,
+    counts: counts,
+    warehousesRead: warehousesRead,
+    productsRead: productsRead,
+    administrator: administrator,
+    facilityId: facilityId,
+    pointSaleId: pointSaleId,
+  );
+
+  /// Serves [rows] from the counts `list`, recording each request.
+  void serveCounts(List<InventoryCountSummary> rows) => stubCountList(
+    (_) async => CatalogPage(
+      items: rows,
+      total: rows.length,
+      pageIndex: 0,
+      pageSize: 20,
+    ),
+  );
+
+  void stubCountList(
+    Future<InventoryCountPage> Function(ReceiptListRequest request) answer,
+  ) {
+    when(
+      () => counts.list(
+        status: any(named: 'status'),
+        warehouseId: any(named: 'warehouseId'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((i) {
+      final request = (
+        status: i.namedArguments[#status] as InventoryDocumentStatus?,
+        warehouseId: i.namedArguments[#warehouseId] as int?,
+        skip: i.namedArguments[#skip] as int,
+      );
+      countRequests.add(request);
+      return answer(request);
+    });
+  }
+
+  /// Answers [count] from `get`.
+  void stubCount(InventoryCount count) =>
+      when(() => counts.get(count.id)).thenAnswer((_) async => count);
+
+  /// Pumps the app at [location] (the counts list by default), as a counts
+  /// user unless [who] is given.
+  Future<GoRouter> pumpCounts(
+    WidgetTester tester, {
+    User? who,
+    String location = inventoryCountsPath,
+    Size surface = const Size(1400, 1000),
+    bool namesFail = false,
+  }) => pump(
+    tester,
+    who: who ?? countUser(),
+    location: location,
+    surface: surface,
+    namesFail: namesFail,
+  );
+
+  /// Pumps [count]'s detail screen, as a counts user unless [who] is given.
+  Future<GoRouter> pumpCount(
+    WidgetTester tester,
+    InventoryCount count, {
+    User? who,
+    Size surface = const Size(1400, 1000),
+  }) {
+    stubCount(count);
+    serveCounts(const []);
+    return pump(
+      tester,
+      who: who ?? countUser(),
+      location: '$inventoryCountsPath/${count.id}',
+      surface: surface,
+    );
+  }
 
   /// Serves [rows] from the transfers `list`, recording each request.
   void serveTransfers(List<InventoryTransferSummary> rows) => stubTransferList(
@@ -427,6 +533,7 @@ class InventoryHarness {
         inventoryReceiptRepositoryProvider.overrideWithValue(receipts),
         inventoryIssueRepositoryProvider.overrideWithValue(issues),
         inventoryTransferRepositoryProvider.overrideWithValue(transfers),
+        inventoryCountRepositoryProvider.overrideWithValue(counts),
         warehouseRepositoryProvider.overrideWithValue(warehouses),
         facilityRepositoryProvider.overrideWithValue(facilities),
         productRepositoryProvider.overrideWithValue(products),
@@ -482,6 +589,18 @@ class InventoryHarness {
           path: '$inventoryTransfersPath/:id',
           builder: (_, s) => InventoryTransferDetailScreen(
             transferId: int.tryParse(s.pathParameters['id'] ?? ''),
+          ),
+        ),
+        GoRoute(
+          path: inventoryCountsPath,
+          builder: (_, s) => Scaffold(
+            body: InventoryCountsListScreen(query: ListQuery.fromUri(s.uri)),
+          ),
+        ),
+        GoRoute(
+          path: '$inventoryCountsPath/:id',
+          builder: (_, s) => InventoryCountDetailScreen(
+            countId: int.tryParse(s.pathParameters['id'] ?? ''),
           ),
         ),
         GoRoute(

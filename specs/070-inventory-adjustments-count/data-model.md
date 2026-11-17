@@ -1,6 +1,6 @@
 # Data Model: Physical Inventory Counts (070)
 
-Domain entities are freezed and live in `lib/features/inventory/domain/`. Quantities stay decimal strings, as in 067–069, and are formatted by `formattersProvider`.
+Domain entities are freezed and live in `lib/features/inventory/domain/`. Quantities are `Decimal` in the domain, as in the shipped issues entities (the wire carries them as strings), and are formatted by `formattersProvider`. The `String` types in the tables below read as `Decimal` for quantity fields.
 
 ## Entities
 

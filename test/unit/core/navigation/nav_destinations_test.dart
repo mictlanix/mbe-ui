@@ -726,7 +726,12 @@ void main() {
       final children = inventoryGroup().children;
       expect(
         [for (final c in children) c.id],
-        ['inventory-receipts', 'inventory-issues', 'inventory-transfers'],
+        [
+          'inventory-receipts',
+          'inventory-issues',
+          'inventory-transfers',
+          'inventory-counts',
+        ],
       );
       final entry = children[1];
       expect(entry.route, '/inventory/issues');
@@ -773,7 +778,12 @@ void main() {
       final children = inventoryGroup().children;
       expect(
         [for (final c in children) c.id],
-        ['inventory-receipts', 'inventory-issues', 'inventory-transfers'],
+        [
+          'inventory-receipts',
+          'inventory-issues',
+          'inventory-transfers',
+          'inventory-counts',
+        ],
       );
       final entry = children[2];
       expect(entry.route, '/inventory/transfers');
@@ -781,6 +791,63 @@ void main() {
       expect(NavBranch.inventoryTransfers, 32);
       expect(entry.icon, Icons.swap_horiz_outlined);
       expect(entry.selectedIcon, Icons.swap_horiz);
+    });
+  });
+
+  group('Conteos físicos destination (spec 070 ui-contract)', () {
+    NavGroup inventoryGroup() => kNavigationTree
+        .whereType<NavGroup>()
+        .firstWhere((g) => g.id == 'inventory');
+
+    test('a user without PhysicalCountAdjustment read has no Conteos '
+        'entry', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.inventoryTransfers, rawValue: 2),
+        ],
+      );
+      expect(ids, contains('inventory-transfers'));
+      expect(ids, isNot(contains('inventory-counts')));
+    });
+
+    test('a user with PhysicalCountAdjustment read has the entry, and the '
+        'group stays when they can read only that one', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(
+            systemObject: SystemObject.physicalCountAdjustment,
+            rawValue: 2,
+          ),
+        ],
+      );
+      expect(ids, contains('inventory-counts'));
+      expect(ids, isNot(contains('inventory-receipts')));
+      expect(ids, isNot(contains('inventory-issues')));
+      expect(ids, isNot(contains('inventory-transfers')));
+    });
+
+    test('it is the fourth entry of Inventario, after Traspasos, on branch 33 '
+        'at /inventory/counts', () {
+      final children = inventoryGroup().children;
+      expect(
+        [for (final c in children) c.id],
+        [
+          'inventory-receipts',
+          'inventory-issues',
+          'inventory-transfers',
+          'inventory-counts',
+        ],
+      );
+      final entry = children[3];
+      expect(entry.route, '/inventory/counts');
+      expect(entry.branchIndex, NavBranch.inventoryCounts);
+      expect(NavBranch.inventoryCounts, 33);
+      expect(entry.icon, Icons.fact_check_outlined);
+      expect(entry.selectedIcon, Icons.fact_check);
     });
   });
 }

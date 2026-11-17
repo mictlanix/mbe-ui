@@ -117,6 +117,11 @@ class NavBranch {
   // above — display order comes from position within `kNavigationTree` (the
   // third destination of the Inventario group there).
   static const int inventoryTransfers = 32;
+
+  // 070-inventory-adjustments-count: appended last, same rationale as
+  // `cashSessions` above — display order comes from position within
+  // `kNavigationTree` (the fourth destination of the Inventario group there).
+  static const int inventoryCounts = 33;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -454,8 +459,8 @@ const List<NavItem> kNavigationTree = [
       ),
     ],
   ),
-  // Inventario (spec 067): warehouse receipts, (spec 068) issues and (spec
-  // 069) transfers. Its own group, between Logística and Facturación.
+  // Inventario (spec 067): warehouse receipts, (spec 068) issues, (spec
+  // 069) transfers and (spec 070) physical counts. Its own group, between Logística and Facturación.
   NavGroup(
     id: 'inventory',
     label: _inventoryLabel,
@@ -496,6 +501,21 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.inventoryTransfers,
         gate: PrivilegeGate(SystemObject.inventoryTransfers, AccessRight.read),
       ),
+      // Gated on SystemObject 74 (`physicalCountAdjustment`) read, matching
+      // the server's GET /inventory-counts. Creating, editing, confirming and
+      // cancelling need 74 create, update and delete, checked on the screens.
+      NavDestination(
+        id: 'inventory-counts',
+        label: _inventoryCountsLabel,
+        icon: Icons.fact_check_outlined,
+        selectedIcon: Icons.fact_check,
+        route: '/inventory/counts',
+        branchIndex: NavBranch.inventoryCounts,
+        gate: PrivilegeGate(
+          SystemObject.physicalCountAdjustment,
+          AccessRight.read,
+        ),
+      ),
     ],
   ),
   // Facturación (spec 066): fiscal documents. Its own group, last in the tree, since invoices
@@ -531,6 +551,7 @@ String _inventoryReceiptsLabel(AppLocalizations l10n) =>
 String _inventoryIssuesLabel(AppLocalizations l10n) => l10n.navInventoryIssues;
 String _inventoryTransfersLabel(AppLocalizations l10n) =>
     l10n.navInventoryTransfers;
+String _inventoryCountsLabel(AppLocalizations l10n) => l10n.navInventoryCounts;
 String _invoicingLabel(AppLocalizations l10n) => l10n.navInvoicingGroup;
 String _fiscalDocumentsLabel(AppLocalizations l10n) => l10n.navFiscalDocuments;
 String _usersLabel(AppLocalizations l10n) => l10n.usersMenuTitle;

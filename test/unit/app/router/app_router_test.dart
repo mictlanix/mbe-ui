@@ -28,12 +28,15 @@ import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/label_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/data/inventory_count_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_issue_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_transfer_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_count.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_issue.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_transfer.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
+import 'package:mbe_ui/features/inventory/domain/repositories/inventory_count_repository.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_issue_repository.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_transfer_repository.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_receipt_repository.dart';
@@ -110,6 +113,9 @@ class MockInventoryIssueRepository extends Mock
 
 class MockInventoryTransferRepository extends Mock
     implements InventoryTransferRepository {}
+
+class MockInventoryCountRepository extends Mock
+    implements InventoryCountRepository {}
 
 class MockUserRepository extends Mock implements UserRepository {}
 
@@ -416,6 +422,19 @@ const _inventoryTransfersReaderUser = User(
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.inventoryTransfers, rawValue: 2),
+  ],
+);
+
+/// Holds read on `physicalCountAdjustment` (74) alone — the gate for spec
+/// 070's `/inventory/counts` routes.
+const _inventoryCountsReaderUser = User(
+  userId: 'inventory-counts-reader',
+  email: 'inventory-counts-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.physicalCountAdjustment, rawValue: 2),
   ],
 );
 
@@ -933,6 +952,27 @@ void main() {
       () => inventoryTransferRepository.get(any()),
     ).thenThrow(const AppError.notFound());
 
+    // 070-inventory-adjustments-count: the same, for counts.
+    final inventoryCountRepository = MockInventoryCountRepository();
+    when(
+      () => inventoryCountRepository.list(
+        status: any(named: 'status'),
+        warehouseId: any(named: 'warehouseId'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer(
+      (_) async => const InventoryCountPage(
+        items: [],
+        total: 0,
+        pageIndex: 0,
+        pageSize: 20,
+      ),
+    );
+    when(
+      () => inventoryCountRepository.get(any()),
+    ).thenThrow(const AppError.notFound());
+
     SharedPreferences.setMockInitialValues({});
     final sharedPreferences = await SharedPreferences.getInstance();
 
@@ -1010,6 +1050,9 @@ void main() {
         ),
         inventoryTransferRepositoryProvider.overrideWithValue(
           inventoryTransferRepository,
+        ),
+        inventoryCountRepositoryProvider.overrideWithValue(
+          inventoryCountRepository,
         ),
       ],
     );
@@ -1921,6 +1964,89 @@ void main() {
       final shell = tester.widget<AppShell>(find.byType(AppShell));
       expect(NavBranch.inventoryTransfers, 32);
       expect(shell.navigationShell.currentIndex, NavBranch.inventoryTransfers);
+    });
+  });
+
+  group('070-inventory-adjustments-count — /inventory/counts gates on '
+      'physicalCountAdjustment (74) read', () {
+    testWidgets('a user with physicalCountAdjustment:read reaches the list', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _inventoryCountsReaderUser,
+        '/inventory/counts',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/inventory/counts');
+      expect(
+        find.byKey(const Key('inventory_counts_filter_button')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a user without physicalCountAdjustment:read is redirected '
+        'home', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/inventory/counts');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a transfers-only reader is redirected home', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _inventoryTransfersReaderUser,
+        '/inventory/counts',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a user with physicalCountAdjustment:read reaches a count '
+        '(here not found)', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _inventoryCountsReaderUser,
+        '/inventory/counts/9',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/inventory/counts/9');
+      expect(
+        find.byKey(const Key('inventory_count_not_found')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a user without physicalCountAdjustment:read is redirected '
+        'from a count', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/inventory/counts/9');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a non-numeric count id gives the not-found state', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _inventoryCountsReaderUser,
+        '/inventory/counts/abc',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/inventory/counts/abc');
+      expect(
+        find.byKey(const Key('inventory_count_not_found')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('activates shell branch NavBranch.inventoryCounts (33)', (
+      tester,
+    ) async {
+      await pumpAt(tester, _inventoryCountsReaderUser, '/inventory/counts');
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.inventoryCounts, 33);
+      expect(shell.navigationShell.currentIndex, NavBranch.inventoryCounts);
     });
   });
 

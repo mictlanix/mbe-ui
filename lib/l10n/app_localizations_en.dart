@@ -8556,4 +8556,372 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inventoryTransferInTransitEmpty => 'There is no stock in transit.';
+
+  @override
+  String get apiErrorInventoryCountBatchInvalid =>
+      'Some products in the list cannot be recorded. Check the marked rows.';
+
+  @override
+  String get apiErrorInventoryCountConfirmedCannotCancel =>
+      'A confirmed count cannot be cancelled. Correct it with a new count.';
+
+  @override
+  String get apiErrorInventoryCountLineProductUnknown =>
+      'The product does not exist.';
+
+  @override
+  String get apiErrorInventoryCountLineNotStockable =>
+      'The product is not stockable.';
+
+  @override
+  String get apiErrorInventoryCountLineRepeated =>
+      'The product is repeated in the list.';
+
+  @override
+  String get apiErrorInventoryCountLineProductReference =>
+      'Name the product by its id or by its code, not both.';
+
+  @override
+  String apiResourceInventoryCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'counts',
+      one: 'count',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderInventoryCount => 'masculine';
+
+  @override
+  String get navInventoryCounts => 'Physical counts';
+
+  @override
+  String get inventoryCountStatusDraft => 'Draft';
+
+  @override
+  String get inventoryCountStatusCompleted => 'Confirmed';
+
+  @override
+  String get inventoryCountStatusCancelled => 'Cancelled';
+
+  @override
+  String get inventoryCountColFolio => 'Folio';
+
+  @override
+  String get inventoryCountColWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryCountColFacility => 'Facility';
+
+  @override
+  String get inventoryCountColStatus => 'Status';
+
+  @override
+  String get inventoryCountColCreatedBy => 'Created by';
+
+  @override
+  String get inventoryCountColDate => 'Date';
+
+  @override
+  String get inventoryCountFilterStatus => 'Status';
+
+  @override
+  String get inventoryCountFilterWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryCountFilterAll => 'All';
+
+  @override
+  String get inventoryCountListEmpty => 'There are no physical counts';
+
+  @override
+  String inventoryCountDraftFolio(String id) {
+    return 'Draft #$id';
+  }
+
+  @override
+  String inventoryCountTitleDraft(String id) {
+    return 'Count · Draft #$id';
+  }
+
+  @override
+  String inventoryCountTitle(String folio) {
+    return 'Count $folio';
+  }
+
+  @override
+  String get inventoryCountFactComment => 'Comment';
+
+  @override
+  String get inventoryCountFactLines => 'Lines';
+
+  @override
+  String get inventoryCountLineColCode => 'Code';
+
+  @override
+  String get inventoryCountLineColProduct => 'Product';
+
+  @override
+  String get inventoryCountLineColCounted => 'Counted';
+
+  @override
+  String get inventoryCountLineColExpected => 'Expected';
+
+  @override
+  String get inventoryCountLineColDifference => 'Difference';
+
+  @override
+  String get inventoryCountLinesSearchHint => 'Search by code or name';
+
+  @override
+  String get inventoryCountDraftEmpty =>
+      'Record what you counted. Expected stock is shown on confirm.';
+
+  @override
+  String get inventoryCountQuickEntryTitle => 'Quick entry';
+
+  @override
+  String get inventoryCountQuickEntryCode => 'Code';
+
+  @override
+  String get inventoryCountQuickEntryQuantity => 'Quantity';
+
+  @override
+  String get inventoryCountQuickEntrySubmit => 'Record';
+
+  @override
+  String inventoryCountQuickEntryFeedback(
+    String code,
+    String name,
+    String newQty,
+  ) {
+    return '$code $name: $newQty';
+  }
+
+  @override
+  String inventoryCountQuickEntryFeedbackReplaced(
+    String code,
+    String name,
+    String oldQty,
+    String newQty,
+  ) {
+    return '$code $name: $oldQty → $newQty (replaced)';
+  }
+
+  @override
+  String get inventoryCountActionNew => 'New count';
+
+  @override
+  String get inventoryCountActionEditHeader => 'Edit header';
+
+  @override
+  String get inventoryCountActionPaste => 'Paste list';
+
+  @override
+  String get inventoryCountActionAddProduct => 'Add product';
+
+  @override
+  String get inventoryCountActionConfirm => 'Confirm';
+
+  @override
+  String get inventoryCountActionCancel => 'Cancel';
+
+  @override
+  String get inventoryCountDialogNewTitle => 'New count';
+
+  @override
+  String get inventoryCountDialogEditTitle => 'Edit header';
+
+  @override
+  String get inventoryCountDialogAddTitle => 'Add product';
+
+  @override
+  String get inventoryCountDialogQuantityTitle => 'Counted quantity';
+
+  @override
+  String get inventoryCountDialogRemoveTitle => 'Remove line';
+
+  @override
+  String inventoryCountDialogRemoveBody(String name) {
+    return 'Remove $name from the count?';
+  }
+
+  @override
+  String get inventoryCountDialogPasteTitle => 'Paste list';
+
+  @override
+  String get inventoryCountDialogConfirmTitle => 'Confirm count';
+
+  @override
+  String get inventoryCountDialogCancelTitle => 'Cancel draft';
+
+  @override
+  String get inventoryCountFieldWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryCountFieldComment => 'Comment';
+
+  @override
+  String get inventoryCountFieldProduct => 'Product';
+
+  @override
+  String get inventoryCountFieldCounted => 'Counted';
+
+  @override
+  String get inventoryCountDialogCreate => 'Create';
+
+  @override
+  String get inventoryCountDialogSave => 'Save';
+
+  @override
+  String get inventoryCountDialogRecord => 'Record';
+
+  @override
+  String get inventoryCountDialogBack => 'Back';
+
+  @override
+  String get inventoryCountDialogClose => 'Close';
+
+  @override
+  String get inventoryCountDialogCancelDraft => 'Cancel draft';
+
+  @override
+  String inventoryCountReplaceNote(String qty) {
+    return 'Already counted: $qty. It will be replaced.';
+  }
+
+  @override
+  String inventoryCountConfirmBody(String warehouse) {
+    return 'On confirm, the stock of $warehouse is set to the counted quantities and a folio is assigned. A confirmed count cannot be cancelled: correct it with a new count.';
+  }
+
+  @override
+  String get inventoryCountConfirmIncludeUncounted =>
+      'Count as 0 the products with stock that are not in this count';
+
+  @override
+  String inventoryCountCancelBody(String id) {
+    return 'Cancel draft #$id. No stock is changed.';
+  }
+
+  @override
+  String get inventoryCountPasteInstructions =>
+      'Paste two columns from your spreadsheet: code and quantity.';
+
+  @override
+  String inventoryCountPasteSummary(String n, String m) {
+    return '$n rows read · $m with problems';
+  }
+
+  @override
+  String inventoryCountPasteProblemRow(int row, String reason) {
+    return 'Row $row: $reason';
+  }
+
+  @override
+  String get inventoryCountPasteProblemFieldCount =>
+      'separate the code and the quantity';
+
+  @override
+  String get inventoryCountPasteProblemMissingCode => 'the code is missing';
+
+  @override
+  String get inventoryCountPasteProblemNotANumber =>
+      'the quantity is not a number';
+
+  @override
+  String get inventoryCountPasteProblemNegative => 'the quantity is negative';
+
+  @override
+  String get inventoryCountPasteProblemTooManyDecimals =>
+      'the quantity has more than 4 decimals';
+
+  @override
+  String get inventoryCountPasteProblemRepeatedCode => 'the code is repeated';
+
+  @override
+  String get inventoryCountPasteSend => 'Send';
+
+  @override
+  String get inventoryCountPasteSending => 'Sending…';
+
+  @override
+  String inventoryCountPasteProgress(String sent, String total) {
+    return '$sent of $total';
+  }
+
+  @override
+  String inventoryCountPasteBatch(int k, int n) {
+    return 'Batch $k of $n';
+  }
+
+  @override
+  String inventoryCountPasteStopped(String applied, String total) {
+    return 'Sending stopped. $applied of $total rows were applied.';
+  }
+
+  @override
+  String inventoryCountPasteRejectedHeading(int k) {
+    return 'Codes rejected in batch $k:';
+  }
+
+  @override
+  String inventoryCountPasteRejectedLine(String code, String reason, int row) {
+    return '$code  $reason (row $row)';
+  }
+
+  @override
+  String get inventoryCountPasteSafeNote =>
+      'Fix your list and paste it again: quantities are replaced, not added.';
+
+  @override
+  String get inventoryCountWarningsTitle => 'Count confirmed with warnings';
+
+  @override
+  String get inventoryCountWarningsNegativeHeading =>
+      'Counted below what is reserved:';
+
+  @override
+  String get inventoryCountWarningsCorrectedHeading =>
+      'Also corrected by another count of this warehouse:';
+
+  @override
+  String inventoryCountWarningsNegativeLine(
+    String code,
+    String counted,
+    String reserved,
+    String available,
+  ) {
+    return '$code  counted $counted · reserved $reserved · available $available';
+  }
+
+  @override
+  String inventoryCountWarningsCorrectedLine(String code, String serial) {
+    return '$code  count $serial';
+  }
+
+  @override
+  String get inventoryCountWarningsDismiss => 'Dismiss warnings';
+
+  @override
+  String get inventoryCountQuantityInvalid =>
+      'Enter a quantity of 0 or more, with up to 4 decimals.';
+
+  @override
+  String get inventoryCountLineEditTooltip => 'Edit quantity';
+
+  @override
+  String get inventoryCountLineRemoveTooltip => 'Remove line';
+
+  @override
+  String get inventoryCountRemoveAction => 'Remove';
+
+  @override
+  String get inventoryCountBackToList => 'Back to physical counts';
+
+  @override
+  String get inventoryCountFactModifiedBy => 'Modified by';
 }

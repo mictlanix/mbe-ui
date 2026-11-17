@@ -46,6 +46,8 @@ import 'package:mbe_ui/features/sales/presentation/capture/advanced_search_scree
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_detail_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/counts/inventory_count_detail_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/counts/inventory_counts_list_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/issues/inventory_issue_detail_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/issues/inventory_issues_list_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/transfers/in_transit_screen.dart';
@@ -486,6 +488,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 070-inventory-adjustments-count: appended last (index 33), same
+          // rationale as `payments` above. Gated on SystemObject 74
+          // (`physicalCountAdjustment`) read, see `_routeGate`. A row opens
+          // `/inventory/counts/:id`.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: inventoryCountsPath,
+                builder: (context, state) => InventoryCountsListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -724,6 +740,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '$inventoryTransfersPath/:id',
         builder: (context, state) => InventoryTransferDetailScreen(
           transferId: int.tryParse(state.pathParameters['id'] ?? ''),
+        ),
+      ),
+      // 070-inventory-adjustments-count: a count's own full screen, gated on
+      // SystemObject 74 (`physicalCountAdjustment`) read by the `_routeGate`
+      // prefix. A non-numeric id parses to `null`, which the screen shows as
+      // not found.
+      GoRoute(
+        path: '$inventoryCountsPath/:id',
+        builder: (context, state) => InventoryCountDetailScreen(
+          countId: int.tryParse(state.pathParameters['id'] ?? ''),
         ),
       ),
       // 038-advanced-product-search: a top-level sibling, not a shell branch
@@ -1020,6 +1046,16 @@ NavGate? _routeGate(String location) {
   // list and every `/inventory/transfers/...` route.
   if (location.startsWith(inventoryTransfersPath)) {
     return PrivilegeGate(SystemObject.inventoryTransfers, AccessRight.read);
+  }
+  // 070-inventory-adjustments-count: SystemObject 74
+  // (`physicalCountAdjustment`) read, matching the server's GET
+  // /inventory-counts. The prefix covers the list and every
+  // `/inventory/counts/:id`.
+  if (location.startsWith(inventoryCountsPath)) {
+    return PrivilegeGate(
+      SystemObject.physicalCountAdjustment,
+      AccessRight.read,
+    );
   }
   // 061-delivery-orders: SystemObject 71 (`deliveryOrders`) read, matching
   // the server's GET /delivery-orders. The prefix covers the list and every

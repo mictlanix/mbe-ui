@@ -21,8 +21,8 @@ This guide validates the feature end to end against the dev mbe-api.
 ```bash
 flutter test test/unit/features/inventory test/widget/features/inventory
 flutter test test/unit/core/errors/catalog_coverage_test.dart test/unit/core/formatting_guard_test.dart test/unit/app/router/app_router_test.dart
-flutter test test/integration/inventory_counts_live_test.dart --dart-define-from-file=.env.settings                  # read-only
-MBE_WRITE=true flutter test test/integration/inventory_counts_live_test.dart --dart-define-from-file=.env.settings   # writes
+flutter test test/integration/inventory_counts_live_test.dart --dart-define-from-file=.env.settings --dart-define-from-file=.env                           # read-only
+flutter test test/integration/inventory_counts_live_test.dart --dart-define-from-file=.env.settings --dart-define-from-file=.env --dart-define=MBE_WRITE=true   # writes
 caffeinate -dimsu flutter test integration_test/inventory_counts_quickstart_test.dart -d macos --dart-define-from-file=.env
 ```
 
