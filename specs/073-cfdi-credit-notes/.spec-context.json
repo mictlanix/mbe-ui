@@ -1,0 +1,34 @@
+{
+  "workflow": "speckit",
+  "specName": "CFDI Credit Notes",
+  "branch": "chore/073-mark-complete",
+  "status": "completed",
+  "currentStep": "implement",
+  "history": [
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-18T20:11:26.454Z"
+    }
+  ],
+  "verified": [
+    {
+      "what": "flutter analyze clean; full suite 6,166 passed, 7 failed, none from this branch (6 known goldens #209, the POS sales-list screenshot that fails identically without this work) — per PR #282"
+    },
+    {
+      "what": "live test/integration/fiscal_documents_live_test.dart 'Credit note against the simulated PAC': 8 of 8 against dev with PAC_PROVIDER=simulated (create from #63927, refused over-quantity copy, copy, form 99 replaced, confirm DRC3, stamp, cancel 02)"
+    }
+  ],
+  "telemetryInstanceId": "e3688773-2c66-4fa8-9657-a57e69a93d12",
+  "concerns": [
+    {
+      "note": "T026 manual checks (quickstart steps 1–17, legacy credit note, compact, largest text, English) not yet run; tracked in mictlanix/mbe-ui#281"
+    },
+    {
+      "note": "mbe-api follow-up candidates, not filed: remaining creditable amount not exposed before confirm; remove_relation has no type guard; copied lines don't record their source invoice line"
+    }
+  ],
+  "currentTask": null
+}
