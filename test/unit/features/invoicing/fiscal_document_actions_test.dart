@@ -5,6 +5,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/invoicing/data/fiscal_document_repository_impl.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_document.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/sat_cancellation_reason.dart';
 import 'package:mbe_ui/features/invoicing/domain/repositories/fiscal_document_repository.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_actions.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_detail_controller.dart';
@@ -25,6 +26,7 @@ void main() {
     registerFallbackValue(const InvoiceHeaderPatch());
     registerFallbackValue(const InvoiceLinePatch());
     registerFallbackValue(InvoiceRelationType.substitution);
+    registerFallbackValue(SatCancellationReason.withoutRelation);
     registerFallbackValue(const NewInvoice(customerId: 1, recipientRfc: 'X'));
   });
 
@@ -191,5 +193,114 @@ void main() {
     expect(result.id, isNull);
     expect(result.error, isA<ServerError>());
     expect(listLoads, 1);
+  });
+
+  group('stamp, cancel and refresh (spec 072)', () {
+    test('each calls its repository method and answers null', () async {
+      final c = await container();
+      when(() => repository.stamp(7)).thenAnswer((_) async => aDocument());
+      when(
+        () => repository.cancel(
+          7,
+          SatCancellationReason.withRelation,
+          substitution: 'U-2',
+        ),
+      ).thenAnswer((_) async => aDocument());
+      final a = actions(c);
+
+      expect(await a.stamp(7), isNull);
+      expect(
+        await a.cancel(
+          7,
+          SatCancellationReason.withRelation,
+          substitution: 'U-2',
+        ),
+        isNull,
+      );
+
+      verify(() => repository.stamp(7)).called(1);
+      verify(
+        () => repository.cancel(
+          7,
+          SatCancellationReason.withRelation,
+          substitution: 'U-2',
+        ),
+      ).called(1);
+    });
+
+    test('a success reloads the detail and the list', () async {
+      final c = await container();
+      when(() => repository.stamp(7)).thenAnswer((_) async => aDocument());
+
+      await actions(c).stamp(7);
+      await settle(c);
+
+      expect(detailLoads, 2);
+      expect(listLoads, 2);
+    });
+
+    test('a refusal reloads only the detail, so a pac.timeout shows the '
+        'document as it now is', () async {
+      final c = await container();
+      when(() => repository.stamp(7)).thenThrow(const AppError.server());
+
+      final error = await actions(c).stamp(7);
+      await settle(c);
+
+      expect(error, isA<ServerError>());
+      expect(detailLoads, 2);
+      expect(listLoads, 1);
+    });
+
+    test('refresh answers the status the server returned', () async {
+      final c = await container();
+      when(
+        () => repository.refresh(7),
+      ).thenAnswer((_) async => aDocument(status: FiscalDocumentStatus.issued));
+
+      final result = await actions(c).refresh(7);
+      await settle(c);
+
+      expect(result.error, isNull);
+      expect(result.status, FiscalDocumentStatus.issued);
+      expect(detailLoads, 2);
+      expect(listLoads, 2);
+    });
+
+    test('a refused refresh answers the error and no status', () async {
+      final c = await container();
+      when(() => repository.refresh(7)).thenThrow(const AppError.server());
+
+      final result = await actions(c).refresh(7);
+      await settle(c);
+
+      expect(result.error, isA<ServerError>());
+      expect(result.status, isNull);
+      expect(detailLoads, 2);
+      expect(listLoads, 1);
+    });
+
+    test(
+      'a lost connection on cancel is a NetworkError and reloads both',
+      () async {
+        final c = await container();
+        when(
+          () => repository.cancel(
+            7,
+            SatCancellationReason.withoutRelation,
+            substitution: any(named: 'substitution'),
+          ),
+        ).thenThrow(const AppError.network());
+
+        final error = await actions(
+          c,
+        ).cancel(7, SatCancellationReason.withoutRelation);
+        await settle(c);
+
+        expect(error, isA<NetworkError>());
+        expect(detailLoads, 2);
+        expect(listLoads, 2);
+      },
+    );
   });
 }

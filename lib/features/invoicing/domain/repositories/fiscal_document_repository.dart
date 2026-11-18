@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_document.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/sat_cancellation_reason.dart';
 
 /// One page of the fiscal documents list.
 class FiscalDocumentPage {
@@ -73,4 +74,22 @@ abstract class FiscalDocumentRepository {
 
   /// `POST /fiscal-documents/{id}/reopen`: a sealed invoice back to draft.
   Future<FiscalDocument> reopen(int id);
+
+  /// `POST /fiscal-documents/{id}/stamp`: sends the sealed document to the PAC.
+  /// A timeout leaves it stamping; [refresh] resolves it.
+  Future<FiscalDocument> stamp(int id);
+
+  /// `POST /fiscal-documents/{id}/cancel`: asks SAT, through the PAC, to cancel
+  /// an issued document. [substitution] is the replacement's UUID, for reason
+  /// 01 only.
+  Future<FiscalDocument> cancel(
+    int id,
+    SatCancellationReason reason, {
+    String? substitution,
+  });
+
+  /// `POST /fiscal-documents/{id}/refresh`: asks the PAC what became of a stamp
+  /// or a cancellation in process. Answers the document as it now is, which is
+  /// unchanged while it is still in process.
+  Future<FiscalDocument> refresh(int id);
 }

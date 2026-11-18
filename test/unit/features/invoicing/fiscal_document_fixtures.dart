@@ -1,6 +1,8 @@
 import 'package:decimal/decimal.dart';
 
+import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_cancellation.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_document.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_stamp.dart';
 
 /// A document for tests; override what the case is about.
 FiscalDocument aDocument({
@@ -14,6 +16,10 @@ FiscalDocument aDocument({
   List<InvoiceLine>? lines,
   List<InvoiceRelation> relations = const [],
   InvoicePaymentTerms paymentTerms = InvoicePaymentTerms.pue,
+  FiscalStamp? stamp,
+  DateTime? stampingSince,
+  String? cancellationSubstitution,
+  List<FiscalCancellation> cancellations = const [],
 }) => FiscalDocument(
   summary: FiscalDocumentSummary(
     id: id,
@@ -38,6 +44,49 @@ FiscalDocument aDocument({
   exchangeRate: Decimal.one,
   lines: lines ?? [anInvoiceLine()],
   relations: relations,
+  stamp: stamp,
+  stampingSince: stampingSince,
+  cancellationSubstitution: cancellationSubstitution,
+  cancellations: cancellations,
+);
+
+/// A PAC stamp; simulated by default, as on dev and test.
+FiscalStamp aStamp({
+  String uuid = '6F1C2A9E-0000-4000-8000-00000000AB21',
+  bool simulated = true,
+  String? satCertificate = '00001000000509846663',
+  String? providerRfc = 'SIM010101SIM',
+}) => FiscalStamp(
+  uuid: uuid,
+  stamped: DateTime(2026, 11, 17, 9, 13),
+  satCertificate: satCertificate,
+  providerRfc: providerRfc,
+  simulated: simulated,
+);
+
+/// One cancellation request; accepted by default.
+FiscalCancellation aCancellation({
+  int id = 1,
+  String reason = '02',
+  String? substitution,
+  CancellationOutcome outcome = CancellationOutcome.accepted,
+  String? pacCode,
+  String? pacMessage,
+  int requestedBy = 5,
+  DateTime? answeredAt,
+  DateTime? resolvedAt,
+}) => FiscalCancellation(
+  id: id,
+  reason: reason,
+  substitution: substitution,
+  outcome: outcome,
+  rawOutcome: outcome.name,
+  pacCode: pacCode,
+  pacMessage: pacMessage,
+  requestedBy: requestedBy,
+  requestedAt: DateTime(2026, 11, 17, 12, 30),
+  answeredAt: answeredAt,
+  resolvedAt: resolvedAt,
 );
 
 InvoiceLine anInvoiceLine({

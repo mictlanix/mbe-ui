@@ -288,7 +288,7 @@ class _FiscalDocumentsFiltersPanel extends ConsumerWidget {
                   child: Text(fiscalDocumentStatusLabel(l10n, s)),
                 ),
             ],
-            onChanged: (s) => goTo(query.withFacet('status', s?.name)),
+            onChanged: (s) => goTo(query.withFacet('status', s?.wireName)),
           ),
         ),
         KeyedSubtree(

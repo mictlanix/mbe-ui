@@ -2,13 +2,33 @@ import 'package:decimal/decimal.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:mbe_ui/features/catalog/domain/entities/fiscal_document_kind.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_cancellation.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_stamp.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/invoice_amounts.dart';
 
 part 'fiscal_document.freezed.dart';
 
 /// The state of a fiscal document, derived on the server (spec 066
-/// data-model §1). Only a draft is editable.
-enum FiscalDocumentStatus { draft, sealed, issued, cancelled }
+/// data-model §1, spec 072 data-model). Only a draft is editable. The order is
+/// the lifecycle's, which is the order the list's state filter shows.
+enum FiscalDocumentStatus {
+  draft('draft'),
+  sealed('sealed'),
+  stamping('stamping'),
+  issued('issued'),
+  cancellationPending('cancellation_pending'),
+  cancelled('cancelled');
+
+  const FiscalDocumentStatus(this.wireName);
+
+  /// The value on the wire and in the list's URL. It is not [name]:
+  /// `cancellationPending` goes as `cancellation_pending`.
+  final String wireName;
+
+  /// `null` for a value that is none of the six.
+  static FiscalDocumentStatus? fromWire(String? wire) =>
+      values.where((s) => s.wireName == wire).firstOrNull;
+}
 
 /// PUE (one payment) or PPD (deferred). Named apart from the sales
 /// `PaymentTerms`, which is a different concept.
@@ -155,6 +175,19 @@ abstract class FiscalDocument with _$FiscalDocument {
     DateTime? stamped,
     DateTime? cancellationDate,
     String? cancellationReason,
+
+    /// The PAC's stamp; `null` before stamping. Legacy-stamped documents have
+    /// one too.
+    FiscalStamp? stamp,
+
+    /// When the pending stamp was sent, while the document is stamping.
+    DateTime? stampingSince,
+
+    /// UUID of the document that replaced this one (cancellation reason 01).
+    String? cancellationSubstitution,
+
+    /// Every cancellation request, newest first as the server sends them.
+    @Default(<FiscalCancellation>[]) List<FiscalCancellation> cancellations,
     @Default(<InvoiceLine>[]) List<InvoiceLine> lines,
     @Default(<InvoiceRelation>[]) List<InvoiceRelation> relations,
   }) = _FiscalDocument;
@@ -165,9 +198,25 @@ abstract class FiscalDocument with _$FiscalDocument {
   bool get isEditableDraft => isInvoice && status == FiscalDocumentStatus.draft;
   bool get canReopen => isInvoice && status == FiscalDocumentStatus.sealed;
 
+  /// Stamping applies to a sealed document of any type (spec 072 R2).
+  bool get canStamp => status == FiscalDocumentStatus.sealed;
+
+  /// Only a stamped, live document can be cancelled, of any type.
+  bool get canCancel => status == FiscalDocumentStatus.issued;
+
+  /// A stamp or a cancellation is in process and the PAC can be asked.
+  bool get canRefresh =>
+      status == FiscalDocumentStatus.stamping ||
+      status == FiscalDocumentStatus.cancellationPending;
+
+  /// The cancellation request still waiting for an answer, if any.
+  FiscalCancellation? get openCancellation =>
+      cancellations.where((c) => c.outcome.isOpen).firstOrNull;
+
   /// PDF and XML are offered; the server still refuses unstamped or pre-4.0.
   bool get hasDocuments =>
       status == FiscalDocumentStatus.issued ||
+      status == FiscalDocumentStatus.cancellationPending ||
       status == FiscalDocumentStatus.cancelled;
 
   bool get hasRelations => relations.isNotEmpty;

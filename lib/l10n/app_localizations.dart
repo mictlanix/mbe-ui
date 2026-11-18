@@ -11818,7 +11818,7 @@ abstract class AppLocalizations {
   /// spec 066: fiscalDocumentBannerSealed
   ///
   /// In en, this message translates to:
-  /// **'Sealed, waiting to be stamped. Stamping is not available in this system yet.'**
+  /// **'Sealed, no fiscal validity yet.'**
   String get fiscalDocumentBannerSealed;
 
   /// spec 066: fiscalDocumentBannerReadOnlyKind
@@ -12514,7 +12514,7 @@ abstract class AppLocalizations {
   /// mbe-api error code `fiscal_document.not_issued` (spec 066)
   ///
   /// In en, this message translates to:
-  /// **'This document has not been stamped yet, so it has no PDF or XML.'**
+  /// **'This document has not been stamped yet, so it has no PDF or XML and cannot be cancelled.'**
   String get apiErrorFiscalDocumentNotIssued;
 
   /// mbe-api error code `fiscal_document.version_not_printable` (spec 066)
@@ -12592,7 +12592,7 @@ abstract class AppLocalizations {
   /// mbe-api error code `fiscal_document.not_sealed` (spec 066)
   ///
   /// In en, this message translates to:
-  /// **'Only a sealed invoice that is not stamped yet can be reopened.'**
+  /// **'Only a sealed document that is not being stamped can be stamped or reopened.'**
   String get apiErrorFiscalDocumentNotSealed;
 
   /// mbe-api error code `fiscal_document.type_not_supported` (spec 066)
@@ -12679,7 +12679,7 @@ abstract class AppLocalizations {
   /// mbe-api error code `fiscal_document.no_valid_certificate` (spec 066)
   ///
   /// In en, this message translates to:
-  /// **'The issuer has no valid certificate to seal with.'**
+  /// **'The issuer has no valid certificate to seal or cancel with.'**
   String get apiErrorFiscalDocumentNoValidCertificate;
 
   /// mbe-api error code `fiscal_document.series_missing` (spec 066)
@@ -15289,6 +15289,372 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View stock'**
   String get catalogViewStockButton;
+
+  /// spec 072: status
+  ///
+  /// In en, this message translates to:
+  /// **'Stamping'**
+  String get fiscalDocumentStatusStamping;
+
+  /// spec 072: status
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation pending'**
+  String get fiscalDocumentStatusCancellationPending;
+
+  /// spec 072: sealed invoice, user can update
+  ///
+  /// In en, this message translates to:
+  /// **'Sealed, no fiscal validity yet. Stamp it to give it fiscal validity, or reopen it if it needs correcting (it keeps its folio).'**
+  String get fiscalDocumentBannerSealedStampOrReopen;
+
+  /// spec 072: sealed non-invoice, user can update
+  ///
+  /// In en, this message translates to:
+  /// **'Sealed, no fiscal validity yet. Stamp it to give it fiscal validity.'**
+  String get fiscalDocumentBannerSealedStamp;
+
+  /// spec 072: stamping banner, user can refresh
+  ///
+  /// In en, this message translates to:
+  /// **'Stamping since {since}. The PAC has not confirmed the result yet; the system checks every 10 minutes, or you can check now.'**
+  String fiscalDocumentBannerStamping(String since);
+
+  /// spec 072: stamping banner, read-only user
+  ///
+  /// In en, this message translates to:
+  /// **'Stamping since {since}. The PAC has not confirmed the result yet; the system checks every 10 minutes.'**
+  String fiscalDocumentBannerStampingNoRefresh(String since);
+
+  /// spec 072: cancellation pending banner
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation requested on {requested}. SAT is waiting for the receiver to accept it; meanwhile the document remains valid.'**
+  String fiscalDocumentBannerCancellationPending(String requested);
+
+  /// spec 072: cancellation pending banner without a date
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation in process. SAT is waiting for the receiver to accept it; meanwhile the document remains valid.'**
+  String get fiscalDocumentBannerCancellationPendingNoDate;
+
+  /// spec 072: stamp fact
+  ///
+  /// In en, this message translates to:
+  /// **'SAT certificate'**
+  String get fiscalDocumentFactSatCertificate;
+
+  /// spec 072: stamp fact, the PAC provider RFC
+  ///
+  /// In en, this message translates to:
+  /// **'PAC'**
+  String get fiscalDocumentFactProviderRfc;
+
+  /// spec 072: UUID of the replacement document
+  ///
+  /// In en, this message translates to:
+  /// **'Replaced by'**
+  String get fiscalDocumentFactSubstitution;
+
+  /// spec 072: badge
+  ///
+  /// In en, this message translates to:
+  /// **'Simulated stamp, no fiscal validity'**
+  String get fiscalDocumentSimulatedBadge;
+
+  /// spec 072: action
+  ///
+  /// In en, this message translates to:
+  /// **'Stamp'**
+  String get fiscalDocumentStampAction;
+
+  /// spec 072: action
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel with SAT'**
+  String get fiscalDocumentCancelCfdiAction;
+
+  /// spec 072: action
+  ///
+  /// In en, this message translates to:
+  /// **'Check status'**
+  String get fiscalDocumentRefreshAction;
+
+  /// spec 072: cancel dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Send cancellation'**
+  String get fiscalDocumentCancelSubmit;
+
+  /// spec 072: cancel dialog, not "Cancelar" which would be ambiguous
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get fiscalDocumentCancelBack;
+
+  /// spec 072: stamp dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Stamp {kind} {folio}?'**
+  String fiscalDocumentStampTitle(String kind, String folio);
+
+  /// spec 072: stamp dialog body
+  ///
+  /// In en, this message translates to:
+  /// **'It will be sent to the PAC to be stamped with SAT. Once stamped it can no longer be reopened or edited; it can only be cancelled.'**
+  String get fiscalDocumentStampBody;
+
+  /// spec 072: snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'{folio} stamped.'**
+  String fiscalDocumentStamped(String folio);
+
+  /// spec 072: snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'{folio} stamped (simulated).'**
+  String fiscalDocumentStampedSimulated(String folio);
+
+  /// spec 072: cancel dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel {folio} with SAT'**
+  String fiscalDocumentCancelTitle(String folio);
+
+  /// spec 072: cancel dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get fiscalDocumentCancelReasonLabel;
+
+  /// spec 072: SAT reason 01
+  ///
+  /// In en, this message translates to:
+  /// **'Document issued with errors, with relation'**
+  String get fiscalDocumentCancelReason01;
+
+  /// spec 072: SAT reason 02
+  ///
+  /// In en, this message translates to:
+  /// **'Document issued with errors, without relation'**
+  String get fiscalDocumentCancelReason02;
+
+  /// spec 072: SAT reason 03
+  ///
+  /// In en, this message translates to:
+  /// **'The operation was not carried out'**
+  String get fiscalDocumentCancelReason03;
+
+  /// spec 072: SAT reason 04
+  ///
+  /// In en, this message translates to:
+  /// **'Nominative operation related to a global invoice'**
+  String get fiscalDocumentCancelReason04;
+
+  /// spec 072: cancel dialog, reason 01
+  ///
+  /// In en, this message translates to:
+  /// **'Replacement document'**
+  String get fiscalDocumentCancelSubstituteLabel;
+
+  /// spec 072: cancel dialog, reason 01
+  ///
+  /// In en, this message translates to:
+  /// **'It must be stamped and have the same issuer and recipient.'**
+  String get fiscalDocumentCancelSubstituteHint;
+
+  /// spec 072: cancel dialog
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get fiscalDocumentCancelSubstituteChange;
+
+  /// spec 072: cancel dialog, reason 01
+  ///
+  /// In en, this message translates to:
+  /// **'There are no stamped documents for this recipient that could replace it. Cancel with reason 02 and issue the new document afterwards, relating it to the cancelled one (04).'**
+  String get fiscalDocumentCancelNoCandidates;
+
+  /// spec 072: cancel dialog
+  ///
+  /// In en, this message translates to:
+  /// **'The request is sent to SAT and cannot be undone from here. If SAT needs the receiver to accept, it will stay pending.'**
+  String get fiscalDocumentCancelNote;
+
+  /// spec 072: snackbar
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation sent: {state}.'**
+  String fiscalDocumentCancelSent(String state);
+
+  /// spec 072: snackbar after a refresh changed the state
+  ///
+  /// In en, this message translates to:
+  /// **'{folio}: {state}.'**
+  String fiscalDocumentRefreshMoved(String folio, String state);
+
+  /// spec 072: info notice after a refresh that changed nothing
+  ///
+  /// In en, this message translates to:
+  /// **'Still in process. Check again in a few minutes.'**
+  String get fiscalDocumentStillInProcess;
+
+  /// spec 072: history section
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellations'**
+  String get fiscalDocumentCancellationsTitle;
+
+  /// spec 072: outcome
+  ///
+  /// In en, this message translates to:
+  /// **'Requested'**
+  String get fiscalDocumentCancellationOutcomeRequested;
+
+  /// spec 072: outcome
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get fiscalDocumentCancellationOutcomePending;
+
+  /// spec 072: outcome
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get fiscalDocumentCancellationOutcomeAccepted;
+
+  /// spec 072: outcome
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get fiscalDocumentCancellationOutcomeExpired;
+
+  /// spec 072: outcome
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get fiscalDocumentCancellationOutcomeRejected;
+
+  /// spec 072: outcome
+  ///
+  /// In en, this message translates to:
+  /// **'Not cancellable'**
+  String get fiscalDocumentCancellationOutcomeNotCancellable;
+
+  /// spec 072: outcome
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get fiscalDocumentCancellationOutcomeFailed;
+
+  /// spec 072: outcome this version does not know
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown ({value})'**
+  String fiscalDocumentCancellationOutcomeUnknown(String value);
+
+  /// spec 072: history row
+  ///
+  /// In en, this message translates to:
+  /// **'Requested by {who} · {when}'**
+  String fiscalDocumentCancellationRequestedBy(String who, String when);
+
+  /// spec 072: history row
+  ///
+  /// In en, this message translates to:
+  /// **'Answered {when}'**
+  String fiscalDocumentCancellationAnswered(String when);
+
+  /// spec 072: history row
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved {when}'**
+  String fiscalDocumentCancellationResolved(String when);
+
+  /// spec 072: history row, detail is the PAC code and message as the PAC wrote them
+  ///
+  /// In en, this message translates to:
+  /// **'PAC {detail}'**
+  String fiscalDocumentCancellationPac(String detail);
+
+  /// spec 072: hint under the issue_date_out_of_range refusal when stamping
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen it, change the issue date (or leave it empty) and confirm it again.'**
+  String get fiscalDocumentStampIssueDateHint;
+
+  /// mbe-api error code `fiscal_document.cancellation_open` (spec 072)
+  ///
+  /// In en, this message translates to:
+  /// **'A cancellation is already in process for this document. Check its status.'**
+  String get apiErrorFiscalDocumentCancellationOpen;
+
+  /// mbe-api error code `fiscal_document.has_live_documents` (spec 072)
+  ///
+  /// In en, this message translates to:
+  /// **'It can\'t be cancelled: cancel the documents that depend on it first: {documents}.'**
+  String apiErrorFiscalDocumentHasLiveDocuments(String documents);
+
+  /// mbe-api error code `fiscal_document.not_cancellable` (spec 072)
+  ///
+  /// In en, this message translates to:
+  /// **'SAT says this document cannot be cancelled.'**
+  String get apiErrorFiscalDocumentNotCancellable;
+
+  /// mbe-api error code `fiscal_document.nothing_to_refresh` (spec 072)
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is in process for this document: it has already been resolved.'**
+  String get apiErrorFiscalDocumentNothingToRefresh;
+
+  /// mbe-api error code `fiscal_document.stamping` (spec 072)
+  ///
+  /// In en, this message translates to:
+  /// **'This document is being stamped. Check its status in a few minutes.'**
+  String get apiErrorFiscalDocumentStamping;
+
+  /// mbe-api error code `fiscal_document.substitution_invalid` (spec 072)
+  ///
+  /// In en, this message translates to:
+  /// **'The replacement document is not valid: it must be stamped, live, and have the same issuer and recipient.'**
+  String get apiErrorFiscalDocumentSubstitutionInvalid;
+
+  /// mbe-api error code `fiscal_document.substitution_required` (spec 072)
+  ///
+  /// In en, this message translates to:
+  /// **'Reason 01 requires the document that replaces the cancelled one.'**
+  String get apiErrorFiscalDocumentSubstitutionRequired;
+
+  /// mbe-api error code `fiscal_document.unknown_cancellation_reason` (spec 072)
+  ///
+  /// In en, this message translates to:
+  /// **'The cancellation reason \"{reason}\" is not valid.'**
+  String apiErrorFiscalDocumentUnknownCancellationReason(String reason);
+
+  /// mbe-api error code `pac.not_configured` (spec 072)
+  ///
+  /// In en, this message translates to:
+  /// **'This system has no PAC configured, so documents can\'t be stamped or cancelled.'**
+  String get apiErrorPacNotConfigured;
+
+  /// mbe-api error code `pac.rejected` (spec 072); the message is the PAC's own text, shown as written
+  ///
+  /// In en, this message translates to:
+  /// **'The PAC rejected the request: {code} · \"{message}\".'**
+  String apiErrorPacRejected(String code, String message);
+
+  /// mbe-api error code `pac.timeout` (spec 072)
+  ///
+  /// In en, this message translates to:
+  /// **'The PAC did not answer in time. The document is left in process; check its status.'**
+  String get apiErrorPacTimeout;
+
+  /// mbe-api error code `pac.unavailable` (spec 072)
+  ///
+  /// In en, this message translates to:
+  /// **'The PAC could not be reached. Nothing changed; try again.'**
+  String get apiErrorPacUnavailable;
 }
 
 class _AppLocalizationsDelegate

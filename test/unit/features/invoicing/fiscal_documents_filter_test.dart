@@ -23,6 +23,26 @@ void main() {
     expect(back, filter);
   });
 
+  test('each of the six states round-trips as its wire value (spec 072)', () {
+    for (final status in FiscalDocumentStatus.values) {
+      final filter = FiscalDocumentsFilter(status: status);
+      final query = filter.toQuery();
+      expect(query.facet('status'), status.wireName);
+      expect(FiscalDocumentsFilter.fromQuery(query).status, status);
+    }
+    expect(
+      FiscalDocumentsFilter(
+        status: FiscalDocumentStatus.cancellationPending,
+      ).toQuery().facet('status'),
+      'cancellation_pending',
+    );
+    // The camel-case enum name is not a wire value.
+    expect(
+      FiscalDocumentsFilter.fromQuery(q('status=cancellationPending')).status,
+      isNull,
+    );
+  });
+
   test('an unknown status is ignored; an unknown type code still applies', () {
     final f = FiscalDocumentsFilter.fromQuery(q('status=weird&type=7'));
     expect(f.status, isNull);

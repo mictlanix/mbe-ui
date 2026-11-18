@@ -30,11 +30,13 @@ void main() {
     'delivery_order.insufficient_notice',
     'delivery_order.quantity_exceeds_remaining',
     'facility.other_facility',
+    'fiscal_document.has_live_documents',
     'fiscal_document.line_missing_sat_key',
     'fiscal_document.line_quantity_not_positive',
     'fiscal_document.quantity_exceeds_invoiceable',
     'fiscal_document.series_missing',
     'fiscal_document.series_not_of_type',
+    'fiscal_document.unknown_cancellation_reason',
     'fiscal_document.unknown_usage',
     'fiscal_document.version_not_printable',
     'image.too_large',
@@ -44,6 +46,7 @@ void main() {
     'inventory_document.no_lines',
     'inventory_transfer.over_received',
     'kardex.range_too_long',
+    'pac.rejected',
     'payment.currency_mismatch',
     'payment.exceeds_order_balance',
     'payment.exceeds_unapplied',
@@ -113,7 +116,7 @@ void main() {
         missing.add(cells[1]);
       }
     }
-    expect(checked, 165);
+    expect(checked, 177);
     expect(missing, isEmpty);
   });
 

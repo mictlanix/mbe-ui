@@ -3,6 +3,7 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
@@ -26,15 +27,21 @@ import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/fact_strip_row.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart' show toAppError;
+import 'package:mbe_ui/core/widgets/status_chip.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/presentation/fiscal_document_kind_label.dart';
 import 'package:mbe_ui/features/invoicing/data/fiscal_document_repository_impl.dart';
 import 'package:mbe_ui/features/invoicing/presentation/add_product_dialog.dart';
 import 'package:mbe_ui/features/invoicing/presentation/add_relation_dialog.dart';
 import 'package:mbe_ui/features/invoicing/presentation/add_sales_order_dialog.dart';
+import 'package:mbe_ui/features/invoicing/presentation/cancel_fiscal_document_dialog.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_cancellation.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_document.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/sat_cancellation_reason.dart';
 import 'package:mbe_ui/features/invoicing/domain/xml_filename.dart';
+import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_actions.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_detail_controller.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_labels.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_refusal.dart';
@@ -202,6 +209,17 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
   /// action area. Cleared when the next action starts.
   AppError? _actionError;
 
+  /// The refusal, if it is the one `_stamp` got for a stale issue date: only
+  /// that refusal carries the "reopen, change the date" hint (spec 072 C24).
+  AppError? _stampDateRefusal;
+
+  /// A refresh is running: every button in the action row waits (FR-021).
+  bool _refreshing = false;
+
+  /// The last refresh succeeded and left the document in process (spec 072
+  /// C23): an informational note, not an error.
+  bool _stillInProcess = false;
+
   FiscalDocument get _document => widget.document;
 
   Future<void> _viewPdf() {
@@ -309,6 +327,105 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
     );
   }
 
+  Future<void> _stamp() async {
+    setState(() => _actionError = null);
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final id = _document.id;
+    final folio = _document.summary.folioLabel ?? '#$id';
+    final result = await showStampFiscalDocumentDialog(
+      context,
+      document: _document,
+    );
+    if (!mounted || result == null) return;
+    final error = result.error;
+    if (error != null) {
+      setState(() {
+        _actionError = error;
+        if (error.problem?.code ==
+            api.ErrorCode.fiscalDocumentPeriodIssueDateOutOfRange) {
+          _stampDateRefusal = error;
+        }
+      });
+      return;
+    }
+    // Whether the simulated PAC stamped it is in the reloaded document.
+    final stamped = await ref.read(fiscalDocumentDetailProvider(id).future);
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          stamped.stamp?.simulated ?? false
+              ? l10n.fiscalDocumentStampedSimulated(folio)
+              : l10n.fiscalDocumentStamped(folio),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _cancel() async {
+    setState(() => _actionError = null);
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final id = _document.id;
+    final result = await showCancelFiscalDocumentDialog(
+      context,
+      document: _document,
+    );
+    if (!mounted || result == null) return;
+    if (result.error != null) {
+      setState(() => _actionError = result.error);
+      return;
+    }
+    // Cancelled at once, or waiting for the receiver: the reloaded document
+    // says which.
+    final reloaded = await ref.read(fiscalDocumentDetailProvider(id).future);
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(
+          l10n.fiscalDocumentCancelSent(
+            fiscalDocumentStatusLabel(l10n, reloaded.status),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _refresh() async {
+    setState(() {
+      _actionError = null;
+      _stillInProcess = false;
+      _refreshing = true;
+    });
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final folio = _document.summary.folioLabel ?? '#${_document.id}';
+    // The server answers the document either way; a status that didn't move is
+    // the only sign that it is still in process.
+    final before = _document.status;
+    final result = await ref
+        .read(fiscalDocumentActionsProvider.notifier)
+        .refresh(_document.id);
+    if (!mounted) return;
+    setState(() {
+      _refreshing = false;
+      _actionError = result.error;
+      _stillInProcess = result.error == null && result.status == before;
+    });
+    final moved = result.status;
+    if (result.error == null && moved != null && moved != before) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            l10n.fiscalDocumentRefreshMoved(
+              folio,
+              fiscalDocumentStatusLabel(l10n, moved),
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
   Future<void> _addRelation() async {
     setState(() => _actionError = null);
     final l10n = AppLocalizations.of(context)!;
@@ -404,8 +521,8 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
     final access = ref.watch(accessControlProvider);
     final document = _document;
     final canRead = access.can(SystemObject.fiscalDocuments, AccessRight.read);
-    // A sealed document has no stamp, so the server refuses both files; only
-    // issued and cancelled documents offer them.
+    // A sealed or stamping document has no stamp yet, so the server refuses
+    // both files; issued, cancellation-pending and cancelled ones offer them.
     final offerFiles = canRead && document.hasDocuments;
     // Only a draft is editable, and only with FiscalDocuments (23) update.
     final canEdit =
@@ -421,6 +538,15 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
     final canReopen =
         document.canReopen &&
         access.can(SystemObject.fiscalDocuments, AccessRight.update);
+    // Stamping and cancelling need FiscalDocuments (23) update too, for any
+    // document type (spec 072 R2).
+    final canUpdateDocuments = access.can(
+      SystemObject.fiscalDocuments,
+      AccessRight.update,
+    );
+    final canStamp = document.canStamp && canUpdateDocuments;
+    final canRefresh = document.canRefresh && canUpdateDocuments;
+    final canCancel = document.canCancel && canUpdateDocuments;
     // A manual line needs StandaloneFiscalDocuments (56) create.
     final canAddProduct =
         canEdit &&
@@ -452,9 +578,28 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
               onAdd: canEdit ? _addRelation : null,
               onRemove: canEdit ? _removeRelation : null,
             ),
+          if (document.cancellations.isNotEmpty)
+            _CancellationsSection(document: document),
           InvoiceTotals(document: document),
-          if (_actionError != null) FiscalDocumentRefusal(error: _actionError!),
-          if (offerFiles || canReopen || canEdit)
+          if (_stillInProcess && document.canRefresh)
+            FiscalDocumentNotice(
+              key: const Key('fiscal_document_still_in_process'),
+              message: l10n.fiscalDocumentStillInProcess,
+              onDismissed: () => setState(() => _stillInProcess = false),
+            ),
+          if (_actionError != null)
+            FiscalDocumentRefusal(
+              error: _actionError!,
+              hint: identical(_actionError, _stampDateRefusal)
+                  ? l10n.fiscalDocumentStampIssueDateHint
+                  : null,
+            ),
+          if (offerFiles ||
+              canCancel ||
+              canReopen ||
+              canEdit ||
+              canStamp ||
+              canRefresh)
             Align(
               key: const Key('fiscal_document_actions'),
               alignment: AlignmentDirectional.centerEnd,
@@ -466,29 +611,59 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
                   if (offerFiles) ...[
                     OutlinedButton.icon(
                       key: const Key('fiscal_document_view_pdf'),
-                      onPressed: _viewPdf,
+                      onPressed: _refreshing ? null : _viewPdf,
                       icon: const Icon(Icons.picture_as_pdf_outlined),
                       label: Text(l10n.fiscalDocumentViewPdf),
                     ),
                     OutlinedButton.icon(
                       key: const Key('fiscal_document_download_xml'),
-                      onPressed: _downloadingXml ? null : _downloadXml,
+                      onPressed: _downloadingXml || _refreshing
+                          ? null
+                          : _downloadXml,
                       icon: const Icon(Icons.download_outlined),
                       label: Text(l10n.fiscalDocumentDownloadXml),
                     ),
                   ],
+                  if (canCancel)
+                    OutlinedButton(
+                      key: const Key('fiscal_document_cancel_cfdi'),
+                      onPressed: _cancel,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Theme.of(context).colorScheme.error,
+                      ),
+                      child: Text(l10n.fiscalDocumentCancelCfdiAction),
+                    ),
                   if (canReopen)
                     OutlinedButton(
                       key: const Key('fiscal_document_reopen'),
                       onPressed: _reopen,
                       child: Text(l10n.fiscalDocumentReopenAction),
                     ),
-                  // The primary action goes last.
+                  // The primary action goes last. The states are exclusive, so
+                  // at most one of these applies.
                   if (canEdit)
                     FilledButton(
                       key: const Key('fiscal_document_confirm'),
                       onPressed: _confirm,
                       child: Text(l10n.fiscalDocumentConfirmAction),
+                    ),
+                  if (canStamp)
+                    FilledButton(
+                      key: const Key('fiscal_document_stamp'),
+                      onPressed: _stamp,
+                      child: Text(l10n.fiscalDocumentStampAction),
+                    ),
+                  if (canRefresh)
+                    FilledButton.icon(
+                      key: const Key('fiscal_document_refresh'),
+                      onPressed: _refreshing ? null : _refresh,
+                      icon: _refreshing
+                          ? const SizedBox.square(
+                              dimension: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.refresh),
+                      label: Text(l10n.fiscalDocumentRefreshAction),
                     ),
                 ],
               ),
@@ -499,8 +674,8 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
   }
 }
 
-/// At most one banner: cancelled, sealed (stamping isn't available yet), or a
-/// type this screen only reads.
+/// At most one banner: cancelled, a stamp or cancellation in process, sealed
+/// (what to do next), or a type this screen only reads (spec 072 C16).
 class _StatusBanner extends ConsumerWidget {
   const _StatusBanner({required this.document});
 
@@ -510,15 +685,41 @@ class _StatusBanner extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final fmt = ref.watch(formattersProvider);
-    final String? text;
+    // The advice in a banner ("stamp it", "check it now") is only for a user
+    // who can do it (FiscalDocuments (23) update).
+    final canUpdate = ref
+        .watch(accessControlProvider)
+        .can(SystemObject.fiscalDocuments, AccessRight.update);
+    final String text;
     final String key;
+    final waiting =
+        document.status == FiscalDocumentStatus.stamping ||
+        document.status == FiscalDocumentStatus.cancellationPending;
     if (document.status == FiscalDocumentStatus.cancelled) {
       text = l10n.fiscalDocumentBannerCancelled(
         fmt.display.date(document.cancellationDate),
       );
       key = 'cancelled';
-    } else if (document.canReopen) {
-      text = l10n.fiscalDocumentBannerSealed;
+    } else if (document.status == FiscalDocumentStatus.cancellationPending) {
+      final requested = document.openCancellation?.requestedAt;
+      text = requested == null
+          ? l10n.fiscalDocumentBannerCancellationPendingNoDate
+          : l10n.fiscalDocumentBannerCancellationPending(
+              fmt.display.dateTime(requested),
+            );
+      key = 'cancellation_pending';
+    } else if (document.status == FiscalDocumentStatus.stamping) {
+      final since = fmt.display.dateTime(document.stampingSince);
+      text = canUpdate
+          ? l10n.fiscalDocumentBannerStamping(since)
+          : l10n.fiscalDocumentBannerStampingNoRefresh(since);
+      key = 'stamping';
+    } else if (document.status == FiscalDocumentStatus.sealed) {
+      text = !canUpdate
+          ? l10n.fiscalDocumentBannerSealed
+          : document.isInvoice
+          ? l10n.fiscalDocumentBannerSealedStampOrReopen
+          : l10n.fiscalDocumentBannerSealedStamp;
       key = 'sealed';
     } else if (!document.isInvoice) {
       text = l10n.fiscalDocumentBannerReadOnlyKind;
@@ -529,6 +730,11 @@ class _StatusBanner extends ConsumerWidget {
     final theme = Theme.of(context);
     final colors = document.status == FiscalDocumentStatus.cancelled
         ? (theme.colorScheme.errorContainer, theme.colorScheme.onErrorContainer)
+        : waiting
+        ? (
+            theme.colorScheme.tertiaryContainer,
+            theme.colorScheme.onTertiaryContainer,
+          )
         : (
             theme.colorScheme.primaryContainer,
             theme.colorScheme.onPrimaryContainer,
@@ -542,7 +748,10 @@ class _StatusBanner extends ConsumerWidget {
         child: Row(
           spacing: theme.spacing.sm,
           children: [
-            Icon(Icons.info_outline, color: colors.$2),
+            Icon(
+              waiting ? Icons.hourglass_top_outlined : Icons.info_outline,
+              color: colors.$2,
+            ),
             Expanded(
               child: Text(text, style: TextStyle(color: colors.$2)),
             ),
@@ -619,7 +828,24 @@ class _HeaderFacts extends ConsumerWidget {
             ),
             CompactField(
               label: l10n.fiscalDocumentColStatus,
-              child: FiscalDocumentStatusChip(status: document.status),
+              child: Wrap(
+                spacing: spacing.sm,
+                runSpacing: spacing.xs,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  FiscalDocumentStatusChip(status: document.status),
+                  // Stamped by the simulated PAC (dev and test only): it has
+                  // no fiscal validity, whatever its state (spec 072 FR-008).
+                  if (document.stamp?.simulated ?? false)
+                    StatusChip<String>(
+                      key: const Key('fiscal_document_simulated_badge'),
+                      value: 'simulated',
+                      label: l10n.fiscalDocumentSimulatedBadge,
+                      colors: (scheme) =>
+                          (scheme.errorContainer, scheme.onErrorContainer),
+                    ),
+                ],
+              ),
             ),
             CompactField(
               label: l10n.fiscalDocumentColType,
@@ -711,6 +937,26 @@ class _HeaderFacts extends ConsumerWidget {
               fact(
                 l10n.fiscalDocumentFactStamped,
                 fmt.display.dateTime(document.stamped),
+                key: const ValueKey('fiscal_document_stamped'),
+              ),
+            // A legacy stamp may lack either; the placeholder says so.
+            if (document.stamp case final stamp?) ...[
+              fact(
+                l10n.fiscalDocumentFactSatCertificate,
+                stamp.satCertificate,
+                key: const ValueKey('fiscal_document_sat_certificate'),
+              ),
+              fact(
+                l10n.fiscalDocumentFactProviderRfc,
+                stamp.providerRfc,
+                key: const ValueKey('fiscal_document_provider_rfc'),
+              ),
+            ],
+            if (document.cancellationSubstitution != null)
+              fact(
+                l10n.fiscalDocumentFactSubstitution,
+                document.cancellationSubstitution,
+                key: const ValueKey('fiscal_document_substitution'),
               ),
           ],
         ),
@@ -976,6 +1222,163 @@ class _LinesSection extends ConsumerWidget {
     );
   }
 }
+
+/// Every cancellation request, newest first as the server sends them (spec 072
+/// C19): the reason, how it ended, who asked and when, SAT's answer, and the
+/// PAC's code and message exactly as the PAC wrote them.
+class _CancellationsSection extends ConsumerWidget {
+  const _CancellationsSection({required this.document});
+
+  final FiscalDocument document;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final spacing = theme.spacing;
+    final fmt = ref.watch(formattersProvider);
+
+    String reasonLine(FiscalCancellation c) {
+      final reason = SatCancellationReason.fromCode(c.reason);
+      return switch (reason) {
+        null => c.reason,
+        SatCancellationReason.withRelation =>
+          '${c.reason} ${l10n.fiscalDocumentCancelReason01}',
+        SatCancellationReason.withoutRelation =>
+          '${c.reason} ${l10n.fiscalDocumentCancelReason02}',
+        SatCancellationReason.notCarriedOut =>
+          '${c.reason} ${l10n.fiscalDocumentCancelReason03}',
+        SatCancellationReason.globalInvoiceNominative =>
+          '${c.reason} ${l10n.fiscalDocumentCancelReason04}',
+      };
+    }
+
+    return Column(
+      key: const Key('fiscal_document_cancellations'),
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: spacing.sm,
+      children: [
+        Text(
+          l10n.fiscalDocumentCancellationsTitle,
+          style: theme.textTheme.titleMedium,
+        ),
+        for (final c in document.cancellations)
+          Padding(
+            key: Key('fiscal_document_cancellation_${c.id}'),
+            padding: EdgeInsets.symmetric(vertical: spacing.xs),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: spacing.xs,
+              children: [
+                Wrap(
+                  spacing: spacing.md,
+                  runSpacing: spacing.xs,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Text(reasonLine(c)),
+                    StatusChip<CancellationOutcome>(
+                      key: Key('fiscal_document_cancellation_outcome_${c.id}'),
+                      value: c.outcome,
+                      label: _outcomeLabel(l10n, c),
+                      colors: (scheme) => _outcomeColors(scheme, c.outcome),
+                    ),
+                  ],
+                ),
+                if (c.substitution != null)
+                  Text(
+                    '${l10n.fiscalDocumentFactSubstitution}: ${c.substitution}',
+                    style: theme.textTheme.bodySmall,
+                  ),
+                Wrap(
+                  spacing: spacing.md,
+                  runSpacing: spacing.xs,
+                  children: [
+                    Text(
+                      l10n.fiscalDocumentCancellationRequestedBy(
+                        ref
+                                .watch(
+                                  employeeDisplayNameProvider(c.requestedBy),
+                                )
+                                .value ??
+                            '#${c.requestedBy}',
+                        fmt.display.dateTime(c.requestedAt),
+                      ),
+                    ),
+                    Text(
+                      l10n.fiscalDocumentCancellationAnswered(
+                        fmt.display.dateTime(c.answeredAt),
+                      ),
+                    ),
+                    Text(
+                      l10n.fiscalDocumentCancellationResolved(
+                        fmt.display.dateTime(c.resolvedAt),
+                      ),
+                    ),
+                  ],
+                ),
+                // The PAC's own words, never ours: the clerk may need to quote
+                // them to SAT (spec 072 FR-019).
+                if (c.pacCode != null || c.pacMessage != null)
+                  Text(
+                    l10n.fiscalDocumentCancellationPac(
+                      [
+                        ?c.pacCode,
+                        if (c.pacMessage != null) '«${c.pacMessage}»',
+                      ].join(' · '),
+                    ),
+                    key: Key('fiscal_document_cancellation_pac_${c.id}'),
+                    style: theme.textTheme.bodySmall,
+                  ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+String _outcomeLabel(
+  AppLocalizations l10n,
+  FiscalCancellation c,
+) => switch (c.outcome) {
+  CancellationOutcome.requested =>
+    l10n.fiscalDocumentCancellationOutcomeRequested,
+  CancellationOutcome.pending => l10n.fiscalDocumentCancellationOutcomePending,
+  CancellationOutcome.accepted =>
+    l10n.fiscalDocumentCancellationOutcomeAccepted,
+  CancellationOutcome.expired => l10n.fiscalDocumentCancellationOutcomeExpired,
+  CancellationOutcome.rejected =>
+    l10n.fiscalDocumentCancellationOutcomeRejected,
+  CancellationOutcome.notCancellable =>
+    l10n.fiscalDocumentCancellationOutcomeNotCancellable,
+  CancellationOutcome.failed => l10n.fiscalDocumentCancellationOutcomeFailed,
+  CancellationOutcome.unknown => l10n.fiscalDocumentCancellationOutcomeUnknown(
+    c.rawOutcome,
+  ),
+};
+
+/// Open requests are "waiting", ones that ended in a cancellation are the
+/// cancelled colour, and the ones that didn't are neutral (research R10).
+(Color, Color) _outcomeColors(
+  ColorScheme scheme,
+  CancellationOutcome outcome,
+) => switch (outcome) {
+  CancellationOutcome.requested || CancellationOutcome.pending => (
+    scheme.tertiaryContainer,
+    scheme.onTertiaryContainer,
+  ),
+  CancellationOutcome.accepted || CancellationOutcome.expired => (
+    scheme.errorContainer,
+    scheme.onErrorContainer,
+  ),
+  CancellationOutcome.rejected ||
+  CancellationOutcome.notCancellable ||
+  CancellationOutcome.failed ||
+  CancellationOutcome.unknown => (
+    scheme.surfaceContainerHighest,
+    scheme.onSurface,
+  ),
+};
 
 /// The related documents: type, folio and UUID, with add and remove on an
 /// editable draft (each `null` callback hides its control, contracts C9).

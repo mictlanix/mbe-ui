@@ -37,13 +37,11 @@ abstract class FiscalDocumentsFilter with _$FiscalDocumentsFilter {
       to = null;
     }
     final search = query.search.trim();
-    final statusName = query.facet('status');
+    final statusWire = query.facet('status');
     final issuer = query.facet('issuer')?.trim();
     return FiscalDocumentsFilter(
       search: search.isEmpty ? null : search,
-      status: FiscalDocumentStatus.values
-          .where((s) => s.name == statusName)
-          .firstOrNull,
+      status: FiscalDocumentStatus.fromWire(statusWire),
       kind: int.tryParse(query.facet('type') ?? ''),
       issuerRfc: issuer == null || issuer.isEmpty ? null : issuer,
       from: from,
@@ -54,7 +52,7 @@ abstract class FiscalDocumentsFilter with _$FiscalDocumentsFilter {
 
   /// This filter as a URL query, facets in their canonical order.
   ListQuery toQuery() => ListQuery(search: search ?? '', pageIndex: pageIndex)
-      .withFacet('status', status?.name)
+      .withFacet('status', status?.wireName)
       .withFacet('type', kind?.toString())
       .withFacet('issuer', issuerRfc)
       .withFacet('from', from == null ? null : encodePaymentsDateFacet(from!))
