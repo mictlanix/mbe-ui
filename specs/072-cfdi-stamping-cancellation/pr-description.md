@@ -83,7 +83,22 @@ Every action is absent, never disabled, without its right or outside its state.
   - refresh: still in process, resolved, `nothing_to_refresh`, buttons waiting while it runs;
   - the history at regular and compact width;
   - the extracted picker.
-- **Live (`test/integration/fiscal_documents_live_test.dart`): written, not run.** The new test, *Stamp, cancel and refresh against the simulated PAC*, needs `MBE_WRITE=true` and a backend with `PAC_PROVIDER=simulated`. It seals and stamps four invoices, which uses four folios on the tenant. It is skipped without credentials and without `MBE_WRITE=true`.
+- **Live, spec 072 (`test/integration/fiscal_documents_live_test.dart`, local mbe-api on the dev database, `PAC_PROVIDER=simulated`): 11 passed.**
+  - **A** (A5246): seal, then stamp: issued with a simulated stamp; a second stamp is a no-op. Cancel with 02, accepted at once: cancelled.
+  - **B** (A5247): the stamp times out, so the document is stamping; refresh: issued. Cancel pending, then refresh while nobody has answered: still pending. The receiver rejects, refresh: issued again with a rejected entry. Cancel again, the receiver accepts, refresh: cancelled, with both entries newest first.
+  - **C/D** (A5248/A5249): D cancelled with 01 naming C's UUID, and the substitute is recorded.
+  - **E** (A5250): 01 with no substitute is refused with `fiscal_document.substitution_required`.
+  - The list filters correctly by each of the six states.
+  - The first run failed D and E while *building* their invoices, not in the flow under test. All invoices came from one sales order, and a stamped live invoice holds what it took. The test now takes each invoice from a completed order that still has something to invoice.
+- **Live, spec 066 (same run): 18 passed, 1 failed**, the search by recipient RFC. This is a pre-existing mbe-api bug, not this branch:
+  - `classify_search` reads anything matching letters followed by digits as series+folio, so the generic RFC `XAXX010101000` becomes series `XAXX`, folio 10101000, and finds nothing.
+  - It surfaced now because the newest issued invoice (A5241) is for the general public. Spec 066's run used legacy GR4776, whose RFC has letters in the homoclave.
+  - Searching the same invoice by series+folio and by UUID finds it.
+- **Left on the dev tenant by these runs:**
+  - Folios A5242–A5250 consumed.
+  - Issued and live: A5245 (#63920), A5248 (#63925), A5250 (#63927).
+  - Cancelled: #63918, #63919, #63923, #63924, #63926.
+  - Drafts: #63916 (A5242, reopened by the 066 flow), and #63917, #63921 and #63922 (empty).
 
 ## Manual checks (quickstart.md)
 

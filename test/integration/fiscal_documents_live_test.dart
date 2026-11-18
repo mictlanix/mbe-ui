@@ -49,8 +49,9 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 ///
 /// **Spec 072** adds a second test, `Stamp, cancel and refresh against the
 /// simulated PAC`, which runs only with `MBE_WRITE=true` and against a backend
-/// whose `PAC_PROVIDER=simulated` (dev and test). It seals **four** invoices
-/// (four folios) and stamps them. It drives the simulator through the
+/// whose `PAC_PROVIDER=simulated` (dev and test). It seals **five** invoices
+/// (five folios) and stamps them, each from a completed order that still has
+/// something to invoice. It drives the simulator through the
 /// generated `PacSimulatorApi`, which only this test uses: stamp, stamp that
 /// times out but did stamp then refresh, cancel accepted, cancel pending with
 /// the receiver rejecting and then accepting, and cancel with reason 01 naming
@@ -574,40 +575,63 @@ void main() {
             receiverAnswer: api.ReceiverAnswer((b) => b..answer = answer),
           );
 
-      // One customer, one RFC and one completed order feed every invoice.
+      // One customer and RFC feed every invoice. A stamped invoice holds what
+      // it took from an order, so each invoice may need another order: keep
+      // every completed order of that customer as a candidate.
       final orders = SalesOrderRepositoryImpl(dio);
       final customers = CustomerRepositoryImpl(dio);
       int? customerId;
       String? rfc;
-      int? orderId;
+      final orderIds = <int>[];
       await step(
-        'discover a customer with an RFC and a completed order',
+        'discover a customer with an RFC and completed orders',
         () async {
           final page = await orders.listOrders(
             status: SaleStatus.completed,
-            limit: 40,
+            limit: 100,
           );
           for (final o in page.items) {
             final sale = await orders.getById(saleId: o.id);
-            final customer = await customers.get(customerId: sale.customer);
-            if (customer.taxpayers.isNotEmpty) {
+            if (customerId == null) {
+              final customer = await customers.get(customerId: sale.customer);
+              if (customer.taxpayers.isEmpty) continue;
               customerId = sale.customer;
               rfc = customer.taxpayers.first.taxpayerRecipientId;
-              orderId = o.id;
-              return 'customer $customerId, RFC $rfc, order $orderId';
             }
+            if (sale.customer == customerId) orderIds.add(o.id);
           }
-          throw StateError('no completed order whose customer has an RFC');
+          if (customerId == null) {
+            throw StateError('no completed order whose customer has an RFC');
+          }
+          return 'customer $customerId, RFC $rfc, ${orderIds.length} orders';
         },
       );
 
-      /// A new invoice sealed from the order. A catalog product with no SAT key
-      /// is dropped once (tenant data, not the flow under test).
+      /// A new invoice sealed from the first candidate order that still has
+      /// something to invoice. A catalog product with no SAT key is dropped
+      /// once (tenant data, not the flow under test).
       Future<FiscalDocument> sealed() async {
         var draft = await docs.create(
           NewInvoice(customerId: customerId!, recipientRfc: rfc!),
         );
-        draft = await docs.addSalesOrder(draft.id, orderId!);
+        var added = false;
+        for (final id in orderIds) {
+          try {
+            draft = await docs.addSalesOrder(draft.id, id);
+            added = true;
+            break;
+          } on AppError catch (e) {
+            if (e.problem?.codeName != 'fiscal_document.no_invoiceable_lines') {
+              rethrow;
+            }
+          }
+        }
+        if (!added) {
+          throw StateError(
+            'none of the ${orderIds.length} orders has anything left to '
+            'invoice (draft #${draft.id} left empty)',
+          );
+        }
         try {
           return await docs.confirm(draft.id);
         } on AppError catch (e) {
