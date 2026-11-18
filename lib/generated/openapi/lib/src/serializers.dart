@@ -197,9 +197,12 @@ import 'package:mbe_api_client/src/model/facility_type.dart';
 import 'package:mbe_api_client/src/model/facility_update.dart';
 import 'package:mbe_api_client/src/model/family.dart';
 import 'package:mbe_api_client/src/model/fiscal_certification_provider.dart';
+import 'package:mbe_api_client/src/model/fiscal_document_cancel_request.dart';
+import 'package:mbe_api_client/src/model/fiscal_document_cancellation_response.dart';
 import 'package:mbe_api_client/src/model/fiscal_document_line.dart';
 import 'package:mbe_api_client/src/model/fiscal_document_relation_response.dart';
 import 'package:mbe_api_client/src/model/fiscal_document_response.dart';
+import 'package:mbe_api_client/src/model/fiscal_document_stamp.dart';
 import 'package:mbe_api_client/src/model/fiscal_document_summary.dart';
 import 'package:mbe_api_client/src/model/fiscal_document_type.dart';
 import 'package:mbe_api_client/src/model/fiscal_email_request.dart';
@@ -311,6 +314,8 @@ import 'package:mbe_api_client/src/model/order_line_add.dart';
 import 'package:mbe_api_client/src/model/order_line_update.dart';
 import 'package:mbe_api_client/src/model/order_origin.dart';
 import 'package:mbe_api_client/src/model/outstanding_order_response.dart';
+import 'package:mbe_api_client/src/model/pac_simulation_response.dart';
+import 'package:mbe_api_client/src/model/pac_simulation_update.dart';
 import 'package:mbe_api_client/src/model/paid_invoice_add.dart';
 import 'package:mbe_api_client/src/model/paid_invoice_response.dart';
 import 'package:mbe_api_client/src/model/paid_invoice_update.dart';
@@ -396,6 +401,7 @@ import 'package:mbe_api_client/src/model/rate1.dart';
 import 'package:mbe_api_client/src/model/reason_request.dart';
 import 'package:mbe_api_client/src/model/receipt_create.dart';
 import 'package:mbe_api_client/src/model/receipt_update.dart';
+import 'package:mbe_api_client/src/model/receiver_answer.dart';
 import 'package:mbe_api_client/src/model/recover_password_admin_response.dart';
 import 'package:mbe_api_client/src/model/refund_payout.dart';
 import 'package:mbe_api_client/src/model/reject_request.dart';
@@ -682,9 +688,12 @@ part 'serializers.g.dart';
   FacilityUpdate,
   Family,
   FiscalCertificationProvider,
+  FiscalDocumentCancelRequest,
+  FiscalDocumentCancellationResponse,
   FiscalDocumentLine,
   FiscalDocumentRelationResponse,
   FiscalDocumentResponse,
+  FiscalDocumentStamp,
   FiscalDocumentSummary,
   FiscalDocumentType,
   FiscalEmailRequest,
@@ -796,6 +805,8 @@ part 'serializers.g.dart';
   OrderLineUpdate,
   OrderOrigin,
   OutstandingOrderResponse,
+  PacSimulationResponse,
+  PacSimulationUpdate,
   PaidInvoiceAdd,
   PaidInvoiceResponse,
   PaidInvoiceUpdate,
@@ -881,6 +892,7 @@ part 'serializers.g.dart';
   ReasonRequest,
   ReceiptCreate,
   ReceiptUpdate,
+  ReceiverAnswer,
   RecoverPasswordAdminResponse,
   RefundPayout,
   RejectRequest,
@@ -1103,6 +1115,12 @@ Serializers serializers =
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(MeasureKey)]),
             () => ListBuilder<MeasureKey>(),
+          )
+          ..addBuilderFactory(
+            const FullType(BuiltList, [
+              FullType(FiscalDocumentCancellationResponse),
+            ]),
+            () => ListBuilder<FiscalDocumentCancellationResponse>(),
           )
           ..addBuilderFactory(
             const FullType(BuiltList, [FullType(ToPurchaseGroup)]),

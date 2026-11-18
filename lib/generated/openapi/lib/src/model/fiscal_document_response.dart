@@ -3,10 +3,12 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:mbe_api_client/src/model/fiscal_document_cancellation_response.dart';
 import 'package:mbe_api_client/src/model/date.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:mbe_api_client/src/model/paid_invoice_response.dart';
 import 'package:mbe_api_client/src/model/fiscal_document_relation_response.dart';
+import 'package:mbe_api_client/src/model/fiscal_document_stamp.dart';
 import 'package:mbe_api_client/src/model/fiscal_document_line.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -53,6 +55,10 @@ part 'fiscal_document_response.g.dart';
 /// * [lines]
 /// * [relations]
 /// * [paidInvoices]
+/// * [stamp]
+/// * [stampingSince] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
+/// * [cancellationSubstitution]
+/// * [cancellations]
 @BuiltValue()
 abstract class FiscalDocumentResponse
     implements Built<FiscalDocumentResponse, FiscalDocumentResponseBuilder> {
@@ -92,7 +98,7 @@ abstract class FiscalDocumentResponse
 
   @BuiltValueField(wireName: r'status')
   FiscalDocumentResponseStatusEnum get status;
-  // enum statusEnum {  draft,  sealed,  issued,  cancelled,  };
+  // enum statusEnum {  draft,  sealed,  stamping,  issued,  cancellation_pending,  cancelled,  };
 
   @BuiltValueField(wireName: r'total')
   String? get total;
@@ -171,6 +177,19 @@ abstract class FiscalDocumentResponse
   @BuiltValueField(wireName: r'paid_invoices')
   BuiltList<PaidInvoiceResponse>? get paidInvoices;
 
+  @BuiltValueField(wireName: r'stamp')
+  FiscalDocumentStamp? get stamp;
+
+  /// Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
+  @BuiltValueField(wireName: r'stamping_since')
+  DateTime? get stampingSince;
+
+  @BuiltValueField(wireName: r'cancellation_substitution')
+  String? get cancellationSubstitution;
+
+  @BuiltValueField(wireName: r'cancellations')
+  BuiltList<FiscalDocumentCancellationResponse>? get cancellations;
+
   FiscalDocumentResponse._();
 
   factory FiscalDocumentResponse([
@@ -180,7 +199,8 @@ abstract class FiscalDocumentResponse
   @BuiltValueHook(initializeBuilder: true)
   static void _defaults(FiscalDocumentResponseBuilder b) => b
     ..relations = ListBuilder()
-    ..paidInvoices = ListBuilder();
+    ..paidInvoices = ListBuilder()
+    ..cancellations = ListBuilder();
 
   @BuiltValueSerializer(custom: true)
   static Serializer<FiscalDocumentResponse> get serializer =>
@@ -441,6 +461,36 @@ class _$FiscalDocumentResponseSerializer
         object.paidInvoices,
         specifiedType: const FullType(BuiltList, [
           FullType(PaidInvoiceResponse),
+        ]),
+      );
+    }
+    if (object.stamp != null) {
+      yield r'stamp';
+      yield serializers.serialize(
+        object.stamp,
+        specifiedType: const FullType.nullable(FiscalDocumentStamp),
+      );
+    }
+    if (object.stampingSince != null) {
+      yield r'stamping_since';
+      yield serializers.serialize(
+        object.stampingSince,
+        specifiedType: const FullType.nullable(DateTime),
+      );
+    }
+    if (object.cancellationSubstitution != null) {
+      yield r'cancellation_substitution';
+      yield serializers.serialize(
+        object.cancellationSubstitution,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.cancellations != null) {
+      yield r'cancellations';
+      yield serializers.serialize(
+        object.cancellations,
+        specifiedType: const FullType(BuiltList, [
+          FullType(FiscalDocumentCancellationResponse),
         ]),
       );
     }
@@ -823,6 +873,48 @@ class _$FiscalDocumentResponseSerializer
           if (valueDes == null) continue;
           result.paidInvoices.replace(valueDes);
           break;
+        case r'stamp':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(FiscalDocumentStamp),
+                  )
+                  as FiscalDocumentStamp?;
+          if (valueDes == null) continue;
+          result.stamp.replace(valueDes);
+          break;
+        case r'stamping_since':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(DateTime),
+                  )
+                  as DateTime?;
+          if (valueDes == null) continue;
+          result.stampingSince = valueDes;
+          break;
+        case r'cancellation_substitution':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.cancellationSubstitution = valueDes;
+          break;
+        case r'cancellations':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(BuiltList, [
+                      FullType(FiscalDocumentCancellationResponse),
+                    ]),
+                  )
+                  as BuiltList<FiscalDocumentCancellationResponse>?;
+          if (valueDes == null) continue;
+          result.cancellations.replace(valueDes);
+          break;
         default:
           unhandled.add(key);
           unhandled.add(value);
@@ -859,9 +951,15 @@ class FiscalDocumentResponseStatusEnum extends EnumClass {
   @BuiltValueEnumConst(wireName: r'sealed')
   static const FiscalDocumentResponseStatusEnum sealed_ =
       _$fiscalDocumentResponseStatusEnum_sealed_;
+  @BuiltValueEnumConst(wireName: r'stamping')
+  static const FiscalDocumentResponseStatusEnum stamping =
+      _$fiscalDocumentResponseStatusEnum_stamping;
   @BuiltValueEnumConst(wireName: r'issued')
   static const FiscalDocumentResponseStatusEnum issued =
       _$fiscalDocumentResponseStatusEnum_issued;
+  @BuiltValueEnumConst(wireName: r'cancellation_pending')
+  static const FiscalDocumentResponseStatusEnum cancellationPending =
+      _$fiscalDocumentResponseStatusEnum_cancellationPending;
   @BuiltValueEnumConst(wireName: r'cancelled')
   static const FiscalDocumentResponseStatusEnum cancelled =
       _$fiscalDocumentResponseStatusEnum_cancelled;

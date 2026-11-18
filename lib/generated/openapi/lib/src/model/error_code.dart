@@ -268,6 +268,9 @@ class ErrorCode extends EnumClass {
   @BuiltValueEnumConst(wireName: r'fiscal_document.amounts_not_equal_payment')
   static const ErrorCode fiscalDocumentPeriodAmountsNotEqualPayment =
       _$fiscalDocumentPeriodAmountsNotEqualPayment;
+  @BuiltValueEnumConst(wireName: r'fiscal_document.cancellation_open')
+  static const ErrorCode fiscalDocumentPeriodCancellationOpen =
+      _$fiscalDocumentPeriodCancellationOpen;
   @BuiltValueEnumConst(wireName: r'fiscal_document.certificate_cannot_sign')
   static const ErrorCode fiscalDocumentPeriodCertificateCannotSign =
       _$fiscalDocumentPeriodCertificateCannotSign;
@@ -282,6 +285,9 @@ class ErrorCode extends EnumClass {
   @BuiltValueEnumConst(wireName: r'fiscal_document.field_not_for_type')
   static const ErrorCode fiscalDocumentPeriodFieldNotForType =
       _$fiscalDocumentPeriodFieldNotForType;
+  @BuiltValueEnumConst(wireName: r'fiscal_document.has_live_documents')
+  static const ErrorCode fiscalDocumentPeriodHasLiveDocuments =
+      _$fiscalDocumentPeriodHasLiveDocuments;
   @BuiltValueEnumConst(wireName: r'fiscal_document.invoice_already_on_receipt')
   static const ErrorCode fiscalDocumentPeriodInvoiceAlreadyOnReceipt =
       _$fiscalDocumentPeriodInvoiceAlreadyOnReceipt;
@@ -312,6 +318,9 @@ class ErrorCode extends EnumClass {
   @BuiltValueEnumConst(wireName: r'fiscal_document.no_valid_certificate')
   static const ErrorCode fiscalDocumentPeriodNoValidCertificate =
       _$fiscalDocumentPeriodNoValidCertificate;
+  @BuiltValueEnumConst(wireName: r'fiscal_document.not_cancellable')
+  static const ErrorCode fiscalDocumentPeriodNotCancellable =
+      _$fiscalDocumentPeriodNotCancellable;
   @BuiltValueEnumConst(wireName: r'fiscal_document.not_draft')
   static const ErrorCode fiscalDocumentPeriodNotDraft =
       _$fiscalDocumentPeriodNotDraft;
@@ -327,6 +336,9 @@ class ErrorCode extends EnumClass {
   @BuiltValueEnumConst(wireName: r'fiscal_document.not_stamped')
   static const ErrorCode fiscalDocumentPeriodNotStamped =
       _$fiscalDocumentPeriodNotStamped;
+  @BuiltValueEnumConst(wireName: r'fiscal_document.nothing_to_refresh')
+  static const ErrorCode fiscalDocumentPeriodNothingToRefresh =
+      _$fiscalDocumentPeriodNothingToRefresh;
   @BuiltValueEnumConst(wireName: r'fiscal_document.order_not_invoiceable')
   static const ErrorCode fiscalDocumentPeriodOrderNotInvoiceable =
       _$fiscalDocumentPeriodOrderNotInvoiceable;
@@ -377,9 +389,21 @@ class ErrorCode extends EnumClass {
   @BuiltValueEnumConst(wireName: r'fiscal_document.series_not_of_type')
   static const ErrorCode fiscalDocumentPeriodSeriesNotOfType =
       _$fiscalDocumentPeriodSeriesNotOfType;
+  @BuiltValueEnumConst(wireName: r'fiscal_document.stamping')
+  static const ErrorCode fiscalDocumentPeriodStamping =
+      _$fiscalDocumentPeriodStamping;
+  @BuiltValueEnumConst(wireName: r'fiscal_document.substitution_invalid')
+  static const ErrorCode fiscalDocumentPeriodSubstitutionInvalid =
+      _$fiscalDocumentPeriodSubstitutionInvalid;
+  @BuiltValueEnumConst(wireName: r'fiscal_document.substitution_required')
+  static const ErrorCode fiscalDocumentPeriodSubstitutionRequired =
+      _$fiscalDocumentPeriodSubstitutionRequired;
   @BuiltValueEnumConst(wireName: r'fiscal_document.type_not_supported')
   static const ErrorCode fiscalDocumentPeriodTypeNotSupported =
       _$fiscalDocumentPeriodTypeNotSupported;
+  @BuiltValueEnumConst(wireName: r'fiscal_document.unknown_cancellation_reason')
+  static const ErrorCode fiscalDocumentPeriodUnknownCancellationReason =
+      _$fiscalDocumentPeriodUnknownCancellationReason;
   @BuiltValueEnumConst(wireName: r'fiscal_document.unknown_facility')
   static const ErrorCode fiscalDocumentPeriodUnknownFacility =
       _$fiscalDocumentPeriodUnknownFacility;
@@ -486,6 +510,14 @@ class ErrorCode extends EnumClass {
   static const ErrorCode kardexPeriodRangeTooLong = _$kardexPeriodRangeTooLong;
   @BuiltValueEnumConst(wireName: r'lock.busy')
   static const ErrorCode lockPeriodBusy = _$lockPeriodBusy;
+  @BuiltValueEnumConst(wireName: r'pac.not_configured')
+  static const ErrorCode pacPeriodNotConfigured = _$pacPeriodNotConfigured;
+  @BuiltValueEnumConst(wireName: r'pac.rejected')
+  static const ErrorCode pacPeriodRejected = _$pacPeriodRejected;
+  @BuiltValueEnumConst(wireName: r'pac.timeout')
+  static const ErrorCode pacPeriodTimeout = _$pacPeriodTimeout;
+  @BuiltValueEnumConst(wireName: r'pac.unavailable')
+  static const ErrorCode pacPeriodUnavailable = _$pacPeriodUnavailable;
   @BuiltValueEnumConst(wireName: r'payment.already_applied')
   static const ErrorCode paymentPeriodAlreadyApplied =
       _$paymentPeriodAlreadyApplied;

@@ -253,6 +253,7 @@ Class | Method | HTTP request | Description
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**addInvoiceRelationApiV1FiscalDocumentsFiscalDocumentIdRelationsPost**](doc/FiscalDocumentsApi.md#addinvoicerelationapiv1fiscaldocumentsfiscaldocumentidrelationspost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/relations | Add Invoice Relation
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**addPaidInvoiceApiV1FiscalDocumentsFiscalDocumentIdPaidInvoicesPost**](doc/FiscalDocumentsApi.md#addpaidinvoiceapiv1fiscaldocumentsfiscaldocumentidpaidinvoicespost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/paid-invoices | Add Paid Invoice
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**addSalesOrderApiV1FiscalDocumentsFiscalDocumentIdSalesOrdersPost**](doc/FiscalDocumentsApi.md#addsalesorderapiv1fiscaldocumentsfiscaldocumentidsalesorderspost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/sales-orders | Add Sales Order
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**cancelFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdCancelPost**](doc/FiscalDocumentsApi.md#cancelfiscaldocumentapiv1fiscaldocumentsfiscaldocumentidcancelpost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/cancel | Cancel Fiscal Document
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**confirmInvoiceApiV1FiscalDocumentsFiscalDocumentIdConfirmPost**](doc/FiscalDocumentsApi.md#confirminvoiceapiv1fiscaldocumentsfiscaldocumentidconfirmpost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/confirm | Confirm Invoice
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**copyInvoiceLineApiV1FiscalDocumentsFiscalDocumentIdInvoiceLinesPost**](doc/FiscalDocumentsApi.md#copyinvoicelineapiv1fiscaldocumentsfiscaldocumentidinvoicelinespost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/invoice-lines | Copy Invoice Line
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**createCreditNoteApiV1FiscalDocumentsCreditNotesPost**](doc/FiscalDocumentsApi.md#createcreditnoteapiv1fiscaldocumentscreditnotespost) | **POST** /api/v1/fiscal-documents/credit-notes | Create Credit Note
@@ -263,10 +264,12 @@ Class | Method | HTTP request | Description
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**getFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdGet**](doc/FiscalDocumentsApi.md#getfiscaldocumentapiv1fiscaldocumentsfiscaldocumentidget) | **GET** /api/v1/fiscal-documents/{fiscal_document_id} | Get Fiscal Document
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**listFiscalDocumentsApiV1FiscalDocumentsGet**](doc/FiscalDocumentsApi.md#listfiscaldocumentsapiv1fiscaldocumentsget) | **GET** /api/v1/fiscal-documents | List Fiscal Documents
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**printFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdPdfGet**](doc/FiscalDocumentsApi.md#printfiscaldocumentapiv1fiscaldocumentsfiscaldocumentidpdfget) | **GET** /api/v1/fiscal-documents/{fiscal_document_id}/pdf | Print Fiscal Document
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**refreshFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdRefreshPost**](doc/FiscalDocumentsApi.md#refreshfiscaldocumentapiv1fiscaldocumentsfiscaldocumentidrefreshpost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/refresh | Refresh Fiscal Document
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**removeInvoiceLineApiV1FiscalDocumentsFiscalDocumentIdLinesLineIdDelete**](doc/FiscalDocumentsApi.md#removeinvoicelineapiv1fiscaldocumentsfiscaldocumentidlineslineiddelete) | **DELETE** /api/v1/fiscal-documents/{fiscal_document_id}/lines/{line_id} | Remove Invoice Line
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**removeInvoiceRelationApiV1FiscalDocumentsFiscalDocumentIdRelationsRelationIdDelete**](doc/FiscalDocumentsApi.md#removeinvoicerelationapiv1fiscaldocumentsfiscaldocumentidrelationsrelationiddelete) | **DELETE** /api/v1/fiscal-documents/{fiscal_document_id}/relations/{relation_id} | Remove Invoice Relation
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**removePaidInvoiceApiV1FiscalDocumentsFiscalDocumentIdPaidInvoicesRelationIdDelete**](doc/FiscalDocumentsApi.md#removepaidinvoiceapiv1fiscaldocumentsfiscaldocumentidpaidinvoicesrelationiddelete) | **DELETE** /api/v1/fiscal-documents/{fiscal_document_id}/paid-invoices/{relation_id} | Remove Paid Invoice
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**reopenInvoiceApiV1FiscalDocumentsFiscalDocumentIdReopenPost**](doc/FiscalDocumentsApi.md#reopeninvoiceapiv1fiscaldocumentsfiscaldocumentidreopenpost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/reopen | Reopen Invoice
+[*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**stampFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdStampPost**](doc/FiscalDocumentsApi.md#stampfiscaldocumentapiv1fiscaldocumentsfiscaldocumentidstamppost) | **POST** /api/v1/fiscal-documents/{fiscal_document_id}/stamp | Stamp Fiscal Document
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**updateInvoiceApiV1FiscalDocumentsFiscalDocumentIdPut**](doc/FiscalDocumentsApi.md#updateinvoiceapiv1fiscaldocumentsfiscaldocumentidput) | **PUT** /api/v1/fiscal-documents/{fiscal_document_id} | Update Invoice
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**updateInvoiceLineApiV1FiscalDocumentsFiscalDocumentIdLinesLineIdPut**](doc/FiscalDocumentsApi.md#updateinvoicelineapiv1fiscaldocumentsfiscaldocumentidlineslineidput) | **PUT** /api/v1/fiscal-documents/{fiscal_document_id}/lines/{line_id} | Update Invoice Line
 [*FiscalDocumentsApi*](doc/FiscalDocumentsApi.md) | [**updatePaidInvoiceApiV1FiscalDocumentsFiscalDocumentIdPaidInvoicesRelationIdPut**](doc/FiscalDocumentsApi.md#updatepaidinvoiceapiv1fiscaldocumentsfiscaldocumentidpaidinvoicesrelationidput) | **PUT** /api/v1/fiscal-documents/{fiscal_document_id}/paid-invoices/{relation_id} | Update Paid Invoice
@@ -318,6 +321,9 @@ Class | Method | HTTP request | Description
 [*LabelsApi*](doc/LabelsApi.md) | [**getLabelApiV1LabelsLabelIdGet**](doc/LabelsApi.md#getlabelapiv1labelslabelidget) | **GET** /api/v1/labels/{label_id} | Get Label
 [*LabelsApi*](doc/LabelsApi.md) | [**listLabelsApiV1LabelsGet**](doc/LabelsApi.md#listlabelsapiv1labelsget) | **GET** /api/v1/labels | List Labels
 [*LabelsApi*](doc/LabelsApi.md) | [**updateLabelApiV1LabelsLabelIdPut**](doc/LabelsApi.md#updatelabelapiv1labelslabelidput) | **PUT** /api/v1/labels/{label_id} | Update Label
+[*PacSimulatorApi*](doc/PacSimulatorApi.md) | [**answerAsReceiverApiV1PacSimulatorFiscalDocumentsFiscalDocumentIdReceiverPost**](doc/PacSimulatorApi.md#answerasreceiverapiv1pacsimulatorfiscaldocumentsfiscaldocumentidreceiverpost) | **POST** /api/v1/pac-simulator/fiscal-documents/{fiscal_document_id}/receiver | Answer As Receiver
+[*PacSimulatorApi*](doc/PacSimulatorApi.md) | [**getSimulationApiV1PacSimulatorFiscalDocumentsFiscalDocumentIdGet**](doc/PacSimulatorApi.md#getsimulationapiv1pacsimulatorfiscaldocumentsfiscaldocumentidget) | **GET** /api/v1/pac-simulator/fiscal-documents/{fiscal_document_id} | Get Simulation
+[*PacSimulatorApi*](doc/PacSimulatorApi.md) | [**setSimulationApiV1PacSimulatorFiscalDocumentsFiscalDocumentIdPut**](doc/PacSimulatorApi.md#setsimulationapiv1pacsimulatorfiscaldocumentsfiscaldocumentidput) | **PUT** /api/v1/pac-simulator/fiscal-documents/{fiscal_document_id} | Set Simulation
 [*PaymentMethodOptionsApi*](doc/PaymentMethodOptionsApi.md) | [**createPaymentMethodOptionApiV1PaymentMethodOptionsPost**](doc/PaymentMethodOptionsApi.md#createpaymentmethodoptionapiv1paymentmethodoptionspost) | **POST** /api/v1/payment-method-options | Create Payment Method Option
 [*PaymentMethodOptionsApi*](doc/PaymentMethodOptionsApi.md) | [**deletePaymentMethodOptionApiV1PaymentMethodOptionsPaymentMethodOptionIdDelete**](doc/PaymentMethodOptionsApi.md#deletepaymentmethodoptionapiv1paymentmethodoptionspaymentmethodoptioniddelete) | **DELETE** /api/v1/payment-method-options/{payment_method_option_id} | Delete Payment Method Option
 [*PaymentMethodOptionsApi*](doc/PaymentMethodOptionsApi.md) | [**getPaymentMethodOptionApiV1PaymentMethodOptionsPaymentMethodOptionIdGet**](doc/PaymentMethodOptionsApi.md#getpaymentmethodoptionapiv1paymentmethodoptionspaymentmethodoptionidget) | **GET** /api/v1/payment-method-options/{payment_method_option_id} | Get Payment Method Option
@@ -690,9 +696,12 @@ Class | Method | HTTP request | Description
  - [FacilityUpdate](doc/FacilityUpdate.md)
  - [Family](doc/Family.md)
  - [FiscalCertificationProvider](doc/FiscalCertificationProvider.md)
+ - [FiscalDocumentCancelRequest](doc/FiscalDocumentCancelRequest.md)
+ - [FiscalDocumentCancellationResponse](doc/FiscalDocumentCancellationResponse.md)
  - [FiscalDocumentLine](doc/FiscalDocumentLine.md)
  - [FiscalDocumentRelationResponse](doc/FiscalDocumentRelationResponse.md)
  - [FiscalDocumentResponse](doc/FiscalDocumentResponse.md)
+ - [FiscalDocumentStamp](doc/FiscalDocumentStamp.md)
  - [FiscalDocumentSummary](doc/FiscalDocumentSummary.md)
  - [FiscalDocumentType](doc/FiscalDocumentType.md)
  - [FiscalEmailRequest](doc/FiscalEmailRequest.md)
@@ -804,6 +813,8 @@ Class | Method | HTTP request | Description
  - [OrderLineUpdate](doc/OrderLineUpdate.md)
  - [OrderOrigin](doc/OrderOrigin.md)
  - [OutstandingOrderResponse](doc/OutstandingOrderResponse.md)
+ - [PacSimulationResponse](doc/PacSimulationResponse.md)
+ - [PacSimulationUpdate](doc/PacSimulationUpdate.md)
  - [PaidInvoiceAdd](doc/PaidInvoiceAdd.md)
  - [PaidInvoiceResponse](doc/PaidInvoiceResponse.md)
  - [PaidInvoiceUpdate](doc/PaidInvoiceUpdate.md)
@@ -889,6 +900,7 @@ Class | Method | HTTP request | Description
  - [ReasonRequest](doc/ReasonRequest.md)
  - [ReceiptCreate](doc/ReceiptCreate.md)
  - [ReceiptUpdate](doc/ReceiptUpdate.md)
+ - [ReceiverAnswer](doc/ReceiverAnswer.md)
  - [RecoverPasswordAdminResponse](doc/RecoverPasswordAdminResponse.md)
  - [RefundPayout](doc/RefundPayout.md)
  - [RejectRequest](doc/RejectRequest.md)
