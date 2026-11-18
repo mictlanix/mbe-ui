@@ -7249,7 +7249,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get fiscalDocumentLineFromOrder => 'Pedido';
 
   @override
-  String get fiscalDocumentLinesEmpty => 'La factura no tiene partidas.';
+  String get fiscalDocumentLinesEmpty => 'El documento no tiene partidas.';
 
   @override
   String get fiscalDocumentTaxIva16 => '16 %';
@@ -7432,7 +7432,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get fiscalDocumentRemoveLineBody =>
-      '¿Quitar esta partida de la factura?';
+      '¿Quitar esta partida del documento?';
 
   @override
   String get fiscalDocumentRemoveAction => 'Quitar';
@@ -7488,29 +7488,29 @@ class AppLocalizationsEs extends AppLocalizations {
       '¿Quitar este documento relacionado?';
 
   @override
-  String get fiscalDocumentConfirmTitle => 'Confirmar factura';
+  String get fiscalDocumentConfirmTitle => 'Confirmar documento';
 
   @override
   String fiscalDocumentConfirmBody(String series) {
-    return 'Se asignará el siguiente folio de la serie $series y se sellará la factura. Después solo podrá reabrirse mientras no esté timbrada.';
+    return 'Se asignará el siguiente folio de la serie $series y se sellará el documento. Después solo podrá reabrirse mientras no esté timbrado.';
   }
 
   @override
-  String fiscalDocumentConfirmed(String folio) {
-    return 'Factura $folio sellada.';
+  String fiscalDocumentConfirmed(String kind, String folio) {
+    return 'Documento sellado: $kind $folio.';
   }
 
   @override
-  String get fiscalDocumentReopenTitle => 'Reabrir factura';
+  String get fiscalDocumentReopenTitle => 'Reabrir documento';
 
   @override
   String fiscalDocumentReopenBody(String folio) {
-    return 'La factura vuelve a borrador y conserva el folio $folio. El sello se descarta.';
+    return 'El documento vuelve a borrador y conserva el folio $folio. El sello se descarta.';
   }
 
   @override
-  String fiscalDocumentReopened(String folio) {
-    return 'Factura $folio reabierta.';
+  String fiscalDocumentReopened(String kind, String folio) {
+    return 'Documento reabierto: $kind $folio.';
   }
 
   @override
@@ -7573,7 +7573,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get apiErrorFiscalDocumentNotDraft =>
-      'Esta factura ya no es borrador y no se puede modificar.';
+      'Este documento ya no es borrador y no se puede modificar.';
 
   @override
   String get apiErrorFiscalDocumentNotSealed =>
@@ -7621,7 +7621,7 @@ class AppLocalizationsEs extends AppLocalizations {
       'Una factura solo puede tener relaciones de un mismo tipo.';
 
   @override
-  String get apiErrorFiscalDocumentNoLines => 'La factura no tiene partidas.';
+  String get apiErrorFiscalDocumentNoLines => 'El documento no tiene partidas.';
 
   @override
   String apiErrorFiscalDocumentLineMissingSatKey(String line) {
@@ -9418,4 +9418,100 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get apiErrorPacUnavailable =>
       'No se pudo contactar al PAC. No cambió nada; inténtalo de nuevo.';
+
+  @override
+  String get fiscalDocumentIssueCreditNoteAction => 'Emitir nota de crédito';
+
+  @override
+  String get fiscalDocumentIssueCreditNoteTitle => '¿Emitir nota de crédito?';
+
+  @override
+  String fiscalDocumentIssueCreditNoteBody(String folio, String recipient) {
+    return 'Se creará un borrador de nota de crédito para la factura $folio ($recipient), relacionada con tipo 01. Tomará el cliente, el receptor, la forma de pago y el uso CFDI de la factura.';
+  }
+
+  @override
+  String get fiscalDocumentIssueCreditNoteCreate => 'Crear';
+
+  @override
+  String get fiscalDocumentCopyInvoiceLinesAction => 'Agregar de la factura';
+
+  @override
+  String fiscalDocumentCopyInvoiceLinesTitle(String folio) {
+    return 'Partidas de la factura $folio';
+  }
+
+  @override
+  String get fiscalDocumentCopyInvoiceLinesIntro =>
+      'Marca las partidas que acreditas y ajusta la cantidad; no puede pasar de la facturada.';
+
+  @override
+  String fiscalDocumentCopyInvoiceLinesSubmit(int count) {
+    return 'Agregar ($count)';
+  }
+
+  @override
+  String get fiscalDocumentCopyInvoiceLinesEmpty =>
+      'La factura no tiene partidas.';
+
+  @override
+  String fiscalDocumentCopyInvoiceLineMax(String max) {
+    return 'Máximo $max (la cantidad facturada)';
+  }
+
+  @override
+  String get fiscalDocumentCopyInvoiceLineQtyPositive => 'Debe ser mayor que 0';
+
+  @override
+  String get fiscalDocumentCopyInvoiceLineAdded => 'Agregada';
+
+  @override
+  String fiscalDocumentCopyInvoiceLineFailed(String code, String message) {
+    return 'Partida $code: $message';
+  }
+
+  @override
+  String fiscalDocumentCopyInvoiceLinesDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count partidas agregadas',
+      one: '1 partida agregada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get fiscalDocumentInvoiceQuantity => 'Cant. factura';
+
+  @override
+  String get fiscalDocumentBannerCreditNoteForm =>
+      'La forma de pago es 99 (Por definir). Elige la forma de pago real en el encabezado antes de confirmar.';
+
+  @override
+  String get fiscalDocumentHeaderTermsFixedPue =>
+      'PUE (fijo en notas de crédito)';
+
+  @override
+  String fiscalDocumentCreditExceedsInvoice(String folio, String remaining) {
+    return 'La nota de crédito excede lo que queda de la factura $folio: $remaining.';
+  }
+
+  @override
+  String get apiErrorFiscalDocumentInvoiceNotCreditable =>
+      'Esta factura ya no admite notas de crédito: debe estar timbrada, vigente y sin cancelación en proceso.';
+
+  @override
+  String apiErrorFiscalDocumentCreditExceedsInvoice(String remaining) {
+    return 'La nota de crédito excede lo que queda por acreditar de la factura: $remaining.';
+  }
+
+  @override
+  String apiErrorFiscalDocumentCreditQuantityExceedsLine(String max) {
+    return 'La cantidad excede la de la factura: máximo $max.';
+  }
+
+  @override
+  String get apiErrorFiscalDocumentPaymentFormRequired =>
+      'Elige la forma de pago real; 99 (Por definir) no se admite en este documento.';
 }

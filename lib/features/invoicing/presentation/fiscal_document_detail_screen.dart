@@ -14,6 +14,7 @@ import 'package:mbe_ui/core/documents/domain/document_ref.dart';
 import 'package:mbe_ui/core/documents/presentation/document_actions.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
+import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/errors/localize_problem.dart';
 import 'package:mbe_ui/core/files/file_saver.dart';
@@ -37,6 +38,7 @@ import 'package:mbe_ui/features/invoicing/presentation/add_product_dialog.dart';
 import 'package:mbe_ui/features/invoicing/presentation/add_relation_dialog.dart';
 import 'package:mbe_ui/features/invoicing/presentation/add_sales_order_dialog.dart';
 import 'package:mbe_ui/features/invoicing/presentation/cancel_fiscal_document_dialog.dart';
+import 'package:mbe_ui/features/invoicing/presentation/copy_invoice_lines_dialog.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_cancellation.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_document.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/sat_cancellation_reason.dart';
@@ -222,6 +224,28 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
 
   FiscalDocument get _document => widget.document;
 
+  /// The over-limit refusal on a credit note, naming the invoice it exceeds
+  /// (spec 073 C32). `null` for any other refusal, or when the document has no
+  /// related invoice or the server sent no `remaining`, so the localized text
+  /// stands.
+  String? _creditExceedsMessage(AppLocalizations l10n, AppError error) {
+    final problem = error.problem;
+    final invoice = _document.creditedInvoice;
+    if (invoice == null ||
+        problem?.code !=
+            api.ErrorCode.fiscalDocumentPeriodCreditExceedsInvoice) {
+      return null;
+    }
+    final remaining = problem?.decimalParam('remaining');
+    if (remaining == null) return null;
+    return l10n.fiscalDocumentCreditExceedsInvoice(
+      invoice.serial == null
+          ? '#${invoice.documentId}'
+          : '${invoice.series ?? ''}${invoice.serial}',
+      ref.read(formattersProvider).display.currency(remaining),
+    );
+  }
+
   Future<void> _viewPdf() {
     final l10n = AppLocalizations.of(context)!;
     return ref
@@ -304,6 +328,7 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
       SnackBar(
         content: Text(
           l10n.fiscalDocumentConfirmed(
+            documentKindLabel(l10n, sealed),
             sealed.summary.folioLabel ?? '#${sealed.id}',
           ),
         ),
@@ -323,7 +348,14 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
       return;
     }
     messenger.showSnackBar(
-      SnackBar(content: Text(l10n.fiscalDocumentReopened(folio))),
+      SnackBar(
+        content: Text(
+          l10n.fiscalDocumentReopened(
+            documentKindLabel(l10n, _document),
+            folio,
+          ),
+        ),
+      ),
     );
   }
 
@@ -390,6 +422,15 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
     );
   }
 
+  /// Creates a credit-note draft for this issued invoice and opens it (spec 073
+  /// C25). Back returns to the invoice.
+  Future<void> _issueCreditNote() async {
+    setState(() => _actionError = null);
+    final id = await showIssueCreditNoteDialog(context, _document);
+    if (!mounted || id == null) return;
+    context.push('$fiscalDocumentsPath/$id');
+  }
+
   Future<void> _refresh() async {
     setState(() {
       _actionError = null;
@@ -451,6 +492,19 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
       documentId: _document.id,
       relation: relation,
     );
+  }
+
+  /// Copies lines of the credit note's invoice onto it (spec 073 C29).
+  Future<void> _copyInvoiceLines() async {
+    setState(() => _actionError = null);
+    final l10n = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    final added = await showCopyInvoiceLinesDialog(context, _document);
+    if (added > 0) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.fiscalDocumentCopyInvoiceLinesDone(added))),
+      );
+    }
   }
 
   Future<void> _addOrder() async {
@@ -530,8 +584,10 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
         access.can(SystemObject.fiscalDocuments, AccessRight.update);
     // "Agregar pedido" lists the customer's orders (SalesOrders (7) read),
     // and a legacy draft with no customer has none to list.
+    // A credit note takes its lines from its invoice instead (spec 073).
     final canAddOrder =
         canEdit &&
+        !document.isCreditNote &&
         document.customerId != null &&
         access.can(SystemObject.salesOrders, AccessRight.read);
     // Reopening a sealed invoice also needs FiscalDocuments (23) update.
@@ -547,6 +603,12 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
     final canStamp = document.canStamp && canUpdateDocuments;
     final canRefresh = document.canRefresh && canUpdateDocuments;
     final canCancel = document.canCancel && canUpdateDocuments;
+    // Starting a credit note needs FiscalDocuments (23) create (spec 073).
+    final canIssueCreditNote =
+        document.canIssueCreditNote &&
+        access.can(SystemObject.fiscalDocuments, AccessRight.create);
+    final canCopyInvoiceLines = canEdit && document.isCreditNote;
+    final canEditRelations = canEdit && !document.isCreditNote;
     // A manual line needs StandaloneFiscalDocuments (56) create.
     final canAddProduct =
         canEdit &&
@@ -566,17 +628,19 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
           _LinesSection(
             document: document,
             onAddOrder: canAddOrder ? _addOrder : null,
+            onCopyInvoiceLines: canCopyInvoiceLines ? _copyInvoiceLines : null,
             onAddProduct: canAddProduct ? _addProduct : null,
             onEditLine: canEdit ? _editLine : null,
             onRemoveLine: canEdit ? _removeLine : null,
           ),
           // Related documents show when there are some, or on an editable
-          // draft, where they can be added.
-          if (document.hasRelations || canEdit)
+          // invoice draft, where they can be added. A credit note's one
+          // relation is its invoice: it is shown, never edited (spec 073).
+          if (document.hasRelations || canEditRelations)
             _RelationsSection(
               document: document,
-              onAdd: canEdit ? _addRelation : null,
-              onRemove: canEdit ? _removeRelation : null,
+              onAdd: canEditRelations ? _addRelation : null,
+              onRemove: canEditRelations ? _removeRelation : null,
             ),
           if (document.cancellations.isNotEmpty)
             _CancellationsSection(document: document),
@@ -593,13 +657,15 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
               hint: identical(_actionError, _stampDateRefusal)
                   ? l10n.fiscalDocumentStampIssueDateHint
                   : null,
+              message: _creditExceedsMessage(l10n, _actionError!),
             ),
           if (offerFiles ||
               canCancel ||
               canReopen ||
               canEdit ||
               canStamp ||
-              canRefresh)
+              canRefresh ||
+              canIssueCreditNote)
             Align(
               key: const Key('fiscal_document_actions'),
               alignment: AlignmentDirectional.centerEnd,
@@ -665,6 +731,12 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
                           : const Icon(Icons.refresh),
                       label: Text(l10n.fiscalDocumentRefreshAction),
                     ),
+                  if (canIssueCreditNote)
+                    OutlinedButton(
+                      key: const Key('fiscal_document_issue_credit_note'),
+                      onPressed: _issueCreditNote,
+                      child: Text(l10n.fiscalDocumentIssueCreditNoteAction),
+                    ),
                 ],
               ),
             ),
@@ -717,11 +789,18 @@ class _StatusBanner extends ConsumerWidget {
     } else if (document.status == FiscalDocumentStatus.sealed) {
       text = !canUpdate
           ? l10n.fiscalDocumentBannerSealed
-          : document.isInvoice
+          : document.canReopen
           ? l10n.fiscalDocumentBannerSealedStampOrReopen
           : l10n.fiscalDocumentBannerSealedStamp;
       key = 'sealed';
-    } else if (!document.isInvoice) {
+    } else if (document.needsPaymentForm &&
+        document.isEditableKind &&
+        canUpdate) {
+      // A credit-note draft still on form 99 (spec 073 C30): the clerk must
+      // choose the real one before confirming.
+      text = l10n.fiscalDocumentBannerCreditNoteForm;
+      key = 'credit_note_form';
+    } else if (!document.isEditableKind) {
       text = l10n.fiscalDocumentBannerReadOnlyKind;
       key = 'read_only_kind';
     } else {
@@ -730,7 +809,7 @@ class _StatusBanner extends ConsumerWidget {
     final theme = Theme.of(context);
     final colors = document.status == FiscalDocumentStatus.cancelled
         ? (theme.colorScheme.errorContainer, theme.colorScheme.onErrorContainer)
-        : waiting
+        : waiting || key == 'credit_note_form'
         ? (
             theme.colorScheme.tertiaryContainer,
             theme.colorScheme.onTertiaryContainer,
@@ -984,6 +1063,7 @@ class _LinesSection extends ConsumerWidget {
   const _LinesSection({
     required this.document,
     this.onAddOrder,
+    this.onCopyInvoiceLines,
     this.onAddProduct,
     this.onEditLine,
     this.onRemoveLine,
@@ -993,6 +1073,7 @@ class _LinesSection extends ConsumerWidget {
 
   /// Each `null` hides its control (contracts C9).
   final VoidCallback? onAddOrder;
+  final VoidCallback? onCopyInvoiceLines;
   final VoidCallback? onAddProduct;
   final void Function(InvoiceLine line)? onEditLine;
   final void Function(InvoiceLine line)? onRemoveLine;
@@ -1058,7 +1139,8 @@ class _LinesSection extends ConsumerWidget {
                     spacing: spacing.sm,
                     children: [
                       Expanded(child: Text(description(line))),
-                      if (line.orderLineId != null) orderMarker(line),
+                      if (line.orderLineId != null && !document.isCreditNote)
+                        orderMarker(line),
                       ..._lineActions(l10n, line),
                     ],
                   ),
@@ -1145,7 +1227,8 @@ class _LinesSection extends ConsumerWidget {
                     ),
                   ),
                 ),
-                if (l.orderLineId != null) orderMarker(l),
+                if (l.orderLineId != null && !document.isCreditNote)
+                  orderMarker(l),
               ],
             ),
           ),
@@ -1191,7 +1274,9 @@ class _LinesSection extends ConsumerWidget {
                 style: theme.textTheme.titleMedium,
               ),
             ),
-            if (onAddOrder != null || onAddProduct != null)
+            if (onAddOrder != null ||
+                onCopyInvoiceLines != null ||
+                onAddProduct != null)
               Flexible(
                 child: Wrap(
                   alignment: WrapAlignment.end,
@@ -1204,6 +1289,13 @@ class _LinesSection extends ConsumerWidget {
                         onPressed: onAddOrder,
                         icon: const Icon(Icons.add),
                         label: Text(l10n.fiscalDocumentAddOrder),
+                      ),
+                    if (onCopyInvoiceLines != null)
+                      OutlinedButton.icon(
+                        key: const Key('fiscal_document_copy_invoice_lines'),
+                        onPressed: onCopyInvoiceLines,
+                        icon: const Icon(Icons.add),
+                        label: Text(l10n.fiscalDocumentCopyInvoiceLinesAction),
                       ),
                     if (onAddProduct != null)
                       OutlinedButton.icon(
@@ -1429,10 +1521,21 @@ class _RelationsSection extends StatelessWidget {
                     children: [
                       if (r.type != null)
                         Text(invoiceRelationTypeLabel(l10n, r.type!)),
-                      Text(
-                        r.serial == null
-                            ? '#${r.documentId}'
-                            : '${r.series ?? ''}${r.serial}',
+                      // The folio opens the related document (spec 073 C28);
+                      // Back returns here.
+                      TextButton(
+                        key: Key('fiscal_document_relation_link_${r.id}'),
+                        style: TextButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        onPressed: () => context.push(
+                          '$fiscalDocumentsPath/${r.documentId}',
+                        ),
+                        child: Text(
+                          r.serial == null
+                              ? '#${r.documentId}'
+                              : '${r.series ?? ''}${r.serial}',
+                        ),
                       ),
                       if (r.stampUuid != null) Text(r.stampUuid!),
                     ],

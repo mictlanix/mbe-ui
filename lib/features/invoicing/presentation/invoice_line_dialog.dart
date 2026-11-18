@@ -19,7 +19,8 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 /// changed fields are sent.
 ///
 /// `quantity_exceeds_invoiceable` keeps the dialog open with what remains to
-/// invoice; any other refusal closes it and is answered to the caller to show
+/// invoice, and so does `credit_quantity_exceeds_line` (spec 073) with the
+/// most a credit note can take; any other refusal closes it and is answered to the caller to show
 /// above its action area. `null` when the user backed out.
 Future<FiscalDocumentActionResult?> showInvoiceLineDialog(
   BuildContext context, {
@@ -150,8 +151,9 @@ class _InvoiceLineDialogState extends ConsumerState<_InvoiceLineDialog> {
         .updateLine(widget.document.id, _line.id, _patch);
     if (!mounted) return;
     // The refusal the user can fix in place keeps the dialog open.
-    if (error?.problem?.code ==
-        api.ErrorCode.fiscalDocumentPeriodQuantityExceedsInvoiceable) {
+    final code = error?.problem?.code;
+    if (code == api.ErrorCode.fiscalDocumentPeriodQuantityExceedsInvoiceable ||
+        code == api.ErrorCode.fiscalDocumentPeriodCreditQuantityExceedsLine) {
       setState(() {
         _busy = false;
         _refusal = error;

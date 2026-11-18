@@ -38,6 +38,7 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import '../../../unit/core/documents/document_fakes.dart';
 import '../../../unit/features/invoicing/fiscal_document_fixtures.dart';
+import 'invoicing_harness.dart' show InvoiceHarness;
 
 class _MockRepository extends Mock implements FiscalDocumentRepository {}
 
@@ -1115,6 +1116,479 @@ void main() {
       expect(key('fiscal_document_line_card_10'), findsOneWidget);
       expect(key('fiscal_document_lines_table'), findsNothing);
       expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('Emitir nota de crédito on an invoice (spec 073 C25)', () {
+    final h = InvoiceHarness();
+
+    FiscalDocument document({
+      int typeCode = 0,
+      FiscalDocumentStatus status = FiscalDocumentStatus.issued,
+    }) => aDocument(
+      status: status,
+      typeCode: typeCode,
+      serial: 12,
+      series: 'GR',
+      total: Decimal.parse('232'),
+      stamp: aStamp(),
+    );
+
+    // FiscalDocuments (23): 1 create, 2 read, 4 update.
+    Future<void> shows(
+      WidgetTester tester,
+      FiscalDocument d, {
+      int rights = 7,
+    }) async {
+      await h.pump(
+        tester,
+        document: d,
+        who: InvoiceHarness.access(fiscalDocuments: rights),
+      );
+    }
+
+    testWidgets('is the last button of an issued invoice, with create', (
+      tester,
+    ) async {
+      await shows(tester, document());
+
+      expect(key('fiscal_document_issue_credit_note'), findsOneWidget);
+      final actions = tester.widget<Wrap>(
+        find.descendant(
+          of: key('fiscal_document_actions'),
+          matching: find.byType(Wrap),
+        ),
+      );
+      expect(
+        (actions.children.last as OutlinedButton).key,
+        const Key('fiscal_document_issue_credit_note'),
+      );
+    });
+
+    for (final status in FiscalDocumentStatus.values) {
+      if (status == FiscalDocumentStatus.issued) continue;
+      testWidgets('is absent on a ${status.name} invoice', (tester) async {
+        await shows(tester, document(status: status));
+        expect(key('fiscal_document_issue_credit_note'), findsNothing);
+      });
+    }
+
+    testWidgets('is absent on an issued credit note', (tester) async {
+      await shows(
+        tester,
+        aCreditNote(status: FiscalDocumentStatus.issued, serial: 3),
+      );
+      expect(key('fiscal_document_issue_credit_note'), findsNothing);
+    });
+
+    testWidgets('is absent with update but no create', (tester) async {
+      await shows(tester, document(), rights: 6);
+      expect(key('fiscal_document_issue_credit_note'), findsNothing);
+    });
+
+    testWidgets('is absent for a read-only user', (tester) async {
+      await shows(tester, document(), rights: 2);
+      expect(key('fiscal_document_issue_credit_note'), findsNothing);
+    });
+  });
+
+  group('a credit note (spec 073 US3)', () {
+    final h = InvoiceHarness();
+
+    FiscalDocument sealedNote({int serial = 5}) =>
+        aCreditNote(
+          status: FiscalDocumentStatus.sealed,
+          serial: serial,
+        ).copyWith(
+          summary: aCreditNote(serial: serial).summary.copyWith(
+            status: FiscalDocumentStatus.sealed,
+            total: Decimal.parse('116'),
+          ),
+        );
+
+    AppError refusal(
+      String name,
+      api.ErrorCode code, [
+      Map<String, Object?> params = const {},
+    ]) => AppError.server(
+      statusCode: 422,
+      problem: ApiProblem(codeName: name, code: code, params: params),
+    );
+
+    group('banners', () {
+      testWidgets('form 99 shows the form banner, for an editor only', (
+        tester,
+      ) async {
+        await h.pump(tester, document: aCreditNote(paymentForm: 99));
+        expect(key('fiscal_document_banner_credit_note_form'), findsOneWidget);
+        expect(
+          find.text(l10n.fiscalDocumentBannerCreditNoteForm),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('form 99 shows no banner to a read-only user', (
+        tester,
+      ) async {
+        await h.pump(
+          tester,
+          document: aCreditNote(paymentForm: 99),
+          who: InvoiceHarness.access(fiscalDocuments: 2),
+        );
+        expect(key('fiscal_document_banner_credit_note_form'), findsNothing);
+      });
+
+      testWidgets('a real form shows no banner at all, and never the '
+          'read-only one', (tester) async {
+        await h.pump(tester, document: aCreditNote(paymentForm: 3));
+        expect(key('fiscal_document_banner_credit_note_form'), findsNothing);
+        expect(key('fiscal_document_banner_read_only_kind'), findsNothing);
+      });
+
+      testWidgets('a sealed credit note says it can be stamped or reopened', (
+        tester,
+      ) async {
+        await h.pump(tester, document: sealedNote());
+        expect(key('fiscal_document_banner_sealed'), findsOneWidget);
+        expect(
+          find.text(l10n.fiscalDocumentBannerSealedStampOrReopen),
+          findsOneWidget,
+        );
+        expect(key('fiscal_document_banner_read_only_kind'), findsNothing);
+      });
+    });
+
+    testWidgets('a draft offers Confirmar, and never a new credit note', (
+      tester,
+    ) async {
+      await h.pump(tester, document: aCreditNote());
+      expect(key('fiscal_document_confirm'), findsOneWidget);
+      expect(key('fiscal_document_issue_credit_note'), findsNothing);
+    });
+
+    testWidgets('a sealed one offers Reabrir and Timbrar', (tester) async {
+      await h.pump(tester, document: sealedNote());
+      expect(key('fiscal_document_reopen'), findsOneWidget);
+      expect(key('fiscal_document_stamp'), findsOneWidget);
+      expect(key('fiscal_document_confirm'), findsNothing);
+      expect(key('fiscal_document_issue_credit_note'), findsNothing);
+    });
+
+    testWidgets('a read-only user sees no action', (tester) async {
+      await h.pump(
+        tester,
+        document: sealedNote(),
+        who: InvoiceHarness.access(fiscalDocuments: 2),
+      );
+      for (final k in [
+        'fiscal_document_reopen',
+        'fiscal_document_stamp',
+        'fiscal_document_confirm',
+        'fiscal_document_issue_credit_note',
+      ]) {
+        expect(key(k), findsNothing, reason: k);
+      }
+    });
+
+    group('Confirmar refused', () {
+      Future<void> confirmRefused(WidgetTester tester, AppError error) async {
+        when(() => h.documents.confirm(7)).thenThrow(error);
+        await h.pump(tester, document: aCreditNote());
+        await tester.tap(key('fiscal_document_confirm'));
+        await tester.pumpAndSettle();
+        await tester.tap(key('invoice_confirm_submit'));
+        await tester.pumpAndSettle();
+      }
+
+      testWidgets('over the invoice names the invoice and what is left', (
+        tester,
+      ) async {
+        await confirmRefused(
+          tester,
+          refusal(
+            'fiscal_document.credit_exceeds_invoice',
+            api.ErrorCode.fiscalDocumentPeriodCreditExceedsInvoice,
+            {'invoice_id': 12, 'remaining': '1500.00'},
+          ),
+        );
+
+        expect(key('fiscal_document_refusal'), findsOneWidget);
+        expect(
+          find.text(
+            l10n.fiscalDocumentCreditExceedsInvoice('GR12', r'$1,500.00'),
+          ),
+          findsOneWidget,
+        );
+      });
+
+      testWidgets('over the invoice, with no related invoice or no amount, '
+          'falls back to the localized text', (tester) async {
+        await confirmRefused(
+          tester,
+          refusal(
+            'fiscal_document.credit_exceeds_invoice',
+            api.ErrorCode.fiscalDocumentPeriodCreditExceedsInvoice,
+            {'invoice_id': 12},
+          ),
+        );
+        expect(find.textContaining('factura GR12'), findsNothing);
+        expect(key('fiscal_document_refusal'), findsOneWidget);
+      });
+
+      for (final (name, code, text)
+          in <(String, api.ErrorCode, String Function())>[
+            (
+              'fiscal_document.payment_form_required',
+              api.ErrorCode.fiscalDocumentPeriodPaymentFormRequired,
+              () => l10n.apiErrorFiscalDocumentPaymentFormRequired,
+            ),
+            (
+              'fiscal_document.no_lines',
+              api.ErrorCode.fiscalDocumentPeriodNoLines,
+              () => l10n.apiErrorFiscalDocumentNoLines,
+            ),
+            (
+              'fiscal_document.issue_date_out_of_range',
+              api.ErrorCode.fiscalDocumentPeriodIssueDateOutOfRange,
+              () => l10n.apiErrorFiscalDocumentIssueDateOutOfRange,
+            ),
+          ]) {
+        testWidgets('$name shows its localized text', (tester) async {
+          await confirmRefused(tester, refusal(name, code, {'type': 100}));
+          expect(find.text(text()), findsOneWidget);
+        });
+      }
+    });
+
+    testWidgets('Confirmar seals it, and the messages say which document', (
+      tester,
+    ) async {
+      var sealed = false;
+      when(() => h.documents.confirm(7)).thenAnswer((_) async {
+        sealed = true;
+        return sealedNote();
+      });
+      await h.pump(tester, document: aCreditNote(serial: null));
+      when(
+        () => h.documents.getById(7),
+      ).thenAnswer((_) async => sealed ? sealedNote() : aCreditNote());
+
+      await tester.tap(key('fiscal_document_confirm'));
+      await tester.pumpAndSettle();
+      // Neutral wording: the dialog doesn't call it an invoice.
+      expect(find.text(l10n.fiscalDocumentConfirmTitle), findsOneWidget);
+      expect(
+        find.descendant(
+          of: key('invoice_confirm_dialog'),
+          matching: find.textContaining('factura'),
+        ),
+        findsNothing,
+      );
+      await tester.tap(key('invoice_confirm_submit'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          l10n.fiscalDocumentConfirmed(
+            l10n.fiscalDocumentKindCreditNote,
+            'NC5',
+          ),
+        ),
+        findsOneWidget,
+      );
+      expect(key('fiscal_document_banner_sealed'), findsOneWidget);
+    });
+
+    testWidgets('Reabrir returns it to a draft that keeps its folio', (
+      tester,
+    ) async {
+      var reopened = false;
+      when(() => h.documents.reopen(7)).thenAnswer((_) async {
+        reopened = true;
+        return aCreditNote(serial: 5);
+      });
+      await h.pump(tester, document: sealedNote());
+      when(() => h.documents.getById(7)).thenAnswer(
+        (_) async => reopened ? aCreditNote(serial: 5) : sealedNote(),
+      );
+
+      await tester.tap(key('fiscal_document_reopen'));
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.fiscalDocumentReopenTitle), findsOneWidget);
+      expect(
+        find.descendant(
+          of: key('invoice_reopen_dialog'),
+          matching: find.textContaining('factura'),
+        ),
+        findsNothing,
+      );
+      await tester.tap(key('invoice_reopen_submit'));
+      await tester.pumpAndSettle();
+
+      verify(() => h.documents.reopen(7)).called(1);
+      expect(
+        find.text(
+          l10n.fiscalDocumentReopened(l10n.fiscalDocumentKindCreditNote, 'NC5'),
+        ),
+        findsOneWidget,
+      );
+      expect(key('fiscal_document_confirm'), findsOneWidget);
+    });
+
+    testWidgets('Timbrar issues it, with the simulated badge (spec 072)', (
+      tester,
+    ) async {
+      var stamped = false;
+      FiscalDocument issuedNote() => sealedNote().copyWith(
+        stamp: aStamp(),
+        summary: sealedNote().summary.copyWith(
+          status: FiscalDocumentStatus.issued,
+          stampUuid: aStamp().uuid,
+        ),
+      );
+      when(() => h.documents.stamp(7)).thenAnswer((_) async {
+        stamped = true;
+        return issuedNote();
+      });
+      await h.pump(tester, document: sealedNote());
+      when(
+        () => h.documents.getById(7),
+      ).thenAnswer((_) async => stamped ? issuedNote() : sealedNote());
+
+      await tester.tap(key('fiscal_document_stamp'));
+      await tester.pumpAndSettle();
+      await tester.tap(key('fiscal_document_stamp_submit'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(l10n.fiscalDocumentStampedSimulated('NC5')),
+        findsOneWidget,
+      );
+      expect(key('fiscal_document_simulated_badge'), findsOneWidget);
+      expect(key('fiscal_document_status_chip_issued'), findsOneWidget);
+    });
+
+    testWidgets('an empty draft says the document has no lines', (
+      tester,
+    ) async {
+      await h.pump(tester, document: aCreditNote(lines: const []));
+
+      expect(find.text(l10n.fiscalDocumentLinesEmpty), findsOneWidget);
+      expect(find.text('El documento no tiene partidas.'), findsOneWidget);
+    });
+  });
+
+  group('the relation link (spec 073 C28, US4)', () {
+    final h = InvoiceHarness();
+
+    testWidgets('a credit note links to its invoice, and Back returns', (
+      tester,
+    ) async {
+      await h.pump(tester, document: aCreditNote());
+      when(() => h.documents.getById(12)).thenAnswer(
+        (_) async => aDocument(
+          id: 12,
+          status: FiscalDocumentStatus.issued,
+          serial: 12,
+          series: 'GR',
+          total: Decimal.parse('232'),
+          stamp: aStamp(),
+        ),
+      );
+
+      expect(key('fiscal_document_relation_link_1'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: key('fiscal_document_relation_link_1'),
+          matching: find.text('GR12'),
+        ),
+        findsOneWidget,
+      );
+
+      await tester.tap(key('fiscal_document_relation_link_1'));
+      await tester.pumpAndSettle();
+
+      // The invoice is open.
+      expect(find.text(l10n.fiscalDocumentTitle('GR12')), findsOneWidget);
+      expect(key('fiscal_document_issue_credit_note'), findsNothing);
+
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(
+          l10n.fiscalDocumentTitleKind(l10n.fiscalDocumentKindCreditNote, '#7'),
+        ),
+        findsWidgets,
+      );
+    });
+
+    testWidgets('an invoice links its 04 relation too', (tester) async {
+      await h.pump(
+        tester,
+        document: aDocument(
+          relations: [
+            aRelation(
+              id: 3,
+              documentId: 99,
+              type: InvoiceRelationType.substitution,
+              series: 'A',
+              serial: 5,
+            ),
+          ],
+        ),
+      );
+      when(() => h.documents.getById(99)).thenAnswer(
+        (_) async => aDocument(
+          id: 99,
+          status: FiscalDocumentStatus.issued,
+          serial: 5,
+          series: 'A',
+          total: Decimal.parse('232'),
+          stamp: aStamp(),
+        ),
+      );
+
+      await tester.tap(key('fiscal_document_relation_link_3'));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.fiscalDocumentTitle('A5')), findsOneWidget);
+    });
+
+    testWidgets('a related document with no folio links by its id', (
+      tester,
+    ) async {
+      await h.pump(
+        tester,
+        document: aCreditNote().copyWith(
+          relations: [aRelation(id: 1, documentId: 12, serial: null)],
+        ),
+      );
+
+      expect(
+        find.descendant(
+          of: key('fiscal_document_relation_link_1'),
+          matching: find.text('#12'),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a legacy credit note with no relation shows no relations '
+        'section, and sealed it cannot be reopened', (tester) async {
+      await h.pump(
+        tester,
+        document: aCreditNote(
+          withRelation: false,
+          status: FiscalDocumentStatus.sealed,
+          serial: 5,
+        ),
+      );
+
+      expect(key('fiscal_document_relations'), findsNothing);
+      expect(key('fiscal_document_reopen'), findsNothing);
+      expect(key('fiscal_document_edit_header'), findsNothing);
+      expect(key('fiscal_document_copy_invoice_lines'), findsNothing);
     });
   });
 }

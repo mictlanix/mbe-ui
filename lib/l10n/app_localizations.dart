@@ -12022,7 +12022,7 @@ abstract class AppLocalizations {
   /// spec 066: fiscalDocumentLinesEmpty
   ///
   /// In en, this message translates to:
-  /// **'The invoice has no lines.'**
+  /// **'The document has no lines.'**
   String get fiscalDocumentLinesEmpty;
 
   /// spec 066: fiscalDocumentTaxIva16
@@ -12364,7 +12364,7 @@ abstract class AppLocalizations {
   /// spec 066: fiscalDocumentRemoveLineBody
   ///
   /// In en, this message translates to:
-  /// **'Remove this line from the invoice?'**
+  /// **'Remove this line from the document?'**
   String get fiscalDocumentRemoveLineBody;
 
   /// spec 066: fiscalDocumentRemoveAction
@@ -12466,38 +12466,38 @@ abstract class AppLocalizations {
   /// spec 066: fiscalDocumentConfirmTitle
   ///
   /// In en, this message translates to:
-  /// **'Confirm invoice'**
+  /// **'Confirm document'**
   String get fiscalDocumentConfirmTitle;
 
   /// spec 066: fiscalDocumentConfirmBody
   ///
   /// In en, this message translates to:
-  /// **'The next folio of series {series} will be assigned and the invoice will be sealed. After that it can only be reopened while it is not stamped.'**
+  /// **'The next folio of series {series} will be assigned and the document will be sealed. After that it can only be reopened while it is not stamped.'**
   String fiscalDocumentConfirmBody(String series);
 
-  /// spec 066: fiscalDocumentConfirmed
+  /// spec 066: fiscalDocumentConfirmed (spec 073: kind placeholder)
   ///
   /// In en, this message translates to:
-  /// **'Invoice {folio} sealed.'**
-  String fiscalDocumentConfirmed(String folio);
+  /// **'{kind} {folio} sealed.'**
+  String fiscalDocumentConfirmed(String kind, String folio);
 
   /// spec 066: fiscalDocumentReopenTitle
   ///
   /// In en, this message translates to:
-  /// **'Reopen invoice'**
+  /// **'Reopen document'**
   String get fiscalDocumentReopenTitle;
 
   /// spec 066: fiscalDocumentReopenBody
   ///
   /// In en, this message translates to:
-  /// **'The invoice goes back to draft and keeps folio {folio}. The seal is discarded.'**
+  /// **'The document goes back to draft and keeps folio {folio}. The seal is discarded.'**
   String fiscalDocumentReopenBody(String folio);
 
-  /// spec 066: fiscalDocumentReopened
+  /// spec 066: fiscalDocumentReopened (spec 073: kind placeholder)
   ///
   /// In en, this message translates to:
-  /// **'Invoice {folio} reopened.'**
-  String fiscalDocumentReopened(String folio);
+  /// **'{kind} {folio} reopened.'**
+  String fiscalDocumentReopened(String kind, String folio);
 
   /// spec 066: fiscalDocumentXmlSaved
   ///
@@ -12586,7 +12586,7 @@ abstract class AppLocalizations {
   /// mbe-api error code `fiscal_document.not_draft` (spec 066)
   ///
   /// In en, this message translates to:
-  /// **'This invoice is no longer a draft and cannot be changed.'**
+  /// **'This document is no longer a draft and cannot be changed.'**
   String get apiErrorFiscalDocumentNotDraft;
 
   /// mbe-api error code `fiscal_document.not_sealed` (spec 066)
@@ -12655,7 +12655,7 @@ abstract class AppLocalizations {
   /// mbe-api error code `fiscal_document.no_lines` (spec 066)
   ///
   /// In en, this message translates to:
-  /// **'The invoice has no lines.'**
+  /// **'The document has no lines.'**
   String get apiErrorFiscalDocumentNoLines;
 
   /// mbe-api error code `fiscal_document.line_missing_sat_key` (spec 066)
@@ -15655,6 +15655,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The PAC could not be reached. Nothing changed; try again.'**
   String get apiErrorPacUnavailable;
+
+  /// spec 073: fiscalDocumentIssueCreditNoteAction
+  ///
+  /// In en, this message translates to:
+  /// **'Issue credit note'**
+  String get fiscalDocumentIssueCreditNoteAction;
+
+  /// spec 073: fiscalDocumentIssueCreditNoteTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Issue a credit note?'**
+  String get fiscalDocumentIssueCreditNoteTitle;
+
+  /// spec 073: fiscalDocumentIssueCreditNoteBody
+  ///
+  /// In en, this message translates to:
+  /// **'A draft credit note will be created for invoice {folio} ({recipient}), related with type 01. It takes the invoice\'s customer, recipient, payment form and CFDI use.'**
+  String fiscalDocumentIssueCreditNoteBody(String folio, String recipient);
+
+  /// spec 073: fiscalDocumentIssueCreditNoteCreate
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get fiscalDocumentIssueCreditNoteCreate;
+
+  /// spec 073: fiscalDocumentCopyInvoiceLinesAction
+  ///
+  /// In en, this message translates to:
+  /// **'Add from invoice'**
+  String get fiscalDocumentCopyInvoiceLinesAction;
+
+  /// spec 073: fiscalDocumentCopyInvoiceLinesTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Lines of invoice {folio}'**
+  String fiscalDocumentCopyInvoiceLinesTitle(String folio);
+
+  /// spec 073: fiscalDocumentCopyInvoiceLinesIntro
+  ///
+  /// In en, this message translates to:
+  /// **'Check the lines you are crediting and adjust the quantity; it cannot exceed the invoiced one.'**
+  String get fiscalDocumentCopyInvoiceLinesIntro;
+
+  /// spec 073: fiscalDocumentCopyInvoiceLinesSubmit
+  ///
+  /// In en, this message translates to:
+  /// **'Add ({count})'**
+  String fiscalDocumentCopyInvoiceLinesSubmit(int count);
+
+  /// spec 073: fiscalDocumentCopyInvoiceLinesEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'The invoice has no lines.'**
+  String get fiscalDocumentCopyInvoiceLinesEmpty;
+
+  /// spec 073: fiscalDocumentCopyInvoiceLineMax
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum {max} (the invoiced quantity)'**
+  String fiscalDocumentCopyInvoiceLineMax(String max);
+
+  /// spec 073: fiscalDocumentCopyInvoiceLineQtyPositive
+  ///
+  /// In en, this message translates to:
+  /// **'Must be greater than 0'**
+  String get fiscalDocumentCopyInvoiceLineQtyPositive;
+
+  /// spec 073: fiscalDocumentCopyInvoiceLineAdded
+  ///
+  /// In en, this message translates to:
+  /// **'Added'**
+  String get fiscalDocumentCopyInvoiceLineAdded;
+
+  /// spec 073: fiscalDocumentCopyInvoiceLineFailed
+  ///
+  /// In en, this message translates to:
+  /// **'Line {code}: {message}'**
+  String fiscalDocumentCopyInvoiceLineFailed(String code, String message);
+
+  /// spec 073: fiscalDocumentCopyInvoiceLinesDone
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 line added} other{{count} lines added}}'**
+  String fiscalDocumentCopyInvoiceLinesDone(int count);
+
+  /// spec 073: fiscalDocumentInvoiceQuantity
+  ///
+  /// In en, this message translates to:
+  /// **'Invoiced qty'**
+  String get fiscalDocumentInvoiceQuantity;
+
+  /// spec 073: fiscalDocumentBannerCreditNoteForm
+  ///
+  /// In en, this message translates to:
+  /// **'The payment form is 99 (To be defined). Choose the real payment form in the header before confirming.'**
+  String get fiscalDocumentBannerCreditNoteForm;
+
+  /// spec 073: fiscalDocumentHeaderTermsFixedPue
+  ///
+  /// In en, this message translates to:
+  /// **'PUE (fixed on credit notes)'**
+  String get fiscalDocumentHeaderTermsFixedPue;
+
+  /// spec 073: fiscalDocumentCreditExceedsInvoice
+  ///
+  /// In en, this message translates to:
+  /// **'The credit note exceeds what is left of invoice {folio}: {remaining}.'**
+  String fiscalDocumentCreditExceedsInvoice(String folio, String remaining);
+
+  /// spec 073: apiErrorFiscalDocumentInvoiceNotCreditable
+  ///
+  /// In en, this message translates to:
+  /// **'This invoice no longer accepts credit notes: it must be stamped, valid and without a cancellation in progress.'**
+  String get apiErrorFiscalDocumentInvoiceNotCreditable;
+
+  /// spec 073: apiErrorFiscalDocumentCreditExceedsInvoice
+  ///
+  /// In en, this message translates to:
+  /// **'The credit note exceeds what is left to credit on the invoice: {remaining}.'**
+  String apiErrorFiscalDocumentCreditExceedsInvoice(String remaining);
+
+  /// spec 073: apiErrorFiscalDocumentCreditQuantityExceedsLine
+  ///
+  /// In en, this message translates to:
+  /// **'The quantity exceeds the invoice\'s: maximum {max}.'**
+  String apiErrorFiscalDocumentCreditQuantityExceedsLine(String max);
+
+  /// spec 073: apiErrorFiscalDocumentPaymentFormRequired
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the real payment form; 99 (To be defined) is not accepted on this document.'**
+  String get apiErrorFiscalDocumentPaymentFormRequired;
 }
 
 class _AppLocalizationsDelegate

@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
@@ -44,6 +45,23 @@ class FiscalDocumentActions extends _$FiscalDocumentActions {
     }
   }
 
+  /// `POST /fiscal-documents/credit-notes` (spec 073). Answers the new credit
+  /// note's id, or the refusal.
+  Future<({AppError? error, int? id})> createCreditNote(int invoiceId) async {
+    try {
+      final doc = await ref
+          .read(fiscalDocumentRepositoryProvider)
+          .createCreditNote(invoiceId);
+      ref.invalidate(fiscalDocumentsListControllerProvider);
+      return (error: null, id: doc.id);
+    } on AppError catch (e) {
+      if (e is NetworkError) {
+        ref.invalidate(fiscalDocumentsListControllerProvider);
+      }
+      return (error: e, id: null);
+    }
+  }
+
   /// `PUT /fiscal-documents/{id}`.
   Future<AppError?> updateHeader(int id, InvoiceHeaderPatch patch) =>
       _run(id, (r) => r.updateHeader(id, patch));
@@ -55,6 +73,41 @@ class FiscalDocumentActions extends _$FiscalDocumentActions {
   /// `POST /fiscal-documents/{id}/lines`.
   Future<AppError?> addProduct(int id, int productId) =>
       _run(id, (r) => r.addProduct(id, productId));
+
+  /// `POST /fiscal-documents/{id}/invoice-lines`, once per entry of [lines], in
+  /// the order given (spec 073 R1). It stops at the first refusal and answers
+  /// how many were added and which line was refused. The detail is refetched
+  /// once, at the end.
+  // simplified: one request per line, no batch route on the server; ask for
+  // one if returns commonly span more than a few dozen lines.
+  Future<({int added, AppError? error, int? failedLineId})> copyInvoiceLines(
+    int id,
+    List<({int lineId, Decimal quantity})> lines,
+  ) async {
+    final repository = ref.read(fiscalDocumentRepositoryProvider);
+    var added = 0;
+    AppError? error;
+    int? failedLineId;
+    for (final line in lines) {
+      try {
+        await repository.copyInvoiceLine(
+          id,
+          line.lineId,
+          quantity: line.quantity,
+        );
+        added++;
+      } on AppError catch (e) {
+        error = e;
+        failedLineId = line.lineId;
+        break;
+      }
+    }
+    ref.invalidate(fiscalDocumentDetailProvider(id));
+    if (added > 0 || error is NetworkError) {
+      ref.invalidate(fiscalDocumentsListControllerProvider);
+    }
+    return (added: added, error: error, failedLineId: failedLineId);
+  }
 
   /// `PUT /fiscal-documents/{id}/lines/{lineId}`.
   Future<AppError?> updateLine(int id, int lineId, InvoiceLinePatch patch) =>

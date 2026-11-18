@@ -233,6 +233,33 @@ void main() {
       expect(canSave(tester), isTrue);
     });
 
+    testWidgets('credit_quantity_exceeds_line keeps the dialog open with the '
+        'maximum (spec 073)', (tester) async {
+      when(() => h.documents.updateLine(7, 10, any())).thenThrow(
+        const AppError.server(
+          statusCode: 422,
+          problem: ApiProblem(
+            codeName: 'fiscal_document.credit_quantity_exceeds_line',
+            code: api.ErrorCode.fiscalDocumentPeriodCreditQuantityExceedsLine,
+            params: {'max': '3'},
+          ),
+        ),
+      );
+      await open(tester);
+
+      await tester.enterText(key('invoice_line_quantity'), '9');
+      await tester.pump();
+      await tester.tap(key('invoice_line_submit'));
+      await tester.pumpAndSettle();
+
+      expect(key('invoice_line_dialog'), findsOneWidget);
+      expect(
+        find.text(l10n.apiErrorFiscalDocumentCreditQuantityExceedsLine('3')),
+        findsOneWidget,
+      );
+      expect(canSave(tester), isTrue);
+    });
+
     testWidgets('any other refusal closes the dialog and shows above the '
         'action area', (tester) async {
       when(() => h.documents.updateLine(7, 10, any())).thenThrow(

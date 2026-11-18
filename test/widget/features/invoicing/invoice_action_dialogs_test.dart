@@ -77,7 +77,12 @@ void main() {
 
       verify(() => h.documents.confirm(7)).called(1);
       expect(key('invoice_confirm_dialog'), findsNothing);
-      expect(find.text(l10n.fiscalDocumentConfirmed('GR12')), findsOneWidget);
+      expect(
+        find.text(
+          l10n.fiscalDocumentConfirmed(l10n.fiscalDocumentKindInvoice, 'GR12'),
+        ),
+        findsOneWidget,
+      );
       expect(key('fiscal_document_banner_sealed'), findsOneWidget);
       // No edit control is left on the sealed invoice.
       expect(key('fiscal_document_confirm'), findsNothing);
@@ -495,7 +500,12 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(() => h.documents.reopen(7)).called(1);
-      expect(find.text(l10n.fiscalDocumentReopened('GR12')), findsOneWidget);
+      expect(
+        find.text(
+          l10n.fiscalDocumentReopened(l10n.fiscalDocumentKindInvoice, 'GR12'),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('a refusal closes the dialog and shows above the actions', (
@@ -516,6 +526,145 @@ void main() {
 
       expect(key('invoice_reopen_dialog'), findsNothing);
       expect(find.text(l10n.apiErrorFiscalDocumentNotSealed), findsOneWidget);
+    });
+  });
+
+  group('Emitir nota de crédito (spec 073 C26)', () {
+    FiscalDocument issuedInvoice() => aDocument(
+      status: FiscalDocumentStatus.issued,
+      serial: 12,
+      series: 'GR',
+      total: Decimal.parse('232'),
+      stamp: aStamp(),
+    );
+
+    final creator = InvoiceHarness.access(fiscalDocuments: 7);
+
+    Future<void> open(WidgetTester tester) async {
+      await h.pump(tester, document: issuedInvoice(), who: creator);
+      await tester.tap(key('fiscal_document_issue_credit_note'));
+      await tester.pumpAndSettle();
+    }
+
+    bool enabled(WidgetTester tester, String k) =>
+        tester.widget<ButtonStyleButton>(key(k)).onPressed != null;
+
+    testWidgets('names the invoice, and Crear opens the new credit note', (
+      tester,
+    ) async {
+      when(
+        () => h.documents.createCreditNote(7),
+      ).thenAnswer((_) async => aCreditNote(id: 40));
+      await open(tester);
+
+      expect(key('issue_credit_note_dialog'), findsOneWidget);
+      expect(
+        find.text(
+          l10n.fiscalDocumentIssueCreditNoteBody('GR12', 'Receptor SA'),
+        ),
+        findsOneWidget,
+      );
+
+      when(
+        () => h.documents.getById(40),
+      ).thenAnswer((_) async => aCreditNote(id: 40));
+      await tester.tap(key('issue_credit_note_create'));
+      await tester.pumpAndSettle();
+
+      verify(() => h.documents.createCreditNote(7)).called(1);
+      expect(key('issue_credit_note_dialog'), findsNothing);
+      // The new draft is on screen, not the invoice.
+      expect(key('fiscal_document_issue_credit_note'), findsNothing);
+      expect(
+        find.text(
+          l10n.fiscalDocumentTitleKind(
+            l10n.fiscalDocumentKindCreditNote,
+            '#40',
+          ),
+        ),
+        findsWidgets,
+      );
+    });
+
+    testWidgets('a refusal stays in the dialog in the clerk\'s words', (
+      tester,
+    ) async {
+      when(() => h.documents.createCreditNote(7)).thenThrow(
+        _refusal(
+          'fiscal_document.issuer_has_no_series',
+          api.ErrorCode.fiscalDocumentPeriodIssuerHasNoSeries,
+          {'type': 100},
+        ),
+      );
+      await open(tester);
+
+      await tester.tap(key('issue_credit_note_create'));
+      await tester.pumpAndSettle();
+
+      expect(key('issue_credit_note_dialog'), findsOneWidget);
+      expect(key('issue_credit_note_refusal'), findsOneWidget);
+      expect(
+        find.text(l10n.apiErrorFiscalDocumentIssuerHasNoSeries),
+        findsOneWidget,
+      );
+      // It can be tried again or backed out of.
+      expect(enabled(tester, 'issue_credit_note_create'), isTrue);
+      expect(enabled(tester, 'issue_credit_note_cancel'), isTrue);
+    });
+
+    testWidgets('an invoice that is no longer creditable says so', (
+      tester,
+    ) async {
+      when(() => h.documents.createCreditNote(7)).thenThrow(
+        _refusal(
+          'fiscal_document.invoice_not_creditable',
+          api.ErrorCode.fiscalDocumentPeriodInvoiceNotCreditable,
+          {'invoice_id': 7},
+        ),
+      );
+      await open(tester);
+
+      await tester.tap(key('issue_credit_note_create'));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(l10n.apiErrorFiscalDocumentInvoiceNotCreditable),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('both buttons are off while the request runs, and a second '
+        'press creates nothing more', (tester) async {
+      final gate = Completer<FiscalDocument>();
+      when(
+        () => h.documents.createCreditNote(7),
+      ).thenAnswer((_) => gate.future);
+      await open(tester);
+
+      await tester.tap(key('issue_credit_note_create'));
+      await tester.pump();
+
+      expect(enabled(tester, 'issue_credit_note_create'), isFalse);
+      expect(enabled(tester, 'issue_credit_note_cancel'), isFalse);
+      await tester.tap(key('issue_credit_note_create'), warnIfMissed: false);
+      await tester.pump();
+      verify(() => h.documents.createCreditNote(7)).called(1);
+
+      when(
+        () => h.documents.getById(40),
+      ).thenAnswer((_) async => aCreditNote(id: 40));
+      gate.complete(aCreditNote(id: 40));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('Cancelar closes it and sends nothing', (tester) async {
+      await open(tester);
+
+      await tester.tap(key('issue_credit_note_cancel'));
+      await tester.pumpAndSettle();
+
+      expect(key('issue_credit_note_dialog'), findsNothing);
+      verifyNever(() => h.documents.createCreditNote(any()));
     });
   });
 }

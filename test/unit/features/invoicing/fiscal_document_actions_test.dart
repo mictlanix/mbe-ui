@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -28,6 +29,7 @@ void main() {
     registerFallbackValue(InvoiceRelationType.substitution);
     registerFallbackValue(SatCancellationReason.withoutRelation);
     registerFallbackValue(const NewInvoice(customerId: 1, recipientRfc: 'X'));
+    registerFallbackValue(Decimal.one);
   });
 
   setUp(() {
@@ -193,6 +195,127 @@ void main() {
     expect(result.id, isNull);
     expect(result.error, isA<ServerError>());
     expect(listLoads, 1);
+  });
+
+  group('credit notes (spec 073)', () {
+    test('createCreditNote answers the new id and reloads the list', () async {
+      final c = await container();
+      when(
+        () => repository.createCreditNote(12),
+      ).thenAnswer((_) async => aCreditNote(id: 40));
+
+      final result = await actions(c).createCreditNote(12);
+      await settle(c);
+
+      expect(result.id, 40);
+      expect(result.error, isNull);
+      expect(listLoads, 2);
+    });
+
+    test('a refused createCreditNote answers the error and no id', () async {
+      final c = await container();
+      when(
+        () => repository.createCreditNote(12),
+      ).thenThrow(const AppError.server());
+
+      final result = await actions(c).createCreditNote(12);
+
+      expect(result.id, isNull);
+      expect(result.error, isA<ServerError>());
+      expect(listLoads, 1);
+    });
+
+    List<({int lineId, Decimal quantity})> lines(List<int> ids) => [
+      for (final id in ids) (lineId: id, quantity: Decimal.fromInt(id)),
+    ];
+
+    test('copyInvoiceLines sends every line in order and reloads the detail '
+        'once', () async {
+      final c = await container();
+      when(
+        () => repository.copyInvoiceLine(
+          7,
+          any(),
+          quantity: any(named: 'quantity'),
+        ),
+      ).thenAnswer((_) async => aCreditNote());
+
+      final result = await actions(c).copyInvoiceLines(7, lines([31, 32, 33]));
+      await settle(c);
+
+      expect(result.added, 3);
+      expect(result.error, isNull);
+      expect(result.failedLineId, isNull);
+      verifyInOrder([
+        () => repository.copyInvoiceLine(7, 31, quantity: Decimal.fromInt(31)),
+        () => repository.copyInvoiceLine(7, 32, quantity: Decimal.fromInt(32)),
+        () => repository.copyInvoiceLine(7, 33, quantity: Decimal.fromInt(33)),
+      ]);
+      expect(detailLoads, 2);
+      expect(listLoads, 2);
+    });
+
+    test(
+      'the second of three failing stops the run and names the line',
+      () async {
+        final c = await container();
+        when(
+          () => repository.copyInvoiceLine(
+            7,
+            any(),
+            quantity: any(named: 'quantity'),
+          ),
+        ).thenAnswer((_) async => aCreditNote());
+        when(
+          () => repository.copyInvoiceLine(
+            7,
+            32,
+            quantity: any(named: 'quantity'),
+          ),
+        ).thenThrow(const AppError.server());
+
+        final result = await actions(
+          c,
+        ).copyInvoiceLines(7, lines([31, 32, 33]));
+        await settle(c);
+
+        expect(result.added, 1);
+        expect(result.error, isA<ServerError>());
+        expect(result.failedLineId, 32);
+        verifyNever(
+          () => repository.copyInvoiceLine(
+            7,
+            33,
+            quantity: any(named: 'quantity'),
+          ),
+        );
+        // One refetch of the detail, and the list because one line did land.
+        expect(detailLoads, 2);
+        expect(listLoads, 2);
+      },
+    );
+
+    test(
+      'a first-line refusal adds nothing and leaves the list alone',
+      () async {
+        final c = await container();
+        when(
+          () => repository.copyInvoiceLine(
+            7,
+            any(),
+            quantity: any(named: 'quantity'),
+          ),
+        ).thenThrow(const AppError.server());
+
+        final result = await actions(c).copyInvoiceLines(7, lines([31, 32]));
+        await settle(c);
+
+        expect(result.added, 0);
+        expect(result.failedLineId, 31);
+        expect(detailLoads, 2);
+        expect(listLoads, 1);
+      },
+    );
   });
 
   group('stamp, cancel and refresh (spec 072)', () {

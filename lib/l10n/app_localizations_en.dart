@@ -7194,7 +7194,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fiscalDocumentLineFromOrder => 'Order';
 
   @override
-  String get fiscalDocumentLinesEmpty => 'The invoice has no lines.';
+  String get fiscalDocumentLinesEmpty => 'The document has no lines.';
 
   @override
   String get fiscalDocumentTaxIva16 => '16 %';
@@ -7377,7 +7377,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fiscalDocumentRemoveLineBody =>
-      'Remove this line from the invoice?';
+      'Remove this line from the document?';
 
   @override
   String get fiscalDocumentRemoveAction => 'Remove';
@@ -7432,29 +7432,29 @@ class AppLocalizationsEn extends AppLocalizations {
       'Remove this related document?';
 
   @override
-  String get fiscalDocumentConfirmTitle => 'Confirm invoice';
+  String get fiscalDocumentConfirmTitle => 'Confirm document';
 
   @override
   String fiscalDocumentConfirmBody(String series) {
-    return 'The next folio of series $series will be assigned and the invoice will be sealed. After that it can only be reopened while it is not stamped.';
+    return 'The next folio of series $series will be assigned and the document will be sealed. After that it can only be reopened while it is not stamped.';
   }
 
   @override
-  String fiscalDocumentConfirmed(String folio) {
-    return 'Invoice $folio sealed.';
+  String fiscalDocumentConfirmed(String kind, String folio) {
+    return '$kind $folio sealed.';
   }
 
   @override
-  String get fiscalDocumentReopenTitle => 'Reopen invoice';
+  String get fiscalDocumentReopenTitle => 'Reopen document';
 
   @override
   String fiscalDocumentReopenBody(String folio) {
-    return 'The invoice goes back to draft and keeps folio $folio. The seal is discarded.';
+    return 'The document goes back to draft and keeps folio $folio. The seal is discarded.';
   }
 
   @override
-  String fiscalDocumentReopened(String folio) {
-    return 'Invoice $folio reopened.';
+  String fiscalDocumentReopened(String kind, String folio) {
+    return '$kind $folio reopened.';
   }
 
   @override
@@ -7517,7 +7517,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get apiErrorFiscalDocumentNotDraft =>
-      'This invoice is no longer a draft and cannot be changed.';
+      'This document is no longer a draft and cannot be changed.';
 
   @override
   String get apiErrorFiscalDocumentNotSealed =>
@@ -7565,7 +7565,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'An invoice can only have relations of one type.';
 
   @override
-  String get apiErrorFiscalDocumentNoLines => 'The invoice has no lines.';
+  String get apiErrorFiscalDocumentNoLines => 'The document has no lines.';
 
   @override
   String apiErrorFiscalDocumentLineMissingSatKey(String line) {
@@ -9359,4 +9359,99 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get apiErrorPacUnavailable =>
       'The PAC could not be reached. Nothing changed; try again.';
+
+  @override
+  String get fiscalDocumentIssueCreditNoteAction => 'Issue credit note';
+
+  @override
+  String get fiscalDocumentIssueCreditNoteTitle => 'Issue a credit note?';
+
+  @override
+  String fiscalDocumentIssueCreditNoteBody(String folio, String recipient) {
+    return 'A draft credit note will be created for invoice $folio ($recipient), related with type 01. It takes the invoice\'s customer, recipient, payment form and CFDI use.';
+  }
+
+  @override
+  String get fiscalDocumentIssueCreditNoteCreate => 'Create';
+
+  @override
+  String get fiscalDocumentCopyInvoiceLinesAction => 'Add from invoice';
+
+  @override
+  String fiscalDocumentCopyInvoiceLinesTitle(String folio) {
+    return 'Lines of invoice $folio';
+  }
+
+  @override
+  String get fiscalDocumentCopyInvoiceLinesIntro =>
+      'Check the lines you are crediting and adjust the quantity; it cannot exceed the invoiced one.';
+
+  @override
+  String fiscalDocumentCopyInvoiceLinesSubmit(int count) {
+    return 'Add ($count)';
+  }
+
+  @override
+  String get fiscalDocumentCopyInvoiceLinesEmpty => 'The invoice has no lines.';
+
+  @override
+  String fiscalDocumentCopyInvoiceLineMax(String max) {
+    return 'Maximum $max (the invoiced quantity)';
+  }
+
+  @override
+  String get fiscalDocumentCopyInvoiceLineQtyPositive =>
+      'Must be greater than 0';
+
+  @override
+  String get fiscalDocumentCopyInvoiceLineAdded => 'Added';
+
+  @override
+  String fiscalDocumentCopyInvoiceLineFailed(String code, String message) {
+    return 'Line $code: $message';
+  }
+
+  @override
+  String fiscalDocumentCopyInvoiceLinesDone(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lines added',
+      one: '1 line added',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get fiscalDocumentInvoiceQuantity => 'Invoiced qty';
+
+  @override
+  String get fiscalDocumentBannerCreditNoteForm =>
+      'The payment form is 99 (To be defined). Choose the real payment form in the header before confirming.';
+
+  @override
+  String get fiscalDocumentHeaderTermsFixedPue => 'PUE (fixed on credit notes)';
+
+  @override
+  String fiscalDocumentCreditExceedsInvoice(String folio, String remaining) {
+    return 'The credit note exceeds what is left of invoice $folio: $remaining.';
+  }
+
+  @override
+  String get apiErrorFiscalDocumentInvoiceNotCreditable =>
+      'This invoice no longer accepts credit notes: it must be stamped, valid and without a cancellation in progress.';
+
+  @override
+  String apiErrorFiscalDocumentCreditExceedsInvoice(String remaining) {
+    return 'The credit note exceeds what is left to credit on the invoice: $remaining.';
+  }
+
+  @override
+  String apiErrorFiscalDocumentCreditQuantityExceedsLine(String max) {
+    return 'The quantity exceeds the invoice\'s: maximum $max.';
+  }
+
+  @override
+  String get apiErrorFiscalDocumentPaymentFormRequired =>
+      'Choose the real payment form; 99 (To be defined) is not accepted on this document.';
 }
