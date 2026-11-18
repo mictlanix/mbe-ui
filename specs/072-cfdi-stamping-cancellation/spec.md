@@ -51,7 +51,7 @@ A billing clerk browsing Facturas sees each document in its real state, includin
 1. **Given** documents in each of the six states, **When** the clerk opens Facturas, **Then** each row shows its state with a distinct label, and the state filter offers all six.
 2. **Given** the list filtered by Timbrando or Cancelación pendiente, **When** it loads, **Then** only documents in that state are shown.
 3. **Given** a document in the stamping or cancellation-pending state, **When** the clerk opens it, **Then** it is read-only: no edit, confirm or reopen action is offered.
-4. **Given** the server returns a state this version of the app does not know, **When** the document is shown, **Then** it is shown read-only with a neutral "unknown state" label, never as a draft.
+4. **Given** each of the six states the server can return, **When** a document in that state is shown, **Then** it shows that state. None falls back to draft.
 
 ---
 
@@ -153,7 +153,7 @@ On an issued, cancellation-pending or cancelled document, the clerk sees its sta
 
 - **FR-001**: The app MUST recognise all six fiscal states (draft, sealed, stamping, issued, cancellation pending, cancelled) and show each with a distinct Spanish label wherever a state appears: list rows, state filter, detail.
 - **FR-002**: The list's state filter MUST offer all six states.
-- **FR-003**: A state the app does not recognise MUST be shown read-only with a neutral "unknown" label. It MUST NOT be treated as a draft.
+- **FR-003**: The mapping from server states MUST be exhaustive: each of the server's states maps to its own state, and none falls back to draft. (A value outside the server's contract fails the load, as every closed server enum does in the app. It is never shown as a draft.)
 - **FR-004**: Only drafts MUST be editable, as in spec 066. Stamping and cancellation-pending documents MUST open read-only.
 - **FR-005**: PDF and XML MUST be offered for issued, cancellation-pending and cancelled documents, and not for draft, sealed or stamping ones. Spec 066's note that "stamping is not yet available" MUST be removed. Sealed and stamping documents get a note that explains what comes next: stamp, or wait and refresh.
 
@@ -167,7 +167,7 @@ On an issued, cancellation-pending or cancelled document, the clerk sees its sta
 **Cancellation (roadmap#52)**
 
 - **FR-010**: Users with update access MUST be able to cancel an issued document of any type by choosing a SAT reason, 01–04, each shown with its code and SAT description.
-- **FR-011**: For reason 01, the user MUST choose a substitute among stamped, live (issued or cancellation-pending) documents with the same issuer and recipient, and the request MUST NOT be sendable without one. For 02–04 no substitute is asked for.
+- **FR-011**: For reason 01, the user MUST choose a substitute among issued documents with the same issuer and recipient, other than the one being cancelled. The request MUST NOT be sendable without one. For 02–04 no substitute is asked for. The server also accepts a document whose own cancellation is pending, but the picker doesn't offer it: such a document is on its way to being cancelled, so it makes a poor replacement.
 - **FR-012**: Cancel MUST ask the user to confirm before sending, saying it is sent to SAT and cannot be undone from the app.
 - **FR-013**: After a cancellation is sent, the document MUST show the state the server returns: cancelled, or cancellation pending with a note that SAT waits for the receiver.
 - **FR-014**: When an invoice still has live payment receipts or credit notes, the refusal MUST list those documents by series and folio.
@@ -175,7 +175,7 @@ On an issued, cancellation-pending or cancelled document, the clerk sees its sta
 **Refresh (mbe-ui#274)**
 
 - **FR-015**: Users with update access MUST be able to refresh a stamping or cancellation-pending document. The screen MUST then show the document as the server returns it.
-- **FR-016**: When a refresh leaves the document unchanged because it is still in process, the user MUST be told it is still in process.
+- **FR-016**: When a refresh succeeds but the document is still in process (same state as before), the user MUST get an informational "still in process" notice, not an error. When the server says there is nothing in process (someone or the periodic job already resolved it), the user MUST see that refusal, and the screen MUST show the document's current state.
 
 **History**
 
@@ -205,7 +205,7 @@ On an issued, cancellation-pending or cancelled document, the clerk sees its sta
 
 - **SC-001**: A clerk can take a sealed invoice to issued in under 30 seconds, and cancel an issued invoice in under 1 minute, including choosing a substitute for reason 01.
 - **SC-002**: Every row of the simulator's scenario table in mbe-ui#274 (13 stamp and cancel outcomes) can be driven from the app's screens, plus the simulator controls, and ends in the state and message the handoff lists.
-- **SC-003**: No document in the stamping, cancellation-pending or an unknown state ever offers an edit action.
+- **SC-003**: No document in the stamping or cancellation-pending state ever offers an edit action.
 - **SC-004**: Every refusal a clerk can trigger from stamp, cancel or refresh shows a specific message. None shows a generic error. Raw server text appears only as the PAC's own rejection message.
 - **SC-005**: A user with read-only access to fiscal documents cannot reach Stamp, Cancel or Refresh.
 
@@ -219,7 +219,7 @@ On an issued, cancellation-pending or cancelled document, the clerk sees its sta
 
 - **Rights**: Stamp, cancel and refresh need update on fiscal documents (system object 23), which is what the server checks. Fiscal documents have no facility scope.
 - **All document types** can be stamped, cancelled and refreshed here, not only invoices, because the server allows it and because a live payment receipt or credit note blocks its invoice's cancellation. Creating and editing payment receipts (#54) and CFDI credit notes (#56) stays out of scope.
-- **Choosing the substitute** reuses the related-document search from spec 066 (relations 04/07), limited to stamped, live documents of the same issuer and recipient. Its search already accepts a UUID, so a clerk with a UUID in hand can paste it.
+- **Choosing the substitute** reuses the related-document search from spec 066 (relations 04/07), limited to issued documents of the same issuer and recipient. Its search already accepts a UUID, so a clerk with a UUID in hand can paste it.
 - **The requester** in the history is shown by user name where the app can resolve it, otherwise by user id.
 - **The simulator's controls** (choosing the next stamp or cancel outcome, answering as the receiver) are a testing aid on dev and test. The app does not show them; testers drive them through the API, as the handoff describes.
 - **Email** of a stamped document (spec 028 on the server) has no UI yet and stays out of scope.
