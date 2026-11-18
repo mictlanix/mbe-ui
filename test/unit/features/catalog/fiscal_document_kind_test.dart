@@ -13,7 +13,7 @@ void main() {
     3: (FiscalDocumentKind.debitNote, 'Nota de cargo'),
     100: (FiscalDocumentKind.creditNote, 'Nota de crédito'),
     101: (FiscalDocumentKind.advancePaymentsApplied, 'Aplicación de anticipos'),
-    200: (FiscalDocumentKind.paymentReceipt, 'Recibo de pago'),
+    200: (FiscalDocumentKind.paymentReceipt, 'Complemento de pago'),
   };
 
   test('each code maps to its kind and Spanish label', () {

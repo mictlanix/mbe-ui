@@ -22,7 +22,7 @@ untouched.
 |---|---|---|---|
 | `invoice` | Nueva factura | picker (unchanged) | – |
 | `receipt` | Nuevo complemento de pago | picker | hint `new_receipt_hint` |
-| `receiptFromPayment(p)` | Emitir complemento de pago | fixed, read-only (`new_receipt_customer_fixed`) | summary `new_receipt_payment_summary`: "Pago #{id} · {customer} · {amount} · {date}" and hint |
+| `receiptFromPayment(p)` | Emitir complemento de pago | the payment's, not picked: it shows in the summary | summary `new_receipt_payment_summary`: "Pago #{id} · {customer} · {amount} · {date}" and hint |
 
 - Shared keys: `new_invoice_dialog`, `new_invoice_customer`, `new_invoice_recipient`,
   `new_invoice_no_taxpayers`, `new_invoice_submit`. With a single RFC it is preselected.
@@ -75,8 +75,8 @@ Inside `invoice_header_dialog`:
 - **Shown**: `invoice_header_payment_date` (date picker, no time), `invoice_header_payment_amount`
   (> 0), `invoice_header_form` (no 99, no government funding; null initial value when the
   stored form is 99, Guardar disabled until chosen), `invoice_header_payment_reference`
-  (max 50, counter), `invoice_header_ordering_bank` (helper "Solo si el banco ordenante es
-  extranjero"), `invoice_header_issued`, `invoice_header_comment`.
+  (max 50), `invoice_header_ordering_bank` (max 25, the server's column; helper "Solo si el banco
+  ordenante es extranjero"), `invoice_header_issued`, `invoice_header_comment`.
 - **Hidden**: recipient, series, terms, PPD toggle, facility, usage, reference.
 - **Patch**: only the changed receipt fields.
 - **Refusals** stay inline: `amounts_exceed_payment`, `payment_date_out_of_range`,

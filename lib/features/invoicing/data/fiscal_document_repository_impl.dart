@@ -107,6 +107,67 @@ class FiscalDocumentRepositoryImpl implements FiscalDocumentRepository {
   );
 
   @override
+  Future<FiscalDocument> createPaymentReceipt(NewPaymentReceipt receipt) =>
+      _document(
+        () => _api.createPaymentReceiptApiV1FiscalDocumentsPaymentReceiptsPost(
+          paymentReceiptCreate: api.PaymentReceiptCreate(
+            (b) => b
+              ..customer = receipt.customerId
+              ..recipient = receipt.recipientRfc
+              ..customerPayment = receipt.customerPaymentId,
+          ),
+        ),
+      );
+
+  @override
+  Future<FiscalDocument> addPaidInvoice(
+    int id,
+    int invoiceId, {
+    Decimal? amount,
+  }) => _document(
+    () =>
+        _api.addPaidInvoiceApiV1FiscalDocumentsFiscalDocumentIdPaidInvoicesPost(
+          fiscalDocumentId: id,
+          paidInvoiceAdd: api.PaidInvoiceAdd((b) {
+            b.invoice = invoiceId;
+            if (amount != null) {
+              b.amount = api.Amount3(
+                (a) => a.anyOf = AnyOf2<String, num>(values: {0: '$amount'}),
+              ).toBuilder();
+            }
+          }),
+        ),
+  );
+
+  @override
+  Future<FiscalDocument> updatePaidInvoice(
+    int id,
+    int relationId,
+    Decimal amount,
+  ) => _document(
+    () => _api
+        .updatePaidInvoiceApiV1FiscalDocumentsFiscalDocumentIdPaidInvoicesRelationIdPut(
+          fiscalDocumentId: id,
+          relationId: relationId,
+          paidInvoiceUpdate: api.PaidInvoiceUpdate(
+            (b) => b
+              ..amount = api.Amount4(
+                (a) => a.anyOf = AnyOf2<String, num>(values: {0: '$amount'}),
+              ).toBuilder(),
+          ),
+        ),
+  );
+
+  @override
+  Future<FiscalDocument> removePaidInvoice(int id, int relationId) => _document(
+    () => _api
+        .removePaidInvoiceApiV1FiscalDocumentsFiscalDocumentIdPaidInvoicesRelationIdDelete(
+          fiscalDocumentId: id,
+          relationId: relationId,
+        ),
+  );
+
+  @override
   Future<FiscalDocument> updateHeader(int id, InvoiceHeaderPatch patch) =>
       _document(
         () => _api.updateInvoiceApiV1FiscalDocumentsFiscalDocumentIdPut(
@@ -122,6 +183,22 @@ class FiscalDocumentRepositoryImpl implements FiscalDocumentRepository {
               ..facility = patch.facilityId
               ..reference = patch.reference
               ..comment = patch.comment;
+            // A payment receipt's fields (spec 074). Only set ones are sent,
+            // so a receipt patch never carries invoice fields and an invoice
+            // patch never carries these.
+            final paymentDate = patch.paymentDate;
+            if (paymentDate != null) b.paymentDate = paymentDate.toDate();
+            final paymentAmount = patch.paymentAmount;
+            if (paymentAmount != null) {
+              b.paymentAmount = api.PaymentAmount(
+                (a) => a.anyOf = AnyOf2<String, num>(
+                  values: {0: '$paymentAmount'},
+                ),
+              ).toBuilder();
+            }
+            b
+              ..paymentReference = patch.paymentReference
+              ..orderingBank = patch.orderingBank;
             final terms = patch.paymentTerms;
             if (terms != null) b.paymentTerms = _termsToApi(terms);
             // PPD sends no form: the server forces 99.
@@ -421,6 +498,25 @@ FiscalDocument _detail(api.FiscalDocumentResponse r) => FiscalDocument(
   relations: (r.relations ?? const <api.FiscalDocumentRelationResponse>[])
       .map(_relation)
       .toList(),
+  paymentDate: r.paymentDate?.toDateTime(),
+  paymentAmount: _decimal(r.paymentAmount),
+  paymentReference: r.paymentReference,
+  customerPaymentId: r.customerPayment,
+  paidInvoices: (r.paidInvoices ?? const <api.PaidInvoiceResponse>[])
+      .map(_paidInvoice)
+      .toList(),
+);
+
+PaidInvoice _paidInvoice(api.PaidInvoiceResponse p) => PaidInvoice(
+  relationId: p.fiscalDocumentRelationId,
+  invoiceId: p.invoice,
+  series: p.batch,
+  serial: p.serial,
+  stampUuid: p.stampUuid,
+  installment: p.installment,
+  previousBalance: _decimal(p.previousBalance) ?? Decimal.zero,
+  amount: _decimal(p.amount) ?? Decimal.zero,
+  remaining: _decimal(p.remaining) ?? Decimal.zero,
 );
 
 FiscalStamp _stamp(api.FiscalDocumentStamp s) => FiscalStamp(

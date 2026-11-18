@@ -15787,6 +15787,377 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose the real payment form; 99 (To be defined) is not accepted on this document.'**
   String get apiErrorFiscalDocumentPaymentFormRequired;
+
+  /// spec 074: paymentIssueReceiptAction
+  ///
+  /// In en, this message translates to:
+  /// **'Issue payment receipt'**
+  String get paymentIssueReceiptAction;
+
+  /// spec 074: fiscalDocumentNewReceiptAction
+  ///
+  /// In en, this message translates to:
+  /// **'New payment receipt'**
+  String get fiscalDocumentNewReceiptAction;
+
+  /// spec 074: fiscalDocumentNewReceiptTitle
+  ///
+  /// In en, this message translates to:
+  /// **'New payment receipt'**
+  String get fiscalDocumentNewReceiptTitle;
+
+  /// spec 074: fiscalDocumentIssueReceiptTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Issue payment receipt'**
+  String get fiscalDocumentIssueReceiptTitle;
+
+  /// spec 074: fiscalDocumentNewReceiptHint
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the payment and the invoices it settles in the draft.'**
+  String get fiscalDocumentNewReceiptHint;
+
+  /// spec 074: fiscalDocumentIssueReceiptHint
+  ///
+  /// In en, this message translates to:
+  /// **'A draft will be created with the payment\'s date, amount, payment form and reference, and the PPD invoices of its orders.'**
+  String get fiscalDocumentIssueReceiptHint;
+
+  /// spec 074: fiscalDocumentIssueReceiptPaymentSummary
+  ///
+  /// In en, this message translates to:
+  /// **'Payment #{id} · {customer} · {amount} · {date}'**
+  String fiscalDocumentIssueReceiptPaymentSummary(
+    int id,
+    String customer,
+    String amount,
+    String date,
+  );
+
+  /// spec 074: fiscalDocumentReceiptOpenExisting
+  ///
+  /// In en, this message translates to:
+  /// **'Open receipt'**
+  String get fiscalDocumentReceiptOpenExisting;
+
+  /// spec 074: fiscalDocumentReceiptPaymentSection
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get fiscalDocumentReceiptPaymentSection;
+
+  /// spec 074: fiscalDocumentReceiptPaymentDate
+  ///
+  /// In en, this message translates to:
+  /// **'Payment date'**
+  String get fiscalDocumentReceiptPaymentDate;
+
+  /// spec 074: fiscalDocumentReceiptPaymentAmount
+  ///
+  /// In en, this message translates to:
+  /// **'Payment amount'**
+  String get fiscalDocumentReceiptPaymentAmount;
+
+  /// spec 074: fiscalDocumentReceiptPaymentForm
+  ///
+  /// In en, this message translates to:
+  /// **'Payment form'**
+  String get fiscalDocumentReceiptPaymentForm;
+
+  /// spec 074: fiscalDocumentReceiptOperationNumber
+  ///
+  /// In en, this message translates to:
+  /// **'Operation no.'**
+  String get fiscalDocumentReceiptOperationNumber;
+
+  /// spec 074: fiscalDocumentReceiptOrderingBank
+  ///
+  /// In en, this message translates to:
+  /// **'Ordering bank'**
+  String get fiscalDocumentReceiptOrderingBank;
+
+  /// spec 074: fiscalDocumentReceiptSourcePayment
+  ///
+  /// In en, this message translates to:
+  /// **'Source payment'**
+  String get fiscalDocumentReceiptSourcePayment;
+
+  /// spec 074: fiscalDocumentReceiptSourcePaymentValue
+  ///
+  /// In en, this message translates to:
+  /// **'Payment #{id}'**
+  String fiscalDocumentReceiptSourcePaymentValue(int id);
+
+  /// spec 074: fiscalDocumentPaidInvoicesSection
+  ///
+  /// In en, this message translates to:
+  /// **'Paid invoices'**
+  String get fiscalDocumentPaidInvoicesSection;
+
+  /// spec 074: fiscalDocumentPaidInvoicesEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'No invoices.'**
+  String get fiscalDocumentPaidInvoicesEmpty;
+
+  /// spec 074: fiscalDocumentPaidInvoicesColumnInvoice
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice'**
+  String get fiscalDocumentPaidInvoicesColumnInvoice;
+
+  /// spec 074: fiscalDocumentPaidInvoicesColumnUuid
+  ///
+  /// In en, this message translates to:
+  /// **'UUID'**
+  String get fiscalDocumentPaidInvoicesColumnUuid;
+
+  /// spec 074: fiscalDocumentPaidInvoicesColumnInstallment
+  ///
+  /// In en, this message translates to:
+  /// **'Installment'**
+  String get fiscalDocumentPaidInvoicesColumnInstallment;
+
+  /// spec 074: fiscalDocumentPaidInvoicesColumnPreviousBalance
+  ///
+  /// In en, this message translates to:
+  /// **'Previous balance'**
+  String get fiscalDocumentPaidInvoicesColumnPreviousBalance;
+
+  /// spec 074: fiscalDocumentPaidInvoicesColumnAmount
+  ///
+  /// In en, this message translates to:
+  /// **'Amount paid'**
+  String get fiscalDocumentPaidInvoicesColumnAmount;
+
+  /// spec 074: fiscalDocumentPaidInvoicesColumnRemaining
+  ///
+  /// In en, this message translates to:
+  /// **'Remaining balance'**
+  String get fiscalDocumentPaidInvoicesColumnRemaining;
+
+  /// spec 074: fiscalDocumentAddPaidInvoiceAction
+  ///
+  /// In en, this message translates to:
+  /// **'Add invoice'**
+  String get fiscalDocumentAddPaidInvoiceAction;
+
+  /// spec 074: fiscalDocumentReceiptSummaryPayment
+  ///
+  /// In en, this message translates to:
+  /// **'Payment amount'**
+  String get fiscalDocumentReceiptSummaryPayment;
+
+  /// spec 074: fiscalDocumentReceiptSummaryAssigned
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get fiscalDocumentReceiptSummaryAssigned;
+
+  /// spec 074: fiscalDocumentReceiptSummaryUnassigned
+  ///
+  /// In en, this message translates to:
+  /// **'Unassigned'**
+  String get fiscalDocumentReceiptSummaryUnassigned;
+
+  /// spec 074: fiscalDocumentBannerReceiptNoProposal
+  ///
+  /// In en, this message translates to:
+  /// **'No stamped PPD invoices were found for this payment\'s orders and this recipient. Add them with \"Add invoice\".'**
+  String get fiscalDocumentBannerReceiptNoProposal;
+
+  /// spec 074: addPaidInvoiceTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add invoice'**
+  String get addPaidInvoiceTitle;
+
+  /// spec 074: addPaidInvoiceIntro
+  ///
+  /// In en, this message translates to:
+  /// **'Stamped invoices of {issuer} for {recipient}.'**
+  String addPaidInvoiceIntro(String issuer, String recipient);
+
+  /// spec 074: addPaidInvoiceEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'There are no stamped invoices for this recipient.'**
+  String get addPaidInvoiceEmpty;
+
+  /// spec 074: addPaidInvoiceAmountLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Amount paid'**
+  String get addPaidInvoiceAmountLabel;
+
+  /// spec 074: addPaidInvoiceAmountHelper
+  ///
+  /// In en, this message translates to:
+  /// **'Empty = the balance, up to what is left to assign'**
+  String get addPaidInvoiceAmountHelper;
+
+  /// spec 074: addPaidInvoiceSubmit
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get addPaidInvoiceSubmit;
+
+  /// spec 074: editPaidInvoiceTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Amount paid · {folio}'**
+  String editPaidInvoiceTitle(String folio);
+
+  /// spec 074: editPaidInvoicePreviousBalance
+  ///
+  /// In en, this message translates to:
+  /// **'Previous balance {amount}'**
+  String editPaidInvoicePreviousBalance(String amount);
+
+  /// spec 074: editPaidInvoiceAmountMax
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum {max} (the previous balance)'**
+  String editPaidInvoiceAmountMax(String max);
+
+  /// spec 074: editPaidInvoiceAmountPositive
+  ///
+  /// In en, this message translates to:
+  /// **'Must be greater than 0'**
+  String get editPaidInvoiceAmountPositive;
+
+  /// spec 074: removePaidInvoiceTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Remove paid invoice'**
+  String get removePaidInvoiceTitle;
+
+  /// spec 074: removePaidInvoiceBody
+  ///
+  /// In en, this message translates to:
+  /// **'Remove invoice {folio} from this receipt?'**
+  String removePaidInvoiceBody(String folio);
+
+  /// spec 074: fiscalDocumentHeaderPaymentDate
+  ///
+  /// In en, this message translates to:
+  /// **'Payment date'**
+  String get fiscalDocumentHeaderPaymentDate;
+
+  /// spec 074: fiscalDocumentHeaderPaymentAmount
+  ///
+  /// In en, this message translates to:
+  /// **'Payment amount'**
+  String get fiscalDocumentHeaderPaymentAmount;
+
+  /// spec 074: fiscalDocumentHeaderOperationNumber
+  ///
+  /// In en, this message translates to:
+  /// **'Operation no.'**
+  String get fiscalDocumentHeaderOperationNumber;
+
+  /// spec 074: fiscalDocumentHeaderOrderingBank
+  ///
+  /// In en, this message translates to:
+  /// **'Ordering bank'**
+  String get fiscalDocumentHeaderOrderingBank;
+
+  /// spec 074: fiscalDocumentHeaderOrderingBankHelper
+  ///
+  /// In en, this message translates to:
+  /// **'Only if the ordering bank is foreign'**
+  String get fiscalDocumentHeaderOrderingBankHelper;
+
+  /// spec 074: fiscalDocumentHeaderReceiptFixed
+  ///
+  /// In en, this message translates to:
+  /// **'CFDI usage CP01 · Currency MXN (fixed on payment receipts)'**
+  String get fiscalDocumentHeaderReceiptFixed;
+
+  /// spec 074: apiErrorFiscalDocumentInvoiceNotPayable
+  ///
+  /// In en, this message translates to:
+  /// **'The invoice cannot be paid by this receipt: it must be PPD, stamped and live, with no cancellation in process, and of the same issuer and recipient.'**
+  String get apiErrorFiscalDocumentInvoiceNotPayable;
+
+  /// spec 074: apiErrorFiscalDocumentInvoiceAlreadyOnReceipt
+  ///
+  /// In en, this message translates to:
+  /// **'The invoice is already on this receipt.'**
+  String get apiErrorFiscalDocumentInvoiceAlreadyOnReceipt;
+
+  /// spec 074: apiErrorFiscalDocumentAmountExceedsBalance
+  ///
+  /// In en, this message translates to:
+  /// **'The amount exceeds the invoice balance: {balance}.'**
+  String apiErrorFiscalDocumentAmountExceedsBalance(String balance);
+
+  /// spec 074: apiErrorFiscalDocumentAmountsExceedPayment
+  ///
+  /// In en, this message translates to:
+  /// **'The amounts paid exceed the payment amount.'**
+  String get apiErrorFiscalDocumentAmountsExceedPayment;
+
+  /// spec 074: apiErrorFiscalDocumentAmountsNotEqualPayment
+  ///
+  /// In en, this message translates to:
+  /// **'The amounts paid must equal the payment amount.'**
+  String get apiErrorFiscalDocumentAmountsNotEqualPayment;
+
+  /// spec 074: apiErrorFiscalDocumentPaymentDateOutOfRange
+  ///
+  /// In en, this message translates to:
+  /// **'The payment date must be between the invoices\' dates and today.'**
+  String get apiErrorFiscalDocumentPaymentDateOutOfRange;
+
+  /// spec 074: apiErrorFiscalDocumentPaymentAlreadyReceipted
+  ///
+  /// In en, this message translates to:
+  /// **'This payment already has a payment receipt.'**
+  String get apiErrorFiscalDocumentPaymentAlreadyReceipted;
+
+  /// spec 074: apiErrorFiscalDocumentPaymentOtherCustomer
+  ///
+  /// In en, this message translates to:
+  /// **'The payment belongs to another customer.'**
+  String get apiErrorFiscalDocumentPaymentOtherCustomer;
+
+  /// spec 074: apiErrorFiscalDocumentReceiptNeedsPaymentData
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the payment date and amount before confirming.'**
+  String get apiErrorFiscalDocumentReceiptNeedsPaymentData;
+
+  /// spec 074: apiErrorFiscalDocumentReceiptPaysNoInvoice
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one paid invoice before confirming.'**
+  String get apiErrorFiscalDocumentReceiptPaysNoInvoice;
+
+  /// spec 074: fiscalDocumentPaidInvoiceEditTooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Edit amount'**
+  String get fiscalDocumentPaidInvoiceEditTooltip;
+
+  /// spec 074: fiscalDocumentPaidInvoiceRemoveTooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Remove invoice'**
+  String get fiscalDocumentPaidInvoiceRemoveTooltip;
+
+  /// spec 074: fiscalDocumentHeaderOperationNumberTooLong
+  ///
+  /// In en, this message translates to:
+  /// **'The operation number can have up to 50 characters.'**
+  String get fiscalDocumentHeaderOperationNumberTooLong;
+
+  /// spec 074: fiscalDocumentHeaderOrderingBankTooLong
+  ///
+  /// In en, this message translates to:
+  /// **'The ordering bank can have up to 25 characters.'**
+  String get fiscalDocumentHeaderOrderingBankTooLong;
 }
 
 class _AppLocalizationsDelegate

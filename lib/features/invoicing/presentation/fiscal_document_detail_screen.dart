@@ -53,6 +53,8 @@ import 'package:mbe_ui/features/invoicing/presentation/invoice_action_dialogs.da
 import 'package:mbe_ui/features/invoicing/presentation/invoice_header_dialog.dart';
 import 'package:mbe_ui/features/invoicing/presentation/invoice_line_dialog.dart';
 import 'package:mbe_ui/features/invoicing/presentation/invoice_totals.dart';
+import 'package:mbe_ui/features/invoicing/presentation/paid_invoice_dialogs.dart';
+import 'package:mbe_ui/features/invoicing/presentation/receipt_sections.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// One fiscal document (spec 066 contracts C5): a status banner, the header
@@ -507,6 +509,28 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
     }
   }
 
+  /// The paid-invoice actions of a receipt draft (spec 074 C41, C42). Each
+  /// dialog writes through the actions, which refresh the detail, and keeps
+  /// its own refusals inline.
+  Future<void> _addPaidInvoice() async {
+    setState(() => _actionError = null);
+    await showAddPaidInvoiceDialog(context, receipt: _document);
+  }
+
+  Future<void> _editPaidInvoice(PaidInvoice paid) async {
+    setState(() => _actionError = null);
+    await showEditPaidInvoiceDialog(context, receipt: _document, paid: paid);
+  }
+
+  Future<void> _removePaidInvoice(PaidInvoice paid) async {
+    setState(() => _actionError = null);
+    await showRemovePaidInvoiceDialog(
+      context,
+      documentId: _document.id,
+      paid: paid,
+    );
+  }
+
   Future<void> _addOrder() async {
     setState(() => _actionError = null);
     final customerId = _document.customerId;
@@ -588,6 +612,7 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
     final canAddOrder =
         canEdit &&
         !document.isCreditNote &&
+        !document.isPaymentReceipt &&
         document.customerId != null &&
         access.can(SystemObject.salesOrders, AccessRight.read);
     // Reopening a sealed invoice also needs FiscalDocuments (23) update.
@@ -608,10 +633,12 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
         document.canIssueCreditNote &&
         access.can(SystemObject.fiscalDocuments, AccessRight.create);
     final canCopyInvoiceLines = canEdit && document.isCreditNote;
-    final canEditRelations = canEdit && !document.isCreditNote;
+    final canEditRelations =
+        canEdit && !document.isCreditNote && !document.isPaymentReceipt;
     // A manual line needs StandaloneFiscalDocuments (56) create.
     final canAddProduct =
         canEdit &&
+        !document.isPaymentReceipt &&
         access.can(SystemObject.standaloneFiscalDocuments, AccessRight.create);
 
     return SingleChildScrollView(
@@ -625,18 +652,33 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
             document: document,
             onEditHeader: canEdit ? _editHeader : null,
           ),
-          _LinesSection(
-            document: document,
-            onAddOrder: canAddOrder ? _addOrder : null,
-            onCopyInvoiceLines: canCopyInvoiceLines ? _copyInvoiceLines : null,
-            onAddProduct: canAddProduct ? _addProduct : null,
-            onEditLine: canEdit ? _editLine : null,
-            onRemoveLine: canEdit ? _removeLine : null,
-          ),
+          // A payment receipt has no product lines, and its relations are the
+          // paid invoices it already lists, so it shows its payment and those
+          // invoices instead (spec 074 R3).
+          if (document.isPaymentReceipt) ...[
+            ReceiptPaymentSection(document: document),
+            PaidInvoicesSection(
+              document: document,
+              onAdd: canEdit ? _addPaidInvoice : null,
+              onEdit: canEdit ? _editPaidInvoice : null,
+              onRemove: canEdit ? _removePaidInvoice : null,
+            ),
+          ] else
+            _LinesSection(
+              document: document,
+              onAddOrder: canAddOrder ? _addOrder : null,
+              onCopyInvoiceLines: canCopyInvoiceLines
+                  ? _copyInvoiceLines
+                  : null,
+              onAddProduct: canAddProduct ? _addProduct : null,
+              onEditLine: canEdit ? _editLine : null,
+              onRemoveLine: canEdit ? _removeLine : null,
+            ),
           // Related documents show when there are some, or on an editable
           // invoice draft, where they can be added. A credit note's one
           // relation is its invoice: it is shown, never edited (spec 073).
-          if (document.hasRelations || canEditRelations)
+          if (!document.isPaymentReceipt &&
+              (document.hasRelations || canEditRelations))
             _RelationsSection(
               document: document,
               onAdd: canEditRelations ? _addRelation : null,
@@ -644,7 +686,10 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
             ),
           if (document.cancellations.isNotEmpty)
             _CancellationsSection(document: document),
-          InvoiceTotals(document: document),
+          if (document.isPaymentReceipt)
+            ReceiptPaymentSummary(document: document)
+          else
+            InvoiceTotals(document: document),
           if (_stillInProcess && document.canRefresh)
             FiscalDocumentNotice(
               key: const Key('fiscal_document_still_in_process'),
@@ -800,6 +845,11 @@ class _StatusBanner extends ConsumerWidget {
       // choose the real one before confirming.
       text = l10n.fiscalDocumentBannerCreditNoteForm;
       key = 'credit_note_form';
+    } else if (document.showsNoProposalBanner && canUpdate) {
+      // A receipt made from a payment whose orders yielded no PPD invoice
+      // (spec 074 C38).
+      text = l10n.fiscalDocumentBannerReceiptNoProposal;
+      key = 'receipt_no_proposal';
     } else if (!document.isEditableKind) {
       text = l10n.fiscalDocumentBannerReadOnlyKind;
       key = 'read_only_kind';
@@ -987,14 +1037,18 @@ class _HeaderFacts extends ConsumerWidget {
                   value: ref.watch(facilityDisplayNameProvider(facilityId)),
                 ),
               ),
-            fact(
-              l10n.fiscalDocumentFactPaymentTerms,
-              invoicePaymentTermsLabel(l10n, document.paymentTerms),
-            ),
-            fact(
-              l10n.fiscalDocumentFactPaymentForm,
-              paymentMethodLabel(l10n, document.paymentForm),
-            ),
+            // A receipt's terms are fixed and its form is part of the payment
+            // it records, shown in its own section (spec 074 C37).
+            if (!document.isPaymentReceipt) ...[
+              fact(
+                l10n.fiscalDocumentFactPaymentTerms,
+                invoicePaymentTermsLabel(l10n, document.paymentTerms),
+              ),
+              fact(
+                l10n.fiscalDocumentFactPaymentForm,
+                paymentMethodLabel(l10n, document.paymentForm),
+              ),
+            ],
             fact(l10n.fiscalDocumentFactUsage, document.usage),
             fact(
               l10n.fiscalDocumentFactCurrency,
@@ -1002,7 +1056,11 @@ class _HeaderFacts extends ConsumerWidget {
                   ? '${document.currencyCode}'
                   : currencyCodeLabel(currency),
             ),
-            if (document.reference != null && document.reference!.isNotEmpty)
+            // On a receipt `reference` holds the ordering bank, which the
+            // payment section shows.
+            if (!document.isPaymentReceipt &&
+                document.reference != null &&
+                document.reference!.isNotEmpty)
               fact(l10n.fiscalDocumentFactReference, document.reference),
             if (document.comment != null && document.comment!.isNotEmpty)
               fact(l10n.fiscalDocumentFactComment, document.comment),

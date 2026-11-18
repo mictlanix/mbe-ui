@@ -33,6 +33,8 @@ class FiscalDocumentCandidatePicker extends ConsumerStatefulWidget {
     required this.emptyMessage,
     required this.onPicked,
     this.excludeId,
+    this.excludeIds = const {},
+    this.typeCode,
     this.initialSearch = '',
     this.recipientRfc,
     this.enabled = true,
@@ -46,6 +48,13 @@ class FiscalDocumentCandidatePicker extends ConsumerStatefulWidget {
 
   /// The document being worked on, which can never be its own candidate.
   final int? excludeId;
+
+  /// Documents that are never candidates, such as the invoices a payment
+  /// receipt already pays (spec 074 R14).
+  final Set<int> excludeIds;
+
+  /// Asks the server for one document type only (0 = invoice).
+  final int? typeCode;
   final String initialSearch;
   final String? recipientRfc;
   final ValueChanged<FiscalDocumentSummary> onPicked;
@@ -112,6 +121,7 @@ class _FiscalDocumentCandidatePickerState
           .list(
             search: search.isEmpty ? null : search,
             issuer: widget.issuerRfc,
+            type: widget.typeCode,
             status: widget.status,
             skip: more ? _fetched?.length ?? 0 : 0,
             limit: _pageSize,
@@ -148,6 +158,7 @@ class _FiscalDocumentCandidatePickerState
         ?.where(
           (d) =>
               d.id != widget.excludeId &&
+              !widget.excludeIds.contains(d.id) &&
               (widget.recipientRfc == null ||
                   d.recipientRfc == widget.recipientRfc),
         )

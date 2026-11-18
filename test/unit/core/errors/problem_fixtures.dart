@@ -89,6 +89,22 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.facilityPeriodOtherFacility: {'resource': 'sales_order'},
   api.ErrorCode.facilityPeriodRequired: {},
   api.ErrorCode.fiscalDocumentPeriodAlreadyRelated: {'relation_id': 4},
+  api.ErrorCode.fiscalDocumentPeriodAmountExceedsBalance: {
+    'balance': '2200.00',
+  },
+  api.ErrorCode.fiscalDocumentPeriodAmountsExceedPayment: {},
+  api.ErrorCode.fiscalDocumentPeriodAmountsNotEqualPayment: {},
+  api.ErrorCode.fiscalDocumentPeriodInvoiceAlreadyOnReceipt: {'invoice_id': 12},
+  api.ErrorCode.fiscalDocumentPeriodInvoiceNotPayable: {'invoice_id': 12},
+  api.ErrorCode.fiscalDocumentPeriodPaymentAlreadyReceipted: {
+    'fiscal_document_id': 77,
+  },
+  api.ErrorCode.fiscalDocumentPeriodPaymentDateOutOfRange: {},
+  api.ErrorCode.fiscalDocumentPeriodPaymentOtherCustomer: {
+    'customer_payment_id': 9,
+  },
+  api.ErrorCode.fiscalDocumentPeriodReceiptNeedsPaymentData: {},
+  api.ErrorCode.fiscalDocumentPeriodReceiptPaysNoInvoice: {},
   api.ErrorCode.fiscalDocumentPeriodCertificateCannotSign: {},
   api.ErrorCode.fiscalDocumentPeriodCreditExceedsInvoice: {
     'invoice_id': 12,

@@ -9454,4 +9454,227 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get apiErrorFiscalDocumentPaymentFormRequired =>
       'Choose the real payment form; 99 (To be defined) is not accepted on this document.';
+
+  @override
+  String get paymentIssueReceiptAction => 'Issue payment receipt';
+
+  @override
+  String get fiscalDocumentNewReceiptAction => 'New payment receipt';
+
+  @override
+  String get fiscalDocumentNewReceiptTitle => 'New payment receipt';
+
+  @override
+  String get fiscalDocumentIssueReceiptTitle => 'Issue payment receipt';
+
+  @override
+  String get fiscalDocumentNewReceiptHint =>
+      'Enter the payment and the invoices it settles in the draft.';
+
+  @override
+  String get fiscalDocumentIssueReceiptHint =>
+      'A draft will be created with the payment\'s date, amount, payment form and reference, and the PPD invoices of its orders.';
+
+  @override
+  String fiscalDocumentIssueReceiptPaymentSummary(
+    int id,
+    String customer,
+    String amount,
+    String date,
+  ) {
+    return 'Payment #$id · $customer · $amount · $date';
+  }
+
+  @override
+  String get fiscalDocumentReceiptOpenExisting => 'Open receipt';
+
+  @override
+  String get fiscalDocumentReceiptPaymentSection => 'Payment';
+
+  @override
+  String get fiscalDocumentReceiptPaymentDate => 'Payment date';
+
+  @override
+  String get fiscalDocumentReceiptPaymentAmount => 'Payment amount';
+
+  @override
+  String get fiscalDocumentReceiptPaymentForm => 'Payment form';
+
+  @override
+  String get fiscalDocumentReceiptOperationNumber => 'Operation no.';
+
+  @override
+  String get fiscalDocumentReceiptOrderingBank => 'Ordering bank';
+
+  @override
+  String get fiscalDocumentReceiptSourcePayment => 'Source payment';
+
+  @override
+  String fiscalDocumentReceiptSourcePaymentValue(int id) {
+    return 'Payment #$id';
+  }
+
+  @override
+  String get fiscalDocumentPaidInvoicesSection => 'Paid invoices';
+
+  @override
+  String get fiscalDocumentPaidInvoicesEmpty => 'No invoices.';
+
+  @override
+  String get fiscalDocumentPaidInvoicesColumnInvoice => 'Invoice';
+
+  @override
+  String get fiscalDocumentPaidInvoicesColumnUuid => 'UUID';
+
+  @override
+  String get fiscalDocumentPaidInvoicesColumnInstallment => 'Installment';
+
+  @override
+  String get fiscalDocumentPaidInvoicesColumnPreviousBalance =>
+      'Previous balance';
+
+  @override
+  String get fiscalDocumentPaidInvoicesColumnAmount => 'Amount paid';
+
+  @override
+  String get fiscalDocumentPaidInvoicesColumnRemaining => 'Remaining balance';
+
+  @override
+  String get fiscalDocumentAddPaidInvoiceAction => 'Add invoice';
+
+  @override
+  String get fiscalDocumentReceiptSummaryPayment => 'Payment amount';
+
+  @override
+  String get fiscalDocumentReceiptSummaryAssigned => 'Assigned';
+
+  @override
+  String get fiscalDocumentReceiptSummaryUnassigned => 'Unassigned';
+
+  @override
+  String get fiscalDocumentBannerReceiptNoProposal =>
+      'No stamped PPD invoices were found for this payment\'s orders and this recipient. Add them with \"Add invoice\".';
+
+  @override
+  String get addPaidInvoiceTitle => 'Add invoice';
+
+  @override
+  String addPaidInvoiceIntro(String issuer, String recipient) {
+    return 'Stamped invoices of $issuer for $recipient.';
+  }
+
+  @override
+  String get addPaidInvoiceEmpty =>
+      'There are no stamped invoices for this recipient.';
+
+  @override
+  String get addPaidInvoiceAmountLabel => 'Amount paid';
+
+  @override
+  String get addPaidInvoiceAmountHelper =>
+      'Empty = the balance, up to what is left to assign';
+
+  @override
+  String get addPaidInvoiceSubmit => 'Add';
+
+  @override
+  String editPaidInvoiceTitle(String folio) {
+    return 'Amount paid · $folio';
+  }
+
+  @override
+  String editPaidInvoicePreviousBalance(String amount) {
+    return 'Previous balance $amount';
+  }
+
+  @override
+  String editPaidInvoiceAmountMax(String max) {
+    return 'Maximum $max (the previous balance)';
+  }
+
+  @override
+  String get editPaidInvoiceAmountPositive => 'Must be greater than 0';
+
+  @override
+  String get removePaidInvoiceTitle => 'Remove paid invoice';
+
+  @override
+  String removePaidInvoiceBody(String folio) {
+    return 'Remove invoice $folio from this receipt?';
+  }
+
+  @override
+  String get fiscalDocumentHeaderPaymentDate => 'Payment date';
+
+  @override
+  String get fiscalDocumentHeaderPaymentAmount => 'Payment amount';
+
+  @override
+  String get fiscalDocumentHeaderOperationNumber => 'Operation no.';
+
+  @override
+  String get fiscalDocumentHeaderOrderingBank => 'Ordering bank';
+
+  @override
+  String get fiscalDocumentHeaderOrderingBankHelper =>
+      'Only if the ordering bank is foreign';
+
+  @override
+  String get fiscalDocumentHeaderReceiptFixed =>
+      'CFDI usage CP01 · Currency MXN (fixed on payment receipts)';
+
+  @override
+  String get apiErrorFiscalDocumentInvoiceNotPayable =>
+      'The invoice cannot be paid by this receipt: it must be PPD, stamped and live, with no cancellation in process, and of the same issuer and recipient.';
+
+  @override
+  String get apiErrorFiscalDocumentInvoiceAlreadyOnReceipt =>
+      'The invoice is already on this receipt.';
+
+  @override
+  String apiErrorFiscalDocumentAmountExceedsBalance(String balance) {
+    return 'The amount exceeds the invoice balance: $balance.';
+  }
+
+  @override
+  String get apiErrorFiscalDocumentAmountsExceedPayment =>
+      'The amounts paid exceed the payment amount.';
+
+  @override
+  String get apiErrorFiscalDocumentAmountsNotEqualPayment =>
+      'The amounts paid must equal the payment amount.';
+
+  @override
+  String get apiErrorFiscalDocumentPaymentDateOutOfRange =>
+      'The payment date must be between the invoices\' dates and today.';
+
+  @override
+  String get apiErrorFiscalDocumentPaymentAlreadyReceipted =>
+      'This payment already has a payment receipt.';
+
+  @override
+  String get apiErrorFiscalDocumentPaymentOtherCustomer =>
+      'The payment belongs to another customer.';
+
+  @override
+  String get apiErrorFiscalDocumentReceiptNeedsPaymentData =>
+      'Enter the payment date and amount before confirming.';
+
+  @override
+  String get apiErrorFiscalDocumentReceiptPaysNoInvoice =>
+      'Add at least one paid invoice before confirming.';
+
+  @override
+  String get fiscalDocumentPaidInvoiceEditTooltip => 'Edit amount';
+
+  @override
+  String get fiscalDocumentPaidInvoiceRemoveTooltip => 'Remove invoice';
+
+  @override
+  String get fiscalDocumentHeaderOperationNumberTooLong =>
+      'The operation number can have up to 50 characters.';
+
+  @override
+  String get fiscalDocumentHeaderOrderingBankTooLong =>
+      'The ordering bank can have up to 25 characters.';
 }

@@ -49,6 +49,28 @@ abstract class FiscalDocumentRepository {
   /// invoice [invoiceId] (spec 073).
   Future<FiscalDocument> createCreditNote(int invoiceId);
 
+  /// `POST /fiscal-documents/payment-receipts`: a payment-receipt draft, by
+  /// hand or from a customer payment with its invoices proposed (spec 074).
+  Future<FiscalDocument> createPaymentReceipt(NewPaymentReceipt receipt);
+
+  /// `POST /fiscal-documents/{id}/paid-invoices`: pays [invoiceId] on a receipt
+  /// draft. A null [amount] takes the server's default.
+  Future<FiscalDocument> addPaidInvoice(
+    int id,
+    int invoiceId, {
+    Decimal? amount,
+  });
+
+  /// `PUT /fiscal-documents/{id}/paid-invoices/{relationId}`.
+  Future<FiscalDocument> updatePaidInvoice(
+    int id,
+    int relationId,
+    Decimal amount,
+  );
+
+  /// `DELETE /fiscal-documents/{id}/paid-invoices/{relationId}`.
+  Future<FiscalDocument> removePaidInvoice(int id, int relationId);
+
   /// `PUT /fiscal-documents/{id}`: only the patch's non-null fields change.
   Future<FiscalDocument> updateHeader(int id, InvoiceHeaderPatch patch);
 

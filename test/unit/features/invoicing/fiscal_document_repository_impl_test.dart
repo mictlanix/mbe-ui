@@ -341,6 +341,218 @@ void main() {
     });
   });
 
+  group('payment receipts (spec 074)', () {
+    Map<String, Object?> receiptJson({
+      List<Object?>? paid,
+      Map<String, Object?> extra = const {},
+    }) => _docJson(
+      type: 200,
+      lines: const [],
+      extra: {
+        'payment_date': '2026-11-12',
+        'payment_amount': '11600.00',
+        'payment_reference': 'SPEI 99812',
+        'customer_payment': 4127,
+        'paid_invoices': paid ?? const [],
+        ...extra,
+      },
+    );
+
+    Map<String, Object?> paidJson({int id = 31}) => {
+      'fiscal_document_relation_id': id,
+      'invoice': 12,
+      'batch': 'A',
+      'serial': 5238,
+      'stamp_uuid': 'AAAA-BBBB',
+      'installment': 2,
+      'previous_balance': '8000.00',
+      'amount': '3600.00',
+      'remaining': '4400.00',
+    };
+
+    test('createPaymentReceipt posts the customer, RFC and payment and maps '
+        'the receipt', () async {
+      late RequestOptions sent;
+      final repo = _repo((o) async {
+        sent = o;
+        return _json(receiptJson(paid: [paidJson()]), 201);
+      });
+
+      final doc = await repo.createPaymentReceipt(
+        const NewPaymentReceipt(
+          customerId: 4,
+          recipientRfc: 'XEXX010101000',
+          customerPaymentId: 4127,
+        ),
+      );
+
+      expect(sent.method, 'POST');
+      expect(sent.path, '/api/v1/fiscal-documents/payment-receipts');
+      expect(sent.data, {
+        'customer': 4,
+        'recipient': 'XEXX010101000',
+        'customer_payment': 4127,
+      });
+      expect(doc.isPaymentReceipt, isTrue);
+      expect(doc.paymentDate, DateTime(2026, 11, 12));
+      expect(doc.paymentAmount, Decimal.parse('11600.00'));
+      expect(doc.paymentReference, 'SPEI 99812');
+      expect(doc.customerPaymentId, 4127);
+      final paid = doc.paidInvoices.single;
+      expect(paid.relationId, 31);
+      expect(paid.invoiceId, 12);
+      expect(paid.folioLabel, 'A5238');
+      expect(paid.installment, 2);
+      expect(paid.previousBalance, Decimal.parse('8000.00'));
+      expect(paid.amount, Decimal.parse('3600.00'));
+      expect(paid.remaining, Decimal.parse('4400.00'));
+    });
+
+    test('a by-hand receipt sends no payment id', () async {
+      late RequestOptions sent;
+      final repo = _repo((o) async {
+        sent = o;
+        return _json(receiptJson(extra: {'customer_payment': null}), 201);
+      });
+
+      final doc = await repo.createPaymentReceipt(
+        const NewPaymentReceipt(customerId: 4, recipientRfc: 'XEXX010101000'),
+      );
+
+      expect((sent.data as Map).containsKey('customer_payment'), isFalse);
+      expect(doc.customerPaymentId, isNull);
+    });
+
+    test(
+      'addPaidInvoice sends the invoice, and the amount only when given',
+      () async {
+        final sent = <RequestOptions>[];
+        final repo = _repo((o) async {
+          sent.add(o);
+          return _json(receiptJson(paid: [paidJson()]));
+        });
+
+        await repo.addPaidInvoice(7, 12);
+        await repo.addPaidInvoice(7, 12, amount: Decimal.parse('3600.5'));
+
+        expect(sent[0].method, 'POST');
+        expect(sent[0].path, '/api/v1/fiscal-documents/7/paid-invoices');
+        expect(sent[0].data, {'invoice': 12});
+        final body = sent[1].data as Map<String, dynamic>;
+        expect(body['invoice'], 12);
+        expect(Decimal.parse('${body['amount']}'), Decimal.parse('3600.5'));
+      },
+    );
+
+    test('updatePaidInvoice puts the amount on the relation', () async {
+      late RequestOptions sent;
+      final repo = _repo((o) async {
+        sent = o;
+        return _json(receiptJson(paid: [paidJson()]));
+      });
+
+      await repo.updatePaidInvoice(7, 31, Decimal.parse('100'));
+
+      expect(sent.method, 'PUT');
+      expect(sent.path, '/api/v1/fiscal-documents/7/paid-invoices/31');
+      expect(
+        Decimal.parse('${(sent.data as Map)['amount']}'),
+        Decimal.parse('100'),
+      );
+    });
+
+    test('removePaidInvoice deletes the relation', () async {
+      late RequestOptions sent;
+      final repo = _repo((o) async {
+        sent = o;
+        return _json(receiptJson());
+      });
+
+      final doc = await repo.removePaidInvoice(7, 31);
+
+      expect(sent.method, 'DELETE');
+      expect(sent.path, '/api/v1/fiscal-documents/7/paid-invoices/31');
+      expect(doc.paidInvoices, isEmpty);
+    });
+
+    test('a receipt header patch sends only the receipt fields', () async {
+      late RequestOptions sent;
+      final repo = _repo((o) async {
+        sent = o;
+        return _json(receiptJson());
+      });
+
+      await repo.updateHeader(
+        7,
+        InvoiceHeaderPatch(
+          paymentDate: DateTime(2026, 11, 12),
+          paymentAmount: Decimal.parse('11600'),
+          paymentForm: 3,
+          paymentReference: 'SPEI 1',
+          orderingBank: 'Bank X',
+          comment: 'n',
+        ),
+      );
+
+      final body = sent.data as Map<String, dynamic>;
+      expect(body.keys.toSet(), {
+        'payment_date',
+        'payment_amount',
+        'payment_method',
+        'payment_reference',
+        'ordering_bank',
+        'comment',
+      });
+      expect(body['payment_date'], '2026-11-12');
+      expect(
+        Decimal.parse('${body['payment_amount']}'),
+        Decimal.parse('11600'),
+      );
+      expect(body['payment_method'], 3);
+    });
+
+    test('an invoice header patch sends none of the receipt fields', () async {
+      late RequestOptions sent;
+      final repo = _repo((o) async {
+        sent = o;
+        return _json(_docJson());
+      });
+
+      await repo.updateHeader(
+        7,
+        const InvoiceHeaderPatch(reference: 'OC-1', usage: 'G03'),
+      );
+
+      expect((sent.data as Map).keys.toSet(), {'reference', 'usage'});
+    });
+
+    test('a refusal keeps its code and params', () async {
+      final repo = _repo(
+        (o) async => _json({
+          'detail': 'x',
+          'code': 'fiscal_document.payment_already_receipted',
+          'params': {'fiscal_document_id': 77},
+        }, 409),
+      );
+      await expectLater(
+        repo.createPaymentReceipt(
+          const NewPaymentReceipt(
+            customerId: 4,
+            recipientRfc: 'X',
+            customerPaymentId: 1,
+          ),
+        ),
+        throwsA(
+          isA<Object>().having(
+            (e) => '$e',
+            'text',
+            contains('payment_already_receipted'),
+          ),
+        ),
+      );
+    });
+  });
+
   group('credit notes (spec 073)', () {
     test(
       'createCreditNote posts the invoice id and maps the document',

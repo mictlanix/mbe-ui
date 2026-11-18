@@ -7004,7 +7004,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get fiscalDocumentKindCreditNote => 'Nota de crédito';
 
   @override
-  String get fiscalDocumentKindPaymentReceipt => 'Recibo de pago';
+  String get fiscalDocumentKindPaymentReceipt => 'Complemento de pago';
 
   @override
   String get fiscalDocumentKindAdvancePaymentsApplied =>
@@ -9514,4 +9514,227 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get apiErrorFiscalDocumentPaymentFormRequired =>
       'Elige la forma de pago real; 99 (Por definir) no se admite en este documento.';
+
+  @override
+  String get paymentIssueReceiptAction => 'Emitir complemento de pago';
+
+  @override
+  String get fiscalDocumentNewReceiptAction => 'Nuevo complemento de pago';
+
+  @override
+  String get fiscalDocumentNewReceiptTitle => 'Nuevo complemento de pago';
+
+  @override
+  String get fiscalDocumentIssueReceiptTitle => 'Emitir complemento de pago';
+
+  @override
+  String get fiscalDocumentNewReceiptHint =>
+      'Captura el pago y las facturas que liquida en el borrador.';
+
+  @override
+  String get fiscalDocumentIssueReceiptHint =>
+      'Se creará un borrador con la fecha, el monto, la forma de pago y la referencia del pago, y las facturas PPD de sus pedidos.';
+
+  @override
+  String fiscalDocumentIssueReceiptPaymentSummary(
+    int id,
+    String customer,
+    String amount,
+    String date,
+  ) {
+    return 'Pago #$id · $customer · $amount · $date';
+  }
+
+  @override
+  String get fiscalDocumentReceiptOpenExisting => 'Abrir complemento';
+
+  @override
+  String get fiscalDocumentReceiptPaymentSection => 'Pago';
+
+  @override
+  String get fiscalDocumentReceiptPaymentDate => 'Fecha del pago';
+
+  @override
+  String get fiscalDocumentReceiptPaymentAmount => 'Monto del pago';
+
+  @override
+  String get fiscalDocumentReceiptPaymentForm => 'Forma de pago';
+
+  @override
+  String get fiscalDocumentReceiptOperationNumber => 'No. de operación';
+
+  @override
+  String get fiscalDocumentReceiptOrderingBank => 'Banco ordenante';
+
+  @override
+  String get fiscalDocumentReceiptSourcePayment => 'Pago de origen';
+
+  @override
+  String fiscalDocumentReceiptSourcePaymentValue(int id) {
+    return 'Pago #$id';
+  }
+
+  @override
+  String get fiscalDocumentPaidInvoicesSection => 'Facturas pagadas';
+
+  @override
+  String get fiscalDocumentPaidInvoicesEmpty => 'Sin facturas.';
+
+  @override
+  String get fiscalDocumentPaidInvoicesColumnInvoice => 'Folio';
+
+  @override
+  String get fiscalDocumentPaidInvoicesColumnUuid => 'UUID';
+
+  @override
+  String get fiscalDocumentPaidInvoicesColumnInstallment => 'Parcialidad';
+
+  @override
+  String get fiscalDocumentPaidInvoicesColumnPreviousBalance =>
+      'Saldo anterior';
+
+  @override
+  String get fiscalDocumentPaidInvoicesColumnAmount => 'Importe pagado';
+
+  @override
+  String get fiscalDocumentPaidInvoicesColumnRemaining => 'Saldo insoluto';
+
+  @override
+  String get fiscalDocumentAddPaidInvoiceAction => 'Agregar factura';
+
+  @override
+  String get fiscalDocumentReceiptSummaryPayment => 'Monto del pago';
+
+  @override
+  String get fiscalDocumentReceiptSummaryAssigned => 'Asignado';
+
+  @override
+  String get fiscalDocumentReceiptSummaryUnassigned => 'Por asignar';
+
+  @override
+  String get fiscalDocumentBannerReceiptNoProposal =>
+      'No se encontraron facturas PPD timbradas de los pedidos de este pago para este receptor. Agrégalas con «Agregar factura».';
+
+  @override
+  String get addPaidInvoiceTitle => 'Agregar factura';
+
+  @override
+  String addPaidInvoiceIntro(String issuer, String recipient) {
+    return 'Facturas timbradas de $issuer para $recipient.';
+  }
+
+  @override
+  String get addPaidInvoiceEmpty =>
+      'No hay facturas timbradas de este receptor.';
+
+  @override
+  String get addPaidInvoiceAmountLabel => 'Importe pagado';
+
+  @override
+  String get addPaidInvoiceAmountHelper =>
+      'Vacío = el saldo, hasta lo que falta asignar';
+
+  @override
+  String get addPaidInvoiceSubmit => 'Agregar';
+
+  @override
+  String editPaidInvoiceTitle(String folio) {
+    return 'Importe pagado · $folio';
+  }
+
+  @override
+  String editPaidInvoicePreviousBalance(String amount) {
+    return 'Saldo anterior $amount';
+  }
+
+  @override
+  String editPaidInvoiceAmountMax(String max) {
+    return 'Máximo $max (el saldo anterior)';
+  }
+
+  @override
+  String get editPaidInvoiceAmountPositive => 'Debe ser mayor que 0';
+
+  @override
+  String get removePaidInvoiceTitle => 'Quitar factura pagada';
+
+  @override
+  String removePaidInvoiceBody(String folio) {
+    return '¿Quitar la factura $folio de este complemento?';
+  }
+
+  @override
+  String get fiscalDocumentHeaderPaymentDate => 'Fecha del pago';
+
+  @override
+  String get fiscalDocumentHeaderPaymentAmount => 'Monto del pago';
+
+  @override
+  String get fiscalDocumentHeaderOperationNumber => 'No. de operación';
+
+  @override
+  String get fiscalDocumentHeaderOrderingBank => 'Banco ordenante';
+
+  @override
+  String get fiscalDocumentHeaderOrderingBankHelper =>
+      'Solo si el banco ordenante es extranjero';
+
+  @override
+  String get fiscalDocumentHeaderReceiptFixed =>
+      'Uso CFDI CP01 · Moneda MXN (fijos en complementos de pago)';
+
+  @override
+  String get apiErrorFiscalDocumentInvoiceNotPayable =>
+      'La factura no se puede pagar con este complemento: debe ser PPD, estar timbrada y vigente, sin cancelación en proceso, y ser del mismo emisor y receptor.';
+
+  @override
+  String get apiErrorFiscalDocumentInvoiceAlreadyOnReceipt =>
+      'La factura ya está en este complemento.';
+
+  @override
+  String apiErrorFiscalDocumentAmountExceedsBalance(String balance) {
+    return 'El importe excede el saldo de la factura: $balance.';
+  }
+
+  @override
+  String get apiErrorFiscalDocumentAmountsExceedPayment =>
+      'La suma de los importes pagados excede el monto del pago.';
+
+  @override
+  String get apiErrorFiscalDocumentAmountsNotEqualPayment =>
+      'La suma de los importes pagados debe ser igual al monto del pago.';
+
+  @override
+  String get apiErrorFiscalDocumentPaymentDateOutOfRange =>
+      'La fecha del pago debe estar entre las fechas de las facturas y hoy.';
+
+  @override
+  String get apiErrorFiscalDocumentPaymentAlreadyReceipted =>
+      'Este pago ya tiene un complemento de pago.';
+
+  @override
+  String get apiErrorFiscalDocumentPaymentOtherCustomer =>
+      'El pago es de otro cliente.';
+
+  @override
+  String get apiErrorFiscalDocumentReceiptNeedsPaymentData =>
+      'Captura la fecha y el monto del pago antes de confirmar.';
+
+  @override
+  String get apiErrorFiscalDocumentReceiptPaysNoInvoice =>
+      'Agrega al menos una factura pagada antes de confirmar.';
+
+  @override
+  String get fiscalDocumentPaidInvoiceEditTooltip => 'Editar importe';
+
+  @override
+  String get fiscalDocumentPaidInvoiceRemoveTooltip => 'Quitar factura';
+
+  @override
+  String get fiscalDocumentHeaderOperationNumberTooLong =>
+      'El número de operación puede tener hasta 50 caracteres.';
+
+  @override
+  String get fiscalDocumentHeaderOrderingBankTooLong =>
+      'El banco ordenante puede tener hasta 25 caracteres.';
 }

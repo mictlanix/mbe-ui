@@ -102,8 +102,24 @@ class FiscalDocumentsListScreen extends ConsumerWidget {
               ),
             ),
           ],
-          // FiscalDocuments (23) create: Nueva factura.
+          // FiscalDocuments (23) create: Nueva factura, and a payment receipt
+          // by hand (spec 074 C36). The invoice keeps the primary slot.
           actions: [
+            if (canCreate)
+              OutlinedButton.icon(
+                key: const Key('fiscal_documents_new_receipt'),
+                onPressed: () async {
+                  final id = await showNewFiscalDocumentDialog(
+                    context,
+                    NewFiscalDocumentMode.receipt,
+                  );
+                  if (id != null && context.mounted) {
+                    context.push('$fiscalDocumentsPath/$id');
+                  }
+                },
+                icon: const Icon(Icons.receipt_long_outlined),
+                label: Text(l10n.fiscalDocumentNewReceiptAction),
+              ),
             if (canCreate)
               FilledButton.icon(
                 key: const Key('fiscal_documents_new_button'),

@@ -53,6 +53,16 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 /// and cancels it with reason 02. It consumes **one credit-note folio** per run
 /// and skips, saying why, when the issuer has no credit-note series.
 ///
+/// **Spec 074** adds `Payment receipt against the simulated PAC`: with
+/// `MBE_WRITE=true` and `PAC_PROVIDER=simulated`, it takes an issued PPD
+/// invoice, creates a payment receipt by hand for that invoice's customer and
+/// recipient, fills the payment, pays the invoice, checks the refusal for
+/// amounts that do not equal the payment, confirms, reopens, confirms again,
+/// stamps and cancels it with reason 02. It consumes **one payment-receipt
+/// folio** per run and skips, saying why, when the tenant has no issued PPD
+/// invoice or the issuer has no payment-receipt series. It does not create a
+/// customer payment (the from-payment path is covered by the widget tests).
+///
 /// **Spec 072** adds a second test, `Stamp, cancel and refresh against the
 /// simulated PAC`, which runs only with `MBE_WRITE=true` and against a backend
 /// whose `PAC_PROVIDER=simulated` (dev and test). It seals **five** invoices
@@ -1006,6 +1016,236 @@ void main() {
       }
 
       final out = StringBuffer('\n== Credit note live run ==\n');
+      for (final s in steps) {
+        out.writeln(
+          '${s.ok ? 'PASS' : 'FAIL'}  ${s.name}'
+          '${s.detail.isEmpty ? '' : '  [${s.detail.split('\n').first}]'}',
+        );
+      }
+      // ignore: avoid_print
+      print(out);
+      final failed = steps.where((s) => !s.ok).toList();
+      expect(
+        failed,
+        isEmpty,
+        reason: [
+          for (final f in failed) '${f.name}: ${f.detail}',
+        ].join('\n---\n'),
+      );
+    },
+    skip: !_canRun
+        ? 'needs --dart-define=MBE_POS_USERNAME/PASSWORD'
+        : !_write
+        ? 'needs --dart-define=MBE_WRITE=true (stamps a document; dev tenant only)'
+        : null,
+    timeout: const Timeout(Duration(minutes: 5)),
+  );
+
+  test(
+    'Payment receipt against the simulated PAC (spec 074)',
+    () async {
+      final steps = <_Step>[];
+      final sim = api.PacSimulatorApi(dio, appSerializers);
+
+      Future<void> step(String name, Future<String?> Function() body) async {
+        try {
+          final note = await body();
+          steps.add(_Step(name, true, note ?? ''));
+        } on Object catch (e, st) {
+          steps.add(_Step(name, false, '$e\n$st'));
+        }
+      }
+
+      FiscalDocument? invoice;
+      await step('an issued, live PPD invoice', () async {
+        final page = await docs.list(
+          status: FiscalDocumentStatus.issued,
+          type: 0,
+          limit: 50,
+        );
+        for (final row in page.items) {
+          final candidate = await docs.getById(row.id);
+          if (candidate.paymentTerms == InvoicePaymentTerms.ppd &&
+              candidate.customerId != null &&
+              candidate.summary.recipientRfc != null) {
+            invoice = candidate;
+            return 'using #${candidate.id} ${candidate.summary.folioLabel}';
+          }
+        }
+        steps.add(
+          _Step(
+            'an issued PPD invoice',
+            true,
+            'SKIPPED: no issued PPD invoice on this tenant',
+          ),
+        );
+        return null;
+      });
+
+      FiscalDocument? receipt;
+      if (invoice != null) {
+        await step(
+          'create: a draft receipt for the invoice\'s customer',
+          () async {
+            try {
+              receipt = await docs.createPaymentReceipt(
+                NewPaymentReceipt(
+                  customerId: invoice!.customerId!,
+                  recipientRfc: invoice!.summary.recipientRfc!,
+                ),
+              );
+            } on AppError catch (e) {
+              if (e.problem?.codeName ==
+                  'fiscal_document.issuer_has_no_series') {
+                steps.add(
+                  _Step(
+                    'create',
+                    true,
+                    'SKIPPED: the issuer has no payment-receipt series',
+                  ),
+                );
+                return null;
+              }
+              rethrow;
+            }
+            final r = receipt!;
+            expect(r.isPaymentReceipt, isTrue);
+            expect(r.status, FiscalDocumentStatus.draft);
+            expect(r.customerPaymentId, isNull);
+            expect(r.paidInvoices, isEmpty);
+            expect(r.isEditableDraft, isTrue);
+            return '#${r.id}';
+          },
+        );
+      }
+
+      if (receipt != null) {
+        final id = receipt!.id;
+        final today = DateTime.now();
+
+        await step('header: date, amount and a real form', () async {
+          receipt = await docs.updateHeader(
+            id,
+            InvoiceHeaderPatch(
+              paymentDate: DateTime(today.year, today.month, today.day),
+              paymentAmount: Decimal.parse('1.00'),
+              paymentForm: 3,
+              paymentReference: 'MBE-UI LIVE',
+            ),
+          );
+          expect(receipt!.paymentAmount, Decimal.parse('1.00'));
+          expect(receipt!.paymentForm, 3);
+          expect(receipt!.paymentReference, 'MBE-UI LIVE');
+          return null;
+        });
+
+        await step('pay the invoice: the default amount, installment and '
+            'balance', () async {
+          receipt = await docs.addPaidInvoice(id, invoice!.id);
+          final paid = receipt!.paidInvoices.single;
+          expect(paid.invoiceId, invoice!.id);
+          expect(paid.amount, greaterThan(Decimal.zero));
+          expect(paid.amount, lessThanOrEqualTo(Decimal.parse('1.00')));
+          expect(paid.installment, greaterThanOrEqualTo(1));
+          expect(paid.remaining, paid.previousBalance - paid.amount);
+          return 'installment ${paid.installment}, amount ${paid.amount}';
+        });
+
+        await step(
+          'a payment lowered below what is assigned is refused',
+          () async {
+            try {
+              await docs.updateHeader(
+                id,
+                InvoiceHeaderPatch(
+                  paymentAmount:
+                      receipt!.assignedAmount - Decimal.parse('0.01'),
+                ),
+              );
+              fail('a payment below the assigned amount was accepted');
+            } on AppError catch (e) {
+              expect(
+                e.problem?.codeName,
+                'fiscal_document.amounts_exceed_payment',
+              );
+            }
+            return null;
+          },
+        );
+
+        await step('confirm with amounts that do not equal the payment is '
+            'refused', () async {
+          receipt = await docs.updateHeader(
+            id,
+            InvoiceHeaderPatch(
+              paymentAmount: receipt!.assignedAmount + Decimal.one,
+            ),
+          );
+          try {
+            await docs.confirm(id);
+            fail('a receipt with unassigned money was confirmed');
+          } on AppError catch (e) {
+            expect(
+              e.problem?.codeName,
+              'fiscal_document.amounts_not_equal_payment',
+            );
+          }
+          return null;
+        });
+
+        await step('confirm: sealed, with a folio', () async {
+          receipt = await docs.updateHeader(
+            id,
+            InvoiceHeaderPatch(paymentAmount: receipt!.assignedAmount),
+          );
+          expect(receipt!.unassignedAmount, Decimal.zero);
+          receipt = await docs.confirm(id);
+          expect(receipt!.status, FiscalDocumentStatus.sealed);
+          expect(receipt!.summary.serial, isNotNull);
+          expect(receipt!.canReopen, isTrue);
+          return receipt!.summary.folioLabel;
+        });
+
+        await step('reopen and confirm again keep the folio', () async {
+          final folio = receipt!.summary.folioLabel;
+          receipt = await docs.reopen(id);
+          expect(receipt!.status, FiscalDocumentStatus.draft);
+          receipt = await docs.confirm(id);
+          expect(receipt!.summary.folioLabel, folio);
+          return null;
+        });
+
+        await step('stamp: issued, with a simulated stamp', () async {
+          receipt = await docs.stamp(id);
+          expect(receipt!.status, FiscalDocumentStatus.issued);
+          expect(
+            receipt!.stamp?.simulated,
+            isTrue,
+            reason: 'this is not a simulated PAC',
+          );
+          return receipt!.stamp!.uuid;
+        });
+
+        await step('cancel with 02: cancelled', () async {
+          await sim
+              .setSimulationApiV1PacSimulatorFiscalDocumentsFiscalDocumentIdPut(
+                fiscalDocumentId: id,
+                pacSimulationUpdate: api.PacSimulationUpdate(
+                  (b) => b
+                    ..cancellation =
+                        api.PacSimulationUpdateCancellationEnum.accepted,
+                ),
+              );
+          final done = await docs.cancel(
+            id,
+            SatCancellationReason.withoutRelation,
+          );
+          expect(done.status, FiscalDocumentStatus.cancelled);
+          return null;
+        });
+      }
+
+      final out = StringBuffer('\n== Payment receipt live run ==\n');
       for (final s in steps) {
         out.writeln(
           '${s.ok ? 'PASS' : 'FAIL'}  ${s.name}'
