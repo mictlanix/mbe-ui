@@ -16,7 +16,12 @@ typedef FiscalDocumentActionResult = ({AppError? error});
 /// leaves the outcome unknown, so it says that rather than claiming it failed;
 /// anything else is the server's refusal, localized from its code (§III).
 class FiscalDocumentRefusal extends StatelessWidget {
-  const FiscalDocumentRefusal({super.key, required this.error, this.hint});
+  const FiscalDocumentRefusal({
+    super.key,
+    required this.error,
+    this.hint,
+    this.message,
+  });
 
   final AppError error;
 
@@ -25,13 +30,25 @@ class FiscalDocumentRefusal extends StatelessWidget {
   /// clerk without the way out, such as a stale issue date on a stamp.
   final String? hint;
 
+  /// A message to show instead of the localized one, for a refusal whose text
+  /// needs what only the screen knows (spec 073 C32: the credited invoice's
+  /// folio). The screen builds it from the error's code and params, never from
+  /// the server's prose (§III).
+  final String? message;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final message = this.message;
     final banner = error is NetworkError
         ? FormErrorBanner(
             key: const Key('fiscal_document_action_unknown'),
             headline: l10n.fiscalDocumentUnknownResult,
+          )
+        : message != null
+        ? FormErrorBanner(
+            key: const Key('fiscal_document_refusal'),
+            headline: message,
           )
         : ErrorBanner(key: const Key('fiscal_document_refusal'), error: error);
     if (hint == null) return banner;

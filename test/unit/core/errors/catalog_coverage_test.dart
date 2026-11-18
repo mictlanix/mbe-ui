@@ -30,6 +30,8 @@ void main() {
     'delivery_order.insufficient_notice',
     'delivery_order.quantity_exceeds_remaining',
     'facility.other_facility',
+    'fiscal_document.credit_exceeds_invoice',
+    'fiscal_document.credit_quantity_exceeds_line',
     'fiscal_document.has_live_documents',
     'fiscal_document.line_missing_sat_key',
     'fiscal_document.line_quantity_not_positive',
@@ -116,7 +118,7 @@ void main() {
         missing.add(cells[1]);
       }
     }
-    expect(checked, 177);
+    expect(checked, 181);
     expect(missing, isEmpty);
   });
 

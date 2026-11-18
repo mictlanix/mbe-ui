@@ -341,6 +341,79 @@ void main() {
     });
   });
 
+  group('credit notes (spec 073)', () {
+    test(
+      'createCreditNote posts the invoice id and maps the document',
+      () async {
+        late RequestOptions sent;
+        final repo = _repo((o) async {
+          sent = o;
+          return _json(
+            _docJson(
+              type: 100,
+              relations: [
+                {
+                  'fiscal_document_relation_id': 9,
+                  'relation': 12,
+                  'type': '01',
+                  'batch': 'GR',
+                  'serial': 12,
+                },
+              ],
+            ),
+            201,
+          );
+        });
+
+        final doc = await repo.createCreditNote(12);
+
+        expect(sent.method, 'POST');
+        expect(sent.path, '/api/v1/fiscal-documents/credit-notes');
+        expect(sent.data, {'invoice': 12});
+        expect(doc.isCreditNote, isTrue);
+        // A wire relation of type 01 is the credited invoice.
+        expect(doc.relations.single.type, InvoiceRelationType.creditNoteOf);
+        expect(doc.creditedInvoice?.documentId, 12);
+      },
+    );
+
+    test('copyInvoiceLine posts the invoice line and the quantity', () async {
+      late RequestOptions sent;
+      final repo = _repo((o) async {
+        sent = o;
+        return _json(_docJson(type: 100));
+      });
+
+      await repo.copyInvoiceLine(7, 31, quantity: Decimal.parse('1.5'));
+
+      expect(sent.method, 'POST');
+      expect(sent.path, '/api/v1/fiscal-documents/7/invoice-lines');
+      final body = sent.data as Map<String, dynamic>;
+      expect(body['line'], 31);
+      expect(Decimal.parse('${body['quantity']}'), Decimal.parse('1.5'));
+    });
+
+    test('a refused copy keeps its code', () async {
+      final repo = _repo(
+        (o) async => _json({
+          'detail': 'x',
+          'code': 'fiscal_document.credit_quantity_exceeds_line',
+          'params': {'max': '2'},
+        }, 422),
+      );
+      await expectLater(
+        repo.copyInvoiceLine(7, 31, quantity: Decimal.parse('9')),
+        throwsA(
+          isA<Object>().having(
+            (e) => '$e',
+            'text',
+            contains('credit_quantity_exceeds_line'),
+          ),
+        ),
+      );
+    });
+  });
+
   group('states (spec 072 R1)', () {
     test('every constant of both generated status enums maps, and the six '
         'domain states are all reached', () async {

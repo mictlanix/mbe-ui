@@ -16,6 +16,7 @@ FiscalDocument aDocument({
   List<InvoiceLine>? lines,
   List<InvoiceRelation> relations = const [],
   InvoicePaymentTerms paymentTerms = InvoicePaymentTerms.pue,
+  int paymentForm = 99,
   FiscalStamp? stamp,
   DateTime? stampingSince,
   String? cancellationSubstitution,
@@ -39,7 +40,7 @@ FiscalDocument aDocument({
   issuedLocation: '64000',
   usage: 'G01',
   paymentTerms: paymentTerms,
-  paymentForm: 99,
+  paymentForm: paymentForm,
   currencyCode: 100,
   exchangeRate: Decimal.one,
   lines: lines ?? [anInvoiceLine()],
@@ -48,6 +49,42 @@ FiscalDocument aDocument({
   stampingSince: stampingSince,
   cancellationSubstitution: cancellationSubstitution,
   cancellations: cancellations,
+);
+
+/// A relation row; a credit note's link to its invoice by default (type 01).
+InvoiceRelation aRelation({
+  int id = 1,
+  int documentId = 12,
+  InvoiceRelationType? type = InvoiceRelationType.creditNoteOf,
+  String? series = 'GR',
+  int? serial = 12,
+}) => InvoiceRelation(
+  id: id,
+  documentId: documentId,
+  type: type,
+  series: series,
+  serial: serial,
+);
+
+/// A credit note (type 100) relating invoice 12; `withRelation: false` is a
+/// legacy one with no relation. Its payment form is a real one unless given.
+FiscalDocument aCreditNote({
+  int id = 7,
+  FiscalDocumentStatus status = FiscalDocumentStatus.draft,
+  int paymentForm = 3,
+  bool withRelation = true,
+  int? serial,
+  String? series = 'NC',
+  List<InvoiceLine>? lines,
+}) => aDocument(
+  id: id,
+  status: status,
+  typeCode: 100,
+  series: series,
+  serial: serial,
+  paymentForm: paymentForm,
+  lines: lines,
+  relations: withRelation ? [aRelation()] : const [],
 );
 
 /// A PAC stamp; simulated by default, as on dev and test.
@@ -94,18 +131,21 @@ InvoiceLine anInvoiceLine({
   int? orderLineId = 5,
   String quantity = '2',
   String price = '100',
+  String productCode = 'P-1',
+  String productName = 'Tornillo',
+  String discountRate = '0',
 }) => InvoiceLine(
   id: id,
   productId: 3,
   orderLineId: orderLineId,
-  productCode: 'P-1',
-  productName: 'Tornillo',
+  productCode: productCode,
+  productName: productName,
   satProductKey: '01010101',
   unitKey: 'H87',
   unitName: 'Pieza',
   quantity: Decimal.parse(quantity),
   price: Decimal.parse(price),
-  discountRate: Decimal.zero,
+  discountRate: Decimal.parse(discountRate),
   taxRate: Decimal.parse('0.16'),
   taxIncluded: false,
 );

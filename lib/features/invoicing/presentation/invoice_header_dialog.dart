@@ -38,6 +38,11 @@ bool isInvoiceIssueDateAllowed(DateTime issued, {DateTime? now}) {
 /// and notes. Only the changed fields are sent. A refusal shows inline and
 /// keeps the dialog open. `true` once saved.
 ///
+/// A credit note (spec 073 R9) has only CFDI use, payment form, issue date,
+/// reference and notes: the rest comes from its invoice, and its terms are
+/// always PUE. It never offers form 99, and opens with no form chosen when 99
+/// is what it has, so the clerk must pick the real one.
+///
 /// An issue date, once set, can't be emptied again from here: the server
 /// treats an absent value as unchanged.
 Future<bool> showInvoiceHeaderDialog(
@@ -64,7 +69,10 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
   late String? _series = _doc.summary.series;
   late String? _usage = _doc.usage;
   late InvoicePaymentTerms _terms = _doc.paymentTerms;
-  late int? _form = _doc.paymentForm;
+  late int? _form =
+      _isNote && _doc.paymentForm == PaymentMethod.toBeDefined.code
+      ? null
+      : _doc.paymentForm;
   late DateTime? _issued = _doc.summary.issued;
   late int? _facility = _doc.facilityId;
   late final _reference = TextEditingController(text: _doc.reference ?? '');
@@ -76,6 +84,7 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
   Future<List<String>>? _seriesOptions;
 
   FiscalDocument get _doc => widget.document;
+  bool get _isNote => _doc.isCreditNote;
 
   @override
   void initState() {
@@ -84,14 +93,14 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
     final customerId = _doc.customerId;
     // The customer's RFCs (Customers read); a legacy draft with no customer
     // has no recipient to change.
-    if (customerId != null) {
+    if (customerId != null && !_isNote) {
       _recipients = ref
           .read(customerRepositoryProvider)
           .get(customerId: customerId)
           .then((c) => [for (final t in c.taxpayers) t.taxpayerRecipientId]);
     }
     // The issuer's invoice series (Taxpayers (24) read).
-    if (access.can(SystemObject.taxpayers, AccessRight.read)) {
+    if (!_isNote && access.can(SystemObject.taxpayers, AccessRight.read)) {
       _seriesOptions = ref
           .read(taxpayerBatchRepositoryProvider)
           .listForIssuer(_doc.summary.issuerRfc)
@@ -121,7 +130,7 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
     return isInvoiceIssueDateAllowed(issued);
   }
 
-  bool get _formNeeded => _terms == InvoicePaymentTerms.pue;
+  bool get _formNeeded => _isNote || _terms == InvoicePaymentTerms.pue;
   bool get _referenceValid => _reference.text.trim().length <= 25;
   bool get _commentValid => _comment.text.trim().length <= 1000;
 
@@ -226,8 +235,9 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
     // Changing the facility needs IssuedLocationId (103) update, or an
     // administrator.
     final canChangeFacility =
-        access.isAdministrator ||
-        access.can(SystemObject.issuedLocationId, AccessRight.update);
+        !_isNote &&
+        (access.isAdministrator ||
+            access.can(SystemObject.issuedLocationId, AccessRight.update));
     final serialAssigned = _doc.summary.serial != null;
 
     Widget stringDropdown({
@@ -253,7 +263,9 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
 
     final forms = [
       for (final m in PaymentMethod.values)
-        if (m != PaymentMethod.governmentFunding) m.code,
+        if (m != PaymentMethod.governmentFunding &&
+            !(_isNote && m == PaymentMethod.toBeDefined))
+          m.code,
       if (_doc.paymentForm == PaymentMethod.governmentFunding.code)
         _doc.paymentForm,
     ];
@@ -324,31 +336,37 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
             },
             onSelected: (i) => setState(() => _usage = i.code),
           ),
-          SegmentedButton<InvoicePaymentTerms>(
-            key: const Key('invoice_header_terms'),
-            segments: [
-              ButtonSegment(
-                value: InvoicePaymentTerms.pue,
-                label: Text(l10n.fiscalDocumentHeaderTermsPue),
-              ),
-              ButtonSegment(
-                value: InvoicePaymentTerms.ppd,
-                label: Text(l10n.fiscalDocumentHeaderTermsPpd),
-              ),
-            ],
-            selected: {_terms},
-            onSelectionChanged: _busy
-                ? null
-                : (s) => setState(() {
-                    _terms = s.single;
-                    if (_terms == InvoicePaymentTerms.pue &&
-                        _form == PaymentMethod.toBeDefined.code) {
-                      // 99 only goes with PPD: ask for a real form.
-                      _form = null;
-                    }
-                  }),
-          ),
-          if (_terms == InvoicePaymentTerms.ppd)
+          if (_isNote)
+            Text(
+              l10n.fiscalDocumentHeaderTermsFixedPue,
+              key: const Key('invoice_header_terms_fixed'),
+            )
+          else
+            SegmentedButton<InvoicePaymentTerms>(
+              key: const Key('invoice_header_terms'),
+              segments: [
+                ButtonSegment(
+                  value: InvoicePaymentTerms.pue,
+                  label: Text(l10n.fiscalDocumentHeaderTermsPue),
+                ),
+                ButtonSegment(
+                  value: InvoicePaymentTerms.ppd,
+                  label: Text(l10n.fiscalDocumentHeaderTermsPpd),
+                ),
+              ],
+              selected: {_terms},
+              onSelectionChanged: _busy
+                  ? null
+                  : (s) => setState(() {
+                      _terms = s.single;
+                      if (_terms == InvoicePaymentTerms.pue &&
+                          _form == PaymentMethod.toBeDefined.code) {
+                        // 99 only goes with PPD: ask for a real form.
+                        _form = null;
+                      }
+                    }),
+            ),
+          if (!_isNote && _terms == InvoicePaymentTerms.ppd)
             // PPD forces form 99, so it is shown and can't be changed.
             InputDecorator(
               key: const Key('invoice_header_form_ppd'),

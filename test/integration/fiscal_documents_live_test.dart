@@ -47,6 +47,12 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 ///
 /// A run without credentials is skipped, like the other live tests.
 ///
+/// **Spec 073** adds `Credit note against the simulated PAC`: with
+/// `MBE_WRITE=true` and `PAC_PROVIDER=simulated`, it takes an issued invoice,
+/// creates a credit note, copies one line at quantity 1, confirms and stamps it
+/// and cancels it with reason 02. It consumes **one credit-note folio** per run
+/// and skips, saying why, when the issuer has no credit-note series.
+///
 /// **Spec 072** adds a second test, `Stamp, cancel and refresh against the
 /// simulated PAC`, which runs only with `MBE_WRITE=true` and against a backend
 /// whose `PAC_PROVIDER=simulated` (dev and test). It seals **five** invoices
@@ -843,6 +849,184 @@ void main() {
         ? 'needs --dart-define=MBE_POS_USERNAME/PASSWORD'
         : !_write
         ? 'needs --dart-define=MBE_WRITE=true (stamps documents; dev tenant only)'
+        : null,
+    timeout: const Timeout(Duration(minutes: 5)),
+  );
+
+  test(
+    'Credit note against the simulated PAC (spec 073)',
+    () async {
+      final steps = <_Step>[];
+      final sim = api.PacSimulatorApi(dio, appSerializers);
+
+      Future<void> step(String name, Future<String?> Function() body) async {
+        try {
+          final note = await body();
+          steps.add(_Step(name, true, note ?? ''));
+        } on Object catch (e, st) {
+          steps.add(_Step(name, false, '$e\n$st'));
+        }
+      }
+
+      FiscalDocument? invoice;
+      await step('an issued, live invoice with a line to credit', () async {
+        final page = await docs.list(
+          status: FiscalDocumentStatus.issued,
+          type: 0,
+          limit: 20,
+        );
+        for (final row in page.items) {
+          final candidate = await docs.getById(row.id);
+          if (candidate.canIssueCreditNote &&
+              candidate.lines.any((l) => l.quantity >= Decimal.one)) {
+            invoice = candidate;
+            return 'using #${candidate.id} ${candidate.summary.folioLabel}';
+          }
+        }
+        throw StateError(
+          'NO ISSUED INVOICE with a line of quantity 1 or more on this tenant',
+        );
+      });
+
+      FiscalDocument? note;
+      if (invoice != null) {
+        await step(
+          'create: a draft credit note that relates the invoice',
+          () async {
+            try {
+              note = await docs.createCreditNote(invoice!.id);
+            } on AppError catch (e) {
+              if (e.problem?.codeName ==
+                  'fiscal_document.issuer_has_no_series') {
+                steps.add(
+                  _Step(
+                    'create',
+                    true,
+                    'SKIPPED: the issuer has no credit-note series',
+                  ),
+                );
+                return null;
+              }
+              rethrow;
+            }
+            final n = note!;
+            expect(n.isCreditNote, isTrue);
+            expect(n.status, FiscalDocumentStatus.draft);
+            expect(n.creditedInvoice?.documentId, invoice!.id);
+            expect(n.isEditableDraft, isTrue);
+            expect(n.paymentTerms, InvoicePaymentTerms.pue);
+            return '#${n.id}';
+          },
+        );
+      }
+
+      if (note != null) {
+        final line = invoice!.lines.firstWhere(
+          (l) => l.quantity >= Decimal.one,
+        );
+
+        await step('copy above the invoiced quantity is refused with its '
+            'code and maximum', () async {
+          try {
+            await docs.copyInvoiceLine(
+              note!.id,
+              line.id,
+              quantity: line.quantity + Decimal.one,
+            );
+            fail('a quantity above the invoice line was accepted');
+          } on AppError catch (e) {
+            expect(
+              e.problem?.codeName,
+              'fiscal_document.credit_quantity_exceeds_line',
+            );
+            expect(e.problem?.decimalParam('max'), isNotNull);
+          }
+          return null;
+        });
+
+        await step('copy one line at quantity 1', () async {
+          note = await docs.copyInvoiceLine(
+            note!.id,
+            line.id,
+            quantity: Decimal.one,
+          );
+          expect(note!.lines, hasLength(1));
+          expect(note!.lines.single.quantity, Decimal.one);
+          return null;
+        });
+
+        await step('a form of 99 is replaced by a real one', () async {
+          if (note!.needsPaymentForm) {
+            note = await docs.updateHeader(
+              note!.id,
+              const InvoiceHeaderPatch(paymentForm: 3),
+            );
+          }
+          expect(note!.needsPaymentForm, isFalse);
+          return 'form ${note!.paymentForm}';
+        });
+
+        await step('confirm: sealed, with a folio', () async {
+          note = await docs.confirm(note!.id);
+          expect(note!.status, FiscalDocumentStatus.sealed);
+          expect(note!.summary.serial, isNotNull);
+          expect(note!.canReopen, isTrue);
+          return note!.summary.folioLabel;
+        });
+
+        await step('stamp: issued, with a simulated stamp', () async {
+          note = await docs.stamp(note!.id);
+          expect(note!.status, FiscalDocumentStatus.issued);
+          expect(
+            note!.stamp?.simulated,
+            isTrue,
+            reason: 'this is not a simulated PAC',
+          );
+          return note!.stamp!.uuid;
+        });
+
+        await step('cancel with 02: cancelled, so the invoice stays '
+            'cancellable', () async {
+          await sim
+              .setSimulationApiV1PacSimulatorFiscalDocumentsFiscalDocumentIdPut(
+                fiscalDocumentId: note!.id,
+                pacSimulationUpdate: api.PacSimulationUpdate(
+                  (b) => b
+                    ..cancellation =
+                        api.PacSimulationUpdateCancellationEnum.accepted,
+                ),
+              );
+          final done = await docs.cancel(
+            note!.id,
+            SatCancellationReason.withoutRelation,
+          );
+          expect(done.status, FiscalDocumentStatus.cancelled);
+          return null;
+        });
+      }
+
+      final out = StringBuffer('\n== Credit note live run ==\n');
+      for (final s in steps) {
+        out.writeln(
+          '${s.ok ? 'PASS' : 'FAIL'}  ${s.name}'
+          '${s.detail.isEmpty ? '' : '  [${s.detail.split('\n').first}]'}',
+        );
+      }
+      // ignore: avoid_print
+      print(out);
+      final failed = steps.where((s) => !s.ok).toList();
+      expect(
+        failed,
+        isEmpty,
+        reason: [
+          for (final f in failed) '${f.name}: ${f.detail}',
+        ].join('\n---\n'),
+      );
+    },
+    skip: !_canRun
+        ? 'needs --dart-define=MBE_POS_USERNAME/PASSWORD'
+        : !_write
+        ? 'needs --dart-define=MBE_WRITE=true (stamps a document; dev tenant only)'
         : null,
     timeout: const Timeout(Duration(minutes: 5)),
   );

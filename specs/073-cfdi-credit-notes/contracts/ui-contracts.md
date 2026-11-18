@@ -31,7 +31,7 @@ Compared with the invoice detail (C5, C18):
 | Region | Credit note |
 |---|---|
 | Title | `fiscalDocumentTitleKind` ("Nota de crédito #id" / "Nota de crédito NC118"): existing |
-| Banner | `credit_note_form` when `needsPaymentForm` and the user has Update on 23 (C30); `sealed` uses the reopen variant; never `read_only_kind` |
+| Banner | `credit_note_form` when `needsPaymentForm` and the user has Update on 23 (C30); `sealed` uses the reopen variant; `read_only_kind` only for a credit note with no related invoice |
 | Header facts | "Editar" when `isEditableDraft` and the user has Update on 23. Terms show PUE |
 | Lines toolbar | `fiscal_document_copy_invoice_lines` ("Agregar de la factura", outlined, `Icons.add`) in place of `fiscal_document_add_order`; `fiscal_document_add_product` with 56 create |
 | Line rows | edit/remove as for invoices; **no** `fiscal_document_line_order_*` chip |
@@ -57,8 +57,9 @@ Compared with the invoice detail (C5, C18):
 - **Rows**: `copy_invoice_line_<lineId>`. Each row has:
   - a checkbox, `copy_invoice_line_check_<lineId>`;
   - the code, description, invoice quantity, price, discount and tax;
-  - a `CompactField` for the quantity, `copy_invoice_line_qty_<lineId>`, enabled when the
-    row is checked and defaulting to the invoice quantity.
+  - a `TextField` for the quantity (not `CompactField`, which is for values that are not typed
+    into), `copy_invoice_line_qty_<lineId>`, enabled when the row is checked and defaulting to
+    the invoice quantity. A row's validation text is `copy_invoice_line_error_<lineId>`.
   - On compact, each row is a two-line card.
 - **Validation**: 0 < q ≤ the invoice quantity. Otherwise an error text appears under the
   field: "Máximo {max} (la cantidad facturada)", or "Debe ser mayor que 0".

@@ -1,6 +1,7 @@
 import 'package:decimal/decimal.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import 'package:mbe_ui/core/domain/payment_method.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/fiscal_document_kind.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_cancellation.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_stamp.dart';
@@ -195,8 +196,36 @@ abstract class FiscalDocument with _$FiscalDocument {
   int get id => summary.id;
   FiscalDocumentStatus get status => summary.status;
   bool get isInvoice => summary.typeCode == 0;
-  bool get isEditableDraft => isInvoice && status == FiscalDocumentStatus.draft;
-  bool get canReopen => isInvoice && status == FiscalDocumentStatus.sealed;
+  bool get isCreditNote => summary.typeCode == 100;
+
+  /// An invoice, or a credit note that relates its invoice (spec 073 R8). A
+  /// credit note with no relation (legacy) can't be edited: the lines are
+  /// copied from that invoice and the server's confirm needs the relation.
+  /// Any other type is read-only here.
+  bool get isEditableKind =>
+      isInvoice || (isCreditNote && creditedInvoice != null);
+
+  bool get isEditableDraft =>
+      isEditableKind && status == FiscalDocumentStatus.draft;
+  bool get canReopen => isEditableKind && status == FiscalDocumentStatus.sealed;
+
+  /// A live, stamped invoice can start a credit note (spec 073).
+  bool get canIssueCreditNote =>
+      isInvoice && status == FiscalDocumentStatus.issued;
+
+  /// The invoice a credit note credits: its first type-01 relation.
+  InvoiceRelation? get creditedInvoice => isCreditNote
+      ? relations
+            .where((r) => r.type == InvoiceRelationType.creditNoteOf)
+            .firstOrNull
+      : null;
+
+  /// A credit-note draft still on payment form 99: the server refuses to
+  /// confirm it until a real form is chosen (spec 073 R5).
+  bool get needsPaymentForm =>
+      isCreditNote &&
+      status == FiscalDocumentStatus.draft &&
+      paymentForm == PaymentMethod.toBeDefined.code;
 
   /// Stamping applies to a sealed document of any type (spec 072 R2).
   bool get canStamp => status == FiscalDocumentStatus.sealed;

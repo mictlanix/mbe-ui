@@ -100,6 +100,13 @@ class FiscalDocumentRepositoryImpl implements FiscalDocumentRepository {
   );
 
   @override
+  Future<FiscalDocument> createCreditNote(int invoiceId) => _document(
+    () => _api.createCreditNoteApiV1FiscalDocumentsCreditNotesPost(
+      creditNoteCreate: api.CreditNoteCreate((b) => b.invoice = invoiceId),
+    ),
+  );
+
+  @override
   Future<FiscalDocument> updateHeader(int id, InvoiceHeaderPatch patch) =>
       _document(
         () => _api.updateInvoiceApiV1FiscalDocumentsFiscalDocumentIdPut(
@@ -141,6 +148,25 @@ class FiscalDocumentRepositoryImpl implements FiscalDocumentRepository {
       fiscalDocumentId: id,
       invoiceLineAdd: api.InvoiceLineAdd((b) => b.product = productId),
     ),
+  );
+
+  @override
+  Future<FiscalDocument> copyInvoiceLine(
+    int id,
+    int invoiceLineId, {
+    required Decimal quantity,
+  }) => _document(
+    () => _api
+        .copyInvoiceLineApiV1FiscalDocumentsFiscalDocumentIdInvoiceLinesPost(
+          fiscalDocumentId: id,
+          invoiceLineCopy: api.InvoiceLineCopy(
+            (b) => b
+              ..line = invoiceLineId
+              ..quantity = api.Quantity4(
+                (q) => q.anyOf = AnyOf2<String, num>(values: {0: '$quantity'}),
+              ).toBuilder(),
+          ),
+        ),
   );
 
   @override

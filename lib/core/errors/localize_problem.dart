@@ -66,7 +66,10 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.facilityPeriodRequired,
   api.ErrorCode.fiscalDocumentPeriodAlreadyRelated,
   api.ErrorCode.fiscalDocumentPeriodCertificateCannotSign,
+  api.ErrorCode.fiscalDocumentPeriodCreditExceedsInvoice,
+  api.ErrorCode.fiscalDocumentPeriodCreditQuantityExceedsLine,
   api.ErrorCode.fiscalDocumentPeriodFieldNotForType,
+  api.ErrorCode.fiscalDocumentPeriodInvoiceNotCreditable,
   api.ErrorCode.fiscalDocumentPeriodIssueDateOutOfRange,
   api.ErrorCode.fiscalDocumentPeriodIssuerHasNoSeries,
   api.ErrorCode.fiscalDocumentPeriodLineMissingSatKey,
@@ -79,6 +82,7 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.fiscalDocumentPeriodNotSealed,
   api.ErrorCode.fiscalDocumentPeriodNotStamped,
   api.ErrorCode.fiscalDocumentPeriodOrderNotInvoiceable,
+  api.ErrorCode.fiscalDocumentPeriodPaymentFormRequired,
   api.ErrorCode.fiscalDocumentPeriodProductUnpriced,
   api.ErrorCode.fiscalDocumentPeriodQuantityExceedsInvoiceable,
   api.ErrorCode.fiscalDocumentPeriodRecipientIncomplete,
@@ -367,8 +371,18 @@ String? localizeProblem(
       l10n.apiErrorFiscalDocumentAlreadyRelated,
     api.ErrorCode.fiscalDocumentPeriodCertificateCannotSign =>
       l10n.apiErrorFiscalDocumentCertificateCannotSign,
+    api.ErrorCode.fiscalDocumentPeriodCreditExceedsInvoice => _ap1(
+      _money(problem, 'remaining', fmt),
+      l10n.apiErrorFiscalDocumentCreditExceedsInvoice,
+    ),
+    api.ErrorCode.fiscalDocumentPeriodCreditQuantityExceedsLine => _ap1(
+      _quantity(problem, 'max', fmt),
+      l10n.apiErrorFiscalDocumentCreditQuantityExceedsLine,
+    ),
     api.ErrorCode.fiscalDocumentPeriodFieldNotForType =>
       l10n.apiErrorFiscalDocumentFieldNotForType,
+    api.ErrorCode.fiscalDocumentPeriodInvoiceNotCreditable =>
+      l10n.apiErrorFiscalDocumentInvoiceNotCreditable,
     api.ErrorCode.fiscalDocumentPeriodIssueDateOutOfRange =>
       l10n.apiErrorFiscalDocumentIssueDateOutOfRange,
     api.ErrorCode.fiscalDocumentPeriodIssuerHasNoSeries =>
@@ -397,6 +411,8 @@ String? localizeProblem(
       l10n.apiErrorFiscalDocumentNotStamped,
     api.ErrorCode.fiscalDocumentPeriodOrderNotInvoiceable =>
       l10n.apiErrorFiscalDocumentOrderNotInvoiceable,
+    api.ErrorCode.fiscalDocumentPeriodPaymentFormRequired =>
+      l10n.apiErrorFiscalDocumentPaymentFormRequired,
     api.ErrorCode.fiscalDocumentPeriodProductUnpriced =>
       l10n.apiErrorFiscalDocumentProductUnpriced,
     api.ErrorCode.fiscalDocumentPeriodQuantityExceedsInvoiceable =>

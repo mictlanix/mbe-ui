@@ -130,4 +130,113 @@ void main() {
     expect(key('fiscal_document_line_remove_10'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  group('a credit-note draft (spec 073 C27)', () {
+    const all = [
+      'fiscal_document_edit_header',
+      'fiscal_document_copy_invoice_lines',
+      'fiscal_document_add_product',
+      'fiscal_document_line_edit_10',
+      'fiscal_document_line_remove_10',
+    ];
+    const never = [
+      'fiscal_document_add_order',
+      'fiscal_document_add_relation',
+      'fiscal_document_relation_remove_1',
+      'fiscal_document_line_order_10',
+    ];
+
+    void expectShown(Set<String> shown) {
+      for (final k in all) {
+        expect(
+          key(k),
+          shown.contains(k) ? findsOneWidget : findsNothing,
+          reason: k,
+        );
+      }
+      for (final k in never) {
+        expect(key(k), findsNothing, reason: k);
+      }
+    }
+
+    testWidgets('offers Agregar de la factura instead of Agregar pedido, and '
+        'no relation or order-chip controls', (tester) async {
+      // The default line came from an order, yet no chip shows on a credit
+      // note: the order is the invoice's, not this document's.
+      await h.pump(tester, document: aCreditNote());
+
+      expectShown(all.toSet());
+      expect(key('fiscal_document_relations'), findsOneWidget);
+      expect(
+        find.text(l10n.fiscalDocumentCopyInvoiceLinesAction),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('Agregar producto needs StandaloneFiscalDocuments create', (
+      tester,
+    ) async {
+      await h.pump(
+        tester,
+        document: aCreditNote(),
+        who: InvoiceHarness.access(standalone: false),
+      );
+
+      expectShown(all.toSet()..remove('fiscal_document_add_product'));
+    });
+
+    testWidgets('Agregar de la factura does not need SalesOrders read', (
+      tester,
+    ) async {
+      await h.pump(
+        tester,
+        document: aCreditNote(),
+        who: InvoiceHarness.access(ordersRead: false),
+      );
+
+      expectShown(all.toSet());
+    });
+
+    testWidgets('a read-only user sees none of them', (tester) async {
+      await h.pump(
+        tester,
+        document: aCreditNote(),
+        who: InvoiceHarness.access(fiscalDocuments: 2),
+      );
+
+      expectShown({});
+      // The relation to the invoice is still shown.
+      expect(key('fiscal_document_relations'), findsOneWidget);
+    });
+
+    testWidgets('a credit note with no relation has no edit controls', (
+      tester,
+    ) async {
+      await h.pump(tester, document: aCreditNote(withRelation: false));
+
+      expectShown({});
+      expect(key('fiscal_document_relations'), findsNothing);
+    });
+
+    testWidgets('an invoice draft is unchanged: Agregar pedido, the order chip '
+        'and relation editing', (tester) async {
+      await h.pump(tester);
+
+      expect(key('fiscal_document_add_order'), findsOneWidget);
+      expect(key('fiscal_document_line_order_10'), findsOneWidget);
+      expect(key('fiscal_document_add_relation'), findsOneWidget);
+      expect(key('fiscal_document_copy_invoice_lines'), findsNothing);
+    });
+
+    testWidgets('the compact cards show no order chip either', (tester) async {
+      await h.pump(
+        tester,
+        document: aCreditNote(),
+        surface: const Size(400, 900),
+      );
+
+      expect(key('fiscal_document_line_order_10'), findsNothing);
+      expect(key('fiscal_document_line_edit_10'), findsOneWidget);
+    });
+  });
 }

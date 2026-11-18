@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 
+import 'package:decimal/decimal.dart';
+
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_document.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/sat_cancellation_reason.dart';
 
@@ -43,6 +45,10 @@ abstract class FiscalDocumentRepository {
   /// `POST /fiscal-documents`: a new invoice draft.
   Future<FiscalDocument> create(NewInvoice invoice);
 
+  /// `POST /fiscal-documents/credit-notes`: a credit-note draft for issued
+  /// invoice [invoiceId] (spec 073).
+  Future<FiscalDocument> createCreditNote(int invoiceId);
+
   /// `PUT /fiscal-documents/{id}`: only the patch's non-null fields change.
   Future<FiscalDocument> updateHeader(int id, InvoiceHeaderPatch patch);
 
@@ -52,6 +58,14 @@ abstract class FiscalDocumentRepository {
 
   /// `POST /fiscal-documents/{id}/lines`: a manual product line.
   Future<FiscalDocument> addProduct(int id, int productId);
+
+  /// `POST /fiscal-documents/{id}/invoice-lines`: copies one line of the
+  /// credit note's invoice at [quantity] (spec 073).
+  Future<FiscalDocument> copyInvoiceLine(
+    int id,
+    int invoiceLineId, {
+    required Decimal quantity,
+  });
 
   /// `PUT /fiscal-documents/{id}/lines/{lineId}`.
   Future<FiscalDocument> updateLine(int id, int lineId, InvoiceLinePatch patch);

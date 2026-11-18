@@ -98,7 +98,7 @@ manual checks show clerks need it.
 invoice draft gets none today. The wireframe's "Borrador. Agrega las partidas…" banner
 is dropped.
 
-The `read_only_kind` branch now excludes credit notes in every state. A credit note's
+The `read_only_kind` branch now excludes credit notes that can be edited, that is, those that relate their invoice (`isEditableKind`). A legacy credit note with no relation is read-only and keeps that banner, which is what 066 showed for it (decided during implementation). A credit note's
 sealed banner uses `fiscalDocumentBannerSealedStampOrReopen`, because it can be reopened.
 
 **Rationale**: This matches invoices and adds no strings that carry no information.

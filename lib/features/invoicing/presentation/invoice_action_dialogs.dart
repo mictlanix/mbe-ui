@@ -116,7 +116,7 @@ Future<FiscalDocumentActionResult?> showStampFiscalDocumentDialog(
     dialogKey: const Key('fiscal_document_stamp_dialog'),
     submitKey: const Key('fiscal_document_stamp_submit'),
     title: (l10n) => l10n.fiscalDocumentStampTitle(
-      _kindLabel(l10n, document),
+      documentKindLabel(l10n, document),
       document.summary.folioLabel ?? '#${document.id}',
     ),
     body: (l10n) => l10n.fiscalDocumentStampBody,
@@ -125,8 +125,100 @@ Future<FiscalDocumentActionResult?> showStampFiscalDocumentDialog(
   ),
 );
 
-/// "Factura", or the name of the document's other type.
-String _kindLabel(AppLocalizations l10n, FiscalDocument document) {
+/// Asks before creating a credit-note draft for issued [invoice] (spec 073
+/// C26). `Crear` runs the write; a refusal stays in the dialog, in the
+/// clerk's words, and the buttons are off while the request runs. Answers the
+/// new credit note's id, or `null` when the user backed out.
+Future<int?> showIssueCreditNoteDialog(
+  BuildContext context,
+  FiscalDocument invoice,
+) => showDialog<int>(
+  context: context,
+  builder: (_) => _IssueCreditNoteDialog(invoice: invoice),
+);
+
+class _IssueCreditNoteDialog extends ConsumerStatefulWidget {
+  const _IssueCreditNoteDialog({required this.invoice});
+
+  final FiscalDocument invoice;
+
+  @override
+  ConsumerState<_IssueCreditNoteDialog> createState() =>
+      _IssueCreditNoteDialogState();
+}
+
+class _IssueCreditNoteDialogState
+    extends ConsumerState<_IssueCreditNoteDialog> {
+  bool _busy = false;
+  AppError? _refusal;
+
+  Future<void> _create() async {
+    if (_busy) return;
+    final navigator = Navigator.of(context);
+    setState(() {
+      _busy = true;
+      _refusal = null;
+    });
+    final result = await ref
+        .read(fiscalDocumentActionsProvider.notifier)
+        .createCreditNote(widget.invoice.id);
+    if (!mounted) return;
+    final id = result.id;
+    if (id != null) {
+      navigator.pop(id);
+      return;
+    }
+    setState(() {
+      _busy = false;
+      _refusal = result.error;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final spacing = Theme.of(context).spacing;
+    final summary = widget.invoice.summary;
+
+    return ResponsiveDialog(
+      key: const Key('issue_credit_note_dialog'),
+      title: l10n.fiscalDocumentIssueCreditNoteTitle,
+      dismissible: !_busy,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: spacing.fieldGapVertical,
+        children: [
+          Text(
+            l10n.fiscalDocumentIssueCreditNoteBody(
+              summary.folioLabel ?? '#${widget.invoice.id}',
+              summary.recipientName ?? summary.recipientRfc ?? '',
+            ),
+          ),
+          if (_refusal != null)
+            KeyedSubtree(
+              key: const Key('issue_credit_note_refusal'),
+              child: FiscalDocumentRefusal(error: _refusal!),
+            ),
+        ],
+      ),
+      secondaryAction: ResponsiveDialogAction(
+        key: const Key('issue_credit_note_cancel'),
+        label: l10n.cancelButton,
+        onPressed: _busy ? null : () => Navigator.of(context).pop(),
+      ),
+      primaryAction: ResponsiveDialogAction(
+        key: const Key('issue_credit_note_create'),
+        label: l10n.fiscalDocumentIssueCreditNoteCreate,
+        busy: _busy,
+        onPressed: _create,
+      ),
+    );
+  }
+}
+
+/// "Factura", or the name of the document's other type (also used by the
+/// detail screen's sealed / reopened messages).
+String documentKindLabel(AppLocalizations l10n, FiscalDocument document) {
   final kind = document.summary.kind;
   return kind == null
       ? l10n.fiscalDocumentKindUnknown(document.summary.typeCode)

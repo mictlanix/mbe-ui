@@ -385,4 +385,120 @@ void main() {
       findsOneWidget,
     );
   });
+
+  group('a credit note (spec 073 R9, C31)', () {
+    FiscalDocument note({int paymentForm = 3}) =>
+        aCreditNote(paymentForm: paymentForm);
+
+    // Every right that could add a field to an invoice's dialog.
+    Future<void> openNote(WidgetTester tester, {int paymentForm = 3}) => open(
+      tester,
+      document: note(paymentForm: paymentForm),
+      issuedLocationUpdate: true,
+      administrator: true,
+    );
+
+    void saveNote() => when(
+      () => h.documents.updateHeader(7, any()),
+    ).thenAnswer((_) async => note());
+
+    testWidgets('shows only usage, form, date, reference and notes, with PUE '
+        'fixed', (tester) async {
+      await openNote(tester);
+
+      for (final k in [
+        'invoice_header_usage',
+        'invoice_header_form',
+        'invoice_header_issued',
+        'invoice_header_reference',
+        'invoice_header_comment',
+        'invoice_header_terms_fixed',
+      ]) {
+        expect(key(k), findsOneWidget, reason: k);
+      }
+      for (final k in [
+        'invoice_header_recipient',
+        'invoice_header_series',
+        'invoice_header_terms',
+        'invoice_header_form_ppd',
+        'invoice_header_facility',
+      ]) {
+        expect(key(k), findsNothing, reason: k);
+      }
+      expect(find.text(l10n.fiscalDocumentHeaderTermsFixedPue), findsOneWidget);
+      // The invoice's recipients and series are not even asked for.
+      verifyNever(() => h.customers.get(customerId: any(named: 'customerId')));
+      verifyNever(() => h.batches.listForIssuer(any()));
+    });
+
+    testWidgets('the form list never offers 99', (tester) async {
+      await openNote(tester);
+
+      await tester.tap(key('invoice_header_form'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('28 —'), findsWidgets);
+      expect(find.textContaining('99 —'), findsNothing);
+    });
+
+    testWidgets('a stored 99 opens with no form chosen, and Guardar waits for '
+        'one', (tester) async {
+      saveNote();
+      await openNote(tester, paymentForm: 99);
+
+      expect(tester.takeException(), isNull);
+      expect(key('invoice_header_form'), findsOneWidget);
+      expect(canSave(tester), isFalse);
+
+      // Even an edit elsewhere does not let it through without a form.
+      await tester.enterText(key('invoice_header_reference'), 'R-1');
+      await tester.pump();
+      expect(canSave(tester), isFalse);
+
+      await tester.tap(key('invoice_header_form'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.textContaining('28 —').last);
+      await tester.pumpAndSettle();
+      expect(canSave(tester), isTrue);
+
+      await tester.tap(key('invoice_header_submit'));
+      await tester.pumpAndSettle();
+
+      final patch = sentPatch();
+      expect(patch.paymentForm, 28);
+      expect(patch.reference, 'R-1');
+    });
+
+    testWidgets('saves only the changed credit-note fields', (tester) async {
+      saveNote();
+      await openNote(tester);
+
+      await tester.enterText(key('invoice_header_comment'), 'devolución');
+      await tester.pump();
+      await tester.tap(key('invoice_header_submit'));
+      await tester.pumpAndSettle();
+
+      final patch = sentPatch();
+      expect(patch.comment, 'devolución');
+      expect(patch.recipientRfc, isNull);
+      expect(patch.series, isNull);
+      expect(patch.paymentTerms, isNull);
+      expect(patch.paymentForm, isNull);
+      expect(patch.facilityId, isNull);
+    });
+
+    testWidgets('the invoice dialog is unchanged', (tester) async {
+      await open(tester, issuedLocationUpdate: true);
+
+      for (final k in [
+        'invoice_header_recipient',
+        'invoice_header_series',
+        'invoice_header_terms',
+        'invoice_header_facility',
+      ]) {
+        expect(key(k), findsOneWidget, reason: k);
+      }
+      expect(key('invoice_header_terms_fixed'), findsNothing);
+    });
+  });
 }

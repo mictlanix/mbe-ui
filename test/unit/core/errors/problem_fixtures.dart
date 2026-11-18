@@ -90,10 +90,16 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.facilityPeriodRequired: {},
   api.ErrorCode.fiscalDocumentPeriodAlreadyRelated: {'relation_id': 4},
   api.ErrorCode.fiscalDocumentPeriodCertificateCannotSign: {},
+  api.ErrorCode.fiscalDocumentPeriodCreditExceedsInvoice: {
+    'invoice_id': 12,
+    'remaining': '1500.00',
+  },
+  api.ErrorCode.fiscalDocumentPeriodCreditQuantityExceedsLine: {'max': '3'},
   api.ErrorCode.fiscalDocumentPeriodFieldNotForType: {
     'fields': ['payment_form'],
     'type': 0,
   },
+  api.ErrorCode.fiscalDocumentPeriodInvoiceNotCreditable: {'invoice_id': 12},
   api.ErrorCode.fiscalDocumentPeriodIssueDateOutOfRange: {},
   api.ErrorCode.fiscalDocumentPeriodIssuerHasNoSeries: {'type': 0},
   api.ErrorCode.fiscalDocumentPeriodLineMissingSatKey: {'line': 2},
@@ -106,6 +112,7 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.fiscalDocumentPeriodNotSealed: {},
   api.ErrorCode.fiscalDocumentPeriodNotStamped: {},
   api.ErrorCode.fiscalDocumentPeriodOrderNotInvoiceable: {'sales_order_id': 9},
+  api.ErrorCode.fiscalDocumentPeriodPaymentFormRequired: {'type': 100},
   api.ErrorCode.fiscalDocumentPeriodProductUnpriced: {'product_id': 77},
   api.ErrorCode.fiscalDocumentPeriodQuantityExceedsInvoiceable: {
     'remaining': '2.5',
