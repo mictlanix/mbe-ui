@@ -7141,7 +7141,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get fiscalDocumentBannerSealed =>
-      'Sellada, pendiente de timbrar. El timbrado aún no está disponible en este sistema.';
+      'Sellado, sin validez fiscal todavía.';
 
   @override
   String get fiscalDocumentBannerReadOnlyKind =>
@@ -7522,7 +7522,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get apiErrorFiscalDocumentNotIssued =>
-      'Este documento aún no se timbra, así que no tiene PDF ni XML.';
+      'Este documento aún no está timbrado, así que no tiene PDF ni XML y no se puede cancelar.';
 
   @override
   String apiErrorFiscalDocumentVersionNotPrintable(String version) {
@@ -7577,7 +7577,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get apiErrorFiscalDocumentNotSealed =>
-      'Solo se puede reabrir una factura sellada que aún no esté timbrada.';
+      'Solo se puede timbrar o reabrir un documento sellado que no esté en proceso de timbrado.';
 
   @override
   String get apiErrorFiscalDocumentTypeNotSupported =>
@@ -7639,7 +7639,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get apiErrorFiscalDocumentNoValidCertificate =>
-      'El emisor no tiene un certificado vigente para sellar.';
+      'El emisor no tiene un certificado vigente para sellar o cancelar.';
 
   @override
   String apiErrorFiscalDocumentSeriesMissing(String batch) {
@@ -9178,4 +9178,244 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get catalogViewStockButton => 'Ver existencias';
+
+  @override
+  String get fiscalDocumentStatusStamping => 'Timbrando';
+
+  @override
+  String get fiscalDocumentStatusCancellationPending => 'Cancelación pendiente';
+
+  @override
+  String get fiscalDocumentBannerSealedStampOrReopen =>
+      'Sellado, sin validez fiscal todavía. Tímbralo para darle validez fiscal, o reábrelo si necesitas corregirlo (conserva el folio).';
+
+  @override
+  String get fiscalDocumentBannerSealedStamp =>
+      'Sellado, sin validez fiscal todavía. Tímbralo para darle validez fiscal.';
+
+  @override
+  String fiscalDocumentBannerStamping(String since) {
+    return 'Timbrando desde $since. El PAC aún no confirma el resultado; el sistema lo consulta cada 10 minutos, o puedes consultarlo ahora.';
+  }
+
+  @override
+  String fiscalDocumentBannerStampingNoRefresh(String since) {
+    return 'Timbrando desde $since. El PAC aún no confirma el resultado; el sistema lo consulta cada 10 minutos.';
+  }
+
+  @override
+  String fiscalDocumentBannerCancellationPending(String requested) {
+    return 'Cancelación solicitada el $requested. El SAT espera que el receptor la acepte; mientras tanto el documento sigue vigente.';
+  }
+
+  @override
+  String get fiscalDocumentBannerCancellationPendingNoDate =>
+      'Cancelación en proceso. El SAT espera que el receptor la acepte; mientras tanto el documento sigue vigente.';
+
+  @override
+  String get fiscalDocumentFactSatCertificate => 'Certificado SAT';
+
+  @override
+  String get fiscalDocumentFactProviderRfc => 'PAC';
+
+  @override
+  String get fiscalDocumentFactSubstitution => 'Sustituido por';
+
+  @override
+  String get fiscalDocumentSimulatedBadge =>
+      'Timbrado simulado, sin validez fiscal';
+
+  @override
+  String get fiscalDocumentStampAction => 'Timbrar';
+
+  @override
+  String get fiscalDocumentCancelCfdiAction => 'Cancelar ante el SAT';
+
+  @override
+  String get fiscalDocumentRefreshAction => 'Consultar estado';
+
+  @override
+  String get fiscalDocumentCancelSubmit => 'Enviar cancelación';
+
+  @override
+  String get fiscalDocumentCancelBack => 'Volver';
+
+  @override
+  String fiscalDocumentStampTitle(String kind, String folio) {
+    return '¿Timbrar $kind $folio?';
+  }
+
+  @override
+  String get fiscalDocumentStampBody =>
+      'Se enviará al PAC para timbrarlo ante el SAT. Una vez timbrado ya no podrá reabrirse ni editarse; solo podrá cancelarse.';
+
+  @override
+  String fiscalDocumentStamped(String folio) {
+    return '$folio timbrado.';
+  }
+
+  @override
+  String fiscalDocumentStampedSimulated(String folio) {
+    return '$folio timbrado (simulado).';
+  }
+
+  @override
+  String fiscalDocumentCancelTitle(String folio) {
+    return 'Cancelar $folio ante el SAT';
+  }
+
+  @override
+  String get fiscalDocumentCancelReasonLabel => 'Motivo';
+
+  @override
+  String get fiscalDocumentCancelReason01 =>
+      'Comprobante emitido con errores con relación';
+
+  @override
+  String get fiscalDocumentCancelReason02 =>
+      'Comprobante emitido con errores sin relación';
+
+  @override
+  String get fiscalDocumentCancelReason03 => 'No se llevó a cabo la operación';
+
+  @override
+  String get fiscalDocumentCancelReason04 =>
+      'Operación nominativa relacionada en una factura global';
+
+  @override
+  String get fiscalDocumentCancelSubstituteLabel =>
+      'Documento que lo sustituye';
+
+  @override
+  String get fiscalDocumentCancelSubstituteHint =>
+      'Debe estar timbrado y ser del mismo emisor y receptor.';
+
+  @override
+  String get fiscalDocumentCancelSubstituteChange => 'Cambiar';
+
+  @override
+  String get fiscalDocumentCancelNoCandidates =>
+      'No hay documentos timbrados de este receptor que puedan sustituirlo. Cancela con el motivo 02 y emite después el documento nuevo, relacionándolo con el cancelado (04).';
+
+  @override
+  String get fiscalDocumentCancelNote =>
+      'La solicitud se envía al SAT y no se puede deshacer desde aquí. Si el SAT requiere la aceptación del receptor, quedará pendiente.';
+
+  @override
+  String fiscalDocumentCancelSent(String state) {
+    return 'Cancelación enviada: $state.';
+  }
+
+  @override
+  String fiscalDocumentRefreshMoved(String folio, String state) {
+    return '$folio: $state.';
+  }
+
+  @override
+  String get fiscalDocumentStillInProcess =>
+      'Sigue en proceso. Vuelve a consultar en unos minutos.';
+
+  @override
+  String get fiscalDocumentCancellationsTitle => 'Cancelaciones';
+
+  @override
+  String get fiscalDocumentCancellationOutcomeRequested => 'Solicitada';
+
+  @override
+  String get fiscalDocumentCancellationOutcomePending => 'Pendiente';
+
+  @override
+  String get fiscalDocumentCancellationOutcomeAccepted => 'Aceptada';
+
+  @override
+  String get fiscalDocumentCancellationOutcomeExpired => 'Expirada';
+
+  @override
+  String get fiscalDocumentCancellationOutcomeRejected => 'Rechazada';
+
+  @override
+  String get fiscalDocumentCancellationOutcomeNotCancellable => 'No cancelable';
+
+  @override
+  String get fiscalDocumentCancellationOutcomeFailed => 'Falló';
+
+  @override
+  String fiscalDocumentCancellationOutcomeUnknown(String value) {
+    return 'Desconocido ($value)';
+  }
+
+  @override
+  String fiscalDocumentCancellationRequestedBy(String who, String when) {
+    return 'Solicitó $who · $when';
+  }
+
+  @override
+  String fiscalDocumentCancellationAnswered(String when) {
+    return 'Respuesta $when';
+  }
+
+  @override
+  String fiscalDocumentCancellationResolved(String when) {
+    return 'Resuelta $when';
+  }
+
+  @override
+  String fiscalDocumentCancellationPac(String detail) {
+    return 'PAC $detail';
+  }
+
+  @override
+  String get fiscalDocumentStampIssueDateHint =>
+      'Reábrelo, cambia la fecha de emisión (o déjala vacía) y confírmalo de nuevo.';
+
+  @override
+  String get apiErrorFiscalDocumentCancellationOpen =>
+      'Ya hay una cancelación en proceso para este documento. Consulta su estado.';
+
+  @override
+  String apiErrorFiscalDocumentHasLiveDocuments(String documents) {
+    return 'No se puede cancelar: primero cancela los documentos que dependen de este: $documents.';
+  }
+
+  @override
+  String get apiErrorFiscalDocumentNotCancellable =>
+      'El SAT indica que este documento no se puede cancelar.';
+
+  @override
+  String get apiErrorFiscalDocumentNothingToRefresh =>
+      'Este documento no tiene nada en proceso: ya se resolvió.';
+
+  @override
+  String get apiErrorFiscalDocumentStamping =>
+      'Este documento se está timbrando. Consulta su estado en unos minutos.';
+
+  @override
+  String get apiErrorFiscalDocumentSubstitutionInvalid =>
+      'El documento sustituto no es válido: debe estar timbrado, vigente y ser del mismo emisor y receptor.';
+
+  @override
+  String get apiErrorFiscalDocumentSubstitutionRequired =>
+      'El motivo 01 requiere indicar el documento que sustituye al cancelado.';
+
+  @override
+  String apiErrorFiscalDocumentUnknownCancellationReason(String reason) {
+    return 'El motivo de cancelación «$reason» no es válido.';
+  }
+
+  @override
+  String get apiErrorPacNotConfigured =>
+      'Este sistema no tiene un PAC configurado, así que no se puede timbrar ni cancelar.';
+
+  @override
+  String apiErrorPacRejected(String code, String message) {
+    return 'El PAC rechazó la solicitud: $code · «$message».';
+  }
+
+  @override
+  String get apiErrorPacTimeout =>
+      'El PAC no respondió a tiempo. El documento quedó en proceso; consulta su estado.';
+
+  @override
+  String get apiErrorPacUnavailable =>
+      'No se pudo contactar al PAC. No cambió nada; inténtalo de nuevo.';
 }

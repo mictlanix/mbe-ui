@@ -11,12 +11,17 @@ String fiscalDocumentStatusLabel(
 ) => switch (status) {
   FiscalDocumentStatus.draft => l10n.fiscalDocumentStatusDraft,
   FiscalDocumentStatus.sealed => l10n.fiscalDocumentStatusSealed,
+  FiscalDocumentStatus.stamping => l10n.fiscalDocumentStatusStamping,
   FiscalDocumentStatus.issued => l10n.fiscalDocumentStatusIssued,
+  FiscalDocumentStatus.cancellationPending =>
+    l10n.fiscalDocumentStatusCancellationPending,
   FiscalDocumentStatus.cancelled => l10n.fiscalDocumentStatusCancelled,
 };
 
 /// A status's `(background, foreground)` pair (C4): draft neutral, sealed
-/// info, issued success, cancelled error.
+/// info, issued success, cancelled error. Stamping and cancellation pending
+/// are the "waiting" pair, the one delivery orders and POS sales use too
+/// (spec 072 R10).
 (Color, Color) fiscalDocumentStatusColors(
   ColorScheme scheme,
   FiscalDocumentStatus status,
@@ -28,6 +33,10 @@ String fiscalDocumentStatusLabel(
   FiscalDocumentStatus.sealed => (
     scheme.primaryContainer,
     scheme.onPrimaryContainer,
+  ),
+  FiscalDocumentStatus.stamping || FiscalDocumentStatus.cancellationPending => (
+    scheme.tertiaryContainer,
+    scheme.onTertiaryContainer,
   ),
   FiscalDocumentStatus.issued => (
     scheme.secondaryContainer,

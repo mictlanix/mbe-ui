@@ -95,7 +95,8 @@ spinner. Stamp and cancel run inside their dialogs (C20, C21).
 - `cancel_cfdi_reason_<code>`: radio buttons, none preselected
 - `cancel_cfdi_substitute`: the C22 picker, shown only for 01
 - `cancel_cfdi_substitute_selected`, with a `Cambiar` control
-- `cancel_cfdi_no_candidates`
+- `cancel_cfdi_candidate_row_<id>`, `cancel_cfdi_candidate_search`, `cancel_cfdi_candidate_empty` (the no-candidates explanation): the C22 picker with key prefix `cancel_cfdi_candidate`
+- `cancel_cfdi_substitute_change`: the Cambiar control
 - `cancel_cfdi_submit`: "Enviar cancelación", enabled only when valid (data-model
   validation)
 - `cancel_cfdi_back`: "Volver"
@@ -117,9 +118,9 @@ confirmation; there is no second prompt.
   from `_AddRelationDialog`.
 - Inputs: `issuerRfc`, `status`, `excludeId`, `recipientRfc` (initial search and row
   filter), `onPicked`.
-- Rows are keyed `candidate_row_<id>` and show folio, type, issue date, recipient, state
-  and total.
-- Also keyed: `candidate_load_more` and `candidate_empty`.
+- Rows are keyed `<prefix>_row_<id>` and show folio, issue date, UUID and total (the
+  relation dialog's columns).
+- Also keyed: `<prefix>_search`, `<prefix>_load_more` and `<prefix>_empty`.
 - The add-relation dialog re-hosts it with no behaviour change. The relation dialog's
   existing keys are kept by passing a key prefix.
 

@@ -93,6 +93,18 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.fiscalDocumentPeriodUnknownUsage,
   api.ErrorCode.fiscalDocumentPeriodVersionNotPrintable,
   api.ErrorCode.fiscalDocumentPeriodXmlUnavailable,
+  api.ErrorCode.fiscalDocumentPeriodCancellationOpen,
+  api.ErrorCode.fiscalDocumentPeriodHasLiveDocuments,
+  api.ErrorCode.fiscalDocumentPeriodNotCancellable,
+  api.ErrorCode.fiscalDocumentPeriodNothingToRefresh,
+  api.ErrorCode.fiscalDocumentPeriodStamping,
+  api.ErrorCode.fiscalDocumentPeriodSubstitutionInvalid,
+  api.ErrorCode.fiscalDocumentPeriodSubstitutionRequired,
+  api.ErrorCode.fiscalDocumentPeriodUnknownCancellationReason,
+  api.ErrorCode.pacPeriodNotConfigured,
+  api.ErrorCode.pacPeriodRejected,
+  api.ErrorCode.pacPeriodTimeout,
+  api.ErrorCode.pacPeriodUnavailable,
   api.ErrorCode.imagePeriodTooLarge,
   api.ErrorCode.imagePeriodUnsupportedFormat,
   api.ErrorCode.incidencePeriodReasonRequired,
@@ -430,6 +442,38 @@ String? localizeProblem(
     ),
     api.ErrorCode.fiscalDocumentPeriodXmlUnavailable =>
       l10n.apiErrorFiscalDocumentXmlUnavailable,
+    // Stamping, cancellation and refresh (spec 072).
+    api.ErrorCode.fiscalDocumentPeriodCancellationOpen =>
+      l10n.apiErrorFiscalDocumentCancellationOpen,
+    api.ErrorCode.fiscalDocumentPeriodHasLiveDocuments => _ap1(
+      _stringList(problem.listParam('documents')),
+      (documents) =>
+          l10n.apiErrorFiscalDocumentHasLiveDocuments(documents.join(', ')),
+    ),
+    api.ErrorCode.fiscalDocumentPeriodNotCancellable =>
+      l10n.apiErrorFiscalDocumentNotCancellable,
+    api.ErrorCode.fiscalDocumentPeriodNothingToRefresh =>
+      l10n.apiErrorFiscalDocumentNothingToRefresh,
+    api.ErrorCode.fiscalDocumentPeriodStamping =>
+      l10n.apiErrorFiscalDocumentStamping,
+    api.ErrorCode.fiscalDocumentPeriodSubstitutionInvalid =>
+      l10n.apiErrorFiscalDocumentSubstitutionInvalid,
+    api.ErrorCode.fiscalDocumentPeriodSubstitutionRequired =>
+      l10n.apiErrorFiscalDocumentSubstitutionRequired,
+    api.ErrorCode.fiscalDocumentPeriodUnknownCancellationReason => _ap1(
+      problem.stringParam('reason'),
+      l10n.apiErrorFiscalDocumentUnknownCancellationReason,
+    ),
+    api.ErrorCode.pacPeriodNotConfigured => l10n.apiErrorPacNotConfigured,
+    // The PAC's own words: the params carry SAT's code and message, which the
+    // clerk needs as written, so they are shown inside our sentence.
+    api.ErrorCode.pacPeriodRejected => _ap2(
+      problem.stringParam('pac_code'),
+      problem.stringParam('pac_message'),
+      l10n.apiErrorPacRejected,
+    ),
+    api.ErrorCode.pacPeriodTimeout => l10n.apiErrorPacTimeout,
+    api.ErrorCode.pacPeriodUnavailable => l10n.apiErrorPacUnavailable,
     api.ErrorCode.imagePeriodTooLarge => _ap1(
       _size(problem, 'max_bytes', fmt),
       l10n.apiErrorImageTooLarge,
@@ -908,6 +952,12 @@ String _stillReferenced(
 
 /// Applies [f] when [a] is present, else `null`: a case whose param is
 /// missing or of the wrong type has no message (FR-004).
+/// A non-empty list whose every element is a string, or `null`.
+List<String>? _stringList(List<Object?>? list) =>
+    list == null || list.isEmpty || !list.every((e) => e is String)
+    ? null
+    : list.cast<String>();
+
 String? _ap1<A>(A? a, String Function(A) f) => a == null ? null : f(a);
 
 String? _ap2<A, B>(A? a, B? b, String Function(A, B) f) =>

@@ -82,10 +82,12 @@ code	fiscal_document.already_related	409	relation_id: int	IN	POST /fiscal-docume
 code	fiscal_document.amount_exceeds_balance	422	balance: decimal	OUT		
 code	fiscal_document.amounts_exceed_payment	422	—	OUT		
 code	fiscal_document.amounts_not_equal_payment	422	—	OUT		
+code	fiscal_document.cancellation_open	409	—	IN	POST /fiscal-documents/{}/cancel	reachable from the Facturas screens (spec 072)
 code	fiscal_document.certificate_cannot_sign	422	—	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
 code	fiscal_document.credit_exceeds_invoice	422	invoice_id: int, remaining: decimal	OUT		
 code	fiscal_document.credit_quantity_exceeds_line	422	max: decimal	OUT		
 code	fiscal_document.field_not_for_type	422	fields: list[str], type: enum:FiscalDocumentType	IN	PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 066)
+code	fiscal_document.has_live_documents	409	documents: list[str]	IN	POST /fiscal-documents/{}/cancel	reachable from the Facturas screens (spec 072)
 code	fiscal_document.invoice_already_on_receipt	409	invoice_id: int	OUT		
 code	fiscal_document.invoice_not_creditable	422	invoice_id: int	OUT		
 code	fiscal_document.invoice_not_payable	422	invoice_id: int	OUT		
@@ -96,11 +98,13 @@ code	fiscal_document.line_quantity_not_positive	422	line: int	IN	POST /fiscal-do
 code	fiscal_document.no_invoiceable_lines	422	—	IN	POST /fiscal-documents/{}/sales-orders	reachable from the Facturas screens (spec 066)
 code	fiscal_document.no_lines	422	—	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
 code	fiscal_document.no_valid_certificate	422	—	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
+code	fiscal_document.not_cancellable	409	—	IN	POST /fiscal-documents/{}/cancel	reachable from the Facturas screens (spec 072)
 code	fiscal_document.not_draft	409	—	IN	PUT /fiscal-documents/{}; POST /fiscal-documents/{}/lines	reachable from the Facturas screens (spec 066)
 code	fiscal_document.not_emailable	409	—	OUT		
 code	fiscal_document.not_issued	409	—	IN	GET /fiscal-documents/{}/pdf; GET /fiscal-documents/{}/xml	reachable from the Facturas screens (spec 066)
 code	fiscal_document.not_sealed	409	—	IN	POST /fiscal-documents/{}/reopen	reachable from the Facturas screens (spec 066)
 code	fiscal_document.not_stamped	409	—	IN	GET /fiscal-documents/{}/pdf	reachable from the Facturas screens (spec 066)
+code	fiscal_document.nothing_to_refresh	409	—	IN	POST /fiscal-documents/{}/refresh	reachable from the Facturas screens (spec 072)
 code	fiscal_document.order_not_invoiceable	422	sales_order_id: int	IN	POST /fiscal-documents/{}/sales-orders	reachable from the Facturas screens (spec 066)
 code	fiscal_document.payment_already_receipted	409	fiscal_document_id: int	OUT		
 code	fiscal_document.payment_date_out_of_range	422	—	OUT		
@@ -117,7 +121,11 @@ code	fiscal_document.relation_types_mixed	422	—	IN	POST /fiscal-documents/{}/r
 code	fiscal_document.series_locked	409	—	IN	PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 066)
 code	fiscal_document.series_missing	422	batch: str	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
 code	fiscal_document.series_not_of_type	422	batch: str, type: enum:FiscalDocumentType	IN	PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 066)
+code	fiscal_document.stamping	409	—	IN	POST /fiscal-documents/{}/stamp; POST /fiscal-documents/{}/cancel	reachable from the Facturas screens (spec 072)
+code	fiscal_document.substitution_invalid	422	substitution: str	IN	POST /fiscal-documents/{}/cancel	reachable from the Facturas screens (spec 072)
+code	fiscal_document.substitution_required	422	—	IN	POST /fiscal-documents/{}/cancel	reachable from the Facturas screens (spec 072)
 code	fiscal_document.type_not_supported	409	type: enum:FiscalDocumentType	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
+code	fiscal_document.unknown_cancellation_reason	422	reason: str	IN	POST /fiscal-documents/{}/cancel	reachable from the Facturas screens (spec 072)
 code	fiscal_document.unknown_facility	422	facility_id: int	IN	PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 066)
 code	fiscal_document.unknown_usage	422	usage: str	IN	PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 066)
 code	fiscal_document.version_not_printable	409	version: str	IN	GET /fiscal-documents/{}/pdf	reachable from the Facturas screens (spec 066)
@@ -154,6 +162,10 @@ code	itinerary.stop_shortfall_needs_reason	422	line_id: int	OUT
 code	kardex.range_reversed	422	—	IN	GET /kardex	reachable from the Kardex screen (spec 071)
 code	kardex.range_too_long	422	max_days: int	IN	GET /kardex	reachable from the Kardex screen (spec 071)
 code	lock.busy	409	resource: str (`warehouse`, `facility` or `sales_order`)	IN	POST /customer-payments; POST /customer-refunds/{}/confirm; POST /delivery-orders/{}/confirm	reachable from 5 UI route(s)
+code	pac.not_configured	503	—	IN	POST /fiscal-documents/{}/stamp; POST /fiscal-documents/{}/cancel; POST /fiscal-documents/{}/refresh	reachable from the Facturas screens (spec 072)
+code	pac.rejected	422	pac_code: str, pac_message: str	IN	POST /fiscal-documents/{}/stamp; POST /fiscal-documents/{}/cancel	reachable from the Facturas screens (spec 072)
+code	pac.timeout	504	state: str	IN	POST /fiscal-documents/{}/stamp; POST /fiscal-documents/{}/cancel	reachable from the Facturas screens (spec 072)
+code	pac.unavailable	503	—	IN	POST /fiscal-documents/{}/stamp; POST /fiscal-documents/{}/cancel; POST /fiscal-documents/{}/refresh	reachable from the Facturas screens (spec 072)
 code	payment.already_verified	409	—	IN	POST /customer-payments/{}/verify	reachable from the payment verification queue and the payment view (spec 060)
 code	payment.application_reversed	409	—	IN	POST /customer-payments/{}/applications/{}/reverse	reachable from the payment view and the Pedidos payments dialog (spec 059)
 code	payment.currency_mismatch	422	payment_currency: enum:CurrencyCode, order_currency: enum:CurrencyCode	IN	POST /customer-payments/{}/applications	reachable from the payment view and the Pedidos payments dialog (spec 059)

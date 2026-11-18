@@ -245,6 +245,26 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
+    testWidgets('a row per state shows its own chip, including the two '
+        'in-process ones (spec 072)', (tester) async {
+      serve([
+        for (final (i, status) in FiscalDocumentStatus.values.indexed)
+          row(i + 1, serial: 100 + i, status: status),
+      ]);
+      await pumpList(tester);
+
+      expect(key('fiscal_document_status_chip_stamping'), findsOneWidget);
+      expect(
+        key('fiscal_document_status_chip_cancellationPending'),
+        findsOneWidget,
+      );
+      expect(find.text(l10n.fiscalDocumentStatusStamping), findsOneWidget);
+      expect(
+        find.text(l10n.fiscalDocumentStatusCancellationPending),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('a draft reads "Borrador #id" and shows the placeholder '
         'total', (tester) async {
       serve([row(9, status: FiscalDocumentStatus.draft, total: null)]);
@@ -320,6 +340,43 @@ void main() {
       expect(router.state.uri.queryParameters['status'], 'sealed');
       expect(router.state.uri.queryParameters.containsKey('page'), isFalse);
       expect(requests.last.status, FiscalDocumentStatus.sealed);
+    });
+
+    testWidgets('the state filter offers all six states in lifecycle order '
+        'and writes the wire value (spec 072)', (tester) async {
+      serve([row(1)]);
+      final router = await pumpList(tester);
+      await openFilters(tester);
+
+      await tester.tap(key('fiscal_documents_status_filter'));
+      await tester.pumpAndSettle();
+      final labels = [
+        l10n.fiscalDocumentStatusDraft,
+        l10n.fiscalDocumentStatusSealed,
+        l10n.fiscalDocumentStatusStamping,
+        l10n.fiscalDocumentStatusIssued,
+        l10n.fiscalDocumentStatusCancellationPending,
+        l10n.fiscalDocumentStatusCancelled,
+      ];
+      double? previous;
+      for (final label in labels) {
+        final item = find.text(label).last;
+        expect(item, findsOneWidget, reason: label);
+        final y = tester.getTopLeft(item).dy;
+        if (previous != null) expect(y, greaterThan(previous), reason: label);
+        previous = y;
+      }
+
+      await tester.tap(
+        find.text(l10n.fiscalDocumentStatusCancellationPending).last,
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        router.state.uri.queryParameters['status'],
+        'cancellation_pending',
+      );
+      expect(requests.last.status, FiscalDocumentStatus.cancellationPending);
     });
 
     testWidgets('type reaches the controller', (tester) async {

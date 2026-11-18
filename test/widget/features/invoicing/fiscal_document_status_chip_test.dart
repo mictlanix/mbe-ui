@@ -22,11 +22,13 @@ Widget _wrap(Widget child, {double width = 120}) => MaterialApp(
 const _spanish = {
   FiscalDocumentStatus.draft: 'Borrador',
   FiscalDocumentStatus.sealed: 'Sellado',
+  FiscalDocumentStatus.stamping: 'Timbrando',
   FiscalDocumentStatus.issued: 'Timbrado',
+  FiscalDocumentStatus.cancellationPending: 'Cancelación pendiente',
   FiscalDocumentStatus.cancelled: 'Cancelado',
 };
 
-/// Spec 066 C4.
+/// Spec 066 C4, spec 072 C15.
 void main() {
   for (final status in FiscalDocumentStatus.values) {
     testWidgets('${status.name} renders its Spanish label without clipping at '
@@ -47,4 +49,35 @@ void main() {
       expect(paragraph.size.width, lessThanOrEqualTo(120));
     });
   }
+
+  test('stamping and cancellation pending share the "waiting" pair, which '
+      'differs from the other four', () {
+    final scheme = ColorScheme.fromSeed(seedColor: Colors.indigo);
+    final pairs = {
+      for (final status in FiscalDocumentStatus.values)
+        status: fiscalDocumentStatusColors(scheme, status),
+    };
+
+    expect(pairs[FiscalDocumentStatus.stamping], (
+      scheme.tertiaryContainer,
+      scheme.onTertiaryContainer,
+    ));
+    expect(
+      pairs[FiscalDocumentStatus.cancellationPending],
+      pairs[FiscalDocumentStatus.stamping],
+    );
+    final others = [
+      FiscalDocumentStatus.draft,
+      FiscalDocumentStatus.sealed,
+      FiscalDocumentStatus.issued,
+      FiscalDocumentStatus.cancelled,
+    ];
+    for (final other in others) {
+      expect(
+        pairs[other],
+        isNot(pairs[FiscalDocumentStatus.stamping]),
+        reason: other.name,
+      );
+    }
+  });
 }

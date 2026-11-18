@@ -8,7 +8,10 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/auth_interceptor.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_cancellation.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_document.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_stamp.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/sat_cancellation_reason.dart';
 import 'package:mbe_ui/features/invoicing/domain/repositories/fiscal_document_repository.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart'
     show wireDate, wireDateEnd;
@@ -43,7 +46,7 @@ class FiscalDocumentRepositoryImpl implements FiscalDocumentRepository {
         search: search,
         issuer: issuer,
         type: type,
-        status: status?.name,
+        status: status?.wireName,
         dateFrom: dateFrom == null ? null : wireDate(dateFrom),
         dateTo: dateTo == null ? null : wireDateEnd(dateTo),
         skip: skip,
@@ -240,6 +243,40 @@ class FiscalDocumentRepositoryImpl implements FiscalDocumentRepository {
     ),
   );
 
+  @override
+  Future<FiscalDocument> stamp(int id) => _document(
+    () => _api.stampFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdStampPost(
+      fiscalDocumentId: id,
+    ),
+  );
+
+  @override
+  Future<FiscalDocument> cancel(
+    int id,
+    SatCancellationReason reason, {
+    String? substitution,
+  }) => _document(
+    () =>
+        _api.cancelFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdCancelPost(
+          fiscalDocumentId: id,
+          fiscalDocumentCancelRequest: api.FiscalDocumentCancelRequest(
+            (b) => b
+              ..reason = reason.code
+              // Only reason 01 names a substitute; the server ignores it for the
+              // others, but it is not sent.
+              ..substitution = reason.needsSubstitute ? substitution : null,
+          ),
+        ),
+  );
+
+  @override
+  Future<FiscalDocument> refresh(int id) => _document(
+    () => _api
+        .refreshFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdRefreshPost(
+          fiscalDocumentId: id,
+        ),
+  );
+
   Future<FiscalDocument> _document(
     Future<Response<api.FiscalDocumentResponse>> Function() call,
   ) async {
@@ -259,13 +296,38 @@ api.PaymentTerms _termsToApi(InvoicePaymentTerms terms) =>
     ? api.PaymentTerms.number0
     : api.PaymentTerms.number1;
 
-/// An unknown status degrades to a draft rather than throwing; the repository
-/// test fixes that (data-model §1).
-FiscalDocumentStatus _status(String name) => switch (name) {
-  'sealed_' || 'sealed' => FiscalDocumentStatus.sealed,
-  'issued' => FiscalDocumentStatus.issued,
-  'cancelled' => FiscalDocumentStatus.cancelled,
-  _ => FiscalDocumentStatus.draft,
+/// Each constant of the generated status enums maps to its own state, and an
+/// unmapped one throws: a state falling back to draft would open a stamped
+/// document as editable (spec 072 R1). A test iterates both enums' `values`,
+/// so a state added on the server fails there after regeneration.
+FiscalDocumentStatus _responseStatus(
+  api.FiscalDocumentResponseStatusEnum status,
+) => switch (status) {
+  api.FiscalDocumentResponseStatusEnum.draft => FiscalDocumentStatus.draft,
+  api.FiscalDocumentResponseStatusEnum.sealed_ => FiscalDocumentStatus.sealed,
+  api.FiscalDocumentResponseStatusEnum.stamping =>
+    FiscalDocumentStatus.stamping,
+  api.FiscalDocumentResponseStatusEnum.issued => FiscalDocumentStatus.issued,
+  api.FiscalDocumentResponseStatusEnum.cancellationPending =>
+    FiscalDocumentStatus.cancellationPending,
+  api.FiscalDocumentResponseStatusEnum.cancelled =>
+    FiscalDocumentStatus.cancelled,
+  _ => throw StateError('Unmapped fiscal document status: ${status.name}'),
+};
+
+/// The list's twin of [_responseStatus].
+FiscalDocumentStatus _summaryStatus(
+  api.FiscalDocumentSummaryStatusEnum status,
+) => switch (status) {
+  api.FiscalDocumentSummaryStatusEnum.draft => FiscalDocumentStatus.draft,
+  api.FiscalDocumentSummaryStatusEnum.sealed_ => FiscalDocumentStatus.sealed,
+  api.FiscalDocumentSummaryStatusEnum.stamping => FiscalDocumentStatus.stamping,
+  api.FiscalDocumentSummaryStatusEnum.issued => FiscalDocumentStatus.issued,
+  api.FiscalDocumentSummaryStatusEnum.cancellationPending =>
+    FiscalDocumentStatus.cancellationPending,
+  api.FiscalDocumentSummaryStatusEnum.cancelled =>
+    FiscalDocumentStatus.cancelled,
+  _ => throw StateError('Unmapped fiscal document status: ${status.name}'),
 };
 
 Decimal? _decimal(String? s) => s == null ? null : Decimal.tryParse(s);
@@ -283,7 +345,7 @@ FiscalDocumentSummary _summary(api.FiscalDocumentSummary r) =>
       recipientName: r.recipientName,
       issued: r.issued,
       stampUuid: r.stampUuid,
-      status: _status(r.status.name),
+      status: _summaryStatus(r.status),
       total: _decimal(r.total),
     );
 
@@ -300,7 +362,7 @@ FiscalDocument _detail(api.FiscalDocumentResponse r) => FiscalDocument(
     recipientName: r.recipientName,
     issued: r.issued,
     stampUuid: r.stampUuid,
-    status: _status(r.status.name),
+    status: _responseStatus(r.status),
     total: _decimal(r.total),
   ),
   issuerRegime: r.issuerRegime,
@@ -322,11 +384,41 @@ FiscalDocument _detail(api.FiscalDocumentResponse r) => FiscalDocument(
   stamped: r.stamped,
   cancellationDate: r.cancellationDate,
   cancellationReason: r.cancellationReason,
+  stamp: r.stamp == null ? null : _stamp(r.stamp!),
+  stampingSince: r.stampingSince,
+  cancellationSubstitution: r.cancellationSubstitution,
+  cancellations:
+      (r.cancellations ?? const <api.FiscalDocumentCancellationResponse>[])
+          .map(_cancellation)
+          .toList(),
   lines: r.lines.map(_line).toList(),
   relations: (r.relations ?? const <api.FiscalDocumentRelationResponse>[])
       .map(_relation)
       .toList(),
 );
+
+FiscalStamp _stamp(api.FiscalDocumentStamp s) => FiscalStamp(
+  uuid: s.uuid,
+  stamped: s.stamped,
+  satCertificate: s.satCertificate,
+  providerRfc: s.providerRfc,
+  simulated: s.simulated,
+);
+
+FiscalCancellation _cancellation(api.FiscalDocumentCancellationResponse c) =>
+    FiscalCancellation(
+      id: c.fiscalDocumentCancellationId,
+      reason: c.reason,
+      substitution: c.substitution,
+      outcome: CancellationOutcome.fromWire(c.status),
+      rawOutcome: c.status,
+      pacCode: c.pacCode,
+      pacMessage: c.pacMessage,
+      requestedBy: c.requestedBy,
+      requestedAt: c.requestedAt,
+      answeredAt: c.answeredAt,
+      resolvedAt: c.resolvedAt,
+    );
 
 InvoiceLine _line(api.FiscalDocumentLine l) => InvoiceLine(
   id: l.fiscalDocumentDetailId,

@@ -3,6 +3,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/invoicing/data/fiscal_document_repository_impl.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_document.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/sat_cancellation_reason.dart';
 import 'package:mbe_ui/features/invoicing/domain/repositories/fiscal_document_repository.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_detail_controller.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_documents_list_controller.dart';
@@ -80,13 +81,43 @@ class FiscalDocumentActions extends _$FiscalDocumentActions {
   /// `POST /fiscal-documents/{id}/reopen`.
   Future<AppError?> reopen(int id) => _run(id, (r) => r.reopen(id));
 
+  /// `POST /fiscal-documents/{id}/stamp` (spec 072): sends the sealed
+  /// document to the PAC. A PAC timeout is a refusal (`pac.timeout`), and the
+  /// reloaded detail then shows the document as stamping.
+  Future<AppError?> stamp(int id) => _run(id, (r) => r.stamp(id));
+
+  /// `POST /fiscal-documents/{id}/cancel` (spec 072). [substitution] is the
+  /// replacement's UUID, for reason 01 only.
+  Future<AppError?> cancel(
+    int id,
+    SatCancellationReason reason, {
+    String? substitution,
+  }) => _run(id, (r) => r.cancel(id, reason, substitution: substitution));
+
+  /// `POST /fiscal-documents/{id}/refresh` (spec 072). Answers the status the
+  /// server returned, so the screen can tell "still in process" (the same
+  /// status as before) from a resolved document. `status` is `null` when the
+  /// server refused.
+  Future<({AppError? error, FiscalDocumentStatus? status})> refresh(
+    int id,
+  ) async {
+    final result = await _attempt(id, (r) => r.refresh(id));
+    return (error: result.error, status: result.value?.status);
+  }
+
   Future<AppError?> _run(
     int id,
     Future<Object?> Function(FiscalDocumentRepository repository) write,
+  ) async => (await _attempt(id, write)).error;
+
+  Future<({AppError? error, T? value})> _attempt<T>(
+    int id,
+    Future<T> Function(FiscalDocumentRepository repository) write,
   ) async {
     AppError? error;
+    T? value;
     try {
-      await write(ref.read(fiscalDocumentRepositoryProvider));
+      value = await write(ref.read(fiscalDocumentRepositoryProvider));
     } on AppError catch (e) {
       error = e;
     }
@@ -94,6 +125,6 @@ class FiscalDocumentActions extends _$FiscalDocumentActions {
     if (error == null || error is NetworkError) {
       ref.invalidate(fiscalDocumentsListControllerProvider);
     }
-    return error;
+    return (error: error, value: value);
   }
 }

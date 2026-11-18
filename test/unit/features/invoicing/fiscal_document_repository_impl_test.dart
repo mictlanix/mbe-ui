@@ -4,9 +4,12 @@ import 'dart:typed_data';
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/features/invoicing/data/fiscal_document_repository_impl.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_cancellation.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_document.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/sat_cancellation_reason.dart';
 
 const _jsonHeaders = {
   Headers.contentTypeHeader: [Headers.jsonContentType],
@@ -47,6 +50,7 @@ Map<String, Object?> _docJson({
   String? total,
   List<Object?>? lines,
   List<Object?>? relations,
+  Map<String, Object?> extra = const {},
 }) => {
   'fiscal_document_id': 7,
   'type': type,
@@ -70,6 +74,7 @@ Map<String, Object?> _docJson({
   'facility': 2,
   'lines': lines ?? [_lineJson()],
   'relations': relations,
+  ...extra,
 };
 
 Map<String, Object?> _summaryJson({
@@ -331,6 +336,229 @@ void main() {
         repo.confirm(7),
         throwsA(
           isA<Object>().having((e) => '$e', 'text', contains('no_lines')),
+        ),
+      );
+    });
+  });
+
+  group('states (spec 072 R1)', () {
+    test('every constant of both generated status enums maps, and the six '
+        'domain states are all reached', () async {
+      final repo = _repo((o) async {
+        if (o.path.endsWith('/fiscal-documents')) {
+          return _json({
+            'items': [
+              for (final v in FiscalDocumentStatus.values)
+                _summaryJson(status: v.wireName),
+            ],
+            'total': 6,
+          });
+        }
+        return _json(_docJson(status: 'sealed'));
+      });
+      final page = await repo.list();
+      expect(page.items.map((i) => i.status).toSet(), {
+        ...FiscalDocumentStatus.values,
+      });
+      expect(
+        api.FiscalDocumentSummaryStatusEnum.values.length,
+        FiscalDocumentStatus.values.length,
+        reason: 'a state added on the server needs a domain state',
+      );
+      expect(
+        api.FiscalDocumentResponseStatusEnum.values.length,
+        FiscalDocumentStatus.values.length,
+      );
+      // The detail's twin, one request per wire value.
+      for (final status in FiscalDocumentStatus.values) {
+        final detail = _repo(
+          (o) async => _json(_docJson(status: status.wireName)),
+        );
+        expect((await detail.getById(7)).status, status);
+      }
+    });
+
+    test(
+      'sends the wire name, not the enum name, as the list filter',
+      () async {
+        late RequestOptions captured;
+        final repo = _repo((o) async {
+          captured = o;
+          return _json({'items': <Object?>[], 'total': 0});
+        });
+        await repo.list(status: FiscalDocumentStatus.cancellationPending);
+        expect(captured.uri.queryParameters['status'], 'cancellation_pending');
+      },
+    );
+  });
+
+  group('stamp and cancellations', () {
+    test('maps the stamp, the pending stamp time, the substitute and the '
+        'history, with an unrecognised outcome kept raw', () async {
+      final repo = _repo(
+        (o) async => _json(
+          _docJson(
+            status: 'cancelled',
+            extra: {
+              'stamp': {
+                'uuid': 'U-1',
+                'stamped': '2026-11-17T09:13:00',
+                'sat_certificate': '00001000000509846663',
+                'provider_rfc': 'SIM010101SIM',
+                'simulated': true,
+              },
+              'stamping_since': '2026-11-17T11:05:00',
+              'cancellation_substitution': 'U-2',
+              'cancellations': [
+                {
+                  'fiscal_document_cancellation_id': 2,
+                  'reason': '01',
+                  'substitution': 'U-2',
+                  'status': 'accepted',
+                  'pac_code': null,
+                  'pac_message': null,
+                  'requested_by': 5,
+                  'requested_at': '2026-11-17T12:40:00',
+                  'answered_at': '2026-11-17T12:41:00',
+                  'resolved_at': '2026-11-17T12:41:00',
+                  'last_checked_at': null,
+                },
+                {
+                  'fiscal_document_cancellation_id': 1,
+                  'reason': '02',
+                  'substitution': null,
+                  'status': 'not_cancellable',
+                  'pac_code': '2001',
+                  'pac_message': 'El receptor rechazó',
+                  'requested_by': 5,
+                  'requested_at': '2026-11-17T12:30:00',
+                  'answered_at': null,
+                  'resolved_at': null,
+                  'last_checked_at': null,
+                },
+                {
+                  'fiscal_document_cancellation_id': 0,
+                  'reason': '03',
+                  'substitution': null,
+                  'status': 'from_the_future',
+                  'requested_by': 6,
+                  'requested_at': '2026-11-17T12:00:00',
+                },
+              ],
+            },
+          ),
+        ),
+      );
+
+      final doc = await repo.getById(7);
+
+      expect(doc.stamp?.uuid, 'U-1');
+      expect(doc.stamp?.simulated, isTrue);
+      expect(doc.stamp?.providerRfc, 'SIM010101SIM');
+      expect(doc.stamp?.satCertificate, '00001000000509846663');
+      expect(doc.stampingSince, DateTime(2026, 11, 17, 11, 5));
+      expect(doc.cancellationSubstitution, 'U-2');
+      expect(doc.cancellations.map((c) => c.id), [2, 1, 0]);
+      expect(doc.cancellations[0].outcome, CancellationOutcome.accepted);
+      expect(doc.cancellations[0].requestedBy, 5);
+      expect(doc.cancellations[1].outcome, CancellationOutcome.notCancellable);
+      expect(doc.cancellations[1].pacMessage, 'El receptor rechazó');
+      expect(doc.cancellations[2].outcome, CancellationOutcome.unknown);
+      expect(doc.cancellations[2].rawOutcome, 'from_the_future');
+      expect(doc.openCancellation, isNull);
+    });
+
+    test(
+      'a document with no stamp and no history maps to null and empty',
+      () async {
+        final repo = _repo((o) async => _json(_docJson()));
+        final doc = await repo.getById(7);
+        expect(doc.stamp, isNull);
+        expect(doc.cancellations, isEmpty);
+        expect(doc.stampingSince, isNull);
+      },
+    );
+
+    test('an open cancellation is the one with no final answer', () async {
+      final repo = _repo(
+        (o) async => _json(
+          _docJson(
+            status: 'cancellation_pending',
+            extra: {
+              'cancellations': [
+                {
+                  'fiscal_document_cancellation_id': 4,
+                  'reason': '02',
+                  'status': 'pending',
+                  'requested_by': 5,
+                  'requested_at': '2026-11-17T12:30:00',
+                },
+              ],
+            },
+          ),
+        ),
+      );
+      final doc = await repo.getById(7);
+      expect(doc.openCancellation?.id, 4);
+      expect(doc.canRefresh, isTrue);
+      expect(doc.canCancel, isFalse);
+      expect(doc.hasDocuments, isTrue);
+    });
+  });
+
+  group('stamp, cancel and refresh', () {
+    test('hit their endpoints', () async {
+      final sent = <RequestOptions>[];
+      final repo = _repo((o) async {
+        sent.add(o);
+        return _json(_docJson(status: 'issued'));
+      });
+      await repo.stamp(7);
+      await repo.refresh(7);
+      expect(
+        [for (final o in sent) '${o.method} ${o.path}'],
+        [
+          'POST /api/v1/fiscal-documents/7/stamp',
+          'POST /api/v1/fiscal-documents/7/refresh',
+        ],
+      );
+    });
+
+    test('cancel with 01 sends the substitute and with 02 does not', () async {
+      final sent = <RequestOptions>[];
+      final repo = _repo((o) async {
+        sent.add(o);
+        return _json(_docJson(status: 'cancelled'));
+      });
+      await repo.cancel(
+        7,
+        SatCancellationReason.withRelation,
+        substitution: 'U-2',
+      );
+      await repo.cancel(
+        7,
+        SatCancellationReason.withoutRelation,
+        substitution: 'U-2',
+      );
+      expect(sent[0].path, '/api/v1/fiscal-documents/7/cancel');
+      expect(sent[0].data, {'reason': '01', 'substitution': 'U-2'});
+      expect(sent[1].data, {'reason': '02'});
+    });
+
+    test('a refusal keeps its code', () async {
+      final repo = _repo(
+        (o) async => _json({
+          'detail': 'busy',
+          'code': 'fiscal_document.has_live_documents',
+          'params': {
+            'documents': ['P12', 'NC3'],
+          },
+        }, 409),
+      );
+      await expectLater(
+        repo.cancel(7, SatCancellationReason.withoutRelation),
+        throwsA(
+          isA<Object>().having((e) => '$e', 'text', contains('has_live')),
         ),
       );
     });

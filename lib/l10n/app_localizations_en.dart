@@ -7085,8 +7085,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Drafts have no issue date and do not appear when filtering by date.';
 
   @override
-  String get fiscalDocumentBannerSealed =>
-      'Sealed, waiting to be stamped. Stamping is not available in this system yet.';
+  String get fiscalDocumentBannerSealed => 'Sealed, no fiscal validity yet.';
 
   @override
   String get fiscalDocumentBannerReadOnlyKind =>
@@ -7467,7 +7466,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get apiErrorFiscalDocumentNotIssued =>
-      'This document has not been stamped yet, so it has no PDF or XML.';
+      'This document has not been stamped yet, so it has no PDF or XML and cannot be cancelled.';
 
   @override
   String apiErrorFiscalDocumentVersionNotPrintable(String version) {
@@ -7522,7 +7521,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get apiErrorFiscalDocumentNotSealed =>
-      'Only a sealed invoice that is not stamped yet can be reopened.';
+      'Only a sealed document that is not being stamped can be stamped or reopened.';
 
   @override
   String get apiErrorFiscalDocumentTypeNotSupported =>
@@ -7584,7 +7583,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get apiErrorFiscalDocumentNoValidCertificate =>
-      'The issuer has no valid certificate to seal with.';
+      'The issuer has no valid certificate to seal or cancel with.';
 
   @override
   String apiErrorFiscalDocumentSeriesMissing(String batch) {
@@ -9119,4 +9118,245 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get catalogViewStockButton => 'View stock';
+
+  @override
+  String get fiscalDocumentStatusStamping => 'Stamping';
+
+  @override
+  String get fiscalDocumentStatusCancellationPending => 'Cancellation pending';
+
+  @override
+  String get fiscalDocumentBannerSealedStampOrReopen =>
+      'Sealed, no fiscal validity yet. Stamp it to give it fiscal validity, or reopen it if it needs correcting (it keeps its folio).';
+
+  @override
+  String get fiscalDocumentBannerSealedStamp =>
+      'Sealed, no fiscal validity yet. Stamp it to give it fiscal validity.';
+
+  @override
+  String fiscalDocumentBannerStamping(String since) {
+    return 'Stamping since $since. The PAC has not confirmed the result yet; the system checks every 10 minutes, or you can check now.';
+  }
+
+  @override
+  String fiscalDocumentBannerStampingNoRefresh(String since) {
+    return 'Stamping since $since. The PAC has not confirmed the result yet; the system checks every 10 minutes.';
+  }
+
+  @override
+  String fiscalDocumentBannerCancellationPending(String requested) {
+    return 'Cancellation requested on $requested. SAT is waiting for the receiver to accept it; meanwhile the document remains valid.';
+  }
+
+  @override
+  String get fiscalDocumentBannerCancellationPendingNoDate =>
+      'Cancellation in process. SAT is waiting for the receiver to accept it; meanwhile the document remains valid.';
+
+  @override
+  String get fiscalDocumentFactSatCertificate => 'SAT certificate';
+
+  @override
+  String get fiscalDocumentFactProviderRfc => 'PAC';
+
+  @override
+  String get fiscalDocumentFactSubstitution => 'Replaced by';
+
+  @override
+  String get fiscalDocumentSimulatedBadge =>
+      'Simulated stamp, no fiscal validity';
+
+  @override
+  String get fiscalDocumentStampAction => 'Stamp';
+
+  @override
+  String get fiscalDocumentCancelCfdiAction => 'Cancel with SAT';
+
+  @override
+  String get fiscalDocumentRefreshAction => 'Check status';
+
+  @override
+  String get fiscalDocumentCancelSubmit => 'Send cancellation';
+
+  @override
+  String get fiscalDocumentCancelBack => 'Back';
+
+  @override
+  String fiscalDocumentStampTitle(String kind, String folio) {
+    return 'Stamp $kind $folio?';
+  }
+
+  @override
+  String get fiscalDocumentStampBody =>
+      'It will be sent to the PAC to be stamped with SAT. Once stamped it can no longer be reopened or edited; it can only be cancelled.';
+
+  @override
+  String fiscalDocumentStamped(String folio) {
+    return '$folio stamped.';
+  }
+
+  @override
+  String fiscalDocumentStampedSimulated(String folio) {
+    return '$folio stamped (simulated).';
+  }
+
+  @override
+  String fiscalDocumentCancelTitle(String folio) {
+    return 'Cancel $folio with SAT';
+  }
+
+  @override
+  String get fiscalDocumentCancelReasonLabel => 'Reason';
+
+  @override
+  String get fiscalDocumentCancelReason01 =>
+      'Document issued with errors, with relation';
+
+  @override
+  String get fiscalDocumentCancelReason02 =>
+      'Document issued with errors, without relation';
+
+  @override
+  String get fiscalDocumentCancelReason03 =>
+      'The operation was not carried out';
+
+  @override
+  String get fiscalDocumentCancelReason04 =>
+      'Nominative operation related to a global invoice';
+
+  @override
+  String get fiscalDocumentCancelSubstituteLabel => 'Replacement document';
+
+  @override
+  String get fiscalDocumentCancelSubstituteHint =>
+      'It must be stamped and have the same issuer and recipient.';
+
+  @override
+  String get fiscalDocumentCancelSubstituteChange => 'Change';
+
+  @override
+  String get fiscalDocumentCancelNoCandidates =>
+      'There are no stamped documents for this recipient that could replace it. Cancel with reason 02 and issue the new document afterwards, relating it to the cancelled one (04).';
+
+  @override
+  String get fiscalDocumentCancelNote =>
+      'The request is sent to SAT and cannot be undone from here. If SAT needs the receiver to accept, it will stay pending.';
+
+  @override
+  String fiscalDocumentCancelSent(String state) {
+    return 'Cancellation sent: $state.';
+  }
+
+  @override
+  String fiscalDocumentRefreshMoved(String folio, String state) {
+    return '$folio: $state.';
+  }
+
+  @override
+  String get fiscalDocumentStillInProcess =>
+      'Still in process. Check again in a few minutes.';
+
+  @override
+  String get fiscalDocumentCancellationsTitle => 'Cancellations';
+
+  @override
+  String get fiscalDocumentCancellationOutcomeRequested => 'Requested';
+
+  @override
+  String get fiscalDocumentCancellationOutcomePending => 'Pending';
+
+  @override
+  String get fiscalDocumentCancellationOutcomeAccepted => 'Accepted';
+
+  @override
+  String get fiscalDocumentCancellationOutcomeExpired => 'Expired';
+
+  @override
+  String get fiscalDocumentCancellationOutcomeRejected => 'Rejected';
+
+  @override
+  String get fiscalDocumentCancellationOutcomeNotCancellable =>
+      'Not cancellable';
+
+  @override
+  String get fiscalDocumentCancellationOutcomeFailed => 'Failed';
+
+  @override
+  String fiscalDocumentCancellationOutcomeUnknown(String value) {
+    return 'Unknown ($value)';
+  }
+
+  @override
+  String fiscalDocumentCancellationRequestedBy(String who, String when) {
+    return 'Requested by $who · $when';
+  }
+
+  @override
+  String fiscalDocumentCancellationAnswered(String when) {
+    return 'Answered $when';
+  }
+
+  @override
+  String fiscalDocumentCancellationResolved(String when) {
+    return 'Resolved $when';
+  }
+
+  @override
+  String fiscalDocumentCancellationPac(String detail) {
+    return 'PAC $detail';
+  }
+
+  @override
+  String get fiscalDocumentStampIssueDateHint =>
+      'Reopen it, change the issue date (or leave it empty) and confirm it again.';
+
+  @override
+  String get apiErrorFiscalDocumentCancellationOpen =>
+      'A cancellation is already in process for this document. Check its status.';
+
+  @override
+  String apiErrorFiscalDocumentHasLiveDocuments(String documents) {
+    return 'It can\'t be cancelled: cancel the documents that depend on it first: $documents.';
+  }
+
+  @override
+  String get apiErrorFiscalDocumentNotCancellable =>
+      'SAT says this document cannot be cancelled.';
+
+  @override
+  String get apiErrorFiscalDocumentNothingToRefresh =>
+      'Nothing is in process for this document: it has already been resolved.';
+
+  @override
+  String get apiErrorFiscalDocumentStamping =>
+      'This document is being stamped. Check its status in a few minutes.';
+
+  @override
+  String get apiErrorFiscalDocumentSubstitutionInvalid =>
+      'The replacement document is not valid: it must be stamped, live, and have the same issuer and recipient.';
+
+  @override
+  String get apiErrorFiscalDocumentSubstitutionRequired =>
+      'Reason 01 requires the document that replaces the cancelled one.';
+
+  @override
+  String apiErrorFiscalDocumentUnknownCancellationReason(String reason) {
+    return 'The cancellation reason \"$reason\" is not valid.';
+  }
+
+  @override
+  String get apiErrorPacNotConfigured =>
+      'This system has no PAC configured, so documents can\'t be stamped or cancelled.';
+
+  @override
+  String apiErrorPacRejected(String code, String message) {
+    return 'The PAC rejected the request: $code · \"$message\".';
+  }
+
+  @override
+  String get apiErrorPacTimeout =>
+      'The PAC did not answer in time. The document is left in process; check its status.';
+
+  @override
+  String get apiErrorPacUnavailable =>
+      'The PAC could not be reached. Nothing changed; try again.';
 }

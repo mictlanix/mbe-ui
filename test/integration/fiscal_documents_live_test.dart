@@ -3,19 +3,23 @@ import 'dart:typed_data';
 import 'package:decimal/decimal.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
 import 'package:mbe_ui/core/documents/data/document_source_impl.dart';
 import 'package:mbe_ui/core/documents/domain/document_kind.dart';
 import 'package:mbe_ui/core/documents/domain/document_ref.dart';
 import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/network/api_serializers.dart';
 import 'package:mbe_ui/core/network/dio_client.dart';
 import 'package:mbe_ui/features/auth/data/auth_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/invoicing/data/fiscal_document_repository_impl.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_cancellation.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_document.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/invoice_amounts.dart';
+import 'package:mbe_ui/features/invoicing/domain/entities/sat_cancellation_reason.dart';
 import 'package:mbe_ui/features/invoicing/domain/xml_filename.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
@@ -42,6 +46,15 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 /// equals the client's estimate (research R11).
 ///
 /// A run without credentials is skipped, like the other live tests.
+///
+/// **Spec 072** adds a second test, `Stamp, cancel and refresh against the
+/// simulated PAC`, which runs only with `MBE_WRITE=true` and against a backend
+/// whose `PAC_PROVIDER=simulated` (dev and test). It seals **four** invoices
+/// (four folios) and stamps them. It drives the simulator through the
+/// generated `PacSimulatorApi`, which only this test uses: stamp, stamp that
+/// times out but did stamp then refresh, cancel accepted, cancel pending with
+/// the receiver rejecting and then accepting, and cancel with reason 01 naming
+/// a stamped substitute.
 const _username = String.fromEnvironment('MBE_POS_USERNAME');
 const _password = String.fromEnvironment('MBE_POS_PASSWORD');
 const _write = bool.fromEnvironment('MBE_WRITE');
@@ -523,6 +536,290 @@ void main() {
       );
     },
     skip: _canRun ? null : 'needs --dart-define=MBE_POS_USERNAME/PASSWORD',
+    timeout: const Timeout(Duration(minutes: 5)),
+  );
+
+  test(
+    'Stamp, cancel and refresh against the simulated PAC (spec 072)',
+    () async {
+      final steps = <_Step>[];
+      final sim = api.PacSimulatorApi(dio, appSerializers);
+
+      Future<void> step(String name, Future<String?> Function() body) async {
+        try {
+          final note = await body();
+          steps.add(_Step(name, true, note ?? ''));
+        } on Object catch (e, st) {
+          steps.add(_Step(name, false, '$e\n$st'));
+        }
+      }
+
+      Future<void> outcome({
+        required int id,
+        api.PacSimulationUpdateStampEnum? stamp,
+        api.PacSimulationUpdateCancellationEnum? cancellation,
+      }) =>
+          sim.setSimulationApiV1PacSimulatorFiscalDocumentsFiscalDocumentIdPut(
+            fiscalDocumentId: id,
+            pacSimulationUpdate: api.PacSimulationUpdate(
+              (b) => b
+                ..stamp = stamp
+                ..cancellation = cancellation,
+            ),
+          );
+
+      Future<void> receiver(int id, api.ReceiverAnswerAnswerEnum answer) => sim
+          .answerAsReceiverApiV1PacSimulatorFiscalDocumentsFiscalDocumentIdReceiverPost(
+            fiscalDocumentId: id,
+            receiverAnswer: api.ReceiverAnswer((b) => b..answer = answer),
+          );
+
+      // One customer, one RFC and one completed order feed every invoice.
+      final orders = SalesOrderRepositoryImpl(dio);
+      final customers = CustomerRepositoryImpl(dio);
+      int? customerId;
+      String? rfc;
+      int? orderId;
+      await step(
+        'discover a customer with an RFC and a completed order',
+        () async {
+          final page = await orders.listOrders(
+            status: SaleStatus.completed,
+            limit: 40,
+          );
+          for (final o in page.items) {
+            final sale = await orders.getById(saleId: o.id);
+            final customer = await customers.get(customerId: sale.customer);
+            if (customer.taxpayers.isNotEmpty) {
+              customerId = sale.customer;
+              rfc = customer.taxpayers.first.taxpayerRecipientId;
+              orderId = o.id;
+              return 'customer $customerId, RFC $rfc, order $orderId';
+            }
+          }
+          throw StateError('no completed order whose customer has an RFC');
+        },
+      );
+
+      /// A new invoice sealed from the order. A catalog product with no SAT key
+      /// is dropped once (tenant data, not the flow under test).
+      Future<FiscalDocument> sealed() async {
+        var draft = await docs.create(
+          NewInvoice(customerId: customerId!, recipientRfc: rfc!),
+        );
+        draft = await docs.addSalesOrder(draft.id, orderId!);
+        try {
+          return await docs.confirm(draft.id);
+        } on AppError catch (e) {
+          final line = e.problem?.intParam('line');
+          if (e.problem?.codeName != 'fiscal_document.line_missing_sat_key' ||
+              line == null) {
+            rethrow;
+          }
+          draft = await docs.removeLine(draft.id, draft.lines[line - 1].id);
+          return docs.confirm(draft.id);
+        }
+      }
+
+      if (customerId != null) {
+        late FiscalDocument a;
+        await step('A: seal, stamp: issued, with a simulated stamp', () async {
+          a = await sealed();
+          expect(a.status, FiscalDocumentStatus.sealed);
+          expect(a.canStamp, isTrue);
+          a = await docs.stamp(a.id);
+          expect(a.status, FiscalDocumentStatus.issued);
+          expect(a.stamp, isNotNull);
+          expect(
+            a.stamp!.simulated,
+            isTrue,
+            reason: 'this is not a simulated PAC',
+          );
+          expect(a.canStamp, isFalse);
+          expect(a.canCancel, isTrue);
+          return '#${a.id} ${a.summary.folioLabel} ${a.stamp!.uuid}';
+        });
+
+        await step('A: a second stamp is a harmless no-op', () async {
+          final again = await docs.stamp(a.id);
+          expect(again.status, FiscalDocumentStatus.issued);
+          expect(again.stamp!.uuid, a.stamp!.uuid);
+          return null;
+        });
+
+        await step('A: cancel with 02, accepted at once: cancelled', () async {
+          await outcome(
+            id: a.id,
+            cancellation: api.PacSimulationUpdateCancellationEnum.accepted,
+          );
+          final done = await docs.cancel(
+            a.id,
+            SatCancellationReason.withoutRelation,
+          );
+          expect(done.status, FiscalDocumentStatus.cancelled);
+          expect(done.cancellations.first.reason, '02');
+          expect(
+            done.cancellations.first.outcome,
+            CancellationOutcome.accepted,
+          );
+          expect(done.hasDocuments, isTrue);
+          return null;
+        });
+
+        late FiscalDocument b;
+        await step('B: a stamp that times out leaves it stamping, and refresh '
+            'resolves it to issued', () async {
+          b = await sealed();
+          await outcome(
+            id: b.id,
+            stamp: api.PacSimulationUpdateStampEnum.timeoutStamped,
+          );
+          try {
+            await docs.stamp(b.id);
+            fail('the timeout was not reported');
+          } on AppError catch (e) {
+            expect(e.problem?.codeName, 'pac.timeout');
+          }
+          final waiting = await docs.getById(b.id);
+          expect(waiting.status, FiscalDocumentStatus.stamping);
+          expect(waiting.canRefresh, isTrue);
+          expect(waiting.stampingSince, isNotNull);
+          b = await docs.refresh(b.id);
+          expect(b.status, FiscalDocumentStatus.issued);
+          expect(b.stamp, isNotNull);
+          return '#${b.id}';
+        });
+
+        await step('B: cancel pending, the receiver rejects, refresh: back to '
+            'issued with a rejected entry', () async {
+          await outcome(
+            id: b.id,
+            cancellation: api.PacSimulationUpdateCancellationEnum.pending,
+          );
+          final pending = await docs.cancel(
+            b.id,
+            SatCancellationReason.notCarriedOut,
+          );
+          expect(pending.status, FiscalDocumentStatus.cancellationPending);
+          expect(pending.openCancellation, isNotNull);
+          expect(pending.canRefresh, isTrue);
+          expect(pending.hasDocuments, isTrue);
+
+          final unchanged = await docs.refresh(b.id);
+          expect(
+            unchanged.status,
+            FiscalDocumentStatus.cancellationPending,
+            reason: 'nobody has answered yet',
+          );
+
+          await receiver(b.id, api.ReceiverAnswerAnswerEnum.reject);
+          b = await docs.refresh(b.id);
+          expect(b.status, FiscalDocumentStatus.issued);
+          expect(b.cancellations.first.outcome, CancellationOutcome.rejected);
+          expect(b.canCancel, isTrue);
+          return null;
+        });
+
+        await step('B: cancel again, the receiver accepts, refresh: cancelled '
+            'with two entries, newest first', () async {
+          await outcome(
+            id: b.id,
+            cancellation: api.PacSimulationUpdateCancellationEnum.pending,
+          );
+          await docs.cancel(b.id, SatCancellationReason.notCarriedOut);
+          await receiver(b.id, api.ReceiverAnswerAnswerEnum.accept);
+          b = await docs.refresh(b.id);
+          expect(b.status, FiscalDocumentStatus.cancelled);
+          expect(b.cancellations, hasLength(2));
+          expect(b.cancellations[0].outcome, CancellationOutcome.accepted);
+          expect(b.cancellations[1].outcome, CancellationOutcome.rejected);
+          expect(
+            b.cancellations[0].id,
+            greaterThan(b.cancellations[1].id),
+            reason: 'not newest first',
+          );
+          return null;
+        });
+
+        late FiscalDocument c;
+        await step(
+          'C: seal and stamp the document that will substitute',
+          () async {
+            c = await sealed();
+            c = await docs.stamp(c.id);
+            expect(c.status, FiscalDocumentStatus.issued);
+            return '#${c.id} ${c.stamp!.uuid}';
+          },
+        );
+
+        await step('D: cancel with 01 naming C: cancelled, with the '
+            'substitute recorded', () async {
+          var d = await sealed();
+          d = await docs.stamp(d.id);
+          await outcome(
+            id: d.id,
+            cancellation: api.PacSimulationUpdateCancellationEnum.accepted,
+          );
+          final done = await docs.cancel(
+            d.id,
+            SatCancellationReason.withRelation,
+            substitution: c.stamp!.uuid,
+          );
+          expect(done.status, FiscalDocumentStatus.cancelled);
+          expect(done.cancellationSubstitution, c.stamp!.uuid);
+          return '#${d.id} replaced by #${c.id}';
+        });
+
+        await step('cancel with 01 and no substitute is refused with its '
+            'code', () async {
+          final e = await sealed();
+          final stamped = await docs.stamp(e.id);
+          try {
+            await docs.cancel(stamped.id, SatCancellationReason.withRelation);
+            fail('reason 01 without a substitute was accepted');
+          } on AppError catch (err) {
+            expect(
+              err.problem?.codeName,
+              'fiscal_document.substitution_required',
+            );
+          }
+          return null;
+        });
+
+        await step('the list filters by every new state', () async {
+          for (final status in FiscalDocumentStatus.values) {
+            final page = await docs.list(status: status, limit: 5);
+            for (final item in page.items) {
+              expect(item.status, status, reason: 'filter ${status.wireName}');
+            }
+          }
+          return null;
+        });
+      }
+
+      final out = StringBuffer('\n== Stamp / cancel / refresh live run ==\n');
+      for (final s in steps) {
+        out.writeln(
+          '${s.ok ? 'PASS' : 'FAIL'}  ${s.name}'
+          '${s.detail.isEmpty ? '' : '  [${s.detail.split('\n').first}]'}',
+        );
+      }
+      // ignore: avoid_print
+      print(out);
+      final failed = steps.where((s) => !s.ok).toList();
+      expect(
+        failed,
+        isEmpty,
+        reason: [
+          for (final f in failed) '${f.name}: ${f.detail}',
+        ].join('\n---\n'),
+      );
+    },
+    skip: !_canRun
+        ? 'needs --dart-define=MBE_POS_USERNAME/PASSWORD'
+        : !_write
+        ? 'needs --dart-define=MBE_WRITE=true (stamps documents; dev tenant only)'
+        : null,
     timeout: const Timeout(Duration(minutes: 5)),
   );
 }

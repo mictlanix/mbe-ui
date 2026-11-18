@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/responsive_dialog.dart';
+import 'package:mbe_ui/features/catalog/presentation/fiscal_document_kind_label.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_document.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_actions.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_refusal.dart';
@@ -99,6 +100,38 @@ Future<FiscalDocumentActionResult?> showReopenInvoiceDialog(
     run: (actions) => actions.reopen(document.id),
   ),
 );
+
+/// Asks before stamping sealed [document] (spec 072 C20): it goes to the PAC,
+/// and once stamped it can no longer be reopened or edited, only cancelled.
+/// Any refusal closes the dialog and is answered to the caller, which shows it
+/// above its action area: each stamp refusal has its own message, and a
+/// `pac.timeout` leaves the document stamping, so the screen reloads it.
+/// `null` when the user backed out.
+Future<FiscalDocumentActionResult?> showStampFiscalDocumentDialog(
+  BuildContext context, {
+  required FiscalDocument document,
+}) => showDialog<FiscalDocumentActionResult>(
+  context: context,
+  builder: (_) => _ConfirmActionDialog(
+    dialogKey: const Key('fiscal_document_stamp_dialog'),
+    submitKey: const Key('fiscal_document_stamp_submit'),
+    title: (l10n) => l10n.fiscalDocumentStampTitle(
+      _kindLabel(l10n, document),
+      document.summary.folioLabel ?? '#${document.id}',
+    ),
+    body: (l10n) => l10n.fiscalDocumentStampBody,
+    actionLabel: (l10n) => l10n.fiscalDocumentStampAction,
+    run: (actions) => actions.stamp(document.id),
+  ),
+);
+
+/// "Factura", or the name of the document's other type.
+String _kindLabel(AppLocalizations l10n, FiscalDocument document) {
+  final kind = document.summary.kind;
+  return kind == null
+      ? l10n.fiscalDocumentKindUnknown(document.summary.typeCode)
+      : fiscalDocumentKindLabel(l10n, kind);
+}
 
 /// One confirm-then-write dialog. With [refusalsInline] a refusal shows in
 /// the dialog and keeps it open; otherwise it closes the dialog and is
