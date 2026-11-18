@@ -261,6 +261,112 @@ void main() {
         expect(deleted, isTrue);
       });
 
+      testWidgets('leading widgets render before Delete and Save', (
+        tester,
+      ) async {
+        await _pump(
+          tester,
+          RecordFormActions(
+            mode: RecordFormMode.edit,
+            saveLabel: 'Save',
+            editLabel: 'Edit',
+            deleteLabel: 'Delete',
+            onSave: () {},
+            onDelete: () {},
+            leading: [
+              TextButton(
+                key: const Key('leading_a'),
+                onPressed: () {},
+                child: const Text('A'),
+              ),
+            ],
+          ),
+        );
+
+        final leadingX = tester
+            .getTopLeft(find.byKey(const Key('leading_a')))
+            .dx;
+        final deleteX = tester.getTopLeft(find.text('Delete')).dx;
+        final saveX = tester.getTopLeft(find.text('Save')).dx;
+        expect(leadingX, lessThan(deleteX));
+        expect(deleteX, lessThan(saveX));
+      });
+
+      testWidgets('leading widgets render before Edit in view mode', (
+        tester,
+      ) async {
+        await _pump(
+          tester,
+          RecordFormActions(
+            mode: RecordFormMode.view,
+            saveLabel: 'Save',
+            editLabel: 'Edit',
+            deleteLabel: 'Delete',
+            onEdit: () {},
+            leading: [
+              TextButton(
+                key: const Key('leading_a'),
+                onPressed: () {},
+                child: const Text('A'),
+              ),
+            ],
+          ),
+        );
+
+        final wrap = tester.widget<Wrap>(find.byType(Wrap));
+        expect(wrap.children, hasLength(2));
+        expect(wrap.children.first.key, const Key('leading_a'));
+        expect(
+          tester.getTopLeft(find.byKey(const Key('leading_a'))).dx,
+          lessThan(tester.getTopLeft(find.text('Edit')).dx),
+        );
+      });
+
+      for (final leading in <List<Widget>?>[null, const []]) {
+        testWidgets(
+          'leading ${leading == null ? 'null' : 'empty'}: nothing extra renders',
+          (tester) async {
+            await _pump(
+              tester,
+              RecordFormActions(
+                mode: RecordFormMode.edit,
+                saveLabel: 'Save',
+                editLabel: 'Edit',
+                deleteLabel: 'Delete',
+                onSave: () {},
+                onDelete: () {},
+                leading: leading,
+              ),
+            );
+
+            final wrap = tester.widget<Wrap>(find.byType(Wrap));
+            expect(wrap.children, hasLength(2));
+            expect(wrap.children[0].key, isNull);
+            expect(find.text('Delete'), findsOneWidget);
+            expect(find.text('Save'), findsOneWidget);
+          },
+        );
+
+        testWidgets(
+          'leading ${leading == null ? 'null' : 'empty'} with no actions '
+          'still renders nothing',
+          (tester) async {
+            await _pump(
+              tester,
+              RecordFormActions(
+                mode: RecordFormMode.view,
+                saveLabel: 'Save',
+                editLabel: 'Edit',
+                deleteLabel: 'Delete',
+                leading: leading,
+              ),
+            );
+
+            expect(find.byType(Wrap), findsNothing);
+          },
+        );
+      }
+
       testWidgets(
         'buttons are not stretched to the form width on a wide (Expanded-tier) layout',
         (tester) async {

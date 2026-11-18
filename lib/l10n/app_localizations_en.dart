@@ -8924,4 +8924,199 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get inventoryCountFactModifiedBy => 'Modified by';
+
+  @override
+  String get apiErrorKardexRangeReversed =>
+      'The end date cannot be before the start date.';
+
+  @override
+  String apiErrorKardexRangeTooLong(String maxDays) {
+    return 'The range cannot exceed $maxDays days.';
+  }
+
+  @override
+  String get navInventoryStock => 'Stock';
+
+  @override
+  String get navInventoryKardex => 'Kardex';
+
+  @override
+  String get inventoryStockColumnCode => 'Code';
+
+  @override
+  String get inventoryStockColumnProduct => 'Product';
+
+  @override
+  String get inventoryStockColumnOnHand => 'On hand';
+
+  @override
+  String get inventoryStockColumnReserved => 'Reserved';
+
+  @override
+  String get inventoryStockColumnAvailable => 'Available';
+
+  @override
+  String get inventoryStockColumnIncoming => 'Incoming';
+
+  @override
+  String get inventoryStockFilterWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryStockFilterIncludeZero => 'Show out of stock';
+
+  @override
+  String get inventoryStockSelectionWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryStockPickWarehousePrompt =>
+      'Choose a warehouse to see its stock.';
+
+  @override
+  String get inventoryStockPickWarehouseButton => 'Choose warehouse';
+
+  @override
+  String get inventoryStockEmpty => 'This warehouse has no stock.';
+
+  @override
+  String get inventoryStockFilteredEmpty => 'No product matches the search.';
+
+  @override
+  String get inventoryStockSearchLabel => 'Search by code or name';
+
+  @override
+  String inventoryStockProductTitle(String code, String name) {
+    return 'Stock · $code $name';
+  }
+
+  @override
+  String get inventoryStockColumnWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryStockColumnFacility => 'Facility';
+
+  @override
+  String get inventoryStockTotalOnHand => 'On hand';
+
+  @override
+  String get inventoryStockTotalReserved => 'Reserved';
+
+  @override
+  String get inventoryStockTotalAvailable => 'Available';
+
+  @override
+  String get inventoryStockTotalIncoming => 'Incoming';
+
+  @override
+  String get inventoryStockViewKardex => 'View kardex';
+
+  @override
+  String get inventoryStockInTransitHeading => 'In transit';
+
+  @override
+  String get inventoryStockProductEmpty =>
+      'This product has no stock in any warehouse.';
+
+  @override
+  String get inventoryKardexFilterProduct => 'Product';
+
+  @override
+  String get inventoryKardexFilterWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryKardexFilterRange => 'Range';
+
+  @override
+  String get inventoryKardexSelectionProduct => 'Product';
+
+  @override
+  String get inventoryKardexSelectionWarehouse => 'Warehouse';
+
+  @override
+  String get inventoryKardexSelectionRange => 'Range';
+
+  @override
+  String get inventoryKardexSummaryOpening => 'Opening balance';
+
+  @override
+  String get inventoryKardexSummaryIn => 'Inflows';
+
+  @override
+  String get inventoryKardexSummaryOut => 'Outflows';
+
+  @override
+  String get inventoryKardexSummaryClosing => 'Closing balance';
+
+  @override
+  String get inventoryKardexColumnDate => 'Date';
+
+  @override
+  String get inventoryKardexColumnSource => 'Source';
+
+  @override
+  String get inventoryKardexColumnDocument => 'Document';
+
+  @override
+  String get inventoryKardexColumnIn => 'In';
+
+  @override
+  String get inventoryKardexColumnOut => 'Out';
+
+  @override
+  String get inventoryKardexColumnBalance => 'Balance';
+
+  @override
+  String get inventoryKardexIncompletePrompt =>
+      'Choose a product and a warehouse to see its kardex.';
+
+  @override
+  String get inventoryKardexIncompleteButton => 'Choose';
+
+  @override
+  String get inventoryKardexRangeReversed =>
+      'The end date cannot be before the start date.';
+
+  @override
+  String inventoryKardexRangeTooLong(String max) {
+    return 'The range cannot exceed $max days.';
+  }
+
+  @override
+  String get inventoryKardexEmpty => 'No movements in this range.';
+
+  @override
+  String get inventoryKardexSourceSalesOrder => 'Order';
+
+  @override
+  String get inventoryKardexSourceSalesReturn => 'Return';
+
+  @override
+  String get inventoryKardexSourceWarehouseIssue => 'Warehouse issue';
+
+  @override
+  String get inventoryKardexSourceWarehouseReceipt => 'Warehouse receipt';
+
+  @override
+  String get inventoryKardexSourceTransfer => 'Transfer';
+
+  @override
+  String get inventoryKardexSourcePurchaseOrder => 'Purchase order';
+
+  @override
+  String get inventoryKardexSourceLegacyAdjustment =>
+      'Adjustment (legacy system)';
+
+  @override
+  String get inventoryKardexSourceDeliveryItinerary => 'Delivery itinerary';
+
+  @override
+  String get inventoryKardexSourceCount => 'Physical count';
+
+  @override
+  String get inventoryKardexSourceCounterDelivery => 'Counter delivery';
+
+  @override
+  String get inventoryKardexSourceFallback => 'Movement';
+
+  @override
+  String get catalogViewStockButton => 'View stock';
 }

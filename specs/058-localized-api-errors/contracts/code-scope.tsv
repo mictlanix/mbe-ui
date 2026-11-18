@@ -151,8 +151,8 @@ code	itinerary.stop_delivered_exceeds_sent	422	line_id: int, sent: decimal, deli
 code	itinerary.stop_lines_incomplete	422	—	OUT		
 code	itinerary.stop_lines_malformed	422	—	OUT		
 code	itinerary.stop_shortfall_needs_reason	422	line_id: int	OUT		
-code	kardex.range_reversed	422	—	OUT		
-code	kardex.range_too_long	422	max_days: int	OUT		
+code	kardex.range_reversed	422	—	IN	GET /kardex	reachable from the Kardex screen (spec 071)
+code	kardex.range_too_long	422	max_days: int	IN	GET /kardex	reachable from the Kardex screen (spec 071)
 code	lock.busy	409	resource: str (`warehouse`, `facility` or `sales_order`)	IN	POST /customer-payments; POST /customer-refunds/{}/confirm; POST /delivery-orders/{}/confirm	reachable from 5 UI route(s)
 code	payment.already_verified	409	—	IN	POST /customer-payments/{}/verify	reachable from the payment verification queue and the payment view (spec 060)
 code	payment.application_reversed	409	—	IN	POST /customer-payments/{}/applications/{}/reverse	reachable from the payment view and the Pedidos payments dialog (spec 059)

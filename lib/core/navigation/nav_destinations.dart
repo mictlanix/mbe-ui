@@ -122,6 +122,16 @@ class NavBranch {
   // `cashSessions` above — display order comes from position within
   // `kNavigationTree` (the fourth destination of the Inventario group there).
   static const int inventoryCounts = 33;
+
+  // 071-stock-kardex: appended last, same rationale as `cashSessions` above
+  // — display order comes from position within `kNavigationTree` (the fifth
+  // destination of the Inventario group there).
+  static const int inventoryStock = 34;
+
+  // 071-stock-kardex: appended last, same rationale as `cashSessions` above
+  // — display order comes from position within `kNavigationTree` (the sixth
+  // destination of the Inventario group there).
+  static const int inventoryKardex = 35;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -516,6 +526,31 @@ const List<NavItem> kNavigationTree = [
           AccessRight.read,
         ),
       ),
+      // Existencias (spec 071): gated on WarehouseStockReport (SystemObject
+      // 67) read, matching the server's GET /stock.
+      NavDestination(
+        id: 'inventory-stock',
+        label: _inventoryStockLabel,
+        icon: Icons.inventory_2_outlined,
+        selectedIcon: Icons.inventory_2,
+        route: '/inventory/stock',
+        branchIndex: NavBranch.inventoryStock,
+        gate: PrivilegeGate(
+          SystemObject.warehouseStockReport,
+          AccessRight.read,
+        ),
+      ),
+      // Kardex (spec 071): gated on Kardex (SystemObject 32) read, matching
+      // the server's GET /kardex.
+      NavDestination(
+        id: 'inventory-kardex',
+        label: _inventoryKardexLabel,
+        icon: Icons.receipt_long_outlined,
+        selectedIcon: Icons.receipt_long,
+        route: '/inventory/kardex',
+        branchIndex: NavBranch.inventoryKardex,
+        gate: PrivilegeGate(SystemObject.kardex, AccessRight.read),
+      ),
     ],
   ),
   // Facturación (spec 066): fiscal documents. Its own group, last in the tree, since invoices
@@ -552,6 +587,8 @@ String _inventoryIssuesLabel(AppLocalizations l10n) => l10n.navInventoryIssues;
 String _inventoryTransfersLabel(AppLocalizations l10n) =>
     l10n.navInventoryTransfers;
 String _inventoryCountsLabel(AppLocalizations l10n) => l10n.navInventoryCounts;
+String _inventoryStockLabel(AppLocalizations l10n) => l10n.navInventoryStock;
+String _inventoryKardexLabel(AppLocalizations l10n) => l10n.navInventoryKardex;
 String _invoicingLabel(AppLocalizations l10n) => l10n.navInvoicingGroup;
 String _fiscalDocumentsLabel(AppLocalizations l10n) => l10n.navFiscalDocuments;
 String _usersLabel(AppLocalizations l10n) => l10n.usersMenuTitle;

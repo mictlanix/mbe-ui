@@ -24,6 +24,7 @@ import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/point_sale_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/entities/product.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/facility_repository.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/point_sale_repository.dart';
@@ -33,21 +34,31 @@ import 'package:mbe_ui/features/inventory/data/inventory_count_repository_impl.d
 import 'package:mbe_ui/features/inventory/data/inventory_issue_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_receipt_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/data/inventory_transfer_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/data/kardex_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/data/stock_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_count.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_issue.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_transfer.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/kardex.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/stock.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_count_repository.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_issue_repository.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_receipt_repository.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_transfer_repository.dart';
+import 'package:mbe_ui/features/inventory/domain/repositories/kardex_repository.dart';
+import 'package:mbe_ui/features/inventory/domain/repositories/stock_repository.dart';
 import 'package:mbe_ui/features/inventory/presentation/counts/inventory_count_detail_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/counts/inventory_counts_list_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/issues/inventory_issue_detail_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/issues/inventory_issues_list_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_detail_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_list_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/kardex/kardex_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/kardex/kardex_selection.dart';
+import 'package:mbe_ui/features/inventory/presentation/stock/product_stock_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/stock/stock_list_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/transfers/in_transit_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/transfers/inventory_transfer_detail_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/transfers/inventory_transfers_list_screen.dart';
@@ -64,6 +75,10 @@ class MockInventoryTransferRepository extends Mock
 
 class MockInventoryCountRepository extends Mock
     implements InventoryCountRepository {}
+
+class MockStockRepository extends Mock implements StockRepository {}
+
+class MockKardexRepository extends Mock implements KardexRepository {}
 
 class MockFacilityRepository extends Mock implements FacilityRepository {}
 
@@ -88,6 +103,21 @@ typedef ReceiptListRequest = ({
 });
 
 /// One transfers `list` call's filter, as the list screen sent it.
+typedef StockListRequest = ({
+  int warehouseId,
+  String q,
+  bool includeZero,
+  int skip,
+  int limit,
+});
+
+typedef KardexRequest = ({
+  int productId,
+  int warehouseId,
+  DateTime from,
+  DateTime to,
+});
+
 typedef TransferListRequest = ({
   InventoryTransferStatus? status,
   int? warehouseId,
@@ -104,6 +134,29 @@ Warehouse aWarehouse(int id, {int facilityId = 2}) => Warehouse(
   status: EntityStatus.active,
 );
 
+/// A catalog product, "A-100 Tornillo 1/4 caja", for the product view's
+/// title.
+Product aProduct(int id) => Product(
+  productId: id,
+  code: 'A-100',
+  name: 'Tornillo 1/4 caja',
+  unitOfMeasurementCode: 'PCE',
+  unitOfMeasurementName: 'Pieza',
+  taxRate: '0.16',
+  taxIncluded: false,
+  priceType: 0,
+  currency: 0,
+  minOrderQty: 1,
+  stockable: true,
+  perishable: false,
+  seriable: false,
+  purchasable: true,
+  salable: true,
+  invoiceable: true,
+  stockRequired: false,
+  status: EntityStatus.active,
+);
+
 /// The Entradas (067), Salidas (068), Traspasos (069) and Conteos físicos
 /// (070) screens with every repository mocked. The session user is
 /// configurable: its rights, whether it is an administrator, and its facility
@@ -116,6 +169,8 @@ class InventoryHarness {
   final issues = MockInventoryIssueRepository();
   final transfers = MockInventoryTransferRepository();
   final counts = MockInventoryCountRepository();
+  final stock = MockStockRepository();
+  final kardex = MockKardexRepository();
   final warehouses = MockWarehouseRepository();
   final facilities = MockFacilityRepository();
   final products = MockProductRepository();
@@ -133,6 +188,12 @@ class InventoryHarness {
   /// Every counts `list` call, oldest first.
   final countRequests = <ReceiptListRequest>[];
 
+  /// Every stock `list` call, oldest first.
+  final stockRequests = <StockListRequest>[];
+
+  /// Every kardex `read` call, oldest first.
+  final kardexRequests = <KardexRequest>[];
+
   /// The last [pump]'s providers, for reading the formatters in a test.
   late ProviderContainer container;
 
@@ -143,6 +204,8 @@ class InventoryHarness {
     int issues = 0,
     int transfers = 0,
     int counts = 0,
+    int stock = 0,
+    int kardex = 0,
     bool warehousesRead = true,
     bool productsRead = true,
     bool administrator = false,
@@ -173,6 +236,13 @@ class InventoryHarness {
           systemObject: SystemObject.physicalCountAdjustment,
           rawValue: counts,
         ),
+      if (stock != 0)
+        Privilege(
+          systemObject: SystemObject.warehouseStockReport,
+          rawValue: stock,
+        ),
+      if (kardex != 0)
+        Privilege(systemObject: SystemObject.kardex, rawValue: kardex),
       if (warehousesRead)
         const Privilege(systemObject: SystemObject.warehouses, rawValue: 2),
       if (productsRead)
@@ -236,6 +306,165 @@ class InventoryHarness {
     facilityId: facilityId,
     pointSaleId: pointSaleId,
   );
+
+  /// A session user holding only WarehouseStockReport (67): [stock] is its
+  /// raw right (2 = read).
+  static User stockUser({
+    int stock = 2,
+    int kardex = 0,
+    bool warehousesRead = true,
+    bool productsRead = true,
+    bool administrator = false,
+    int? facilityId = 2,
+    int? pointSaleId,
+  }) => user(
+    receipts: 0,
+    stock: stock,
+    kardex: kardex,
+    warehousesRead: warehousesRead,
+    productsRead: productsRead,
+    administrator: administrator,
+    facilityId: facilityId,
+    pointSaleId: pointSaleId,
+  );
+
+  /// A session user holding only Kardex (32): [kardex] is its raw right
+  /// (2 = read).
+  static User kardexUser({
+    int kardex = 2,
+    int stock = 0,
+    bool warehousesRead = true,
+    bool productsRead = true,
+    bool administrator = false,
+    int? facilityId = 2,
+  }) => user(
+    receipts: 0,
+    stock: stock,
+    kardex: kardex,
+    warehousesRead: warehousesRead,
+    productsRead: productsRead,
+    administrator: administrator,
+    facilityId: facilityId,
+  );
+
+  /// Serves [rows] from the stock `list`, recording each request.
+  void serveStock(List<StockRow> rows, {int? total}) => stubStockList(
+    (_) async => StockPage(items: rows, total: total ?? rows.length),
+  );
+
+  void stubStockList(
+    Future<StockPage> Function(StockListRequest request) answer,
+  ) {
+    when(
+      () => stock.list(
+        warehouseId: any(named: 'warehouseId'),
+        q: any(named: 'q'),
+        includeZero: any(named: 'includeZero'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((i) {
+      final request = (
+        warehouseId: i.namedArguments[#warehouseId] as int,
+        q: (i.namedArguments[#q] as String?) ?? '',
+        includeZero: i.namedArguments[#includeZero] as bool,
+        skip: i.namedArguments[#skip] as int,
+        limit: i.namedArguments[#limit] as int,
+      );
+      stockRequests.add(request);
+      return answer(request);
+    });
+  }
+
+  /// Pumps the app at [location] (Existencias by default), as a stock user
+  /// unless [who] is given.
+  Future<GoRouter> pumpStock(
+    WidgetTester tester, {
+    User? who,
+    String location = stockPath,
+    Size surface = const Size(1400, 1000),
+    bool namesFail = false,
+  }) => pump(
+    tester,
+    who: who ?? stockUser(),
+    location: location,
+    surface: surface,
+    namesFail: namesFail,
+  );
+
+  /// Answers [productStock] from `product`.
+  void stubProductStock(ProductStock productStock) => when(
+    () => stock.product(productStock.productId),
+  ).thenAnswer((_) async => productStock);
+
+  /// Pumps [productStock]'s product view, as a stock user unless [who] is
+  /// given. The product is "A-100 Tornillo 1/4 caja", and warehouse `w`
+  /// belongs to facility `w * 10`, "Sucursal {w * 10}".
+  Future<GoRouter> pumpProductStock(
+    WidgetTester tester,
+    ProductStock productStock, {
+    User? who,
+    Size surface = const Size(1400, 1000),
+  }) {
+    stubProductStock(productStock);
+    when(
+      () => products.get(productId: productStock.productId),
+    ).thenAnswer((_) async => aProduct(productStock.productId));
+    when(
+      () => warehouses.get(warehouseId: any(named: 'warehouseId')),
+    ).thenAnswer((i) async {
+      final id = i.namedArguments[#warehouseId] as int;
+      return aWarehouse(id, facilityId: id * 10);
+    });
+    return pump(
+      tester,
+      who: who ?? stockUser(),
+      location: '$stockPath/products/${productStock.productId}',
+      surface: surface,
+    );
+  }
+
+  /// Answers [result] from every kardex `read`, recording each request.
+  void serveKardex(Kardex result) => stubKardex((_) async => result);
+
+  void stubKardex(Future<Kardex> Function(KardexRequest request) answer) {
+    when(
+      () => kardex.read(
+        productId: any(named: 'productId'),
+        warehouseId: any(named: 'warehouseId'),
+        from: any(named: 'from'),
+        to: any(named: 'to'),
+      ),
+    ).thenAnswer((i) {
+      final request = (
+        productId: i.namedArguments[#productId] as int,
+        warehouseId: i.namedArguments[#warehouseId] as int,
+        from: i.namedArguments[#from] as DateTime,
+        to: i.namedArguments[#to] as DateTime,
+      );
+      kardexRequests.add(request);
+      return answer(request);
+    });
+  }
+
+  /// Pumps the Kardex at [location], as a kardex user unless [who] is
+  /// given. Every product reads as "A-100 Tornillo 1/4 caja".
+  Future<GoRouter> pumpKardex(
+    WidgetTester tester, {
+    User? who,
+    String location = kardexPath,
+    Size surface = const Size(1400, 1000),
+  }) {
+    when(
+      () => products.get(productId: any(named: 'productId')),
+    ).thenAnswer((i) async => aProduct(i.namedArguments[#productId] as int));
+    return pump(
+      tester,
+      who: who ?? kardexUser(),
+      location: location,
+      surface: surface,
+    );
+  }
 
   /// Serves [rows] from the counts `list`, recording each request.
   void serveCounts(List<InventoryCountSummary> rows) => stubCountList(
@@ -534,6 +763,8 @@ class InventoryHarness {
         inventoryIssueRepositoryProvider.overrideWithValue(issues),
         inventoryTransferRepositoryProvider.overrideWithValue(transfers),
         inventoryCountRepositoryProvider.overrideWithValue(counts),
+        stockRepositoryProvider.overrideWithValue(stock),
+        kardexRepositoryProvider.overrideWithValue(kardex),
         warehouseRepositoryProvider.overrideWithValue(warehouses),
         facilityRepositoryProvider.overrideWithValue(facilities),
         productRepositoryProvider.overrideWithValue(products),
@@ -603,6 +834,43 @@ class InventoryHarness {
             countId: int.tryParse(s.pathParameters['id'] ?? ''),
           ),
         ),
+        GoRoute(
+          path: stockPath,
+          builder: (_, s) =>
+              Scaffold(body: StockListScreen(query: ListQuery.fromUri(s.uri))),
+        ),
+        GoRoute(
+          path: '$stockPath/products/:id',
+          builder: (_, s) => ProductStockScreen(
+            productId: int.tryParse(s.pathParameters['id'] ?? ''),
+          ),
+        ),
+        GoRoute(
+          path: kardexPath,
+          builder: (_, s) => Scaffold(
+            body: KardexScreen(selection: KardexSelection.fromUri(s.uri)),
+          ),
+        ),
+        GoRoute(
+          path: kardexPagePath,
+          builder: (_, s) => KardexScreen(
+            selection: KardexSelection.fromUri(s.uri),
+            pushed: true,
+          ),
+        ),
+        // Stand-ins for the sales documents a kardex row links to: the
+        // Kardex tests only check where a row goes.
+        for (final path in const [
+          '/sales/orders',
+          '/sales/refunds',
+          '/sales/delivery-orders',
+        ])
+          GoRoute(
+            path: '$path/:id',
+            builder: (_, s) => Scaffold(
+              body: Text('${s.uri}', key: const Key('sales_document_route')),
+            ),
+          ),
         GoRoute(
           path: '$inventoryReceiptsPath/:id',
           builder: (_, s) => InventoryReceiptDetailScreen(

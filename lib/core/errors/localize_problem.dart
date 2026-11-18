@@ -113,6 +113,8 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.inventoryCountLinePeriodNotStockable,
   api.ErrorCode.inventoryCountLinePeriodRepeated,
   api.ErrorCode.inventoryCountLinePeriodProductReference,
+  api.ErrorCode.kardexPeriodRangeReversed,
+  api.ErrorCode.kardexPeriodRangeTooLong,
   api.ErrorCode.paymentPeriodAlreadyApplied,
   api.ErrorCode.paymentPeriodAlreadyVerified,
   api.ErrorCode.paymentPeriodApplicationReversed,
@@ -499,6 +501,11 @@ String? localizeProblem(
       l10n.apiErrorInventoryCountLineRepeated,
     api.ErrorCode.inventoryCountLinePeriodProductReference =>
       l10n.apiErrorInventoryCountLineProductReference,
+    api.ErrorCode.kardexPeriodRangeReversed => l10n.apiErrorKardexRangeReversed,
+    api.ErrorCode.kardexPeriodRangeTooLong => _ap1(
+      _count(problem, 'max_days', fmt),
+      l10n.apiErrorKardexRangeTooLong,
+    ),
     api.ErrorCode.paymentPeriodAlreadyApplied =>
       l10n.apiErrorPaymentAlreadyApplied,
     api.ErrorCode.paymentPeriodAlreadyVerified =>
