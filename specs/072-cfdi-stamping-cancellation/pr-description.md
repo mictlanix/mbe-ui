@@ -90,7 +90,7 @@ Every action is absent, never disabled, without its right or outside its state.
   - **E** (A5250): 01 with no substitute is refused with `fiscal_document.substitution_required`.
   - The list filters correctly by each of the six states.
   - The first run failed D and E while *building* their invoices, not in the flow under test. All invoices came from one sales order, and a stamped live invoice holds what it took. The test now takes each invoice from a completed order that still has something to invoice.
-- **Live, spec 066 (same run): 18 passed, 1 failed**, the search by recipient RFC. This is a pre-existing mbe-api bug, not this branch:
+- **Live, spec 066 (same run): 18 passed, 1 failed**, the search by recipient RFC. This is a pre-existing mbe-api bug, not this branch (filed as mictlanix/mbe-api#337):
   - `classify_search` reads anything matching letters followed by digits as series+folio, so the generic RFC `XAXX010101000` becomes series `XAXX`, folio 10101000, and finds nothing.
   - It surfaced now because the newest issued invoice (A5241) is for the general public. Spec 066's run used legacy GR4776, whose RFC has letters in the homoclave.
   - Searching the same invoice by series+folio and by UUID finds it.
@@ -102,6 +102,6 @@ Every action is absent, never disabled, without its right or outside its state.
 
 ## Manual checks (quickstart.md)
 
-**Not run yet.** Steps 1–22, run against the dev simulator: the 13 simulator scenarios, read-only users, compact width at the largest text size, and English.
+**Not run yet**; tracked in #278 (steps 1–22: the app's screens against the simulator, the outcomes the live test doesn't drive, read-only user, compact width at the largest text size, English).
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
