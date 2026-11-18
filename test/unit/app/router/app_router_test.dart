@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
@@ -41,6 +42,13 @@ import 'package:mbe_ui/features/inventory/domain/repositories/inventory_issue_re
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_transfer_repository.dart';
 import 'package:mbe_ui/features/inventory/domain/repositories/inventory_receipt_repository.dart';
 import 'package:mbe_ui/features/inventory/presentation/transfers/in_transit_screen.dart';
+import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
+import 'package:mbe_ui/features/catalog/domain/repositories/warehouse_repository.dart';
+import 'package:mbe_ui/features/inventory/data/kardex_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/data/stock_repository_impl.dart';
+import 'package:mbe_ui/features/inventory/domain/repositories/kardex_repository.dart';
+import 'package:mbe_ui/features/inventory/domain/repositories/stock_repository.dart';
+import 'package:mbe_ui/features/inventory/presentation/kardex/kardex_screen.dart';
 import 'package:mbe_ui/features/invoicing/data/fiscal_document_repository_impl.dart';
 import 'package:mbe_ui/features/invoicing/domain/repositories/fiscal_document_repository.dart';
 import 'package:mbe_ui/features/catalog/data/product_repository_impl.dart';
@@ -89,12 +97,22 @@ import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository
 import 'package:mbe_ui/features/sales/domain/repositories/sales_quote_repository.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
+import '../../../widget/features/inventory/inventory_harness.dart'
+    show aWarehouse;
 import '../../../widget/features/sales/pos_test_harness.dart'
     show MockCustomerRefundRepository, testRefund;
+import '../../features/inventory/kardex_fixtures.dart';
+import '../../features/inventory/stock_fixtures.dart';
 
 class MockProductRepository extends Mock implements ProductRepository {}
 
 class MockFacilityRepository extends Mock implements FacilityRepository {}
+
+class MockStockRepository extends Mock implements StockRepository {}
+
+class MockKardexRepository extends Mock implements KardexRepository {}
+
+class MockWarehouseRepository extends Mock implements WarehouseRepository {}
 
 class MockDeliveryOrderAdminRepository extends Mock
     implements DeliveryOrderAdminRepository {}
@@ -438,6 +456,45 @@ const _inventoryCountsReaderUser = User(
   ],
 );
 
+/// Holds read on `warehouseStockReport` (67) alone — the gate for spec 071's
+/// `/inventory/stock` routes. No point of sale, so Existencias opens on the
+/// prompt and makes no request.
+const _stockReaderUser = User(
+  userId: 'stock-reader',
+  email: 'stock-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.warehouseStockReport, rawValue: 2),
+  ],
+);
+
+/// Holds read on `kardex` (32) alone — the gate for spec 071's
+/// `/inventory/kardex` route.
+const _kardexReaderUser = User(
+  userId: 'kardex-reader',
+  email: 'kardex-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [Privilege(systemObject: SystemObject.kardex, rawValue: 2)],
+);
+
+/// Holds read on `warehouseStockReport` (67) and `kardex` (32): the product
+/// view's "Ver kardex" opens the Kardex page.
+const _stockKardexReaderUser = User(
+  userId: 'stock-kardex-reader',
+  email: 'stock-kardex-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.warehouseStockReport, rawValue: 2),
+    Privilege(systemObject: SystemObject.kardex, rawValue: 2),
+  ],
+);
+
 const _forDeliverReaderUser = User(
   userId: 'for-deliver-reader',
   email: 'for-deliver-reader@example.com',
@@ -502,6 +559,7 @@ void main() {
     User? user,
     String location, {
     bool multiCurrency = true,
+    List<Override> extraOverrides = const [],
   }) async {
     final productRepository = MockProductRepository();
     when(
@@ -1054,6 +1112,7 @@ void main() {
         inventoryCountRepositoryProvider.overrideWithValue(
           inventoryCountRepository,
         ),
+        ...extraOverrides,
       ],
     );
     addTearDown(container.dispose);
@@ -2047,6 +2106,186 @@ void main() {
       final shell = tester.widget<AppShell>(find.byType(AppShell));
       expect(NavBranch.inventoryCounts, 33);
       expect(shell.navigationShell.currentIndex, NavBranch.inventoryCounts);
+    });
+  });
+
+  group('071-stock-kardex — /inventory/stock gates on warehouseStockReport '
+      '(67) read', () {
+    testWidgets('a user with warehouseStockReport:read reaches the list', (
+      tester,
+    ) async {
+      final handle = await pumpAt(tester, _stockReaderUser, '/inventory/stock');
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/inventory/stock');
+      expect(find.byKey(const Key('stock_filter_button')), findsOneWidget);
+    });
+
+    testWidgets('a user without warehouseStockReport:read is redirected '
+        'home', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/inventory/stock');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a counts-only reader is redirected home', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _inventoryCountsReaderUser,
+        '/inventory/stock',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a user with warehouseStockReport:read reaches a product '
+        'view (here not found)', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _stockReaderUser,
+        '/inventory/stock/products/abc',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/inventory/stock/products/abc');
+      expect(find.byKey(const Key('product_stock_not_found')), findsOneWidget);
+    });
+
+    testWidgets('a user without warehouseStockReport:read is redirected '
+        'from a product view', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/inventory/stock/products/7',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('activates shell branch NavBranch.inventoryStock (34)', (
+      tester,
+    ) async {
+      await pumpAt(tester, _stockReaderUser, '/inventory/stock');
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.inventoryStock, 34);
+      expect(shell.navigationShell.currentIndex, NavBranch.inventoryStock);
+    });
+  });
+
+  group('071-stock-kardex — /inventory/kardex gates on kardex (32) read', () {
+    testWidgets('a user with kardex:read reaches the screen (here the '
+        'incomplete prompt)', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _kardexReaderUser,
+        '/inventory/kardex',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/inventory/kardex');
+      expect(find.byKey(const Key('kardex_filter_button')), findsOneWidget);
+    });
+
+    testWidgets('a user without kardex:read is redirected home', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/inventory/kardex?product=7&warehouse=3',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a stock-only reader (67) is redirected home', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _stockReaderUser,
+        '/inventory/kardex',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a user without kardex:read is redirected home from the '
+        'Kardex page', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _stockReaderUser,
+        '/inventory/kardex/view?product=7&warehouse=3',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('"Ver kardex" from a product view pushes the Kardex page, and '
+        'back returns to the product view (regression: two shell pages on '
+        'the root navigator)', (tester) async {
+      final stock = MockStockRepository();
+      when(
+        () => stock.product(7),
+      ).thenAnswer((_) async => aProductStock(productId: 7));
+      final kardex = MockKardexRepository();
+      when(
+        () => kardex.read(
+          productId: any(named: 'productId'),
+          warehouseId: any(named: 'warehouseId'),
+          from: any(named: 'from'),
+          to: any(named: 'to'),
+        ),
+      ).thenAnswer((_) async => aKardex());
+      final warehouses = MockWarehouseRepository();
+      when(
+        () => warehouses.get(warehouseId: any(named: 'warehouseId')),
+      ).thenAnswer(
+        (i) async => aWarehouse(i.namedArguments[#warehouseId] as int),
+      );
+
+      final handle = await pumpAt(
+        tester,
+        _stockKardexReaderUser,
+        '/inventory/stock',
+        extraOverrides: [
+          stockRepositoryProvider.overrideWithValue(stock),
+          kardexRepositoryProvider.overrideWithValue(kardex),
+          warehouseRepositoryProvider.overrideWithValue(warehouses),
+        ],
+      );
+      await tester.pumpAndSettle();
+      final router = handle.router;
+
+      router.push('/inventory/stock/products/7');
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('product_stock_kardex_3')), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('product_stock_kardex_3')));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(router.state.uri.path, '/inventory/kardex/view');
+      expect(router.state.uri.queryParameters, {
+        'product': '7',
+        'warehouse': '3',
+      });
+      expect(find.byType(KardexScreen), findsOneWidget);
+      expect(find.byType(BackButton), findsOneWidget);
+
+      await tester.tap(find.byType(BackButton));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(router.state.uri.path, '/inventory/stock/products/7');
+      expect(find.byKey(const Key('product_stock_kardex_3')), findsOneWidget);
+
+      router.go('/inventory/stock');
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+      expect(find.byKey(const Key('stock_filter_button')), findsOneWidget);
+    });
+
+    testWidgets('activates shell branch NavBranch.inventoryKardex (35)', (
+      tester,
+    ) async {
+      await pumpAt(tester, _kardexReaderUser, '/inventory/kardex');
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.inventoryKardex, 35);
+      expect(shell.navigationShell.currentIndex, NavBranch.inventoryKardex);
     });
   });
 

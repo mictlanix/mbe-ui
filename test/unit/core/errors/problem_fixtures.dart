@@ -162,6 +162,8 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.inventoryCountLinePeriodNotStockable: {},
   api.ErrorCode.inventoryCountLinePeriodRepeated: {},
   api.ErrorCode.inventoryCountLinePeriodProductReference: {},
+  api.ErrorCode.kardexPeriodRangeReversed: {},
+  api.ErrorCode.kardexPeriodRangeTooLong: {'max_days': 366},
   api.ErrorCode.lockPeriodBusy: {'resource': 'warehouse'},
   api.ErrorCode.paymentPeriodAlreadyApplied: {
     'customer_payment_id': 300912,

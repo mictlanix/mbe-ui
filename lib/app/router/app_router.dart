@@ -55,6 +55,10 @@ import 'package:mbe_ui/features/inventory/presentation/transfers/inventory_trans
 import 'package:mbe_ui/features/inventory/presentation/transfers/inventory_transfers_list_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipt_detail_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_list_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/kardex/kardex_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/kardex/kardex_selection.dart';
+import 'package:mbe_ui/features/inventory/presentation/stock/product_stock_screen.dart';
+import 'package:mbe_ui/features/inventory/presentation/stock/stock_list_screen.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_documents_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/for_delivery/pending_deliveries_filter.dart';
 import 'package:mbe_ui/features/sales/presentation/for_delivery/pending_deliveries_screen.dart';
@@ -502,6 +506,31 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 071-stock-kardex: appended last (index 34), same rationale as
+          // `payments` above. Gated on SystemObject 67
+          // (`warehouseStockReport`) read, see `_routeGate`. A row opens
+          // `/inventory/stock/products/:id`.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: stockPath,
+                builder: (context, state) =>
+                    StockListScreen(query: ListQuery.fromUri(state.uri)),
+              ),
+            ],
+          ),
+          // 071-stock-kardex: appended last (index 35), same rationale as
+          // `payments` above. Gated on SystemObject 32 (`kardex`) read, see
+          // `_routeGate`. Product, warehouse and range live in the query.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: kardexPath,
+                builder: (context, state) =>
+                    KardexScreen(selection: KardexSelection.fromUri(state.uri)),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -750,6 +779,27 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '$inventoryCountsPath/:id',
         builder: (context, state) => InventoryCountDetailScreen(
           countId: int.tryParse(state.pathParameters['id'] ?? ''),
+        ),
+      ),
+      // 071-stock-kardex: one product's stock in every warehouse, gated on
+      // SystemObject 67 (`warehouseStockReport`) read by the `_routeGate`
+      // prefix. A non-numeric id parses to `null`, which the screen shows as
+      // not found.
+      GoRoute(
+        path: '$stockPath/products/:id',
+        builder: (context, state) => ProductStockScreen(
+          productId: int.tryParse(state.pathParameters['id'] ?? ''),
+        ),
+      ),
+      // 071-stock-kardex: the Kardex as a pushed page, opened by the product
+      // view's "Ver kardex" (pushing the `/inventory/kardex` branch from a
+      // top-level page would stack a second shell on the root navigator).
+      // Gated on SystemObject 32 (`kardex`) read by the `_routeGate` prefix.
+      GoRoute(
+        path: kardexPagePath,
+        builder: (context, state) => KardexScreen(
+          selection: KardexSelection.fromUri(state.uri),
+          pushed: true,
         ),
       ),
       // 038-advanced-product-search: a top-level sibling, not a shell branch
@@ -1056,6 +1106,17 @@ NavGate? _routeGate(String location) {
       SystemObject.physicalCountAdjustment,
       AccessRight.read,
     );
+  }
+  // 071-stock-kardex: SystemObject 67 (`warehouseStockReport`) read,
+  // matching the server's GET /stock. The prefix covers the list and every
+  // `/inventory/stock/products/:id`.
+  if (location.startsWith(stockPath)) {
+    return PrivilegeGate(SystemObject.warehouseStockReport, AccessRight.read);
+  }
+  // 071-stock-kardex: SystemObject 32 (`kardex`) read, matching the server's
+  // GET /kardex.
+  if (location.startsWith(kardexPath)) {
+    return PrivilegeGate(SystemObject.kardex, AccessRight.read);
   }
   // 061-delivery-orders: SystemObject 71 (`deliveryOrders`) read, matching
   // the server's GET /delivery-orders. The prefix covers the list and every

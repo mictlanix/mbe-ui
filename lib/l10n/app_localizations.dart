@@ -14923,6 +14923,372 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Modified by'**
   String get inventoryCountFactModifiedBy;
+
+  /// spec 071: kardex.range_reversed
+  ///
+  /// In en, this message translates to:
+  /// **'The end date cannot be before the start date.'**
+  String get apiErrorKardexRangeReversed;
+
+  /// spec 071: kardex.range_too_long
+  ///
+  /// In en, this message translates to:
+  /// **'The range cannot exceed {maxDays} days.'**
+  String apiErrorKardexRangeTooLong(String maxDays);
+
+  /// spec 071: navigation destination
+  ///
+  /// In en, this message translates to:
+  /// **'Stock'**
+  String get navInventoryStock;
+
+  /// spec 071: navigation destination
+  ///
+  /// In en, this message translates to:
+  /// **'Kardex'**
+  String get navInventoryKardex;
+
+  /// spec 071: stock table column
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get inventoryStockColumnCode;
+
+  /// spec 071: stock table column
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get inventoryStockColumnProduct;
+
+  /// spec 071: stock table column
+  ///
+  /// In en, this message translates to:
+  /// **'On hand'**
+  String get inventoryStockColumnOnHand;
+
+  /// spec 071: stock table column
+  ///
+  /// In en, this message translates to:
+  /// **'Reserved'**
+  String get inventoryStockColumnReserved;
+
+  /// spec 071: stock table column
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get inventoryStockColumnAvailable;
+
+  /// spec 071: stock table column
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming'**
+  String get inventoryStockColumnIncoming;
+
+  /// spec 071: stock filter facet
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryStockFilterWarehouse;
+
+  /// spec 071: stock filter switch
+  ///
+  /// In en, this message translates to:
+  /// **'Show out of stock'**
+  String get inventoryStockFilterIncludeZero;
+
+  /// spec 071: facts-strip label for the chosen warehouse
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryStockSelectionWarehouse;
+
+  /// spec 071: stock list state with no warehouse
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a warehouse to see its stock.'**
+  String get inventoryStockPickWarehousePrompt;
+
+  /// spec 071: button opening the filter sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Choose warehouse'**
+  String get inventoryStockPickWarehouseButton;
+
+  /// spec 071: stock list empty state
+  ///
+  /// In en, this message translates to:
+  /// **'This warehouse has no stock.'**
+  String get inventoryStockEmpty;
+
+  /// spec 071: stock list filtered-empty state
+  ///
+  /// In en, this message translates to:
+  /// **'No product matches the search.'**
+  String get inventoryStockFilteredEmpty;
+
+  /// spec 071: stock list search box label
+  ///
+  /// In en, this message translates to:
+  /// **'Search by code or name'**
+  String get inventoryStockSearchLabel;
+
+  /// spec 071: product stock view title
+  ///
+  /// In en, this message translates to:
+  /// **'Stock · {code} {name}'**
+  String inventoryStockProductTitle(String code, String name);
+
+  /// spec 071: product stock table column
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryStockColumnWarehouse;
+
+  /// spec 071: product stock table column
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get inventoryStockColumnFacility;
+
+  /// spec 071: product stock totals label
+  ///
+  /// In en, this message translates to:
+  /// **'On hand'**
+  String get inventoryStockTotalOnHand;
+
+  /// spec 071: product stock totals label
+  ///
+  /// In en, this message translates to:
+  /// **'Reserved'**
+  String get inventoryStockTotalReserved;
+
+  /// spec 071: product stock totals label
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get inventoryStockTotalAvailable;
+
+  /// spec 071: product stock totals label
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming'**
+  String get inventoryStockTotalIncoming;
+
+  /// spec 071: row action tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'View kardex'**
+  String get inventoryStockViewKardex;
+
+  /// spec 071: in-transit section heading
+  ///
+  /// In en, this message translates to:
+  /// **'In transit'**
+  String get inventoryStockInTransitHeading;
+
+  /// spec 071: product stock view empty state
+  ///
+  /// In en, this message translates to:
+  /// **'This product has no stock in any warehouse.'**
+  String get inventoryStockProductEmpty;
+
+  /// spec 071: kardex filter facet
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get inventoryKardexFilterProduct;
+
+  /// spec 071: kardex filter facet
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryKardexFilterWarehouse;
+
+  /// spec 071: kardex filter facet
+  ///
+  /// In en, this message translates to:
+  /// **'Range'**
+  String get inventoryKardexFilterRange;
+
+  /// spec 071: kardex facts-strip label
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get inventoryKardexSelectionProduct;
+
+  /// spec 071: kardex facts-strip label
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get inventoryKardexSelectionWarehouse;
+
+  /// spec 071: kardex facts-strip label
+  ///
+  /// In en, this message translates to:
+  /// **'Range'**
+  String get inventoryKardexSelectionRange;
+
+  /// spec 071: kardex summary label
+  ///
+  /// In en, this message translates to:
+  /// **'Opening balance'**
+  String get inventoryKardexSummaryOpening;
+
+  /// spec 071: kardex summary label
+  ///
+  /// In en, this message translates to:
+  /// **'Inflows'**
+  String get inventoryKardexSummaryIn;
+
+  /// spec 071: kardex summary label
+  ///
+  /// In en, this message translates to:
+  /// **'Outflows'**
+  String get inventoryKardexSummaryOut;
+
+  /// spec 071: kardex summary label
+  ///
+  /// In en, this message translates to:
+  /// **'Closing balance'**
+  String get inventoryKardexSummaryClosing;
+
+  /// spec 071: kardex table column
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get inventoryKardexColumnDate;
+
+  /// spec 071: kardex table column
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get inventoryKardexColumnSource;
+
+  /// spec 071: kardex table column
+  ///
+  /// In en, this message translates to:
+  /// **'Document'**
+  String get inventoryKardexColumnDocument;
+
+  /// spec 071: kardex table column
+  ///
+  /// In en, this message translates to:
+  /// **'In'**
+  String get inventoryKardexColumnIn;
+
+  /// spec 071: kardex table column
+  ///
+  /// In en, this message translates to:
+  /// **'Out'**
+  String get inventoryKardexColumnOut;
+
+  /// spec 071: kardex table column
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get inventoryKardexColumnBalance;
+
+  /// spec 071: kardex state with a missing selection
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a product and a warehouse to see its kardex.'**
+  String get inventoryKardexIncompletePrompt;
+
+  /// spec 071: button opening the filter sheet
+  ///
+  /// In en, this message translates to:
+  /// **'Choose'**
+  String get inventoryKardexIncompleteButton;
+
+  /// spec 071: client-side range check
+  ///
+  /// In en, this message translates to:
+  /// **'The end date cannot be before the start date.'**
+  String get inventoryKardexRangeReversed;
+
+  /// spec 071: client-side range check
+  ///
+  /// In en, this message translates to:
+  /// **'The range cannot exceed {max} days.'**
+  String inventoryKardexRangeTooLong(String max);
+
+  /// spec 071: kardex empty state
+  ///
+  /// In en, this message translates to:
+  /// **'No movements in this range.'**
+  String get inventoryKardexEmpty;
+
+  /// spec 071: source type 1
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get inventoryKardexSourceSalesOrder;
+
+  /// spec 071: source type 2
+  ///
+  /// In en, this message translates to:
+  /// **'Return'**
+  String get inventoryKardexSourceSalesReturn;
+
+  /// spec 071: source type 3
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse issue'**
+  String get inventoryKardexSourceWarehouseIssue;
+
+  /// spec 071: source type 4
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse receipt'**
+  String get inventoryKardexSourceWarehouseReceipt;
+
+  /// spec 071: source type 5
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer'**
+  String get inventoryKardexSourceTransfer;
+
+  /// spec 071: source type 6
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase order'**
+  String get inventoryKardexSourcePurchaseOrder;
+
+  /// spec 071: source type 8
+  ///
+  /// In en, this message translates to:
+  /// **'Adjustment (legacy system)'**
+  String get inventoryKardexSourceLegacyAdjustment;
+
+  /// spec 071: source type 10
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery itinerary'**
+  String get inventoryKardexSourceDeliveryItinerary;
+
+  /// spec 071: source type 12
+  ///
+  /// In en, this message translates to:
+  /// **'Physical count'**
+  String get inventoryKardexSourceCount;
+
+  /// spec 071: source type 13
+  ///
+  /// In en, this message translates to:
+  /// **'Counter delivery'**
+  String get inventoryKardexSourceCounterDelivery;
+
+  /// spec 071: source type not recognised
+  ///
+  /// In en, this message translates to:
+  /// **'Movement'**
+  String get inventoryKardexSourceFallback;
+
+  /// spec 071: product detail button
+  ///
+  /// In en, this message translates to:
+  /// **'View stock'**
+  String get catalogViewStockButton;
 }
 
 class _AppLocalizationsDelegate

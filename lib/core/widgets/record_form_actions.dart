@@ -69,6 +69,7 @@ class RecordFormActions extends StatelessWidget {
     this.editKey,
     this.saveKey,
     this.deleteKey,
+    this.leading,
   });
 
   final RecordFormMode mode;
@@ -98,6 +99,12 @@ class RecordFormActions extends StatelessWidget {
   final Key? saveKey;
   final Key? deleteKey;
 
+  /// Extra actions rendered first, before Delete/Edit/Save — for a shortcut
+  /// into a related record's screen (constitution §VI). `null` or empty
+  /// renders exactly as without it. These are not gated by [mode] or
+  /// [isSubmitting]; the caller decides when they appear.
+  final List<Widget>? leading;
+
   bool get _showDelete => mode == RecordFormMode.edit && onDelete != null;
   bool get _showEdit => mode == RecordFormMode.view && onEdit != null;
   bool get _showSave => mode != RecordFormMode.view && onSave != null;
@@ -106,6 +113,7 @@ class RecordFormActions extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final buttons = <Widget>[
+      ...?leading,
       // Fixed left-to-right order: Delete, then Edit-or-Save (contract §2)
       // — the destructive action sits furthest from the primary one, and
       // the primary/confirming action is rightmost.

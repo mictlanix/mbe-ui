@@ -731,6 +731,8 @@ void main() {
           'inventory-issues',
           'inventory-transfers',
           'inventory-counts',
+          'inventory-stock',
+          'inventory-kardex',
         ],
       );
       final entry = children[1];
@@ -783,6 +785,8 @@ void main() {
           'inventory-issues',
           'inventory-transfers',
           'inventory-counts',
+          'inventory-stock',
+          'inventory-kardex',
         ],
       );
       final entry = children[2];
@@ -840,6 +844,8 @@ void main() {
           'inventory-issues',
           'inventory-transfers',
           'inventory-counts',
+          'inventory-stock',
+          'inventory-kardex',
         ],
       );
       final entry = children[3];
@@ -848,6 +854,117 @@ void main() {
       expect(NavBranch.inventoryCounts, 33);
       expect(entry.icon, Icons.fact_check_outlined);
       expect(entry.selectedIcon, Icons.fact_check);
+    });
+  });
+
+  group('Existencias destination (spec 071 ui-contract)', () {
+    NavGroup inventoryGroup() => kNavigationTree
+        .whereType<NavGroup>()
+        .firstWhere((g) => g.id == 'inventory');
+
+    test('a user without WarehouseStockReport read has no Existencias '
+        'entry', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(
+            systemObject: SystemObject.physicalCountAdjustment,
+            rawValue: 2,
+          ),
+        ],
+      );
+      expect(ids, contains('inventory-counts'));
+      expect(ids, isNot(contains('inventory-stock')));
+    });
+
+    test('a user with WarehouseStockReport read has the entry, and the group '
+        'stays when they can read only that one', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(
+            systemObject: SystemObject.warehouseStockReport,
+            rawValue: 2,
+          ),
+        ],
+      );
+      expect(ids, contains('inventory-stock'));
+      expect(ids, isNot(contains('inventory-receipts')));
+      expect(ids, isNot(contains('inventory-issues')));
+      expect(ids, isNot(contains('inventory-transfers')));
+      expect(ids, isNot(contains('inventory-counts')));
+    });
+
+    test('it is the fifth entry of Inventario, after Conteos físicos, on '
+        'branch 34 at /inventory/stock', () {
+      final children = inventoryGroup().children;
+      expect(
+        [for (final c in children) c.id],
+        [
+          'inventory-receipts',
+          'inventory-issues',
+          'inventory-transfers',
+          'inventory-counts',
+          'inventory-stock',
+          'inventory-kardex',
+        ],
+      );
+      final entry = children[4];
+      expect(entry.route, '/inventory/stock');
+      expect(entry.branchIndex, NavBranch.inventoryStock);
+      expect(NavBranch.inventoryStock, 34);
+      expect(entry.icon, Icons.inventory_2_outlined);
+      expect(entry.selectedIcon, Icons.inventory_2);
+    });
+  });
+
+  group('Kardex destination (spec 071 ui-contract)', () {
+    NavGroup inventoryGroup() => kNavigationTree
+        .whereType<NavGroup>()
+        .firstWhere((g) => g.id == 'inventory');
+
+    test('a user with only WarehouseStockReport read sees Existencias but '
+        'not Kardex', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(
+            systemObject: SystemObject.warehouseStockReport,
+            rawValue: 2,
+          ),
+        ],
+      );
+      expect(ids, contains('inventory-stock'));
+      expect(ids, isNot(contains('inventory-kardex')));
+    });
+
+    test('a user with Kardex (32) read has the entry, and the group stays '
+        'when they can read only that one', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.kardex, rawValue: 2),
+        ],
+      );
+      expect(ids, contains('inventory-kardex'));
+      expect(ids, isNot(contains('inventory-stock')));
+      expect(ids, isNot(contains('inventory-receipts')));
+    });
+
+    test('it is the sixth entry of Inventario, after Existencias, on branch '
+        '35 at /inventory/kardex', () {
+      final children = inventoryGroup().children;
+      expect(children.map((c) => c.id).toList().indexOf('inventory-kardex'), 5);
+      final entry = children[5];
+      expect(entry.route, '/inventory/kardex');
+      expect(entry.branchIndex, NavBranch.inventoryKardex);
+      expect(NavBranch.inventoryKardex, 35);
+      expect(entry.icon, Icons.receipt_long_outlined);
+      expect(entry.selectedIcon, Icons.receipt_long);
     });
   });
 }

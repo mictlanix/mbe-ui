@@ -437,6 +437,25 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 editKey: const Key('edit_product_button'),
                 saveKey: const Key('save_button'),
                 deleteKey: const Key('delete_product_button'),
+                leading: [
+                  // Spec 071 FR-013a: only while read-only (a View, or no
+                  // products update), never while editing or creating, and
+                  // with WarehouseStockReport (SystemObject 67) read.
+                  if (mode == RecordFormMode.view &&
+                      widget.productId != null &&
+                      access.can(
+                        SystemObject.warehouseStockReport,
+                        AccessRight.read,
+                      ))
+                    OutlinedButton.icon(
+                      key: const Key('view_stock_button'),
+                      icon: const Icon(Icons.inventory_2_outlined),
+                      label: Text(l10n.catalogViewStockButton),
+                      onPressed: () => context.push(
+                        '/inventory/stock/products/${widget.productId}',
+                      ),
+                    ),
+                ],
                 onEdit: (canUpdate && widget.productId != null)
                     ? () => context.replace('/products/${widget.productId}')
                     : null,

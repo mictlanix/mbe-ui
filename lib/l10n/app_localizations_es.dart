@@ -8982,4 +8982,200 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get inventoryCountFactModifiedBy => 'Modificado por';
+
+  @override
+  String get apiErrorKardexRangeReversed =>
+      'La fecha final no puede ser anterior a la inicial.';
+
+  @override
+  String apiErrorKardexRangeTooLong(String maxDays) {
+    return 'El rango no puede pasar de $maxDays días.';
+  }
+
+  @override
+  String get navInventoryStock => 'Existencias';
+
+  @override
+  String get navInventoryKardex => 'Kardex';
+
+  @override
+  String get inventoryStockColumnCode => 'Código';
+
+  @override
+  String get inventoryStockColumnProduct => 'Producto';
+
+  @override
+  String get inventoryStockColumnOnHand => 'Existencia';
+
+  @override
+  String get inventoryStockColumnReserved => 'Apartado';
+
+  @override
+  String get inventoryStockColumnAvailable => 'Disponible';
+
+  @override
+  String get inventoryStockColumnIncoming => 'Por recibir';
+
+  @override
+  String get inventoryStockFilterWarehouse => 'Almacén';
+
+  @override
+  String get inventoryStockFilterIncludeZero => 'Mostrar sin existencia';
+
+  @override
+  String get inventoryStockSelectionWarehouse => 'Almacén';
+
+  @override
+  String get inventoryStockPickWarehousePrompt =>
+      'Elige un almacén para ver sus existencias.';
+
+  @override
+  String get inventoryStockPickWarehouseButton => 'Elegir almacén';
+
+  @override
+  String get inventoryStockEmpty => 'Este almacén no tiene existencias.';
+
+  @override
+  String get inventoryStockFilteredEmpty =>
+      'Ningún producto coincide con la búsqueda.';
+
+  @override
+  String get inventoryStockSearchLabel => 'Buscar por código o nombre';
+
+  @override
+  String inventoryStockProductTitle(String code, String name) {
+    return 'Existencias · $code $name';
+  }
+
+  @override
+  String get inventoryStockColumnWarehouse => 'Almacén';
+
+  @override
+  String get inventoryStockColumnFacility => 'Sucursal';
+
+  @override
+  String get inventoryStockTotalOnHand => 'Existencia';
+
+  @override
+  String get inventoryStockTotalReserved => 'Apartado';
+
+  @override
+  String get inventoryStockTotalAvailable => 'Disponible';
+
+  @override
+  String get inventoryStockTotalIncoming => 'Por recibir';
+
+  @override
+  String get inventoryStockViewKardex => 'Ver kardex';
+
+  @override
+  String get inventoryStockInTransitHeading => 'En tránsito';
+
+  @override
+  String get inventoryStockProductEmpty =>
+      'Este producto no tiene existencias en ningún almacén.';
+
+  @override
+  String get inventoryKardexFilterProduct => 'Producto';
+
+  @override
+  String get inventoryKardexFilterWarehouse => 'Almacén';
+
+  @override
+  String get inventoryKardexFilterRange => 'Rango';
+
+  @override
+  String get inventoryKardexSelectionProduct => 'Producto';
+
+  @override
+  String get inventoryKardexSelectionWarehouse => 'Almacén';
+
+  @override
+  String get inventoryKardexSelectionRange => 'Rango';
+
+  @override
+  String get inventoryKardexSummaryOpening => 'Saldo inicial';
+
+  @override
+  String get inventoryKardexSummaryIn => 'Entradas';
+
+  @override
+  String get inventoryKardexSummaryOut => 'Salidas';
+
+  @override
+  String get inventoryKardexSummaryClosing => 'Saldo final';
+
+  @override
+  String get inventoryKardexColumnDate => 'Fecha';
+
+  @override
+  String get inventoryKardexColumnSource => 'Origen';
+
+  @override
+  String get inventoryKardexColumnDocument => 'Documento';
+
+  @override
+  String get inventoryKardexColumnIn => 'Entrada';
+
+  @override
+  String get inventoryKardexColumnOut => 'Salida';
+
+  @override
+  String get inventoryKardexColumnBalance => 'Saldo';
+
+  @override
+  String get inventoryKardexIncompletePrompt =>
+      'Elige un producto y un almacén para ver su kardex.';
+
+  @override
+  String get inventoryKardexIncompleteButton => 'Elegir';
+
+  @override
+  String get inventoryKardexRangeReversed =>
+      'La fecha final no puede ser anterior a la inicial.';
+
+  @override
+  String inventoryKardexRangeTooLong(String max) {
+    return 'El rango no puede pasar de $max días.';
+  }
+
+  @override
+  String get inventoryKardexEmpty => 'Sin movimientos en este rango.';
+
+  @override
+  String get inventoryKardexSourceSalesOrder => 'Pedido';
+
+  @override
+  String get inventoryKardexSourceSalesReturn => 'Devolución';
+
+  @override
+  String get inventoryKardexSourceWarehouseIssue => 'Salida de almacén';
+
+  @override
+  String get inventoryKardexSourceWarehouseReceipt => 'Entrada de almacén';
+
+  @override
+  String get inventoryKardexSourceTransfer => 'Traspaso';
+
+  @override
+  String get inventoryKardexSourcePurchaseOrder => 'Orden de compra';
+
+  @override
+  String get inventoryKardexSourceLegacyAdjustment =>
+      'Ajuste (sistema anterior)';
+
+  @override
+  String get inventoryKardexSourceDeliveryItinerary => 'Itinerario de reparto';
+
+  @override
+  String get inventoryKardexSourceCount => 'Conteo físico';
+
+  @override
+  String get inventoryKardexSourceCounterDelivery => 'Entrega en mostrador';
+
+  @override
+  String get inventoryKardexSourceFallback => 'Movimiento';
+
+  @override
+  String get catalogViewStockButton => 'Ver existencias';
 }
