@@ -3,7 +3,7 @@
   "specName": "Physical Inventory Counts",
   "branch": "070-inventory-adjustments-count",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -333,8 +333,45 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-17T16:07:02.663Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-18T03:11:38.813Z"
     }
   ],
   "telemetryInstanceId": "970073cc-2a7f-44af-a523-f07bab31d536",
-  "currentTask": "T036"
+  "currentTask": null,
+  "verified": [
+    {
+      "what": "inventory unit and widget suites on main after #273 merged",
+      "command": "flutter test test/unit/features/inventory test/widget/features/inventory",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 29.9,
+      "result": "DataTable2 built: 0ms · 00:26 +826: /Users/augusto/development/repos/mictlanix/mbe-ui/test/widget/features/inventory/kardex_screen_test.dart: (tearDownAll) · 00:26 +826: All tests passed!"
+    },
+    {
+      "what": "live API test test/integration/inventory_counts_live_test.dart, read-only and with MBE_WRITE",
+      "result": "pass: 21 write steps; stock restored and checked before/after; read-only rerun on 2026-11-17 also passes",
+      "command": "flutter test test/integration/inventory_counts_live_test.dart --dart-define-from-file=.env.settings --dart-define-from-file=.env --dart-define=MBE_WRITE=true"
+    },
+    {
+      "what": "macOS device walkthrough integration_test/inventory_counts_quickstart_test.dart",
+      "result": "pass: quickstart steps 1-8, 11, 12 and the qanoaccess gate; stock restored, no drafts left",
+      "command": "caffeinate -dimsu flutter test integration_test/inventory_counts_quickstart_test.dart -d macos --dart-define-from-file=.env"
+    },
+    {
+      "what": "large-count timing (T034)",
+      "result": "one line write on a 15,000-line count: ~2.15 s, 2.88 MB response; filed mictlanix/mbe-api#333"
+    }
+  ],
+  "concerns": [
+    {
+      "note": "manual checks open in mictlanix/mbe-ui#272 (T036 stays unchecked in tasks.md): non-admin scope and pickers, read-only account, FR-019 side by side, real scanner/spreadsheet paste, SC-001/SC-008 timing",
+      "step": "implement"
+    }
+  ]
 }
