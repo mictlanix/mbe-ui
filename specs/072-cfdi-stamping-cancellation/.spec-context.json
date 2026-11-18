@@ -1,0 +1,34 @@
+{
+  "workflow": "speckit",
+  "specName": "CFDI Stamping, Refresh and Cancellation",
+  "branch": "chore/072-mark-complete",
+  "verified": [
+    {
+      "what": "flutter analyze clean; full suite 6,091 passed, 8 failed, none from this branch (6 known goldens #209, the POS sales-list screenshot that fails identically on main, auth_flow_test needing a live backend) — per PR #279"
+    },
+    {
+      "what": "live test/integration/fiscal_documents_live_test.dart 'Stamp, cancel and refresh against the simulated PAC': 11 of 11 against local mbe-api with PAC_PROVIDER=simulated (stamp, repeat stamp, timeout then refresh, cancel 02, pending/reject/accept, 01 with substitute, 01 without refused, six-state filter)"
+    }
+  ],
+  "concerns": [
+    {
+      "note": "T033 manual checks (the screens against the simulator, outcomes the live test does not drive, read-only user, compact at the largest text, English, SC-001) not yet run; tracked in mictlanix/mbe-ui#278"
+    },
+    {
+      "note": "spec 066 live search by recipient RFC fails on XAXX010101000 because of mbe-api classify_search; filed as mictlanix/mbe-api#337"
+    }
+  ],
+  "currentStep": "implement",
+  "status": "completed",
+  "history": [
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-18T06:06:32.514Z"
+    }
+  ],
+  "telemetryInstanceId": "e546b61a-7b44-455d-985b-33b057c7e47e",
+  "currentTask": null
+}
