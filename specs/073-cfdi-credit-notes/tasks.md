@@ -135,7 +135,7 @@ description: "Task list for 073-cfdi-credit-notes"
 ## Phase 7: Polish & Cross-Cutting Concerns
 
 - [X] T025 Run the full gate: `flutter analyze` (clean), `dart format` on the changed files only, and `flutter test` for the whole suite. Compare against the T001 baseline: nothing new may fail.
-- [ ] T026 (not done: needs a browser or device session against dev, and the live test needs the user's go-ahead; see pr-description.md "Verification") Walk `quickstart.md` steps 1–17 against dev (simulated PAC), including compact width (step 16) and the largest text scale (step 17), and English. Record any step that cannot be run. Anything left becomes a manual-checks issue like 072's (mbe-ui#278), which you create only after asking the user.
+- [ ] T026 (open: the manual walk is tracked in mbe-ui#281; the live test passed 8/8 on 2026-11-18) Walk `quickstart.md` steps 1–17 against dev (simulated PAC), including compact width (step 16) and the largest text scale (step 17), and English. Record any step that cannot be run. Anything left becomes a manual-checks issue like 072's (mbe-ui#278), which you create only after asking the user.
 - [X] T027 Write `specs/073-cfdi-credit-notes/pr-description.md`. The Roadmap section reads `Closes mictlanix/mbe-roadmap#56`. Do not add `Part of` lines for #54 (payment receipts). Under "Follow-ups" list the two mbe-api candidates from research R6 and R8 (the invoice's remaining creditable amount, and the missing type guard in `remove_relation`) and say they are not filed. Note that the relation link also changes spec 066's invoice screen. Do not open the PR: the user does that.
 
 ---

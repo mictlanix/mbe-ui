@@ -54,6 +54,7 @@ Every action is absent, never disabled, without its right or outside its state.
 
 - `flutter analyze`: clean. Formatting checked on the changed files only.
 - `flutter test`: 6166 pass. The failures are the six goldens in `test/golden/core_widgets_golden_test.dart` (known, mbe-ui#209) and `pos_screens_screenshot_test.dart`, a pixel diff on the sales list that fails the same way on the branch without this work.
-- **Not run:** the live test (`test/integration/fiscal_documents_live_test.dart`, group "Credit note against the simulated PAC") and the manual walk of `quickstart.md` against dev. The live test consumes a credit-note folio and stamps a document, so it needs a go-ahead.
+- **Live test** (`test/integration/fiscal_documents_live_test.dart`, group "Credit note against the simulated PAC"): 8/8 passed against dev on 2026-11-18. It created credit note #63928 against invoice #63927, refused a copy above the invoiced quantity with `credit_quantity_exceeds_line`, copied one line, set the form, confirmed (DRC3), stamped and cancelled it.
+- **Manual checks** (`quickstart.md`) are tracked in #281.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
