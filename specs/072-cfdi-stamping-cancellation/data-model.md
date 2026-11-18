@@ -12,7 +12,7 @@ the generated client's (`FiscalDocumentResponse`, `FiscalDocumentStamp`,
 | `draft` | `draft` | Borrador | surfaceContainerHighest |
 | `sealed` | `sealed` | Sellado | primaryContainer |
 | `stamping` **new** | `stamping` | Timbrando | tertiaryContainer |
-| `issued` | `issued` | Emitido | secondaryContainer |
+| `issued` | `issued` | Timbrado (existing label, spec 066) | secondaryContainer |
 | `cancellationPending` **new** | `cancellation_pending` | Cancelación pendiente | tertiaryContainer |
 | `cancelled` | `cancelled` | Cancelado | errorContainer |
 

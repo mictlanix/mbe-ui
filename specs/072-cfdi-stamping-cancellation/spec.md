@@ -217,6 +217,7 @@ On an issued, cancellation-pending or cancelled document, the clerk sees its sta
 
 ## Assumptions
 
+- **State names**: The issued state keeps the label spec 066 already ships ("Timbrado" in Spanish, "Stamped" in English). Wherever this spec or its wireframes say "Emitido" or "issued", they mean that state. The new states are labelled "Timbrando" / "Stamping" and "Cancelación pendiente" / "Cancellation pending".
 - **Rights**: Stamp, cancel and refresh need update on fiscal documents (system object 23), which is what the server checks. Fiscal documents have no facility scope.
 - **All document types** can be stamped, cancelled and refreshed here, not only invoices, because the server allows it and because a live payment receipt or credit note blocks its invoice's cancellation. Creating and editing payment receipts (#54) and CFDI credit notes (#56) stays out of scope.
 - **Choosing the substitute** reuses the related-document search from spec 066 (relations 04/07), limited to issued documents of the same issuer and recipient. Its search already accepts a UUID, so a clerk with a UUID in hand can paste it.
