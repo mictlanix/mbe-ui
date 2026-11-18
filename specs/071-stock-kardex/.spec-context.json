@@ -3,7 +3,7 @@
   "specName": "Stock and Kardex",
   "branch": "071-stock-kardex",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -261,8 +261,46 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-18T02:59:44.893Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-18T03:12:21.508Z"
     }
   ],
   "telemetryInstanceId": "35e7dc07-b0c6-4e92-bddf-71f690623e66",
-  "currentTask": "T027"
+  "currentTask": null,
+  "verified": [
+    {
+      "what": "inventory, catalog and router suites on main after #276 merged",
+      "command": "flutter test test/unit/features/inventory test/widget/features/inventory test/widget/features/catalog test/unit/app/router/app_router_test.dart test/unit/core/navigation",
+      "source": "derived",
+      "exitCode": 0,
+      "durationSeconds": 54.5,
+      "result": "[BrandConfig] BRAND_DISPLAY_NAME=Mictlanix Business Essentials BRAND_WELCOME_ASSET=null BRAND_SEED_COLOR= BRAND_LOCKUP_ASSET=assets/brand/login_lockup.png BRAND_MARK_ASSET=assets/brand/nav_lockup.png · [FormattingSettings] DATE_FORMAT=yyyy-MM-dd DATE_TIME_FORMAT=yyyy-MM-dd HH:mm CURRENCY_SYMBOL=$ CURRENCY_CODE=MXN CURRENCY_DECIMAL_DIGITS=2 PERCENT_DECIMAL_DIGITS=2 QUANTITY_DECIMAL_DIGITS=0 · 00:51 +1731: All tests passed!"
+    },
+    {
+      "what": "read-only live API test test/integration/stock_kardex_live_test.dart",
+      "result": "pass: 13 of 13 steps; SC-002 closing == on hand; source types 1,2,3,4,5,8 resolve to their own documents; status omitted returns inactive products (R12)",
+      "command": "flutter test test/integration/stock_kardex_live_test.dart --dart-define-from-file=.env.settings --dart-define-from-file=.env"
+    },
+    {
+      "what": "macOS device walkthrough integration_test/stock_kardex_quickstart_test.dart",
+      "result": "pass: quickstart steps 1-11, back navigation from the Kardex page and through the nav, and the qanoaccess gate (1:38); SC-003 two taps",
+      "command": "caffeinate -dimsu flutter test integration_test/stock_kardex_quickstart_test.dart -d macos --dart-define-from-file=.env"
+    },
+    {
+      "what": "core_widgets goldens before and after the RecordFormActions.leading slot",
+      "result": "identical: +21 -6, the same 6 pre-existing failures as main",
+      "command": "flutter test test/golden/core_widgets_golden_test.dart"
+    }
+  ],
+  "concerns": [
+    {
+      "note": "manual checks open in mictlanix/mbe-ui#275 (T027 stays unchecked in tasks.md): the two rights accounts, Ver existencias for a non-editing user, sales-document links and unlinked rows, largest text on a device, SC-001 timing",
+      "step": "implement"
+    }
+  ]
 }
