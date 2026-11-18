@@ -35,7 +35,7 @@ Expected: everything passes. The live test is read-only: these screens write not
 4. **Search and switch.** Searching part of a code narrows the list. Turning on "Mostrar sin existencia" adds products with every figure at zero. Reloading the page keeps the warehouse, search and switch.
 5. **In-transit warehouse.** Choosing a facility's in-transit warehouse shows the Spanish in-transit refusal and an empty list.
 6. **Product view.** Tapping product 2926 in warehouse 15 opens "Existencias · {code} {name}". The view lists every warehouse with stock, and the totals strip sums them. A product on a dispatched transfer also shows its En tránsito section.
-7. **To the kardex.** "Ver kardex" on the warehouse 15 row opens Kardex with product 2926, warehouse 15 and the last 30 days.
+7. **To the kardex.** "Ver kardex" on the warehouse 15 row opens the Kardex page with product 2926, warehouse 15 and the last 30 days, with a back arrow. Back returns to the product view, and the side nav still works afterwards (research R14).
 8. **Kardex balance.** The opening balance plus Entradas minus Salidas equals the final balance, and the final balance equals Existencias' on-hand figure for that product and warehouse (SC-002). The QA070 count rows show "Conteo físico" with their folios.
 9. **Document links.** Tapping a count row opens that count, and back returns to the same kardex. A row of a type with no screen (itinerary, purchase order) shows "#id" and does nothing.
 10. **Invalid range.** Setting a range longer than 366 days shows "El rango no puede pasar de 366 días." with no request. An end date before the start shows the reversed-range text.

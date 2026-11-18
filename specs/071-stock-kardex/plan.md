@@ -100,9 +100,9 @@ lib/features/inventory/
     │   ├── stock_list_screen.dart                  # stockPath = '/inventory/stock'
     │   ├── stock_list_controller.dart
     │   ├── product_stock_screen.dart               # '/inventory/stock/products/:id'
-    │   └── product_stock_controller.dart
+    │   └── product_stock_controller.dart           # also resolves each warehouse's facility (research R6)
     └── kardex/                                     # NEW
-        ├── kardex_screen.dart                      # kardexPath = '/inventory/kardex'
+        ├── kardex_screen.dart                      # kardexPath = '/inventory/kardex'; also the pushed page '/inventory/kardex/view' (research R14)
         ├── kardex_controller.dart
         ├── kardex_selection.dart                   # URL state + range check (research R4)
         └── kardex_sources.dart                     # source labels + document routes (research R5)

@@ -4,6 +4,11 @@
 
 Drawn from the spec before planning. They follow the shipped Inventario list screens (specs 067–070) where the shapes match. Layout is indicative, not prescriptive. Every dimension, colour and spacing resolves through the design tokens, per constitution §V.
 
+> **Superseded by the plan (2026-11-17).** Three drawings below no longer match what gets built. Follow [research.md](./research.md) and [contracts/ui-contract.md](./contracts/ui-contract.md) where they differ:
+> - **Pickers (Open Question 1, research R2).** Existencias' Almacén and the Kardex's Producto, Almacén and Rango live in the **filter sheet**, not inline in the filter row. A facts strip above each table shows the current selection, and with nothing chosen the empty state has a button that opens the sheet.
+> - **Product view totals (Open Question 3, research R6).** The totals are a **facts strip above the table**, not a footer row (`DataTableView` has no footer).
+> - **"Ver existencias" (Open Question 8, research R9).** It shows whenever the product screen is **read-only** (View, or a user without the products update right), and is **absent while editing** or creating. The screen has no unsaved-changes guard. It sits first in `RecordFormActions`' end-aligned row, through a new `leading` slot.
+
 Three new screens and one change to a shipped screen:
 - Existencias, the stock of one warehouse;
 - the product view, one product across every warehouse;

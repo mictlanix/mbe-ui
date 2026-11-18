@@ -65,8 +65,8 @@ Sources:
 
 - **Decision**: A full screen at `/inventory/stock/products/:id`, under the read-67 gate (FR-006, FR-013).
   - The title is "Existencias · {code} {name}", using the product name from the catalog's product lookup by id, since `ProductStock` carries no name.
-  - Warehouses: a `DataTableView` with Almacén, Sucursal, Existencia, Apartado, Disponible and Por recibir.
-  - The one row action is "Ver kardex", via `buildCatalogRowActions(onEdit: null, extraActions: [...])`, shown only with read on 32. It opens `/inventory/kardex?product=&warehouse=` with the default range.
+  - Warehouses: a `DataTableView` with Almacén, Sucursal, Existencia, Apartado, Disponible and Por recibir. `StockRow` carries only the warehouse id, so the view's controller resolves each distinct warehouse's facility once through the catalog `warehouseRepositoryProvider.get(id)`, whose `Warehouse` entity has the facility's id and name.
+  - The one row action is "Ver kardex", via `buildCatalogRowActions(onEdit: null, extraActions: [...])`, shown only with read on 32. It pushes the Kardex page `/inventory/kardex/view?product=&warehouse=` with the default range (R14).
   - **Totals**: `DataTableView` has no footer row, so a `FactStripRow` above the table shows the four totals (wireframe question 3, option b). The totals are sums of the server's rows; the UI recomputes no per-row figure.
   - **En tránsito**: a short list of facility name (through `InventoryFacilityName`) and quantity, shown only when non-empty, as plain text (wireframe question 4).
   - Empty (no rows and no in-transit): "Este producto no tiene existencias en ningún almacén."
@@ -85,7 +85,7 @@ Sources:
 - **Facts**: `RecordFormActions` renders only Delete, Edit and Save, in an end-aligned `Wrap`, and has no slot for another button. No screen puts a button beside it. The product detail screen has a read-only View mode (`?view=true`) and **no unsaved-changes guard**.
 - **Decision**:
   - Add an optional `leading` list of widgets to `RecordFormActions`, rendered first in its `Wrap`. With null or empty, the widget behaves exactly as today.
-  - The product detail screen passes an `OutlinedButton.icon` "Ver existencias" there. It shows only in View mode, for an existing product, with read on 67 (FR-013a; wireframe question 8, answered "View only" because the screen has no guard that would protect unsaved edits).
+  - The product detail screen passes an `OutlinedButton.icon` "Ver existencias" there. It shows whenever the screen's resulting mode is `RecordFormMode.view`, for an existing product, with read on 67 (FR-013a; wireframe question 8, answered "view only" because the screen has no guard that would protect unsaved edits). That mode covers both ways a product is read-only: `?view=true`, and a user without the products update right (`readOnly = (isEdit && !canUpdate) || forceReadOnly`, `product_detail_screen.dart`). Keying it on `forceReadOnly` alone would hide it from exactly the stock-only supervisors it is for.
   - It pushes `/inventory/stock/products/{id}`.
 - **Rationale**: §VI places a shortcut to a related screen in the record's shared action area. Extending the shared component keeps that area built in one place. Building a local `Row` next to it would let the alignment drift from every other record screen.
 - **Alternatives considered**:
@@ -120,3 +120,12 @@ Sources:
 ## R13. Timestamps
 
 - **Decision**: `KardexApi` is constructed with `appSerializers`, as every repository is, so each row's `date` is read as wall-clock time (spec 043). Dates and times show through `formattersProvider`.
+
+## R14. Opening the Kardex from the product view
+
+- **Fact** (found by the macOS device test, 2026-11-17): the product view is a top-level route pushed over the Existencias tab. Pushing `/inventory/kardex`, a shell branch, on top of it puts a second `StatefulShellRoute` page on the root navigator. That trips `navigator.dart` `!keyReservation.contains(key)`, later `A GlobalKey was used multiple times` on the root navigator key, and every later navigation renders blank. The widget harness's simplified router can't show it, so the regression test lives in `test/unit/app/router/app_router_test.dart` with the real router.
+- **Decision** (the user's choice): "Ver kardex" pushes a separate, top-level Kardex **page** at `/inventory/kardex/view`, with the same query as the tab. It is the same `KardexScreen` in a pushed mode: its own `AppBar` with a back arrow to the product view, and selection changes that `replace` the URL in place. The existing `/inventory/kardex` gate clause (32 read) covers it.
+- **Alternatives considered**:
+  - `go` to the Kardex tab. A one-line fix, but the product view closes and back no longer returns to it.
+  - Moving the product view inside the Existencias tab. A larger routing change.
+- **Cost**: one screen at two addresses, and the side nav doesn't highlight Kardex while the pushed page covers the shell.

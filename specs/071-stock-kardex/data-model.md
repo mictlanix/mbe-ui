@@ -107,7 +107,7 @@ Derived values:
 | Product view | 67 read |
 | Kardex (nav, route) | Kardex (32) read |
 | "Ver kardex" row action | 32 read |
-| "Ver existencias" on product detail (View mode, existing product) | 67 read |
+| "Ver existencias" on product detail (screen in view mode, from `?view=true` or no products update; existing product) | 67 read |
 | Warehouse pickers | Warehouses (4) read |
 | Kardex product picker | Products read |
 | A movement's link | that document type's read right (table above) |

@@ -102,7 +102,7 @@ The supervisor wants to know why a warehouse shows the stock it does. In the Kar
 
 - **In-transit warehouses.** Existencias refuses an in-transit warehouse (the server answers with an error). The warehouse picker can't tell which warehouses are in transit, so the server's refusal is shown in Spanish and the list stays empty. In-transit stock is seen through the product view instead.
 - **Negative stock.** On-hand and available figures can be negative (for example, sales posted before a receipt). They are shown as negative numbers, never hidden or clamped to zero.
-- **Large ranges.** The kardex is not paged by the server. A year of movements for a busy product can be thousands of rows, and the screen stays usable with that many.
+- **Large ranges.** The kardex is not paged by the server. A year of movements for a busy product can be thousands of rows. The screen stays usable with at least 5,000 movements: it shows them a page at a time without freezing.
 - **Same-day ordering.** Movements are shown one row per entry in the server's order, not netted by day as the legacy kardex did.
 - **Stale figures.** The views show the stock at the moment they load. Movements recorded afterwards appear when the user reloads.
 - **No warehouse.** A user without a point-of-sale warehouse sees Existencias with no warehouse chosen and a prompt to pick one.
@@ -137,7 +137,7 @@ The supervisor wants to know why a warehouse shows the stock it does. In the Kar
 **Navigation between views**
 
 - **FR-013**: Existencias and Kardex MUST be two entries of the Inventario group. The product view MUST open from an Existencias row, and MUST have its own address, so it can also be opened directly.
-- **FR-013a**: The product catalog's record surface MUST offer a "Ver existencias" action to users with read on stock (67), which opens that product's view (FR-006). It MUST be absent without that right.
+- **FR-013a**: The product catalog's record surface MUST offer a "Ver existencias" action to users with read on stock (67), which opens that product's view (FR-006). It MUST be absent without that right. It MUST appear whenever the product is shown read-only, whether the user chose View or lacks the right to edit products, and MUST be absent while a product is being edited or created, because leaving the form would lose unsaved edits.
 
 **Across the feature**
 
