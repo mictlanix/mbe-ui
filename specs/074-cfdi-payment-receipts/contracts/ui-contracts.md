@@ -59,7 +59,7 @@ Compared with the invoice detail (C5, C18):
 - **Key**: `fiscal_document_banner_receipt_no_proposal`, primary colours, `Icons.info_outline`.
 - **es**: "No se encontraron facturas PPD timbradas de los pedidos de este pago para este
   receptor. Agrégalas con «Agregar factura»."
-- **When**: `showsNoProposalBanner` and Update on 23.
+- **When**: `showsNoProposalBanner` and Update on 23 (FR-003 applies to users who can edit the draft).
 
 ## C39. ReceiptPaymentSummary (FR-010)
 
@@ -96,8 +96,8 @@ Inside `invoice_header_dialog`:
   a request runs, or when the amount is not > 0.
 - Refusal `add_paid_invoice_refusal` (`FormErrorBanner`): `invoice_not_payable`,
   `invoice_already_on_receipt`, `amount_exceeds_balance` (with balance),
-  `amounts_exceed_payment`, `payment_date_out_of_range`, `cancellation_open`. The dialog
-  stays open.
+  `amounts_exceed_payment`, `payment_date_out_of_range`. An invoice with an open cancellation
+  is refused as `invoice_not_payable`. The dialog stays open.
 
 ## C42. Edit paid invoice amount dialog (FR-008)
 

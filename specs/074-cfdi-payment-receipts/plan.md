@@ -28,6 +28,7 @@ mictlanix/mbe-roadmap#54. The server side is mbe-api spec 028 (#53). The work, i
 5. **Dialogs.** The header dialog in receipt mode (C40), add paid invoice with the 072 picker
    (C41, R14), and edit/remove amount (C42).
 6. **Error codes.** Ten codes are localized and flipped to `IN` (R11).
+7. **Naming.** The type's Spanish label `fiscalDocumentKindPaymentReceipt` changes from "Recibo de pago" to "Complemento de pago" (English stays "Payment receipt").
 
 No new route, no navigation change, no new package and no client regeneration: the client
 already has spec 028's receipt routes, models and codes.
@@ -78,7 +79,7 @@ already has spec 028's receipt routes, models and codes.
 | **New source (2)** | `features/invoicing/presentation/{paid_invoice_dialogs, receipt_sections}.dart` |
 | **Edited source (≈12)** | `domain/entities/fiscal_document.dart`; `domain/repositories/fiscal_document_repository.dart`; `data/fiscal_document_repository_impl.dart`; `presentation/{fiscal_document_actions, fiscal_document_detail_screen, new_invoice_dialog, invoice_header_dialog, fiscal_document_candidate_picker, fiscal_documents_list_screen}.dart`; `features/sales/presentation/payments/payment_detail_screen.dart`; `core/errors/localize_problem.dart`; both `.arb` files; `specs/058-localized-api-errors/contracts/code-scope.tsv` (10 rows `OUT` → `IN`) |
 | **New tests (3)** | `test/widget/features/invoicing/paid_invoice_dialogs_test.dart`, `test/widget/features/invoicing/receipt_detail_test.dart`, `test/unit/features/invoicing/fiscal_document_receipt_test.dart` |
-| **Edited tests (≈10)** | `fiscal_document_repository_impl_test`, `fiscal_document_actions_test`, `fiscal_document_fixtures`, `new_invoice_dialog_test`, `invoice_header_dialog_test`, `fiscal_document_candidate_picker_test`, `fiscal_documents_list_screen_test`, `payment_detail_screen_test`, `catalog_coverage_test` (181 → 191), `problem_fixtures`; the live test is extended |
+| **Edited tests (≈10)** | `fiscal_document_repository_impl_test`, `fiscal_document_actions_test`, `fiscal_document_fixtures`, `new_invoice_dialog_test`, `invoice_header_dialog_test`, `fiscal_document_candidate_picker_test`, `fiscal_documents_list_screen_test`, `payment_detail_screen_test`, `fiscal_document_kind_test` (label rename), `catalog_coverage_test` (181 → 191), `problem_fixtures`; the live test is extended |
 
 ## Constitution Check
 
@@ -93,7 +94,7 @@ These verdicts are against **v1.15.0**.
 | **III. Contract-driven API** | Pass | Only generated operations are used. **Error text**: the ten new reachable codes are localized and flipped to `IN` (R11). The "already has a receipt" path reads `params.fiscal_document_id`, never `detail` (R9). **Upstream**: nothing blocks this spec. The list's missing PPD/recipient filter (spec assumption) is a follow-up candidate, not filed. |
 | **IV. Deny-by-default RBAC** | Pass | Create needs 23 create; edits need 23 update; the source-payment link needs 8 read (C44). Each action is absent without its right. Banners with advice show only with 23 update. |
 | **V. Material 3 / design system** | Pass | Only shared components: `ResponsiveDialog`, `DataTableView`, `FactStripRow`, `ListStateViews`, `FormErrorBanner`, the existing `FiscalDocumentCandidatePicker` and `FiscalDocumentRefusal`. Colours from `ColorScheme`. **Largest text level**: quickstart step 12. |
-| **VI. List and record-surface rules** | Pass | **List**: one extra header button, no row changes. **Surface**: the existing full detail screen; `AppBar.actions` stays empty and every action is in the body's action row. **Delete**: none; drafts are not deletable, as in 066. Paid-invoice remove is a row action with a confirm dialog. |
+| **VI. List and record-surface rules** | Pass | **List**: one extra header button, no row changes. **Surface**: the existing full detail screen; `AppBar.actions` stays empty and every action is in the body's action row. **Delete**: none; drafts are not deletable, as in 066. Paid-invoice remove is a row action with a confirm dialog. **Control band**: the paid-invoice row and compact card (folio link, amounts, edit and remove icons) and the add dialog's amount row are asserted for symmetric padding and a shared baseline (T011, T020), as 073 did for its copy row. Edit and remove use the shared icons from `core/widgets/catalog_action_icons.dart`. |
 | **VII. Online-only, server-rendered documents** | Pass | PDF and XML stay the server's. Every write re-reads the document. |
 | **Quality gates** | Pass | Unit, widget and live tests are listed in R15. `flutter analyze` must be clean. Coverage is enforced by `catalog_coverage_test`. |
 

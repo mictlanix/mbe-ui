@@ -138,13 +138,13 @@ From a receipt, the clerk opens each invoice it pays and the customer payment it
 
 - **FR-001**: Users who can create fiscal documents (system object 23) MUST be able to issue a payment receipt from a customer payment's detail, choosing one of the payment customer's recipient RFCs and confirming. The action MUST be absent for users without that right.
 - **FR-002**: Users who can create fiscal documents MUST be able to create a payment receipt by hand from the Facturas list, choosing a customer and one of their recipient RFCs. The existing new-invoice action MUST stay as it is.
-- **FR-003**: After a receipt is created, the app MUST open the new draft. A receipt created from a payment with no proposed invoices MUST say that none were found.
+- **FR-003**: After a receipt is created, the app MUST open the new draft. When a receipt created from a payment has no proposed invoices, the draft MUST say that none were found to users who can edit it.
 - **FR-004**: When the customer payment already has a live receipt, the app MUST say so and offer to open that receipt.
 
 **Payment data**
 
 - **FR-005**: The header of a draft receipt MUST let the user change the payment date, payment amount, payment form, operation number (at most 50 characters), ordering bank, issue date and notes, and MUST NOT offer the invoice header fields. Terms, CFDI usage and currency MUST show read-only.
-- **FR-006**: The payment form list for a receipt MUST NOT offer 99 ("por definir"). When the payment form is 99 or empty, the draft MUST say a real payment form is needed before confirming.
+- **FR-006**: The payment form list for a receipt MUST NOT offer 99 ("por definir"). When the payment form is 99 (possible only on legacy drafts, since the server starts every receipt on 01), the draft MUST say a real payment form is needed before confirming.
 
 **Paid invoices**
 
@@ -197,6 +197,7 @@ From a receipt, the clerk opens each invoice it pays and the customer payment it
 - **No delete of drafts**: as with invoices in spec 066, a draft receipt cannot be deleted; it stays as a draft.
 - **Rights**: creating needs Create on 23; header, paid invoices, confirm and reopen need Update on 23. These are what the server checks. Fiscal documents have no facility scope. Opening the source payment needs read access to customer payments.
 - **Currency**: receipts are MXN at rate 1. Paying foreign-currency invoices, or receipts for foreign-currency payments, is out of scope, as on the server.
+- **Naming**: the type's Spanish label changes from the existing "Recibo de pago" to "Complemento de pago" everywhere it appears, including spec 065's series list. English keeps "Payment receipt".
 - **Email** of a stamped receipt stays out of scope, as in specs 072 and 073.
 - **No new navigation**: everything happens on the existing Facturas list, document detail and customer payment detail.
 - **Live verification** runs against the dev tenant with the simulated PAC. It needs an issuer with a payment receipt series and a stamped PPD invoice. It consumes folios, so it is dev only, and the user is asked before it runs.
