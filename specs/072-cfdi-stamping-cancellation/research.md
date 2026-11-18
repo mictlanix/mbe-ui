@@ -159,7 +159,7 @@ distinct requester, cached by the family.
     after a localized lead-in. They are **params**, so this follows §III: the text comes
     from the code plus params, never from `detail`.
   - `pac.timeout.state` is not shown; the re-read banner says it.
-  - `substitution_invalid.substitution` is shown shortened.
+  - `substitution_invalid` is a fixed sentence; its `substitution` param is not shown.
   - `unknown_cancellation_reason.reason` is shown.
 
   With a param missing or of the wrong type, there's no message and the shared fallback

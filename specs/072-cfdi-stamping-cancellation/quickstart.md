@@ -44,20 +44,29 @@ It must pass:
 
 ## Manual walk (app against dev)
 
+Steps 4–12 and 16–22 together cover all 13 rows of the simulator scenario table in mbe-ui#274 §5 (SC-002).
+
 | # | Do | Expect |
 |---|---|---|
 | 1 | Facturas → Filtros → Estado | Six states listed (C15) |
 | 2 | Seal a draft invoice | Sellado banner without the "not available" text. Timbrar and Reabrir (C16, C18) |
-| 3 | Timbrar → confirm | Emitido; UUID, Timbrado, Certificado SAT, PAC `SIM010101SIM`; simulated badge; PDF/XML; no Reabrir (C17) |
+| 3 | Timbrar → confirm | Timbrado; UUID, Fecha de timbrado, Certificado SAT, PAC `SIM010101SIM`; simulated badge; PDF/XML; no Reabrir (C17) |
 | 4 | Simulator `stamp:"rejected"` on another sealed invoice → Timbrar | The PAC's message quoted; still Sellado |
 | 5 | Simulator `stamp:"timeout_stamped"` → Timbrar | Timeout message; Timbrando banner; only "Consultar estado" |
-| 6 | Consultar estado | Emitido (snackbar) |
+| 6 | Consultar estado | Timbrado (snackbar) |
 | 7 | Simulator `stamp:"timeout_not_stamped"` → Timbrar → Consultar estado at once | "Sigue en proceso" info notice (C23) |
 | 8 | Issued invoice → Cancelar ante el SAT → 02 | Cancelado; history row "Aceptada" |
 | 9 | Simulator `cancellation:"pending"` → cancel 03 | Cancelación pendiente banner with time; PDF/XML still offered; no Cancel |
-| 10 | Simulator receiver `reject` → Consultar estado | Emitido again; history has the "Rechazada" row; Cancel offered |
+| 10 | Simulator receiver `reject` → Consultar estado | Timbrado again; history has the "Rechazada" row; Cancel offered |
 | 11 | Cancel with 01 | Picker shows issued documents of the same recipient, not the document itself; Enviar disabled until picked |
 | 12 | Invoice with a live payment receipt (legacy REP in dev) → cancel | "Primero cancela … P12" (series+folio list) |
 | 13 | Log in as `qareadonly`, open documents 3, 5 and 9 | States, stamp facts and history visible; no Timbrar, Cancel or Consultar |
 | 14 | Compact width (≈390 pt) and largest text size | The pending chip wraps; the action row wraps; the dialog goes full-screen; nothing clips |
 | 15 | Switch the app to English | Every new label, reason and error is translated |
+| 16 | Simulator `stamp:"unavailable"` → Timbrar | "PAC unavailable, nothing changed" message; still Sellado |
+| 17 | Simulator `cancellation:"pending"` → cancel → receiver `accept` → Consultar estado | Cancelado; history row "Aceptada" |
+| 18 | Same, with receiver `expire` | Cancelado; history row "Expirada" |
+| 19 | Simulator `cancellation:"not_cancellable"` → cancel | "SAT says it can't be cancelled" message; still Timbrado |
+| 20 | Simulator `cancellation:"rejected"` → cancel | The PAC's message quoted; still Timbrado; history row "Rechazada" |
+| 21 | Simulator `cancellation:"unavailable"` → cancel | "PAC unavailable" message; still Timbrado; history row "Falló" |
+| 22 | Simulator `cancellation:"timeout"` → cancel → Consultar estado | Timeout message, then Cancelación pendiente (SAT has it) |

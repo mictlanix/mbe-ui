@@ -19,7 +19,7 @@ A fiscal document now has six states:
 | Borrador (draft) | Editable | Edit, confirm (seal) |
 | Sellado (sealed) | Signed, not stamped; no fiscal validity | Stamp, reopen |
 | Timbrando (stamping) | A stamp was sent and its outcome is not known yet | Refresh |
-| Emitido (issued) | Stamped by the PAC; has a UUID | Cancel, PDF, XML |
+| Timbrado (issued) | Stamped by the PAC; has a UUID | Cancel, PDF, XML |
 | Cancelación pendiente (cancellation pending) | SAT waits for the receiver to accept the cancellation | Refresh, PDF, XML |
 | Cancelado (cancelled) | Cancelled at SAT | PDF, XML |
 
@@ -61,11 +61,11 @@ After confirming an invoice, the clerk stamps it. The document comes back issued
 
 **Why this priority**: This is the step spec 066 could not offer. Without it no document made in the new MBE has fiscal validity, and there is nothing to cancel.
 
-**Independent Test**: Seal an invoice and stamp it against the simulator. It shows Emitido, its UUID and stamp details, the simulated badge, and the PDF and XML actions. Reopen is no longer offered.
+**Independent Test**: Seal an invoice and stamp it against the simulator. It shows Timbrado, its UUID and stamp details, the simulated badge, and the PDF and XML actions. Reopen is no longer offered.
 
 **Acceptance Scenarios**:
 
-1. **Given** a sealed document and a user with update access to fiscal documents, **When** they stamp it and confirm the action, **Then** it shows Emitido with its UUID, stamp date, SAT certificate number and PAC RFC.
+1. **Given** a sealed document and a user with update access to fiscal documents, **When** they stamp it and confirm the action, **Then** it shows Timbrado with its UUID, stamp date, SAT certificate number and PAC RFC.
 2. **Given** a document stamped by the simulator, **When** anyone views it, **Then** a "Timbrado simulado, sin validez fiscal" badge is shown next to its state.
 3. **Given** a newly issued document, **When** the clerk views it, **Then** PDF and XML are offered and reopen is not.
 4. **Given** the PAC rejects the stamp, **When** the clerk stamps, **Then** they see the PAC's own message as the PAC wrote it, and the document stays sealed.
@@ -86,7 +86,7 @@ A clerk cancels an issued CFDI by choosing one of SAT's four reasons. For reason
 **Acceptance Scenarios**:
 
 1. **Given** an issued document of any type and a user with update access, **When** they choose Cancel, **Then** they are asked for a reason among 01 Comprobante emitido con errores con relación, 02 Comprobante emitido con errores sin relación, 03 No se llevó a cabo la operación and 04 Operación nominativa relacionada en una factura global.
-2. **Given** reason 01, **When** the clerk cancels, **Then** they must choose the substitute document among stamped, live documents of the same issuer and recipient before the cancellation can be sent.
+2. **Given** reason 01, **When** the clerk cancels, **Then** they must choose the substitute document among issued documents of the same issuer and recipient before the cancellation can be sent.
 3. **Given** reason 02, 03 or 04, **When** the clerk cancels, **Then** no substitute is asked for.
 4. **Given** SAT accepts at once, **When** the cancellation is sent, **Then** the document shows Cancelado with its cancellation date, and Cancel is no longer offered.
 5. **Given** SAT needs the receiver's acceptance, **When** the cancellation is sent, **Then** the document shows Cancelación pendiente, Refresh is offered, and the screen explains it waits for the receiver.
@@ -102,15 +102,15 @@ A clerk who sees Timbrando or Cancelación pendiente can ask the PAC for the out
 
 **Why this priority**: The server's own check resolves these documents within about 10 minutes, so refresh is a convenience. It does matter when a customer is waiting at the counter.
 
-**Independent Test**: With the simulator, leave a document stamping after a "timeout but stamped" outcome and refresh it: it becomes Emitido. Leave a cancellation pending, have the receiver accept it in the simulator, and refresh: it becomes Cancelado. Do the same with a rejection: it goes back to Emitido.
+**Independent Test**: With the simulator, leave a document stamping after a "timeout but stamped" outcome and refresh it: it becomes Timbrado. Leave a cancellation pending, have the receiver accept it in the simulator, and refresh: it becomes Cancelado. Do the same with a rejection: it goes back to Timbrado.
 
 **Acceptance Scenarios**:
 
-1. **Given** a stamping document the PAC did stamp, **When** the clerk refreshes, **Then** it shows Emitido with its stamp.
+1. **Given** a stamping document the PAC did stamp, **When** the clerk refreshes, **Then** it shows Timbrado with its stamp.
 2. **Given** a stamping document the PAC never stamped, **When** the clerk refreshes after the PAC's waiting period, **Then** it is back to Sellado and can be stamped again or reopened.
 3. **Given** a document still in process, **When** the clerk refreshes, **Then** they are told it is still in process and the document is unchanged.
 4. **Given** a cancellation the receiver accepted or that expired, **When** the clerk refreshes, **Then** the document shows Cancelado.
-5. **Given** a cancellation the receiver rejected, **When** the clerk refreshes, **Then** the document is Emitido again, the rejection shows in its history, and Cancel is offered again.
+5. **Given** a cancellation the receiver rejected, **When** the clerk refreshes, **Then** the document is Timbrado again, the rejection shows in its history, and Cancel is offered again.
 6. **Given** a document someone else already resolved, **When** the clerk refreshes, **Then** they are told there is nothing in process and the screen shows the current state.
 
 ---
@@ -217,7 +217,7 @@ On an issued, cancellation-pending or cancelled document, the clerk sees its sta
 
 ## Assumptions
 
-- **State names**: The issued state keeps the label spec 066 already ships ("Timbrado" in Spanish, "Stamped" in English). Wherever this spec or its wireframes say "Emitido" or "issued", they mean that state. The new states are labelled "Timbrando" / "Stamping" and "Cancelación pendiente" / "Cancellation pending".
+- **State names**: The issued state keeps the label spec 066 already ships ("Timbrado" in Spanish, "Stamped" in English). Wherever the wireframes say "Emitido", they mean that state. The new states are labelled "Timbrando" / "Stamping" and "Cancelación pendiente" / "Cancellation pending".
 - **Rights**: Stamp, cancel and refresh need update on fiscal documents (system object 23), which is what the server checks. Fiscal documents have no facility scope.
 - **All document types** can be stamped, cancelled and refreshed here, not only invoices, because the server allows it and because a live payment receipt or credit note blocks its invoice's cancellation. Creating and editing payment receipts (#54) and CFDI credit notes (#56) stays out of scope.
 - **Choosing the substitute** reuses the related-document search from spec 066 (relations 04/07), limited to issued documents of the same issuer and recipient. Its search already accepts a UUID, so a clerk with a UUID in hand can paste it.

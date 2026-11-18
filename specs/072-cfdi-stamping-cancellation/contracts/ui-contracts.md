@@ -29,7 +29,7 @@ The old "stamping is not yet available" text (`fiscalDocumentBannerSealed`) is r
 
 - Shown in `_HeaderFacts` when `stamp != null`. The existing UUID fact is kept.
 - New facts:
-  - `fiscal_document_stamped`: Timbrado, the date and time.
+  - `fiscal_document_stamped`: Fecha de timbrado ("Stamped on"), the date and time.
   - `fiscal_document_sat_certificate`: Certificado SAT.
   - `fiscal_document_provider_rfc`: PAC.
 - A null field shows `emptyValuePlaceholder`.
