@@ -48,8 +48,8 @@ Compared with the invoice detail (C5, C18):
 
 ## C29. Copy invoice lines dialog (FR-004, R1, R10)
 
-- **Entry point**: `showCopyInvoiceLinesDialog(context, creditNote)`. It returns `true` when
-  at least one line was added.
+- **Entry point**: `showCopyInvoiceLinesDialog(context, creditNote)`. It returns the number of lines
+  added, 0 when none (analysis F3).
 - **Key**: `copy_invoice_lines_dialog`, a `ResponsiveDialog`, full-screen on compact.
 - **Loading the invoice**: through `fiscalDocumentDetailProvider(creditedInvoice.documentId)`.
   - `ListStateViews` shows loading, and an error with retry.
@@ -66,8 +66,9 @@ Compared with the invoice detail (C5, C18):
   nothing is checked, any checked row is invalid, or a request is running.
 - **Sending**: `FiscalDocumentActions.copyInvoiceLines` sends the lines in the invoice's
   line order.
-  - All succeed: the dialog closes and the screen shows the SnackBar "{n} partidas
-    agregadas".
+  - All succeed: the dialog closes with the count, and the screen shows the SnackBar "{n}
+    partidas agregadas" when it is above 0. Closing after a partial run returns the count
+    added so far.
   - A refusal: the dialog stays open. The added rows become unchecked and disabled with a
     "Agregada" label. A `FormErrorBanner`, `copy_invoice_lines_refusal`, says "Partida
     {code}: {localized refusal}".

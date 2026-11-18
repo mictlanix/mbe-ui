@@ -32,4 +32,5 @@
 ## Notes
 
 - System object numbers (23, 56) and SAT codes (type 100, relation 01, payment form 99) are domain identifiers the clerks and prior specs use, not implementation details.
+- 2026-11-18 analysis: FR-006, FR-015 and US2 sc. 2 and US4 sc. 3 were narrowed (findings F1, F2).
 - Two server gaps are recorded as assumptions rather than clarifications: the invoice's remaining creditable amount is not exposed before confirm, and copied lines don't record their source invoice line. Either may become an mbe-api follow-up.

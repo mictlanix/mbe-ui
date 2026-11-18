@@ -13,7 +13,7 @@ mbe-api spec 028. The work, in order:
 
 1. **Domain.** `FiscalDocument` gains `isCreditNote`, `canIssueCreditNote`,
    `creditedInvoice` and `needsPaymentForm`. `isEditableDraft` and `canReopen` widen to
-   credit notes (R8).
+   credit notes that relate an invoice (R8).
 2. **Data.** Two repository methods, `createCreditNote` and `copyInvoiceLine`, and two
    actions. The second action sends a multi-line copy one request at a time (R1, R12).
 3. **Invoice detail.** "Emitir nota de crédito" and its confirmation dialog (C25, C26).
@@ -24,7 +24,8 @@ mbe-api spec 028. The work, in order:
    - the header dialog in credit-note mode (C27, C30, C31).
 5. **The copy dialog** (C29).
 6. **Relation link**: on every relation row, for every type (C28, R4).
-7. **Error codes.** Four codes are localized, two texts are made type-neutral, and one
+7. **Error codes and wording.** Four codes are localized, two error texts and the invoice-worded
+   confirm/reopen/remove/empty-lines texts are made type-neutral, and one
    screen branch names the invoice in the exceeds-invoice refusal (R11, C32).
 
 No new route, no navigation change, no new package and no client regeneration: the client at
@@ -72,8 +73,8 @@ f4271b49 already has spec 028's credit-note routes.
 | | Files |
 |---|---|
 | **New source (1)** | `features/invoicing/presentation/copy_invoice_lines_dialog.dart` |
-| **Edited source (≈9)** | `domain/entities/fiscal_document.dart`; `domain/repositories/fiscal_document_repository.dart`; `data/fiscal_document_repository_impl.dart`; `presentation/{fiscal_document_actions, fiscal_document_detail_screen, invoice_action_dialogs, invoice_header_dialog, invoice_line_dialog}.dart`; `core/errors/localize_problem.dart`; both `.arb` files; `specs/058-localized-api-errors/contracts/code-scope.tsv` (4 rows go from `OUT` to `IN`) |
-| **New tests (1)** | `test/widget/features/invoicing/copy_invoice_lines_dialog_test.dart` |
+| **Edited source (11)** | `domain/entities/fiscal_document.dart`; `domain/repositories/fiscal_document_repository.dart`; `data/fiscal_document_repository_impl.dart`; `presentation/{fiscal_document_actions, fiscal_document_detail_screen, invoice_action_dialogs, invoice_header_dialog, invoice_line_dialog}.dart`; `core/errors/localize_problem.dart`; both `.arb` files; `specs/058-localized-api-errors/contracts/code-scope.tsv` (4 rows go from `OUT` to `IN`) |
+| **New tests (2)** | `test/widget/features/invoicing/copy_invoice_lines_dialog_test.dart`, `test/unit/features/invoicing/fiscal_document_credit_note_test.dart` |
 | **Edited tests (≈9)** | `fiscal_document_repository_impl_test`, `fiscal_document_actions_test`, `fiscal_document_fixtures`, `fiscal_document_detail_screen_test`, `invoice_action_dialogs_test`, `invoice_header_dialog_test`, `invoice_line_dialog_test`, `catalog_coverage_test` (177 → 181), `problem_fixtures`; the live test is extended |
 
 ## Constitution Check
@@ -89,7 +90,7 @@ These verdicts are against **v1.15.0**.
 | **III. Contract-driven API** | Pass | Only generated operations are used. **Error text**: the four new reachable codes are localized and flipped to `IN`, and two reused texts are made type-neutral (R11). The exceeds-invoice folio is chosen by branching on `code` and reading `params.remaining`, never `detail`. **Upstream**: nothing blocks this spec. R6 (no remaining-to-credit amount) and R8 (`remove_relation` has no type guard) are recorded as follow-up candidates. |
 | **IV. Deny-by-default RBAC** | Pass | Create needs 23 create; edits need 23 update; a manual product needs 56 create, as the server checks (C33). Each action is absent without its right. The banner's advice shows only with 23 update. |
 | **V. Material 3 / design system** | Pass | Only shared components are used: `ResponsiveDialog`, `DataTableView`, `CompactField`, `ListStateViews`, `FormErrorBanner`, and the existing `FiscalDocumentRefusal` and `InvoiceTotals`. The banner colours come from `ColorScheme`. **Largest text level**: quickstart step 17. |
-| **VI. List and record-surface rules** | Pass | **List**: unchanged. **Surface**: the existing full detail screen. `AppBar.actions` stays empty and every action is in the body's action row. **Delete**: none. Drafts are not deletable, as in 066. |
+| **VI. List and record-surface rules** | Pass | **List**: unchanged. **Surface**: the existing full detail screen. `AppBar.actions` stays empty and every action is in the body's action row. **Delete**: none. Drafts are not deletable, as in 066. **Control band**: the copy dialog's row (checkbox, text, quantity field) is asserted for symmetric padding and a shared baseline (R10b). |
 | **VII. Online-only, server-rendered documents** | Pass | The PDF and XML are still the server's. Every write re-reads the document. |
 | **Quality gates** | Pass | Unit, widget and live tests are listed in R13. `flutter analyze` must be clean. Coverage is enforced by `catalog_coverage_test`. |
 

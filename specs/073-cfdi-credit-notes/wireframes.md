@@ -2,6 +2,10 @@
 
 **Spec**: [spec.md](./spec.md) | **Drawn**: 2026-11-18 | **Fidelity**: low
 
+> **Superseded in part** (research.md, 2026-11-18): the title stays "Nota de crédito #id"
+> without "· Borrador" (R2), and a credit-note draft with a real payment form has **no**
+> "Borrador. Agrega las partidas…" banner (R7). Every other frame still applies.
+
 Drawn from the spec before planning. Layout is indicative, not prescriptive. Every
 dimension, colour and spacing comes from the design tokens (constitution §V).
 

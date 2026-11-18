@@ -55,7 +55,7 @@ On the draft credit note, the clerk picks lines of the related invoice to credit
 **Acceptance Scenarios**:
 
 1. **Given** a draft credit note, **When** the clerk chooses to add lines from the invoice, **Then** they see the related invoice's lines (code, description, quantity, unit price, discount, tax) and can pick one or more, each with a quantity that defaults to the invoice line's.
-2. **Given** a quantity above the invoice line's, **When** the clerk adds or edits that line, **Then** they are told the most it can be, and the line is not saved at that quantity.
+2. **Given** a quantity above the invoice line's, **When** the clerk adds that line, **Then** they are told the most it can be, and the line is not added. **Given** an edit to a quantity above what the invoice billed of that product, **When** the clerk saves it, **Then** they are told the most it can be, and the quantity is not changed.
 3. **Given** a user with the standalone fiscal documents right, **When** they add a product by hand, **Then** it is added under spec 066's manual-line rules and can be renamed, priced and discounted.
 4. **Given** a user without that right, **When** they view the draft, **Then** the hand-added product action is absent, and copying from the invoice is still offered.
 5. **Given** a draft with lines, **When** the clerk edits a line's quantity, price or discount, or removes it, **Then** the line and the totals reflect the change.
@@ -95,7 +95,7 @@ From a credit note, the clerk opens the invoice it reduces. In the Facturas list
 
 1. **Given** a credit note in any state, **When** the clerk opens it, **Then** it shows the related invoice's series, folio and UUID, and opening it shows that invoice.
 2. **Given** the Facturas list filtered by type "Nota de crédito", **When** it loads, **Then** credit notes made in the new MBE and in the legacy system are listed.
-3. **Given** a legacy credit note with no related invoice, **When** the clerk opens it, **Then** it shows no relation, and it is read-only unless it is a draft made in the new MBE.
+3. **Given** a legacy credit note with no related invoice, **When** the clerk opens it, **Then** it shows no relation, and it is read-only in every state.
 
 ---
 
@@ -125,7 +125,7 @@ From a credit note, the clerk opens the invoice it reduces. In the Facturas list
 
 - **FR-004**: Users who can update fiscal documents MUST be able to copy one or more lines of the related invoice into a draft credit note, each at a quantity greater than 0 and no greater than the invoice line's, defaulting to the invoice line's.
 - **FR-005**: Users with the standalone fiscal documents right (system object 56, create) MUST be able to add a product by hand, under spec 066's manual-line rules. The action MUST be absent without that right.
-- **FR-006**: Users who can update fiscal documents MUST be able to edit a draft credit note line's quantity, price, discount and description, and remove it, under spec 066's line rules. A copied line's quantity MUST NOT exceed its invoice line's.
+- **FR-006**: Users who can update fiscal documents MUST be able to edit a draft credit note line's quantity, price, discount and description, and remove it, under spec 066's line rules. When adding, a copied line's quantity MUST NOT exceed its invoice line's (checked in the app and by the server). When editing, the server's limit applies: the largest quantity of that product on the invoice, because the app does not know which invoice line a copied line came from (see Assumptions).
 - **FR-007**: A draft credit note MUST NOT offer adding sales orders, adding or removing relations, or changing the series.
 - **FR-008**: The draft MUST show the credit note's subtotal, taxes and total, computed as spec 066 computes an invoice's.
 
@@ -140,7 +140,7 @@ From a credit note, the clerk opens the invoice it reduces. In the Facturas list
 
 - **FR-013**: A credit note MUST show as "Nota de crédito" wherever a document type appears, and its detail MUST show the related invoice in every state.
 - **FR-014**: Stamping, refresh, cancellation, PDF and XML of a credit note MUST work as spec 072 and spec 066 describe, with no credit-note-specific behaviour.
-- **FR-015**: Only drafts of invoices and credit notes made in the new MBE MUST be editable. Other types stay read-only, as in spec 066.
+- **FR-015**: Only drafts of invoices, and drafts of credit notes that relate an invoice, MUST be editable. A credit note with no related invoice (legacy only) stays read-only in every state, because it has no invoice to copy from and cannot be confirmed. Other types stay read-only, as in spec 066.
 
 **Errors and access**
 

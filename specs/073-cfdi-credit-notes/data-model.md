@@ -8,8 +8,8 @@ This spec adds no new entity. It extends spec 066/072's `FiscalDocument`
 | Getter | Definition | Used by |
 |---|---|---|
 | `isCreditNote` (new) | `summary.typeCode == 100` | detail, header dialog, banner |
-| `isEditableDraft` | `(isInvoice \|\| isCreditNote) && status == draft` | detail edit gates (FR-015) |
-| `canReopen` | `(isInvoice \|\| isCreditNote) && status == sealed` | Reabrir (FR-011) |
+| `isEditableDraft` | `(isInvoice \|\| (isCreditNote && creditedInvoice != null)) && status == draft` | detail edit gates (FR-015) |
+| `canReopen` | `(isInvoice \|\| (isCreditNote && creditedInvoice != null)) && status == sealed` | Reabrir (FR-011) |
 | `canIssueCreditNote` (new) | `isInvoice && status == issued` | "Emitir nota de crédito" (FR-001), plus Create on 23 |
 | `creditedInvoice` (new) | `isCreditNote ? relations.where((r) => r.type == creditNoteOf).firstOrNull : null` | relation link, exceeds refusal (FR-003, FR-012) |
 | `needsPaymentForm` (new) | `isCreditNote && status == draft && paymentForm == 99` | banner (FR-010) |

@@ -109,8 +109,8 @@ sealed banner uses `fiscalDocumentBannerSealedStampOrReopen`, because it can be 
 
 | Getter | Before | After |
 |---|---|---|
-| `isEditableDraft` | invoice ∧ draft | (invoice ∨ credit note) ∧ draft |
-| `canReopen` | invoice ∧ sealed | (invoice ∨ credit note) ∧ sealed |
+| `isEditableDraft` | invoice ∧ draft | (invoice ∨ (credit note ∧ related invoice)) ∧ draft |
+| `canReopen` | invoice ∧ sealed | (invoice ∨ (credit note ∧ related invoice)) ∧ sealed |
 | `canIssueCreditNote` (new) | — | invoice ∧ issued |
 | `creditedInvoice` (new) | — | the first relation of type `creditNoteOf`, on a credit note |
 
@@ -118,6 +118,8 @@ The detail screen narrows several things for credit notes:
 - `canAddOrder` is false.
 - The relations section gets no `onAdd` and no `onRemove`.
 - The header dialog runs in credit-note mode (R9).
+
+**A credit note with no relation** (legacy: 11 on mbe_dev) is not editable or reopenable: the credit-note half of both gates also needs `creditedInvoice != null`. Without that, "Agregar de la factura" has no invoice to load, and the server's confirm (`scalar_one` on the relation) fails. Spec FR-015 was narrowed to match (2026-11-18, analysis F1).
 
 `canIssueCreditNote` also needs Create on 23. The server refuses an invoice with an open
 cancellation too, but that state is `cancellationPending`, not `issued`, so the getter
@@ -160,6 +162,10 @@ product on the invoice (`_check_credited_quantity`), not against the source line
 - `InvoiceLineDialog` stays open on `credit_quantity_exceeds_line` with the `max`, as it
   does today for `quantity_exceeds_invoiceable`.
 
+## R10b. Copy dialog alignment (constitution §VI)
+
+The copy dialog's row puts a checkbox, text cells and a quantity field in one band. That counts as a non-trivial control band, so its widget test asserts symmetric vertical padding and a shared baseline with real geometry (analysis G1).
+
 ## R11. Error codes
 
 Four codes go from `OUT` to `IN` in `specs/058-localized-api-errors/contracts/code-scope.tsv`,
@@ -187,6 +193,7 @@ Notes on the codes:
 - **Rewording**: `apiErrorFiscalDocumentNotDraft` ("Esta factura ya no es borrador…") and
   `apiErrorFiscalDocumentNoLines` ("La factura no tiene partidas.") are reworded to
   "este documento" / "El documento". Their English texts change the same way.
+- **UI texts that say "factura"** and are also shown on credit notes are reworded to neutral wording too: `fiscalDocumentLinesEmpty`, `fiscalDocumentRemoveLineBody`, `fiscalDocumentConfirmTitle`/`Body`, `fiscalDocumentReopenTitle`/`Body`, and `fiscalDocumentConfirmed`/`Reopened`, which gain a `{kind}` placeholder (analysis U1).
 
 ## R12. Repository and actions additions
 
