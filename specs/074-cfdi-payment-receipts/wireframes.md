@@ -2,6 +2,11 @@
 
 **Spec**: [spec.md](./spec.md) | **Drawn**: 2026-11-18 | **Fidelity**: low
 
+> **Superseded in part** (research.md, 2026-11-18): the server refuses a header that lowers the
+> payment below what is assigned (R8), so the "-1,600.00" frame cannot happen; a by-hand draft
+> starts on payment form 01, not empty (R10); and "already has a receipt" offers "Abrir
+> complemento" instead of naming the folio (R9). Every other frame still applies.
+
 Drawn from the spec before planning. Layout is indicative, not prescriptive. Every
 dimension, colour and spacing comes from the design tokens (constitution §V).
 

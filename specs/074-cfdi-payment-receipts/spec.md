@@ -38,7 +38,7 @@ A billing clerk opens a customer payment in Pagos (spec 054) that settled orders
 
 1. **Given** a customer payment and a user who can create fiscal documents, **When** they choose "Emitir complemento de pago", pick a recipient RFC of the payment's customer and confirm, **Then** a draft receipt opens with the payment's date, amount, payment form and reference, a link to that payment, and the proposed paid invoices.
 2. **Given** a payment whose orders have no stamped PPD invoice of that issuer and recipient, **When** the receipt is created, **Then** the draft opens with no paid invoices and says none were found, and the clerk can add them by hand (User Story 3).
-3. **Given** a payment that already has a live receipt, **When** the clerk tries to issue another, **Then** they are told the series and folio of the existing receipt, and no draft is created.
+3. **Given** a payment that already has a live receipt, **When** the clerk tries to issue another, **Then** they are told the payment already has a receipt and can open it, and no draft is created.
 4. **Given** the issuer has no payment receipt series, **When** the clerk issues a receipt, **Then** they are told so, and no draft is created.
 5. **Given** a customer with no recipient RFC, **When** the clerk starts the action, **Then** they are told the customer has no tax data and cannot continue.
 6. **Given** a user who cannot create fiscal documents, **When** they open a customer payment, **Then** the action is absent.
@@ -55,7 +55,7 @@ A billing clerk has to issue a receipt for a payment that was not recorded in th
 
 **Acceptance Scenarios**:
 
-1. **Given** a user who can create fiscal documents, **When** they choose "Nuevo complemento de pago" in Facturas and pick a customer and recipient RFC, **Then** a draft receipt opens with no payment data, no paid invoices and no link to a payment.
+1. **Given** a user who can create fiscal documents, **When** they choose "Nuevo complemento de pago" in Facturas and pick a customer and recipient RFC, **Then** a draft receipt opens with no payment date or amount, payment form 01 (the server's default), no paid invoices and no link to a payment.
 2. **Given** the existing "Nueva factura" action, **When** the clerk uses it, **Then** it still creates an invoice, unchanged.
 
 ---
@@ -93,7 +93,7 @@ The clerk confirms the receipt to seal it and stamps it with spec 072's "Timbrar
 1. **Given** a draft whose amounts paid do not add up to the payment amount, **When** the clerk confirms it, **Then** they are told the amounts must equal the payment amount, and it stays a draft. The draft already shows the difference before confirm.
 2. **Given** a draft with payment form 99 or no payment form, **When** the clerk confirms it, **Then** they are told a receipt needs the actual payment form, and it stays a draft.
 3. **Given** a payment date in the future or before one of the paid invoices' dates, **When** the clerk confirms, **Then** they are told the date must fall between the invoices' dates and today, and it stays a draft.
-4. **Given** a draft with no paid invoices, **When** the clerk confirms it, **Then** it is refused because the amounts paid do not equal the payment amount, and it stays a draft.
+4. **Given** a draft with no paid invoices, or with no payment date or amount, **When** the clerk confirms it, **Then** they are told what is missing, and it stays a draft.
 5. **Given** a valid draft, **When** the clerk confirms it, **Then** it shows Sellado with the next folio of the payment receipt series, and the stored installments and balances.
 6. **Given** a sealed receipt, **When** the clerk reopens it, **Then** it is a draft again and keeps its folio.
 7. **Given** a sealed receipt, **When** the clerk stamps it, **Then** it behaves as spec 072 describes for any document.
@@ -121,7 +121,7 @@ From a receipt, the clerk opens each invoice it pays and the customer payment it
 - **Two drafts for the same invoice.** Drafts reserve nothing. Each one's balance counts only live (sealed or stamped) receipts, so both can look valid; confirm recomputes, and the second confirm is refused if it overpays.
 - **Balances shown on a draft are live.** They are recomputed every time the draft loads, so they can change while the draft is open if another receipt or credit note is sealed for the same invoice. Sealed receipts show the stored values.
 - **A credit note sealed after the receipt was drafted** lowers the invoice's balance. If the amount now exceeds it, confirm is refused with the balance.
-- **The payment amount is lowered below the amounts already assigned.** If the server accepts the header change, the draft shows a negative unassigned amount, and confirm is refused until the amounts match again.
+- **The payment amount is lowered below the amounts already assigned.** The header change is refused (the amounts would exceed the payment); the clerk lowers or removes paid invoices first. So the unassigned amount is never negative.
 - **The customer payment is cancelled or edited after the receipt exists.** The receipt keeps its copied data; the app does not resync it (server behaviour). The clerk can edit a draft by hand.
 - **Legacy-stamped PPD invoices** can be paid by receipts from the new MBE, and legacy receipts count toward installments and balances.
 - **Invoice cancellation.** An invoice with a live receipt cannot be cancelled; spec 072's refusal names the receipts. Cancelling the receipt first (spec 072 flow) frees it.
@@ -139,7 +139,7 @@ From a receipt, the clerk opens each invoice it pays and the customer payment it
 - **FR-001**: Users who can create fiscal documents (system object 23) MUST be able to issue a payment receipt from a customer payment's detail, choosing one of the payment customer's recipient RFCs and confirming. The action MUST be absent for users without that right.
 - **FR-002**: Users who can create fiscal documents MUST be able to create a payment receipt by hand from the Facturas list, choosing a customer and one of their recipient RFCs. The existing new-invoice action MUST stay as it is.
 - **FR-003**: After a receipt is created, the app MUST open the new draft. A receipt created from a payment with no proposed invoices MUST say that none were found.
-- **FR-004**: When the customer payment already has a live receipt, the app MUST name that receipt's series and folio.
+- **FR-004**: When the customer payment already has a live receipt, the app MUST say so and offer to open that receipt.
 
 **Payment data**
 
@@ -166,7 +166,7 @@ From a receipt, the clerk opens each invoice it pays and the customer payment it
 
 **Errors and access**
 
-- **FR-016**: Every refusal from these actions MUST be shown with localized text for its error code, per the constitution: invoice cannot be paid by this receipt; amount above the invoice's balance (with the balance); amounts above the payment amount; amounts not equal to the payment amount at confirm; payment date out of range; payment form required; payment already has a receipt (with series and folio); issuer without a payment receipt series; field not allowed for this type; action not available for this type; and the codes specs 066, 072 and 073 already map, reused.
+- **FR-016**: Every refusal from these actions MUST be shown with localized text for its error code, per the constitution: invoice cannot be paid by this receipt; amount above the invoice's balance (with the balance); amounts above the payment amount; amounts not equal to the payment amount at confirm; payment date out of range; payment form required; payment already has a receipt (with a way to open it); payment of another customer; receipt pays no invoice; receipt missing payment date or amount; invoice already on the receipt; issuer without a payment receipt series; field not allowed for this type; action not available for this type; and the codes specs 066, 072 and 073 already map, reused.
 - **FR-017**: Every action in this spec MUST be absent, never disabled, for users without the right the server checks, and absent in states where it does not apply.
 - **FR-018**: While a request on the receipt is running, the user MUST NOT be able to start a second action on it from this screen.
 - **FR-019**: All user-facing text MUST be in Spanish (with English where the app is localized), with amounts, dates and identifiers formatted by the app's shared formatting.
