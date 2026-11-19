@@ -1,0 +1,27 @@
+{
+  "workflow": "speckit",
+  "specName": "CFDI Payment Receipts (REP)",
+  "branch": "chore/074-mark-complete",
+  "status": "completed",
+  "currentStep": "implement",
+  "history": [
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-19T01:54:52.418Z"
+    }
+  ],
+  "currentTask": null,
+  "concerns": [],
+  "telemetryInstanceId": "c0790724-5da6-4fc1-a11a-fde06f6dfc61",
+  "verified": [
+    {
+      "what": "flutter analyze clean; full suite 6,285 passed, 85 skipped, 7 failed, none from this branch (6 known goldens #209, the POS sales-list screenshot that fails identically without this work) — per PR #286"
+    },
+    {
+      "what": "live test/integration/fiscal_documents_live_test.dart 'Payment receipt against the simulated PAC': 13 of 13 against dev with PAC_PROVIDER=simulated after mbe-api#341 (PPD invoice A5252, receipt CPZUMP13: header, paid invoice, two amount refusals, confirm/reopen/confirm same folio, stamp, has_live_documents on the invoice, cancel both)"
+    }
+  ]
+}
