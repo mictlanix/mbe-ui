@@ -86,6 +86,7 @@ import 'package:mbe_ui/features/sales/data/cash_session_repository_impl.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/sales/data/delivery_itinerary_repository_impl.dart';
 import 'package:mbe_ui/features/sales/data/delivery_order_admin_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/entities/delivery_itinerary.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_itinerary_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/delivery_order_admin_repository.dart';
 import 'package:mbe_ui/features/sales/data/sales_order_repository_impl.dart';
@@ -387,6 +388,20 @@ const _deliveryOrderApprovalReaderUser = User(
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.deliveryOrderApproval, rawValue: 2),
+  ],
+);
+
+/// Holds read on `deliveryItineraries` (87) alone — the gate for spec 075's
+/// `/sales/delivery-itineraries` routes. It is its own privilege: Delivery
+/// Orders (71) read must not open it, and it must not open the orders.
+const _deliveryItinerariesReaderUser = User(
+  userId: 'delivery-itineraries-reader',
+  email: 'delivery-itineraries-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.deliveryItineraries, rawValue: 2),
   ],
 );
 
@@ -926,6 +941,23 @@ void main() {
         limit: any(named: 'limit'),
       ),
     ).thenAnswer((_) async => const {});
+    // 075-delivery-itineraries: the list fetches eagerly; an empty page is
+    // enough to show it opened. A trip is not found.
+    when(
+      () => deliveryItineraryRepository.list(
+        status: any(named: 'status'),
+        dateFrom: any(named: 'dateFrom'),
+        dateTo: any(named: 'dateTo'),
+        vehicleId: any(named: 'vehicleId'),
+        operatorId: any(named: 'operatorId'),
+        warehouseId: any(named: 'warehouseId'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) async => const ItineraryPage(items: [], total: 0));
+    when(
+      () => deliveryItineraryRepository.getById(any()),
+    ).thenThrow(const AppError.notFound());
 
     // 066-invoice-list-editor: the list fetches eagerly; an empty page is
     // enough to show it opened. A document is not found.
@@ -2441,6 +2473,105 @@ void main() {
         shell.navigationShell.currentIndex,
         NavBranch.deliveryOrderApproval,
       );
+    });
+  });
+
+  group('075-delivery-itineraries — /sales/delivery-itineraries gates on '
+      'deliveryItineraries (87) read', () {
+    testWidgets('a user with deliveryItineraries:read reaches the list', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _deliveryItinerariesReaderUser,
+        '/sales/delivery-itineraries',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/sales/delivery-itineraries');
+      expect(
+        find.byKey(const Key('delivery_itineraries_filter_button')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a user without deliveryItineraries:read is redirected home', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/sales/delivery-itineraries',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('deliveryOrders:read alone does not open the list or a trip', (
+      tester,
+    ) async {
+      final list = await pumpAt(
+        tester,
+        _deliveryOrdersReaderUser,
+        '/sales/delivery-itineraries',
+      );
+      expect(list.router.state.uri.path, '/');
+      final trip = await pumpAt(
+        tester,
+        _deliveryOrdersReaderUser,
+        '/sales/delivery-itineraries/58',
+      );
+      expect(trip.router.state.uri.path, '/');
+    });
+
+    testWidgets('deliveryItineraries:read alone does not open an order', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _deliveryItinerariesReaderUser,
+        '/sales/delivery-orders/9',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a trip opens on its own route, and an unknown one is not '
+        'found', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _deliveryItinerariesReaderUser,
+        '/sales/delivery-itineraries/999',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/sales/delivery-itineraries/999');
+      expect(find.byKey(const Key('itinerary_not_found')), findsOneWidget);
+    });
+
+    testWidgets('a non-numeric id shows not found, not an error', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _deliveryItinerariesReaderUser,
+        '/sales/delivery-itineraries/abc',
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/sales/delivery-itineraries/abc');
+      expect(find.byKey(const Key('itinerary_not_found')), findsOneWidget);
+    });
+
+    testWidgets('activates shell branch NavBranch.deliveryItineraries (36)', (
+      tester,
+    ) async {
+      await pumpAt(
+        tester,
+        _deliveryItinerariesReaderUser,
+        '/sales/delivery-itineraries',
+      );
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.deliveryItineraries, 36);
+      expect(shell.navigationShell.currentIndex, NavBranch.deliveryItineraries);
     });
   });
 

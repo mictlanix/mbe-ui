@@ -47,3 +47,8 @@ void setPriceAdjustment1(api.PriceAdjustment1Builder builder, String value) {
 void setQuantity3(api.Quantity3Builder builder, String value) {
   builder.anyOf = AnyOf2<String, num>(values: {0: value});
 }
+
+/// Spec 075: the itinerary line update's `quantity` (`CommitLineUpdate`).
+void setQuantity1(api.Quantity1Builder builder, String value) {
+  builder.anyOf = AnyOf2<String, num>(values: {0: value});
+}

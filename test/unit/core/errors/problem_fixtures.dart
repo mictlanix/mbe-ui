@@ -321,4 +321,30 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.warehousePeriodInTransitLocation: {'warehouse_id': 4},
   api.ErrorCode.warehousePeriodInTransitManaged: {},
   api.ErrorCode.warehousePeriodRequired: {'resource': 'purchase_order'},
+  // Spec 075 (delivery itineraries).
+  api.ErrorCode.deliveryOrderPeriodNotInPreparation: {'status': 2},
+  api.ErrorCode.deliveryOrderPeriodPickupNotLoadable: {},
+  api.ErrorCode.deliveryOrderLinePeriodNothingToLoad: {},
+  api.ErrorCode.deliveryOrderLinePeriodQuantityUnavailable: {
+    'available': '4',
+    'requested': '6',
+  },
+  api.ErrorCode.itineraryPeriodCancelled: {},
+  api.ErrorCode.itineraryPeriodLinesOvercommitted: {},
+  api.ErrorCode.itineraryPeriodNotDeparted: {'status': 0},
+  api.ErrorCode.itineraryPeriodNotOpen: {'status': 1},
+  api.ErrorCode.itineraryPeriodNothingCommitted: {},
+  api.ErrorCode.itineraryPeriodStopAlreadyResolved: {},
+  api.ErrorCode.itineraryPeriodStopDeliveredExceedsSent: {
+    'line_id': 7,
+    'sent': '5',
+    'delivered': '6',
+  },
+  api.ErrorCode.itineraryPeriodStopLinesIncomplete: {},
+  api.ErrorCode.itineraryPeriodStopLinesMalformed: {},
+  api.ErrorCode.itineraryPeriodStopShortfallNeedsReason: {'line_id': 7},
+  api.ErrorCode.vehiclePeriodOpenItineraryExists: {
+    'vehicle_id': 3,
+    'itinerary_id': 58,
+  },
 };

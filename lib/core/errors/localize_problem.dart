@@ -205,6 +205,21 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.warehousePeriodInTransitLocation,
   api.ErrorCode.warehousePeriodInTransitManaged,
   api.ErrorCode.warehousePeriodRequired,
+  api.ErrorCode.deliveryOrderPeriodNotInPreparation,
+  api.ErrorCode.deliveryOrderPeriodPickupNotLoadable,
+  api.ErrorCode.deliveryOrderLinePeriodNothingToLoad,
+  api.ErrorCode.deliveryOrderLinePeriodQuantityUnavailable,
+  api.ErrorCode.itineraryPeriodCancelled,
+  api.ErrorCode.itineraryPeriodLinesOvercommitted,
+  api.ErrorCode.itineraryPeriodNotDeparted,
+  api.ErrorCode.itineraryPeriodNotOpen,
+  api.ErrorCode.itineraryPeriodNothingCommitted,
+  api.ErrorCode.itineraryPeriodStopAlreadyResolved,
+  api.ErrorCode.itineraryPeriodStopDeliveredExceedsSent,
+  api.ErrorCode.itineraryPeriodStopLinesIncomplete,
+  api.ErrorCode.itineraryPeriodStopLinesMalformed,
+  api.ErrorCode.itineraryPeriodStopShortfallNeedsReason,
+  api.ErrorCode.vehiclePeriodOpenItineraryExists,
 };
 
 /// The validation `type`s [localizeValidationType] renders.
@@ -362,6 +377,59 @@ String? localizeProblem(
       l10n.apiErrorDeliveryOrderSalesOrderUnpaid,
     api.ErrorCode.deliveryOrderPeriodUnknownWarehouse =>
       l10n.apiErrorDeliveryOrderUnknownWarehouse,
+    api.ErrorCode.deliveryOrderPeriodNotInPreparation =>
+      l10n.apiErrorDeliveryOrderNotInPreparation,
+    api.ErrorCode.deliveryOrderPeriodPickupNotLoadable =>
+      l10n.apiErrorDeliveryOrderPickupNotLoadable,
+    api.ErrorCode.deliveryOrderLinePeriodNothingToLoad =>
+      l10n.apiErrorDeliveryOrderLineNothingToLoad,
+    api.ErrorCode.deliveryOrderLinePeriodQuantityUnavailable => _ap2(
+      _quantity(problem, 'requested', fmt),
+      _quantity(problem, 'available', fmt),
+      l10n.apiErrorDeliveryOrderLineQuantityUnavailable,
+    ),
+    api.ErrorCode.itineraryPeriodCancelled => l10n.apiErrorItineraryCancelled,
+    // The refusal lists delivery-order line ids, not product names, so they
+    // show as the numbers the server sent (spec 075 contracts/error-messages).
+    api.ErrorCode.itineraryPeriodLinesOvercommitted => _withItems(
+      problem,
+      l10n,
+      fmt,
+      l10n.apiErrorItineraryLinesOvercommitted,
+    ),
+    api.ErrorCode.itineraryPeriodNotDeparted =>
+      l10n.apiErrorItineraryNotDeparted,
+    api.ErrorCode.itineraryPeriodNotOpen => l10n.apiErrorItineraryNotOpen,
+    api.ErrorCode.itineraryPeriodNothingCommitted =>
+      l10n.apiErrorItineraryNothingCommitted,
+    api.ErrorCode.itineraryPeriodStopAlreadyResolved =>
+      l10n.apiErrorItineraryStopAlreadyResolved,
+    // simplified: the stop's lines are named by number ("Partida 7"), not by
+    // product; resolving the name needs a lookup `localizeProblem` doesn't
+    // take. The close dialog validates both cases first, so a server refusal
+    // here is rare. Add a lookup parameter if it turns out to matter.
+    api.ErrorCode.itineraryPeriodStopDeliveredExceedsSent => _ap3(
+      problem.intParam('line_id'),
+      _quantity(problem, 'sent', fmt),
+      _quantity(problem, 'delivered', fmt),
+      (line, sent, delivered) => l10n.apiErrorItineraryStopDeliveredExceedsSent(
+        '$line',
+        sent,
+        delivered,
+      ),
+    ),
+    api.ErrorCode.itineraryPeriodStopLinesIncomplete =>
+      l10n.apiErrorItineraryStopLinesIncomplete,
+    api.ErrorCode.itineraryPeriodStopLinesMalformed =>
+      l10n.apiErrorItineraryStopLinesMalformed,
+    api.ErrorCode.itineraryPeriodStopShortfallNeedsReason => _ap1(
+      problem.intParam('line_id'),
+      (line) => l10n.apiErrorItineraryStopShortfallNeedsReason('$line'),
+    ),
+    api.ErrorCode.vehiclePeriodOpenItineraryExists => _ap1(
+      problem.intParam('itinerary_id'),
+      (id) => l10n.apiErrorVehicleOpenItineraryExists('$id'),
+    ),
     api.ErrorCode.documentPeriodNotEditable => l10n.apiErrorDocumentNotEditable,
     api.ErrorCode.emailPeriodNotConfigured => l10n.apiErrorEmailNotConfigured,
     api.ErrorCode.emailPeriodSendFailed => l10n.apiErrorEmailSendFailed,
@@ -799,6 +867,8 @@ String resourceNoun(String? resource, AppLocalizations l10n, {int count = 1}) =>
       'customer_payment' => l10n.apiResourceCustomerPayment(count),
       'customer_refund' => l10n.apiResourceCustomerRefund(count),
       'delivery_itinerary' => l10n.apiResourceDeliveryItinerary(count),
+      'delivery_itinerary_line' => l10n.apiResourceDeliveryItineraryLine(count),
+      'delivery_itinerary_stop' => l10n.apiResourceDeliveryItineraryStop(count),
       'delivery_order' => l10n.apiResourceDeliveryOrder(count),
       'delivery_order_line' => l10n.apiResourceDeliveryOrderLine(count),
       'employee' => l10n.apiResourceEmployee(count),
@@ -861,6 +931,8 @@ String resourceGender(String? resource, AppLocalizations l10n) =>
       'customer_payment' => l10n.apiResourceGenderCustomerPayment,
       'customer_refund' => l10n.apiResourceGenderCustomerRefund,
       'delivery_itinerary' => l10n.apiResourceGenderDeliveryItinerary,
+      'delivery_itinerary_line' => l10n.apiResourceGenderDeliveryItineraryLine,
+      'delivery_itinerary_stop' => l10n.apiResourceGenderDeliveryItineraryStop,
       'delivery_order' => l10n.apiResourceGenderDeliveryOrder,
       'delivery_order_line' => l10n.apiResourceGenderDeliveryOrderLine,
       'employee' => l10n.apiResourceGenderEmployee,
@@ -1010,6 +1082,9 @@ String? _ap1<A>(A? a, String Function(A) f) => a == null ? null : f(a);
 
 String? _ap2<A, B>(A? a, B? b, String Function(A, B) f) =>
     a == null || b == null ? null : f(a, b);
+
+String? _ap3<A, B, C>(A? a, B? b, C? c, String Function(A, B, C) f) =>
+    a == null || b == null || c == null ? null : f(a, b, c);
 
 /// `inventory_transfer.over_received`: the product and the two quantities.
 String? _overReceived(

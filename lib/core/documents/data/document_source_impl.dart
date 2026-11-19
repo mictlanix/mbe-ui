@@ -22,7 +22,9 @@ final documentSourceProvider = Provider<DocumentSource>((ref) {
 /// the payment ticket mbe-api#272 added (spec 055 research R4), plus the refund
 /// receipt mbe-api#287 added (spec 057 research R10), plus the delivery order
 /// ticket and Letter document mbe-api spec 026 added (spec 064 research R1),
-/// plus the fiscal document PDF mbe-api spec 020 added (spec 066 research R9).
+/// plus the fiscal document PDF mbe-api spec 020 added (spec 066 research R9),
+/// plus the itinerary ticket and delivery notes mbe-api spec 026 added (spec
+/// 075 research R11).
 ///
 /// A PDF has no DTO, so there is no mapping: the bytes are returned exactly as
 /// the server sent them (FR-020). The generated methods already ask dio for
@@ -36,7 +38,8 @@ class DocumentSourceImpl implements DocumentSource {
       _customerPayments = api.CustomerPaymentsApi(dio, appSerializers),
       _customerRefunds = api.CustomerRefundsApi(dio, appSerializers),
       _deliveryOrders = api.DeliveryOrdersApi(dio, appSerializers),
-      _fiscalDocuments = api.FiscalDocumentsApi(dio, appSerializers);
+      _fiscalDocuments = api.FiscalDocumentsApi(dio, appSerializers),
+      _itineraries = api.DeliveryItinerariesApi(dio, appSerializers);
 
   final api.SalesOrdersApi _salesOrders;
   final api.CashSessionsApi _cashSessions;
@@ -45,6 +48,7 @@ class DocumentSourceImpl implements DocumentSource {
   final api.CustomerRefundsApi _customerRefunds;
   final api.DeliveryOrdersApi _deliveryOrders;
   final api.FiscalDocumentsApi _fiscalDocuments;
+  final api.DeliveryItinerariesApi _itineraries;
 
   @override
   Future<RenderedDocument> fetch(DocumentRef ref) async {
@@ -95,6 +99,16 @@ class DocumentSourceImpl implements DocumentSource {
           _fiscalDocuments
               .printFiscalDocumentApiV1FiscalDocumentsFiscalDocumentIdPdfGet(
                 fiscalDocumentId: ref.recordId,
+              ),
+        DocumentKind.itineraryTicket =>
+          _itineraries
+              .printItineraryTicketApiV1DeliveryItinerariesItineraryIdTicketGet(
+                itineraryId: ref.recordId,
+              ),
+        DocumentKind.itineraryDeliveryNotes =>
+          _itineraries
+              .printDeliveryNotesApiV1DeliveryItinerariesItineraryIdDeliveryNotesGet(
+                itineraryId: ref.recordId,
               ),
       };
 

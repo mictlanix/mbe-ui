@@ -4,6 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:mbe_api_client/src/model/shortfall_reason.dart';
+import 'package:mbe_api_client/src/model/sat_unit_of_measurement_response.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -14,6 +15,10 @@ part 'itinerary_line_response.g.dart';
 /// Properties:
 /// * [deliveriesItineraryDetailId]
 /// * [deliveryOrderDetail]
+/// * [deliveryOrder]
+/// * [productCode]
+/// * [productName]
+/// * [unitOfMeasurement]
 /// * [committedQuantity]
 /// * [sentQuantity]
 /// * [deliveredQuantity]
@@ -28,6 +33,18 @@ abstract class ItineraryLineResponse
 
   @BuiltValueField(wireName: r'delivery_order_detail')
   int get deliveryOrderDetail;
+
+  @BuiltValueField(wireName: r'delivery_order')
+  int get deliveryOrder;
+
+  @BuiltValueField(wireName: r'product_code')
+  String get productCode;
+
+  @BuiltValueField(wireName: r'product_name')
+  String get productName;
+
+  @BuiltValueField(wireName: r'unit_of_measurement')
+  SatUnitOfMeasurementResponse? get unitOfMeasurement;
 
   @BuiltValueField(wireName: r'committed_quantity')
   String get committedQuantity;
@@ -88,6 +105,28 @@ class _$ItineraryLineResponseSerializer
       object.deliveryOrderDetail,
       specifiedType: const FullType(int),
     );
+    yield r'delivery_order';
+    yield serializers.serialize(
+      object.deliveryOrder,
+      specifiedType: const FullType(int),
+    );
+    yield r'product_code';
+    yield serializers.serialize(
+      object.productCode,
+      specifiedType: const FullType(String),
+    );
+    yield r'product_name';
+    yield serializers.serialize(
+      object.productName,
+      specifiedType: const FullType(String),
+    );
+    if (object.unitOfMeasurement != null) {
+      yield r'unit_of_measurement';
+      yield serializers.serialize(
+        object.unitOfMeasurement,
+        specifiedType: const FullType.nullable(SatUnitOfMeasurementResponse),
+      );
+    }
     yield r'committed_quantity';
     yield serializers.serialize(
       object.committedQuantity,
@@ -160,6 +199,42 @@ class _$ItineraryLineResponseSerializer
               serializers.deserialize(value, specifiedType: const FullType(int))
                   as int;
           result.deliveryOrderDetail = valueDes;
+          break;
+        case r'delivery_order':
+          final valueDes =
+              serializers.deserialize(value, specifiedType: const FullType(int))
+                  as int;
+          result.deliveryOrder = valueDes;
+          break;
+        case r'product_code':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
+          result.productCode = valueDes;
+          break;
+        case r'product_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType(String),
+                  )
+                  as String;
+          result.productName = valueDes;
+          break;
+        case r'unit_of_measurement':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(
+                      SatUnitOfMeasurementResponse,
+                    ),
+                  )
+                  as SatUnitOfMeasurementResponse?;
+          if (valueDes == null) continue;
+          result.unitOfMeasurement.replace(valueDes);
           break;
         case r'committed_quantity':
           final valueDes =

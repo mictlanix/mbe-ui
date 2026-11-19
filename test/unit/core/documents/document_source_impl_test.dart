@@ -3,6 +3,8 @@ import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mbe_ui/core/access/access_right.dart';
+import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/documents/data/document_source_impl.dart';
 import 'package:mbe_ui/core/documents/domain/document_kind.dart';
 import 'package:mbe_ui/core/documents/domain/document_ref.dart';
@@ -118,6 +120,80 @@ void main() {
         () => source.fetch(_ref(DocumentKind.deliveryTicket, 42)),
         throwsA(isA<ServerError>()),
       );
+    });
+
+    test('itinerary documents use their routes (spec 075)', () async {
+      final paths = <String>[];
+      final source = _sourceWith((options) async {
+        paths.add(options.path);
+        return _pdfResponse(_pdf([1]), filename: 'x.pdf');
+      });
+
+      await source.fetch(_ref(DocumentKind.itineraryTicket, 58));
+      await source.fetch(_ref(DocumentKind.itineraryDeliveryNotes, 58));
+
+      expect(paths, [
+        '/api/v1/delivery-itineraries/58/ticket',
+        '/api/v1/delivery-itineraries/58/delivery-notes',
+      ]);
+    });
+
+    test(
+      'itinerary documents take the server\'s name, else fall back',
+      () async {
+        var withHeader = true;
+        final source = _sourceWith(
+          (options) async => withHeader
+              ? _pdfResponse(_pdf([1]), filename: 'itinerario-00000058.pdf')
+              : _pdfResponse(_pdf([1])),
+        );
+
+        expect(
+          (await source.fetch(_ref(DocumentKind.itineraryTicket, 58))).filename,
+          'itinerario-00000058.pdf',
+        );
+        withHeader = false;
+        expect(
+          (await source.fetch(_ref(DocumentKind.itineraryTicket, 58))).filename,
+          'itinerario-58.pdf',
+        );
+        expect(
+          (await source.fetch(
+            _ref(DocumentKind.itineraryDeliveryNotes, 58),
+          )).filename,
+          'notas-entrega-58.pdf',
+        );
+      },
+    );
+
+    test('an itinerary document is gated by Delivery Itineraries read', () {
+      for (final kind in [
+        DocumentKind.itineraryTicket,
+        DocumentKind.itineraryDeliveryNotes,
+      ]) {
+        expect(kind.gateObject, SystemObject.deliveryItineraries);
+        expect(kind.gateRight, AccessRight.read);
+      }
+    });
+
+    test('an itinerary document that is not a PDF is a ServerError', () async {
+      final source = _sourceWith(
+        (options) async => ResponseBody.fromBytes(
+          Uint8List.fromList(utf8.encode('<html>login</html>')),
+          200,
+          headers: _pdfHeaders(),
+        ),
+      );
+
+      for (final kind in [
+        DocumentKind.itineraryTicket,
+        DocumentKind.itineraryDeliveryNotes,
+      ]) {
+        await expectLater(
+          () => source.fetch(_ref(kind, 58)),
+          throwsA(isA<ServerError>()),
+        );
+      }
     });
 
     test('a fiscal document PDF uses its route, the server\'s name and a '

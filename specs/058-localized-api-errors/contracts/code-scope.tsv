@@ -51,9 +51,9 @@ code	delivery_order.no_lines_from_warehouse	422	warehouse_id: int	IN
 code	delivery_order.not_approved	409	status: enum:DeliveryOrderStatus	IN		
 code	delivery_order.not_editable	409	status: enum:DeliveryOrderStatus	IN	DELETE /delivery-orders/{}/lines/{}; POST /delivery-orders/{}/confirm; POST /delivery-orders/{}/lines; PUT /delivery-orders/{}	reachable from 6 UI route(s)
 code	delivery_order.not_failed	409	status: enum:DeliveryOrderStatus	IN	POST /delivery-orders/{}/requeue	reachable from the delivery order detail screen (spec 061)
-code	delivery_order.not_in_preparation	409	status: enum:DeliveryOrderStatus	OUT		
+code	delivery_order.not_in_preparation	409	status: enum:DeliveryOrderStatus	IN	POST /delivery-itineraries/{}/stops	reachable from the Itinerarios screens (spec 075)
 code	delivery_order.not_pending_approval	409	status: enum:DeliveryOrderStatus, action: str (`approve` or `reject`)	IN	POST /delivery-orders/approval/{}/approve; POST /delivery-orders/approval/{}/reject	reachable from the delivery order approval queue and detail screen (spec 062)
-code	delivery_order.pickup_not_loadable	409	—	OUT		
+code	delivery_order.pickup_not_loadable	409	—	IN	POST /delivery-itineraries/{}/stops	reachable from the Itinerarios screens (spec 075)
 code	delivery_order.proof_incomplete	422	—	IN	POST /delivery-orders/{}/pickup	reachable from the delivery order detail screen (spec 061)
 code	delivery_order.quantity_exceeds_remaining	422	sales_order_line_id: int, remaining: decimal, requested: decimal	IN	POST /delivery-orders; POST /delivery-orders/{}/lines	reachable from 3 UI route(s)
 code	delivery_order.reason_required	422	to: enum:DeliveryOrderStatus	IN	POST /delivery-orders/{}/cancel; POST /delivery-orders/approval/{}/reject	reachable from 1 UI route(s)
@@ -61,8 +61,8 @@ code	delivery_order.sales_order_fully_delivered	409	—	IN	POST /delivery-orders
 code	delivery_order.sales_order_not_deliverable	409	—	IN	POST /delivery-orders	reachable from 1 UI route(s)
 code	delivery_order.sales_order_unpaid	422	—	IN	POST /delivery-orders	reachable from 1 UI route(s)
 code	delivery_order.unknown_warehouse	422	warehouse_id: int	IN		
-code	delivery_order_line.nothing_to_load	422	—	OUT		
-code	delivery_order_line.quantity_unavailable	422	available: decimal, requested: decimal	OUT		
+code	delivery_order_line.nothing_to_load	422	—	IN	POST /delivery-itineraries/{}/stops/{}/lines	reachable from the Itinerarios screens (spec 075)
+code	delivery_order_line.quantity_unavailable	422	available: decimal, requested: decimal	IN	POST /delivery-itineraries/{}/stops/{}/lines; PUT /delivery-itineraries/{}/stops/{}/lines/{}	reachable from the Itinerarios screens (spec 075)
 code	document.not_editable	409	status: enum:DocumentStatus	IN	DELETE /sales-orders/{}/lines/{}; DELETE /sales-quotes/{}/lines/{}	reachable from 11 UI route(s)
 code	email.contact_no_address	422	contact_id: int	OUT		
 code	email.contact_not_of_party	422	contact_id: int	OUT		
@@ -149,16 +149,16 @@ code	inventory_transfer.line_repeated	422	line_id: int	IN	POST /inventory-transf
 code	inventory_transfer.not_in_transit	409	—	IN	POST /inventory-transfers/{}/receive	reachable from the Traspasos screens (spec 069)
 code	inventory_transfer.over_received	409	product_code: str, received: decimal, outstanding: decimal	IN	POST /inventory-transfers/{}/receive	reachable from the Traspasos screens (spec 069)
 code	inventory_transfer.same_warehouse	422	—	IN	POST /inventory-transfers; PUT /inventory-transfers/{}	reachable from the Traspasos screens (spec 069)
-code	itinerary.cancelled	409	—	OUT		
-code	itinerary.lines_overcommitted	422	— (dict `detail` kept: message, lines)	OUT		
-code	itinerary.not_departed	409	status: enum:ItineraryStatus	OUT		
-code	itinerary.not_open	409	status: enum:ItineraryStatus	OUT		
-code	itinerary.nothing_committed	409	—	OUT		
-code	itinerary.stop_already_resolved	409	—	OUT		
-code	itinerary.stop_delivered_exceeds_sent	422	line_id: int, sent: decimal, delivered: decimal	OUT		
-code	itinerary.stop_lines_incomplete	422	—	OUT		
-code	itinerary.stop_lines_malformed	422	—	OUT		
-code	itinerary.stop_shortfall_needs_reason	422	line_id: int	OUT		
+code	itinerary.cancelled	409	—	IN	GET /delivery-itineraries/{}/ticket	reachable from the Itinerarios screens (spec 075)
+code	itinerary.lines_overcommitted	422	— (dict `detail` kept: message, lines)	IN	POST /delivery-itineraries/{}/depart	reachable from the Itinerarios screens (spec 075)
+code	itinerary.not_departed	409	status: enum:ItineraryStatus	IN	POST /delivery-itineraries/{}/stops/{}/close; GET /delivery-itineraries/{}/ticket	reachable from the Itinerarios screens (spec 075)
+code	itinerary.not_open	409	status: enum:ItineraryStatus	IN	PUT /delivery-itineraries/{}; POST /delivery-itineraries/{}/stops	reachable from the Itinerarios screens (spec 075)
+code	itinerary.nothing_committed	409	—	IN	POST /delivery-itineraries/{}/depart	reachable from the Itinerarios screens (spec 075)
+code	itinerary.stop_already_resolved	409	—	IN	POST /delivery-itineraries/{}/stops/{}/close	reachable from the Itinerarios screens (spec 075)
+code	itinerary.stop_delivered_exceeds_sent	422	line_id: int, sent: decimal, delivered: decimal	IN	POST /delivery-itineraries/{}/stops/{}/close	reachable from the Itinerarios screens (spec 075)
+code	itinerary.stop_lines_incomplete	422	—	IN	POST /delivery-itineraries/{}/stops/{}/close	reachable from the Itinerarios screens (spec 075)
+code	itinerary.stop_lines_malformed	422	—	IN	POST /delivery-itineraries/{}/stops/{}/close	reachable from the Itinerarios screens (spec 075)
+code	itinerary.stop_shortfall_needs_reason	422	line_id: int	IN	POST /delivery-itineraries/{}/stops/{}/close	reachable from the Itinerarios screens (spec 075)
 code	kardex.range_reversed	422	—	IN	GET /kardex	reachable from the Kardex screen (spec 071)
 code	kardex.range_too_long	422	max_days: int	IN	GET /kardex	reachable from the Kardex screen (spec 071)
 code	lock.busy	409	resource: str (`warehouse`, `facility` or `sales_order`)	IN	POST /customer-payments; POST /customer-refunds/{}/confirm; POST /delivery-orders/{}/confirm	reachable from 5 UI route(s)
@@ -258,7 +258,7 @@ code	user.no_cash_drawer	422	—	IN	POST /cash-sessions	reachable from 1 UI rout
 code	user.no_facility	422	—	IN	POST /sales-orders; POST /sales-quotes	reachable from 2 UI route(s)
 code	user.no_point_of_sale	422	—	IN	POST /sales-orders; POST /sales-quotes/{}/convert	reachable from 2 UI route(s)
 code	user_profile.not_active	409	profile_id: int	IN	POST /user-profiles/{}/apply/{}; POST /users	reachable from 2 UI route(s)
-code	vehicle.open_itinerary_exists	409	vehicle_id: int, itinerary_id: int	OUT		
+code	vehicle.open_itinerary_exists	409	vehicle_id: int, itinerary_id: int	IN	POST /delivery-itineraries	reachable from the Itinerarios screens (spec 075)
 code	warehouse.in_transit_location	422	warehouse_id: int	IN	POST /sales-orders/{}/lines; PUT /sales-orders/{}/lines/{}	reachable from 2 UI route(s)
 code	warehouse.in_transit_managed	403	—	IN	DELETE /warehouses/{}; GET /warehouses/{}	reachable from 3 UI route(s)
 code	warehouse.required	422	resource: str (`purchase_order`, `purchase_request` or `customer_refund`)	IN	POST /customer-refunds/{}/confirm	reachable from 1 UI route(s)
@@ -350,6 +350,9 @@ resource	customer_refund		resource.still_referenced (references[].resource)	IN	D
 resource	customer_refund_line		resource.still_referenced (references[].resource)	IN	DELETE /facilities/{}; DELETE /products/{}	blocker name, computed from FK metadata of the deleted model
 resource	customer_taxpayer		resource.still_referenced (references[].resource)	IN	DELETE /customers/{}; DELETE /taxpayer-recipients/{}	blocker name, computed from FK metadata of the deleted model
 resource	delivery_itinerary		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}; DELETE /facilities/{}	blocker name, computed from FK metadata of the deleted model
+resource	delivery_itinerary		resource.not_found	IN	GET /delivery-itineraries/{}; POST /delivery-itineraries/{}/depart	
+resource	delivery_itinerary_line		resource.not_found	IN	PUT /delivery-itineraries/{}/stops/{}/lines/{}; DELETE /delivery-itineraries/{}/stops/{}/lines/{}	
+resource	delivery_itinerary_stop		resource.not_found	IN	DELETE /delivery-itineraries/{}/stops/{}; POST /delivery-itineraries/{}/stops/{}/close	
 resource	delivery_order		resource.still_referenced (references[].resource)	IN	DELETE /customers/{}; DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
 resource	delivery_order_event		resource.still_referenced (references[].resource)	IN	DELETE /employees/{}	blocker name, computed from FK metadata of the deleted model
 resource	delivery_order_line		resource.still_referenced (references[].resource)	IN	DELETE /facilities/{}; DELETE /products/{}	blocker name, computed from FK metadata of the deleted model

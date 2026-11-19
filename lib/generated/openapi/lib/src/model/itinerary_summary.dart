@@ -16,8 +16,11 @@ part 'itinerary_summary.g.dart';
 /// * [deliveriesItineraryId]
 /// * [date]
 /// * [vehicle]
+/// * [vehicleName]
 /// * [vehicleOperator]
+/// * [vehicleOperatorName]
 /// * [warehouse]
+/// * [warehouseName]
 /// * [status]
 /// * [departureTime] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
 /// * [returnTime] - Local wall-clock time in America/Mexico_City, with no UTC offset. A value sent with an offset is converted to America/Mexico_City; a value without one is taken as already local.
@@ -33,11 +36,20 @@ abstract class ItinerarySummary
   @BuiltValueField(wireName: r'vehicle')
   int? get vehicle;
 
+  @BuiltValueField(wireName: r'vehicle_name')
+  String? get vehicleName;
+
   @BuiltValueField(wireName: r'vehicle_operator')
   int? get vehicleOperator;
 
+  @BuiltValueField(wireName: r'vehicle_operator_name')
+  String? get vehicleOperatorName;
+
   @BuiltValueField(wireName: r'warehouse')
   int? get warehouse;
+
+  @BuiltValueField(wireName: r'warehouse_name')
+  String? get warehouseName;
 
   @BuiltValueField(wireName: r'status')
   ItineraryStatus get status;
@@ -94,6 +106,13 @@ class _$ItinerarySummarySerializer
             object.vehicle,
             specifiedType: const FullType.nullable(int),
           );
+    if (object.vehicleName != null) {
+      yield r'vehicle_name';
+      yield serializers.serialize(
+        object.vehicleName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'vehicle_operator';
     yield object.vehicleOperator == null
         ? null
@@ -101,6 +120,13 @@ class _$ItinerarySummarySerializer
             object.vehicleOperator,
             specifiedType: const FullType.nullable(int),
           );
+    if (object.vehicleOperatorName != null) {
+      yield r'vehicle_operator_name';
+      yield serializers.serialize(
+        object.vehicleOperatorName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'warehouse';
     yield object.warehouse == null
         ? null
@@ -108,6 +134,13 @@ class _$ItinerarySummarySerializer
             object.warehouse,
             specifiedType: const FullType.nullable(int),
           );
+    if (object.warehouseName != null) {
+      yield r'warehouse_name';
+      yield serializers.serialize(
+        object.warehouseName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     yield r'status';
     yield serializers.serialize(
       object.status,
@@ -179,6 +212,16 @@ class _$ItinerarySummarySerializer
           if (valueDes == null) continue;
           result.vehicle = valueDes;
           break;
+        case r'vehicle_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.vehicleName = valueDes;
+          break;
         case r'vehicle_operator':
           final valueDes =
               serializers.deserialize(
@@ -189,6 +232,16 @@ class _$ItinerarySummarySerializer
           if (valueDes == null) continue;
           result.vehicleOperator = valueDes;
           break;
+        case r'vehicle_operator_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.vehicleOperatorName = valueDes;
+          break;
         case r'warehouse':
           final valueDes =
               serializers.deserialize(
@@ -198,6 +251,16 @@ class _$ItinerarySummarySerializer
                   as int?;
           if (valueDes == null) continue;
           result.warehouse = valueDes;
+          break;
+        case r'warehouse_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.warehouseName = valueDes;
           break;
         case r'status':
           final valueDes =
