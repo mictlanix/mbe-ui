@@ -101,24 +101,6 @@ void main() {
             () => repository.updateHeader(_id, comment: 'n'),
           ).thenAnswer((_) => answer()),
         ),
-        'setLines': (
-          act: (a) => a.setLines(_id, batch),
-          stub: (answer) => when(
-            () => repository.setLines(_id, batch),
-          ).thenAnswer((_) => answer()),
-        ),
-        'updateLine': (
-          act: (a) => a.updateLine(_id, 1200, quantity: Decimal.ten),
-          stub: (answer) => when(
-            () => repository.updateLine(_id, 1200, quantity: Decimal.ten),
-          ).thenAnswer((_) => answer()),
-        ),
-        'removeLine': (
-          act: (a) => a.removeLine(_id, 1200),
-          stub: (answer) => when(
-            () => repository.removeLine(_id, 1200),
-          ).thenAnswer((_) => answer()),
-        ),
         'confirm': (
           act: (a) async =>
               (await a.confirm(_id, includeUncounted: false)).error,
@@ -195,6 +177,127 @@ void main() {
           );
         });
       }
+    });
+  }
+
+  /// The line writes (mbe-api#333): each answers only what it changed,
+  /// which is merged into the count on screen ([aCount]: line 1200 at 8).
+  final lineCases =
+      <
+        String,
+        ({
+          Future<AppError?> Function(InventoryCountActions a) act,
+          void Function(Future<InventoryCountLinesChange> Function() answer)
+          stub,
+          InventoryCountLinesChange change,
+          List<InventoryCountLine> merged,
+        })
+      >{
+        'setLines': (
+          act: (a) => a.setLines(_id, batch),
+          stub: (answer) => when(
+            () => repository.setLines(_id, batch),
+          ).thenAnswer((_) => answer()),
+          change: aLinesChange(
+            lines: [aCountLine(id: 1201, productId: 8, productCode: 'B-200')],
+            lineCount: 2,
+          ),
+          merged: [
+            aCountLine(),
+            aCountLine(id: 1201, productId: 8, productCode: 'B-200'),
+          ],
+        ),
+        'updateLine': (
+          act: (a) => a.updateLine(_id, 1200, quantity: Decimal.ten),
+          stub: (answer) => when(
+            () => repository.updateLine(_id, 1200, quantity: Decimal.ten),
+          ).thenAnswer((_) => answer()),
+          change: aLinesChange(lines: [aCountLine(quantity: '10')]),
+          merged: [aCountLine(quantity: '10')],
+        ),
+        'removeLine': (
+          act: (a) => a.removeLine(_id, 1200),
+          stub: (answer) => when(
+            () => repository.removeLine(_id, 1200),
+          ).thenAnswer((_) => answer()),
+          change: aLinesChange(lineCount: 0, removedLineId: 1200),
+          merged: const [],
+        ),
+      };
+
+  for (final MapEntry(key: name, value: c) in lineCases.entries) {
+    group(name, () {
+      test('on success merges the changed lines into the count and '
+          'refreshes the list', () async {
+        c.stub(() async => c.change);
+
+        expect(await c.act(actions()), isNull);
+        await settle();
+
+        final count = container.read(detail).value!;
+        expect(count.lines, c.merged);
+        expect(count.updaterId, 6);
+        expect(count.updatedAt, DateTime(2026, 11, 17, 9, 45));
+        expect(_listBuilds, 2);
+        verifyNever(() => repository.get(_id));
+      });
+
+      test('re-fetches the count when the line total does not add up '
+          '(someone else changed it meanwhile)', () async {
+        final elsewhere = aCount(lines: [aCountLine(), aCountLine(id: 1300)]);
+        c.stub(
+          () async => InventoryCountLinesChange(
+            countId: _id,
+            status: c.change.status,
+            updaterId: c.change.updaterId,
+            updatedAt: c.change.updatedAt,
+            lineCount: c.change.lineCount + 1,
+            lines: c.change.lines,
+            removedLineId: c.change.removedLineId,
+          ),
+        );
+        when(() => repository.get(_id)).thenAnswer((_) async => elsewhere);
+
+        expect(await c.act(actions()), isNull);
+
+        verify(() => repository.get(_id)).called(1);
+        expect(container.read(detail).value, elsewhere);
+      });
+
+      test('passes a refusal through and touches nothing', () async {
+        final refusal = _refusal(
+          'inventory_count.batch_invalid',
+          api.ErrorCode.inventoryCountPeriodBatchInvalid,
+        );
+        c.stub(() async => throw refusal);
+
+        expect(await c.act(actions()), refusal);
+        await settle();
+
+        expect(container.read(detail).value, aCount());
+        expect(_listBuilds, 1);
+        verifyNever(() => repository.get(_id));
+      });
+
+      test('re-fetches the count after a stale refusal', () async {
+        c.stub(
+          () async => throw _refusal(
+            'document.not_editable',
+            api.ErrorCode.documentPeriodNotEditable,
+          ),
+        );
+        when(() => repository.get(_id)).thenAnswer(
+          (_) async => aCount(status: InventoryDocumentStatus.completed),
+        );
+
+        expect(await c.act(actions()), isNotNull);
+
+        verify(() => repository.get(_id)).called(1);
+        expect(
+          container.read(detail).value?.status,
+          InventoryDocumentStatus.completed,
+        );
+      });
     });
   }
 

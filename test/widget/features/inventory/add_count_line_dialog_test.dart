@@ -143,9 +143,8 @@ void main() {
 
   testWidgets('sets one line by product, then closes', (tester) async {
     when(() => h.counts.setLines(412, any())).thenAnswer(
-      (_) async => aCount(
+      (_) async => aLinesChange(
         lines: [
-          aCountLine(),
           aCountLine(
             id: 1201,
             productId: 8,
@@ -154,6 +153,7 @@ void main() {
             quantity: '3',
           ),
         ],
+        lineCount: 2,
       ),
     );
     await open(tester);

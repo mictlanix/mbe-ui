@@ -47,13 +47,13 @@ void main() {
   }
 
   /// `setLines` answers [answer].
-  void stubSetLines(Future<InventoryCount> Function() answer) =>
+  void stubSetLines(Future<InventoryCountLinesChange> Function() answer) =>
       when(() => h.counts.setLines(412, any())).thenAnswer((_) => answer());
 
   testWidgets('keyboard only: Enter moves to Cantidad, Enter submits, both '
       'fields clear and focus returns to Código; a counted product says '
       '"(reemplazada)" (FR-009, SC-008)', (tester) async {
-    stubSetLines(() async => aCount(lines: [aCountLine(quantity: '12')]));
+    stubSetLines(() async => aLinesChange(lines: [aCountLine(quantity: '12')]));
     await h.pumpCount(tester, aCount());
 
     await enter(tester, ' a-100 ', '12');
@@ -81,9 +81,8 @@ void main() {
     tester,
   ) async {
     stubSetLines(
-      () async => aCount(
+      () async => aLinesChange(
         lines: [
-          aCountLine(),
           aCountLine(
             id: 1201,
             productId: 8,
@@ -92,6 +91,7 @@ void main() {
             quantity: '3.5',
           ),
         ],
+        lineCount: 2,
       ),
     );
     await h.pumpCount(tester, aCount());
@@ -149,7 +149,7 @@ void main() {
   });
 
   testWidgets('Registrar submits too', (tester) async {
-    stubSetLines(() async => aCount());
+    stubSetLines(() async => aLinesChange(lines: [aCountLine()]));
     await h.pumpCount(tester, aCount());
 
     await tester.enterText(code, 'A-100');

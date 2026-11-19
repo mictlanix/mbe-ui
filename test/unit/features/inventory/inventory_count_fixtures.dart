@@ -41,6 +41,22 @@ InventoryCount aCount({
   lines: lines ?? [aCountLine()],
 );
 
+/// A line write's answer for tests. The defaults fit [aCount]: its one line
+/// kept, no line set, no line removed.
+InventoryCountLinesChange aLinesChange({
+  List<InventoryCountLine> lines = const [],
+  int lineCount = 1,
+  int? removedLineId,
+}) => InventoryCountLinesChange(
+  countId: 412,
+  status: InventoryDocumentStatus.draft,
+  updaterId: 6,
+  updatedAt: DateTime(2026, 11, 17, 9, 45),
+  lineCount: lineCount,
+  lines: lines,
+  removedLineId: removedLineId,
+);
+
 /// A blind (draft) line for tests: no on-hand figure, no difference.
 InventoryCountLine aCountLine({
   int id = 1200,

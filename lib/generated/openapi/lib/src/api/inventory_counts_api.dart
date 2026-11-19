@@ -15,6 +15,7 @@ import 'package:mbe_api_client/src/model/count_line_update.dart';
 import 'package:mbe_api_client/src/model/count_lines_set.dart';
 import 'package:mbe_api_client/src/model/count_update.dart';
 import 'package:mbe_api_client/src/model/inventory_count_confirm_response.dart';
+import 'package:mbe_api_client/src/model/inventory_count_lines_changed.dart';
 import 'package:mbe_api_client/src/model/inventory_count_response.dart';
 import 'package:mbe_api_client/src/model/list_response_inventory_count_summary.dart';
 import 'package:mbe_api_client/src/model/problem.dart';
@@ -611,6 +612,212 @@ class InventoryCountsApi {
     );
   }
 
+  /// Remove Inventory Count Line Change
+  /// &#x60;DELETE /lines/{line_id}&#x60;, answering no lines, &#x60;removed_line_id&#x60; and the line total.
+  ///
+  /// Parameters:
+  /// * [countId]
+  /// * [lineId]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [InventoryCountLinesChanged] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<InventoryCountLinesChanged>>
+  removeInventoryCountLineChangeApiV1InventoryCountsCountIdLineChangesLineIdDelete({
+    required int countId,
+    required int lineId,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/inventory-counts/{count_id}/line-changes/{line_id}'
+        .replaceAll(
+          '{'
+          r'count_id'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            countId,
+            const FullType(int),
+          ).toString(),
+        )
+        .replaceAll(
+          '{'
+          r'line_id'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            lineId,
+            const FullType(int),
+          ).toString(),
+        );
+    final _options = Options(
+      method: r'DELETE',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      validateStatus: validateStatus,
+    );
+
+    final _response = await _dio.request<Object>(
+      _path,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    InventoryCountLinesChanged? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(InventoryCountLinesChanged),
+                )
+                as InventoryCountLinesChanged;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<InventoryCountLinesChanged>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// Set Inventory Count Line Changes
+  /// &#x60;PUT /lines&#x60;, answering only the batch&#39;s lines, the header&#39;s state and the line total.
+  ///
+  /// Parameters:
+  /// * [countId]
+  /// * [countLinesSet]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [InventoryCountLinesChanged] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<InventoryCountLinesChanged>>
+  setInventoryCountLineChangesApiV1InventoryCountsCountIdLineChangesPut({
+    required int countId,
+    required CountLinesSet countLinesSet,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/inventory-counts/{count_id}/line-changes'
+        .replaceAll(
+          '{'
+          r'count_id'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            countId,
+            const FullType(int),
+          ).toString(),
+        );
+    final _options = Options(
+      method: r'PUT',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      contentType: 'application/json',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+      const _type = FullType(CountLinesSet);
+      _bodyData = _serializers.serialize(countLinesSet, specifiedType: _type);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _options.compose(_dio.options, _path),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    InventoryCountLinesChanged? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(InventoryCountLinesChanged),
+                )
+                as InventoryCountLinesChanged;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<InventoryCountLinesChanged>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
   /// Set Inventory Count Lines
   /// Set many counted quantities at once; the batch applies whole or not at all (R3).
   ///
@@ -928,6 +1135,124 @@ class InventoryCountsApi {
     }
 
     return Response<InventoryCountResponse>(
+      data: _responseData,
+      headers: _response.headers,
+      isRedirect: _response.isRedirect,
+      requestOptions: _response.requestOptions,
+      redirects: _response.redirects,
+      statusCode: _response.statusCode,
+      statusMessage: _response.statusMessage,
+      extra: _response.extra,
+    );
+  }
+
+  /// Update Inventory Count Line Change
+  /// &#x60;PUT /lines/{line_id}&#x60;, answering only that line, the header&#39;s state and the line total.
+  ///
+  /// Parameters:
+  /// * [countId]
+  /// * [lineId]
+  /// * [countLineUpdate]
+  /// * [cancelToken] - A [CancelToken] that can be used to cancel the operation
+  /// * [headers] - Can be used to add additional headers to the request
+  /// * [extras] - Can be used to add flags to the request
+  /// * [validateStatus] - A [ValidateStatus] callback that can be used to determine request success based on the HTTP status of the response
+  /// * [onSendProgress] - A [ProgressCallback] that can be used to get the send progress
+  /// * [onReceiveProgress] - A [ProgressCallback] that can be used to get the receive progress
+  ///
+  /// Returns a [Future] containing a [Response] with a [InventoryCountLinesChanged] as data
+  /// Throws [DioException] if API call or serialization fails
+  Future<Response<InventoryCountLinesChanged>>
+  updateInventoryCountLineChangeApiV1InventoryCountsCountIdLineChangesLineIdPut({
+    required int countId,
+    required int lineId,
+    required CountLineUpdate countLineUpdate,
+    CancelToken? cancelToken,
+    Map<String, dynamic>? headers,
+    Map<String, dynamic>? extra,
+    ValidateStatus? validateStatus,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
+    final _path = r'/api/v1/inventory-counts/{count_id}/line-changes/{line_id}'
+        .replaceAll(
+          '{'
+          r'count_id'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            countId,
+            const FullType(int),
+          ).toString(),
+        )
+        .replaceAll(
+          '{'
+          r'line_id'
+          '}',
+          encodeQueryParameter(
+            _serializers,
+            lineId,
+            const FullType(int),
+          ).toString(),
+        );
+    final _options = Options(
+      method: r'PUT',
+      headers: <String, dynamic>{...?headers},
+      extra: <String, dynamic>{
+        'secure': <Map<String, String>>[
+          {'type': 'oauth2', 'name': 'OAuth2PasswordBearer'},
+        ],
+        ...?extra,
+      },
+      contentType: 'application/json',
+      validateStatus: validateStatus,
+    );
+
+    dynamic _bodyData;
+
+    try {
+      const _type = FullType(CountLineUpdate);
+      _bodyData = _serializers.serialize(countLineUpdate, specifiedType: _type);
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _options.compose(_dio.options, _path),
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    final _response = await _dio.request<Object>(
+      _path,
+      data: _bodyData,
+      options: _options,
+      cancelToken: cancelToken,
+      onSendProgress: onSendProgress,
+      onReceiveProgress: onReceiveProgress,
+    );
+
+    InventoryCountLinesChanged? _responseData;
+
+    try {
+      final rawResponse = _response.data;
+      _responseData = rawResponse == null
+          ? null
+          : _serializers.deserialize(
+                  rawResponse,
+                  specifiedType: const FullType(InventoryCountLinesChanged),
+                )
+                as InventoryCountLinesChanged;
+    } catch (error, stackTrace) {
+      throw DioException(
+        requestOptions: _response.requestOptions,
+        response: _response,
+        type: DioExceptionType.unknown,
+        error: error,
+        stackTrace: stackTrace,
+      );
+    }
+
+    return Response<InventoryCountLinesChanged>(
       data: _responseData,
       headers: _response.headers,
       isRedirect: _response.isRedirect,
