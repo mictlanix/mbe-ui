@@ -230,6 +230,7 @@ doc/InTransitResponse.md
 doc/InTransitStock.md
 doc/InventoryCountConfirmResponse.md
 doc/InventoryCountLineResponse.md
+doc/InventoryCountLinesChanged.md
 doc/InventoryCountResponse.md
 doc/InventoryCountSummary.md
 doc/InventoryCountsApi.md
@@ -806,6 +807,7 @@ lib/src/model/in_transit_response.dart
 lib/src/model/in_transit_stock.dart
 lib/src/model/inventory_count_confirm_response.dart
 lib/src/model/inventory_count_line_response.dart
+lib/src/model/inventory_count_lines_changed.dart
 lib/src/model/inventory_count_response.dart
 lib/src/model/inventory_count_summary.dart
 lib/src/model/inventory_issue_line_response.dart

@@ -280,9 +280,12 @@ Class | Method | HTTP request | Description
 [*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**getInventoryCountApiV1InventoryCountsCountIdGet**](doc/InventoryCountsApi.md#getinventorycountapiv1inventorycountscountidget) | **GET** /api/v1/inventory-counts/{count_id} | Get Inventory Count
 [*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**listInventoryCountsApiV1InventoryCountsGet**](doc/InventoryCountsApi.md#listinventorycountsapiv1inventorycountsget) | **GET** /api/v1/inventory-counts | List Inventory Counts
 [*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**removeInventoryCountLineApiV1InventoryCountsCountIdLinesLineIdDelete**](doc/InventoryCountsApi.md#removeinventorycountlineapiv1inventorycountscountidlineslineiddelete) | **DELETE** /api/v1/inventory-counts/{count_id}/lines/{line_id} | Remove Inventory Count Line
+[*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**removeInventoryCountLineChangeApiV1InventoryCountsCountIdLineChangesLineIdDelete**](doc/InventoryCountsApi.md#removeinventorycountlinechangeapiv1inventorycountscountidlinechangeslineiddelete) | **DELETE** /api/v1/inventory-counts/{count_id}/line-changes/{line_id} | Remove Inventory Count Line Change
+[*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**setInventoryCountLineChangesApiV1InventoryCountsCountIdLineChangesPut**](doc/InventoryCountsApi.md#setinventorycountlinechangesapiv1inventorycountscountidlinechangesput) | **PUT** /api/v1/inventory-counts/{count_id}/line-changes | Set Inventory Count Line Changes
 [*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**setInventoryCountLinesApiV1InventoryCountsCountIdLinesPut**](doc/InventoryCountsApi.md#setinventorycountlinesapiv1inventorycountscountidlinesput) | **PUT** /api/v1/inventory-counts/{count_id}/lines | Set Inventory Count Lines
 [*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**updateInventoryCountApiV1InventoryCountsCountIdPut**](doc/InventoryCountsApi.md#updateinventorycountapiv1inventorycountscountidput) | **PUT** /api/v1/inventory-counts/{count_id} | Update Inventory Count
 [*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**updateInventoryCountLineApiV1InventoryCountsCountIdLinesLineIdPut**](doc/InventoryCountsApi.md#updateinventorycountlineapiv1inventorycountscountidlineslineidput) | **PUT** /api/v1/inventory-counts/{count_id}/lines/{line_id} | Update Inventory Count Line
+[*InventoryCountsApi*](doc/InventoryCountsApi.md) | [**updateInventoryCountLineChangeApiV1InventoryCountsCountIdLineChangesLineIdPut**](doc/InventoryCountsApi.md#updateinventorycountlinechangeapiv1inventorycountscountidlinechangeslineidput) | **PUT** /api/v1/inventory-counts/{count_id}/line-changes/{line_id} | Update Inventory Count Line Change
 [*InventoryIssuesApi*](doc/InventoryIssuesApi.md) | [**addInventoryIssueLineApiV1InventoryIssuesIssueIdLinesPost**](doc/InventoryIssuesApi.md#addinventoryissuelineapiv1inventoryissuesissueidlinespost) | **POST** /api/v1/inventory-issues/{issue_id}/lines | Add Inventory Issue Line
 [*InventoryIssuesApi*](doc/InventoryIssuesApi.md) | [**cancelInventoryIssueApiV1InventoryIssuesIssueIdCancelPost**](doc/InventoryIssuesApi.md#cancelinventoryissueapiv1inventoryissuesissueidcancelpost) | **POST** /api/v1/inventory-issues/{issue_id}/cancel | Cancel Inventory Issue
 [*InventoryIssuesApi*](doc/InventoryIssuesApi.md) | [**confirmInventoryIssueApiV1InventoryIssuesIssueIdConfirmPost**](doc/InventoryIssuesApi.md#confirminventoryissueapiv1inventoryissuesissueidconfirmpost) | **POST** /api/v1/inventory-issues/{issue_id}/confirm | Confirm Inventory Issue
@@ -718,6 +721,7 @@ Class | Method | HTTP request | Description
  - [InTransitStock](doc/InTransitStock.md)
  - [InventoryCountConfirmResponse](doc/InventoryCountConfirmResponse.md)
  - [InventoryCountLineResponse](doc/InventoryCountLineResponse.md)
+ - [InventoryCountLinesChanged](doc/InventoryCountLinesChanged.md)
  - [InventoryCountResponse](doc/InventoryCountResponse.md)
  - [InventoryCountSummary](doc/InventoryCountSummary.md)
  - [InventoryIssueLineResponse](doc/InventoryIssueLineResponse.md)

@@ -219,6 +219,7 @@ import 'package:mbe_api_client/src/model/in_transit_response.dart';
 import 'package:mbe_api_client/src/model/in_transit_stock.dart';
 import 'package:mbe_api_client/src/model/inventory_count_confirm_response.dart';
 import 'package:mbe_api_client/src/model/inventory_count_line_response.dart';
+import 'package:mbe_api_client/src/model/inventory_count_lines_changed.dart';
 import 'package:mbe_api_client/src/model/inventory_count_response.dart';
 import 'package:mbe_api_client/src/model/inventory_count_summary.dart';
 import 'package:mbe_api_client/src/model/inventory_issue_line_response.dart';
@@ -710,6 +711,7 @@ part 'serializers.g.dart';
   InTransitStock,
   InventoryCountConfirmResponse,
   InventoryCountLineResponse,
+  InventoryCountLinesChanged,
   InventoryCountResponse,
   InventoryCountSummary,
   InventoryIssueLineResponse,

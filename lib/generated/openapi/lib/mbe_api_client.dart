@@ -267,6 +267,7 @@ export 'package:mbe_api_client/src/model/in_transit_response.dart';
 export 'package:mbe_api_client/src/model/in_transit_stock.dart';
 export 'package:mbe_api_client/src/model/inventory_count_confirm_response.dart';
 export 'package:mbe_api_client/src/model/inventory_count_line_response.dart';
+export 'package:mbe_api_client/src/model/inventory_count_lines_changed.dart';
 export 'package:mbe_api_client/src/model/inventory_count_response.dart';
 export 'package:mbe_api_client/src/model/inventory_count_summary.dart';
 export 'package:mbe_api_client/src/model/inventory_issue_line_response.dart';
