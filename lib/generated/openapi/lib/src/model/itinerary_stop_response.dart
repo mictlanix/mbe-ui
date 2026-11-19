@@ -20,6 +20,10 @@ part 'itinerary_stop_response.g.dart';
 /// * [outcome]
 /// * [proofOfDelivery]
 /// * [comment]
+/// * [deliveryOrder]
+/// * [deliveryOrders]
+/// * [customerDisplayName] - The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing. On a stop, also null when the stop has no stored delivery order.
+/// * [shipToLabel]
 /// * [lines]
 @BuiltValue()
 abstract class ItineraryStopResponse
@@ -44,6 +48,19 @@ abstract class ItineraryStopResponse
   @BuiltValueField(wireName: r'comment')
   String? get comment;
 
+  @BuiltValueField(wireName: r'delivery_order')
+  int? get deliveryOrder;
+
+  @BuiltValueField(wireName: r'delivery_orders')
+  BuiltList<int>? get deliveryOrders;
+
+  /// The customer's own name, joined from the customer record. This is the field to render in a list. Null only if the customer row is missing. On a stop, also null when the stop has no stored delivery order.
+  @BuiltValueField(wireName: r'customer_display_name')
+  String? get customerDisplayName;
+
+  @BuiltValueField(wireName: r'ship_to_label')
+  String? get shipToLabel;
+
   @BuiltValueField(wireName: r'lines')
   BuiltList<ItineraryLineResponse>? get lines;
 
@@ -54,8 +71,9 @@ abstract class ItineraryStopResponse
   ]) = _$ItineraryStopResponse;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(ItineraryStopResponseBuilder b) =>
-      b..lines = ListBuilder();
+  static void _defaults(ItineraryStopResponseBuilder b) => b
+    ..deliveryOrders = ListBuilder()
+    ..lines = ListBuilder();
 
   @BuiltValueSerializer(custom: true)
   static Serializer<ItineraryStopResponse> get serializer =>
@@ -114,6 +132,34 @@ class _$ItineraryStopResponseSerializer
             object.comment,
             specifiedType: const FullType.nullable(String),
           );
+    yield r'delivery_order';
+    yield object.deliveryOrder == null
+        ? null
+        : serializers.serialize(
+            object.deliveryOrder,
+            specifiedType: const FullType.nullable(int),
+          );
+    if (object.deliveryOrders != null) {
+      yield r'delivery_orders';
+      yield serializers.serialize(
+        object.deliveryOrders,
+        specifiedType: const FullType(BuiltList, [FullType(int)]),
+      );
+    }
+    if (object.customerDisplayName != null) {
+      yield r'customer_display_name';
+      yield serializers.serialize(
+        object.customerDisplayName,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
+    if (object.shipToLabel != null) {
+      yield r'ship_to_label';
+      yield serializers.serialize(
+        object.shipToLabel,
+        specifiedType: const FullType.nullable(String),
+      );
+    }
     if (object.lines != null) {
       yield r'lines';
       yield serializers.serialize(
@@ -200,6 +246,48 @@ class _$ItineraryStopResponseSerializer
                   as String?;
           if (valueDes == null) continue;
           result.comment = valueDes;
+          break;
+        case r'delivery_order':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(int),
+                  )
+                  as int?;
+          if (valueDes == null) continue;
+          result.deliveryOrder = valueDes;
+          break;
+        case r'delivery_orders':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(BuiltList, [
+                      FullType(int),
+                    ]),
+                  )
+                  as BuiltList<int>?;
+          if (valueDes == null) continue;
+          result.deliveryOrders.replace(valueDes);
+          break;
+        case r'customer_display_name':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.customerDisplayName = valueDes;
+          break;
+        case r'ship_to_label':
+          final valueDes =
+              serializers.deserialize(
+                    value,
+                    specifiedType: const FullType.nullable(String),
+                  )
+                  as String?;
+          if (valueDes == null) continue;
+          result.shipToLabel = valueDes;
           break;
         case r'lines':
           final valueDes =
