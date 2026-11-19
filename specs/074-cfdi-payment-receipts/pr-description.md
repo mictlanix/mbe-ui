@@ -53,6 +53,6 @@ Every action is absent, never disabled, without its right or outside its state.
 - `flutter analyze`: clean. Formatting checked on the changed files only.
 - `flutter test`: 6285 pass, 85 skipped (live tests without credentials). The 7 failures all fail the same way on the branch without this work: the six goldens in `test/golden/core_widgets_golden_test.dart` (known, mbe-ui#209) and the sales-list pixel diff in `pos_screens_screenshot_test.dart`. `auth_flow_test.dart` scenario 2 also failed in the full run, because mbe-api had lost its database connection; it passes after an mbe-api restart.
 - **Live test** (`test/integration/fiscal_documents_live_test.dart`, group "Payment receipt against the simulated PAC"): **13/13 pass** on 2026-11-18, after mictlanix/mbe-api#341 (the `usage` column was too short for `CP01`) was fixed. The run makes and stamps its own PPD invoice (A5252), then creates, fills, seals, reopens, re-seals and stamps a receipt (CPZUMP13). Along the way it checks both amount refusals and that the invoice can't be cancelled while the receipt is live. It then cancels both.
-- **Manual checks** (`quickstart.md`) are not done yet.
+- **Manual checks** (`quickstart.md`) are not done yet; tracked in #285.
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
