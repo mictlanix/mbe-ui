@@ -129,7 +129,7 @@ class PacSimulatorApi {
   }
 
   /// Get Simulation
-  /// The simulator&#39;s record of the document.
+  /// The simulated SAT&#39;s view of the document.
   ///
   /// Parameters:
   /// * [fiscalDocumentId]
@@ -217,7 +217,7 @@ class PacSimulatorApi {
   }
 
   /// Set Simulation
-  /// The outcome of the document&#39;s next stamp or cancellation call only.
+  /// The outcome of the document&#39;s next stamp, or of its UUID&#39;s next cancellation, only.
   ///
   /// Parameters:
   /// * [fiscalDocumentId]

@@ -8,14 +8,12 @@ import 'package:built_value/serializer.dart';
 
 part 'pac_simulation_response.g.dart';
 
-/// What the simulator holds for a document.
+/// The simulated SAT's view of a document (spec 040): `sat_status` is `not_found` and `cancellation_status` `none` until the document has a UUID. The library cannot read back a queued outcome, so the response does not carry one.
 ///
 /// Properties:
 /// * [uuid]
 /// * [satStatus]
 /// * [cancellationStatus]
-/// * [nextStamp]
-/// * [nextCancellation]
 @BuiltValue()
 abstract class PacSimulationResponse
     implements Built<PacSimulationResponse, PacSimulationResponseBuilder> {
@@ -27,12 +25,6 @@ abstract class PacSimulationResponse
 
   @BuiltValueField(wireName: r'cancellation_status')
   String get cancellationStatus;
-
-  @BuiltValueField(wireName: r'next_stamp')
-  String? get nextStamp;
-
-  @BuiltValueField(wireName: r'next_cancellation')
-  String? get nextCancellation;
 
   PacSimulationResponse._();
 
@@ -81,20 +73,6 @@ class _$PacSimulationResponseSerializer
       object.cancellationStatus,
       specifiedType: const FullType(String),
     );
-    yield r'next_stamp';
-    yield object.nextStamp == null
-        ? null
-        : serializers.serialize(
-            object.nextStamp,
-            specifiedType: const FullType.nullable(String),
-          );
-    yield r'next_cancellation';
-    yield object.nextCancellation == null
-        ? null
-        : serializers.serialize(
-            object.nextCancellation,
-            specifiedType: const FullType.nullable(String),
-          );
   }
 
   @override
@@ -149,26 +127,6 @@ class _$PacSimulationResponseSerializer
                   )
                   as String;
           result.cancellationStatus = valueDes;
-          break;
-        case r'next_stamp':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType.nullable(String),
-                  )
-                  as String?;
-          if (valueDes == null) continue;
-          result.nextStamp = valueDes;
-          break;
-        case r'next_cancellation':
-          final valueDes =
-              serializers.deserialize(
-                    value,
-                    specifiedType: const FullType.nullable(String),
-                  )
-                  as String?;
-          if (valueDes == null) continue;
-          result.nextCancellation = valueDes;
           break;
         default:
           unhandled.add(key);
