@@ -41,7 +41,7 @@ The AppBar has the title "Itinerario {id}" and no actions (§VI).
 | Dialog | Fields | Confirm enabled when |
 |---|---|---|
 | Nuevo itinerario | date (today), vehicle, operator, dispatch warehouse (optional; helper text: blank uses the point of sale's) | always |
-| Editar encabezado | date, vehicle, operator, comment | something changed |
+| Editar encabezado | date, vehicle, operator, comment; a changed vehicle is checked for another Abierto trip first (R16) | something changed |
 | Agregar parada | paged list of delivery-type orders in En preparación, with folio search; existing stops hidden | one chosen |
 | Cargar línea | order lines with open > 0; quantity (default open, max open) | 0 < q ≤ open |
 | Cantidad cargada (✎) | quantity, max open + loaded | 0 < q ≤ max |

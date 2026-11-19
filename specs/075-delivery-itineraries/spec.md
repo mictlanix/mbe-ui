@@ -152,7 +152,7 @@ Before the van leaves, the dispatcher prints the trip ticket for the driver and 
 **Create and header**
 
 - **FR-005**: "Nuevo itinerario" MUST be offered only to users with Delivery Itineraries create. It creates the trip at once, with today's date and the dispatch warehouse from the user's point of sale unless they choose another, and opens its screen.
-- **FR-006**: On an Abierto trip, a user with Delivery Itineraries update MUST be able to change date, vehicle, operator and comment. The dispatch warehouse MUST be shown read-only after creation.
+- **FR-006**: On an Abierto trip, a user with Delivery Itineraries update MUST be able to change date, vehicle, operator and comment. The dispatch warehouse MUST be shown read-only after creation. Changing the vehicle to one that already has another Abierto trip MUST be refused with the same message as at creation, naming that trip.
 - **FR-007**: When the assigned operator's licence has expired, the trip screen MUST show a warning with the expiry date. The warning doesn't block anything.
 
 **Stops and loading**
@@ -244,4 +244,4 @@ Before the van leaves, the dispatcher prints the trip ticket for the driver and 
   - `delivery_order.not_in_preparation` (`status`), `delivery_order.pickup_not_loadable`, `delivery_order_line.nothing_to_load`, `delivery_order_line.quantity_unavailable` (`available`, `requested`);
   - `facility.no_in_transit_location`, `image.too_large`, `image.unsupported_format`, `lock.busy`, `resource.not_found`.
 - Server change mictlanix/mbe-api#343 shipped 2026-11-18 (mbe-api#344, migration 036): it keeps a stop's delivery order and adds names on stops, lines and trip rows. Legacy stops weren't backfilled.
-- Known server gaps, relied on as they are: the one-open-trip-per-vehicle check runs only at creation; departure doesn't refuse a stop with no lines.
+- Known server gaps, both guarded in the app: the one-open-trip-per-vehicle check runs only at creation (mictlanix/mbe-api#345); departure doesn't refuse a stop with no lines (mictlanix/mbe-api#346).

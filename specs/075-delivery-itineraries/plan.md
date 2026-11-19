@@ -148,7 +148,7 @@ integration_test/delivery_itineraries_quickstart_test.dart
 
 ## External dependencies
 
-- **mictlanix/mbe-api#343**: shipped 2026-11-18 in mbe-api#344. Migration 036 was applied to mbe_dev on 2026-11-18. The two gaps in the 2026-11-18 comment (the vehicle check on update, departure with empty stops) are not fixed upstream. The departure guard stays (R7), and the vehicle check on update stays a known gap.
+- **mictlanix/mbe-api#343**: shipped 2026-11-18 in mbe-api#344. Migration 036 was applied to mbe_dev on 2026-11-18. The two gaps in the 2026-11-18 comment (the vehicle check on update, departure with empty stops) are not fixed upstream. They're filed as mbe-api#345 (the vehicle check on update) and #346 (departure with empty stops). The UI guards both: the departure guard (R7) and a client-side vehicle check in the header dialog (R16).
 
 ## Complexity Tracking
 

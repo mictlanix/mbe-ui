@@ -72,7 +72,7 @@ A loaded line's ✎ opens the quantity dialog, capped at open plus already loade
 
 **Decision**: "Dar salida" is enabled only when the trip has at least one loaded line and every stop has at least one line. Otherwise it's disabled, with a caption naming the empty stops or saying nothing is loaded. The confirmation dialog shows vehicle, operator (or "Sin operador"), stop count and line count.
 
-**Rationale**: Spec FR-012. The server accepts empty stops (gap posted on mbe-api#343), and such a stop would block the trip from closing.
+**Rationale**: Spec FR-012. The server accepts empty stops (mbe-api#346), and such a stop would block the trip from closing. Once #346 ships with a coded refusal, the code gets a message too, and the guard stays.
 
 ## R8. Close-stop dialog and proof
 
@@ -137,3 +137,12 @@ Confirm stays disabled until every requirement in FR-016 holds. Switching betwee
 **Rationale**: The spec says creation is immediate and the warehouse is optional. The app can't read the point of sale's warehouse cheaply, and the server already defaults it. The warehouse can only be chosen here (R1, spec Assumptions).
 
 **Alternatives**: Creating with no dialog and editing afterwards (legacy "New"). That would leave no place to choose a non-default warehouse, because the header can't change it later.
+
+## R16. Vehicle change on the header
+
+**Decision**: When "Editar encabezado" changes the vehicle, the dialog first lists the trips that are Abierto and use the new vehicle. This is one `list(status: open, vehicleId, pageSize: 1)` call. If a trip other than this one comes back, the dialog stays open with the creation refusal's message, "Este vehículo ya tiene abierto el itinerario N.". It's built from an `AppError` carrying the code `vehicle.open_itinerary_exists` and the params `vehicle_id` and `itinerary_id`, so both paths go through the same localized text. A failed check doesn't block the save. Nothing is reloaded.
+
+**Rationale**: The server checks one open trip per vehicle only at creation (mbe-api#345). The user chose on 2026-11-18 to guard it in the UI. The check can race with another writer, so the server remains the real fix. When #345 ships, the server's refusal arrives with the same code and renders the same way, and the client check can go.
+
+**Alternatives**: No guard, relying on #345. Until #345 ships, a vehicle could end up on two open trips.
+
