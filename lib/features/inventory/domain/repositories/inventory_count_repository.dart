@@ -4,8 +4,9 @@ import 'package:mbe_ui/features/inventory/domain/entities/inventory_count.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
 
 /// Physical inventory counts (spec 070), over the generated
-/// `InventoryCountsApi`. Every method throws `AppError` on failure. Every
-/// mutation returns the full count.
+/// `InventoryCountsApi`. Every method throws `AppError` on failure. The line
+/// writes return only what they changed (mbe-api#333); every other mutation
+/// returns the full count.
 abstract class InventoryCountRepository {
   /// `GET /inventory-counts?status&warehouse&skip&limit`. The server orders
   /// newest first and decides the scope.
@@ -30,20 +31,23 @@ abstract class InventoryCountRepository {
     String? comment,
   });
 
-  /// `PUT /inventory-counts/{id}/lines`: 1–2,000 items, applied whole or not
-  /// at all, each replacing its product's quantity. Splitting a longer list
-  /// is the caller's job (research R8).
-  Future<InventoryCount> setLines(int id, List<CountLineInput> items);
+  /// `PUT /inventory-counts/{id}/line-changes`: 1–2,000 items, applied whole
+  /// or not at all, each replacing its product's quantity. Splitting a longer
+  /// list is the caller's job (research R8).
+  Future<InventoryCountLinesChange> setLines(
+    int id,
+    List<CountLineInput> items,
+  );
 
-  /// `PUT /inventory-counts/{id}/lines/{lineId}`.
-  Future<InventoryCount> updateLine(
+  /// `PUT /inventory-counts/{id}/line-changes/{lineId}`.
+  Future<InventoryCountLinesChange> updateLine(
     int id,
     int lineId, {
     required Decimal quantity,
   });
 
-  /// `DELETE /inventory-counts/{id}/lines/{lineId}`.
-  Future<InventoryCount> removeLine(int id, int lineId);
+  /// `DELETE /inventory-counts/{id}/line-changes/{lineId}`.
+  Future<InventoryCountLinesChange> removeLine(int id, int lineId);
 
   /// `POST /inventory-counts/{id}/confirm`.
   Future<CountConfirmResult> confirm(int id, {required bool includeUncounted});

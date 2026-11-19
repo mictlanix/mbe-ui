@@ -52,10 +52,10 @@ void main() {
   }
 
   /// Each `setLines` call waits for its own completer, in order.
-  List<Completer<InventoryCount>> gateSetLines() {
-    final gates = <Completer<InventoryCount>>[];
+  List<Completer<InventoryCountLinesChange>> gateSetLines() {
+    final gates = <Completer<InventoryCountLinesChange>>[];
     when(() => h.counts.setLines(412, any())).thenAnswer((_) {
-      final gate = Completer<InventoryCount>();
+      final gate = Completer<InventoryCountLinesChange>();
       gates.add(gate);
       return gate.future;
     });
@@ -118,7 +118,9 @@ void main() {
 
   testWidgets('a clean list is sent by code, the dialog closes and the count '
       'is re-fetched', (tester) async {
-    when(() => h.counts.setLines(412, any())).thenAnswer((_) async => aCount());
+    when(
+      () => h.counts.setLines(412, any()),
+    ).thenAnswer((_) async => aLinesChange());
     await open(tester);
     await paste(tester, 'A-100\t12\nB-220\t0,5');
 
@@ -160,7 +162,7 @@ void main() {
     await tester.pump();
     expect(dialog, findsOneWidget);
 
-    gates[0].complete(aCount());
+    gates[0].complete(aLinesChange());
     await tester.pump();
     await tester.pump();
     expect(find.text(l10n.inventoryCountPasteBatch(2, 2)), findsOneWidget);
@@ -169,7 +171,7 @@ void main() {
       findsOneWidget,
     );
 
-    gates[1].complete(aCount());
+    gates[1].complete(aLinesChange());
     await tester.pumpAndSettle();
     expect(gates, hasLength(2));
     final batches = verify(
@@ -186,7 +188,7 @@ void main() {
     when(() => h.counts.setLines(412, any())).thenAnswer((_) async {
       calls++;
       if (calls == 2) throw batchInvalid(3);
-      return aCount();
+      return aLinesChange();
     });
     await open(tester);
     await paste(tester, rows(2500));
