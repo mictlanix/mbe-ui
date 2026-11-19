@@ -130,18 +130,18 @@ The driver-mobile design in `artifacts/delivery_itineraries/` belongs to mbe-roa
   - ⋮ is the overflow with "Quitar parada" (FR-011).
   - "Cargar todo" and "Cargar línea" sit on the right (FR-010).
   - The line table is a non-paginated `DataTableView` (bounded by the order's lines). "Pendiente" is the order line's open quantity, and quantities are right-aligned. ✎ and 🗑 change and release a loaded line (FR-011).
-- **Unidad** is blank until mbe-api#343 (research R2); see Open Question 3.
+- **Unidad** is the line's unit symbol (mbe-api#343, research R2).
 
-### State: Abierto, a stop whose order isn't known (before #343, reloaded)
+### State: Abierto, a legacy stop with no stored order (rare; created before #343)
 
 ```
 │ Parada 2                                                                              ⋮  │
 │                                                  [Cargar todo]  [＋ Cargar línea]         │
-│ │ —        │ Partida 88231             │        │         — │      6.00 │  ✎   🗑  │     │
-│   No se conoce la orden de esta parada hasta que el servidor la envíe.                   │
+│ Parada 2 · Órdenes 1498, 1502                                                         ⋮  │
+│ │ CLA-25   │ Clavo 2½"                 │ kg     │      0.00 │      6.00 │  ✎   🗑  │     │
 ```
 
-- Spec Edge Cases. "Cargar todo" and "Cargar línea" first ask for the order (the Agregar parada list). ✎ and 🗑 still work, because they need only the line id.
+- Spec Edge Cases. Lines still carry product and order (#343); the folios come from the lines. "Cargar todo" and "Cargar línea" first ask for the order (the Agregar parada list). ✎ and 🗑 still work, because they need only the line id.
 
 ### State: Abierto, read-only user (read on 87, no update)
 
@@ -365,7 +365,7 @@ The driver-mobile design in `artifacts/delivery_itineraries/` belongs to mbe-roa
    - (c) "Nada entregado" asks for the reason first.
 
    The wireframe assumed (b), the simplest: the per-row dropdowns appear and the missing list names each. A failed delivery (nobody home, wrong address) usually has one reason for the whole stop, so (a) would save clicks. *Touches the spec (FR-016) and research R8.*
-3. **Unit column before #343.** A delivery-order line carries no unit, so before #343 the Unidad column is blank. Options: (a) keep a blank column, (b) hide it until #343, (c) look up each product for its unit. The wireframe assumed (a). (b) is cleaner, and (c) costs a read per product. *Touches the spec (FR-009) and research R2.*
+3. ~~**Unit column before #343.**~~ **Resolved 2026-11-18**: #343 shipped with `unit_of_measurement` on every line, so Unidad shows the symbol.
 4. **An Abierto stop card shows only loaded lines.** The order's unloaded open lines are reachable only through "Cargar línea". Options: (a) loaded lines only (drawn), (b) every open line of the order, with unloaded ones at "Cargado 0" and a load icon. (b) shows at a glance what's left behind, but it adds a third row icon and a row state. The wireframe assumed (a). *Touches the spec (FR-009, FR-010).*
 5. **Cancelled trips show nothing.** The server deletes a cancelled trip's stops and lines, so the screen can't show what was on it. The wireframe assumed a single explanatory line. *A spec Edge Cases addition, no requirement change.*
 6. **When a stop closed.** The server sets the stop's `arrival_time` at closure, so the card shows "cerrada {hora}" from it (US3 scenario 6's "when it was closed"). *Confirms the spec; Key Entities could name it.*

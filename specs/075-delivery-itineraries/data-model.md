@@ -1,6 +1,6 @@
 # Data Model: Delivery Itineraries (spec 075)
 
-Domain entities (`freezed`) in `lib/features/sales/domain/entities/delivery_itinerary.dart`, mapped from the generated DTOs in `data/` (§III). The fields marked **#343** stay null until mbe-api#343 ships and the client is regenerated. Until then they are filled by the fallbacks in research R2–R3, or left null.
+Domain entities (`freezed`) in `lib/features/sales/domain/entities/delivery_itinerary.dart`, mapped from the generated DTOs in `data/` (§III). The fields marked **#343** come from mbe-api#343, which shipped 2026-11-18 (research R2–R3).
 
 ## Enums
 
@@ -24,7 +24,7 @@ The mapping is exhaustive. An unknown wire value maps to a server error, as the 
 
 ## Entities
 
-**ItinerarySummary** (list row): `id`, `date`, `vehicleId?`, `vehicleOperatorId?`, `warehouseId?`, `status`, `departedAt?`, `returnedAt?`, plus `vehicleName?`, `operatorName?` and `warehouseName?` (**#343**).
+**ItinerarySummary** (list row): `id`, `date`, `vehicleId?`, `vehicleOperatorId?`, `warehouseId?`, `status`, `departedAt?`, `returnedAt?`, plus `vehicleName?`, `operatorName?` and `warehouseName?` (**#343**; null when the id is null).
 
 **ItineraryPage**: `items: List<ItinerarySummary>`, `total`.
 
@@ -34,9 +34,9 @@ The mapping is exhaustive. An unknown wire value maps to a server error, as the 
 - `canDepart`: `status == open && loadedLineCount > 0 && emptyStops.isEmpty`.
 - `pendingStops`: stops with `outcome == pending`.
 
-**ItineraryStop**: `id`, `sequence`, `outcome`, `arrivedAt?`, `proofId?`, `comment?`, `lines: List<ItineraryLine>`, plus `deliveryOrderId?`, `customerName?` and `shipToLabel?` (**#343**, else R2).
+**ItineraryStop**: `id`, `sequence`, `outcome`, `arrivedAt?`, `proofId?`, `comment?`, `lines: List<ItineraryLine>`, plus `deliveryOrderId?` (null on legacy stops), `deliveryOrderIds: List<int>`, `customerName?` and `shipToLabel?` (**#343**, R2).
 
-**ItineraryLine**: `id`, `deliveryOrderLineId`, `committed`, `sent`, `delivered`, `returned` (all `Decimal`), `reason?: ShortfallReason`, `comment?`, plus `deliveryOrderId?`, `productCode?`, `productName?` and `unitSymbol?` (**#343**, else R2 except the unit).
+**ItineraryLine**: `id`, `deliveryOrderLineId`, `committed`, `sent`, `delivered`, `returned` (all `Decimal`), `reason?: ShortfallReason`, `comment?`, plus `deliveryOrderId`, `productCode`, `productName` and `unitSymbol?` (**#343**).
 
 **StopClosure** (a value object, the close dialog's output): `receiverName`, `receiverIdShown` (both trimmed, not blank), `lines: List<StopClosureLine>`, and `proof: ProofImage`.
 - **StopClosureLine**: `lineId`, `delivered` (0 ≤ delivered ≤ sent), and `reason?`, required when delivered < sent.
@@ -57,7 +57,7 @@ stop: pending ──close──► delivered | partiallyDelivered | failed
 | Nuevo itinerario | n/a | n/a | create |
 | Edit header (date, vehicle, operator, comment) | open | n/a | update |
 | Agregar parada, Quitar parada | open | n/a | update |
-| Cargar todo, Cargar línea, ✎ quantity, 🗑 release | open | order known (R2) | update |
+| Cargar todo, Cargar línea, ✎ quantity, 🗑 release | open | has a stored order (R2) | update |
 | Dar salida | open, `canDepart` | n/a | update |
 | Cancelar itinerario | open | n/a | update |
 | Cerrar parada | departed | pending | update |

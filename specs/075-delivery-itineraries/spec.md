@@ -9,7 +9,7 @@
 **Input**: User description: mictlanix/mbe-roadmap#41 ([UI] Delivery itineraries: stops, depart, close stop, proof of delivery). Scope 06 §6.4 and 06a §4–5 (mbe-api `docs/specs/06-logistics.md`, `06a-delivery-flow-v2.md`; SystemObject DeliveryItineraries 87). Server side done in mbe-api spec 012 US3–5, plus printing in spec 026. Weight: 12 legacy actions. Before specify, the user chose:
 
 - the back office only. The driver's phone app (offline queue, sync, map) is mictlanix/mbe-roadmap#119, and the design in `artifacts/delivery_itineraries/` belongs to it, not to this feature;
-- for names the server doesn't send (a stop's order, customer and ship-to; the vehicle, operator and warehouse on rows), both: file the server change (mictlanix/mbe-api#343) and resolve the names in the app until it ships;
+- for names the server doesn't send (a stop's order, customer and ship-to; the vehicle, operator and warehouse on rows), both: file the server change (mictlanix/mbe-api#343) and resolve the names in the app until it ships. It shipped on 2026-11-18, before implementation began, so the app uses the server's names;
 - for proof of delivery, both: upload a photo or scan, or draw a signature on screen;
 - printing the trip ticket and the delivery notes is part of this feature;
 - trip setup follows the server: a trip may start empty, and vehicle and operator are optional until departure.
@@ -123,8 +123,8 @@ Before the van leaves, the dispatcher prints the trip ticket for the driver and 
 
 ### Edge Cases
 
-- **A stop's order after a reload.** The server takes a stop's delivery order when the stop is added, but doesn't keep it (mbe-api#343). Until that ships, the app knows a stop's order in the session that added it, and otherwise works it out from the stop's loaded lines. A stop with no lines, loaded fresh, shows as "Parada N" with no customer. Loading lines onto it asks the user to pick the order again, from the same list as "Agregar parada".
-- **Names arriving as numbers.** Vehicle, operator, warehouse, customer, ship-to and product arrive as numbers on trips, stops and lines until mbe-api#343 ships. The app looks each one up. When the user can't read that catalog, the app shows the number.
+- **A legacy stop with no stored order.** Since mbe-api#343, the server keeps a stop's delivery order. Stops created before it (one per legacy trip) have none. Such a stop shows as "Parada N" with the folios of its lines and no customer. If its trip is still Abierto, loading lines onto it asks the user to pick the order, from the same list as "Agregar parada".
+- **A missing name.** The server sends the vehicle, operator, warehouse, customer, ship-to and product names. When a name is missing but its id is set, the app shows the number.
 - **Licence warning text.** The server reports an expired licence as an English sentence with no error code. The app builds its own warning from the operator's licence expiry date, in the user's language, and doesn't show the server's text.
 - **A vehicle moved onto a second open trip.** The server checks that a vehicle has only one Abierto trip when a trip is created, not when its vehicle is changed later. The app relies on the server and adds no check of its own, so changing a trip's vehicle can leave that vehicle on two open trips.
 - **An empty stop on a departed trip.** The server would let a trip depart with a stop that has no lines, and that stop would then need proof to close. The app blocks departure until every stop has a line (US2 scenario 4).
@@ -185,7 +185,7 @@ Before the van leaves, the dispatcher prints the trip ticket for the driver and 
 - **FR-021**: Every action MUST be shown only to a user with the right it needs (see Assumptions), and only in the trip and stop statuses that allow it.
 - **FR-022**: When the server refuses an action, the app MUST show the reason in the user's language, from the error code, and reload the trip.
 - **FR-023**: Every new label, message, status name, outcome and reason MUST be available in Spanish and English.
-- **FR-024**: Until mbe-api#343 ships, the app MUST resolve the names the server sends as numbers (vehicle, operator, warehouse, a stop's order, customer and ship-to, a line's product), falling back to the number when the user can't read that catalog. Once it ships, the app MUST use the server's names and keep the lookups only as a fallback.
+- **FR-024**: The app MUST show the names the server sends (mbe-api#343): the vehicle, operator and warehouse on trips; a stop's order, customer and ship-to; and a line's product and unit. Where a name is missing, the app shows the number instead.
 
 ### Key Entities
 
@@ -243,5 +243,5 @@ Before the van leaves, the dispatcher prints the trip ticket for the driver and 
   - `vehicle.open_itinerary_exists` (`vehicle_id`, `itinerary_id`);
   - `delivery_order.not_in_preparation` (`status`), `delivery_order.pickup_not_loadable`, `delivery_order_line.nothing_to_load`, `delivery_order_line.quantity_unavailable` (`available`, `requested`);
   - `facility.no_in_transit_location`, `image.too_large`, `image.unsupported_format`, `lock.busy`, `resource.not_found`.
-- Pending server change: mictlanix/mbe-api#343 (keep a stop's delivery order; names on stops, lines and trip rows).
+- Server change mictlanix/mbe-api#343 shipped 2026-11-18 (mbe-api#344, migration 036): it keeps a stop's delivery order and adds names on stops, lines and trip rows. Legacy stops weren't backfilled.
 - Known server gaps, relied on as they are: the one-open-trip-per-vehicle check runs only at creation; departure doesn't refuse a stop with no lines.

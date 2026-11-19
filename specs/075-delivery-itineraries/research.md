@@ -10,35 +10,43 @@ Phase 0 decisions. Each entry is a decision, why it was chosen, and the alternat
 
 **Alternatives**: A new `features/logistics/`. That would move 061–063 or import them across features, which is a refactor nobody asked for.
 
-## R2. A stop's delivery order and its names (mbe-api#343)
+## R2. A stop's delivery order and its names (mbe-api#343, shipped)
 
-**Decision**: Build against #343. The domain `ItineraryStop` carries `deliveryOrderId`, `customerName` and `shipToLabel`, and `ItineraryLine` carries `deliveryOrderId`, `productCode`, `productName` and `unitSymbol`, all nullable. The data layer fills them from the server once #343 ships and the client is regenerated. Until then, two sources fill what they can:
+**Decision**: Map them from the server. mbe-api#343 shipped on 2026-11-18 (PR mbe-api#344, migration 036), and the client was regenerated in a8290511. Migration 036 was applied to mbe_dev on 2026-11-18 (reported by the user).
+- **`ItineraryStopResponse`** has these fields:
+  - `delivery_order?`: the order the stop was added for. It's null on legacy stops.
+  - `delivery_orders`: every order on the stop, from the stored order and the lines.
+  - `customer_display_name?` and `ship_to_label?`, from the stored order.
+- **`ItineraryLineResponse`** has these fields:
+  - `delivery_order`, `product_code` and `product_name`, all non-null;
+  - `unit_of_measurement?` (with `symbol`).
 
-1. **Session memory.** `addStop` records `stopId → deliveryOrderId` in a keep-alive provider. The new stop is the one id the response has that the previous state lacked. Every screen in the same app session can then resolve that stop.
-2. **The order itself.** For a stop whose order is known, one cached `DeliveryOrderAdminRepository.getById` gives customer name, ship-to label and the order's lines (detail id → product code and name). Those resolve the stop's loaded lines. Unit symbol isn't on a delivery-order line, so it stays empty until #343.
+The domain `ItineraryStop` carries `deliveryOrderId?`, `deliveryOrderIds`, `customerName?` and `shipToLabel?`. `ItineraryLine` carries `deliveryOrderId`, `productCode`, `productName` and `unitSymbol?`.
 
-A stop whose order isn't known (a reload in a new session) shows "Parada N", and its lines show their delivery-order line number. The stop UI is implemented last (plan order step 6), so #343 has time to land. "Agregar línea" on an unknown stop asks for the order again (spec Edge Cases).
+The app still makes one order read, a cached `DeliveryOrderAdminRepository.getById` per stop order. It's needed only on an Abierto trip, for the order's open quantities: the Pendiente column, "Cargar línea" and "Cargar todo".
 
-**Rationale**: The user chose this on 2026-11-18. No endpoint maps a delivery-order line to its order, and the stop row doesn't store one (mbe-api `add_stop` validates and then drops it). Every workaround that works across sessions either writes markers into server data or costs many requests.
+**Legacy stops.** Migration 008 created them, one per legacy itinerary, and #344 didn't backfill them. They have no stored order, so their title is "Parada N" with the folios from `deliveryOrderIds`. Their lines still show product names. No itinerary has been created since 2026-09-29, so an Abierto legacy trip is not expected. If one does exist, "Cargar línea" on a stop with no stored order first asks for the order (spec Edge Cases).
 
-**Alternatives** (rejected by the user):
-- Encoding `DO:<id>` in the stop's `comment`. It leaves residue in data that outlives #343.
-- Listing every order in En preparación or En tránsito and matching line ids. That costs many requests per trip and misses closed trips.
-- Device-local storage of the mapping. It's barred by §VII.
+**Rationale**: The user chose on 2026-11-18 to build against #343. It shipped before the stop UI was built, so the session-memory fallback is no longer needed. The fallback had two parts: a `stopId → orderId` map written by `addStop`, and product names resolved from the order.
+
+**Alternatives** (rejected before #343 shipped):
+- Encoding `DO:<id>` in the stop's `comment`.
+- Scanning orders to match line ids.
+- Keeping the map in device storage (barred by §VII).
 
 ## R3. Vehicle, operator and warehouse names
 
-**Decision**: These are feature-local `FutureProvider.family` lookups by id: `vehicleDisplayNameProvider` (name, then plate) and `vehicleOperatorDisplayNameProvider` (the employee's name, as the operators catalog shows it). Warehouses use the existing `warehouseDisplayNameProvider` (catalog). Each is cached per id for the session. A failed or forbidden lookup falls back to the number (FR-024). Once #343 adds `vehicle_name`, `vehicle_operator_name` and `warehouse_name`, the mapper prefers them.
+**Decision**: Map `vehicle_name` (`{nickname} · {license_plate}`), `vehicle_operator_name` and `warehouse_name` from `ItinerarySummary` and `ItineraryResponse` (#343). There are no per-id lookups. A null name shows the number when the id is set, and "—" when it isn't.
 
-**Rationale**: This is the pattern 061 used until api#324–330 shipped. Rows render first, and names fill in.
+**Rationale**: The server sends the names in the same response, with no N+1 (mbe-api#344). That makes lookups redundant.
 
-**Alternatives**: Loading the whole vehicle and operator catalogs once. That's fine for vehicles, but the same per-id lookup already exists for warehouses, so one pattern serves all three.
+**Alternatives**: Per-id `FutureProvider.family` lookups (061's pattern before api#324–330). That was the plan before #343 shipped. It's dropped.
 
 ## R4. Licence warning
 
 **Decision**: Ignore the response's `warnings`. The trip screen reads the assigned operator (catalog `VehicleOperatorRepository.getById`, which carries `expirationDate`) and shows "La licencia de {operador} venció el {fecha}" when the expiry is before today. It's shown on the header for an Abierto trip only.
 
-**Rationale**: The server's warning is uncoded English (§III, API error text). The same operator read already serves the name (R3), so the warning costs no extra request. Specs 067 and 068 took the same approach for over-receipt warnings.
+**Rationale**: The server's warning is uncoded English (§III, API error text). The operator's name comes from the trip (R3). This one read, made only for an Abierto trip with an operator, is for the expiry. Specs 067 and 068 took the same approach for over-receipt warnings.
 
 **Alternatives**: Asking for a coded warning upstream (as api#322 did). That's possible later. It doesn't block this feature.
 

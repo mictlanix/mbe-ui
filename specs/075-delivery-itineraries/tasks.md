@@ -14,12 +14,12 @@ description: "Task list for 075-delivery-itineraries"
 - **P1 (the MVP)**: US1 plan a trip and load it, US2 send the truck out, US3 close each stop.
 - **P2**: US4 find trips (the filter drawer and states), US5 print.
 
-Phase 2 holds what two or more stories share: the error messages, strings, entities, repository, name sources, status chips, controllers and the actions notifier. The trip is reached from the list, so US1 also creates the list screen as a plain paginated table with "Nuevo itinerario". US4 adds the filter drawer and the list's states on top of it.
+Phase 2 holds what two or more stories share: the error messages, strings, entities, repository, lookups, status chips, controllers and the actions notifier. The trip is reached from the list, so US1 also creates the list screen as a plain paginated table with "Nuevo itinerario". US4 adds the filter drawer and the list's states on top of it.
 
 **Wireframe open questions 1–3 were not answered when this was generated.** The tasks follow the wireframes' assumptions. Change the tasks named here if the answer differs:
 - Q2 ("Nada entregado" needs a reason on every line): one reason picker per line, no "reason for all" control (T027).
 - Q4 (unloaded lines on an open stop): the stop card lists loaded lines only (T019).
-- Q3 (unit column before #343): a blank Unidad column (T019).
+- Q3 (unit column) is resolved: #343 shipped with the line's unit, so Unidad shows its symbol (T019).
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -36,7 +36,7 @@ Phase 2 holds what two or more stories share: the error messages, strings, entit
   - `lib/app/router/app_router.dart` and `lib/core/navigation/nav_destinations.dart`: T012 (US1) adds the list branch, the nav entry, the detail route and the gate.
   - `lib/l10n/app_en.arb` and `lib/l10n/app_es.arb`: T003 adds the error-message keys and T004 adds every itinerary key once. If a later task needs another, add it there and run `flutter gen-l10n`. Never hand-edit `lib/l10n/app_localizations*.dart`.
   - `test/widget/features/sales/delivery_itinerary_harness.dart`: T011 creates it, and later tests only use it.
-- **mbe-api#343.** The fields it will provide are nullable in the entities (T005). T002 checks whether it has shipped. If it has, regenerate the client and map the new fields in T006. If not, the stop UI (T018–T021, T027–T028) uses the fallbacks in research R2–R3. Do those tasks last within their phases, so #343 has time to land.
+- **mbe-api#343 shipped** (2026-11-18, mbe-api#344), and the client was regenerated in a8290511. Names come from the server: there are no vehicle, operator, warehouse or stop→order lookups and no session memory (research R2–R3). The one stop case left is a legacy stop with no stored order (R2). Migration 036 is applied on mbe_dev (2026-11-18). T002 confirms it from the API.
 - **Generated code.** After editing a freezed or `@riverpod` file, run `dart run build_runner build --delete-conflicting-outputs` at the repo root. Never run two build_runner processes at once: tasks that both need it are not marked [P] against each other. Regenerating the API client is only for T002, with `tool/generate_api_client.sh`.
 - **Generated method names are long** (for example `pendingDeliveriesApiV1DeliveryItinerariesDeliveriesGet`). Read the exact names from `lib/generated/openapi/lib/src/api/delivery_itineraries_api.dart` and never guess them.
 - **Formatting.** Format only the files you changed (`dart format <files>`). Never `dart format .`, and never format `lib/generated/`.
@@ -57,18 +57,16 @@ Phase 2 holds what two or more stories share: the error messages, strings, entit
 
 ## Phase 1: Setup
 
-**Purpose**: a known-good baseline, so later failures are attributable, and a decision on #343.
+**Purpose**: a known-good baseline, so later failures are attributable, and a check that the dev server runs #343.
 
 - [ ] T001 Run `flutter analyze` and the tests this feature touches: all of `test/unit/features/sales/` and `test/widget/features/sales/`, plus `test/unit/core/errors/catalog_coverage_test.dart`, `test/unit/core/navigation/nav_destinations_test.dart`, `test/unit/app/router/app_router_test.dart`, `test/unit/core/documents/` and `test/unit/core/formatting_guard_test.dart`. Record any failure that predates this feature, so it isn't blamed on the new code.
-- [ ] T002 Check whether mictlanix/mbe-api#343 has shipped (`gh issue view 343 -R mictlanix/mbe-api`, and whether `GET /openapi.json` on the dev server shows `delivery_order` on stops). Record the answer at the top of `specs/075-delivery-itineraries/research.md` under R2, with the date.
-  - **Shipped**: run `tool/generate_api_client.sh`, review the diff (never hand-edit `lib/generated/`), run `flutter analyze`, and note the new field names for T006.
-  - **Not shipped**: change nothing. The entities keep the fields nullable (T005), and the fallbacks in R2–R3 apply.
+- [ ] T002 Confirm the dev server serves #343. Read one itinerary with a stop (`GET /delivery-itineraries/{id}`): the stop has `delivery_order` and the lines have `product_name`. The user reported migration 036 applied on 2026-11-18. If the fields are still missing, stop and tell the user before T035/T038/T039. The unit and widget work doesn't need the server. The client is already regenerated (a8290511): don't regenerate, and never hand-edit `lib/generated/`. Record the date checked under R2 in `specs/075-delivery-itineraries/research.md`.
 
 ---
 
 ## Phase 2: Foundational (blocks all user stories)
 
-**Purpose**: the error messages, strings, entities, repository, name sources, chips, controllers and actions that two or more stories share.
+**Purpose**: the error messages, strings, entities, repository, lookups, chips, controllers and actions that two or more stories share.
 
 - [ ] T003 Localize the itinerary error codes (research R13, contracts/error-messages.md "New" and "Resources"). Mirror how `delivery_order.quantity_exceeds_remaining` is wired end to end.
   - In `lib/core/errors/localize_problem.dart`:
@@ -84,18 +82,18 @@ Phase 2 holds what two or more stories share: the error messages, strings, entit
   - the nav label "Itinerarios", screen titles and column headers;
   - the four trip statuses, four stop outcomes and five shortfall reasons (data-model.md);
   - every action, dialog title, field label, helper text and confirmation text in ui-contract.md and wireframes.md;
-  - the licence warning (placeholders for operator and date), the depart guard captions ("Nada cargado" and "La parada {n} no tiene nada cargado"), the unknown-order notes, the cancelled-trip line, and "cerrada {hora}";
+  - the licence warning (placeholders for operator and date), the depart guard captions ("Nada cargado" and "La parada {n} no tiene nada cargado"),  the cancelled-trip line, and "cerrada {hora}";
   - the close-dialog "what's missing" lines (receiver, ID, proof, a reason for {product}).
   - **Check:** `flutter gen-l10n` runs clean, and no Spanish string is left in English.
 - [ ] T005 Create the domain entities in `lib/features/sales/domain/entities/delivery_itinerary.dart` (data-model.md), as `freezed` classes:
   - the enums `ItineraryStatus`, `StopOutcome` and `ShortfallReason`, with the wire numbers;
   - `ItinerarySummary`, `ItineraryPage`, `Itinerary`, `ItineraryStop`, `ItineraryLine`, `StopClosure`, `StopClosureLine` and `ProofImage`;
-  - the #343 fields as nullable (`deliveryOrderId`, `customerName`, `shipToLabel`, `productCode`, `productName`, `unitSymbol`, `vehicleName`, `operatorName`, `warehouseName`);
+  - the #343 fields (data-model.md): nullable `vehicleName`, `operatorName`, `warehouseName`, a stop's `deliveryOrderId`, `customerName` and `shipToLabel`, and a line's `unitSymbol`; non-null a stop's `deliveryOrderIds` and a line's `deliveryOrderId`, `productCode` and `productName`;
   - the derived getters on `Itinerary`: `loadedLineCount`, `emptyStops`, `canDepart` and `pendingStops`.
   - Run build_runner.
 - [ ] T006 Extend the repository (contracts/repository.md): the interface `lib/features/sales/domain/repositories/delivery_itinerary_repository.dart` and the implementation `lib/features/sales/data/delivery_itinerary_repository_impl.dart`.
   - Add the 13 methods in the contract table. Keep `pendingDeliveries` unchanged.
-  - Map the DTOs to the entities with an **exhaustive** enum mapping. An unknown wire value is `AppError.server()`. Map the #343 fields from the DTO when T002 found them, and leave them null otherwise.
+  - Map the DTOs to the entities with an **exhaustive** enum mapping. An unknown wire value is `AppError.server()`. Map the #343 fields (stop `delivery_order`, `delivery_orders`, `customer_display_name`, `ship_to_label`; line `delivery_order`, `product_code`, `product_name`, `unit_of_measurement.symbol`; summary and detail `vehicle_name`, `vehicle_operator_name`, `warehouse_name`).
   - Ignore the response's `warnings` (R4).
   - `closeStop` posts the generated multipart call: `lines` is `jsonEncode` of `[{line, delivered_quantity (decimal string), reason_code (wire int or null)}]` and `image` is `MultipartFile.fromBytes(bytes, filename: …)`. Deserialize with `appSerializers`, never the raw `standardSerializers` (§III, spec 043).
   - Map `DioException` to `AppError` with the shared mapper.
@@ -105,19 +103,17 @@ Phase 2 holds what two or more stories share: the error messages, strings, entit
   - the `closeStop` `lines` JSON and that `image` is a real file part, not a plain field;
   - `warnings` ignored;
   - `DioException` → `AppError`, including a coded 409 and 422.
-- [ ] T008 [P] Create the name sources, `lib/features/sales/presentation/delivery_itineraries/itinerary_name_sources.dart`, and `test/unit/features/sales/itinerary_name_sources_test.dart` (research R2–R3, contracts/repository.md):
-  - `stopOrderMemoryProvider` (keepAlive `Map<int, int>`, stop id → delivery order id);
-  - `itineraryOrderProvider.family(orderId)`, one cached `DeliveryOrderAdminRepository.getById`;
-  - `vehicleDisplayNameProvider.family` (name, then plate) and `vehicleOperatorProvider.family` (name and licence expiry), over the catalog repositories;
-  - warehouse names reuse `warehouseDisplayNameProvider`.
+- [ ] T008 [P] Create the lookups, `lib/features/sales/presentation/delivery_itineraries/itinerary_lookups.dart`, and `test/unit/features/sales/itinerary_lookups_test.dart` (research R2, R4, contracts/repository.md):
+  - `itineraryOrderProvider.family(orderId)`: one cached `DeliveryOrderAdminRepository.getById`. It's used only on an Abierto trip, for open quantities.
+  - `vehicleOperatorProvider.family(id)`: the operator's licence expiry, from the catalog `VehicleOperatorRepository`.
 
-  A failed or forbidden lookup returns null so the caller shows the number (FR-024). When the entity already carries a name (#343), the caller prefers it. Test caching per id, the null fallback, and the memory map.
+  A failed or forbidden lookup returns null. The caller then shows "—" for open quantities, and no licence warning. Test caching per id and the null case.
 - [ ] T009 [P] Create the chips, `lib/features/sales/presentation/delivery_itineraries/itinerary_status_chip.dart`: `ItineraryStatusChip` (four tones) and `StopOutcomeChip` (four tones), both built on the shared `StatusChip`, with labels from l10n. Test in `test/widget/features/sales/itinerary_status_chip_test.dart`: every value renders its own label, and none shows the enum name.
 - [ ] T010 Create the controllers and actions in `lib/features/sales/presentation/delivery_itineraries/`, mirroring `delivery_order_detail_controller.dart` and `delivery_order_actions.dart`:
   - `delivery_itinerary_detail_controller.dart`: `AsyncNotifier` family by id.
-  - `delivery_itinerary_actions.dart`: a `keepAlive` notifier with `create`, `updateHeader`, `addStop`, `removeStop`, `commitLine`, `commitWholeOrder`, `adjust`, `release`, `depart`, `cancel` and `closeStop`. Each returns `AppError?` (`create` returns the new id or an error). On success it sets the detail controller's state to the returned trip, invalidates the list controller and the touched `itineraryOrderProvider` entries, and, after `depart`, `cancel` or `closeStop`, invalidates the 061 delivery-order list and detail providers and the 063 pending queue (R10). `addStop` also records the stop in `stopOrderMemoryProvider`. A network failure returns the "result unknown" error and reloads the trip.
-  - Run build_runner, then add `test/unit/features/sales/delivery_itinerary_actions_test.dart`: each action calls the repository and updates the detail state without an extra GET, a refusal returns the error and reloads, the 061 and 063 providers are invalidated after depart, cancel and close, and `addStop` fills the memory map.
-- [ ] T011 [P] Create the widget harness, `test/widget/features/sales/delivery_itinerary_harness.dart`, mirroring how `delivery_order_detail_screen_test.dart` wires its overrides: a mocktail `MockDeliveryItineraryRepository`, the access control with a configurable rights set (87 and 71), the formatters, a router, and overrides for the name sources.
+  - `delivery_itinerary_actions.dart`: a `keepAlive` notifier with `create`, `updateHeader`, `addStop`, `removeStop`, `commitLine`, `commitWholeOrder`, `adjust`, `release`, `depart`, `cancel` and `closeStop`. Each returns `AppError?` (`create` returns the new id or an error). On success it sets the detail controller's state to the returned trip, invalidates the list controller and the touched `itineraryOrderProvider` entries, and, after `depart`, `cancel` or `closeStop`, invalidates the 061 delivery-order list and detail providers and the 063 pending queue (R10). A network failure returns the "result unknown" error and reloads the trip.
+  - Run build_runner, then add `test/unit/features/sales/delivery_itinerary_actions_test.dart`: each action calls the repository and updates the detail state without an extra GET, a refusal returns the error and reloads, the 061 and 063 providers are invalidated after depart, cancel and close.
+- [ ] T011 [P] Create the widget harness, `test/widget/features/sales/delivery_itinerary_harness.dart`, mirroring how `delivery_order_detail_screen_test.dart` wires its overrides: a mocktail `MockDeliveryItineraryRepository`, the access control with a configurable rights set (87 and 71), the formatters, a router, and overrides for the lookups.
 
 **Checkpoint**: the shared pieces compile, `flutter analyze` is clean, and the unit tests above pass.
 
@@ -136,7 +132,7 @@ Phase 2 holds what two or more stories share: the error messages, strings, entit
 - [ ] T013 [US1] Create the filter and the list controller in `lib/features/sales/presentation/delivery_itineraries/`: `delivery_itineraries_filter.dart` (freezed `DeliveryItinerariesFilter`: status, dateFrom, dateTo, vehicleId, operatorId, warehouseId, page, with URL encoding as in `delivery_orders_filter.dart`) and `delivery_itineraries_list_controller.dart` (`AsyncNotifier`, page size 20, newest first). Run build_runner. Test the filter's URL round-trip and the controller's request in `test/unit/features/sales/delivery_itineraries_filter_test.dart` and `delivery_itineraries_list_controller_test.dart`.
 - [ ] T014 [US1] Create the list screen (ui-contract "List screen", wireframes "Screen: Itinerarios list", depends on T013): `delivery_itineraries_list_screen.dart`. Declare `const deliveryItinerariesPath = '/sales/delivery-itineraries';` at the top of this file.
   - `CatalogFilterBar` with **no search control**. Its actions hold "Nuevo itinerario" (`FilledButton.icon`, only with create on 87). The filter button and drawer come in T030.
-  - `DataTableView<ItinerarySummary>` with Núm. (right-aligned), Fecha, Vehículo, Operador, Almacén (name cells from the T008 sources, falling back to the number), Estado (`ItineraryStatusChip`), Salida and Regreso (times via `formattersProvider`, "—" when absent). The row tap pushes `'$deliveryItinerariesPath/${id}'`. No row icons.
+  - `DataTableView<ItinerarySummary>` with Núm. (right-aligned), Fecha, Vehículo, Operador, Almacén (names from the row, #343; the number when the name is null but the id is set, "—" when there's no id), Estado (`ItineraryStatusChip`), Salida and Regreso (times via `formattersProvider`, "—" when absent). The row tap pushes `'$deliveryItinerariesPath/${id}'`. No row icons.
   - `CatalogPagination`. Loading, empty and error use `CatalogListStateView`.
 - [ ] T015 [US1] Create `new_itinerary_dialog.dart` (wireframes "Dialog: Nuevo itinerario"): a `ResponsiveDialog` with date (default today), vehicle, operator (both `CatalogEntityPicker`, each needing read on its catalog) and dispatch warehouse (optional, with the helper text that blank uses the point of sale's), and a comment. Everything is optional. On confirm it calls `create` and opens the new trip. `vehicle.open_itinerary_exists` shows in `FormErrorBanner`, the dialog stays open, and the message names the trip holding the vehicle (US1 scenario 4). Launch it from T014's button.
 - [ ] T016 [US1] Create the trip screen (ui-contract "Trip screen", wireframes "Screen: Trip", depends on T010, T018, T019): `delivery_itinerary_detail_screen.dart`. Declare the detail path helper beside the list's constant.
@@ -148,10 +144,10 @@ Phase 2 holds what two or more stories share: the error messages, strings, entit
 - [ ] T017 [US1] Create `itinerary_header_dialog.dart` (wireframes, FR-006): a `ResponsiveDialog` with date, vehicle, operator and comment. The dispatch warehouse isn't editable. Confirm is enabled only when something changed. Wire "Editar encabezado" in T016. Add the licence warning (R4): read the assigned operator through `vehicleOperatorProvider` and, when the expiry is before today, show an `ErrorBanner` in warning tone, "La licencia de {operador} venció el {fecha}" (FR-007), on an Abierto trip. It blocks nothing.
 - [ ] T018 [US1] Create `add_stop_dialog.dart` (wireframes "Dialog: Agregar parada", research R5): a `ResponsiveDialog` with `CatalogSearchBar` (folio), a single-select `DataTableView` over `DeliveryOrderAdminRepository.list` filtered to delivery-type orders in En preparación (Folio, Cliente, Dirección, Fecha), pagination, and orders already stops on this trip hidden. The empty state reads "No hay órdenes en preparación." It needs read on 71. Confirm calls `addStop`.
 - [ ] T019 [US1] Create `itinerary_stop_card.dart` (wireframes "Trip" and "a stop whose order isn't known"): a titled section per stop.
-  - The title has "Parada {n}", the order folio as a link to `/sales/delivery-orders/{id}` (only with read on 71), customer and ship-to. Prefer the entity's #343 names, then the T008 sources, then show only "Parada {n}".
+  - The title has "Parada {n}", the order folio as a link to `/sales/delivery-orders/{id}` (only with read on 71), customer and ship-to. Names come from the stop (#343).
   - On an Abierto stop with update: "Cargar todo", "Cargar línea" and a ⋮ overflow with "Quitar parada".
-  - The line table is a non-paginated `DataTableView` with Código, Producto, Unidad (blank until #343), Pendiente (the order line's open quantity) and Cargado. Loaded lines only (wireframe Q4). ✎ and 🗑 sit on each row. Quantities are right-aligned and use `formattersProvider`.
-  - A stop whose order is unknown shows "Parada {n}", lines as "Partida {id}", and the note from the wireframe. "Cargar todo" and "Cargar línea" first ask for the order (reuse T018's dialog).
+  - The line table is a non-paginated `DataTableView` with Código, Producto, Unidad (the line's `unitSymbol`), Pendiente (the order line's open quantity) and Cargado. Loaded lines only (wireframe Q4). ✎ and 🗑 sit on each row. Quantities are right-aligned and use `formattersProvider`.
+  - A legacy stop with no stored order (`deliveryOrderId == null`) shows "Parada {n}" with the folios from `deliveryOrderIds`. Its lines still show product names. "Cargar todo" and "Cargar línea" first ask for the order (reuse T018's dialog).
 - [ ] T020 [US1] Create `load_line_dialog.dart` (wireframes "Dialog: Cargar línea"): a `ResponsiveDialog` listing the stop's order lines with open > 0 (from `itineraryOrderProvider`), a single selection, and a `CompactField` quantity that defaults to the open quantity and is greater than 0 and at most that (FR-010). Confirm calls `commitLine`. "Cargar todo" in T019 calls `commitWholeOrder` after one confirmation.
 - [ ] T021 [US1] Create `itinerary_dialogs.dart` with the quantity prompt (✎: quantity at most open + already loaded, calls `adjust`, FR-011), the release prompt (🗑, calls `release`) and the remove-stop prompt (calls `removeStop`, naming what's released). All use `ResponsiveDialog` confirmations and the shared button order.
 - [ ] T022 [US1] Test the US1 widgets, using the T011 harness. Create:
@@ -159,8 +155,8 @@ Phase 2 holds what two or more stories share: the error messages, strings, entit
   - `itinerary_header_dialog_test.dart`: the warehouse isn't editable, confirm needs a change, and the licence warning shows for an expired operator and not for a valid one.
   - `add_stop_dialog_test.dart`: only delivery orders in En preparación are requested, orders already on the trip are hidden, folio search, empty state.
   - `load_line_dialog_test.dart`: the default is the open quantity, above-open is refused, lines with open 0 aren't offered, and the quantity prompt's maximum is open + loaded.
-  - `delivery_itinerary_detail_screen_test.dart` (Abierto part): rights × status (read-only sees no control), stop cards with names, the unknown-order stop (title "Parada {n}", no folio link without read on 71), and ✎ and 🗑 on loaded rows only.
-  - `delivery_itineraries_list_screen_test.dart` (the table part): rows, the draft-free columns, no row icons, "Nuevo itinerario" only with create, the name fallbacks, and the compact tier (two-line rows).
+  - `delivery_itinerary_detail_screen_test.dart` (Abierto part): rights × status (read-only sees no control), stop cards with names, the legacy stop (title "Parada {n}" with folios), no folio link without read on 71, and ✎ and 🗑 on loaded rows only.
+  - `delivery_itineraries_list_screen_test.dart` (the table part): rows, the draft-free columns, no row icons, "Nuevo itinerario" only with create, the null-name fallback, and the compact tier (two-line rows).
 
 **Checkpoint**: US1 is demonstrable on its own: create a trip, add stops, load them, adjust, release and reload.
 
@@ -256,7 +252,7 @@ Phase 2 holds what two or more stories share: the error messages, strings, entit
   - cancel an Abierto trip, and its quantities are open again;
   - both print documents return a PDF for En ruta and Cerrado, and a 409 for Abierto.
 
-  Note in the file header which accounts it needs and that the facility must have an in-transit location. If #343 shipped, assert the new fields too.
+  Note in the file header which accounts it needs and that the facility must have an in-transit location. Assert the #343 fields on a fresh read: the stop's order, customer and ship-to, and the line's product and unit (needs migration 036, T002).
 - [ ] T036 [P] Device test (quickstart.md, depends on T033, T028): `integration_test/delivery_itineraries_quickstart_test.dart`, mirroring `delivery_orders_quickstart_test.dart` and the macOS traps in memory (frame-stall watchdog, picker and back-button finders). Walk quickstart steps 1–12 as the administrator. Run with `caffeinate -dimsu flutter test integration_test/delivery_itineraries_quickstart_test.dart -d macos --dart-define-from-file=.env`, since without `caffeinate` it stalls silently.
 - [ ] T037 [P] Largest text level (quickstart step 13, depends on T028, T030): `test/widget/features/sales/delivery_itineraries_large_text_test.dart`. At the largest text scale, the list, the trip screen with a closed stop's table and the close dialog don't clip or scroll sideways at 1280 px.
 - [ ] T038 Final checks (depends on all previous tasks).
@@ -270,7 +266,7 @@ Phase 2 holds what two or more stories share: the error messages, strings, entit
 
 ## Dependencies & execution order
 
-- **Phase 1** before everything. T002 decides whether T006 maps the #343 fields.
+- **Phase 1** before everything. T002 only gates the live tasks (T035, T038, T039).
 - **Phase 2** blocks all stories. Inside it: T005 → T006 → (T007, T008, T010 in parallel); T003 and T004 can run alongside T005; T009 and T011 are independent.
 - **US1 (Phase 3)** needs Phase 2. Inside it: T013 → T014 → T015; T018, T019, T020 and T021 can be built in parallel with each other (different files) before T016 ties them together; T012 comes after T014 and T016; T022 is last.
 - **US2 (Phase 4)** needs US1's trip screen (T016). **US3 (Phase 5)** needs US2's departed state to be reachable, and T026 → T027 → T028. **US4** needs T014. **US5** needs T016 only (it adds buttons to the screen), but run it after US3 so the detail screen is edited one story at a time.
@@ -286,5 +282,4 @@ Phase 2 holds what two or more stories share: the error messages, strings, entit
 ## Implementation strategy
 
 - **MVP = US1 + US2 + US3**: plan, depart, close. That's every order in En preparación put on a truck, sent and settled (SC-003). Stop after Phase 5, validate against the dev server (T035's core cases, quickstart steps 1–12), then add US4 and US5.
-- **Do the stop UI last within each phase** (T018–T021, T027–T028) and re-run T002 first, so #343 has had as long as possible to land. If it ships mid-feature, regenerate, map the fields in T006, and keep the lookups as the fallback (FR-024).
 - **Commit per story** after its tests pass, in the house style (`feat(sales): …` for code, `docs(specs): …` for spec changes). Never `dart format .`.

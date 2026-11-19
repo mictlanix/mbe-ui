@@ -13,7 +13,7 @@ Nav: Logística group, the fourth entry ("Itinerarios", `Icons.route_outlined` /
 
 - **Filter row**: the badged filters button (drawer) and "Nuevo itinerario" (`FilledButton.icon`, only with `can(87, create)`). No search box (R14).
 - **Drawer**: status (Todos, Abierto, En ruta, Cerrado, Cancelado), a date range, vehicle, operator and dispatch warehouse pickers.
-- **Table** (`DataTableView`, paginated 20): Núm., Fecha, Vehículo, Operador, Almacén, Estado (`StatusChip<ItineraryStatus>`), Salida, Regreso. Name cells fill in after lookup. There is no row Edit icon. A row click opens the trip.
+- **Table** (`DataTableView`, paginated 20): Núm., Fecha, Vehículo, Operador, Almacén, Estado (`StatusChip<ItineraryStatus>`), Salida, Regreso. Name cells come from the row (#343). There is no row Edit icon. A row click opens the trip.
 
 ## Trip screen
 
@@ -30,11 +30,11 @@ The AppBar has the title "Itinerario {id}" and no actions (§VI).
    - **Card title**: "Parada {n}", the order's folio as a link to `/sales/delivery-orders/{id}` (with 71 read), customer, ship-to, and an outcome chip once departed.
    - **Abierto**: "Cargar todo", "Cargar línea" and "Quitar parada" (overflow).
    - **En ruta, pending**: "Cerrar parada".
-   - **Table**: Código, Producto, Unidad (blank until #343), and the quantities for the status:
+   - **Table**: Código, Producto, Unidad (the line's unit symbol), and the quantities for the status:
      - Abierto: Pendiente (open on the order), Cargado, with ✎ and 🗑;
      - En ruta: Enviado;
      - closed stop: Enviado, Entregado, Devuelto, Motivo.
-   - **Unknown order** (R2): the title is "Parada {n}", lines show "Partida {deliveryOrderLineId}", and "Cargar línea" first asks for the order.
+   - **Legacy stop, no stored order** (R2): the title is "Parada {n}" with the folios of the stop's lines. Lines still show product names. On an Abierto trip, "Cargar línea" first asks for the order.
 
 ## Dialogs (`ResponsiveDialog`)
 

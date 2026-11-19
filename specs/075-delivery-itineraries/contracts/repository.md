@@ -22,11 +22,11 @@ The 063 `pendingDeliveries` method stays as it is. New methods follow. Each writ
 
 Errors map `DioException` → `AppError` with the shared mapper (§III). Printing goes through `DocumentSource`, not this repository (R11).
 
-## Name sources (presentation, research R2–R3)
+## Lookups (presentation, research R2–R4)
 
-- `stopOrderMemoryProvider` (keepAlive, `Map<int stopId, int deliveryOrderId>`): written by `addStop` and read by the stop resolver.
-- `itineraryOrderProvider.family(deliveryOrderId)` → `DeliveryOrder`: one `DeliveryOrderAdminRepository.getById` per order, cached and invalidated after loads, departure and close.
-- `vehicleDisplayNameProvider.family(id)`, `vehicleOperatorProvider.family(id)` (name plus expiry for R4), and the existing `warehouseDisplayNameProvider`.
+Names come from the trip itself (mbe-api#343). Only two reads remain:
+- `itineraryOrderProvider.family(deliveryOrderId)` → `DeliveryOrder`. This is one `DeliveryOrderAdminRepository.getById` per stop order, read only on an Abierto trip for open quantities. It's cached, and invalidated after loads, departure and close.
+- `vehicleOperatorProvider.family(id)` → the operator's licence expiry (R4). It's read only for an Abierto trip with an operator.
 
 ## `DeliveryItineraryActions` (keepAlive notifier)
 

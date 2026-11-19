@@ -4,7 +4,7 @@ A walkthrough that proves the feature end to end against the dev mbe-api.
 
 ## Prerequisites
 
-- mbe-api running locally, with the client regenerated if #343 has shipped (`tool/generate_api_client.sh`).
+- mbe-api running locally at or after mbe-api#344 (#343), with migration 036 applied (done on mbe_dev 2026-11-18). The client is already regenerated (a8290511).
 - `.env` with the dev tenant's admin account (see the memory on dev tenant accounts). A non-admin with Delivery Itineraries read only (`qareadonly`) for the rights check.
 - Two delivery-type orders in **En preparación** at the admin's facility, each with two lines:
   - create the sales with delivery destinations in the POS;
@@ -25,7 +25,7 @@ A walkthrough that proves the feature end to end against the dev mbe-api.
 8. **Print**: "Imprimir ticket" and "Imprimir notas de entrega" each open the preview.
 9. **Close stop 1 with an image**: Enter the receiver and ID, keep everything delivered, and upload the image. The stop shows Entregada. Order A shows Entregada, and its proof is on the 061 screen.
 10. **Close stop 2 with a signature and a shortfall**: Enter delivered below sent with no reason. Confirm is disabled until "Mercancía dañada" is picked. Draw a signature, then confirm. The stop shows Entregada parcialmente with returned quantities. The trip shows **Cerrado** with its return time without a reload. Order B shows Entregada parcialmente, and a child order with the remainder exists.
-11. **Reload**: Reload the trip in a fresh session. Before #343, stops show "Parada N" and line numbers. After #343, they show folio, customer and products.
+11. **Reload**: Reload the trip in a fresh session. The stops still show folio, customer, ship-to, products and units, and the list rows show vehicle, operator and warehouse names.
 12. **Cancel**: Create a trip, load something, and cancel it. It shows Cancelado, the order's open quantity is back, and print isn't offered.
 13. **Largest text size**: At the largest text level, the trip screen and the close dialog don't clip or overflow at 1280 px.
 
