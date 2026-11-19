@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Delivery Itineraries",
   "branch": "075-delivery-itineraries",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -32,6 +32,20 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-19T02:44:46.816Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-19T02:55:20.791Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-19T02:57:38.529Z"
     }
   ],
   "telemetryInstanceId": "4f0f6e04-8731-47bd-87fa-30668f7a3492"
