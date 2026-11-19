@@ -54,13 +54,13 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 /// and skips, saying why, when the issuer has no credit-note series.
 ///
 /// **Spec 074** adds `Payment receipt against the simulated PAC`: with
-/// `MBE_WRITE=true` and `PAC_PROVIDER=simulated`, it takes an issued PPD
-/// invoice, creates a payment receipt by hand for that invoice's customer and
+/// `MBE_WRITE=true` and `PAC_PROVIDER=simulated`, it seals and stamps a PPD
+/// invoice from a completed order, creates a payment receipt by hand for that invoice's customer and
 /// recipient, fills the payment, pays the invoice, checks the refusal for
 /// amounts that do not equal the payment, confirms, reopens, confirms again,
-/// stamps and cancels it with reason 02. It consumes **one payment-receipt
-/// folio** per run and skips, saying why, when the tenant has no issued PPD
-/// invoice or the issuer has no payment-receipt series. It does not create a
+/// stamps and cancels it with reason 02, then cancels the invoice. It consumes
+/// **one invoice folio and one payment-receipt folio** per run and skips,
+/// saying why, when the issuer has no payment-receipt series. It does not create a
 /// customer payment (the from-payment path is covered by the widget tests).
 ///
 /// **Spec 072** adds a second test, `Stamp, cancel and refresh against the
@@ -1056,31 +1056,97 @@ void main() {
         }
       }
 
-      FiscalDocument? invoice;
-      await step('an issued, live PPD invoice', () async {
-        final page = await docs.list(
-          status: FiscalDocumentStatus.issued,
-          type: 0,
-          limit: 50,
-        );
-        for (final row in page.items) {
-          final candidate = await docs.getById(row.id);
-          if (candidate.paymentTerms == InvoicePaymentTerms.ppd &&
-              candidate.customerId != null &&
-              candidate.summary.recipientRfc != null) {
-            invoice = candidate;
-            return 'using #${candidate.id} ${candidate.summary.folioLabel}';
+      Future<void> simulate(int id) =>
+          sim.setSimulationApiV1PacSimulatorFiscalDocumentsFiscalDocumentIdPut(
+            fiscalDocumentId: id,
+            pacSimulationUpdate: api.PacSimulationUpdate(
+              (b) => b
+                ..cancellation =
+                    api.PacSimulationUpdateCancellationEnum.accepted,
+            ),
+          );
+
+      // The receipt needs a stamped, live PPD invoice. Dev has few or none
+      // among its recent ones, so the test makes its own from a completed
+      // order that still has something to invoice (one invoice folio).
+      final orders = SalesOrderRepositoryImpl(dio);
+      final customers = CustomerRepositoryImpl(dio);
+      int? customerId;
+      String? rfc;
+      final orderIds = <int>[];
+      await step(
+        'discover a customer with an RFC and completed orders',
+        () async {
+          final page = await orders.listOrders(
+            status: SaleStatus.completed,
+            limit: 100,
+          );
+          for (final o in page.items) {
+            final sale = await orders.getById(saleId: o.id);
+            if (customerId == null) {
+              final customer = await customers.get(customerId: sale.customer);
+              if (customer.taxpayers.isEmpty) continue;
+              customerId = sale.customer;
+              rfc = customer.taxpayers.first.taxpayerRecipientId;
+            }
+            if (sale.customer == customerId) orderIds.add(o.id);
           }
-        }
-        steps.add(
-          _Step(
-            'an issued PPD invoice',
-            true,
-            'SKIPPED: no issued PPD invoice on this tenant',
-          ),
-        );
-        return null;
-      });
+          if (customerId == null) {
+            throw StateError('no completed order whose customer has an RFC');
+          }
+          return 'customer $customerId, RFC $rfc, ${orderIds.length} orders';
+        },
+      );
+
+      FiscalDocument? invoice;
+      if (customerId != null) {
+        await step('a PPD invoice: sealed and stamped from an order', () async {
+          var draft = await docs.create(
+            NewInvoice(customerId: customerId!, recipientRfc: rfc!),
+          );
+          var added = false;
+          for (final id in orderIds) {
+            try {
+              draft = await docs.addSalesOrder(draft.id, id);
+              added = true;
+              break;
+            } on AppError catch (e) {
+              if (e.problem?.codeName !=
+                  'fiscal_document.no_invoiceable_lines') {
+                rethrow;
+              }
+            }
+          }
+          if (!added) {
+            throw StateError(
+              'none of the ${orderIds.length} orders has anything left to '
+              'invoice (draft #${draft.id} left empty)',
+            );
+          }
+          draft = await docs.updateHeader(
+            draft.id,
+            const InvoiceHeaderPatch(paymentTerms: InvoicePaymentTerms.ppd),
+          );
+          expect(draft.paymentTerms, InvoicePaymentTerms.ppd);
+          FiscalDocument sealedInvoice;
+          try {
+            sealedInvoice = await docs.confirm(draft.id);
+          } on AppError catch (e) {
+            final line = e.problem?.intParam('line');
+            if (e.problem?.codeName != 'fiscal_document.line_missing_sat_key' ||
+                line == null) {
+              rethrow;
+            }
+            draft = await docs.removeLine(draft.id, draft.lines[line - 1].id);
+            sealedInvoice = await docs.confirm(draft.id);
+          }
+          final stamped = await docs.stamp(sealedInvoice.id);
+          expect(stamped.status, FiscalDocumentStatus.issued);
+          expect(stamped.stamp?.simulated, isTrue);
+          invoice = stamped;
+          return '#${stamped.id} ${stamped.summary.folioLabel}';
+        });
+      }
 
       FiscalDocument? receipt;
       if (invoice != null) {
@@ -1226,22 +1292,38 @@ void main() {
           return receipt!.stamp!.uuid;
         });
 
-        await step('cancel with 02: cancelled', () async {
-          await sim
-              .setSimulationApiV1PacSimulatorFiscalDocumentsFiscalDocumentIdPut(
-                fiscalDocumentId: id,
-                pacSimulationUpdate: api.PacSimulationUpdate(
-                  (b) => b
-                    ..cancellation =
-                        api.PacSimulationUpdateCancellationEnum.accepted,
-                ),
-              );
+        await step('the invoice cannot be cancelled while the receipt is '
+            'live', () async {
+          try {
+            await docs.cancel(
+              invoice!.id,
+              SatCancellationReason.withoutRelation,
+            );
+            fail('an invoice with a live receipt was cancelled');
+          } on AppError catch (e) {
+            expect(e.problem?.codeName, 'fiscal_document.has_live_documents');
+          }
+          return null;
+        });
+
+        await step('cancel the receipt with 02: cancelled', () async {
+          await simulate(id);
           final done = await docs.cancel(
             id,
             SatCancellationReason.withoutRelation,
           );
           expect(done.status, FiscalDocumentStatus.cancelled);
           return null;
+        });
+
+        await step('then the invoice cancels too (cleanup)', () async {
+          await simulate(invoice!.id);
+          final done = await docs.cancel(
+            invoice!.id,
+            SatCancellationReason.withoutRelation,
+          );
+          expect(done.status, FiscalDocumentStatus.cancelled);
+          return done.summary.folioLabel;
         });
       }
 
