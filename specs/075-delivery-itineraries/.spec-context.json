@@ -1,0 +1,24 @@
+{
+  "workflow": "speckit",
+  "specName": "Delivery Itineraries",
+  "branch": "075-delivery-itineraries",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-19T02:32:16.000Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-19T02:35:26.675Z"
+    }
+  ],
+  "telemetryInstanceId": "4f0f6e04-8731-47bd-87fa-30668f7a3492"
+}
