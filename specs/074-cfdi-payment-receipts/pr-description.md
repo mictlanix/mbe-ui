@@ -51,7 +51,7 @@ Every action is absent, never disabled, without its right or outside its state.
 ## Verification
 
 - `flutter analyze`: clean. Formatting checked on the changed files only.
-- `flutter test`: 6285 pass, 85 skipped (live tests without credentials). The 8 failures all fail the same way on the branch without this work: the six goldens in `test/golden/core_widgets_golden_test.dart` (known, mbe-ui#209), the sales-list pixel diff in `pos_screens_screenshot_test.dart`, and `auth_flow_test.dart` scenario 2 (a live login with a wrong password against the local API did not throw).
+- `flutter test`: 6285 pass, 85 skipped (live tests without credentials). The 7 failures all fail the same way on the branch without this work: the six goldens in `test/golden/core_widgets_golden_test.dart` (known, mbe-ui#209) and the sales-list pixel diff in `pos_screens_screenshot_test.dart`. `auth_flow_test.dart` scenario 2 also failed in the full run, because mbe-api had lost its database connection; it passes after an mbe-api restart.
 - **Live test** (`test/integration/fiscal_documents_live_test.dart`, group "Payment receipt against the simulated PAC"): written, **not yet run**. It needs `MBE_WRITE=true` against dev, and it consumes one receipt folio and stamps one document.
 - **Manual checks** (`quickstart.md`) are not done yet.
 
