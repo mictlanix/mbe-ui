@@ -37,7 +37,10 @@ class _FakeRepository implements InventoryCountRepository {
   }
 
   @override
-  Future<InventoryCount> setLines(int id, List<CountLineInput> items) async {
+  Future<InventoryCountLinesChange> setLines(
+    int id,
+    List<CountLineInput> items,
+  ) async {
     batches.add(items);
     await gate?.future;
     if (batches.length == refuseBatch) throw refusal!;
@@ -46,7 +49,7 @@ class _FakeRepository implements InventoryCountRepository {
       applied[line.code] = line.quantity;
     }
     // Lines are left out: the sender only reads the answer's refusal.
-    return aCount(lines: const []);
+    return aLinesChange(lineCount: 0);
   }
 
   @override

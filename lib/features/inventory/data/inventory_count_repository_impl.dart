@@ -88,29 +88,33 @@ class InventoryCountRepositoryImpl implements InventoryCountRepository {
   );
 
   @override
-  Future<InventoryCount> setLines(int id, List<CountLineInput> items) {
+  Future<InventoryCountLinesChange> setLines(
+    int id,
+    List<CountLineInput> items,
+  ) {
     assert(
       items.isNotEmpty && items.length <= 2000,
       'A line batch holds 1 to 2,000 items',
     );
-    return _count(
-      () => _api.setInventoryCountLinesApiV1InventoryCountsCountIdLinesPut(
-        countId: id,
-        countLinesSet: api.CountLinesSet(
-          (b) => b.lines = ListBuilder(items.map(_lineSet)),
-        ),
-      ),
+    return _change(
+      () => _api
+          .setInventoryCountLineChangesApiV1InventoryCountsCountIdLineChangesPut(
+            countId: id,
+            countLinesSet: api.CountLinesSet(
+              (b) => b.lines = ListBuilder(items.map(_lineSet)),
+            ),
+          ),
     );
   }
 
   @override
-  Future<InventoryCount> updateLine(
+  Future<InventoryCountLinesChange> updateLine(
     int id,
     int lineId, {
     required Decimal quantity,
-  }) => _count(
-    () =>
-        _api.updateInventoryCountLineApiV1InventoryCountsCountIdLinesLineIdPut(
+  }) => _change(
+    () => _api
+        .updateInventoryCountLineChangeApiV1InventoryCountsCountIdLineChangesLineIdPut(
           countId: id,
           lineId: lineId,
           countLineUpdate: api.CountLineUpdate(
@@ -120,9 +124,9 @@ class InventoryCountRepositoryImpl implements InventoryCountRepository {
   );
 
   @override
-  Future<InventoryCount> removeLine(int id, int lineId) => _count(
+  Future<InventoryCountLinesChange> removeLine(int id, int lineId) => _change(
     () => _api
-        .removeInventoryCountLineApiV1InventoryCountsCountIdLinesLineIdDelete(
+        .removeInventoryCountLineChangeApiV1InventoryCountsCountIdLineChangesLineIdDelete(
           countId: id,
           lineId: lineId,
         ),
@@ -202,6 +206,26 @@ class InventoryCountRepositoryImpl implements InventoryCountRepository {
       final result = (await call()).data;
       if (result == null) throw const AppError.server();
       return _toCount(result);
+    } on DioException catch (e) {
+      throw _toAppError(e);
+    }
+  }
+
+  Future<InventoryCountLinesChange> _change(
+    Future<Response<api.InventoryCountLinesChanged>> Function() call,
+  ) async {
+    try {
+      final result = (await call()).data;
+      if (result == null) throw const AppError.server();
+      return InventoryCountLinesChange(
+        countId: result.inventoryCountId,
+        status: _status(result.status),
+        updaterId: result.updater,
+        updatedAt: result.modificationTime,
+        lineCount: result.lineCount,
+        lines: result.lines?.map(_line).toList() ?? [],
+        removedLineId: result.removedLineId,
+      );
     } on DioException catch (e) {
       throw _toAppError(e);
     }

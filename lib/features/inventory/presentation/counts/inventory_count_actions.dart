@@ -31,9 +31,9 @@ const _staleCodes = {
 ///
 /// Each method answers the [AppError] the server refused with, or `null`
 /// when it went through, rather than throwing: the dialog that asked shows
-/// the refusal where the user is looking. On success the returned count is
-/// put into its detail provider (when one is alive) and the list is
-/// invalidated.
+/// the refusal where the user is looking. On success the returned count (or,
+/// for a line write, the lines it changed) goes into its detail provider
+/// when one is alive, and the list is invalidated.
 ///
 /// Keep-alive because a write outlives the dialog that started it.
 @Riverpod(keepAlive: true)
@@ -64,24 +64,21 @@ class InventoryCountActions extends _$InventoryCountActions {
     (r) => r.updateHeader(id, warehouseId: warehouseId, comment: comment),
   )).error;
 
-  /// `PUT /inventory-counts/{id}/lines`: one batch, already split by the
-  /// caller (the paste sender owns the splitting).
-  Future<AppError?> setLines(int id, List<CountLineInput> items) async =>
-      (await _run(id, (r) => r.setLines(id, items))).error;
+  /// `PUT /inventory-counts/{id}/line-changes`: one batch, already split by
+  /// the caller (the paste sender owns the splitting).
+  Future<AppError?> setLines(int id, List<CountLineInput> items) =>
+      _runLines(id, (r) => r.setLines(id, items));
 
-  /// `PUT /inventory-counts/{id}/lines/{lineId}`.
+  /// `PUT /inventory-counts/{id}/line-changes/{lineId}`.
   Future<AppError?> updateLine(
     int id,
     int lineId, {
     required Decimal quantity,
-  }) async => (await _run(
-    id,
-    (r) => r.updateLine(id, lineId, quantity: quantity),
-  )).error;
+  }) => _runLines(id, (r) => r.updateLine(id, lineId, quantity: quantity));
 
-  /// `DELETE /inventory-counts/{id}/lines/{lineId}`.
-  Future<AppError?> removeLine(int id, int lineId) async =>
-      (await _run(id, (r) => r.removeLine(id, lineId))).error;
+  /// `DELETE /inventory-counts/{id}/line-changes/{lineId}`.
+  Future<AppError?> removeLine(int id, int lineId) =>
+      _runLines(id, (r) => r.removeLine(id, lineId));
 
   /// `POST /inventory-counts/{id}/confirm`.
   Future<CountConfirmOutcome> confirm(
@@ -111,15 +108,37 @@ class InventoryCountActions extends _$InventoryCountActions {
     try {
       count = await write(ref.read(inventoryCountRepositoryProvider));
     } on AppError catch (error) {
-      if (id != null && _staleCodes.contains(error.problem?.code)) {
-        final detail = inventoryCountDetailControllerProvider(id);
-        if (ref.exists(detail)) await ref.read(detail.notifier).refresh();
-      }
+      if (id != null) await _refreshIfStale(id, error);
       return (error: error, count: null);
     }
     final detail = inventoryCountDetailControllerProvider(count.id);
     if (ref.exists(detail)) ref.read(detail.notifier).put(count);
     ref.invalidate(inventoryCountsListControllerProvider);
     return (error: null, count: count);
+  }
+
+  /// [_run] for the line writes, which answer only what they changed.
+  Future<AppError?> _runLines(
+    int id,
+    Future<InventoryCountLinesChange> Function(InventoryCountRepository r)
+    write,
+  ) async {
+    final InventoryCountLinesChange change;
+    try {
+      change = await write(ref.read(inventoryCountRepositoryProvider));
+    } on AppError catch (error) {
+      await _refreshIfStale(id, error);
+      return error;
+    }
+    final detail = inventoryCountDetailControllerProvider(id);
+    if (ref.exists(detail)) await ref.read(detail.notifier).apply(change);
+    ref.invalidate(inventoryCountsListControllerProvider);
+    return null;
+  }
+
+  Future<void> _refreshIfStale(int id, AppError error) async {
+    if (!_staleCodes.contains(error.problem?.code)) return;
+    final detail = inventoryCountDetailControllerProvider(id);
+    if (ref.exists(detail)) await ref.read(detail.notifier).refresh();
   }
 }

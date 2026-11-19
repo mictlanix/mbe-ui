@@ -79,7 +79,9 @@ void main() {
     testWidgets('saves 0 and closes', (tester) async {
       when(
         () => h.counts.updateLine(412, 1200, quantity: any(named: 'quantity')),
-      ).thenAnswer((_) async => aCount(lines: [aCountLine(quantity: '0')]));
+      ).thenAnswer(
+        (_) async => aLinesChange(lines: [aCountLine(quantity: '0')]),
+      );
       await open(tester);
 
       await tester.enterText(field(), '0');
@@ -122,9 +124,9 @@ void main() {
     }
 
     testWidgets('names the product and removes the line', (tester) async {
-      when(
-        () => h.counts.removeLine(412, 1200),
-      ).thenAnswer((_) async => aCount(lines: const []));
+      when(() => h.counts.removeLine(412, 1200)).thenAnswer(
+        (_) async => aLinesChange(lineCount: 0, removedLineId: 1200),
+      );
       await open(tester);
 
       expect(

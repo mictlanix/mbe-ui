@@ -35,6 +35,16 @@ Map<String, Object?> _countJson({
   'lines': lines,
 };
 
+Map<String, Object?> _changeJson({Object? lines, int? removedLineId}) => {
+  'inventory_count_id': 412,
+  'status': 'draft',
+  'updater': 6,
+  'modification_time': '2026-11-17T09:45:00.000',
+  'line_count': 15000,
+  'lines': lines,
+  'removed_line_id': removedLineId,
+};
+
 Map<String, Object?> _lineJson({
   String? quantityOnHand,
   String? difference,
@@ -175,20 +185,28 @@ void main() {
   });
 
   test('setLines sends exactly one of product and product_code per item, '
-      'with decimal-string quantities', () async {
+      'with decimal-string quantities, and maps the changed lines', () async {
     final requests = <RequestOptions>[];
     final repository = _repositoryWith((options) async {
       requests.add(options);
-      return _ok(_countJson());
+      return _ok(_changeJson(lines: [_lineJson()]));
     });
 
-    await repository.setLines(412, [
+    final change = await repository.setLines(412, [
       CountLineInput.byProduct(productId: 7, quantity: Decimal.parse('2.5')),
       CountLineInput.byCode(code: 'B-200', quantity: Decimal.zero),
     ]);
 
     expect(requests.single.method, 'PUT');
-    expect(requests.single.path, '/api/v1/inventory-counts/412/lines');
+    expect(requests.single.path, '/api/v1/inventory-counts/412/line-changes');
+    expect(change.countId, 412);
+    expect(change.status, InventoryDocumentStatus.draft);
+    expect(change.updaterId, 6);
+    expect(change.updatedAt, DateTime(2026, 11, 17, 9, 45));
+    expect(change.lineCount, 15000);
+    expect(change.lines.single.id, 1200);
+    expect(change.lines.single.quantity, Decimal.parse('8.5'));
+    expect(change.removedLineId, isNull);
     expect(_decoded(requests.single.data), {
       'lines': [
         {'product': 7, 'quantity': '2.5'},
@@ -201,17 +219,28 @@ void main() {
     final requests = <RequestOptions>[];
     final repository = _repositoryWith((options) async {
       requests.add(options);
-      return _ok(_countJson());
+      return _ok(
+        options.method == 'DELETE'
+            ? _changeJson(lines: const [], removedLineId: 1200)
+            : _changeJson(lines: [_lineJson()]),
+      );
     });
 
-    await repository.updateLine(412, 1200, quantity: Decimal.parse('3'));
-    await repository.removeLine(412, 1200);
+    final updated = await repository.updateLine(
+      412,
+      1200,
+      quantity: Decimal.parse('3'),
+    );
+    final removed = await repository.removeLine(412, 1200);
 
     expect(requests[0].method, 'PUT');
-    expect(requests[0].path, '/api/v1/inventory-counts/412/lines/1200');
+    expect(requests[0].path, '/api/v1/inventory-counts/412/line-changes/1200');
     expect(_decoded(requests[0].data), {'quantity': '3'});
+    expect(updated.lines.single.id, 1200);
     expect(requests[1].method, 'DELETE');
-    expect(requests[1].path, '/api/v1/inventory-counts/412/lines/1200');
+    expect(requests[1].path, '/api/v1/inventory-counts/412/line-changes/1200');
+    expect(removed.lines, isEmpty);
+    expect(removed.removedLineId, 1200);
   });
 
   test('create and updateHeader always send the comment', () async {

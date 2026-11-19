@@ -73,6 +73,55 @@ abstract class InventoryCount with _$InventoryCount {
   bool get isDraft => status == InventoryDocumentStatus.draft;
   bool get isCompleted => status == InventoryDocumentStatus.completed;
   bool get isCancelled => status == InventoryDocumentStatus.cancelled;
+
+  /// This count with [change] merged in: each line the write set replaces
+  /// the one with its id or is appended (the server answers lines oldest
+  /// first, so appending keeps its order), and the removed line goes. Null
+  /// when the merged lines don't add up to the server's line total: someone
+  /// else changed the count meanwhile, so it has to be re-fetched.
+  InventoryCount? merge(InventoryCountLinesChange change) {
+    final changed = {for (final line in change.lines) line.id: line};
+    final merged = [
+      for (final line in lines)
+        if (line.id != change.removedLineId) changed.remove(line.id) ?? line,
+      ...changed.values,
+    ];
+    if (merged.length != change.lineCount) return null;
+    return copyWith(
+      status: change.status,
+      updaterId: change.updaterId,
+      updatedAt: change.updatedAt,
+      lines: merged,
+    );
+  }
+}
+
+/// What a line write answers (mbe-api#333): the header's new state, the
+/// line total, and only the lines the write set, or the line it removed.
+class InventoryCountLinesChange {
+  const InventoryCountLinesChange({
+    required this.countId,
+    required this.status,
+    required this.updaterId,
+    required this.updatedAt,
+    required this.lineCount,
+    this.lines = const [],
+    this.removedLineId,
+  });
+
+  final int countId;
+  final InventoryDocumentStatus status;
+  final int updaterId;
+  final DateTime updatedAt;
+
+  /// Lines on the count after the write.
+  final int lineCount;
+
+  /// The lines the write set, oldest first; empty for a removal.
+  final List<InventoryCountLine> lines;
+
+  /// The line a removal took out; null for the other writes.
+  final int? removedLineId;
 }
 
 /// A product whose available stock went negative with the count (it is

@@ -345,6 +345,7 @@ void main() {
                     isTrue,
                   );
                   expect(r.lines.every((l) => l.difference == null), isTrue);
+                  expect(r.lineCount, 2);
                   final again = await counts.get(id);
                   expect(
                     again.lines.every((l) => l.quantityOnHand == null),
@@ -365,7 +366,9 @@ void main() {
                 final lines = r.lines.where((l) => l.productId == p1);
                 expect(lines, hasLength(1));
                 expect(lines.single.quantity, o1 + _d(2));
-                expect(r.lines, hasLength(2));
+                // Only the line the write set comes back (mbe-api#333).
+                expect(r.lines, hasLength(1));
+                expect(r.lineCount, 2);
                 return null;
               });
 
@@ -383,14 +386,21 @@ void main() {
                     r.lines.singleWhere((l) => l.id == line.id).quantity,
                     o1 + _d(3),
                   );
-                  final l2 = r.lines.singleWhere((l) => l.productId == p2);
+                  expect(r.lines, hasLength(1));
+                  expect(r.lineCount, 2);
+                  final l2 = r0.lines.singleWhere((l) => l.productId == p2);
                   r = await counts.removeLine(id, l2.id);
-                  expect(r.lines.map((l) => l.productId), [p1]);
+                  expect(r.lines, isEmpty);
+                  expect(r.removedLineId, l2.id);
+                  expect(r.lineCount, 1);
                   r = await counts.setLines(id, [
                     CountLineInput.byProduct(productId: p2, quantity: o2),
                   ]);
+                  expect(r.lines.map((l) => l.productId), [p2]);
+                  expect(r.lineCount, 2);
+                  final after = await counts.get(id);
                   expect(
-                    r.lines.map((l) => l.productId),
+                    after.lines.map((l) => l.productId),
                     unorderedEquals([p1, p2]),
                   );
                   return null;

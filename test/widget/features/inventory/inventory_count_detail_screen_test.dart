@@ -279,11 +279,9 @@ void main() {
         () =>
             h.counts.updateLine(412, line.id, quantity: any(named: 'quantity')),
       ).thenAnswer(
-        (_) async => aCount(
-          lines: [
-            for (final l in all)
-              l.id == line.id ? l.copyWith(quantity: Decimal.zero) : l,
-          ],
+        (_) async => aLinesChange(
+          lines: [line.copyWith(quantity: Decimal.zero)],
+          lineCount: all.length,
         ),
       );
       await h.pumpCount(tester, aCount(lines: all));
