@@ -1270,23 +1270,43 @@ class _LinesSection extends ConsumerWidget {
                 Expanded(
                   child: Tooltip(
                     message: description(l),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          description(l),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (l.productCode != null && l.productCode!.isNotEmpty)
-                          Text(
-                            l10n.fiscalDocumentLineInternalCode(l.productCode!),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall,
-                          ),
-                      ],
+                    child: LayoutBuilder(
+                      builder: (context, box) {
+                        final code = l.productCode;
+                        final hasCode = code != null && code.isNotEmpty;
+                        final main = DefaultTextStyle.of(context).style;
+                        final small = theme.textTheme.bodySmall!;
+                        final scaler = MediaQuery.textScalerOf(context);
+                        double line(TextStyle s) =>
+                            scaler.scale(s.fontSize ?? 14) * (s.height ?? 1.2);
+                        // Two lines outgrow the shared table row at the
+                        // largest text level (constitution §V). Tighten their
+                        // line height only then, so every level that fits
+                        // renders exactly as before.
+                        final tight =
+                            hasCode && line(main) + line(small) > box.maxHeight;
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              description(l),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: tight ? main.copyWith(height: 1.2) : null,
+                            ),
+                            if (hasCode)
+                              Text(
+                                l10n.fiscalDocumentLineInternalCode(code),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: tight
+                                    ? small.copyWith(height: 1.2)
+                                    : small,
+                              ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ),

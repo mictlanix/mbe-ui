@@ -12,6 +12,7 @@ import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:mbe_ui/core/design/text_scale.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -186,6 +187,24 @@ void main() {
   Finder key(String k) => find.byKey(Key(k));
 
   group('an issued invoice', () {
+    // Constitution §V: at every text level the lines table's two-line
+    // description cell (description + internal code) fits the shared row.
+    for (final level in TextSizeLevel.values) {
+      testWidgets('the lines table fits at text level ${level.name}', (
+        tester,
+      ) async {
+        await pumpDetail(
+          tester,
+          document: issued(),
+          textScaler: TextScaler.linear(level.factor),
+        );
+
+        expect(key('fiscal_document_lines_table'), findsOneWidget);
+        expect(find.text('Tornillo'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      });
+    }
+
     testWidgets('shows the header, lines and the server total, with both '
         'document buttons', (tester) async {
       await pumpDetail(tester, document: issued());
@@ -653,21 +672,10 @@ void main() {
     for (final surface in const [Size(1400, 1000), Size(400, 900)]) {
       testWidgets('the pending-cancellation notice fits at the largest text '
           'level on ${surface.width.toInt()} px', (tester) async {
-        // No lines: at 1.3 the lines table's two-line description cell
-        // overflows its 44 px row by 3 px on desktop (specs 066/072, not this
-        // notice), and this test is about the notice.
-        final noLines = aDocument(
-          status: FiscalDocumentStatus.cancellationPending,
-          serial: 12,
-          total: Decimal.parse('232'),
-          stamp: aStamp(),
-          cancellations: [aCancellation(outcome: CancellationOutcome.pending)],
-          lines: const [],
-        );
-        when(() => repository.refresh(7)).thenAnswer((_) async => noLines);
+        when(() => repository.refresh(7)).thenAnswer((_) async => pending());
         await pumpDetail(
           tester,
-          document: noLines,
+          document: pending(),
           who: access(update: true),
           surface: surface,
           textScaler: const TextScaler.linear(1.3),
