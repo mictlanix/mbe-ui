@@ -2977,6 +2977,7 @@
   "fiscalDocumentCancelSent": "Cancelación enviada: {state}.",
   "fiscalDocumentRefreshMoved": "{folio}: {state}.",
   "fiscalDocumentStillInProcess": "Sigue en proceso. Vuelve a consultar en unos minutos.",
+  "fiscalDocumentCancellationStillPending": "La cancelación sigue en proceso. El SAT y el receptor pueden tardar hasta 72 horas en resolverla; mientras tanto el documento sigue vigente.",
   "fiscalDocumentCancellationsTitle": "Cancelaciones",
   "fiscalDocumentCancellationOutcomeRequested": "Solicitada",
   "fiscalDocumentCancellationOutcomePending": "Pendiente",

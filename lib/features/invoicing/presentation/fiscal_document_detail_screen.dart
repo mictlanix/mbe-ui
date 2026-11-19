@@ -693,7 +693,12 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
           if (_stillInProcess && document.canRefresh)
             FiscalDocumentNotice(
               key: const Key('fiscal_document_still_in_process'),
-              message: l10n.fiscalDocumentStillInProcess,
+              // A cancellation waits up to 72 hours for SAT (spec 076); a
+              // stamp is a matter of minutes.
+              message:
+                  document.status == FiscalDocumentStatus.cancellationPending
+                  ? l10n.fiscalDocumentCancellationStillPending
+                  : l10n.fiscalDocumentStillInProcess,
               onDismissed: () => setState(() => _stillInProcess = false),
             ),
           if (_actionError != null)
@@ -1265,23 +1270,43 @@ class _LinesSection extends ConsumerWidget {
                 Expanded(
                   child: Tooltip(
                     message: description(l),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          description(l),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (l.productCode != null && l.productCode!.isNotEmpty)
-                          Text(
-                            l10n.fiscalDocumentLineInternalCode(l.productCode!),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall,
-                          ),
-                      ],
+                    child: LayoutBuilder(
+                      builder: (context, box) {
+                        final code = l.productCode;
+                        final hasCode = code != null && code.isNotEmpty;
+                        final main = DefaultTextStyle.of(context).style;
+                        final small = theme.textTheme.bodySmall!;
+                        final scaler = MediaQuery.textScalerOf(context);
+                        double line(TextStyle s) =>
+                            scaler.scale(s.fontSize ?? 14) * (s.height ?? 1.2);
+                        // Two lines outgrow the shared table row at the
+                        // largest text level (constitution §V). Tighten their
+                        // line height only then, so every level that fits
+                        // renders exactly as before.
+                        final tight =
+                            hasCode && line(main) + line(small) > box.maxHeight;
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              description(l),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: tight ? main.copyWith(height: 1.2) : null,
+                            ),
+                            if (hasCode)
+                              Text(
+                                l10n.fiscalDocumentLineInternalCode(code),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: tight
+                                    ? small.copyWith(height: 1.2)
+                                    : small,
+                              ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ),

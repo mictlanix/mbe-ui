@@ -15500,6 +15500,12 @@ abstract class AppLocalizations {
   /// **'Still in process. Check again in a few minutes.'**
   String get fiscalDocumentStillInProcess;
 
+  /// spec 076: info notice after a refresh that left a cancellation pending
+  ///
+  /// In en, this message translates to:
+  /// **'The cancellation is still in process. SAT and the receiver can take up to 72 hours to settle it; the document stays valid meanwhile.'**
+  String get fiscalDocumentCancellationStillPending;
+
   /// spec 072: history section
   ///
   /// In en, this message translates to:

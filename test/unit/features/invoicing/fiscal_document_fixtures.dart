@@ -158,7 +158,7 @@ FiscalStamp aStamp({
   String uuid = '6F1C2A9E-0000-4000-8000-00000000AB21',
   bool simulated = true,
   String? satCertificate = '00001000000509846663',
-  String? providerRfc = 'SIM010101SIM',
+  String? providerRfc = 'SIM010101SI0',
 }) => FiscalStamp(
   uuid: uuid,
   stamped: DateTime(2026, 11, 17, 9, 13),
