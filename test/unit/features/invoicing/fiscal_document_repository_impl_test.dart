@@ -689,7 +689,7 @@ void main() {
                 'uuid': 'U-1',
                 'stamped': '2026-11-17T09:13:00',
                 'sat_certificate': '00001000000509846663',
-                'provider_rfc': 'SIM010101SIM',
+                'provider_rfc': 'SIM010101SI0',
                 'simulated': true,
               },
               'stamping_since': '2026-11-17T11:05:00',
@@ -739,7 +739,7 @@ void main() {
 
       expect(doc.stamp?.uuid, 'U-1');
       expect(doc.stamp?.simulated, isTrue);
-      expect(doc.stamp?.providerRfc, 'SIM010101SIM');
+      expect(doc.stamp?.providerRfc, 'SIM010101SI0');
       expect(doc.stamp?.satCertificate, '00001000000509846663');
       expect(doc.stampingSince, DateTime(2026, 11, 17, 11, 5));
       expect(doc.cancellationSubstitution, 'U-2');

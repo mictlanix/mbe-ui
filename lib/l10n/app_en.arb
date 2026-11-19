@@ -5530,6 +5530,8 @@
   "@fiscalDocumentRefreshMoved": {"description": "spec 072: snackbar after a refresh changed the state", "placeholders": {"folio": {"type": "String"}, "state": {"type": "String"}}},
   "fiscalDocumentStillInProcess": "Still in process. Check again in a few minutes.",
   "@fiscalDocumentStillInProcess": {"description": "spec 072: info notice after a refresh that changed nothing"},
+  "fiscalDocumentCancellationStillPending": "The cancellation is still in process. SAT and the receiver can take up to 72 hours to settle it; the document stays valid meanwhile.",
+  "@fiscalDocumentCancellationStillPending": {"description": "spec 076: info notice after a refresh that left a cancellation pending"},
   "fiscalDocumentCancellationsTitle": "Cancellations",
   "@fiscalDocumentCancellationsTitle": {"description": "spec 072: history section"},
   "fiscalDocumentCancellationOutcomeRequested": "Requested",

@@ -113,6 +113,8 @@ void main() {
     FakeDocumentSource? documents,
     Size surface = const Size(1400, 1000),
     List<Override> extraOverrides = const [],
+    Locale locale = const Locale('es', 'MX'),
+    TextScaler? textScaler,
   }) async {
     if (loadError != null) {
       when(() => repository.getById(any())).thenThrow(loadError);
@@ -166,9 +168,15 @@ void main() {
         container: container,
         child: MaterialApp.router(
           routerConfig: router,
-          locale: const Locale('es', 'MX'),
+          locale: locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
+          builder: textScaler == null
+              ? null
+              : (context, child) => MediaQuery(
+                  data: MediaQuery.of(context).copyWith(textScaler: textScaler),
+                  child: child!,
+                ),
         ),
       ),
     );
@@ -598,6 +606,85 @@ void main() {
       expect(key('fiscal_document_still_in_process'), findsNothing);
     });
 
+    // Spec 076: SAT and the receiver can take up to 72 hours, so a pending
+    // cancellation does not tell the user to look again in a few minutes.
+    testWidgets('a refresh that leaves a cancellation pending says it can take '
+        'up to 72 hours, in Spanish and in English', (tester) async {
+      when(() => repository.refresh(7)).thenAnswer((_) async => pending());
+      await pumpDetail(tester, document: pending(), who: access(update: true));
+
+      await tester.tap(key('fiscal_document_refresh'));
+      await tester.pumpAndSettle();
+
+      expect(key('fiscal_document_still_in_process'), findsOneWidget);
+      expect(
+        find.text(l10n.fiscalDocumentCancellationStillPending),
+        findsOneWidget,
+      );
+      expect(l10n.fiscalDocumentCancellationStillPending, contains('72 horas'));
+      expect(find.text(l10n.fiscalDocumentStillInProcess), findsNothing);
+      expect(key('fiscal_document_refusal'), findsNothing);
+
+      await tester.tap(key('fiscal_document_notice_dismiss'));
+      await tester.pumpAndSettle();
+      expect(key('fiscal_document_still_in_process'), findsNothing);
+    });
+
+    testWidgets('the pending-cancellation notice speaks English', (
+      tester,
+    ) async {
+      final en = await AppLocalizations.delegate.load(const Locale('en'));
+      when(() => repository.refresh(7)).thenAnswer((_) async => pending());
+      await pumpDetail(
+        tester,
+        document: pending(),
+        who: access(update: true),
+        locale: const Locale('en'),
+      );
+
+      await tester.tap(key('fiscal_document_refresh'));
+      await tester.pumpAndSettle();
+
+      expect(find.text(en.fiscalDocumentCancellationStillPending), findsOne);
+      expect(en.fiscalDocumentCancellationStillPending, contains('72 hours'));
+      expect(find.text(en.fiscalDocumentStillInProcess), findsNothing);
+    });
+
+    for (final surface in const [Size(1400, 1000), Size(400, 900)]) {
+      testWidgets('the pending-cancellation notice fits at the largest text '
+          'level on ${surface.width.toInt()} px', (tester) async {
+        // No lines: at 1.3 the lines table's two-line description cell
+        // overflows its 44 px row by 3 px on desktop (specs 066/072, not this
+        // notice), and this test is about the notice.
+        final noLines = aDocument(
+          status: FiscalDocumentStatus.cancellationPending,
+          serial: 12,
+          total: Decimal.parse('232'),
+          stamp: aStamp(),
+          cancellations: [aCancellation(outcome: CancellationOutcome.pending)],
+          lines: const [],
+        );
+        when(() => repository.refresh(7)).thenAnswer((_) async => noLines);
+        await pumpDetail(
+          tester,
+          document: noLines,
+          who: access(update: true),
+          surface: surface,
+          textScaler: const TextScaler.linear(1.3),
+        );
+
+        await tester.ensureVisible(key('fiscal_document_refresh'));
+        await tester.tap(key('fiscal_document_refresh'));
+        await tester.pumpAndSettle();
+
+        expect(
+          find.text(l10n.fiscalDocumentCancellationStillPending),
+          findsOneWidget,
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+
     testWidgets('a refresh that resolves a stamp says so and shows the stamp, '
         'with Consultar estado gone', (tester) async {
       var refreshed = false;
@@ -956,7 +1043,7 @@ void main() {
       expect(find.text(aStamp().uuid), findsOneWidget);
       expect(find.text('2026-11-17 09:13'), findsOneWidget);
       expect(find.text('00001000000509846663'), findsOneWidget);
-      expect(find.text('SIM010101SIM'), findsOneWidget);
+      expect(find.text('SIM010101SI0'), findsOneWidget);
       expect(key('fiscal_document_simulated_badge'), findsOneWidget);
       expect(find.text(l10n.fiscalDocumentSimulatedBadge), findsOneWidget);
     });
@@ -1005,11 +1092,70 @@ void main() {
           );
 
           expect(key('fiscal_document_provider_rfc'), findsOneWidget);
-          expect(find.text('SIM010101SIM'), findsOneWidget);
+          expect(find.text('SIM010101SI0'), findsOneWidget);
           expect(key('fiscal_document_simulated_badge'), findsOneWidget);
         },
       );
     }
+
+    // Spec 076 (FR-012, FR-013): mbe-api spec 040 changed the simulator's
+    // provider RFC and migrated the old stamps. The badge follows the flag,
+    // never the RFC.
+    for (final rfc in ['SIM010101SIM', 'SIM010101SI0']) {
+      testWidgets('a simulated stamp from $rfc shows the badge and the RFC', (
+        tester,
+      ) async {
+        await pumpDetail(
+          tester,
+          document: issued().copyWith(stamp: aStamp(providerRfc: rfc)),
+        );
+
+        expect(key('fiscal_document_simulated_badge'), findsOneWidget);
+        expect(
+          find.descendant(
+            of: key('fiscal_document_provider_rfc'),
+            matching: find.text(rfc),
+          ),
+          findsOneWidget,
+        );
+      });
+    }
+
+    testWidgets('a real stamp shows its RFC and no simulated badge', (
+      tester,
+    ) async {
+      await pumpDetail(
+        tester,
+        document: issued().copyWith(
+          stamp: aStamp(simulated: false, providerRfc: 'MAS0310229P8'),
+        ),
+      );
+
+      expect(key('fiscal_document_simulated_badge'), findsNothing);
+      expect(find.text('MAS0310229P8'), findsOneWidget);
+    });
+
+    // Spec 076 (FR-011): after 72 hours with nothing from SAT, the server
+    // closes the request as failed and the document is issued again.
+    testWidgets('an issued document whose request failed after 72 hours shows '
+        'it in the history and can be cancelled again', (tester) async {
+      await pumpDetail(
+        tester,
+        document: issued().copyWith(
+          stamp: aStamp(),
+          cancellations: [aCancellation(outcome: CancellationOutcome.failed)],
+        ),
+        who: access(update: true),
+      );
+
+      expect(key('fiscal_document_status_chip_issued'), findsOneWidget);
+      expect(key('fiscal_document_cancellations'), findsOneWidget);
+      expect(
+        find.text(l10n.fiscalDocumentCancellationOutcomeFailed),
+        findsOneWidget,
+      );
+      expect(key('fiscal_document_cancel_cfdi'), findsOneWidget);
+    });
 
     testWidgets('a document with no stamp shows none of it', (tester) async {
       await pumpDetail(

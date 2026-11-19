@@ -72,10 +72,29 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 /// times out but did stamp then refresh, cancel accepted, cancel pending with
 /// the receiver rejecting and then accepting, and cancel with reason 01 naming
 /// a stamped substitute.
+///
+/// **Spec 076** (mbe-api spec 040: the simulator is the CFDI library's) sets
+/// these rules for every simulated group:
+/// - a **stamp** outcome is set after the document's last seal (reopening and
+///   sealing again discards it) and never while the document is stamping;
+/// - a **cancellation** outcome is set after the stamp (409
+///   `fiscal_document.not_stamped` otherwise);
+/// - `not_cancellable` is permanent: every later cancel of that document
+///   answers 409, so a successful cancel afterwards needs a new document;
+/// - a simulated stamp carries provider RFC `SIM010101SI0`;
+/// - the simulator's responses carry only uuid, sat_status and
+///   cancellation_status, and no step reads more;
+/// - each simulated group skips, saying why, when the simulator is off on the
+///   server (its routes answer 404, as on a test server that has moved to the
+///   PAC's own test mode).
 const _username = String.fromEnvironment('MBE_POS_USERNAME');
 const _password = String.fromEnvironment('MBE_POS_PASSWORD');
 const _write = bool.fromEnvironment('MBE_WRITE');
 const _canRun = _username != '' && _password != '';
+
+/// The provider RFC of a stamp from the simulator (mbe-api spec 040). SAT's
+/// schema rejected the old `SIM010101SIM`.
+const _simulatorRfc = 'SIM010101SI0';
 
 class _Step {
   _Step(this.name, this.ok, this.detail);
@@ -83,6 +102,30 @@ class _Step {
   final bool ok;
   final String detail;
 }
+
+/// Whether the server runs the PAC simulator (spec 076, contract C4).
+///
+/// Asks for document 0, which no server has. With the simulator off the route
+/// answers 404 `request.route_not_found` before it looks at anything else;
+/// with it on, the same 404 carries the document's own `not_found` code. A
+/// document is never sealed for this, so a skipped run spends no folio.
+/// Anything else (network, 401, 5xx) is rethrown: it is a failure, not a skip.
+Future<bool> _simulatorOn(api.PacSimulatorApi sim) async {
+  try {
+    await sim.getSimulationApiV1PacSimulatorFiscalDocumentsFiscalDocumentIdGet(
+      fiscalDocumentId: 0,
+    );
+    return true;
+  } on DioException catch (e) {
+    final body = e.response?.data;
+    final code = body is Map ? body['code'] : null;
+    if (e.response?.statusCode != 404 || code == null) rethrow;
+    return code != 'request.route_not_found';
+  }
+}
+
+const _simulatorOffReason =
+    'the PAC simulator is off on this server (PAC_PROVIDER is not simulated)';
 
 void main() {
   late Dio dio;
@@ -561,6 +604,10 @@ void main() {
     () async {
       final steps = <_Step>[];
       final sim = api.PacSimulatorApi(dio, appSerializers);
+      if (!await _simulatorOn(sim)) {
+        markTestSkipped(_simulatorOffReason);
+        return;
+      }
 
       Future<void> step(String name, Future<String?> Function() body) async {
         try {
@@ -674,6 +721,11 @@ void main() {
             a.stamp!.simulated,
             isTrue,
             reason: 'this is not a simulated PAC',
+          );
+          expect(
+            a.stamp!.providerRfc,
+            _simulatorRfc,
+            reason: 'mbe-api spec 040 changed the simulator\'s provider RFC',
           );
           expect(a.canStamp, isFalse);
           expect(a.canCancel, isTrue);
@@ -868,6 +920,10 @@ void main() {
     () async {
       final steps = <_Step>[];
       final sim = api.PacSimulatorApi(dio, appSerializers);
+      if (!await _simulatorOn(sim)) {
+        markTestSkipped(_simulatorOffReason);
+        return;
+      }
 
       Future<void> step(String name, Future<String?> Function() body) async {
         try {
@@ -992,6 +1048,11 @@ void main() {
             isTrue,
             reason: 'this is not a simulated PAC',
           );
+          expect(
+            note!.stamp?.providerRfc,
+            _simulatorRfc,
+            reason: 'mbe-api spec 040 changed the simulator\'s provider RFC',
+          );
           return note!.stamp!.uuid;
         });
 
@@ -1046,6 +1107,10 @@ void main() {
     () async {
       final steps = <_Step>[];
       final sim = api.PacSimulatorApi(dio, appSerializers);
+      if (!await _simulatorOn(sim)) {
+        markTestSkipped(_simulatorOffReason);
+        return;
+      }
 
       Future<void> step(String name, Future<String?> Function() body) async {
         try {
@@ -1288,6 +1353,11 @@ void main() {
             receipt!.stamp?.simulated,
             isTrue,
             reason: 'this is not a simulated PAC',
+          );
+          expect(
+            receipt!.stamp?.providerRfc,
+            _simulatorRfc,
+            reason: 'mbe-api spec 040 changed the simulator\'s provider RFC',
           );
           return receipt!.stamp!.uuid;
         });

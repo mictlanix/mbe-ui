@@ -9256,6 +9256,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Still in process. Check again in a few minutes.';
 
   @override
+  String get fiscalDocumentCancellationStillPending =>
+      'The cancellation is still in process. SAT and the receiver can take up to 72 hours to settle it; the document stays valid meanwhile.';
+
+  @override
   String get fiscalDocumentCancellationsTitle => 'Cancellations';
 
   @override

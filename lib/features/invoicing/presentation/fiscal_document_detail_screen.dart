@@ -693,7 +693,12 @@ class _FiscalDocumentBodyState extends ConsumerState<_FiscalDocumentBody> {
           if (_stillInProcess && document.canRefresh)
             FiscalDocumentNotice(
               key: const Key('fiscal_document_still_in_process'),
-              message: l10n.fiscalDocumentStillInProcess,
+              // A cancellation waits up to 72 hours for SAT (spec 076); a
+              // stamp is a matter of minutes.
+              message:
+                  document.status == FiscalDocumentStatus.cancellationPending
+                  ? l10n.fiscalDocumentCancellationStillPending
+                  : l10n.fiscalDocumentStillInProcess,
               onDismissed: () => setState(() => _stillInProcess = false),
             ),
           if (_actionError != null)
