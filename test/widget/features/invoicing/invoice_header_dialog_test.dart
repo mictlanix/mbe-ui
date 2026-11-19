@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
@@ -499,6 +500,223 @@ void main() {
         expect(key(k), findsOneWidget, reason: k);
       }
       expect(key('invoice_header_terms_fixed'), findsNothing);
+    });
+  });
+
+  group('a payment receipt (spec 074 C40, FR-005, FR-006)', () {
+    FiscalDocument receipt({int paymentForm = 3, String? reference}) =>
+        aPaymentReceipt(paymentForm: paymentForm, reference: reference);
+
+    Future<void> openReceipt(
+      WidgetTester tester, {
+      int paymentForm = 3,
+      String? reference,
+    }) => open(
+      tester,
+      document: receipt(paymentForm: paymentForm, reference: reference),
+      issuedLocationUpdate: true,
+      administrator: true,
+    );
+
+    void saveReceipt() => when(
+      () => h.documents.updateHeader(7, any()),
+    ).thenAnswer((_) async => receipt());
+
+    testWidgets('shows the seven receipt fields and the fixed values only', (
+      tester,
+    ) async {
+      await openReceipt(tester);
+
+      for (final k in [
+        'invoice_header_payment_date',
+        'invoice_header_payment_amount',
+        'invoice_header_form',
+        'invoice_header_payment_reference',
+        'invoice_header_ordering_bank',
+        'invoice_header_issued',
+        'invoice_header_comment',
+        'invoice_header_receipt_fixed',
+      ]) {
+        expect(key(k), findsOneWidget, reason: k);
+      }
+      for (final k in [
+        'invoice_header_recipient',
+        'invoice_header_series',
+        'invoice_header_usage',
+        'invoice_header_terms',
+        'invoice_header_terms_fixed',
+        'invoice_header_form_ppd',
+        'invoice_header_facility',
+        'invoice_header_reference',
+      ]) {
+        expect(key(k), findsNothing, reason: k);
+      }
+      expect(find.text(l10n.fiscalDocumentHeaderReceiptFixed), findsOneWidget);
+      verifyNever(() => h.customers.get(customerId: any(named: 'customerId')));
+      verifyNever(() => h.batches.listForIssuer(any()));
+    });
+
+    testWidgets('opens with the stored payment', (tester) async {
+      await openReceipt(tester, reference: 'Banco X');
+
+      expect(
+        tester
+            .widget<TextField>(key('invoice_header_payment_amount'))
+            .controller!
+            .text,
+        '8000.00',
+      );
+      expect(
+        tester
+            .widget<TextField>(key('invoice_header_payment_reference'))
+            .controller!
+            .text,
+        'SPEI 99812',
+      );
+      expect(
+        tester
+            .widget<TextField>(key('invoice_header_ordering_bank'))
+            .controller!
+            .text,
+        'Banco X',
+      );
+      expect(canSave(tester), isFalse);
+    });
+
+    testWidgets('the form list never offers 99', (tester) async {
+      await openReceipt(tester);
+
+      await tester.tap(key('invoice_header_form'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('28 —'), findsWidgets);
+      expect(find.textContaining('99 —'), findsNothing);
+    });
+
+    testWidgets('a stored 99 opens with no form chosen, and Guardar waits for '
+        'one', (tester) async {
+      saveReceipt();
+      await openReceipt(tester, paymentForm: 99);
+
+      expect(tester.takeException(), isNull);
+      expect(canSave(tester), isFalse);
+
+      await tester.enterText(key('invoice_header_comment'), 'x');
+      await tester.pump();
+      expect(canSave(tester), isFalse);
+
+      await tester.tap(key('invoice_header_form'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.textContaining('28 —').last);
+      await tester.pumpAndSettle();
+      expect(canSave(tester), isTrue);
+    });
+
+    testWidgets('saves only the changed receipt fields', (tester) async {
+      saveReceipt();
+      await openReceipt(tester);
+
+      await tester.enterText(key('invoice_header_payment_amount'), '9500.50');
+      await tester.enterText(key('invoice_header_ordering_bank'), 'Bank Ext');
+      await tester.pump();
+      await tester.tap(key('invoice_header_submit'));
+      await tester.pumpAndSettle();
+
+      final patch = sentPatch();
+      expect(patch.paymentAmount, Decimal.parse('9500.50'));
+      expect(patch.orderingBank, 'Bank Ext');
+      expect(patch.paymentDate, isNull);
+      expect(patch.paymentForm, isNull);
+      expect(patch.paymentReference, isNull);
+      expect(patch.comment, isNull);
+      expect(patch.issued, isNull);
+      expect(patch.usage, isNull);
+      expect(patch.reference, isNull);
+      expect(patch.recipientRfc, isNull);
+      expect(patch.paymentTerms, isNull);
+    });
+
+    testWidgets('the operation number stops at 50 characters and the bank at '
+        '25', (tester) async {
+      await openReceipt(tester);
+
+      await tester.enterText(key('invoice_header_payment_reference'), 'x' * 51);
+      await tester.pump();
+      expect(
+        find.text(l10n.fiscalDocumentHeaderOperationNumberTooLong),
+        findsOneWidget,
+      );
+      expect(canSave(tester), isFalse);
+
+      await tester.enterText(key('invoice_header_payment_reference'), 'x' * 50);
+      await tester.enterText(key('invoice_header_ordering_bank'), 'b' * 26);
+      await tester.pump();
+      expect(
+        find.text(l10n.fiscalDocumentHeaderOrderingBankTooLong),
+        findsOneWidget,
+      );
+      expect(canSave(tester), isFalse);
+
+      await tester.enterText(key('invoice_header_ordering_bank'), 'b' * 25);
+      await tester.pump();
+      expect(canSave(tester), isTrue);
+    });
+
+    testWidgets('a payment amount of zero is refused inline', (tester) async {
+      await openReceipt(tester);
+
+      await tester.enterText(key('invoice_header_payment_amount'), '0');
+      await tester.pump();
+
+      expect(find.text(l10n.editPaidInvoiceAmountPositive), findsOneWidget);
+      expect(canSave(tester), isFalse);
+    });
+
+    testWidgets('a payment below what is assigned keeps the dialog open with '
+        'the refusal', (tester) async {
+      when(() => h.documents.updateHeader(7, any())).thenThrow(
+        const AppError.server(
+          statusCode: 422,
+          problem: ApiProblem(
+            codeName: 'fiscal_document.amounts_exceed_payment',
+            code: api.ErrorCode.fiscalDocumentPeriodAmountsExceedPayment,
+          ),
+        ),
+      );
+      await openReceipt(tester);
+
+      await tester.enterText(key('invoice_header_payment_amount'), '100');
+      await tester.pump();
+      await tester.tap(key('invoice_header_submit'));
+      await tester.pumpAndSettle();
+
+      expect(key('invoice_header_dialog'), findsOneWidget);
+      expect(
+        find.text(l10n.apiErrorFiscalDocumentAmountsExceedPayment),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('the payment date is chosen from a picker and saved as a '
+        'date', (tester) async {
+      saveReceipt();
+      await openReceipt(tester);
+
+      await tester.tap(key('invoice_header_payment_date'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('10'));
+      await tester.pumpAndSettle();
+      final ok = MaterialLocalizations.of(
+        tester.element(find.byType(Dialog).last),
+      ).okButtonLabel;
+      await tester.tap(find.text(ok));
+      await tester.pumpAndSettle();
+      await tester.tap(key('invoice_header_submit'));
+      await tester.pumpAndSettle();
+
+      final patch = sentPatch();
+      expect(patch.paymentDate?.day, 10);
+      expect(patch.paymentDate?.hour, 0);
     });
   });
 }

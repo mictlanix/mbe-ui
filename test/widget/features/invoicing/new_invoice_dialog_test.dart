@@ -383,4 +383,74 @@ void main() {
     expect(key('new_invoice_dialog'), findsNothing);
     verifyNever(() => documents.create(any()));
   });
+
+  group('"Nuevo complemento de pago" on the list (spec 074 C36, FR-002)', () {
+    setUpAll(() {
+      registerFallbackValue(
+        const NewPaymentReceipt(customerId: 1, recipientRfc: 'X'),
+      );
+    });
+
+    testWidgets('is offered with create, beside Nueva factura', (tester) async {
+      await pumpList(tester);
+
+      expect(key('fiscal_documents_new_receipt'), findsOneWidget);
+      expect(find.text(l10n.fiscalDocumentNewReceiptAction), findsOneWidget);
+      expect(key('fiscal_documents_new_button'), findsOneWidget);
+    });
+
+    testWidgets('is absent without create, like Nueva factura', (tester) async {
+      await pumpList(tester, create: false);
+
+      expect(key('fiscal_documents_new_receipt'), findsNothing);
+      expect(key('fiscal_documents_new_button'), findsNothing);
+    });
+
+    testWidgets('Nueva factura still creates an invoice', (tester) async {
+      customerHas([_acme]);
+      when(
+        () => documents.create(any()),
+      ).thenAnswer((_) async => aDocument(id: 30));
+      await pumpList(tester);
+      await open(tester);
+      await pickCustomer(tester);
+      await tester.pumpAndSettle();
+      await tester.tap(key('new_invoice_submit'));
+      await tester.pumpAndSettle();
+
+      verify(() => documents.create(any())).called(1);
+      verifyNever(() => documents.createPaymentReceipt(any()));
+    });
+
+    testWidgets('opens the dialog in receipt mode, and a created receipt '
+        'opens its screen', (tester) async {
+      customerHas([_acme]);
+      when(() => documents.createPaymentReceipt(any())).thenAnswer(
+        (_) async => aPaymentReceipt(id: 31, customerPaymentId: null),
+      );
+      final router = await pumpList(tester);
+
+      await tester.tap(key('fiscal_documents_new_receipt'));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<Text>(key('responsive_dialog_title')).data,
+        l10n.fiscalDocumentNewReceiptTitle,
+      );
+      await pickCustomer(tester);
+      await tester.pumpAndSettle();
+      await tester.tap(key('new_invoice_submit'));
+      await tester.pumpAndSettle();
+
+      final sent =
+          verify(
+                () => documents.createPaymentReceipt(captureAny()),
+              ).captured.single
+              as NewPaymentReceipt;
+      expect(sent.customerId, 4);
+      expect(sent.recipientRfc, 'AAA010101AAA');
+      expect(sent.customerPaymentId, isNull);
+      verifyNever(() => documents.create(any()));
+      expect(router.state.uri.path, '/invoicing/fiscal-documents/31');
+    });
+  });
 }

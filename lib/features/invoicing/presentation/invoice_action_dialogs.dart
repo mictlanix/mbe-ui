@@ -37,6 +37,29 @@ Future<bool> showRemoveInvoiceLineDialog(
   return result != null && result.error == null;
 }
 
+/// Asks before removing [paid] from receipt draft [documentId] (spec 074 C42),
+/// then removes it. A refusal shows inline and keeps the dialog open. `true`
+/// once removed.
+Future<bool> showRemovePaidInvoiceDialog(
+  BuildContext context, {
+  required int documentId,
+  required PaidInvoice paid,
+}) async {
+  final result = await showDialog<FiscalDocumentActionResult>(
+    context: context,
+    builder: (_) => _ConfirmActionDialog(
+      dialogKey: const Key('paid_invoice_remove_dialog'),
+      submitKey: const Key('paid_invoice_remove_submit'),
+      title: (l10n) => l10n.removePaidInvoiceTitle,
+      body: (l10n) => l10n.removePaidInvoiceBody(paid.folioLabel),
+      actionLabel: (l10n) => l10n.fiscalDocumentRemoveAction,
+      refusalsInline: true,
+      run: (actions) => actions.removePaidInvoice(documentId, paid.relationId),
+    ),
+  );
+  return result != null && result.error == null;
+}
+
 /// Asks before removing [relation] from draft [documentId] (C12), then
 /// removes it. A refusal shows inline and keeps the dialog open. `true` once
 /// removed.

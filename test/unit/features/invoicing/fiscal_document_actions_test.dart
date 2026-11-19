@@ -197,6 +197,85 @@ void main() {
     expect(listLoads, 1);
   });
 
+  group('payment receipts (spec 074)', () {
+    const receipt = NewPaymentReceipt(
+      customerId: 4,
+      recipientRfc: 'XEXX010101000',
+      customerPaymentId: 4127,
+    );
+
+    test(
+      'createPaymentReceipt answers the new id and reloads the list',
+      () async {
+        final c = await container();
+        when(
+          () => repository.createPaymentReceipt(receipt),
+        ).thenAnswer((_) async => aPaymentReceipt(id: 41));
+
+        final result = await actions(c).createPaymentReceipt(receipt);
+        await settle(c);
+
+        expect(result.id, 41);
+        expect(result.error, isNull);
+        expect(listLoads, 2);
+      },
+    );
+
+    test(
+      'a refused createPaymentReceipt answers the error and no id',
+      () async {
+        final c = await container();
+        when(
+          () => repository.createPaymentReceipt(receipt),
+        ).thenThrow(const AppError.server());
+
+        final result = await actions(c).createPaymentReceipt(receipt);
+
+        expect(result.id, isNull);
+        expect(result.error, isA<ServerError>());
+        expect(listLoads, 1);
+      },
+    );
+
+    test('the paid-invoice writes call their repository methods and answer '
+        'no error', () async {
+      final c = await container();
+      when(
+        () => repository.addPaidInvoice(7, 12, amount: any(named: 'amount')),
+      ).thenAnswer((_) async => aPaymentReceipt());
+      when(
+        () => repository.updatePaidInvoice(7, 31, any()),
+      ).thenAnswer((_) async => aPaymentReceipt());
+      when(
+        () => repository.removePaidInvoice(7, 31),
+      ).thenAnswer((_) async => aPaymentReceipt());
+      final a = actions(c);
+
+      expect(await a.addPaidInvoice(7, 12), isNull);
+      expect(await a.addPaidInvoice(7, 12, amount: Decimal.parse('5')), isNull);
+      expect(await a.updatePaidInvoice(7, 31, Decimal.parse('9')), isNull);
+      expect(await a.removePaidInvoice(7, 31), isNull);
+
+      verify(() => repository.addPaidInvoice(7, 12)).called(1);
+      verify(
+        () => repository.addPaidInvoice(7, 12, amount: Decimal.parse('5')),
+      ).called(1);
+      verify(
+        () => repository.updatePaidInvoice(7, 31, Decimal.parse('9')),
+      ).called(1);
+      verify(() => repository.removePaidInvoice(7, 31)).called(1);
+    });
+
+    test('a refused paid-invoice write answers the error', () async {
+      final c = await container();
+      when(
+        () => repository.addPaidInvoice(7, 12, amount: any(named: 'amount')),
+      ).thenThrow(const AppError.server());
+
+      expect(await actions(c).addPaidInvoice(7, 12), isA<ServerError>());
+    });
+  });
+
   group('credit notes (spec 073)', () {
     test('createCreditNote answers the new id and reloads the list', () async {
       final c = await container();

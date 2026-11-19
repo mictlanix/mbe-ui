@@ -76,6 +76,8 @@ void main() {
     WidgetTester tester, {
     FiscalDocumentStatus status = FiscalDocumentStatus.issued,
     int? excludeId,
+    Set<int> excludeIds = const {},
+    int? typeCode,
     String initialSearch = '',
     String? recipientRfc,
     bool enabled = true,
@@ -112,6 +114,8 @@ void main() {
                 status: status,
                 emptyMessage: 'Sin candidatos',
                 excludeId: excludeId,
+                excludeIds: excludeIds,
+                typeCode: typeCode,
                 initialSearch: initialSearch,
                 recipientRfc: recipientRfc,
                 enabled: enabled,
@@ -158,6 +162,38 @@ void main() {
     expect(key('candidate_row_1'), findsOneWidget);
     expect(key('candidate_row_7'), findsNothing);
     expect(key('candidate_row_2'), findsOneWidget);
+  });
+
+  testWidgets('never offers any of the excluded documents (spec 074 R14)', (
+    tester,
+  ) async {
+    stub((_, _) => [row(1), row(7), row(2)]);
+    await pump(tester, excludeIds: {1, 2});
+
+    expect(key('candidate_row_1'), findsNothing);
+    expect(key('candidate_row_2'), findsNothing);
+    expect(key('candidate_row_7'), findsOneWidget);
+  });
+
+  testWidgets('asks the server for the requested document type only', (
+    tester,
+  ) async {
+    stub((_, _) => [row(1)]);
+    await pump(tester, typeCode: 0);
+
+    final type = verify(
+      () => repository.list(
+        search: any(named: 'search'),
+        issuer: any(named: 'issuer'),
+        type: captureAny(named: 'type'),
+        status: any(named: 'status'),
+        dateFrom: any(named: 'dateFrom'),
+        dateTo: any(named: 'dateTo'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).captured.single;
+    expect(type, 0);
   });
 
   testWidgets('starts the search as the initial text, and a recipient drops '

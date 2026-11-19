@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -7,6 +8,8 @@ import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/domain/payment_method.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/core/formatting/app_formatters.dart'
+    show emptyValuePlaceholder;
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/responsive_dialog.dart';
@@ -43,6 +46,10 @@ bool isInvoiceIssueDateAllowed(DateTime issued, {DateTime? now}) {
 /// always PUE. It never offers form 99, and opens with no form chosen when 99
 /// is what it has, so the clerk must pick the real one.
 ///
+/// A payment receipt (spec 074 C40) has only the payment's date, amount and
+/// form, its operation number and ordering bank, the issue date and notes: its
+/// usage (CP01), currency and terms are fixed. It never offers form 99 either.
+///
 /// An issue date, once set, can't be emptied again from here: the server
 /// treats an absent value as unchanged.
 Future<bool> showInvoiceHeaderDialog(
@@ -70,9 +77,25 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
   late String? _usage = _doc.usage;
   late InvoicePaymentTerms _terms = _doc.paymentTerms;
   late int? _form =
-      _isNote && _doc.paymentForm == PaymentMethod.toBeDefined.code
+      (_isNote || _isReceipt) &&
+          _doc.paymentForm == PaymentMethod.toBeDefined.code
       ? null
       : _doc.paymentForm;
+  late DateTime? _paymentDate = _doc.paymentDate;
+  late final _paymentAmount = TextEditingController(
+    text: _doc.paymentAmount == null
+        ? ''
+        : ref
+              .read(formattersProvider)
+              .field
+              .price(_doc.paymentAmount.toString()),
+  );
+  late final _paymentReference = TextEditingController(
+    text: _doc.paymentReference ?? '',
+  );
+  late final _orderingBank = TextEditingController(
+    text: _doc.orderingBank ?? '',
+  );
   late DateTime? _issued = _doc.summary.issued;
   late int? _facility = _doc.facilityId;
   late final _reference = TextEditingController(text: _doc.reference ?? '');
@@ -85,6 +108,7 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
 
   FiscalDocument get _doc => widget.document;
   bool get _isNote => _doc.isCreditNote;
+  bool get _isReceipt => _doc.isPaymentReceipt;
 
   @override
   void initState() {
@@ -93,14 +117,16 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
     final customerId = _doc.customerId;
     // The customer's RFCs (Customers read); a legacy draft with no customer
     // has no recipient to change.
-    if (customerId != null && !_isNote) {
+    if (customerId != null && !_isNote && !_isReceipt) {
       _recipients = ref
           .read(customerRepositoryProvider)
           .get(customerId: customerId)
           .then((c) => [for (final t in c.taxpayers) t.taxpayerRecipientId]);
     }
     // The issuer's invoice series (Taxpayers (24) read).
-    if (!_isNote && access.can(SystemObject.taxpayers, AccessRight.read)) {
+    if (!_isNote &&
+        !_isReceipt &&
+        access.can(SystemObject.taxpayers, AccessRight.read)) {
       _seriesOptions = ref
           .read(taxpayerBatchRepositoryProvider)
           .listForIssuer(_doc.summary.issuerRfc)
@@ -117,6 +143,9 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
   void dispose() {
     _reference.dispose();
     _comment.dispose();
+    _paymentAmount.dispose();
+    _paymentReference.dispose();
+    _orderingBank.dispose();
     super.dispose();
   }
 
@@ -130,11 +159,53 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
     return isInvoiceIssueDateAllowed(issued);
   }
 
-  bool get _formNeeded => _isNote || _terms == InvoicePaymentTerms.pue;
+  bool get _formNeeded =>
+      _isNote || _isReceipt || _terms == InvoicePaymentTerms.pue;
   bool get _referenceValid => _reference.text.trim().length <= 25;
   bool get _commentValid => _comment.text.trim().length <= 1000;
 
+  /// `null` while the amount field is empty or unreadable.
+  Decimal? get _paymentAmountValue {
+    final parsed = ref
+        .read(formattersProvider)
+        .field
+        .parsePrice(_paymentAmount.text);
+    return parsed == null ? null : Decimal.tryParse(parsed);
+  }
+
+  bool get _paymentAmountChanged =>
+      _paymentAmount.text.trim().isNotEmpty &&
+      _paymentAmountValue != _doc.paymentAmount;
+
+  /// An empty field means "unchanged": only a positive amount is sent.
+  bool get _paymentAmountValid =>
+      _paymentAmount.text.trim().isEmpty ||
+      (_paymentAmountValue ?? Decimal.zero) > Decimal.zero;
+
+  /// The server's column limits: 50 for the operation number, 25 for the
+  /// ordering bank (stored in `reference`).
+  bool get _paymentReferenceValid => _paymentReference.text.trim().length <= 50;
+  bool get _orderingBankValid => _orderingBank.text.trim().length <= 25;
+
+  InvoiceHeaderPatch get _receiptPatch {
+    final reference = _paymentReference.text.trim();
+    final bank = _orderingBank.text.trim();
+    final comment = _comment.text.trim();
+    return InvoiceHeaderPatch(
+      paymentDate: _paymentDate != _doc.paymentDate ? _paymentDate : null,
+      paymentAmount: _paymentAmountChanged ? _paymentAmountValue : null,
+      paymentForm: _form != _doc.paymentForm ? _form : null,
+      paymentReference: reference != (_doc.paymentReference ?? '')
+          ? reference
+          : null,
+      orderingBank: bank != (_doc.orderingBank ?? '') ? bank : null,
+      issued: _issuedChanged ? _issued : null,
+      comment: comment != (_doc.comment ?? '') ? comment : null,
+    );
+  }
+
   InvoiceHeaderPatch get _patch {
+    if (_isReceipt) return _receiptPatch;
     final termsChanged = _terms != _doc.paymentTerms;
     final formChanged = _form != _doc.paymentForm;
     final reference = _reference.text.trim();
@@ -158,7 +229,11 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
 
   bool get _dirty {
     final p = _patch;
-    return p.recipientRfc != null ||
+    return p.paymentDate != null ||
+        p.paymentAmount != null ||
+        p.paymentReference != null ||
+        p.orderingBank != null ||
+        p.recipientRfc != null ||
         p.series != null ||
         p.usage != null ||
         p.paymentTerms != null ||
@@ -171,7 +246,9 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
 
   bool get _valid =>
       _issuedValid &&
-      _referenceValid &&
+      (_isReceipt
+          ? _paymentAmountValid && _paymentReferenceValid && _orderingBankValid
+          : _referenceValid) &&
       _commentValid &&
       (!_formNeeded || _form != null);
 
@@ -202,6 +279,21 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
         picked.minute,
       ),
     );
+  }
+
+  /// The payment's date: any day up to today (the server also checks it
+  /// against the paid invoices' dates).
+  Future<void> _pickPaymentDate() async {
+    final now = DateTime.now();
+    final current = _paymentDate ?? now;
+    final day = await showDatePicker(
+      context: context,
+      initialDate: current.isAfter(now) ? now : current,
+      firstDate: DateTime(now.year - 5),
+      lastDate: now,
+    );
+    if (day == null || !mounted) return;
+    setState(() => _paymentDate = DateTime(day.year, day.month, day.day));
   }
 
   Future<void> _save() async {
@@ -236,6 +328,7 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
     // administrator.
     final canChangeFacility =
         !_isNote &&
+        !_isReceipt &&
         (access.isAdministrator ||
             access.can(SystemObject.issuedLocationId, AccessRight.update));
     final serialAssigned = _doc.summary.serial != null;
@@ -264,7 +357,7 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
     final forms = [
       for (final m in PaymentMethod.values)
         if (m != PaymentMethod.governmentFunding &&
-            !(_isNote && m == PaymentMethod.toBeDefined))
+            !((_isNote || _isReceipt) && m == PaymentMethod.toBeDefined))
           m.code,
       if (_doc.paymentForm == PaymentMethod.governmentFunding.code)
         _doc.paymentForm,
@@ -318,25 +411,67 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
                 );
               },
             ),
-          CatalogEntityPicker<SatCatalogItem>(
-            key: const Key('invoice_header_usage'),
-            label: l10n.fiscalDocumentHeaderUsage,
-            enabled: !_busy,
-            initialDisplayText: _usage,
-            displayStringForOption: (i) =>
-                i.description == null ? i.code : '${i.code} — ${i.description}',
-            optionsBuilder: (query) async {
-              final result = await ref
-                  .read(satCatalogRepositoryProvider)
-                  .listCfdiUsages(
-                    search: query.trim().isEmpty ? null : query.trim(),
-                    limit: 10,
-                  );
-              return result.items;
-            },
-            onSelected: (i) => setState(() => _usage = i.code),
-          ),
-          if (_isNote)
+          if (!_isReceipt)
+            CatalogEntityPicker<SatCatalogItem>(
+              key: const Key('invoice_header_usage'),
+              label: l10n.fiscalDocumentHeaderUsage,
+              enabled: !_busy,
+              initialDisplayText: _usage,
+              displayStringForOption: (i) => i.description == null
+                  ? i.code
+                  : '${i.code} — ${i.description}',
+              optionsBuilder: (query) async {
+                final result = await ref
+                    .read(satCatalogRepositoryProvider)
+                    .listCfdiUsages(
+                      search: query.trim().isEmpty ? null : query.trim(),
+                      limit: 10,
+                    );
+                return result.items;
+              },
+              onSelected: (i) => setState(() => _usage = i.code),
+            ),
+          if (_isReceipt) ...[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: spacing.xs,
+              children: [
+                Text(
+                  l10n.fiscalDocumentHeaderPaymentDate,
+                  style: theme.textTheme.labelMedium,
+                ),
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: OutlinedButton.icon(
+                    key: const Key('invoice_header_payment_date'),
+                    onPressed: _busy ? null : _pickPaymentDate,
+                    icon: const Icon(Icons.event_outlined),
+                    label: Text(
+                      _paymentDate == null
+                          ? emptyValuePlaceholder
+                          : fmt.display.date(_paymentDate),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            TextField(
+              key: const Key('invoice_header_payment_amount'),
+              controller: _paymentAmount,
+              enabled: !_busy,
+              textAlign: TextAlign.end,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              decoration: InputDecoration(
+                labelText: l10n.fiscalDocumentHeaderPaymentAmount,
+                errorText: _paymentAmountValid
+                    ? null
+                    : l10n.editPaidInvoiceAmountPositive,
+              ),
+              onChanged: (_) => setState(() {}),
+            ),
+          ] else if (_isNote)
             Text(
               l10n.fiscalDocumentHeaderTermsFixedPue,
               key: const Key('invoice_header_terms_fixed'),
@@ -366,7 +501,7 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
                       }
                     }),
             ),
-          if (!_isNote && _terms == InvoicePaymentTerms.ppd)
+          if (!_isNote && !_isReceipt && _terms == InvoicePaymentTerms.ppd)
             // PPD forces form 99, so it is shown and can't be changed.
             InputDecorator(
               key: const Key('invoice_header_form_ppd'),
@@ -393,6 +528,33 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
               ],
               onChanged: _busy ? null : (v) => setState(() => _form = v),
             ),
+          if (_isReceipt) ...[
+            TextField(
+              key: const Key('invoice_header_payment_reference'),
+              controller: _paymentReference,
+              enabled: !_busy,
+              decoration: InputDecoration(
+                labelText: l10n.fiscalDocumentHeaderOperationNumber,
+                errorText: _paymentReferenceValid
+                    ? null
+                    : l10n.fiscalDocumentHeaderOperationNumberTooLong,
+              ),
+              onChanged: (_) => setState(() {}),
+            ),
+            TextField(
+              key: const Key('invoice_header_ordering_bank'),
+              controller: _orderingBank,
+              enabled: !_busy,
+              decoration: InputDecoration(
+                labelText: l10n.fiscalDocumentHeaderOrderingBank,
+                helperText: l10n.fiscalDocumentHeaderOrderingBankHelper,
+                errorText: _orderingBankValid
+                    ? null
+                    : l10n.fiscalDocumentHeaderOrderingBankTooLong,
+              ),
+              onChanged: (_) => setState(() {}),
+            ),
+          ],
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: spacing.xs,
@@ -443,18 +605,19 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
               },
               onSelected: (f) => setState(() => _facility = f.facilityId),
             ),
-          TextField(
-            key: const Key('invoice_header_reference'),
-            controller: _reference,
-            enabled: !_busy,
-            decoration: InputDecoration(
-              labelText: l10n.fiscalDocumentHeaderReference,
-              errorText: _referenceValid
-                  ? null
-                  : l10n.fiscalDocumentHeaderReferenceTooLong,
+          if (!_isReceipt)
+            TextField(
+              key: const Key('invoice_header_reference'),
+              controller: _reference,
+              enabled: !_busy,
+              decoration: InputDecoration(
+                labelText: l10n.fiscalDocumentHeaderReference,
+                errorText: _referenceValid
+                    ? null
+                    : l10n.fiscalDocumentHeaderReferenceTooLong,
+              ),
+              onChanged: (_) => setState(() {}),
             ),
-            onChanged: (_) => setState(() {}),
-          ),
           TextField(
             key: const Key('invoice_header_comment'),
             controller: _comment,
@@ -468,6 +631,12 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
             ),
             onChanged: (_) => setState(() {}),
           ),
+          if (_isReceipt)
+            Text(
+              l10n.fiscalDocumentHeaderReceiptFixed,
+              key: const Key('invoice_header_receipt_fixed'),
+              style: theme.textTheme.bodySmall,
+            ),
           if (_refusal != null) FiscalDocumentRefusal(error: _refusal!),
         ],
       ),

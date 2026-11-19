@@ -300,6 +300,26 @@ void main() {
     });
   });
 
+  group('payment receipts (spec 074 US5 scenario 3)', () {
+    testWidgets('the type filter offers "Complemento de pago", sends type 200 '
+        'and lists the rows with that label and their chip', (tester) async {
+      serve([row(3, serial: 413, series: 'CP', type: 200, total: '0.00')]);
+      await pumpList(tester, location: '/invoicing/fiscal-documents?type=200');
+
+      expect(requests.single.type, 200);
+      expect(find.text('CP413'), findsOneWidget);
+      expect(find.text(l10n.fiscalDocumentKindPaymentReceipt), findsOneWidget);
+      expect(l10n.fiscalDocumentKindPaymentReceipt, 'Complemento de pago');
+      expect(key('fiscal_document_status_chip_issued'), findsOneWidget);
+      expect(badge(tester).isLabelVisible, isTrue);
+
+      await openFilters(tester);
+      await tester.tap(key('fiscal_documents_type_filter'));
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.fiscalDocumentKindPaymentReceipt), findsWidgets);
+    });
+  });
+
   group('search', () {
     testWidgets('submitting sends the text as search and writes the '
         'address', (tester) async {

@@ -79,18 +79,18 @@ code	facility.no_in_transit_location	422	facility_ids: list[int]	IN	POST /invent
 code	facility.other_facility	403	resource: str, required?: list[{system_object: int, right: int}]	IN	GET /credit-notes; GET /customer-payments	reachable from 4 UI route(s)
 code	facility.required	422	—	IN	POST /customer-refunds	reachable from 1 UI route(s)
 code	fiscal_document.already_related	409	relation_id: int	IN	POST /fiscal-documents/{}/relations	reachable from the Facturas screens (spec 066)
-code	fiscal_document.amount_exceeds_balance	422	balance: decimal	OUT		
-code	fiscal_document.amounts_exceed_payment	422	—	OUT		
-code	fiscal_document.amounts_not_equal_payment	422	—	OUT		
+code	fiscal_document.amount_exceeds_balance	422	balance: decimal	IN	POST /fiscal-documents/{}/paid-invoices; PUT /fiscal-documents/{}/paid-invoices/{}; POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 074)
+code	fiscal_document.amounts_exceed_payment	422	—	IN	POST /fiscal-documents/{}/paid-invoices; PUT /fiscal-documents/{}/paid-invoices/{}; PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 074)
+code	fiscal_document.amounts_not_equal_payment	422	—	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 074)
 code	fiscal_document.cancellation_open	409	—	IN	POST /fiscal-documents/{}/cancel; POST /fiscal-documents/credit-notes	reachable from the Facturas screens (spec 072)
 code	fiscal_document.certificate_cannot_sign	422	—	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
 code	fiscal_document.credit_exceeds_invoice	422	invoice_id: int, remaining: decimal	IN	POST /fiscal-documents/credit-notes; POST /fiscal-documents/{}/invoice-lines; PUT /fiscal-documents/{}/lines/{}; POST /fiscal-documents/{}/confirm; PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 073)
 code	fiscal_document.credit_quantity_exceeds_line	422	max: decimal	IN	POST /fiscal-documents/credit-notes; POST /fiscal-documents/{}/invoice-lines; PUT /fiscal-documents/{}/lines/{}; POST /fiscal-documents/{}/confirm; PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 073)
 code	fiscal_document.field_not_for_type	422	fields: list[str], type: enum:FiscalDocumentType	IN	PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 066)
 code	fiscal_document.has_live_documents	409	documents: list[str]	IN	POST /fiscal-documents/{}/cancel	reachable from the Facturas screens (spec 072)
-code	fiscal_document.invoice_already_on_receipt	409	invoice_id: int	OUT		
+code	fiscal_document.invoice_already_on_receipt	409	invoice_id: int	IN	POST /fiscal-documents/{}/paid-invoices	reachable from the Facturas screens (spec 074)
 code	fiscal_document.invoice_not_creditable	422	invoice_id: int	IN	POST /fiscal-documents/credit-notes; POST /fiscal-documents/{}/invoice-lines; PUT /fiscal-documents/{}/lines/{}; POST /fiscal-documents/{}/confirm; PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 073)
-code	fiscal_document.invoice_not_payable	422	invoice_id: int	OUT		
+code	fiscal_document.invoice_not_payable	422	invoice_id: int	IN	POST /fiscal-documents/{}/paid-invoices; POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 074)
 code	fiscal_document.issue_date_out_of_range	422	—	IN	PUT /fiscal-documents/{}; POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
 code	fiscal_document.issuer_has_no_series	422	type: enum:FiscalDocumentType	IN	POST /fiscal-documents; POST /fiscal-documents/credit-notes	reachable from the Facturas screens (spec 066)
 code	fiscal_document.line_missing_sat_key	422	line: int	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
@@ -106,14 +106,14 @@ code	fiscal_document.not_sealed	409	—	IN	POST /fiscal-documents/{}/reopen	reac
 code	fiscal_document.not_stamped	409	—	IN	GET /fiscal-documents/{}/pdf	reachable from the Facturas screens (spec 066)
 code	fiscal_document.nothing_to_refresh	409	—	IN	POST /fiscal-documents/{}/refresh	reachable from the Facturas screens (spec 072)
 code	fiscal_document.order_not_invoiceable	422	sales_order_id: int	IN	POST /fiscal-documents/{}/sales-orders	reachable from the Facturas screens (spec 066)
-code	fiscal_document.payment_already_receipted	409	fiscal_document_id: int	OUT		
-code	fiscal_document.payment_date_out_of_range	422	—	OUT		
+code	fiscal_document.payment_already_receipted	409	fiscal_document_id: int	IN	POST /fiscal-documents/payment-receipts	reachable from the Facturas screens (spec 074)
+code	fiscal_document.payment_date_out_of_range	422	—	IN	POST /fiscal-documents/{}/paid-invoices; PUT /fiscal-documents/{}; POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 074)
 code	fiscal_document.payment_form_required	422	type: enum:FiscalDocumentType	IN	POST /fiscal-documents/credit-notes; POST /fiscal-documents/{}/invoice-lines; PUT /fiscal-documents/{}/lines/{}; POST /fiscal-documents/{}/confirm; PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 073)
-code	fiscal_document.payment_other_customer	422	customer_payment_id: int	OUT		
+code	fiscal_document.payment_other_customer	422	customer_payment_id: int	IN	POST /fiscal-documents/payment-receipts	reachable from the Facturas screens (spec 074)
 code	fiscal_document.product_unpriced	422	product_id: int	IN	POST /fiscal-documents/{}/lines	reachable from the Facturas screens (spec 066)
 code	fiscal_document.quantity_exceeds_invoiceable	422	remaining: decimal, line?: int	IN	PUT /fiscal-documents/{}/lines/{}; POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
-code	fiscal_document.receipt_needs_payment_data	422	—	OUT		
-code	fiscal_document.receipt_pays_no_invoice	422	—	OUT		
+code	fiscal_document.receipt_needs_payment_data	422	—	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 074)
+code	fiscal_document.receipt_pays_no_invoice	422	—	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 074)
 code	fiscal_document.recipient_incomplete	422	—	IN	POST /fiscal-documents/{}/confirm	reachable from the Facturas screens (spec 066)
 code	fiscal_document.recipient_not_linked	422	customer_id: int, recipient: str	IN	POST /fiscal-documents; PUT /fiscal-documents/{}	reachable from the Facturas screens (spec 066)
 code	fiscal_document.relation_not_allowed	422	relation_type: str	IN	POST /fiscal-documents/{}/relations	reachable from the Facturas screens (spec 066)

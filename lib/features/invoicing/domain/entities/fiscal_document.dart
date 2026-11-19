@@ -152,6 +152,30 @@ abstract class InvoiceRelation with _$InvoiceRelation {
   }) = _InvoiceRelation;
 }
 
+/// One PPD invoice a payment receipt pays (spec 074 data-model). The values
+/// are the server's: live on a draft, stored once the receipt is sealed.
+@freezed
+abstract class PaidInvoice with _$PaidInvoice {
+  const PaidInvoice._();
+
+  const factory PaidInvoice({
+    /// The id the update and remove routes take.
+    required int relationId,
+    required int invoiceId,
+    String? series,
+    int? serial,
+    String? stampUuid,
+    required int installment,
+    required Decimal previousBalance,
+    required Decimal amount,
+    required Decimal remaining,
+  }) = _PaidInvoice;
+
+  /// Series and serial, or `#invoiceId` for an invoice with no serial.
+  String get folioLabel =>
+      serial == null ? '#$invoiceId' : '${series ?? ''}$serial';
+}
+
 /// A fiscal document in full.
 @freezed
 abstract class FiscalDocument with _$FiscalDocument {
@@ -191,19 +215,34 @@ abstract class FiscalDocument with _$FiscalDocument {
     @Default(<FiscalCancellation>[]) List<FiscalCancellation> cancellations,
     @Default(<InvoiceLine>[]) List<InvoiceLine> lines,
     @Default(<InvoiceRelation>[]) List<InvoiceRelation> relations,
+
+    /// A payment receipt's payment (spec 074): `null` on other types, and on a
+    /// fresh by-hand receipt until the header is filled.
+    DateTime? paymentDate,
+    Decimal? paymentAmount,
+    String? paymentReference,
+
+    /// The customer payment the receipt came from, when it did.
+    int? customerPaymentId,
+
+    /// The invoices a receipt pays; empty for any other type.
+    @Default(<PaidInvoice>[]) List<PaidInvoice> paidInvoices,
   }) = _FiscalDocument;
 
   int get id => summary.id;
   FiscalDocumentStatus get status => summary.status;
   bool get isInvoice => summary.typeCode == 0;
   bool get isCreditNote => summary.typeCode == 100;
+  bool get isPaymentReceipt => summary.typeCode == 200;
 
   /// An invoice, or a credit note that relates its invoice (spec 073 R8). A
   /// credit note with no relation (legacy) can't be edited: the lines are
   /// copied from that invoice and the server's confirm needs the relation.
   /// Any other type is read-only here.
   bool get isEditableKind =>
-      isInvoice || (isCreditNote && creditedInvoice != null);
+      isInvoice ||
+      isPaymentReceipt ||
+      (isCreditNote && creditedInvoice != null);
 
   bool get isEditableDraft =>
       isEditableKind && status == FiscalDocumentStatus.draft;
@@ -223,7 +262,7 @@ abstract class FiscalDocument with _$FiscalDocument {
   /// A credit-note draft still on payment form 99: the server refuses to
   /// confirm it until a real form is chosen (spec 073 R5).
   bool get needsPaymentForm =>
-      isCreditNote &&
+      (isCreditNote || isPaymentReceipt) &&
       status == FiscalDocumentStatus.draft &&
       paymentForm == PaymentMethod.toBeDefined.code;
 
@@ -250,6 +289,29 @@ abstract class FiscalDocument with _$FiscalDocument {
 
   bool get hasRelations => relations.isNotEmpty;
 
+  /// The ordering bank of a receipt: the server stores it in `reference`
+  /// (spec 074 R7).
+  String? get orderingBank => isPaymentReceipt ? reference : null;
+
+  /// What the paid invoices add up to (spec 074 FR-010).
+  Decimal get assignedAmount =>
+      paidInvoices.fold(Decimal.zero, (sum, p) => sum + p.amount);
+
+  /// The payment amount not yet assigned to an invoice; `null` while the
+  /// payment amount is unknown.
+  Decimal? get unassignedAmount {
+    final amount = paymentAmount;
+    return amount == null ? null : amount - assignedAmount;
+  }
+
+  /// A draft receipt made from a payment whose orders yielded no PPD invoice
+  /// (spec 074 C38).
+  bool get showsNoProposalBanner =>
+      isPaymentReceipt &&
+      status == FiscalDocumentStatus.draft &&
+      customerPaymentId != null &&
+      paidInvoices.isEmpty;
+
   /// The type shared by the relations, or null when there are none.
   InvoiceRelationType? get relationType =>
       relations.isEmpty ? null : relations.first.type;
@@ -266,6 +328,17 @@ abstract class NewInvoice with _$NewInvoice {
   }) = _NewInvoice;
 }
 
+/// Start a payment receipt for a customer's RFC, optionally from one of their
+/// payments (spec 074).
+@freezed
+abstract class NewPaymentReceipt with _$NewPaymentReceipt {
+  const factory NewPaymentReceipt({
+    required int customerId,
+    required String recipientRfc,
+    int? customerPaymentId,
+  }) = _NewPaymentReceipt;
+}
+
 /// A partial header update: only non-null fields are sent. An empty
 /// [reference] or [comment] clears it.
 @freezed
@@ -280,6 +353,14 @@ abstract class InvoiceHeaderPatch with _$InvoiceHeaderPatch {
     int? facilityId,
     String? reference,
     String? comment,
+
+    /// A payment receipt's fields (spec 074). The server accepts them only on
+    /// a receipt, and the invoice fields above only on an invoice or credit
+    /// note.
+    DateTime? paymentDate,
+    Decimal? paymentAmount,
+    String? paymentReference,
+    String? orderingBank,
   }) = _InvoiceHeaderPatch;
 }
 

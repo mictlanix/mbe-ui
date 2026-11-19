@@ -62,6 +62,38 @@ class FiscalDocumentActions extends _$FiscalDocumentActions {
     }
   }
 
+  /// `POST /fiscal-documents/payment-receipts` (spec 074): answers the new
+  /// draft's id, or the refusal.
+  Future<({AppError? error, int? id})> createPaymentReceipt(
+    NewPaymentReceipt receipt,
+  ) async {
+    try {
+      final created = await ref
+          .read(fiscalDocumentRepositoryProvider)
+          .createPaymentReceipt(receipt);
+      ref.invalidate(fiscalDocumentsListControllerProvider);
+      return (error: null, id: created.id);
+    } on AppError catch (e) {
+      // A lost connection leaves the outcome unknown, so the list refetches.
+      if (e is NetworkError) {
+        ref.invalidate(fiscalDocumentsListControllerProvider);
+      }
+      return (error: e, id: null);
+    }
+  }
+
+  /// `POST /fiscal-documents/{id}/paid-invoices`.
+  Future<AppError?> addPaidInvoice(int id, int invoiceId, {Decimal? amount}) =>
+      _run(id, (r) => r.addPaidInvoice(id, invoiceId, amount: amount));
+
+  /// `PUT /fiscal-documents/{id}/paid-invoices/{relationId}`.
+  Future<AppError?> updatePaidInvoice(int id, int relationId, Decimal amount) =>
+      _run(id, (r) => r.updatePaidInvoice(id, relationId, amount));
+
+  /// `DELETE /fiscal-documents/{id}/paid-invoices/{relationId}`.
+  Future<AppError?> removePaidInvoice(int id, int relationId) =>
+      _run(id, (r) => r.removePaidInvoice(id, relationId));
+
   /// `PUT /fiscal-documents/{id}`.
   Future<AppError?> updateHeader(int id, InvoiceHeaderPatch patch) =>
       _run(id, (r) => r.updateHeader(id, patch));

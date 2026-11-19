@@ -24,6 +24,8 @@ import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/payment_method_option.dart';
+import 'package:mbe_ui/features/invoicing/data/fiscal_document_repository_impl.dart';
+import 'package:mbe_ui/features/invoicing/domain/repositories/fiscal_document_repository.dart';
 import 'package:mbe_ui/features/sales/data/customer_payment_repository_impl.dart';
 import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
 import 'package:mbe_ui/features/sales/domain/entities/outstanding_order.dart';
@@ -34,6 +36,8 @@ import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import '../../../unit/core/documents/document_fakes.dart';
 import 'payments_list_screen_test.dart';
+
+class _MockFiscalDocuments extends Mock implements FiscalDocumentRepository {}
 
 class _FixedAuthNotifier extends AuthNotifier {
   _FixedAuthNotifier(this._state);
@@ -48,6 +52,7 @@ User _user({
   bool customerPaymentsRead = true,
   int paymentRights = 2,
   int verificationRights = 0,
+  int fiscalDocumentsRights = 0,
   int? facilityId = 9,
 }) => User(
   userId: 'u1',
@@ -65,6 +70,11 @@ User _user({
     if (pos) const Privilege(systemObject: SystemObject.pos, rawValue: 2),
     if (editor)
       const Privilege(systemObject: SystemObject.paymentsEditor, rawValue: 2),
+    if (fiscalDocumentsRights > 0)
+      Privilege(
+        systemObject: SystemObject.fiscalDocuments,
+        rawValue: fiscalDocumentsRights,
+      ),
     if (verificationRights > 0)
       Privilege(
         systemObject: SystemObject.paymentsVerification,
@@ -1100,6 +1110,79 @@ void main() {
       expect(find.text('Verificar'), findsOneWidget);
       expect(find.text('Rechazar'), findsOneWidget);
       expect(tester.takeException(), isNull);
+    });
+  });
+
+  group('"Emitir complemento de pago" (spec 074 C34, FR-001, FR-017)', () {
+    const issue = Key('payment_issue_receipt_button');
+
+    testWidgets('is offered with Create on fiscal documents, in every payment '
+        'state', (tester) async {
+      for (final payment in [
+        testPayment(verifierId: 3),
+        testPayment(verifierId: null),
+        testPayment(unapplied: '300.00'),
+      ]) {
+        stubGet(payment);
+        await pumpDetail(tester, user: _user(fiscalDocumentsRights: 3));
+
+        expect(find.byKey(issue), findsOneWidget);
+        expect(find.text(l10n.paymentIssueReceiptAction), findsOneWidget);
+        await tester.pumpWidget(const SizedBox());
+      }
+    });
+
+    testWidgets('is absent with Update only, and with no fiscal documents '
+        'right', (tester) async {
+      stubGet(testPayment());
+      await pumpDetail(tester, user: _user(fiscalDocumentsRights: 2));
+      expect(find.byKey(issue), findsNothing);
+    });
+
+    testWidgets('is absent without any fiscal documents right', (tester) async {
+      stubGet(testPayment());
+      await pumpDetail(tester);
+      expect(find.byKey(issue), findsNothing);
+    });
+
+    testWidgets('sits beside "Aplicar" without disturbing it', (tester) async {
+      stubGet(testPayment(unapplied: '300.00'));
+      await pumpDetail(
+        tester,
+        user: _user(fiscalDocumentsRights: 3, paymentRights: 3),
+      );
+
+      expect(find.byKey(const Key('payment_apply_button')), findsOneWidget);
+      expect(find.byKey(issue), findsOneWidget);
+    });
+
+    testWidgets('opens the create dialog for this payment', (tester) async {
+      stubGet(testPayment(customerName: 'Aceros del Bajío'));
+      await pumpDetail(
+        tester,
+        user: _user(fiscalDocumentsRights: 3),
+        extraOverrides: [
+          fiscalDocumentRepositoryProvider.overrideWithValue(
+            _MockFiscalDocuments(),
+          ),
+        ],
+      );
+
+      await tester.tap(find.byKey(issue));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key('new_invoice_dialog')), findsOneWidget);
+      expect(
+        tester
+            .widget<Text>(find.byKey(const Key('responsive_dialog_title')))
+            .data,
+        l10n.fiscalDocumentIssueReceiptTitle,
+      );
+      expect(
+        find.byKey(const Key('new_receipt_payment_summary')),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Pago #501'), findsOneWidget);
     });
   });
 }

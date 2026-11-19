@@ -65,6 +65,16 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.facilityPeriodOtherFacility,
   api.ErrorCode.facilityPeriodRequired,
   api.ErrorCode.fiscalDocumentPeriodAlreadyRelated,
+  api.ErrorCode.fiscalDocumentPeriodAmountExceedsBalance,
+  api.ErrorCode.fiscalDocumentPeriodAmountsExceedPayment,
+  api.ErrorCode.fiscalDocumentPeriodAmountsNotEqualPayment,
+  api.ErrorCode.fiscalDocumentPeriodInvoiceAlreadyOnReceipt,
+  api.ErrorCode.fiscalDocumentPeriodInvoiceNotPayable,
+  api.ErrorCode.fiscalDocumentPeriodPaymentAlreadyReceipted,
+  api.ErrorCode.fiscalDocumentPeriodPaymentDateOutOfRange,
+  api.ErrorCode.fiscalDocumentPeriodPaymentOtherCustomer,
+  api.ErrorCode.fiscalDocumentPeriodReceiptNeedsPaymentData,
+  api.ErrorCode.fiscalDocumentPeriodReceiptPaysNoInvoice,
   api.ErrorCode.fiscalDocumentPeriodCertificateCannotSign,
   api.ErrorCode.fiscalDocumentPeriodCreditExceedsInvoice,
   api.ErrorCode.fiscalDocumentPeriodCreditQuantityExceedsLine,
@@ -369,6 +379,28 @@ String? localizeProblem(
     api.ErrorCode.facilityPeriodRequired => l10n.apiErrorFacilityRequired,
     api.ErrorCode.fiscalDocumentPeriodAlreadyRelated =>
       l10n.apiErrorFiscalDocumentAlreadyRelated,
+    api.ErrorCode.fiscalDocumentPeriodAmountExceedsBalance => _ap1(
+      _money(problem, 'balance', fmt),
+      l10n.apiErrorFiscalDocumentAmountExceedsBalance,
+    ),
+    api.ErrorCode.fiscalDocumentPeriodAmountsExceedPayment =>
+      l10n.apiErrorFiscalDocumentAmountsExceedPayment,
+    api.ErrorCode.fiscalDocumentPeriodAmountsNotEqualPayment =>
+      l10n.apiErrorFiscalDocumentAmountsNotEqualPayment,
+    api.ErrorCode.fiscalDocumentPeriodInvoiceAlreadyOnReceipt =>
+      l10n.apiErrorFiscalDocumentInvoiceAlreadyOnReceipt,
+    api.ErrorCode.fiscalDocumentPeriodInvoiceNotPayable =>
+      l10n.apiErrorFiscalDocumentInvoiceNotPayable,
+    api.ErrorCode.fiscalDocumentPeriodPaymentAlreadyReceipted =>
+      l10n.apiErrorFiscalDocumentPaymentAlreadyReceipted,
+    api.ErrorCode.fiscalDocumentPeriodPaymentDateOutOfRange =>
+      l10n.apiErrorFiscalDocumentPaymentDateOutOfRange,
+    api.ErrorCode.fiscalDocumentPeriodPaymentOtherCustomer =>
+      l10n.apiErrorFiscalDocumentPaymentOtherCustomer,
+    api.ErrorCode.fiscalDocumentPeriodReceiptNeedsPaymentData =>
+      l10n.apiErrorFiscalDocumentReceiptNeedsPaymentData,
+    api.ErrorCode.fiscalDocumentPeriodReceiptPaysNoInvoice =>
+      l10n.apiErrorFiscalDocumentReceiptPaysNoInvoice,
     api.ErrorCode.fiscalDocumentPeriodCertificateCannotSign =>
       l10n.apiErrorFiscalDocumentCertificateCannotSign,
     api.ErrorCode.fiscalDocumentPeriodCreditExceedsInvoice => _ap1(

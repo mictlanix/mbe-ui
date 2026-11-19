@@ -907,6 +907,296 @@ as int?,
 }
 
 /// @nodoc
+mixin _$PaidInvoice {
+
+/// The id the update and remove routes take.
+ int get relationId; int get invoiceId; String? get series; int? get serial; String? get stampUuid; int get installment; Decimal get previousBalance; Decimal get amount; Decimal get remaining;
+/// Create a copy of PaidInvoice
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PaidInvoiceCopyWith<PaidInvoice> get copyWith => _$PaidInvoiceCopyWithImpl<PaidInvoice>(this as PaidInvoice, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as PaidInvoice;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PaidInvoice&&(identical(other.relationId, _this.relationId) || other.relationId == _this.relationId)&&(identical(other.invoiceId, _this.invoiceId) || other.invoiceId == _this.invoiceId)&&(identical(other.series, _this.series) || other.series == _this.series)&&(identical(other.serial, _this.serial) || other.serial == _this.serial)&&(identical(other.stampUuid, _this.stampUuid) || other.stampUuid == _this.stampUuid)&&(identical(other.installment, _this.installment) || other.installment == _this.installment)&&(identical(other.previousBalance, _this.previousBalance) || other.previousBalance == _this.previousBalance)&&(identical(other.amount, _this.amount) || other.amount == _this.amount)&&(identical(other.remaining, _this.remaining) || other.remaining == _this.remaining));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as PaidInvoice;
+  return Object.hash(runtimeType,_this.relationId,_this.invoiceId,_this.series,_this.serial,_this.stampUuid,_this.installment,_this.previousBalance,_this.amount,_this.remaining);
+}
+
+@override
+String toString() {
+  final _this = this as PaidInvoice;
+  return 'PaidInvoice(relationId: ${_this.relationId}, invoiceId: ${_this.invoiceId}, series: ${_this.series}, serial: ${_this.serial}, stampUuid: ${_this.stampUuid}, installment: ${_this.installment}, previousBalance: ${_this.previousBalance}, amount: ${_this.amount}, remaining: ${_this.remaining})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PaidInvoiceCopyWith<$Res>  {
+  factory $PaidInvoiceCopyWith(PaidInvoice value, $Res Function(PaidInvoice) _then) = _$PaidInvoiceCopyWithImpl;
+@useResult
+$Res call({
+ int relationId, int invoiceId, String? series, int? serial, String? stampUuid, int installment, Decimal previousBalance, Decimal amount, Decimal remaining
+});
+
+
+
+
+}
+/// @nodoc
+class _$PaidInvoiceCopyWithImpl<$Res>
+    implements $PaidInvoiceCopyWith<$Res> {
+  _$PaidInvoiceCopyWithImpl(this._self, this._then);
+
+  final PaidInvoice _self;
+  final $Res Function(PaidInvoice) _then;
+
+/// Create a copy of PaidInvoice
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? relationId = null,Object? invoiceId = null,Object? series = freezed,Object? serial = freezed,Object? stampUuid = freezed,Object? installment = null,Object? previousBalance = null,Object? amount = null,Object? remaining = null,}) {
+  return _then(PaidInvoice(
+relationId: null == relationId ? _self.relationId : relationId // ignore: cast_nullable_to_non_nullable
+as int,invoiceId: null == invoiceId ? _self.invoiceId : invoiceId // ignore: cast_nullable_to_non_nullable
+as int,series: freezed == series ? _self.series : series // ignore: cast_nullable_to_non_nullable
+as String?,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
+as int?,stampUuid: freezed == stampUuid ? _self.stampUuid : stampUuid // ignore: cast_nullable_to_non_nullable
+as String?,installment: null == installment ? _self.installment : installment // ignore: cast_nullable_to_non_nullable
+as int,previousBalance: null == previousBalance ? _self.previousBalance : previousBalance // ignore: cast_nullable_to_non_nullable
+as Decimal,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as Decimal,remaining: null == remaining ? _self.remaining : remaining // ignore: cast_nullable_to_non_nullable
+as Decimal,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [PaidInvoice].
+extension PaidInvoicePatterns on PaidInvoice {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _PaidInvoice value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _PaidInvoice() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _PaidInvoice value)  $default,){
+final _that = this;
+switch (_that) {
+case _PaidInvoice():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _PaidInvoice value)?  $default,){
+final _that = this;
+switch (_that) {
+case _PaidInvoice() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int relationId,  int invoiceId,  String? series,  int? serial,  String? stampUuid,  int installment,  Decimal previousBalance,  Decimal amount,  Decimal remaining)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _PaidInvoice() when $default != null:
+return $default(_that.relationId,_that.invoiceId,_that.series,_that.serial,_that.stampUuid,_that.installment,_that.previousBalance,_that.amount,_that.remaining);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int relationId,  int invoiceId,  String? series,  int? serial,  String? stampUuid,  int installment,  Decimal previousBalance,  Decimal amount,  Decimal remaining)  $default,) {final _that = this;
+switch (_that) {
+case _PaidInvoice():
+return $default(_that.relationId,_that.invoiceId,_that.series,_that.serial,_that.stampUuid,_that.installment,_that.previousBalance,_that.amount,_that.remaining);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int relationId,  int invoiceId,  String? series,  int? serial,  String? stampUuid,  int installment,  Decimal previousBalance,  Decimal amount,  Decimal remaining)?  $default,) {final _that = this;
+switch (_that) {
+case _PaidInvoice() when $default != null:
+return $default(_that.relationId,_that.invoiceId,_that.series,_that.serial,_that.stampUuid,_that.installment,_that.previousBalance,_that.amount,_that.remaining);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _PaidInvoice extends PaidInvoice {
+  const _PaidInvoice({required this.relationId, required this.invoiceId, this.series, this.serial, this.stampUuid, required this.installment, required this.previousBalance, required this.amount, required this.remaining}): super._();
+  
+
+/// The id the update and remove routes take.
+@override final  int relationId;
+@override final  int invoiceId;
+@override final  String? series;
+@override final  int? serial;
+@override final  String? stampUuid;
+@override final  int installment;
+@override final  Decimal previousBalance;
+@override final  Decimal amount;
+@override final  Decimal remaining;
+
+/// Create a copy of PaidInvoice
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$PaidInvoiceCopyWith<_PaidInvoice> get copyWith => __$PaidInvoiceCopyWithImpl<_PaidInvoice>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _PaidInvoice&&(identical(other.relationId, relationId) || other.relationId == relationId)&&(identical(other.invoiceId, invoiceId) || other.invoiceId == invoiceId)&&(identical(other.series, series) || other.series == series)&&(identical(other.serial, serial) || other.serial == serial)&&(identical(other.stampUuid, stampUuid) || other.stampUuid == stampUuid)&&(identical(other.installment, installment) || other.installment == installment)&&(identical(other.previousBalance, previousBalance) || other.previousBalance == previousBalance)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.remaining, remaining) || other.remaining == remaining));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,relationId,invoiceId,series,serial,stampUuid,installment,previousBalance,amount,remaining);
+}
+
+@override
+String toString() {
+    return 'PaidInvoice(relationId: $relationId, invoiceId: $invoiceId, series: $series, serial: $serial, stampUuid: $stampUuid, installment: $installment, previousBalance: $previousBalance, amount: $amount, remaining: $remaining)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$PaidInvoiceCopyWith<$Res> implements $PaidInvoiceCopyWith<$Res> {
+  factory _$PaidInvoiceCopyWith(_PaidInvoice value, $Res Function(_PaidInvoice) _then) = __$PaidInvoiceCopyWithImpl;
+@override @useResult
+$Res call({
+ int relationId, int invoiceId, String? series, int? serial, String? stampUuid, int installment, Decimal previousBalance, Decimal amount, Decimal remaining
+});
+
+
+
+
+}
+/// @nodoc
+class __$PaidInvoiceCopyWithImpl<$Res>
+    implements _$PaidInvoiceCopyWith<$Res> {
+  __$PaidInvoiceCopyWithImpl(this._self, this._then);
+
+  final _PaidInvoice _self;
+  final $Res Function(_PaidInvoice) _then;
+
+/// Create a copy of PaidInvoice
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? relationId = null,Object? invoiceId = null,Object? series = freezed,Object? serial = freezed,Object? stampUuid = freezed,Object? installment = null,Object? previousBalance = null,Object? amount = null,Object? remaining = null,}) {
+  return _then(_PaidInvoice(
+relationId: null == relationId ? _self.relationId : relationId // ignore: cast_nullable_to_non_nullable
+as int,invoiceId: null == invoiceId ? _self.invoiceId : invoiceId // ignore: cast_nullable_to_non_nullable
+as int,series: freezed == series ? _self.series : series // ignore: cast_nullable_to_non_nullable
+as String?,serial: freezed == serial ? _self.serial : serial // ignore: cast_nullable_to_non_nullable
+as int?,stampUuid: freezed == stampUuid ? _self.stampUuid : stampUuid // ignore: cast_nullable_to_non_nullable
+as String?,installment: null == installment ? _self.installment : installment // ignore: cast_nullable_to_non_nullable
+as int,previousBalance: null == previousBalance ? _self.previousBalance : previousBalance // ignore: cast_nullable_to_non_nullable
+as Decimal,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
+as Decimal,remaining: null == remaining ? _self.remaining : remaining // ignore: cast_nullable_to_non_nullable
+as Decimal,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$FiscalDocument {
 
  FiscalDocumentSummary get summary; String? get issuerRegime; String? get issuerRegimeName; int? get customerId; int? get facilityId; String get issuedLocation; String? get taxpayerRegime; String? get taxpayerPostalCode; String? get usage; InvoicePaymentTerms get paymentTerms; int get paymentForm; int get currencyCode; Decimal get exchangeRate; String? get reference; String? get comment; DateTime? get stamped; DateTime? get cancellationDate; String? get cancellationReason;/// The PAC's stamp; `null` before stamping. Legacy-stamped documents have
@@ -914,7 +1204,11 @@ mixin _$FiscalDocument {
  FiscalStamp? get stamp;/// When the pending stamp was sent, while the document is stamping.
  DateTime? get stampingSince;/// UUID of the document that replaced this one (cancellation reason 01).
  String? get cancellationSubstitution;/// Every cancellation request, newest first as the server sends them.
- List<FiscalCancellation> get cancellations; List<InvoiceLine> get lines; List<InvoiceRelation> get relations;
+ List<FiscalCancellation> get cancellations; List<InvoiceLine> get lines; List<InvoiceRelation> get relations;/// A payment receipt's payment (spec 074): `null` on other types, and on a
+/// fresh by-hand receipt until the header is filled.
+ DateTime? get paymentDate; Decimal? get paymentAmount; String? get paymentReference;/// The customer payment the receipt came from, when it did.
+ int? get customerPaymentId;/// The invoices a receipt pays; empty for any other type.
+ List<PaidInvoice> get paidInvoices;
 /// Create a copy of FiscalDocument
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -926,20 +1220,20 @@ $FiscalDocumentCopyWith<FiscalDocument> get copyWith => _$FiscalDocumentCopyWith
 @override
 bool operator ==(Object other) {
   final _this = this as FiscalDocument;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FiscalDocument&&(identical(other.summary, _this.summary) || other.summary == _this.summary)&&(identical(other.issuerRegime, _this.issuerRegime) || other.issuerRegime == _this.issuerRegime)&&(identical(other.issuerRegimeName, _this.issuerRegimeName) || other.issuerRegimeName == _this.issuerRegimeName)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.issuedLocation, _this.issuedLocation) || other.issuedLocation == _this.issuedLocation)&&(identical(other.taxpayerRegime, _this.taxpayerRegime) || other.taxpayerRegime == _this.taxpayerRegime)&&(identical(other.taxpayerPostalCode, _this.taxpayerPostalCode) || other.taxpayerPostalCode == _this.taxpayerPostalCode)&&(identical(other.usage, _this.usage) || other.usage == _this.usage)&&(identical(other.paymentTerms, _this.paymentTerms) || other.paymentTerms == _this.paymentTerms)&&(identical(other.paymentForm, _this.paymentForm) || other.paymentForm == _this.paymentForm)&&(identical(other.currencyCode, _this.currencyCode) || other.currencyCode == _this.currencyCode)&&(identical(other.exchangeRate, _this.exchangeRate) || other.exchangeRate == _this.exchangeRate)&&(identical(other.reference, _this.reference) || other.reference == _this.reference)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.stamped, _this.stamped) || other.stamped == _this.stamped)&&(identical(other.cancellationDate, _this.cancellationDate) || other.cancellationDate == _this.cancellationDate)&&(identical(other.cancellationReason, _this.cancellationReason) || other.cancellationReason == _this.cancellationReason)&&(identical(other.stamp, _this.stamp) || other.stamp == _this.stamp)&&(identical(other.stampingSince, _this.stampingSince) || other.stampingSince == _this.stampingSince)&&(identical(other.cancellationSubstitution, _this.cancellationSubstitution) || other.cancellationSubstitution == _this.cancellationSubstitution)&&const DeepCollectionEquality().equals(other.cancellations, _this.cancellations)&&const DeepCollectionEquality().equals(other.lines, _this.lines)&&const DeepCollectionEquality().equals(other.relations, _this.relations));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FiscalDocument&&(identical(other.summary, _this.summary) || other.summary == _this.summary)&&(identical(other.issuerRegime, _this.issuerRegime) || other.issuerRegime == _this.issuerRegime)&&(identical(other.issuerRegimeName, _this.issuerRegimeName) || other.issuerRegimeName == _this.issuerRegimeName)&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.issuedLocation, _this.issuedLocation) || other.issuedLocation == _this.issuedLocation)&&(identical(other.taxpayerRegime, _this.taxpayerRegime) || other.taxpayerRegime == _this.taxpayerRegime)&&(identical(other.taxpayerPostalCode, _this.taxpayerPostalCode) || other.taxpayerPostalCode == _this.taxpayerPostalCode)&&(identical(other.usage, _this.usage) || other.usage == _this.usage)&&(identical(other.paymentTerms, _this.paymentTerms) || other.paymentTerms == _this.paymentTerms)&&(identical(other.paymentForm, _this.paymentForm) || other.paymentForm == _this.paymentForm)&&(identical(other.currencyCode, _this.currencyCode) || other.currencyCode == _this.currencyCode)&&(identical(other.exchangeRate, _this.exchangeRate) || other.exchangeRate == _this.exchangeRate)&&(identical(other.reference, _this.reference) || other.reference == _this.reference)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.stamped, _this.stamped) || other.stamped == _this.stamped)&&(identical(other.cancellationDate, _this.cancellationDate) || other.cancellationDate == _this.cancellationDate)&&(identical(other.cancellationReason, _this.cancellationReason) || other.cancellationReason == _this.cancellationReason)&&(identical(other.stamp, _this.stamp) || other.stamp == _this.stamp)&&(identical(other.stampingSince, _this.stampingSince) || other.stampingSince == _this.stampingSince)&&(identical(other.cancellationSubstitution, _this.cancellationSubstitution) || other.cancellationSubstitution == _this.cancellationSubstitution)&&const DeepCollectionEquality().equals(other.cancellations, _this.cancellations)&&const DeepCollectionEquality().equals(other.lines, _this.lines)&&const DeepCollectionEquality().equals(other.relations, _this.relations)&&(identical(other.paymentDate, _this.paymentDate) || other.paymentDate == _this.paymentDate)&&(identical(other.paymentAmount, _this.paymentAmount) || other.paymentAmount == _this.paymentAmount)&&(identical(other.paymentReference, _this.paymentReference) || other.paymentReference == _this.paymentReference)&&(identical(other.customerPaymentId, _this.customerPaymentId) || other.customerPaymentId == _this.customerPaymentId)&&const DeepCollectionEquality().equals(other.paidInvoices, _this.paidInvoices));
 }
 
 
 @override
 int get hashCode {
   final _this = this as FiscalDocument;
-  return Object.hashAll([runtimeType,_this.summary,_this.issuerRegime,_this.issuerRegimeName,_this.customerId,_this.facilityId,_this.issuedLocation,_this.taxpayerRegime,_this.taxpayerPostalCode,_this.usage,_this.paymentTerms,_this.paymentForm,_this.currencyCode,_this.exchangeRate,_this.reference,_this.comment,_this.stamped,_this.cancellationDate,_this.cancellationReason,_this.stamp,_this.stampingSince,_this.cancellationSubstitution,const DeepCollectionEquality().hash(_this.cancellations),const DeepCollectionEquality().hash(_this.lines),const DeepCollectionEquality().hash(_this.relations)]);
+  return Object.hashAll([runtimeType,_this.summary,_this.issuerRegime,_this.issuerRegimeName,_this.customerId,_this.facilityId,_this.issuedLocation,_this.taxpayerRegime,_this.taxpayerPostalCode,_this.usage,_this.paymentTerms,_this.paymentForm,_this.currencyCode,_this.exchangeRate,_this.reference,_this.comment,_this.stamped,_this.cancellationDate,_this.cancellationReason,_this.stamp,_this.stampingSince,_this.cancellationSubstitution,const DeepCollectionEquality().hash(_this.cancellations),const DeepCollectionEquality().hash(_this.lines),const DeepCollectionEquality().hash(_this.relations),_this.paymentDate,_this.paymentAmount,_this.paymentReference,_this.customerPaymentId,const DeepCollectionEquality().hash(_this.paidInvoices)]);
 }
 
 @override
 String toString() {
   final _this = this as FiscalDocument;
-  return 'FiscalDocument(summary: ${_this.summary}, issuerRegime: ${_this.issuerRegime}, issuerRegimeName: ${_this.issuerRegimeName}, customerId: ${_this.customerId}, facilityId: ${_this.facilityId}, issuedLocation: ${_this.issuedLocation}, taxpayerRegime: ${_this.taxpayerRegime}, taxpayerPostalCode: ${_this.taxpayerPostalCode}, usage: ${_this.usage}, paymentTerms: ${_this.paymentTerms}, paymentForm: ${_this.paymentForm}, currencyCode: ${_this.currencyCode}, exchangeRate: ${_this.exchangeRate}, reference: ${_this.reference}, comment: ${_this.comment}, stamped: ${_this.stamped}, cancellationDate: ${_this.cancellationDate}, cancellationReason: ${_this.cancellationReason}, stamp: ${_this.stamp}, stampingSince: ${_this.stampingSince}, cancellationSubstitution: ${_this.cancellationSubstitution}, cancellations: ${_this.cancellations}, lines: ${_this.lines}, relations: ${_this.relations})';
+  return 'FiscalDocument(summary: ${_this.summary}, issuerRegime: ${_this.issuerRegime}, issuerRegimeName: ${_this.issuerRegimeName}, customerId: ${_this.customerId}, facilityId: ${_this.facilityId}, issuedLocation: ${_this.issuedLocation}, taxpayerRegime: ${_this.taxpayerRegime}, taxpayerPostalCode: ${_this.taxpayerPostalCode}, usage: ${_this.usage}, paymentTerms: ${_this.paymentTerms}, paymentForm: ${_this.paymentForm}, currencyCode: ${_this.currencyCode}, exchangeRate: ${_this.exchangeRate}, reference: ${_this.reference}, comment: ${_this.comment}, stamped: ${_this.stamped}, cancellationDate: ${_this.cancellationDate}, cancellationReason: ${_this.cancellationReason}, stamp: ${_this.stamp}, stampingSince: ${_this.stampingSince}, cancellationSubstitution: ${_this.cancellationSubstitution}, cancellations: ${_this.cancellations}, lines: ${_this.lines}, relations: ${_this.relations}, paymentDate: ${_this.paymentDate}, paymentAmount: ${_this.paymentAmount}, paymentReference: ${_this.paymentReference}, customerPaymentId: ${_this.customerPaymentId}, paidInvoices: ${_this.paidInvoices})';
 }
 
 
@@ -950,7 +1244,7 @@ abstract mixin class $FiscalDocumentCopyWith<$Res>  {
   factory $FiscalDocumentCopyWith(FiscalDocument value, $Res Function(FiscalDocument) _then) = _$FiscalDocumentCopyWithImpl;
 @useResult
 $Res call({
- FiscalDocumentSummary summary, String? issuerRegime, String? issuerRegimeName, int? customerId, int? facilityId, String issuedLocation, String? taxpayerRegime, String? taxpayerPostalCode, String? usage, InvoicePaymentTerms paymentTerms, int paymentForm, int currencyCode, Decimal exchangeRate, String? reference, String? comment, DateTime? stamped, DateTime? cancellationDate, String? cancellationReason, FiscalStamp? stamp, DateTime? stampingSince, String? cancellationSubstitution, List<FiscalCancellation> cancellations, List<InvoiceLine> lines, List<InvoiceRelation> relations
+ FiscalDocumentSummary summary, String? issuerRegime, String? issuerRegimeName, int? customerId, int? facilityId, String issuedLocation, String? taxpayerRegime, String? taxpayerPostalCode, String? usage, InvoicePaymentTerms paymentTerms, int paymentForm, int currencyCode, Decimal exchangeRate, String? reference, String? comment, DateTime? stamped, DateTime? cancellationDate, String? cancellationReason, FiscalStamp? stamp, DateTime? stampingSince, String? cancellationSubstitution, List<FiscalCancellation> cancellations, List<InvoiceLine> lines, List<InvoiceRelation> relations, DateTime? paymentDate, Decimal? paymentAmount, String? paymentReference, int? customerPaymentId, List<PaidInvoice> paidInvoices
 });
 
 
@@ -967,7 +1261,7 @@ class _$FiscalDocumentCopyWithImpl<$Res>
 
 /// Create a copy of FiscalDocument
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? summary = null,Object? issuerRegime = freezed,Object? issuerRegimeName = freezed,Object? customerId = freezed,Object? facilityId = freezed,Object? issuedLocation = null,Object? taxpayerRegime = freezed,Object? taxpayerPostalCode = freezed,Object? usage = freezed,Object? paymentTerms = null,Object? paymentForm = null,Object? currencyCode = null,Object? exchangeRate = null,Object? reference = freezed,Object? comment = freezed,Object? stamped = freezed,Object? cancellationDate = freezed,Object? cancellationReason = freezed,Object? stamp = freezed,Object? stampingSince = freezed,Object? cancellationSubstitution = freezed,Object? cancellations = null,Object? lines = null,Object? relations = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? summary = null,Object? issuerRegime = freezed,Object? issuerRegimeName = freezed,Object? customerId = freezed,Object? facilityId = freezed,Object? issuedLocation = null,Object? taxpayerRegime = freezed,Object? taxpayerPostalCode = freezed,Object? usage = freezed,Object? paymentTerms = null,Object? paymentForm = null,Object? currencyCode = null,Object? exchangeRate = null,Object? reference = freezed,Object? comment = freezed,Object? stamped = freezed,Object? cancellationDate = freezed,Object? cancellationReason = freezed,Object? stamp = freezed,Object? stampingSince = freezed,Object? cancellationSubstitution = freezed,Object? cancellations = null,Object? lines = null,Object? relations = null,Object? paymentDate = freezed,Object? paymentAmount = freezed,Object? paymentReference = freezed,Object? customerPaymentId = freezed,Object? paidInvoices = null,}) {
   return _then(FiscalDocument(
 summary: null == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
 as FiscalDocumentSummary,issuerRegime: freezed == issuerRegime ? _self.issuerRegime : issuerRegime // ignore: cast_nullable_to_non_nullable
@@ -993,7 +1287,12 @@ as DateTime?,cancellationSubstitution: freezed == cancellationSubstitution ? _se
 as String?,cancellations: null == cancellations ? _self.cancellations : cancellations // ignore: cast_nullable_to_non_nullable
 as List<FiscalCancellation>,lines: null == lines ? _self.lines : lines // ignore: cast_nullable_to_non_nullable
 as List<InvoiceLine>,relations: null == relations ? _self.relations : relations // ignore: cast_nullable_to_non_nullable
-as List<InvoiceRelation>,
+as List<InvoiceRelation>,paymentDate: freezed == paymentDate ? _self.paymentDate : paymentDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,paymentAmount: freezed == paymentAmount ? _self.paymentAmount : paymentAmount // ignore: cast_nullable_to_non_nullable
+as Decimal?,paymentReference: freezed == paymentReference ? _self.paymentReference : paymentReference // ignore: cast_nullable_to_non_nullable
+as String?,customerPaymentId: freezed == customerPaymentId ? _self.customerPaymentId : customerPaymentId // ignore: cast_nullable_to_non_nullable
+as int?,paidInvoices: null == paidInvoices ? _self.paidInvoices : paidInvoices // ignore: cast_nullable_to_non_nullable
+as List<PaidInvoice>,
   ));
 }
 /// Create a copy of FiscalDocument
@@ -1099,10 +1398,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( FiscalDocumentSummary summary,  String? issuerRegime,  String? issuerRegimeName,  int? customerId,  int? facilityId,  String issuedLocation,  String? taxpayerRegime,  String? taxpayerPostalCode,  String? usage,  InvoicePaymentTerms paymentTerms,  int paymentForm,  int currencyCode,  Decimal exchangeRate,  String? reference,  String? comment,  DateTime? stamped,  DateTime? cancellationDate,  String? cancellationReason,  FiscalStamp? stamp,  DateTime? stampingSince,  String? cancellationSubstitution,  List<FiscalCancellation> cancellations,  List<InvoiceLine> lines,  List<InvoiceRelation> relations)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( FiscalDocumentSummary summary,  String? issuerRegime,  String? issuerRegimeName,  int? customerId,  int? facilityId,  String issuedLocation,  String? taxpayerRegime,  String? taxpayerPostalCode,  String? usage,  InvoicePaymentTerms paymentTerms,  int paymentForm,  int currencyCode,  Decimal exchangeRate,  String? reference,  String? comment,  DateTime? stamped,  DateTime? cancellationDate,  String? cancellationReason,  FiscalStamp? stamp,  DateTime? stampingSince,  String? cancellationSubstitution,  List<FiscalCancellation> cancellations,  List<InvoiceLine> lines,  List<InvoiceRelation> relations,  DateTime? paymentDate,  Decimal? paymentAmount,  String? paymentReference,  int? customerPaymentId,  List<PaidInvoice> paidInvoices)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FiscalDocument() when $default != null:
-return $default(_that.summary,_that.issuerRegime,_that.issuerRegimeName,_that.customerId,_that.facilityId,_that.issuedLocation,_that.taxpayerRegime,_that.taxpayerPostalCode,_that.usage,_that.paymentTerms,_that.paymentForm,_that.currencyCode,_that.exchangeRate,_that.reference,_that.comment,_that.stamped,_that.cancellationDate,_that.cancellationReason,_that.stamp,_that.stampingSince,_that.cancellationSubstitution,_that.cancellations,_that.lines,_that.relations);case _:
+return $default(_that.summary,_that.issuerRegime,_that.issuerRegimeName,_that.customerId,_that.facilityId,_that.issuedLocation,_that.taxpayerRegime,_that.taxpayerPostalCode,_that.usage,_that.paymentTerms,_that.paymentForm,_that.currencyCode,_that.exchangeRate,_that.reference,_that.comment,_that.stamped,_that.cancellationDate,_that.cancellationReason,_that.stamp,_that.stampingSince,_that.cancellationSubstitution,_that.cancellations,_that.lines,_that.relations,_that.paymentDate,_that.paymentAmount,_that.paymentReference,_that.customerPaymentId,_that.paidInvoices);case _:
   return orElse();
 
 }
@@ -1120,10 +1419,10 @@ return $default(_that.summary,_that.issuerRegime,_that.issuerRegimeName,_that.cu
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( FiscalDocumentSummary summary,  String? issuerRegime,  String? issuerRegimeName,  int? customerId,  int? facilityId,  String issuedLocation,  String? taxpayerRegime,  String? taxpayerPostalCode,  String? usage,  InvoicePaymentTerms paymentTerms,  int paymentForm,  int currencyCode,  Decimal exchangeRate,  String? reference,  String? comment,  DateTime? stamped,  DateTime? cancellationDate,  String? cancellationReason,  FiscalStamp? stamp,  DateTime? stampingSince,  String? cancellationSubstitution,  List<FiscalCancellation> cancellations,  List<InvoiceLine> lines,  List<InvoiceRelation> relations)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( FiscalDocumentSummary summary,  String? issuerRegime,  String? issuerRegimeName,  int? customerId,  int? facilityId,  String issuedLocation,  String? taxpayerRegime,  String? taxpayerPostalCode,  String? usage,  InvoicePaymentTerms paymentTerms,  int paymentForm,  int currencyCode,  Decimal exchangeRate,  String? reference,  String? comment,  DateTime? stamped,  DateTime? cancellationDate,  String? cancellationReason,  FiscalStamp? stamp,  DateTime? stampingSince,  String? cancellationSubstitution,  List<FiscalCancellation> cancellations,  List<InvoiceLine> lines,  List<InvoiceRelation> relations,  DateTime? paymentDate,  Decimal? paymentAmount,  String? paymentReference,  int? customerPaymentId,  List<PaidInvoice> paidInvoices)  $default,) {final _that = this;
 switch (_that) {
 case _FiscalDocument():
-return $default(_that.summary,_that.issuerRegime,_that.issuerRegimeName,_that.customerId,_that.facilityId,_that.issuedLocation,_that.taxpayerRegime,_that.taxpayerPostalCode,_that.usage,_that.paymentTerms,_that.paymentForm,_that.currencyCode,_that.exchangeRate,_that.reference,_that.comment,_that.stamped,_that.cancellationDate,_that.cancellationReason,_that.stamp,_that.stampingSince,_that.cancellationSubstitution,_that.cancellations,_that.lines,_that.relations);case _:
+return $default(_that.summary,_that.issuerRegime,_that.issuerRegimeName,_that.customerId,_that.facilityId,_that.issuedLocation,_that.taxpayerRegime,_that.taxpayerPostalCode,_that.usage,_that.paymentTerms,_that.paymentForm,_that.currencyCode,_that.exchangeRate,_that.reference,_that.comment,_that.stamped,_that.cancellationDate,_that.cancellationReason,_that.stamp,_that.stampingSince,_that.cancellationSubstitution,_that.cancellations,_that.lines,_that.relations,_that.paymentDate,_that.paymentAmount,_that.paymentReference,_that.customerPaymentId,_that.paidInvoices);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1140,10 +1439,10 @@ return $default(_that.summary,_that.issuerRegime,_that.issuerRegimeName,_that.cu
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( FiscalDocumentSummary summary,  String? issuerRegime,  String? issuerRegimeName,  int? customerId,  int? facilityId,  String issuedLocation,  String? taxpayerRegime,  String? taxpayerPostalCode,  String? usage,  InvoicePaymentTerms paymentTerms,  int paymentForm,  int currencyCode,  Decimal exchangeRate,  String? reference,  String? comment,  DateTime? stamped,  DateTime? cancellationDate,  String? cancellationReason,  FiscalStamp? stamp,  DateTime? stampingSince,  String? cancellationSubstitution,  List<FiscalCancellation> cancellations,  List<InvoiceLine> lines,  List<InvoiceRelation> relations)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( FiscalDocumentSummary summary,  String? issuerRegime,  String? issuerRegimeName,  int? customerId,  int? facilityId,  String issuedLocation,  String? taxpayerRegime,  String? taxpayerPostalCode,  String? usage,  InvoicePaymentTerms paymentTerms,  int paymentForm,  int currencyCode,  Decimal exchangeRate,  String? reference,  String? comment,  DateTime? stamped,  DateTime? cancellationDate,  String? cancellationReason,  FiscalStamp? stamp,  DateTime? stampingSince,  String? cancellationSubstitution,  List<FiscalCancellation> cancellations,  List<InvoiceLine> lines,  List<InvoiceRelation> relations,  DateTime? paymentDate,  Decimal? paymentAmount,  String? paymentReference,  int? customerPaymentId,  List<PaidInvoice> paidInvoices)?  $default,) {final _that = this;
 switch (_that) {
 case _FiscalDocument() when $default != null:
-return $default(_that.summary,_that.issuerRegime,_that.issuerRegimeName,_that.customerId,_that.facilityId,_that.issuedLocation,_that.taxpayerRegime,_that.taxpayerPostalCode,_that.usage,_that.paymentTerms,_that.paymentForm,_that.currencyCode,_that.exchangeRate,_that.reference,_that.comment,_that.stamped,_that.cancellationDate,_that.cancellationReason,_that.stamp,_that.stampingSince,_that.cancellationSubstitution,_that.cancellations,_that.lines,_that.relations);case _:
+return $default(_that.summary,_that.issuerRegime,_that.issuerRegimeName,_that.customerId,_that.facilityId,_that.issuedLocation,_that.taxpayerRegime,_that.taxpayerPostalCode,_that.usage,_that.paymentTerms,_that.paymentForm,_that.currencyCode,_that.exchangeRate,_that.reference,_that.comment,_that.stamped,_that.cancellationDate,_that.cancellationReason,_that.stamp,_that.stampingSince,_that.cancellationSubstitution,_that.cancellations,_that.lines,_that.relations,_that.paymentDate,_that.paymentAmount,_that.paymentReference,_that.customerPaymentId,_that.paidInvoices);case _:
   return null;
 
 }
@@ -1155,7 +1454,7 @@ return $default(_that.summary,_that.issuerRegime,_that.issuerRegimeName,_that.cu
 
 
 class _FiscalDocument extends FiscalDocument {
-  const _FiscalDocument({required this.summary, this.issuerRegime, this.issuerRegimeName, this.customerId, this.facilityId, required this.issuedLocation, this.taxpayerRegime, this.taxpayerPostalCode, this.usage, required this.paymentTerms, required this.paymentForm, required this.currencyCode, required this.exchangeRate, this.reference, this.comment, this.stamped, this.cancellationDate, this.cancellationReason, this.stamp, this.stampingSince, this.cancellationSubstitution,  List<FiscalCancellation> cancellations = const <FiscalCancellation>[],  List<InvoiceLine> lines = const <InvoiceLine>[],  List<InvoiceRelation> relations = const <InvoiceRelation>[]}): _cancellations = cancellations,_lines = lines,_relations = relations,super._();
+  const _FiscalDocument({required this.summary, this.issuerRegime, this.issuerRegimeName, this.customerId, this.facilityId, required this.issuedLocation, this.taxpayerRegime, this.taxpayerPostalCode, this.usage, required this.paymentTerms, required this.paymentForm, required this.currencyCode, required this.exchangeRate, this.reference, this.comment, this.stamped, this.cancellationDate, this.cancellationReason, this.stamp, this.stampingSince, this.cancellationSubstitution,  List<FiscalCancellation> cancellations = const <FiscalCancellation>[],  List<InvoiceLine> lines = const <InvoiceLine>[],  List<InvoiceRelation> relations = const <InvoiceRelation>[], this.paymentDate, this.paymentAmount, this.paymentReference, this.customerPaymentId,  List<PaidInvoice> paidInvoices = const <PaidInvoice>[]}): _cancellations = cancellations,_lines = lines,_relations = relations,_paidInvoices = paidInvoices,super._();
   
 
 @override final  FiscalDocumentSummary summary;
@@ -1206,6 +1505,22 @@ class _FiscalDocument extends FiscalDocument {
   return EqualUnmodifiableListView(_relations);
 }
 
+/// A payment receipt's payment (spec 074): `null` on other types, and on a
+/// fresh by-hand receipt until the header is filled.
+@override final  DateTime? paymentDate;
+@override final  Decimal? paymentAmount;
+@override final  String? paymentReference;
+/// The customer payment the receipt came from, when it did.
+@override final  int? customerPaymentId;
+/// The invoices a receipt pays; empty for any other type.
+ final  List<PaidInvoice> _paidInvoices;
+/// The invoices a receipt pays; empty for any other type.
+@override@JsonKey() List<PaidInvoice> get paidInvoices {
+  if (_paidInvoices is EqualUnmodifiableListView) return _paidInvoices;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_paidInvoices);
+}
+
 
 /// Create a copy of FiscalDocument
 /// with the given fields replaced by the non-null parameter values.
@@ -1217,18 +1532,18 @@ _$FiscalDocumentCopyWith<_FiscalDocument> get copyWith => __$FiscalDocumentCopyW
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FiscalDocument&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.issuerRegime, issuerRegime) || other.issuerRegime == issuerRegime)&&(identical(other.issuerRegimeName, issuerRegimeName) || other.issuerRegimeName == issuerRegimeName)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.issuedLocation, issuedLocation) || other.issuedLocation == issuedLocation)&&(identical(other.taxpayerRegime, taxpayerRegime) || other.taxpayerRegime == taxpayerRegime)&&(identical(other.taxpayerPostalCode, taxpayerPostalCode) || other.taxpayerPostalCode == taxpayerPostalCode)&&(identical(other.usage, usage) || other.usage == usage)&&(identical(other.paymentTerms, paymentTerms) || other.paymentTerms == paymentTerms)&&(identical(other.paymentForm, paymentForm) || other.paymentForm == paymentForm)&&(identical(other.currencyCode, currencyCode) || other.currencyCode == currencyCode)&&(identical(other.exchangeRate, exchangeRate) || other.exchangeRate == exchangeRate)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.stamped, stamped) || other.stamped == stamped)&&(identical(other.cancellationDate, cancellationDate) || other.cancellationDate == cancellationDate)&&(identical(other.cancellationReason, cancellationReason) || other.cancellationReason == cancellationReason)&&(identical(other.stamp, stamp) || other.stamp == stamp)&&(identical(other.stampingSince, stampingSince) || other.stampingSince == stampingSince)&&(identical(other.cancellationSubstitution, cancellationSubstitution) || other.cancellationSubstitution == cancellationSubstitution)&&const DeepCollectionEquality().equals(other.cancellations, _cancellations)&&const DeepCollectionEquality().equals(other.lines, _lines)&&const DeepCollectionEquality().equals(other.relations, _relations));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _FiscalDocument&&(identical(other.summary, summary) || other.summary == summary)&&(identical(other.issuerRegime, issuerRegime) || other.issuerRegime == issuerRegime)&&(identical(other.issuerRegimeName, issuerRegimeName) || other.issuerRegimeName == issuerRegimeName)&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.issuedLocation, issuedLocation) || other.issuedLocation == issuedLocation)&&(identical(other.taxpayerRegime, taxpayerRegime) || other.taxpayerRegime == taxpayerRegime)&&(identical(other.taxpayerPostalCode, taxpayerPostalCode) || other.taxpayerPostalCode == taxpayerPostalCode)&&(identical(other.usage, usage) || other.usage == usage)&&(identical(other.paymentTerms, paymentTerms) || other.paymentTerms == paymentTerms)&&(identical(other.paymentForm, paymentForm) || other.paymentForm == paymentForm)&&(identical(other.currencyCode, currencyCode) || other.currencyCode == currencyCode)&&(identical(other.exchangeRate, exchangeRate) || other.exchangeRate == exchangeRate)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.stamped, stamped) || other.stamped == stamped)&&(identical(other.cancellationDate, cancellationDate) || other.cancellationDate == cancellationDate)&&(identical(other.cancellationReason, cancellationReason) || other.cancellationReason == cancellationReason)&&(identical(other.stamp, stamp) || other.stamp == stamp)&&(identical(other.stampingSince, stampingSince) || other.stampingSince == stampingSince)&&(identical(other.cancellationSubstitution, cancellationSubstitution) || other.cancellationSubstitution == cancellationSubstitution)&&const DeepCollectionEquality().equals(other.cancellations, _cancellations)&&const DeepCollectionEquality().equals(other.lines, _lines)&&const DeepCollectionEquality().equals(other.relations, _relations)&&(identical(other.paymentDate, paymentDate) || other.paymentDate == paymentDate)&&(identical(other.paymentAmount, paymentAmount) || other.paymentAmount == paymentAmount)&&(identical(other.paymentReference, paymentReference) || other.paymentReference == paymentReference)&&(identical(other.customerPaymentId, customerPaymentId) || other.customerPaymentId == customerPaymentId)&&const DeepCollectionEquality().equals(other.paidInvoices, _paidInvoices));
 }
 
 
 @override
 int get hashCode {
-    return Object.hashAll([runtimeType,summary,issuerRegime,issuerRegimeName,customerId,facilityId,issuedLocation,taxpayerRegime,taxpayerPostalCode,usage,paymentTerms,paymentForm,currencyCode,exchangeRate,reference,comment,stamped,cancellationDate,cancellationReason,stamp,stampingSince,cancellationSubstitution,const DeepCollectionEquality().hash(_cancellations),const DeepCollectionEquality().hash(_lines),const DeepCollectionEquality().hash(_relations)]);
+    return Object.hashAll([runtimeType,summary,issuerRegime,issuerRegimeName,customerId,facilityId,issuedLocation,taxpayerRegime,taxpayerPostalCode,usage,paymentTerms,paymentForm,currencyCode,exchangeRate,reference,comment,stamped,cancellationDate,cancellationReason,stamp,stampingSince,cancellationSubstitution,const DeepCollectionEquality().hash(_cancellations),const DeepCollectionEquality().hash(_lines),const DeepCollectionEquality().hash(_relations),paymentDate,paymentAmount,paymentReference,customerPaymentId,const DeepCollectionEquality().hash(_paidInvoices)]);
 }
 
 @override
 String toString() {
-    return 'FiscalDocument(summary: $summary, issuerRegime: $issuerRegime, issuerRegimeName: $issuerRegimeName, customerId: $customerId, facilityId: $facilityId, issuedLocation: $issuedLocation, taxpayerRegime: $taxpayerRegime, taxpayerPostalCode: $taxpayerPostalCode, usage: $usage, paymentTerms: $paymentTerms, paymentForm: $paymentForm, currencyCode: $currencyCode, exchangeRate: $exchangeRate, reference: $reference, comment: $comment, stamped: $stamped, cancellationDate: $cancellationDate, cancellationReason: $cancellationReason, stamp: $stamp, stampingSince: $stampingSince, cancellationSubstitution: $cancellationSubstitution, cancellations: $cancellations, lines: $lines, relations: $relations)';
+    return 'FiscalDocument(summary: $summary, issuerRegime: $issuerRegime, issuerRegimeName: $issuerRegimeName, customerId: $customerId, facilityId: $facilityId, issuedLocation: $issuedLocation, taxpayerRegime: $taxpayerRegime, taxpayerPostalCode: $taxpayerPostalCode, usage: $usage, paymentTerms: $paymentTerms, paymentForm: $paymentForm, currencyCode: $currencyCode, exchangeRate: $exchangeRate, reference: $reference, comment: $comment, stamped: $stamped, cancellationDate: $cancellationDate, cancellationReason: $cancellationReason, stamp: $stamp, stampingSince: $stampingSince, cancellationSubstitution: $cancellationSubstitution, cancellations: $cancellations, lines: $lines, relations: $relations, paymentDate: $paymentDate, paymentAmount: $paymentAmount, paymentReference: $paymentReference, customerPaymentId: $customerPaymentId, paidInvoices: $paidInvoices)';
 }
 
 
@@ -1239,7 +1554,7 @@ abstract mixin class _$FiscalDocumentCopyWith<$Res> implements $FiscalDocumentCo
   factory _$FiscalDocumentCopyWith(_FiscalDocument value, $Res Function(_FiscalDocument) _then) = __$FiscalDocumentCopyWithImpl;
 @override @useResult
 $Res call({
- FiscalDocumentSummary summary, String? issuerRegime, String? issuerRegimeName, int? customerId, int? facilityId, String issuedLocation, String? taxpayerRegime, String? taxpayerPostalCode, String? usage, InvoicePaymentTerms paymentTerms, int paymentForm, int currencyCode, Decimal exchangeRate, String? reference, String? comment, DateTime? stamped, DateTime? cancellationDate, String? cancellationReason, FiscalStamp? stamp, DateTime? stampingSince, String? cancellationSubstitution, List<FiscalCancellation> cancellations, List<InvoiceLine> lines, List<InvoiceRelation> relations
+ FiscalDocumentSummary summary, String? issuerRegime, String? issuerRegimeName, int? customerId, int? facilityId, String issuedLocation, String? taxpayerRegime, String? taxpayerPostalCode, String? usage, InvoicePaymentTerms paymentTerms, int paymentForm, int currencyCode, Decimal exchangeRate, String? reference, String? comment, DateTime? stamped, DateTime? cancellationDate, String? cancellationReason, FiscalStamp? stamp, DateTime? stampingSince, String? cancellationSubstitution, List<FiscalCancellation> cancellations, List<InvoiceLine> lines, List<InvoiceRelation> relations, DateTime? paymentDate, Decimal? paymentAmount, String? paymentReference, int? customerPaymentId, List<PaidInvoice> paidInvoices
 });
 
 
@@ -1256,7 +1571,7 @@ class __$FiscalDocumentCopyWithImpl<$Res>
 
 /// Create a copy of FiscalDocument
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? summary = null,Object? issuerRegime = freezed,Object? issuerRegimeName = freezed,Object? customerId = freezed,Object? facilityId = freezed,Object? issuedLocation = null,Object? taxpayerRegime = freezed,Object? taxpayerPostalCode = freezed,Object? usage = freezed,Object? paymentTerms = null,Object? paymentForm = null,Object? currencyCode = null,Object? exchangeRate = null,Object? reference = freezed,Object? comment = freezed,Object? stamped = freezed,Object? cancellationDate = freezed,Object? cancellationReason = freezed,Object? stamp = freezed,Object? stampingSince = freezed,Object? cancellationSubstitution = freezed,Object? cancellations = null,Object? lines = null,Object? relations = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? summary = null,Object? issuerRegime = freezed,Object? issuerRegimeName = freezed,Object? customerId = freezed,Object? facilityId = freezed,Object? issuedLocation = null,Object? taxpayerRegime = freezed,Object? taxpayerPostalCode = freezed,Object? usage = freezed,Object? paymentTerms = null,Object? paymentForm = null,Object? currencyCode = null,Object? exchangeRate = null,Object? reference = freezed,Object? comment = freezed,Object? stamped = freezed,Object? cancellationDate = freezed,Object? cancellationReason = freezed,Object? stamp = freezed,Object? stampingSince = freezed,Object? cancellationSubstitution = freezed,Object? cancellations = null,Object? lines = null,Object? relations = null,Object? paymentDate = freezed,Object? paymentAmount = freezed,Object? paymentReference = freezed,Object? customerPaymentId = freezed,Object? paidInvoices = null,}) {
   return _then(_FiscalDocument(
 summary: null == summary ? _self.summary : summary // ignore: cast_nullable_to_non_nullable
 as FiscalDocumentSummary,issuerRegime: freezed == issuerRegime ? _self.issuerRegime : issuerRegime // ignore: cast_nullable_to_non_nullable
@@ -1282,7 +1597,12 @@ as DateTime?,cancellationSubstitution: freezed == cancellationSubstitution ? _se
 as String?,cancellations: null == cancellations ? _self._cancellations : cancellations // ignore: cast_nullable_to_non_nullable
 as List<FiscalCancellation>,lines: null == lines ? _self._lines : lines // ignore: cast_nullable_to_non_nullable
 as List<InvoiceLine>,relations: null == relations ? _self._relations : relations // ignore: cast_nullable_to_non_nullable
-as List<InvoiceRelation>,
+as List<InvoiceRelation>,paymentDate: freezed == paymentDate ? _self.paymentDate : paymentDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,paymentAmount: freezed == paymentAmount ? _self.paymentAmount : paymentAmount // ignore: cast_nullable_to_non_nullable
+as Decimal?,paymentReference: freezed == paymentReference ? _self.paymentReference : paymentReference // ignore: cast_nullable_to_non_nullable
+as String?,customerPaymentId: freezed == customerPaymentId ? _self.customerPaymentId : customerPaymentId // ignore: cast_nullable_to_non_nullable
+as int?,paidInvoices: null == paidInvoices ? _self._paidInvoices : paidInvoices // ignore: cast_nullable_to_non_nullable
+as List<PaidInvoice>,
   ));
 }
 
@@ -1578,9 +1898,282 @@ as String,
 }
 
 /// @nodoc
+mixin _$NewPaymentReceipt {
+
+ int get customerId; String get recipientRfc; int? get customerPaymentId;
+/// Create a copy of NewPaymentReceipt
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$NewPaymentReceiptCopyWith<NewPaymentReceipt> get copyWith => _$NewPaymentReceiptCopyWithImpl<NewPaymentReceipt>(this as NewPaymentReceipt, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  final _this = this as NewPaymentReceipt;
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NewPaymentReceipt&&(identical(other.customerId, _this.customerId) || other.customerId == _this.customerId)&&(identical(other.recipientRfc, _this.recipientRfc) || other.recipientRfc == _this.recipientRfc)&&(identical(other.customerPaymentId, _this.customerPaymentId) || other.customerPaymentId == _this.customerPaymentId));
+}
+
+
+@override
+int get hashCode {
+  final _this = this as NewPaymentReceipt;
+  return Object.hash(runtimeType,_this.customerId,_this.recipientRfc,_this.customerPaymentId);
+}
+
+@override
+String toString() {
+  final _this = this as NewPaymentReceipt;
+  return 'NewPaymentReceipt(customerId: ${_this.customerId}, recipientRfc: ${_this.recipientRfc}, customerPaymentId: ${_this.customerPaymentId})';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $NewPaymentReceiptCopyWith<$Res>  {
+  factory $NewPaymentReceiptCopyWith(NewPaymentReceipt value, $Res Function(NewPaymentReceipt) _then) = _$NewPaymentReceiptCopyWithImpl;
+@useResult
+$Res call({
+ int customerId, String recipientRfc, int? customerPaymentId
+});
+
+
+
+
+}
+/// @nodoc
+class _$NewPaymentReceiptCopyWithImpl<$Res>
+    implements $NewPaymentReceiptCopyWith<$Res> {
+  _$NewPaymentReceiptCopyWithImpl(this._self, this._then);
+
+  final NewPaymentReceipt _self;
+  final $Res Function(NewPaymentReceipt) _then;
+
+/// Create a copy of NewPaymentReceipt
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? customerId = null,Object? recipientRfc = null,Object? customerPaymentId = freezed,}) {
+  return _then(NewPaymentReceipt(
+customerId: null == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
+as int,recipientRfc: null == recipientRfc ? _self.recipientRfc : recipientRfc // ignore: cast_nullable_to_non_nullable
+as String,customerPaymentId: freezed == customerPaymentId ? _self.customerPaymentId : customerPaymentId // ignore: cast_nullable_to_non_nullable
+as int?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [NewPaymentReceipt].
+extension NewPaymentReceiptPatterns on NewPaymentReceipt {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _NewPaymentReceipt value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _NewPaymentReceipt() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _NewPaymentReceipt value)  $default,){
+final _that = this;
+switch (_that) {
+case _NewPaymentReceipt():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _NewPaymentReceipt value)?  $default,){
+final _that = this;
+switch (_that) {
+case _NewPaymentReceipt() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int customerId,  String recipientRfc,  int? customerPaymentId)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _NewPaymentReceipt() when $default != null:
+return $default(_that.customerId,_that.recipientRfc,_that.customerPaymentId);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int customerId,  String recipientRfc,  int? customerPaymentId)  $default,) {final _that = this;
+switch (_that) {
+case _NewPaymentReceipt():
+return $default(_that.customerId,_that.recipientRfc,_that.customerPaymentId);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int customerId,  String recipientRfc,  int? customerPaymentId)?  $default,) {final _that = this;
+switch (_that) {
+case _NewPaymentReceipt() when $default != null:
+return $default(_that.customerId,_that.recipientRfc,_that.customerPaymentId);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _NewPaymentReceipt implements NewPaymentReceipt {
+  const _NewPaymentReceipt({required this.customerId, required this.recipientRfc, this.customerPaymentId});
+  
+
+@override final  int customerId;
+@override final  String recipientRfc;
+@override final  int? customerPaymentId;
+
+/// Create a copy of NewPaymentReceipt
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$NewPaymentReceiptCopyWith<_NewPaymentReceipt> get copyWith => __$NewPaymentReceiptCopyWithImpl<_NewPaymentReceipt>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _NewPaymentReceipt&&(identical(other.customerId, customerId) || other.customerId == customerId)&&(identical(other.recipientRfc, recipientRfc) || other.recipientRfc == recipientRfc)&&(identical(other.customerPaymentId, customerPaymentId) || other.customerPaymentId == customerPaymentId));
+}
+
+
+@override
+int get hashCode {
+    return Object.hash(runtimeType,customerId,recipientRfc,customerPaymentId);
+}
+
+@override
+String toString() {
+    return 'NewPaymentReceipt(customerId: $customerId, recipientRfc: $recipientRfc, customerPaymentId: $customerPaymentId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$NewPaymentReceiptCopyWith<$Res> implements $NewPaymentReceiptCopyWith<$Res> {
+  factory _$NewPaymentReceiptCopyWith(_NewPaymentReceipt value, $Res Function(_NewPaymentReceipt) _then) = __$NewPaymentReceiptCopyWithImpl;
+@override @useResult
+$Res call({
+ int customerId, String recipientRfc, int? customerPaymentId
+});
+
+
+
+
+}
+/// @nodoc
+class __$NewPaymentReceiptCopyWithImpl<$Res>
+    implements _$NewPaymentReceiptCopyWith<$Res> {
+  __$NewPaymentReceiptCopyWithImpl(this._self, this._then);
+
+  final _NewPaymentReceipt _self;
+  final $Res Function(_NewPaymentReceipt) _then;
+
+/// Create a copy of NewPaymentReceipt
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? customerId = null,Object? recipientRfc = null,Object? customerPaymentId = freezed,}) {
+  return _then(_NewPaymentReceipt(
+customerId: null == customerId ? _self.customerId : customerId // ignore: cast_nullable_to_non_nullable
+as int,recipientRfc: null == recipientRfc ? _self.recipientRfc : recipientRfc // ignore: cast_nullable_to_non_nullable
+as String,customerPaymentId: freezed == customerPaymentId ? _self.customerPaymentId : customerPaymentId // ignore: cast_nullable_to_non_nullable
+as int?,
+  ));
+}
+
+
+}
+
+/// @nodoc
 mixin _$InvoiceHeaderPatch {
 
- String? get recipientRfc; String? get series; String? get usage; InvoicePaymentTerms? get paymentTerms; int? get paymentForm; DateTime? get issued; int? get facilityId; String? get reference; String? get comment;
+ String? get recipientRfc; String? get series; String? get usage; InvoicePaymentTerms? get paymentTerms; int? get paymentForm; DateTime? get issued; int? get facilityId; String? get reference; String? get comment;/// A payment receipt's fields (spec 074). The server accepts them only on
+/// a receipt, and the invoice fields above only on an invoice or credit
+/// note.
+ DateTime? get paymentDate; Decimal? get paymentAmount; String? get paymentReference; String? get orderingBank;
 /// Create a copy of InvoiceHeaderPatch
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1592,20 +2185,20 @@ $InvoiceHeaderPatchCopyWith<InvoiceHeaderPatch> get copyWith => _$InvoiceHeaderP
 @override
 bool operator ==(Object other) {
   final _this = this as InvoiceHeaderPatch;
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is InvoiceHeaderPatch&&(identical(other.recipientRfc, _this.recipientRfc) || other.recipientRfc == _this.recipientRfc)&&(identical(other.series, _this.series) || other.series == _this.series)&&(identical(other.usage, _this.usage) || other.usage == _this.usage)&&(identical(other.paymentTerms, _this.paymentTerms) || other.paymentTerms == _this.paymentTerms)&&(identical(other.paymentForm, _this.paymentForm) || other.paymentForm == _this.paymentForm)&&(identical(other.issued, _this.issued) || other.issued == _this.issued)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.reference, _this.reference) || other.reference == _this.reference)&&(identical(other.comment, _this.comment) || other.comment == _this.comment));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is InvoiceHeaderPatch&&(identical(other.recipientRfc, _this.recipientRfc) || other.recipientRfc == _this.recipientRfc)&&(identical(other.series, _this.series) || other.series == _this.series)&&(identical(other.usage, _this.usage) || other.usage == _this.usage)&&(identical(other.paymentTerms, _this.paymentTerms) || other.paymentTerms == _this.paymentTerms)&&(identical(other.paymentForm, _this.paymentForm) || other.paymentForm == _this.paymentForm)&&(identical(other.issued, _this.issued) || other.issued == _this.issued)&&(identical(other.facilityId, _this.facilityId) || other.facilityId == _this.facilityId)&&(identical(other.reference, _this.reference) || other.reference == _this.reference)&&(identical(other.comment, _this.comment) || other.comment == _this.comment)&&(identical(other.paymentDate, _this.paymentDate) || other.paymentDate == _this.paymentDate)&&(identical(other.paymentAmount, _this.paymentAmount) || other.paymentAmount == _this.paymentAmount)&&(identical(other.paymentReference, _this.paymentReference) || other.paymentReference == _this.paymentReference)&&(identical(other.orderingBank, _this.orderingBank) || other.orderingBank == _this.orderingBank));
 }
 
 
 @override
 int get hashCode {
   final _this = this as InvoiceHeaderPatch;
-  return Object.hash(runtimeType,_this.recipientRfc,_this.series,_this.usage,_this.paymentTerms,_this.paymentForm,_this.issued,_this.facilityId,_this.reference,_this.comment);
+  return Object.hash(runtimeType,_this.recipientRfc,_this.series,_this.usage,_this.paymentTerms,_this.paymentForm,_this.issued,_this.facilityId,_this.reference,_this.comment,_this.paymentDate,_this.paymentAmount,_this.paymentReference,_this.orderingBank);
 }
 
 @override
 String toString() {
   final _this = this as InvoiceHeaderPatch;
-  return 'InvoiceHeaderPatch(recipientRfc: ${_this.recipientRfc}, series: ${_this.series}, usage: ${_this.usage}, paymentTerms: ${_this.paymentTerms}, paymentForm: ${_this.paymentForm}, issued: ${_this.issued}, facilityId: ${_this.facilityId}, reference: ${_this.reference}, comment: ${_this.comment})';
+  return 'InvoiceHeaderPatch(recipientRfc: ${_this.recipientRfc}, series: ${_this.series}, usage: ${_this.usage}, paymentTerms: ${_this.paymentTerms}, paymentForm: ${_this.paymentForm}, issued: ${_this.issued}, facilityId: ${_this.facilityId}, reference: ${_this.reference}, comment: ${_this.comment}, paymentDate: ${_this.paymentDate}, paymentAmount: ${_this.paymentAmount}, paymentReference: ${_this.paymentReference}, orderingBank: ${_this.orderingBank})';
 }
 
 
@@ -1616,7 +2209,7 @@ abstract mixin class $InvoiceHeaderPatchCopyWith<$Res>  {
   factory $InvoiceHeaderPatchCopyWith(InvoiceHeaderPatch value, $Res Function(InvoiceHeaderPatch) _then) = _$InvoiceHeaderPatchCopyWithImpl;
 @useResult
 $Res call({
- String? recipientRfc, String? series, String? usage, InvoicePaymentTerms? paymentTerms, int? paymentForm, DateTime? issued, int? facilityId, String? reference, String? comment
+ String? recipientRfc, String? series, String? usage, InvoicePaymentTerms? paymentTerms, int? paymentForm, DateTime? issued, int? facilityId, String? reference, String? comment, DateTime? paymentDate, Decimal? paymentAmount, String? paymentReference, String? orderingBank
 });
 
 
@@ -1633,7 +2226,7 @@ class _$InvoiceHeaderPatchCopyWithImpl<$Res>
 
 /// Create a copy of InvoiceHeaderPatch
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? recipientRfc = freezed,Object? series = freezed,Object? usage = freezed,Object? paymentTerms = freezed,Object? paymentForm = freezed,Object? issued = freezed,Object? facilityId = freezed,Object? reference = freezed,Object? comment = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? recipientRfc = freezed,Object? series = freezed,Object? usage = freezed,Object? paymentTerms = freezed,Object? paymentForm = freezed,Object? issued = freezed,Object? facilityId = freezed,Object? reference = freezed,Object? comment = freezed,Object? paymentDate = freezed,Object? paymentAmount = freezed,Object? paymentReference = freezed,Object? orderingBank = freezed,}) {
   return _then(InvoiceHeaderPatch(
 recipientRfc: freezed == recipientRfc ? _self.recipientRfc : recipientRfc // ignore: cast_nullable_to_non_nullable
 as String?,series: freezed == series ? _self.series : series // ignore: cast_nullable_to_non_nullable
@@ -1644,6 +2237,10 @@ as int?,issued: freezed == issued ? _self.issued : issued // ignore: cast_nullab
 as DateTime?,facilityId: freezed == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
 as int?,reference: freezed == reference ? _self.reference : reference // ignore: cast_nullable_to_non_nullable
 as String?,comment: freezed == comment ? _self.comment : comment // ignore: cast_nullable_to_non_nullable
+as String?,paymentDate: freezed == paymentDate ? _self.paymentDate : paymentDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,paymentAmount: freezed == paymentAmount ? _self.paymentAmount : paymentAmount // ignore: cast_nullable_to_non_nullable
+as Decimal?,paymentReference: freezed == paymentReference ? _self.paymentReference : paymentReference // ignore: cast_nullable_to_non_nullable
+as String?,orderingBank: freezed == orderingBank ? _self.orderingBank : orderingBank // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -1729,10 +2326,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? recipientRfc,  String? series,  String? usage,  InvoicePaymentTerms? paymentTerms,  int? paymentForm,  DateTime? issued,  int? facilityId,  String? reference,  String? comment)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? recipientRfc,  String? series,  String? usage,  InvoicePaymentTerms? paymentTerms,  int? paymentForm,  DateTime? issued,  int? facilityId,  String? reference,  String? comment,  DateTime? paymentDate,  Decimal? paymentAmount,  String? paymentReference,  String? orderingBank)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _InvoiceHeaderPatch() when $default != null:
-return $default(_that.recipientRfc,_that.series,_that.usage,_that.paymentTerms,_that.paymentForm,_that.issued,_that.facilityId,_that.reference,_that.comment);case _:
+return $default(_that.recipientRfc,_that.series,_that.usage,_that.paymentTerms,_that.paymentForm,_that.issued,_that.facilityId,_that.reference,_that.comment,_that.paymentDate,_that.paymentAmount,_that.paymentReference,_that.orderingBank);case _:
   return orElse();
 
 }
@@ -1750,10 +2347,10 @@ return $default(_that.recipientRfc,_that.series,_that.usage,_that.paymentTerms,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? recipientRfc,  String? series,  String? usage,  InvoicePaymentTerms? paymentTerms,  int? paymentForm,  DateTime? issued,  int? facilityId,  String? reference,  String? comment)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? recipientRfc,  String? series,  String? usage,  InvoicePaymentTerms? paymentTerms,  int? paymentForm,  DateTime? issued,  int? facilityId,  String? reference,  String? comment,  DateTime? paymentDate,  Decimal? paymentAmount,  String? paymentReference,  String? orderingBank)  $default,) {final _that = this;
 switch (_that) {
 case _InvoiceHeaderPatch():
-return $default(_that.recipientRfc,_that.series,_that.usage,_that.paymentTerms,_that.paymentForm,_that.issued,_that.facilityId,_that.reference,_that.comment);case _:
+return $default(_that.recipientRfc,_that.series,_that.usage,_that.paymentTerms,_that.paymentForm,_that.issued,_that.facilityId,_that.reference,_that.comment,_that.paymentDate,_that.paymentAmount,_that.paymentReference,_that.orderingBank);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1770,10 +2367,10 @@ return $default(_that.recipientRfc,_that.series,_that.usage,_that.paymentTerms,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? recipientRfc,  String? series,  String? usage,  InvoicePaymentTerms? paymentTerms,  int? paymentForm,  DateTime? issued,  int? facilityId,  String? reference,  String? comment)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? recipientRfc,  String? series,  String? usage,  InvoicePaymentTerms? paymentTerms,  int? paymentForm,  DateTime? issued,  int? facilityId,  String? reference,  String? comment,  DateTime? paymentDate,  Decimal? paymentAmount,  String? paymentReference,  String? orderingBank)?  $default,) {final _that = this;
 switch (_that) {
 case _InvoiceHeaderPatch() when $default != null:
-return $default(_that.recipientRfc,_that.series,_that.usage,_that.paymentTerms,_that.paymentForm,_that.issued,_that.facilityId,_that.reference,_that.comment);case _:
+return $default(_that.recipientRfc,_that.series,_that.usage,_that.paymentTerms,_that.paymentForm,_that.issued,_that.facilityId,_that.reference,_that.comment,_that.paymentDate,_that.paymentAmount,_that.paymentReference,_that.orderingBank);case _:
   return null;
 
 }
@@ -1785,7 +2382,7 @@ return $default(_that.recipientRfc,_that.series,_that.usage,_that.paymentTerms,_
 
 
 class _InvoiceHeaderPatch implements InvoiceHeaderPatch {
-  const _InvoiceHeaderPatch({this.recipientRfc, this.series, this.usage, this.paymentTerms, this.paymentForm, this.issued, this.facilityId, this.reference, this.comment});
+  const _InvoiceHeaderPatch({this.recipientRfc, this.series, this.usage, this.paymentTerms, this.paymentForm, this.issued, this.facilityId, this.reference, this.comment, this.paymentDate, this.paymentAmount, this.paymentReference, this.orderingBank});
   
 
 @override final  String? recipientRfc;
@@ -1797,6 +2394,13 @@ class _InvoiceHeaderPatch implements InvoiceHeaderPatch {
 @override final  int? facilityId;
 @override final  String? reference;
 @override final  String? comment;
+/// A payment receipt's fields (spec 074). The server accepts them only on
+/// a receipt, and the invoice fields above only on an invoice or credit
+/// note.
+@override final  DateTime? paymentDate;
+@override final  Decimal? paymentAmount;
+@override final  String? paymentReference;
+@override final  String? orderingBank;
 
 /// Create a copy of InvoiceHeaderPatch
 /// with the given fields replaced by the non-null parameter values.
@@ -1808,18 +2412,18 @@ _$InvoiceHeaderPatchCopyWith<_InvoiceHeaderPatch> get copyWith => __$InvoiceHead
 
 @override
 bool operator ==(Object other) {
-    return identical(this, other) || (other.runtimeType == runtimeType&&other is _InvoiceHeaderPatch&&(identical(other.recipientRfc, recipientRfc) || other.recipientRfc == recipientRfc)&&(identical(other.series, series) || other.series == series)&&(identical(other.usage, usage) || other.usage == usage)&&(identical(other.paymentTerms, paymentTerms) || other.paymentTerms == paymentTerms)&&(identical(other.paymentForm, paymentForm) || other.paymentForm == paymentForm)&&(identical(other.issued, issued) || other.issued == issued)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.comment, comment) || other.comment == comment));
+    return identical(this, other) || (other.runtimeType == runtimeType&&other is _InvoiceHeaderPatch&&(identical(other.recipientRfc, recipientRfc) || other.recipientRfc == recipientRfc)&&(identical(other.series, series) || other.series == series)&&(identical(other.usage, usage) || other.usage == usage)&&(identical(other.paymentTerms, paymentTerms) || other.paymentTerms == paymentTerms)&&(identical(other.paymentForm, paymentForm) || other.paymentForm == paymentForm)&&(identical(other.issued, issued) || other.issued == issued)&&(identical(other.facilityId, facilityId) || other.facilityId == facilityId)&&(identical(other.reference, reference) || other.reference == reference)&&(identical(other.comment, comment) || other.comment == comment)&&(identical(other.paymentDate, paymentDate) || other.paymentDate == paymentDate)&&(identical(other.paymentAmount, paymentAmount) || other.paymentAmount == paymentAmount)&&(identical(other.paymentReference, paymentReference) || other.paymentReference == paymentReference)&&(identical(other.orderingBank, orderingBank) || other.orderingBank == orderingBank));
 }
 
 
 @override
 int get hashCode {
-    return Object.hash(runtimeType,recipientRfc,series,usage,paymentTerms,paymentForm,issued,facilityId,reference,comment);
+    return Object.hash(runtimeType,recipientRfc,series,usage,paymentTerms,paymentForm,issued,facilityId,reference,comment,paymentDate,paymentAmount,paymentReference,orderingBank);
 }
 
 @override
 String toString() {
-    return 'InvoiceHeaderPatch(recipientRfc: $recipientRfc, series: $series, usage: $usage, paymentTerms: $paymentTerms, paymentForm: $paymentForm, issued: $issued, facilityId: $facilityId, reference: $reference, comment: $comment)';
+    return 'InvoiceHeaderPatch(recipientRfc: $recipientRfc, series: $series, usage: $usage, paymentTerms: $paymentTerms, paymentForm: $paymentForm, issued: $issued, facilityId: $facilityId, reference: $reference, comment: $comment, paymentDate: $paymentDate, paymentAmount: $paymentAmount, paymentReference: $paymentReference, orderingBank: $orderingBank)';
 }
 
 
@@ -1830,7 +2434,7 @@ abstract mixin class _$InvoiceHeaderPatchCopyWith<$Res> implements $InvoiceHeade
   factory _$InvoiceHeaderPatchCopyWith(_InvoiceHeaderPatch value, $Res Function(_InvoiceHeaderPatch) _then) = __$InvoiceHeaderPatchCopyWithImpl;
 @override @useResult
 $Res call({
- String? recipientRfc, String? series, String? usage, InvoicePaymentTerms? paymentTerms, int? paymentForm, DateTime? issued, int? facilityId, String? reference, String? comment
+ String? recipientRfc, String? series, String? usage, InvoicePaymentTerms? paymentTerms, int? paymentForm, DateTime? issued, int? facilityId, String? reference, String? comment, DateTime? paymentDate, Decimal? paymentAmount, String? paymentReference, String? orderingBank
 });
 
 
@@ -1847,7 +2451,7 @@ class __$InvoiceHeaderPatchCopyWithImpl<$Res>
 
 /// Create a copy of InvoiceHeaderPatch
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? recipientRfc = freezed,Object? series = freezed,Object? usage = freezed,Object? paymentTerms = freezed,Object? paymentForm = freezed,Object? issued = freezed,Object? facilityId = freezed,Object? reference = freezed,Object? comment = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? recipientRfc = freezed,Object? series = freezed,Object? usage = freezed,Object? paymentTerms = freezed,Object? paymentForm = freezed,Object? issued = freezed,Object? facilityId = freezed,Object? reference = freezed,Object? comment = freezed,Object? paymentDate = freezed,Object? paymentAmount = freezed,Object? paymentReference = freezed,Object? orderingBank = freezed,}) {
   return _then(_InvoiceHeaderPatch(
 recipientRfc: freezed == recipientRfc ? _self.recipientRfc : recipientRfc // ignore: cast_nullable_to_non_nullable
 as String?,series: freezed == series ? _self.series : series // ignore: cast_nullable_to_non_nullable
@@ -1858,6 +2462,10 @@ as int?,issued: freezed == issued ? _self.issued : issued // ignore: cast_nullab
 as DateTime?,facilityId: freezed == facilityId ? _self.facilityId : facilityId // ignore: cast_nullable_to_non_nullable
 as int?,reference: freezed == reference ? _self.reference : reference // ignore: cast_nullable_to_non_nullable
 as String?,comment: freezed == comment ? _self.comment : comment // ignore: cast_nullable_to_non_nullable
+as String?,paymentDate: freezed == paymentDate ? _self.paymentDate : paymentDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,paymentAmount: freezed == paymentAmount ? _self.paymentAmount : paymentAmount // ignore: cast_nullable_to_non_nullable
+as Decimal?,paymentReference: freezed == paymentReference ? _self.paymentReference : paymentReference // ignore: cast_nullable_to_non_nullable
+as String?,orderingBank: freezed == orderingBank ? _self.orderingBank : orderingBank // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

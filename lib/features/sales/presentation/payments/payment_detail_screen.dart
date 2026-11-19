@@ -20,6 +20,9 @@ import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/payment_method_option_repository_impl.dart';
+import 'package:mbe_ui/features/invoicing/presentation/fiscal_documents_list_screen.dart'
+    show fiscalDocumentsPath;
+import 'package:mbe_ui/features/invoicing/presentation/new_invoice_dialog.dart';
 import 'package:mbe_ui/features/sales/domain/entities/customer_payment.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/domain/payment_type.dart';
@@ -155,6 +158,13 @@ class _PaymentBody extends ConsumerWidget {
         compareAmounts(payment.unapplied, '0.01') > 0 &&
         access.can(SystemObject.customerPayments, AccessRight.create);
 
+    // spec 074 FR-001: any payment can start a payment receipt, whatever its
+    // state; the right is the server's, Create on FiscalDocuments (23).
+    final canIssueReceipt = access.can(
+      SystemObject.fiscalDocuments,
+      AccessRight.create,
+    );
+
     return SingleChildScrollView(
       padding: EdgeInsets.all(spacing.screenMargin),
       child: Column(
@@ -237,12 +247,27 @@ class _PaymentBody extends ConsumerWidget {
                   ),
                 ],
               ),
-              if (canApply)
-                OutlinedButton.icon(
-                  key: const Key('payment_apply_button'),
-                  onPressed: () => showApplyPaymentDialog(context, payment),
-                  icon: const Icon(Icons.playlist_add_check),
-                  label: Text(l10n.paymentApplyAction),
+              if (canApply || canIssueReceipt)
+                Wrap(
+                  spacing: spacing.md,
+                  runSpacing: spacing.sm,
+                  children: [
+                    if (canApply)
+                      OutlinedButton.icon(
+                        key: const Key('payment_apply_button'),
+                        onPressed: () =>
+                            showApplyPaymentDialog(context, payment),
+                        icon: const Icon(Icons.playlist_add_check),
+                        label: Text(l10n.paymentApplyAction),
+                      ),
+                    if (canIssueReceipt)
+                      OutlinedButton.icon(
+                        key: const Key('payment_issue_receipt_button'),
+                        onPressed: () => _issueReceipt(context, payment),
+                        icon: const Icon(Icons.receipt_long_outlined),
+                        label: Text(l10n.paymentIssueReceiptAction),
+                      ),
+                  ],
                 ),
             ],
           ),
@@ -363,6 +388,21 @@ class _PaymentBody extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// "Emitir complemento de pago" (spec 074 C34): creates a payment-receipt draft
+/// from [payment] and opens it. The dialog also answers the id of the receipt
+/// the payment already has, when it does.
+Future<void> _issueReceipt(
+  BuildContext context,
+  CustomerPayment payment,
+) async {
+  final id = await showNewFiscalDocumentDialog(
+    context,
+    NewFiscalDocumentMode.receiptFromPayment(payment),
+  );
+  if (id == null || !context.mounted) return;
+  context.push('$fiscalDocumentsPath/$id');
 }
 
 /// Verifies [payment] after its confirmation, and says so once it went

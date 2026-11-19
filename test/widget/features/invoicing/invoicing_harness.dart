@@ -77,6 +77,7 @@ class InvoiceHarness {
     bool taxpayersRead = false,
     bool issuedLocationUpdate = false,
     bool customersRead = true,
+    bool customerPaymentsRead = false,
     bool administrator = false,
   }) => accessControlProvider.overrideWithValue(
     AccessControlService(
@@ -114,6 +115,11 @@ class InvoiceHarness {
                 systemObject: SystemObject.issuedLocationId,
                 rawValue: 4,
               ),
+            if (customerPaymentsRead)
+              const Privilege(
+                systemObject: SystemObject.customerPayments,
+                rawValue: 2,
+              ),
             if (customersRead)
               const Privilege(
                 systemObject: SystemObject.customers,
@@ -130,9 +136,16 @@ class InvoiceHarness {
     FiscalDocument? document,
     Override? who,
     Size surface = const Size(1400, 1000),
+
+    /// `false` when the test stubs `getById` itself (a document that changes
+    /// after a write).
+    bool stubDocument = true,
+    Locale locale = const Locale('es', 'MX'),
   }) async {
     final current = document ?? aDocument();
-    when(() => documents.getById(any())).thenAnswer((_) async => current);
+    if (stubDocument) {
+      when(() => documents.getById(any())).thenAnswer((_) async => current);
+    }
     tester.view.physicalSize = surface;
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -173,6 +186,11 @@ class InvoiceHarness {
           builder: (_, _) => const Scaffold(body: Text('list')),
         ),
         GoRoute(
+          path: '/sales/payments/:id',
+          builder: (_, s) =>
+              Scaffold(body: Text('payment ${s.pathParameters['id']}')),
+        ),
+        GoRoute(
           path: '/invoicing/fiscal-documents/:id',
           builder: (_, s) => FiscalDocumentDetailScreen(
             fiscalDocumentId: int.tryParse(s.pathParameters['id'] ?? ''),
@@ -185,7 +203,7 @@ class InvoiceHarness {
         container: container,
         child: MaterialApp.router(
           routerConfig: router,
-          locale: const Locale('es', 'MX'),
+          locale: locale,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
         ),

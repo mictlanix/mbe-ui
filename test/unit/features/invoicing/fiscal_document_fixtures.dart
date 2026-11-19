@@ -21,6 +21,12 @@ FiscalDocument aDocument({
   DateTime? stampingSince,
   String? cancellationSubstitution,
   List<FiscalCancellation> cancellations = const [],
+  DateTime? paymentDate,
+  Decimal? paymentAmount,
+  String? paymentReference,
+  int? customerPaymentId,
+  List<PaidInvoice> paidInvoices = const [],
+  String? reference,
 }) => FiscalDocument(
   summary: FiscalDocumentSummary(
     id: id,
@@ -49,6 +55,12 @@ FiscalDocument aDocument({
   stampingSince: stampingSince,
   cancellationSubstitution: cancellationSubstitution,
   cancellations: cancellations,
+  paymentDate: paymentDate,
+  paymentAmount: paymentAmount,
+  paymentReference: paymentReference,
+  customerPaymentId: customerPaymentId,
+  paidInvoices: paidInvoices,
+  reference: reference,
 );
 
 /// A relation row; a credit note's link to its invoice by default (type 01).
@@ -85,6 +97,60 @@ FiscalDocument aCreditNote({
   paymentForm: paymentForm,
   lines: lines,
   relations: withRelation ? [aRelation()] : const [],
+);
+
+/// One invoice a receipt pays (spec 074).
+PaidInvoice aPaidInvoice({
+  int relationId = 31,
+  int invoiceId = 12,
+  String? series = 'A',
+  int? serial = 5238,
+  String previousBalance = '8000.00',
+  String amount = '8000.00',
+  String remaining = '0.00',
+  int installment = 1,
+}) => PaidInvoice(
+  relationId: relationId,
+  invoiceId: invoiceId,
+  series: series,
+  serial: serial,
+  stampUuid: '6F1C2A9E-0000-4000-8000-00000000AB21',
+  installment: installment,
+  previousBalance: Decimal.parse(previousBalance),
+  amount: Decimal.parse(amount),
+  remaining: Decimal.parse(remaining),
+);
+
+/// A payment receipt (type 200) for a payment of 8,000.00 that pays one
+/// invoice in full, so the draft has nothing left to assign. `paidInvoices`
+/// and `paymentAmount` are overridable; `customerPaymentId: null` is a
+/// by-hand receipt.
+FiscalDocument aPaymentReceipt({
+  int id = 7,
+  FiscalDocumentStatus status = FiscalDocumentStatus.draft,
+  int paymentForm = 3,
+  int? serial,
+  String? series = 'CP',
+  int? customerPaymentId = 4127,
+  Decimal? paymentAmount,
+  bool paysInvoice = true,
+  List<PaidInvoice>? paidInvoices,
+  DateTime? paymentDate,
+  String? reference,
+}) => aDocument(
+  id: id,
+  status: status,
+  typeCode: 200,
+  series: series,
+  serial: serial,
+  paymentForm: paymentForm,
+  lines: const [],
+  customerPaymentId: customerPaymentId,
+  paymentAmount: paymentAmount ?? Decimal.parse('8000.00'),
+  paymentDate: paymentDate ?? DateTime(2026, 11, 12),
+  paymentReference: 'SPEI 99812',
+  reference: reference,
+  paidInvoices: paidInvoices ?? (paysInvoice ? [aPaidInvoice()] : const []),
 );
 
 /// A PAC stamp; simulated by default, as on dev and test.
