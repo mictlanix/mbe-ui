@@ -9,7 +9,7 @@ import 'package:built_value/serializer.dart';
 
 part 'pac_simulation_update.g.dart';
 
-/// The outcome of the document's next stamp or cancellation call only. `pac_code` and `pac_message` are a `rejected` outcome's, as the `pac_simulation` columns hold them.
+/// The outcome of the document's next stamp or cancellation call only. `pac_code` and `pac_message` are a `rejected` outcome's (spec 040: the library's simulator keeps them).
 ///
 /// Properties:
 /// * [stamp]

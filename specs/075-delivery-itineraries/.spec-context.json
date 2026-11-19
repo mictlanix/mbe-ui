@@ -3,7 +3,7 @@
   "specName": "Delivery Itineraries",
   "branch": "075-delivery-itineraries",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -357,8 +357,21 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-19T09:00:04.718Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-19T10:27:17.246Z"
     }
   ],
   "telemetryInstanceId": "4f0f6e04-8731-47bd-87fa-30668f7a3492",
-  "currentTask": "T039"
+  "currentTask": null,
+  "concerns": [
+    {
+      "note": "finished, unverified",
+      "step": "implement"
+    }
+  ]
 }
