@@ -4859,14 +4859,14 @@ class AppLocalizationsEn extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'delivery routes',
-      one: 'delivery route',
+      other: 'itineraries',
+      one: 'itinerary',
     );
     return '$_temp0';
   }
 
   @override
-  String get apiResourceGenderDeliveryItinerary => 'feminine';
+  String get apiResourceGenderDeliveryItinerary => 'masculine';
 
   @override
   String apiResourceDeliveryOrder(int count) {
@@ -9677,4 +9677,617 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get fiscalDocumentHeaderOrderingBankTooLong =>
       'The ordering bank can have up to 25 characters.';
+
+  @override
+  String get apiErrorItineraryNotOpen =>
+      'The itinerary is no longer open and can\'t be changed.';
+
+  @override
+  String get apiErrorItineraryNotDeparted => 'The itinerary hasn\'t left yet.';
+
+  @override
+  String get apiErrorItineraryCancelled => 'The itinerary is cancelled.';
+
+  @override
+  String get apiErrorItineraryNothingCommitted =>
+      'Nothing is loaded on this itinerary.';
+
+  @override
+  String get apiErrorItineraryLinesOvercommitted =>
+      'These lines are loaded beyond what\'s left to deliver';
+
+  @override
+  String get apiErrorItineraryStopAlreadyResolved =>
+      'This stop is already closed.';
+
+  @override
+  String get apiErrorItineraryStopLinesIncomplete =>
+      'A line of the stop has no result.';
+
+  @override
+  String get apiErrorItineraryStopLinesMalformed =>
+      'The lines\' results aren\'t valid.';
+
+  @override
+  String apiErrorItineraryStopDeliveredExceedsSent(
+    String line,
+    String sent,
+    String delivered,
+  ) {
+    return 'Line $line: $sent were sent and $delivered are recorded as delivered.';
+  }
+
+  @override
+  String apiErrorItineraryStopShortfallNeedsReason(String line) {
+    return 'Line $line: give a reason for what wasn\'t delivered.';
+  }
+
+  @override
+  String apiErrorVehicleOpenItineraryExists(String itinerary) {
+    return 'This vehicle already has itinerary $itinerary open.';
+  }
+
+  @override
+  String get apiErrorDeliveryOrderNotInPreparation =>
+      'The delivery order is no longer in preparation; only orders in preparation can be loaded.';
+
+  @override
+  String get apiErrorDeliveryOrderPickupNotLoadable =>
+      'A store-pickup order can\'t be loaded on an itinerary.';
+
+  @override
+  String get apiErrorDeliveryOrderLineNothingToLoad =>
+      'This line has nothing left to load.';
+
+  @override
+  String apiErrorDeliveryOrderLineQuantityUnavailable(
+    String requested,
+    String available,
+  ) {
+    return 'You asked to load $requested, but only $available are available.';
+  }
+
+  @override
+  String apiResourceDeliveryItineraryStop(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'stops',
+      one: 'stop',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderDeliveryItineraryStop => 'feminine';
+
+  @override
+  String apiResourceDeliveryItineraryLine(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'itinerary lines',
+      one: 'itinerary line',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderDeliveryItineraryLine => 'feminine';
+
+  @override
+  String get navDeliveryItineraries => 'Itineraries';
+
+  @override
+  String itineraryTitle(int id) {
+    return 'Itinerary $id';
+  }
+
+  @override
+  String get itinerariesEmpty => 'There are no itineraries yet.';
+
+  @override
+  String get itineraryNotFoundBack => 'Back to Itineraries';
+
+  @override
+  String get itineraryActionUnknown =>
+      'We can\'t tell whether it went through: the connection was lost. The itinerary was refreshed.';
+
+  @override
+  String get itineraryColumnNumber => 'No.';
+
+  @override
+  String get itineraryColumnDate => 'Date';
+
+  @override
+  String get itineraryColumnVehicle => 'Vehicle';
+
+  @override
+  String get itineraryColumnOperator => 'Operator';
+
+  @override
+  String get itineraryColumnWarehouse => 'Warehouse';
+
+  @override
+  String get itineraryColumnStatus => 'Status';
+
+  @override
+  String get itineraryColumnDeparture => 'Departure';
+
+  @override
+  String get itineraryColumnReturn => 'Return';
+
+  @override
+  String itineraryDeparted(String time) {
+    return 'Departure $time';
+  }
+
+  @override
+  String itineraryReturned(String time) {
+    return 'Return $time';
+  }
+
+  @override
+  String get itineraryStatusOpen => 'Open';
+
+  @override
+  String get itineraryStatusDeparted => 'On the road';
+
+  @override
+  String get itineraryStatusClosed => 'Closed';
+
+  @override
+  String get itineraryStatusCancelled => 'Cancelled';
+
+  @override
+  String get itineraryStopOutcomePending => 'Pending';
+
+  @override
+  String get itineraryStopOutcomeDelivered => 'Delivered';
+
+  @override
+  String get itineraryStopOutcomePartiallyDelivered => 'Partially delivered';
+
+  @override
+  String get itineraryStopOutcomeFailed => 'Failed';
+
+  @override
+  String get itineraryReasonCustomerRefused => 'Customer refused';
+
+  @override
+  String get itineraryReasonNobodyPresent => 'Nobody there';
+
+  @override
+  String get itineraryReasonWrongAddress => 'Wrong address';
+
+  @override
+  String get itineraryReasonDamagedGoods => 'Damaged goods';
+
+  @override
+  String get itineraryReasonOther => 'Other';
+
+  @override
+  String get itineraryFilterStatus => 'Status';
+
+  @override
+  String get itineraryFilterStatusAll => 'All';
+
+  @override
+  String get itineraryFilterDate => 'Date';
+
+  @override
+  String get itineraryFilterVehicle => 'Vehicle';
+
+  @override
+  String get itineraryFilterOperator => 'Operator';
+
+  @override
+  String get itineraryFilterWarehouse => 'Dispatch warehouse';
+
+  @override
+  String get itineraryFilterAny => 'Any';
+
+  @override
+  String get itineraryHeaderComment => 'Comment';
+
+  @override
+  String get itineraryEditHeader => 'Edit header';
+
+  @override
+  String get itineraryNoOperator => 'No operator';
+
+  @override
+  String get itineraryNoneAssigned => '—';
+
+  @override
+  String itineraryLicenseExpired(String operator, String date) {
+    return '$operator\'s licence expired on $date.';
+  }
+
+  @override
+  String get itineraryActionNew => 'New itinerary';
+
+  @override
+  String get itineraryActionAddStop => 'Add stop';
+
+  @override
+  String get itineraryActionCancel => 'Cancel itinerary';
+
+  @override
+  String get itineraryActionDepart => 'Depart';
+
+  @override
+  String get itineraryActionLoadAll => 'Load all';
+
+  @override
+  String get itineraryActionLoadLine => 'Load line';
+
+  @override
+  String get itineraryActionRemoveStop => 'Remove stop';
+
+  @override
+  String get itineraryActionCloseStop => 'Close stop';
+
+  @override
+  String get itineraryActionPrintTicket => 'Print ticket';
+
+  @override
+  String get itineraryActionPrintNotes => 'Print delivery notes';
+
+  @override
+  String get itineraryDepartGuardNothing => 'Nothing is loaded yet.';
+
+  @override
+  String itineraryDepartGuardEmptyStop(int n) {
+    return 'Stop $n has nothing loaded.';
+  }
+
+  @override
+  String get itineraryCancelledNote =>
+      'This itinerary was cancelled before departure. What was loaded is pending again.';
+
+  @override
+  String itineraryStopTitle(int n) {
+    return 'Stop $n';
+  }
+
+  @override
+  String itineraryStopOrder(int id) {
+    return 'Order $id';
+  }
+
+  @override
+  String itineraryStopOrders(String ids) {
+    return 'Orders $ids';
+  }
+
+  @override
+  String get itineraryStopEmpty => 'Nothing loaded yet.';
+
+  @override
+  String itineraryStopClosedAt(String time) {
+    return 'closed $time';
+  }
+
+  @override
+  String get itineraryStopMenuTooltip => 'Stop actions';
+
+  @override
+  String get itineraryStopOrderLinkTooltip => 'Open the delivery order';
+
+  @override
+  String get itineraryLineCode => 'Code';
+
+  @override
+  String get itineraryLineProduct => 'Product';
+
+  @override
+  String get itineraryLineUnit => 'Unit';
+
+  @override
+  String get itineraryLinePending => 'Pending';
+
+  @override
+  String get itineraryLineLoaded => 'Loaded';
+
+  @override
+  String get itineraryLineSent => 'Sent';
+
+  @override
+  String get itineraryLineDelivered => 'Delivered';
+
+  @override
+  String get itineraryLineReturned => 'Returned';
+
+  @override
+  String get itineraryLineReason => 'Reason';
+
+  @override
+  String get itineraryLineEditTooltip => 'Change the loaded quantity';
+
+  @override
+  String get itineraryLineReleaseTooltip => 'Release the line';
+
+  @override
+  String get itineraryNewTitle => 'New itinerary';
+
+  @override
+  String get itineraryFieldDate => 'Date';
+
+  @override
+  String get itineraryFieldVehicle => 'Vehicle';
+
+  @override
+  String get itineraryFieldOperator => 'Operator';
+
+  @override
+  String get itineraryFieldWarehouse => 'Dispatch warehouse';
+
+  @override
+  String get itineraryWarehouseHint =>
+      'Empty uses your point of sale\'s warehouse.';
+
+  @override
+  String get itineraryFieldComment => 'Comment';
+
+  @override
+  String get itineraryCreateButton => 'Create';
+
+  @override
+  String itineraryHeaderTitle(int id) {
+    return 'Edit header · Itinerary $id';
+  }
+
+  @override
+  String get itineraryAddStopTitle => 'Add stop';
+
+  @override
+  String get itineraryAddStopSearch => 'Folio';
+
+  @override
+  String get itineraryAddStopEmpty => 'There are no orders in preparation.';
+
+  @override
+  String get itineraryAddStopColumnFolio => 'Folio';
+
+  @override
+  String get itineraryAddStopColumnCustomer => 'Customer';
+
+  @override
+  String get itineraryAddStopColumnAddress => 'Address';
+
+  @override
+  String get itineraryAddStopColumnDate => 'Date';
+
+  @override
+  String get itineraryAddStopConfirm => 'Add';
+
+  @override
+  String get itineraryPickOrderTitle => 'Choose the stop\'s order';
+
+  @override
+  String itineraryLoadLineTitle(int id) {
+    return 'Load line · Order $id';
+  }
+
+  @override
+  String get itineraryLoadLineEmpty => 'This order has no lines left to load.';
+
+  @override
+  String itineraryLoadLinePending(String qty) {
+    return '$qty pend.';
+  }
+
+  @override
+  String get itineraryLoadLineConfirm => 'Load';
+
+  @override
+  String get itineraryQuantityLabel => 'Quantity';
+
+  @override
+  String itineraryQuantityMax(String max) {
+    return 'Maximum $max';
+  }
+
+  @override
+  String itineraryQuantityMaxBreakdown(
+    String max,
+    String pending,
+    String loaded,
+  ) {
+    return 'Maximum $max ($pending pend. + $loaded loaded)';
+  }
+
+  @override
+  String get itineraryQuantityInvalid =>
+      'Enter a quantity above 0 and no more than the maximum.';
+
+  @override
+  String itineraryAdjustTitle(String code) {
+    return 'Loaded quantity · $code';
+  }
+
+  @override
+  String itineraryLoadAllTitle(int id) {
+    return 'Load all of order $id?';
+  }
+
+  @override
+  String get itineraryLoadAllBody =>
+      'What is left to deliver of each line is loaded.';
+
+  @override
+  String get itineraryLoadAllConfirm => 'Load all';
+
+  @override
+  String itineraryReleaseTitle(String code) {
+    return 'Release $code?';
+  }
+
+  @override
+  String get itineraryReleaseBody =>
+      'The loaded quantity is pending again on the order.';
+
+  @override
+  String get itineraryReleaseConfirm => 'Release';
+
+  @override
+  String itineraryRemoveStopTitle(int n) {
+    return 'Remove stop $n?';
+  }
+
+  @override
+  String get itineraryRemoveStopBody =>
+      'What is loaded on this stop is released; the order is pending again.';
+
+  @override
+  String get itineraryRemoveStopConfirm => 'Remove';
+
+  @override
+  String itineraryCancelTitle(int id) {
+    return 'Cancel itinerary $id?';
+  }
+
+  @override
+  String get itineraryCancelBody =>
+      'Everything loaded is released and the orders stay in preparation. This can\'t be undone.';
+
+  @override
+  String get itineraryCancelConfirm => 'Cancel itinerary';
+
+  @override
+  String get itineraryCancelDismiss => 'Keep';
+
+  @override
+  String itineraryDepartTitle(int id) {
+    return 'Depart itinerary $id?';
+  }
+
+  @override
+  String itineraryDepartVehicleOperator(String vehicle, String operator) {
+    return 'Vehicle $vehicle · Operator $operator';
+  }
+
+  @override
+  String itineraryDepartCounts(int stops, int lines) {
+    String _temp0 = intl.Intl.pluralLogic(
+      stops,
+      locale: localeName,
+      other: '$stops stops',
+      one: '1 stop',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      lines,
+      locale: localeName,
+      other: '$lines lines',
+      one: '1 line',
+    );
+    return '$_temp0 · $_temp1';
+  }
+
+  @override
+  String get itineraryDepartWarning =>
+      'Once it departs, what is loaded can\'t be changed.';
+
+  @override
+  String get itineraryDepartConfirm => 'Depart';
+
+  @override
+  String itineraryCloseTitle(int n) {
+    return 'Close stop $n';
+  }
+
+  @override
+  String itineraryCloseSubtitle(String title, String order, String customer) {
+    return '$title · Order $order · $customer';
+  }
+
+  @override
+  String get itineraryCloseReceiverSection => 'Who received';
+
+  @override
+  String get itineraryCloseReceiverName => 'Name';
+
+  @override
+  String get itineraryCloseReceiverId => 'Identification';
+
+  @override
+  String get itineraryCloseLinesSection => 'What they received';
+
+  @override
+  String get itineraryCloseAllDelivered => 'All delivered';
+
+  @override
+  String get itineraryCloseNothingDelivered => 'Nothing delivered';
+
+  @override
+  String itineraryCloseSentLabel(String qty) {
+    return 'Sent $qty';
+  }
+
+  @override
+  String get itineraryCloseDeliveredField => 'Delivered';
+
+  @override
+  String get itineraryCloseReasonField => 'Reason';
+
+  @override
+  String get itineraryCloseProofSection => 'Proof of delivery';
+
+  @override
+  String get itineraryCloseProofImage => 'Image';
+
+  @override
+  String get itineraryCloseProofSignature => 'Signature';
+
+  @override
+  String get itineraryCloseChooseImage => 'Choose image';
+
+  @override
+  String get itineraryCloseRemoveImage => 'Remove';
+
+  @override
+  String get itineraryCloseClearSignature => 'Clear';
+
+  @override
+  String get itineraryCloseSignatureHint => 'Sign here';
+
+  @override
+  String get itineraryCloseSignatureTooltip => 'Signature area';
+
+  @override
+  String get itineraryCloseImageTooLarge => 'The image is over 2 MB.';
+
+  @override
+  String get itineraryCloseImageFormat => 'Choose a jpg or png image.';
+
+  @override
+  String get itineraryCloseMissingTitle => 'Missing:';
+
+  @override
+  String get itineraryCloseMissingReceiver => 'the receiver\'s name';
+
+  @override
+  String get itineraryCloseMissingId => 'the identification';
+
+  @override
+  String get itineraryCloseMissingProof => 'the proof of delivery';
+
+  @override
+  String itineraryCloseMissingReason(String product) {
+    return 'the reason for $product';
+  }
+
+  @override
+  String get itineraryCloseConfirm => 'Close stop';
+
+  @override
+  String documentItineraryTicketTitle(String id) {
+    return 'Itinerary ticket · $id';
+  }
+
+  @override
+  String documentItineraryNotesTitle(String id) {
+    return 'Delivery notes · itinerary $id';
+  }
 }

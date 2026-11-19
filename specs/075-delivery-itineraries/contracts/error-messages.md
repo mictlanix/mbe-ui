@@ -45,3 +45,12 @@ These are the codes the 15 itinerary routes and the order picker can return. The
 | `facility.no_in_transit_location` | depart, close stop |
 | `image.too_large`, `image.unsupported_format` | close stop |
 | `lock.busy` | close stop (`facility` / `warehouse`) |
+
+## As built (2026-11-19)
+
+Three departures from the table above, all simplifications:
+- `itinerary.not_open`, `itinerary.not_departed` and `delivery_order.not_in_preparation` are fixed sentences without `{status}`. `localizeProblem` lives in `core/` and can't reach the features' status labels. The status is visible on the screen anyway.
+- `itinerary.stop_delivered_exceeds_sent` and `itinerary.stop_shortfall_needs_reason` name the line as "Partida {line_id}", not by product: `localizeProblem` takes no lookup. The close dialog checks both cases before sending, so the server's refusal is rare.
+- `itinerary.lines_overcommitted` shows its headline, followed by the line ids from `detail.lines`.
+
+So `needParams` gains four codes, not five: `not_in_preparation` is a fixed sentence. The `delivery_itinerary` noun is now "itinerario" (masculine), no longer "ruta de entrega".

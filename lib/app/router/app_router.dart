@@ -68,6 +68,8 @@ import 'package:mbe_ui/features/sales/presentation/payments/payment_detail_scree
 import 'package:mbe_ui/features/sales/presentation/credit_notes/credit_notes_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/payments/payments_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_order_approval/delivery_order_approval_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_itineraries/delivery_itineraries_list_screen.dart';
+import 'package:mbe_ui/features/sales/presentation/delivery_itineraries/delivery_itinerary_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_order_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_orders_list_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/refunds/refund_detail_screen.dart';
@@ -531,6 +533,20 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 075-delivery-itineraries: appended last (index 36), same rationale
+          // as `payments` above. Gated on SystemObject 87
+          // (`deliveryItineraries`) read, see `_routeGate`. A row opens the
+          // top-level `/sales/delivery-itineraries/:itineraryId` route.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: deliveryItinerariesPath,
+                builder: (context, state) => DeliveryItinerariesListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -722,6 +738,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           deliveryOrderId: int.tryParse(
             state.pathParameters['deliveryOrderId'] ?? '',
           ),
+        ),
+      ),
+      // 075-delivery-itineraries: a trip's own full screen, gated on
+      // SystemObject 87 (`deliveryItineraries`) read by the `_routeGate`
+      // prefix. A non-numeric id parses to `null`, which the screen shows as
+      // not found.
+      GoRoute(
+        path: '$deliveryItinerariesPath/:itineraryId',
+        builder: (context, state) => DeliveryItineraryDetailScreen(
+          itineraryId: int.tryParse(state.pathParameters['itineraryId'] ?? ''),
         ),
       ),
       // 066-invoice-list-editor: a document's own full screen, gated on
@@ -1117,6 +1143,13 @@ NavGate? _routeGate(String location) {
   // GET /kardex.
   if (location.startsWith(kardexPath)) {
     return PrivilegeGate(SystemObject.kardex, AccessRight.read);
+  }
+  // 075-delivery-itineraries: SystemObject 87 (`deliveryItineraries`) read,
+  // matching the server's GET /delivery-itineraries. The prefix covers the
+  // list and every `/sales/delivery-itineraries/:itineraryId`. It shares no
+  // prefix with the delivery order paths, and 71 read must not open it.
+  if (location.startsWith(deliveryItinerariesPath)) {
+    return PrivilegeGate(SystemObject.deliveryItineraries, AccessRight.read);
   }
   // 061-delivery-orders: SystemObject 71 (`deliveryOrders`) read, matching
   // the server's GET /delivery-orders. The prefix covers the list and every

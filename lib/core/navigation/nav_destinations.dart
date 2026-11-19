@@ -132,6 +132,11 @@ class NavBranch {
   // — display order comes from position within `kNavigationTree` (the sixth
   // destination of the Inventario group there).
   static const int inventoryKardex = 35;
+
+  // 075-delivery-itineraries: appended last, same rationale as `cashSessions`
+  // above — display order comes from position within `kNavigationTree` (the
+  // fourth destination of the Logística group there, after `forDelivery`).
+  static const int deliveryItineraries = 36;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -401,9 +406,9 @@ const List<NavItem> kNavigationTree = [
       ),
     ],
   ),
-  // Logística: delivery orders and the vehicles and operators that carry
-  // them. Delivery itineraries join this group when they ship. Only nav
-  // placement changed; routes and branch indices are unchanged.
+  // Logística: delivery orders, the trips that carry them (Itinerarios), and
+  // the vehicles and operators that make them. Only nav placement changed;
+  // routes and branch indices are unchanged.
   NavGroup(
     id: 'logistics',
     label: _logisticsLabel,
@@ -448,6 +453,19 @@ const List<NavItem> kNavigationTree = [
         route: '/sales/for-delivery',
         branchIndex: NavBranch.forDelivery,
         gate: PrivilegeGate(SystemObject.forDeliver, AccessRight.read),
+      ),
+      // 075-delivery-itineraries: right after Por entregar. Gated on
+      // SystemObject 87 (`deliveryItineraries`) read, matching the server's
+      // GET /delivery-itineraries. Creating needs 87 create; every other
+      // write needs 87 update, checked on the screens.
+      NavDestination(
+        id: 'delivery-itineraries',
+        label: _deliveryItinerariesLabel,
+        icon: Icons.route_outlined,
+        selectedIcon: Icons.route,
+        route: '/sales/delivery-itineraries',
+        branchIndex: NavBranch.deliveryItineraries,
+        gate: PrivilegeGate(SystemObject.deliveryItineraries, AccessRight.read),
       ),
       NavDestination(
         id: 'vehicles',
@@ -621,6 +639,8 @@ String _deliveryOrdersLabel(AppLocalizations l10n) => l10n.navDeliveryOrders;
 String _deliveryOrderApprovalLabel(AppLocalizations l10n) =>
     l10n.navDeliveryOrderApproval;
 String _forDeliveryLabel(AppLocalizations l10n) => l10n.navForDelivery;
+String _deliveryItinerariesLabel(AppLocalizations l10n) =>
+    l10n.navDeliveryItineraries;
 String _paymentsLabel(AppLocalizations l10n) => l10n.paymentsMenuTitle;
 String _paymentVerificationLabel(AppLocalizations l10n) =>
     l10n.paymentVerificationMenuTitle;

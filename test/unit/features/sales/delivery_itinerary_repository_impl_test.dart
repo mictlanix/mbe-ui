@@ -4,8 +4,14 @@ import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:decimal/decimal.dart';
+
+import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/sales/data/delivery_itinerary_repository_impl.dart';
+import 'package:mbe_ui/features/sales/domain/entities/delivery_itinerary.dart';
 import 'package:mbe_ui/features/sales/domain/entities/pending_delivery.dart';
+
+import 'delivery_itinerary_fixtures.dart';
 
 const _jsonHeaders = {
   Headers.contentTypeHeader: [Headers.jsonContentType],
@@ -178,6 +184,339 @@ void main() {
     final result = await repository.pendingDeliveries(skip: 0, limit: 20);
 
     expect(result.keys, [PendingDeliveryPeriod.today]);
+  });
+
+  group('spec 075 itineraries', () {
+    final png = Uint8List.fromList([
+      0x89,
+      0x50,
+      0x4E,
+      0x47,
+      0x0D,
+      0x0A,
+      0x1A,
+      0x0A,
+    ]);
+
+    ({DeliveryItineraryRepositoryImpl repo, List<RequestOptions> requests})
+    stub({Object? body, int status = 200}) {
+      final requests = <RequestOptions>[];
+      final repo = _repositoryWith((options) async {
+        requests.add(options);
+        return ResponseBody.fromString(
+          jsonEncode(body ?? itineraryJson()),
+          status,
+          headers: _jsonHeaders,
+        );
+      });
+      return (repo: repo, requests: requests);
+    }
+
+    test('list sends only the facets set, as calendar dates', () async {
+      final s = stub(
+        body: {
+          'items': [itinerarySummaryJson()],
+          'total': 1,
+        },
+      );
+
+      final page = await s.repo.list(
+        status: ItineraryStatus.departed,
+        dateFrom: DateTime(2026, 11, 1, 13, 45),
+        dateTo: DateTime(2026, 11, 18),
+        vehicleId: 4,
+        operatorId: 9,
+        warehouseId: 3,
+        skip: 20,
+        limit: 20,
+      );
+
+      final r = s.requests.single;
+      expect(r.method, 'GET');
+      expect(r.path, endsWith('/delivery-itineraries'));
+      expect(r.queryParameters, {
+        'date_from': '2026-11-01',
+        'date_to': '2026-11-18',
+        'vehicle': 4,
+        'vehicle_operator': 9,
+        'warehouse': 3,
+        'status': 1,
+        'skip': 20,
+        'limit': 20,
+      });
+      expect(page.total, 1);
+      expect(page.items.single.vehicleName, 'Torton · MBE-114');
+      expect(page.items.single.status, ItineraryStatus.open);
+    });
+
+    test(
+      'getById maps the trip, its stops, lines and the #343 names',
+      () async {
+        final s = stub(
+          body: itineraryJson(
+            status: 1,
+            departure: '2026-11-18T07:04:00',
+            stops: [
+              itineraryStopJson(
+                id: 502,
+                sequence: 2,
+                outcome: 2,
+                arrival: '2026-11-18T14:20:00',
+                lines: [
+                  itineraryLineJson(
+                    sent: '6.0000',
+                    delivered: '4.0000',
+                    returned: '2.0000',
+                    reason: 3,
+                  ),
+                ],
+              ),
+              itineraryStopJson(
+                id: 501,
+                sequence: 1,
+                order: null,
+                orders: [1498, 1502],
+              ),
+            ],
+          ),
+        );
+
+        final trip = await s.repo.getById(58);
+
+        expect(s.requests.single.path, endsWith('/delivery-itineraries/58'));
+        expect(trip.status, ItineraryStatus.departed);
+        expect(trip.departedAt, DateTime(2026, 11, 18, 7, 4));
+        expect(trip.vehicleName, 'Torton · MBE-114');
+        expect(trip.operatorName, 'Juan Rivas');
+        expect(trip.warehouseName, 'Bodega Norte');
+        // Sorted by sequence, whatever the server's order.
+        expect(trip.stops.map((st) => st.sequence), [1, 2]);
+        final legacy = trip.stops.first;
+        expect(legacy.deliveryOrderId, isNull);
+        expect(legacy.deliveryOrderIds, [1498, 1502]);
+        final closed = trip.stops.last;
+        expect(closed.outcome, StopOutcome.partiallyDelivered);
+        expect(closed.arrivedAt, DateTime(2026, 11, 18, 14, 20));
+        expect(closed.customerName, 'Abarrotes La Central');
+        final line = closed.lines.single;
+        expect(line.productName, 'Clavo 2½"');
+        expect(line.unitSymbol, 'kg');
+        expect(line.sent, Decimal.parse('6'));
+        expect(line.delivered, Decimal.parse('4'));
+        expect(line.returned, Decimal.parse('2'));
+        expect(line.reason, ShortfallReason.damagedGoods);
+      },
+    );
+
+    test('every status, outcome and reason maps, none by name', () async {
+      for (var i = 0; i < ItineraryStatus.values.length; i++) {
+        final s = stub(
+          body: itineraryJson(status: i, stops: []),
+        );
+        expect((await s.repo.getById(1)).status, ItineraryStatus.values[i]);
+      }
+      for (var i = 0; i < StopOutcome.values.length; i++) {
+        final s = stub(
+          body: itineraryJson(stops: [itineraryStopJson(outcome: i)]),
+        );
+        expect(
+          (await s.repo.getById(1)).stops.single.outcome,
+          StopOutcome.values[i],
+        );
+      }
+      for (var i = 0; i < ShortfallReason.values.length; i++) {
+        final s = stub(
+          body: itineraryJson(
+            stops: [
+              itineraryStopJson(lines: [itineraryLineJson(reason: i)]),
+            ],
+          ),
+        );
+        expect(
+          (await s.repo.getById(1)).stops.single.lines.single.reason,
+          ShortfallReason.values[i],
+        );
+      }
+    });
+
+    test('an unknown status is a server error, not a default', () async {
+      final s = stub(body: itineraryJson(status: 9));
+      await expectLater(s.repo.getById(1), throwsA(isA<AppError>()));
+    });
+
+    test('the response warnings are dropped', () async {
+      final s = stub(
+        body: itineraryJson(warnings: ['Operator licence expired']),
+      );
+      final trip = await s.repo.getById(1);
+      expect(trip.toString(), isNot(contains('licence')));
+    });
+
+    test('create sends only what was given', () async {
+      final s = stub();
+
+      await s.repo.create(
+        date: DateTime(2026, 11, 18, 9),
+        vehicleId: 4,
+        comment: 'x',
+      );
+
+      final r = s.requests.single;
+      expect(r.method, 'POST');
+      expect(r.path, endsWith('/delivery-itineraries'));
+      expect(r.data, {'date': '2026-11-18', 'vehicle': 4, 'comment': 'x'});
+    });
+
+    test('updateHeader sends only the changed fields', () async {
+      final s = stub();
+
+      await s.repo.updateHeader(58, operatorId: 12);
+
+      final r = s.requests.single;
+      expect(r.method, 'PUT');
+      expect(r.path, endsWith('/delivery-itineraries/58'));
+      expect(r.data, {'vehicle_operator': 12});
+    });
+
+    test('cancel and depart post to their own routes', () async {
+      final s = stub();
+
+      await s.repo.cancel(58);
+      await s.repo.depart(58);
+
+      expect(s.requests[0].path, endsWith('/delivery-itineraries/58/cancel'));
+      expect(s.requests[1].path, endsWith('/delivery-itineraries/58/depart'));
+      expect(s.requests.every((r) => r.method == 'POST'), isTrue);
+    });
+
+    test(
+      'stops and lines hit their routes with the quantity always sent',
+      () async {
+        final s = stub();
+
+        await s.repo.addStop(58, deliveryOrderId: 1532);
+        await s.repo.commitWholeOrder(58, 501, deliveryOrderId: 1532);
+        await s.repo.commitLine(
+          58,
+          501,
+          deliveryOrderLineId: 900,
+          quantity: Decimal.parse('12.5'),
+        );
+        await s.repo.adjustCommitment(
+          58,
+          501,
+          7001,
+          quantity: Decimal.parse('3'),
+        );
+        await s.repo.releaseCommitment(58, 501, 7001);
+        await s.repo.removeStop(58, 501);
+
+        final r = s.requests;
+        expect(r[0].method, 'POST');
+        expect(r[0].path, endsWith('/delivery-itineraries/58/stops'));
+        expect(r[0].data, {'delivery_order': 1532});
+        expect(r[1].path, endsWith('/stops/501/lines/all'));
+        expect(r[1].data, {'delivery_order': 1532});
+        expect(r[2].path, endsWith('/stops/501/lines'));
+        expect(r[2].data, {'delivery_order_detail': 900, 'quantity': '12.5'});
+        expect(r[3].method, 'PUT');
+        expect(r[3].path, endsWith('/stops/501/lines/7001'));
+        expect(r[3].data, {'quantity': '3'});
+        expect(r[4].method, 'DELETE');
+        expect(r[4].path, endsWith('/stops/501/lines/7001'));
+        expect(r[5].method, 'DELETE');
+        expect(r[5].path, endsWith('/delivery-itineraries/58/stops/501'));
+      },
+    );
+
+    test(
+      'closeStop is multipart: fields, a lines JSON and a real file part',
+      () async {
+        final s = stub();
+
+        await s.repo.closeStop(
+          58,
+          501,
+          StopClosure(
+            receiverName: 'Ana',
+            receiverIdShown: 'INE 123',
+            lines: [
+              StopClosureLine(
+                lineId: 7001,
+                delivered: Decimal.parse('4.5'),
+                reason: ShortfallReason.damagedGoods,
+              ),
+              StopClosureLine(lineId: 7002, delivered: Decimal.parse('2')),
+            ],
+            proof: ProofImage(bytes: png, filename: 'firma.png'),
+          ),
+        );
+
+        final r = s.requests.single;
+        expect(r.method, 'POST');
+        expect(r.path, endsWith('/delivery-itineraries/58/stops/501/close'));
+        expect(r.data, isA<FormData>());
+        final form = r.data as FormData;
+        final fields = {for (final f in form.fields) f.key: f.value};
+        expect(fields['receiver_name'], 'Ana');
+        expect(fields['receiver_id_shown'], 'INE 123');
+        expect(jsonDecode(fields['lines']!), [
+          {'line': 7001, 'delivered_quantity': '4.5', 'reason_code': 3},
+          {'line': 7002, 'delivered_quantity': '2', 'reason_code': null},
+        ]);
+        // A file part, not a plain field.
+        expect(form.fields.map((f) => f.key), isNot(contains('image')));
+        expect(form.files.single.key, 'image');
+        expect(form.files.single.value.filename, 'firma.png');
+      },
+    );
+
+    test('a coded refusal becomes an AppError carrying its code', () async {
+      final s = stub(
+        status: 409,
+        body: {
+          'detail': 'This vehicle already has an open itinerary',
+          'code': 'vehicle.open_itinerary_exists',
+          'params': {'vehicle_id': 4, 'itinerary_id': 54},
+        },
+      );
+
+      await expectLater(
+        s.repo.create(vehicleId: 4),
+        throwsA(
+          isA<AppError>().having(
+            (e) => e.toString(),
+            'text',
+            contains('vehicle.open_itinerary_exists'),
+          ),
+        ),
+      );
+    });
+
+    test('a 422 refusal is mapped too', () async {
+      final s = stub(
+        status: 422,
+        body: {
+          'detail': 'Line 7 needs a reason',
+          'code': 'itinerary.stop_shortfall_needs_reason',
+          'params': {'line_id': 7},
+        },
+      );
+
+      await expectLater(
+        s.repo.closeStop(
+          58,
+          501,
+          StopClosure(
+            receiverName: 'A',
+            receiverIdShown: 'B',
+            lines: const [],
+            proof: ProofImage(bytes: png, filename: 'x.png'),
+          ),
+        ),
+        throwsA(isA<AppError>()),
+      );
+    });
   });
 }
 

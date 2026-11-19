@@ -49,7 +49,19 @@ enum DocumentKind {
   /// invoice (mbe-api spec 020, spec 066 research R9). A never-issued,
   /// unstamped or pre-4.0 document is a 409 on the server with its own code,
   /// so the preview shows that reason.
-  fiscalDocument(SystemObject.fiscalDocuments);
+  fiscalDocument(SystemObject.fiscalDocuments),
+
+  /// `GET /delivery-itineraries/{id}/ticket` — the 72 mm trip ticket of a
+  /// departed or closed itinerary (mbe-api spec 026, spec 075 research R11).
+  /// An Abierto trip is a 409 `itinerary.not_departed` and a cancelled one a
+  /// 409 `itinerary.cancelled` on the server, so call sites offer it only
+  /// from departure on.
+  itineraryTicket(SystemObject.deliveryItineraries),
+
+  /// `GET /delivery-itineraries/{id}/delivery-notes` — the delivery notes of a
+  /// departed or closed itinerary, one per stop (mbe-api spec 026, spec 075
+  /// research R11). The same 409s as [itineraryTicket].
+  itineraryDeliveryNotes(SystemObject.deliveryItineraries);
 
   const DocumentKind(this.gateObject);
 
@@ -73,6 +85,8 @@ enum DocumentKind {
     DocumentKind.deliveryOrderDocument =>
       'orden-entrega-${_pad(recordId, 8)}.pdf',
     DocumentKind.fiscalDocument => 'factura-$recordId.pdf',
+    DocumentKind.itineraryTicket => 'itinerario-$recordId.pdf',
+    DocumentKind.itineraryDeliveryNotes => 'notas-entrega-$recordId.pdf',
   };
 
   static String _pad(int id, int width) => id.toString().padLeft(width, '0');

@@ -437,6 +437,7 @@ void main() {
             'delivery-orders',
             'delivery-order-approval',
             'for-delivery',
+            'delivery-itineraries',
             'vehicles',
             'vehicle-operators',
           ],
@@ -606,6 +607,90 @@ void main() {
       expect(entry.branchIndex, NavBranch.forDelivery);
       expect(entry.route, '/sales/for-delivery');
       expect(NavBranch.forDelivery, 28);
+    });
+  });
+
+  group('Itinerarios destination (spec 075 FR-001)', () {
+    test('a user without Delivery Itineraries read has no entry', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.deliveryOrders, rawValue: 2),
+          Privilege(systemObject: SystemObject.forDeliver, rawValue: 2),
+          // Create without read still doesn't open the list.
+          Privilege(
+            systemObject: SystemObject.deliveryItineraries,
+            rawValue: 1,
+          ),
+        ],
+      );
+      expect(ids, isNot(contains('delivery-itineraries')));
+    });
+
+    test('a user with Delivery Itineraries read has the entry, and no '
+        'Delivery Orders entry unless they hold that right too', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(
+            systemObject: SystemObject.deliveryItineraries,
+            rawValue: 2,
+          ),
+        ],
+      );
+      expect(ids, contains('delivery-itineraries'));
+      expect(ids, isNot(contains('delivery-orders')));
+      expect(ids, isNot(contains('for-delivery')));
+    });
+
+    test('an administrator has the entry', () {
+      expect(
+        visibleIds(multiCurrency: false, administrator: true),
+        contains('delivery-itineraries'),
+      );
+    });
+
+    test('it sits right after Por entregar in Logística, on branch 36 at '
+        '/sales/delivery-itineraries', () {
+      final container = ProviderContainer(
+        overrides: [
+          multiCurrencyEnabledProvider.overrideWithValue(false),
+          accessControlProvider.overrideWithValue(
+            AccessControlService(
+              AuthState.authenticated(
+                token: 't',
+                user: const User(
+                  userId: 'u',
+                  email: 'u@example.com',
+                  administrator: true,
+                  status: EntityStatus.active,
+                  sessionVersion: 1,
+                  privileges: [],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      final logistics =
+          container
+                  .read(navDestinationsProvider)
+                  .firstWhere((i) => i is NavGroup && i.id == 'logistics')
+              as NavGroup;
+      final ids = [for (final d in logistics.children) d.id];
+      expect(
+        ids.indexOf('delivery-itineraries'),
+        ids.indexOf('for-delivery') + 1,
+      );
+      final entry = logistics.children.firstWhere(
+        (d) => d.id == 'delivery-itineraries',
+      );
+      expect(entry.branchIndex, NavBranch.deliveryItineraries);
+      expect(entry.route, '/sales/delivery-itineraries');
+      expect(NavBranch.deliveryItineraries, 36);
     });
   });
 

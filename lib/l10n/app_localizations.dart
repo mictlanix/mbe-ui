@@ -8704,13 +8704,13 @@ abstract class AppLocalizations {
   /// Record noun for the API resource name `delivery_itinerary` (spec 058), singular or plural
   ///
   /// In en, this message translates to:
-  /// **'{count, plural, one{delivery route} other{delivery routes}}'**
+  /// **'{count, plural, one{itinerary} other{itineraries}}'**
   String apiResourceDeliveryItinerary(int count);
 
   /// Grammatical gender of the noun for `delivery_itinerary` in Spanish: `feminine` or `masculine` (spec 058)
   ///
   /// In en, this message translates to:
-  /// **'feminine'**
+  /// **'masculine'**
   String get apiResourceGenderDeliveryItinerary;
 
   /// Record noun for the API resource name `delivery_order` (spec 058), singular or plural
@@ -16158,6 +16158,1001 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The ordering bank can have up to 25 characters.'**
   String get fiscalDocumentHeaderOrderingBankTooLong;
+
+  /// spec 075: API error message for `itinerary.not_open`
+  ///
+  /// In en, this message translates to:
+  /// **'The itinerary is no longer open and can\'t be changed.'**
+  String get apiErrorItineraryNotOpen;
+
+  /// spec 075: API error message for `itinerary.not_departed`
+  ///
+  /// In en, this message translates to:
+  /// **'The itinerary hasn\'t left yet.'**
+  String get apiErrorItineraryNotDeparted;
+
+  /// spec 075: API error message for `itinerary.cancelled`
+  ///
+  /// In en, this message translates to:
+  /// **'The itinerary is cancelled.'**
+  String get apiErrorItineraryCancelled;
+
+  /// spec 075: API error message for `itinerary.nothing_committed`
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is loaded on this itinerary.'**
+  String get apiErrorItineraryNothingCommitted;
+
+  /// spec 075: API error message headline for `itinerary.lines_overcommitted`; the line ids follow, one per line
+  ///
+  /// In en, this message translates to:
+  /// **'These lines are loaded beyond what\'s left to deliver'**
+  String get apiErrorItineraryLinesOvercommitted;
+
+  /// spec 075: API error message for `itinerary.stop_already_resolved`
+  ///
+  /// In en, this message translates to:
+  /// **'This stop is already closed.'**
+  String get apiErrorItineraryStopAlreadyResolved;
+
+  /// spec 075: API error message for `itinerary.stop_lines_incomplete`
+  ///
+  /// In en, this message translates to:
+  /// **'A line of the stop has no result.'**
+  String get apiErrorItineraryStopLinesIncomplete;
+
+  /// spec 075: API error message for `itinerary.stop_lines_malformed`
+  ///
+  /// In en, this message translates to:
+  /// **'The lines\' results aren\'t valid.'**
+  String get apiErrorItineraryStopLinesMalformed;
+
+  /// spec 075: API error message for `itinerary.stop_delivered_exceeds_sent`
+  ///
+  /// In en, this message translates to:
+  /// **'Line {line}: {sent} were sent and {delivered} are recorded as delivered.'**
+  String apiErrorItineraryStopDeliveredExceedsSent(
+    String line,
+    String sent,
+    String delivered,
+  );
+
+  /// spec 075: API error message for `itinerary.stop_shortfall_needs_reason`
+  ///
+  /// In en, this message translates to:
+  /// **'Line {line}: give a reason for what wasn\'t delivered.'**
+  String apiErrorItineraryStopShortfallNeedsReason(String line);
+
+  /// spec 075: API error message for `vehicle.open_itinerary_exists`
+  ///
+  /// In en, this message translates to:
+  /// **'This vehicle already has itinerary {itinerary} open.'**
+  String apiErrorVehicleOpenItineraryExists(String itinerary);
+
+  /// spec 075: API error message for `delivery_order.not_in_preparation`
+  ///
+  /// In en, this message translates to:
+  /// **'The delivery order is no longer in preparation; only orders in preparation can be loaded.'**
+  String get apiErrorDeliveryOrderNotInPreparation;
+
+  /// spec 075: API error message for `delivery_order.pickup_not_loadable`
+  ///
+  /// In en, this message translates to:
+  /// **'A store-pickup order can\'t be loaded on an itinerary.'**
+  String get apiErrorDeliveryOrderPickupNotLoadable;
+
+  /// spec 075: API error message for `delivery_order_line.nothing_to_load`
+  ///
+  /// In en, this message translates to:
+  /// **'This line has nothing left to load.'**
+  String get apiErrorDeliveryOrderLineNothingToLoad;
+
+  /// spec 075: API error message for `delivery_order_line.quantity_unavailable`
+  ///
+  /// In en, this message translates to:
+  /// **'You asked to load {requested}, but only {available} are available.'**
+  String apiErrorDeliveryOrderLineQuantityUnavailable(
+    String requested,
+    String available,
+  );
+
+  /// spec 075: record noun for `delivery_itinerary_stop`
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{stop} other{stops}}'**
+  String apiResourceDeliveryItineraryStop(int count);
+
+  /// spec 075: gender of the noun for `delivery_itinerary_stop`
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderDeliveryItineraryStop;
+
+  /// spec 075: record noun for `delivery_itinerary_line`
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{itinerary line} other{itinerary lines}}'**
+  String apiResourceDeliveryItineraryLine(int count);
+
+  /// spec 075: gender of the noun for `delivery_itinerary_line`
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderDeliveryItineraryLine;
+
+  /// spec 075: navDeliveryItineraries
+  ///
+  /// In en, this message translates to:
+  /// **'Itineraries'**
+  String get navDeliveryItineraries;
+
+  /// spec 075: itineraryTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Itinerary {id}'**
+  String itineraryTitle(int id);
+
+  /// spec 075: itinerariesEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'There are no itineraries yet.'**
+  String get itinerariesEmpty;
+
+  /// spec 075: itineraryNotFoundBack
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Itineraries'**
+  String get itineraryNotFoundBack;
+
+  /// spec 075: itineraryActionUnknown
+  ///
+  /// In en, this message translates to:
+  /// **'We can\'t tell whether it went through: the connection was lost. The itinerary was refreshed.'**
+  String get itineraryActionUnknown;
+
+  /// spec 075: itineraryColumnNumber
+  ///
+  /// In en, this message translates to:
+  /// **'No.'**
+  String get itineraryColumnNumber;
+
+  /// spec 075: itineraryColumnDate
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get itineraryColumnDate;
+
+  /// spec 075: itineraryColumnVehicle
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle'**
+  String get itineraryColumnVehicle;
+
+  /// spec 075: itineraryColumnOperator
+  ///
+  /// In en, this message translates to:
+  /// **'Operator'**
+  String get itineraryColumnOperator;
+
+  /// spec 075: itineraryColumnWarehouse
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get itineraryColumnWarehouse;
+
+  /// spec 075: itineraryColumnStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get itineraryColumnStatus;
+
+  /// spec 075: itineraryColumnDeparture
+  ///
+  /// In en, this message translates to:
+  /// **'Departure'**
+  String get itineraryColumnDeparture;
+
+  /// spec 075: itineraryColumnReturn
+  ///
+  /// In en, this message translates to:
+  /// **'Return'**
+  String get itineraryColumnReturn;
+
+  /// spec 075: itineraryDeparted
+  ///
+  /// In en, this message translates to:
+  /// **'Departure {time}'**
+  String itineraryDeparted(String time);
+
+  /// spec 075: itineraryReturned
+  ///
+  /// In en, this message translates to:
+  /// **'Return {time}'**
+  String itineraryReturned(String time);
+
+  /// spec 075: itineraryStatusOpen
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get itineraryStatusOpen;
+
+  /// spec 075: itineraryStatusDeparted
+  ///
+  /// In en, this message translates to:
+  /// **'On the road'**
+  String get itineraryStatusDeparted;
+
+  /// spec 075: itineraryStatusClosed
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get itineraryStatusClosed;
+
+  /// spec 075: itineraryStatusCancelled
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get itineraryStatusCancelled;
+
+  /// spec 075: itineraryStopOutcomePending
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get itineraryStopOutcomePending;
+
+  /// spec 075: itineraryStopOutcomeDelivered
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get itineraryStopOutcomeDelivered;
+
+  /// spec 075: itineraryStopOutcomePartiallyDelivered
+  ///
+  /// In en, this message translates to:
+  /// **'Partially delivered'**
+  String get itineraryStopOutcomePartiallyDelivered;
+
+  /// spec 075: itineraryStopOutcomeFailed
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get itineraryStopOutcomeFailed;
+
+  /// spec 075: itineraryReasonCustomerRefused
+  ///
+  /// In en, this message translates to:
+  /// **'Customer refused'**
+  String get itineraryReasonCustomerRefused;
+
+  /// spec 075: itineraryReasonNobodyPresent
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody there'**
+  String get itineraryReasonNobodyPresent;
+
+  /// spec 075: itineraryReasonWrongAddress
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong address'**
+  String get itineraryReasonWrongAddress;
+
+  /// spec 075: itineraryReasonDamagedGoods
+  ///
+  /// In en, this message translates to:
+  /// **'Damaged goods'**
+  String get itineraryReasonDamagedGoods;
+
+  /// spec 075: itineraryReasonOther
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get itineraryReasonOther;
+
+  /// spec 075: itineraryFilterStatus
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get itineraryFilterStatus;
+
+  /// spec 075: itineraryFilterStatusAll
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get itineraryFilterStatusAll;
+
+  /// spec 075: itineraryFilterDate
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get itineraryFilterDate;
+
+  /// spec 075: itineraryFilterVehicle
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle'**
+  String get itineraryFilterVehicle;
+
+  /// spec 075: itineraryFilterOperator
+  ///
+  /// In en, this message translates to:
+  /// **'Operator'**
+  String get itineraryFilterOperator;
+
+  /// spec 075: itineraryFilterWarehouse
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch warehouse'**
+  String get itineraryFilterWarehouse;
+
+  /// spec 075: itineraryFilterAny
+  ///
+  /// In en, this message translates to:
+  /// **'Any'**
+  String get itineraryFilterAny;
+
+  /// spec 075: itineraryHeaderComment
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get itineraryHeaderComment;
+
+  /// spec 075: itineraryEditHeader
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get itineraryEditHeader;
+
+  /// spec 075: itineraryNoOperator
+  ///
+  /// In en, this message translates to:
+  /// **'No operator'**
+  String get itineraryNoOperator;
+
+  /// spec 075: itineraryNoneAssigned
+  ///
+  /// In en, this message translates to:
+  /// **'—'**
+  String get itineraryNoneAssigned;
+
+  /// spec 075: itineraryLicenseExpired
+  ///
+  /// In en, this message translates to:
+  /// **'{operator}\'s licence expired on {date}.'**
+  String itineraryLicenseExpired(String operator, String date);
+
+  /// spec 075: itineraryActionNew
+  ///
+  /// In en, this message translates to:
+  /// **'New itinerary'**
+  String get itineraryActionNew;
+
+  /// spec 075: itineraryActionAddStop
+  ///
+  /// In en, this message translates to:
+  /// **'Add stop'**
+  String get itineraryActionAddStop;
+
+  /// spec 075: itineraryActionCancel
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel itinerary'**
+  String get itineraryActionCancel;
+
+  /// spec 075: itineraryActionDepart
+  ///
+  /// In en, this message translates to:
+  /// **'Depart'**
+  String get itineraryActionDepart;
+
+  /// spec 075: itineraryActionLoadAll
+  ///
+  /// In en, this message translates to:
+  /// **'Load all'**
+  String get itineraryActionLoadAll;
+
+  /// spec 075: itineraryActionLoadLine
+  ///
+  /// In en, this message translates to:
+  /// **'Load line'**
+  String get itineraryActionLoadLine;
+
+  /// spec 075: itineraryActionRemoveStop
+  ///
+  /// In en, this message translates to:
+  /// **'Remove stop'**
+  String get itineraryActionRemoveStop;
+
+  /// spec 075: itineraryActionCloseStop
+  ///
+  /// In en, this message translates to:
+  /// **'Close stop'**
+  String get itineraryActionCloseStop;
+
+  /// spec 075: itineraryActionPrintTicket
+  ///
+  /// In en, this message translates to:
+  /// **'Print ticket'**
+  String get itineraryActionPrintTicket;
+
+  /// spec 075: itineraryActionPrintNotes
+  ///
+  /// In en, this message translates to:
+  /// **'Print delivery notes'**
+  String get itineraryActionPrintNotes;
+
+  /// spec 075: itineraryDepartGuardNothing
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is loaded yet.'**
+  String get itineraryDepartGuardNothing;
+
+  /// spec 075: itineraryDepartGuardEmptyStop
+  ///
+  /// In en, this message translates to:
+  /// **'Stop {n} has nothing loaded.'**
+  String itineraryDepartGuardEmptyStop(int n);
+
+  /// spec 075: itineraryCancelledNote
+  ///
+  /// In en, this message translates to:
+  /// **'This itinerary was cancelled before departure. What was loaded is pending again.'**
+  String get itineraryCancelledNote;
+
+  /// spec 075: itineraryStopTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Stop {n}'**
+  String itineraryStopTitle(int n);
+
+  /// spec 075: itineraryStopOrder
+  ///
+  /// In en, this message translates to:
+  /// **'Order {id}'**
+  String itineraryStopOrder(int id);
+
+  /// spec 075: itineraryStopOrders
+  ///
+  /// In en, this message translates to:
+  /// **'Orders {ids}'**
+  String itineraryStopOrders(String ids);
+
+  /// spec 075: itineraryStopEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing loaded yet.'**
+  String get itineraryStopEmpty;
+
+  /// spec 075: itineraryStopClosedAt
+  ///
+  /// In en, this message translates to:
+  /// **'closed {time}'**
+  String itineraryStopClosedAt(String time);
+
+  /// spec 075: itineraryStopMenuTooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Stop actions'**
+  String get itineraryStopMenuTooltip;
+
+  /// spec 075: itineraryStopOrderLinkTooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Open the delivery order'**
+  String get itineraryStopOrderLinkTooltip;
+
+  /// spec 075: itineraryLineCode
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get itineraryLineCode;
+
+  /// spec 075: itineraryLineProduct
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get itineraryLineProduct;
+
+  /// spec 075: itineraryLineUnit
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get itineraryLineUnit;
+
+  /// spec 075: itineraryLinePending
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get itineraryLinePending;
+
+  /// spec 075: itineraryLineLoaded
+  ///
+  /// In en, this message translates to:
+  /// **'Loaded'**
+  String get itineraryLineLoaded;
+
+  /// spec 075: itineraryLineSent
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get itineraryLineSent;
+
+  /// spec 075: itineraryLineDelivered
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get itineraryLineDelivered;
+
+  /// spec 075: itineraryLineReturned
+  ///
+  /// In en, this message translates to:
+  /// **'Returned'**
+  String get itineraryLineReturned;
+
+  /// spec 075: itineraryLineReason
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get itineraryLineReason;
+
+  /// spec 075: itineraryLineEditTooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Change the loaded quantity'**
+  String get itineraryLineEditTooltip;
+
+  /// spec 075: itineraryLineReleaseTooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Release the line'**
+  String get itineraryLineReleaseTooltip;
+
+  /// spec 075: itineraryNewTitle
+  ///
+  /// In en, this message translates to:
+  /// **'New itinerary'**
+  String get itineraryNewTitle;
+
+  /// spec 075: itineraryFieldDate
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get itineraryFieldDate;
+
+  /// spec 075: itineraryFieldVehicle
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle'**
+  String get itineraryFieldVehicle;
+
+  /// spec 075: itineraryFieldOperator
+  ///
+  /// In en, this message translates to:
+  /// **'Operator'**
+  String get itineraryFieldOperator;
+
+  /// spec 075: itineraryFieldWarehouse
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch warehouse'**
+  String get itineraryFieldWarehouse;
+
+  /// spec 075: itineraryWarehouseHint
+  ///
+  /// In en, this message translates to:
+  /// **'Empty uses your point of sale\'s warehouse.'**
+  String get itineraryWarehouseHint;
+
+  /// spec 075: itineraryFieldComment
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get itineraryFieldComment;
+
+  /// spec 075: itineraryCreateButton
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get itineraryCreateButton;
+
+  /// spec 075: itineraryHeaderTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header · Itinerary {id}'**
+  String itineraryHeaderTitle(int id);
+
+  /// spec 075: itineraryAddStopTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Add stop'**
+  String get itineraryAddStopTitle;
+
+  /// spec 075: itineraryAddStopSearch
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get itineraryAddStopSearch;
+
+  /// spec 075: itineraryAddStopEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'There are no orders in preparation.'**
+  String get itineraryAddStopEmpty;
+
+  /// spec 075: itineraryAddStopColumnFolio
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get itineraryAddStopColumnFolio;
+
+  /// spec 075: itineraryAddStopColumnCustomer
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get itineraryAddStopColumnCustomer;
+
+  /// spec 075: itineraryAddStopColumnAddress
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get itineraryAddStopColumnAddress;
+
+  /// spec 075: itineraryAddStopColumnDate
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get itineraryAddStopColumnDate;
+
+  /// spec 075: itineraryAddStopConfirm
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get itineraryAddStopConfirm;
+
+  /// spec 075: itineraryPickOrderTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the stop\'s order'**
+  String get itineraryPickOrderTitle;
+
+  /// spec 075: itineraryLoadLineTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Load line · Order {id}'**
+  String itineraryLoadLineTitle(int id);
+
+  /// spec 075: itineraryLoadLineEmpty
+  ///
+  /// In en, this message translates to:
+  /// **'This order has no lines left to load.'**
+  String get itineraryLoadLineEmpty;
+
+  /// spec 075: itineraryLoadLinePending
+  ///
+  /// In en, this message translates to:
+  /// **'{qty} pend.'**
+  String itineraryLoadLinePending(String qty);
+
+  /// spec 075: itineraryLoadLineConfirm
+  ///
+  /// In en, this message translates to:
+  /// **'Load'**
+  String get itineraryLoadLineConfirm;
+
+  /// spec 075: itineraryQuantityLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get itineraryQuantityLabel;
+
+  /// spec 075: itineraryQuantityMax
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum {max}'**
+  String itineraryQuantityMax(String max);
+
+  /// spec 075: itineraryQuantityMaxBreakdown
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum {max} ({pending} pend. + {loaded} loaded)'**
+  String itineraryQuantityMaxBreakdown(
+    String max,
+    String pending,
+    String loaded,
+  );
+
+  /// spec 075: itineraryQuantityInvalid
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity above 0 and no more than the maximum.'**
+  String get itineraryQuantityInvalid;
+
+  /// spec 075: itineraryAdjustTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Loaded quantity · {code}'**
+  String itineraryAdjustTitle(String code);
+
+  /// spec 075: itineraryLoadAllTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Load all of order {id}?'**
+  String itineraryLoadAllTitle(int id);
+
+  /// spec 075: itineraryLoadAllBody
+  ///
+  /// In en, this message translates to:
+  /// **'What is left to deliver of each line is loaded.'**
+  String get itineraryLoadAllBody;
+
+  /// spec 075: itineraryLoadAllConfirm
+  ///
+  /// In en, this message translates to:
+  /// **'Load all'**
+  String get itineraryLoadAllConfirm;
+
+  /// spec 075: itineraryReleaseTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Release {code}?'**
+  String itineraryReleaseTitle(String code);
+
+  /// spec 075: itineraryReleaseBody
+  ///
+  /// In en, this message translates to:
+  /// **'The loaded quantity is pending again on the order.'**
+  String get itineraryReleaseBody;
+
+  /// spec 075: itineraryReleaseConfirm
+  ///
+  /// In en, this message translates to:
+  /// **'Release'**
+  String get itineraryReleaseConfirm;
+
+  /// spec 075: itineraryRemoveStopTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Remove stop {n}?'**
+  String itineraryRemoveStopTitle(int n);
+
+  /// spec 075: itineraryRemoveStopBody
+  ///
+  /// In en, this message translates to:
+  /// **'What is loaded on this stop is released; the order is pending again.'**
+  String get itineraryRemoveStopBody;
+
+  /// spec 075: itineraryRemoveStopConfirm
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get itineraryRemoveStopConfirm;
+
+  /// spec 075: itineraryCancelTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel itinerary {id}?'**
+  String itineraryCancelTitle(int id);
+
+  /// spec 075: itineraryCancelBody
+  ///
+  /// In en, this message translates to:
+  /// **'Everything loaded is released and the orders stay in preparation. This can\'t be undone.'**
+  String get itineraryCancelBody;
+
+  /// spec 075: itineraryCancelConfirm
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel itinerary'**
+  String get itineraryCancelConfirm;
+
+  /// spec 075: itineraryCancelDismiss
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
+  String get itineraryCancelDismiss;
+
+  /// spec 075: itineraryDepartTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Depart itinerary {id}?'**
+  String itineraryDepartTitle(int id);
+
+  /// spec 075: itineraryDepartVehicleOperator
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle {vehicle} · Operator {operator}'**
+  String itineraryDepartVehicleOperator(String vehicle, String operator);
+
+  /// spec 075: itineraryDepartCounts
+  ///
+  /// In en, this message translates to:
+  /// **'{stops, plural, one{1 stop} other{{stops} stops}} · {lines, plural, one{1 line} other{{lines} lines}}'**
+  String itineraryDepartCounts(int stops, int lines);
+
+  /// spec 075: itineraryDepartWarning
+  ///
+  /// In en, this message translates to:
+  /// **'Once it departs, what is loaded can\'t be changed.'**
+  String get itineraryDepartWarning;
+
+  /// spec 075: itineraryDepartConfirm
+  ///
+  /// In en, this message translates to:
+  /// **'Depart'**
+  String get itineraryDepartConfirm;
+
+  /// spec 075: itineraryCloseTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Close stop {n}'**
+  String itineraryCloseTitle(int n);
+
+  /// spec 075: itineraryCloseSubtitle
+  ///
+  /// In en, this message translates to:
+  /// **'{title} · Order {order} · {customer}'**
+  String itineraryCloseSubtitle(String title, String order, String customer);
+
+  /// spec 075: itineraryCloseReceiverSection
+  ///
+  /// In en, this message translates to:
+  /// **'Who received'**
+  String get itineraryCloseReceiverSection;
+
+  /// spec 075: itineraryCloseReceiverName
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get itineraryCloseReceiverName;
+
+  /// spec 075: itineraryCloseReceiverId
+  ///
+  /// In en, this message translates to:
+  /// **'Identification'**
+  String get itineraryCloseReceiverId;
+
+  /// spec 075: itineraryCloseLinesSection
+  ///
+  /// In en, this message translates to:
+  /// **'What they received'**
+  String get itineraryCloseLinesSection;
+
+  /// spec 075: itineraryCloseAllDelivered
+  ///
+  /// In en, this message translates to:
+  /// **'All delivered'**
+  String get itineraryCloseAllDelivered;
+
+  /// spec 075: itineraryCloseNothingDelivered
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing delivered'**
+  String get itineraryCloseNothingDelivered;
+
+  /// spec 075: itineraryCloseSentLabel
+  ///
+  /// In en, this message translates to:
+  /// **'Sent {qty}'**
+  String itineraryCloseSentLabel(String qty);
+
+  /// spec 075: itineraryCloseDeliveredField
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get itineraryCloseDeliveredField;
+
+  /// spec 075: itineraryCloseReasonField
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get itineraryCloseReasonField;
+
+  /// spec 075: itineraryCloseProofSection
+  ///
+  /// In en, this message translates to:
+  /// **'Proof of delivery'**
+  String get itineraryCloseProofSection;
+
+  /// spec 075: itineraryCloseProofImage
+  ///
+  /// In en, this message translates to:
+  /// **'Image'**
+  String get itineraryCloseProofImage;
+
+  /// spec 075: itineraryCloseProofSignature
+  ///
+  /// In en, this message translates to:
+  /// **'Signature'**
+  String get itineraryCloseProofSignature;
+
+  /// spec 075: itineraryCloseChooseImage
+  ///
+  /// In en, this message translates to:
+  /// **'Choose image'**
+  String get itineraryCloseChooseImage;
+
+  /// spec 075: itineraryCloseRemoveImage
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get itineraryCloseRemoveImage;
+
+  /// spec 075: itineraryCloseClearSignature
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get itineraryCloseClearSignature;
+
+  /// spec 075: itineraryCloseSignatureHint
+  ///
+  /// In en, this message translates to:
+  /// **'Sign here'**
+  String get itineraryCloseSignatureHint;
+
+  /// spec 075: itineraryCloseSignatureTooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Signature area'**
+  String get itineraryCloseSignatureTooltip;
+
+  /// spec 075: itineraryCloseImageTooLarge
+  ///
+  /// In en, this message translates to:
+  /// **'The image is over 2 MB.'**
+  String get itineraryCloseImageTooLarge;
+
+  /// spec 075: itineraryCloseImageFormat
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a jpg or png image.'**
+  String get itineraryCloseImageFormat;
+
+  /// spec 075: itineraryCloseMissingTitle
+  ///
+  /// In en, this message translates to:
+  /// **'Missing:'**
+  String get itineraryCloseMissingTitle;
+
+  /// spec 075: itineraryCloseMissingReceiver
+  ///
+  /// In en, this message translates to:
+  /// **'the receiver\'s name'**
+  String get itineraryCloseMissingReceiver;
+
+  /// spec 075: itineraryCloseMissingId
+  ///
+  /// In en, this message translates to:
+  /// **'the identification'**
+  String get itineraryCloseMissingId;
+
+  /// spec 075: itineraryCloseMissingProof
+  ///
+  /// In en, this message translates to:
+  /// **'the proof of delivery'**
+  String get itineraryCloseMissingProof;
+
+  /// spec 075: itineraryCloseMissingReason
+  ///
+  /// In en, this message translates to:
+  /// **'the reason for {product}'**
+  String itineraryCloseMissingReason(String product);
+
+  /// spec 075: itineraryCloseConfirm
+  ///
+  /// In en, this message translates to:
+  /// **'Close stop'**
+  String get itineraryCloseConfirm;
+
+  /// spec 075: preview title of the trip ticket
+  ///
+  /// In en, this message translates to:
+  /// **'Itinerary ticket · {id}'**
+  String documentItineraryTicketTitle(String id);
+
+  /// spec 075: preview title of the trip delivery notes
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery notes · itinerary {id}'**
+  String documentItineraryNotesTitle(String id);
 }
 
 class _AppLocalizationsDelegate

@@ -4906,14 +4906,14 @@ class AppLocalizationsEs extends AppLocalizations {
     String _temp0 = intl.Intl.pluralLogic(
       count,
       locale: localeName,
-      other: 'rutas de entrega',
-      one: 'ruta de entrega',
+      other: 'itinerarios',
+      one: 'itinerario',
     );
     return '$_temp0';
   }
 
   @override
-  String get apiResourceGenderDeliveryItinerary => 'feminine';
+  String get apiResourceGenderDeliveryItinerary => 'masculine';
 
   @override
   String apiResourceDeliveryOrder(int count) {
@@ -9737,4 +9737,617 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get fiscalDocumentHeaderOrderingBankTooLong =>
       'El banco ordenante puede tener hasta 25 caracteres.';
+
+  @override
+  String get apiErrorItineraryNotOpen =>
+      'El itinerario ya no está abierto; no se puede modificar.';
+
+  @override
+  String get apiErrorItineraryNotDeparted => 'El itinerario aún no ha salido.';
+
+  @override
+  String get apiErrorItineraryCancelled => 'El itinerario está cancelado.';
+
+  @override
+  String get apiErrorItineraryNothingCommitted =>
+      'No hay nada cargado en este itinerario.';
+
+  @override
+  String get apiErrorItineraryLinesOvercommitted =>
+      'Estas partidas tienen cargado más de lo que queda por entregar';
+
+  @override
+  String get apiErrorItineraryStopAlreadyResolved => 'Esta parada ya se cerró.';
+
+  @override
+  String get apiErrorItineraryStopLinesIncomplete =>
+      'Falta el resultado de alguna partida de la parada.';
+
+  @override
+  String get apiErrorItineraryStopLinesMalformed =>
+      'El resultado de las partidas no es válido.';
+
+  @override
+  String apiErrorItineraryStopDeliveredExceedsSent(
+    String line,
+    String sent,
+    String delivered,
+  ) {
+    return 'Partida $line: se enviaron $sent y se registran $delivered entregados.';
+  }
+
+  @override
+  String apiErrorItineraryStopShortfallNeedsReason(String line) {
+    return 'Partida $line: indica el motivo de lo no entregado.';
+  }
+
+  @override
+  String apiErrorVehicleOpenItineraryExists(String itinerary) {
+    return 'Este vehículo ya tiene abierto el itinerario $itinerary.';
+  }
+
+  @override
+  String get apiErrorDeliveryOrderNotInPreparation =>
+      'La orden de entrega ya no está en preparación; solo se cargan órdenes en preparación.';
+
+  @override
+  String get apiErrorDeliveryOrderPickupNotLoadable =>
+      'Una orden para recoger en tienda no se carga en un itinerario.';
+
+  @override
+  String get apiErrorDeliveryOrderLineNothingToLoad =>
+      'Esta partida ya no tiene nada por cargar.';
+
+  @override
+  String apiErrorDeliveryOrderLineQuantityUnavailable(
+    String requested,
+    String available,
+  ) {
+    return 'Pediste cargar $requested, pero solo hay $available disponibles.';
+  }
+
+  @override
+  String apiResourceDeliveryItineraryStop(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'paradas',
+      one: 'parada',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderDeliveryItineraryStop => 'feminine';
+
+  @override
+  String apiResourceDeliveryItineraryLine(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'partidas del itinerario',
+      one: 'partida del itinerario',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderDeliveryItineraryLine => 'feminine';
+
+  @override
+  String get navDeliveryItineraries => 'Itinerarios';
+
+  @override
+  String itineraryTitle(int id) {
+    return 'Itinerario $id';
+  }
+
+  @override
+  String get itinerariesEmpty => 'Aún no hay itinerarios.';
+
+  @override
+  String get itineraryNotFoundBack => 'Volver a Itinerarios';
+
+  @override
+  String get itineraryActionUnknown =>
+      'No sabemos si se completó: se perdió la conexión. El itinerario se actualizó.';
+
+  @override
+  String get itineraryColumnNumber => 'Núm.';
+
+  @override
+  String get itineraryColumnDate => 'Fecha';
+
+  @override
+  String get itineraryColumnVehicle => 'Vehículo';
+
+  @override
+  String get itineraryColumnOperator => 'Operador';
+
+  @override
+  String get itineraryColumnWarehouse => 'Almacén';
+
+  @override
+  String get itineraryColumnStatus => 'Estado';
+
+  @override
+  String get itineraryColumnDeparture => 'Salida';
+
+  @override
+  String get itineraryColumnReturn => 'Regreso';
+
+  @override
+  String itineraryDeparted(String time) {
+    return 'Salida $time';
+  }
+
+  @override
+  String itineraryReturned(String time) {
+    return 'Regreso $time';
+  }
+
+  @override
+  String get itineraryStatusOpen => 'Abierto';
+
+  @override
+  String get itineraryStatusDeparted => 'En ruta';
+
+  @override
+  String get itineraryStatusClosed => 'Cerrado';
+
+  @override
+  String get itineraryStatusCancelled => 'Cancelado';
+
+  @override
+  String get itineraryStopOutcomePending => 'Pendiente';
+
+  @override
+  String get itineraryStopOutcomeDelivered => 'Entregada';
+
+  @override
+  String get itineraryStopOutcomePartiallyDelivered => 'Entregada parcialmente';
+
+  @override
+  String get itineraryStopOutcomeFailed => 'Fallida';
+
+  @override
+  String get itineraryReasonCustomerRefused => 'Cliente rechazó';
+
+  @override
+  String get itineraryReasonNobodyPresent => 'No había nadie';
+
+  @override
+  String get itineraryReasonWrongAddress => 'Dirección incorrecta';
+
+  @override
+  String get itineraryReasonDamagedGoods => 'Mercancía dañada';
+
+  @override
+  String get itineraryReasonOther => 'Otro';
+
+  @override
+  String get itineraryFilterStatus => 'Estado';
+
+  @override
+  String get itineraryFilterStatusAll => 'Todos';
+
+  @override
+  String get itineraryFilterDate => 'Fecha';
+
+  @override
+  String get itineraryFilterVehicle => 'Vehículo';
+
+  @override
+  String get itineraryFilterOperator => 'Operador';
+
+  @override
+  String get itineraryFilterWarehouse => 'Almacén de salida';
+
+  @override
+  String get itineraryFilterAny => 'Cualquiera';
+
+  @override
+  String get itineraryHeaderComment => 'Comentario';
+
+  @override
+  String get itineraryEditHeader => 'Editar encabezado';
+
+  @override
+  String get itineraryNoOperator => 'Sin operador';
+
+  @override
+  String get itineraryNoneAssigned => '—';
+
+  @override
+  String itineraryLicenseExpired(String operator, String date) {
+    return 'La licencia de $operator venció el $date.';
+  }
+
+  @override
+  String get itineraryActionNew => 'Nuevo itinerario';
+
+  @override
+  String get itineraryActionAddStop => 'Agregar parada';
+
+  @override
+  String get itineraryActionCancel => 'Cancelar itinerario';
+
+  @override
+  String get itineraryActionDepart => 'Dar salida';
+
+  @override
+  String get itineraryActionLoadAll => 'Cargar todo';
+
+  @override
+  String get itineraryActionLoadLine => 'Cargar línea';
+
+  @override
+  String get itineraryActionRemoveStop => 'Quitar parada';
+
+  @override
+  String get itineraryActionCloseStop => 'Cerrar parada';
+
+  @override
+  String get itineraryActionPrintTicket => 'Imprimir ticket';
+
+  @override
+  String get itineraryActionPrintNotes => 'Imprimir notas de entrega';
+
+  @override
+  String get itineraryDepartGuardNothing => 'Nada cargado todavía.';
+
+  @override
+  String itineraryDepartGuardEmptyStop(int n) {
+    return 'La parada $n no tiene nada cargado.';
+  }
+
+  @override
+  String get itineraryCancelledNote =>
+      'Este itinerario se canceló antes de salir. Lo cargado volvió a estar pendiente.';
+
+  @override
+  String itineraryStopTitle(int n) {
+    return 'Parada $n';
+  }
+
+  @override
+  String itineraryStopOrder(int id) {
+    return 'Orden $id';
+  }
+
+  @override
+  String itineraryStopOrders(String ids) {
+    return 'Órdenes $ids';
+  }
+
+  @override
+  String get itineraryStopEmpty => 'Nada cargado todavía.';
+
+  @override
+  String itineraryStopClosedAt(String time) {
+    return 'cerrada $time';
+  }
+
+  @override
+  String get itineraryStopMenuTooltip => 'Acciones de la parada';
+
+  @override
+  String get itineraryStopOrderLinkTooltip => 'Abrir la orden de entrega';
+
+  @override
+  String get itineraryLineCode => 'Código';
+
+  @override
+  String get itineraryLineProduct => 'Producto';
+
+  @override
+  String get itineraryLineUnit => 'Unidad';
+
+  @override
+  String get itineraryLinePending => 'Pendiente';
+
+  @override
+  String get itineraryLineLoaded => 'Cargado';
+
+  @override
+  String get itineraryLineSent => 'Enviado';
+
+  @override
+  String get itineraryLineDelivered => 'Entregado';
+
+  @override
+  String get itineraryLineReturned => 'Devuelto';
+
+  @override
+  String get itineraryLineReason => 'Motivo';
+
+  @override
+  String get itineraryLineEditTooltip => 'Cambiar la cantidad cargada';
+
+  @override
+  String get itineraryLineReleaseTooltip => 'Liberar la partida';
+
+  @override
+  String get itineraryNewTitle => 'Nuevo itinerario';
+
+  @override
+  String get itineraryFieldDate => 'Fecha';
+
+  @override
+  String get itineraryFieldVehicle => 'Vehículo';
+
+  @override
+  String get itineraryFieldOperator => 'Operador';
+
+  @override
+  String get itineraryFieldWarehouse => 'Almacén de salida';
+
+  @override
+  String get itineraryWarehouseHint =>
+      'Vacío usa el almacén de tu punto de venta.';
+
+  @override
+  String get itineraryFieldComment => 'Comentario';
+
+  @override
+  String get itineraryCreateButton => 'Crear';
+
+  @override
+  String itineraryHeaderTitle(int id) {
+    return 'Editar encabezado · Itinerario $id';
+  }
+
+  @override
+  String get itineraryAddStopTitle => 'Agregar parada';
+
+  @override
+  String get itineraryAddStopSearch => 'Folio';
+
+  @override
+  String get itineraryAddStopEmpty => 'No hay órdenes en preparación.';
+
+  @override
+  String get itineraryAddStopColumnFolio => 'Folio';
+
+  @override
+  String get itineraryAddStopColumnCustomer => 'Cliente';
+
+  @override
+  String get itineraryAddStopColumnAddress => 'Dirección';
+
+  @override
+  String get itineraryAddStopColumnDate => 'Fecha';
+
+  @override
+  String get itineraryAddStopConfirm => 'Agregar';
+
+  @override
+  String get itineraryPickOrderTitle => 'Elegir la orden de la parada';
+
+  @override
+  String itineraryLoadLineTitle(int id) {
+    return 'Cargar línea · Orden $id';
+  }
+
+  @override
+  String get itineraryLoadLineEmpty =>
+      'Esta orden no tiene partidas por cargar.';
+
+  @override
+  String itineraryLoadLinePending(String qty) {
+    return '$qty pend.';
+  }
+
+  @override
+  String get itineraryLoadLineConfirm => 'Cargar';
+
+  @override
+  String get itineraryQuantityLabel => 'Cantidad';
+
+  @override
+  String itineraryQuantityMax(String max) {
+    return 'Máximo $max';
+  }
+
+  @override
+  String itineraryQuantityMaxBreakdown(
+    String max,
+    String pending,
+    String loaded,
+  ) {
+    return 'Máximo $max ($pending pend. + $loaded carg.)';
+  }
+
+  @override
+  String get itineraryQuantityInvalid =>
+      'Escribe una cantidad mayor que 0 y no más que el máximo.';
+
+  @override
+  String itineraryAdjustTitle(String code) {
+    return 'Cantidad cargada · $code';
+  }
+
+  @override
+  String itineraryLoadAllTitle(int id) {
+    return '¿Cargar toda la orden $id?';
+  }
+
+  @override
+  String get itineraryLoadAllBody =>
+      'Se carga lo que aún queda por entregar de cada partida.';
+
+  @override
+  String get itineraryLoadAllConfirm => 'Cargar todo';
+
+  @override
+  String itineraryReleaseTitle(String code) {
+    return '¿Liberar $code?';
+  }
+
+  @override
+  String get itineraryReleaseBody =>
+      'La cantidad cargada vuelve a quedar pendiente en la orden.';
+
+  @override
+  String get itineraryReleaseConfirm => 'Liberar';
+
+  @override
+  String itineraryRemoveStopTitle(int n) {
+    return '¿Quitar la parada $n?';
+  }
+
+  @override
+  String get itineraryRemoveStopBody =>
+      'Se libera lo cargado en esta parada; la orden queda pendiente.';
+
+  @override
+  String get itineraryRemoveStopConfirm => 'Quitar';
+
+  @override
+  String itineraryCancelTitle(int id) {
+    return '¿Cancelar el itinerario $id?';
+  }
+
+  @override
+  String get itineraryCancelBody =>
+      'Se libera todo lo cargado y las órdenes siguen en preparación. No se puede deshacer.';
+
+  @override
+  String get itineraryCancelConfirm => 'Cancelar itinerario';
+
+  @override
+  String get itineraryCancelDismiss => 'Conservar';
+
+  @override
+  String itineraryDepartTitle(int id) {
+    return '¿Dar salida al itinerario $id?';
+  }
+
+  @override
+  String itineraryDepartVehicleOperator(String vehicle, String operator) {
+    return 'Vehículo $vehicle · Operador $operator';
+  }
+
+  @override
+  String itineraryDepartCounts(int stops, int lines) {
+    String _temp0 = intl.Intl.pluralLogic(
+      stops,
+      locale: localeName,
+      other: '$stops paradas',
+      one: '1 parada',
+    );
+    String _temp1 = intl.Intl.pluralLogic(
+      lines,
+      locale: localeName,
+      other: '$lines partidas',
+      one: '1 partida',
+    );
+    return '$_temp0 · $_temp1';
+  }
+
+  @override
+  String get itineraryDepartWarning =>
+      'Después de la salida no se puede cambiar lo cargado.';
+
+  @override
+  String get itineraryDepartConfirm => 'Dar salida';
+
+  @override
+  String itineraryCloseTitle(int n) {
+    return 'Cerrar parada $n';
+  }
+
+  @override
+  String itineraryCloseSubtitle(String title, String order, String customer) {
+    return '$title · Orden $order · $customer';
+  }
+
+  @override
+  String get itineraryCloseReceiverSection => 'Quién recibió';
+
+  @override
+  String get itineraryCloseReceiverName => 'Nombre';
+
+  @override
+  String get itineraryCloseReceiverId => 'Identificación';
+
+  @override
+  String get itineraryCloseLinesSection => 'Qué recibió';
+
+  @override
+  String get itineraryCloseAllDelivered => 'Todo entregado';
+
+  @override
+  String get itineraryCloseNothingDelivered => 'Nada entregado';
+
+  @override
+  String itineraryCloseSentLabel(String qty) {
+    return 'Enviado $qty';
+  }
+
+  @override
+  String get itineraryCloseDeliveredField => 'Entregado';
+
+  @override
+  String get itineraryCloseReasonField => 'Motivo';
+
+  @override
+  String get itineraryCloseProofSection => 'Prueba de entrega';
+
+  @override
+  String get itineraryCloseProofImage => 'Imagen';
+
+  @override
+  String get itineraryCloseProofSignature => 'Firma';
+
+  @override
+  String get itineraryCloseChooseImage => 'Elegir imagen';
+
+  @override
+  String get itineraryCloseRemoveImage => 'Quitar';
+
+  @override
+  String get itineraryCloseClearSignature => 'Borrar';
+
+  @override
+  String get itineraryCloseSignatureHint => 'Firma aquí';
+
+  @override
+  String get itineraryCloseSignatureTooltip => 'Área de firma';
+
+  @override
+  String get itineraryCloseImageTooLarge => 'La imagen pesa más de 2 MB.';
+
+  @override
+  String get itineraryCloseImageFormat => 'Elige una imagen jpg o png.';
+
+  @override
+  String get itineraryCloseMissingTitle => 'Falta:';
+
+  @override
+  String get itineraryCloseMissingReceiver => 'el nombre de quien recibió';
+
+  @override
+  String get itineraryCloseMissingId => 'la identificación';
+
+  @override
+  String get itineraryCloseMissingProof => 'la prueba de entrega';
+
+  @override
+  String itineraryCloseMissingReason(String product) {
+    return 'el motivo de $product';
+  }
+
+  @override
+  String get itineraryCloseConfirm => 'Cerrar parada';
+
+  @override
+  String documentItineraryTicketTitle(String id) {
+    return 'Ticket del itinerario · $id';
+  }
+
+  @override
+  String documentItineraryNotesTitle(String id) {
+    return 'Notas de entrega · itinerario $id';
+  }
 }

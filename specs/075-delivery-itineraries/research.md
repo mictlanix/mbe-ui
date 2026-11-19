@@ -12,7 +12,7 @@ Phase 0 decisions. Each entry is a decision, why it was chosen, and the alternat
 
 ## R2. A stop's delivery order and its names (mbe-api#343, shipped)
 
-**Decision**: Map them from the server. mbe-api#343 shipped on 2026-11-18 (PR mbe-api#344, migration 036), and the client was regenerated in a8290511. Migration 036 was applied to mbe_dev on 2026-11-18 (reported by the user).
+**Decision**: Map them from the server. mbe-api#343 shipped on 2026-11-18 (PR mbe-api#344, migration 036), and the client was regenerated in a8290511. Migration 036 was applied to mbe_dev on 2026-11-18 (reported by the user). Confirmed 2026-11-18: `GET /openapi.json` on the dev server shows `delivery_order` on stops, `product_name` on lines and `vehicle_name` on rows.
 - **`ItineraryStopResponse`** has these fields:
   - `delivery_order?`: the order the stop was added for. It's null on legacy stops.
   - `delivery_orders`: every order on the stop, from the stored order and the lines.
