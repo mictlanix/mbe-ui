@@ -24,7 +24,7 @@ flutter test
 ```
 
 Expected: everything passes (SC-005). In particular:
-- refreshing a `cancellationPending` document shows the 72-hour notice in es and en (C1, SC-004);
+- refreshing a `cancellationPending` document shows the 72-hour notice in es and en (C1, SC-004), and the notice does not overflow at the largest text level (1.3) or at a compact width (§V);
 - refreshing a `stamping` one still shows "unos minutos" (C1);
 - an issued document with a `failed` request offers "Cancelar" (C2);
 - both RFCs show the simulated badge (C3).

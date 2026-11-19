@@ -46,7 +46,7 @@ mbe-api spec 040 (PR #348, merged at 1713acd) moved the PAC simulator into the C
 |---|---|
 | **Regenerated** | `lib/generated/openapi/**` (via `tool/generate_api_client.sh`) |
 | **Edited source (3)** | `lib/features/invoicing/presentation/fiscal_document_detail_screen.dart` (the notice's text by status); `lib/l10n/app_es.arb`, `lib/l10n/app_en.arb` (one key), plus the generated `app_localizations*.dart` |
-| **Edited tests (4)** | `test/integration/fiscal_documents_live_test.dart` (probe, RFC assertions, header note on ordering); `test/unit/features/invoicing/fiscal_document_fixtures.dart` and `fiscal_document_repository_impl_test.dart` (new RFC); `test/widget/features/invoicing/fiscal_document_detail_screen_test.dart` (72-hour notice in es/en, failed-after-72h state, both RFCs show the badge) |
+| **Edited tests (4)** | `test/integration/fiscal_documents_live_test.dart` (probe, RFC assertions, header note on ordering); `test/unit/features/invoicing/fiscal_document_fixtures.dart` and `fiscal_document_repository_impl_test.dart` (new RFC); `test/widget/features/invoicing/fiscal_document_detail_screen_test.dart` (72-hour notice in es/en and at the largest text level, failed-after-72h state, both RFCs show the badge) |
 
 ## Constitution Check
 
@@ -60,7 +60,7 @@ These verdicts are against **v1.15.0**.
 | **II. Riverpod** | Pass | No new state. The notice still uses the screen's local `_stillInProcess` flag and reads the document's status. |
 | **III. Contract-driven API** | Pass | **Codegen**: re-run because the contract changed (R2). **Error text**: no new reachable codes. The simulator's refusals are test-only, and the probe keys on `request.route_not_found` by code, never by prose (R4, R7). **Upstream**: nothing to file. The "not received by SAT" variant of `failed` is noted in the spec's assumptions as a possible request, not a dependency. |
 | **IV. Deny-by-default RBAC** | Pass | No change. The notice appears only after a refresh, which already requires 23 update. |
-| **V. Material 3 / design system** | Pass | The same `FiscalDocumentNotice`, only with a different string. The longer Spanish sentence wraps inside the notice. It is checked at the largest text level in the widget test (quickstart §2). |
+| **V. Material 3 / design system** | Pass | The same `FiscalDocumentNotice`, only with a different string. The longer Spanish sentence wraps inside the notice. It is checked at the largest text level (1.3) and at a compact width in the widget test (tasks T011, quickstart §2). |
 | **VI. List and record-surface rules** | Pass | No list, surface, control band or action changes. |
 | **VII. Online-only, server-rendered documents** | Pass | The PDF and its simulated banner stay the server's. |
 | **Quality gates** | Pass | Unit, widget and live checks are in quickstart §2 to §4. `flutter analyze` must be clean. |
