@@ -1,0 +1,143 @@
+{
+  "workflow": "companion",
+  "specName": "Casa Maestra Branding",
+  "branch": "077-casa-maestra-branding",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-20T14:38:04.350Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T14:40:07.600Z"
+    },
+    {
+      "step": "clarify",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T14:45:48.701Z"
+    }
+  ],
+  "telemetryInstanceId": "7b23ad11-955e-49d2-a4a8-4f4062ebf54c",
+  "expectations": [
+    "Compact-tier card list for data tables",
+    "printed-document use of the reversed lockup before brand-owner confirmation",
+    "spacing, shape, elevation, density or breakpoint overrides per brand",
+    "mbe-roadmap issue link"
+  ],
+  "context": [
+    "area: lib/core/branding (BrandConfig, XbePalette, BrandInk)",
+    "area: lib/app/theme/app_theme.dart (hardcoded Archivo text theme)",
+    "area: lib/core/widgets/status_chip.dart + 8 per-feature status chips",
+    "area: lib/core/navigation/nav_destinations.dart (groups: catalogs, sales, logistics, inventory, invoicing)",
+    "area: deploy/brands + tool/release (spec 045)",
+    "constraint: constitution §V, brands override color, typography, logos only",
+    "constraint: default XBE brand unchanged except shared chrome",
+    "source: Casa Maestra design system artifact XqxMRRyKYvf5auFTjWZ24t"
+  ],
+  "coverage": {
+    "FR-001": {
+      "title": "Brand selected by build-time brand ID, default XBE"
+    },
+    "FR-002": {
+      "title": "Each brand defines exact colors, fonts, logos in code"
+    },
+    "FR-003": {
+      "title": "Unknown brand ID falls back to default"
+    },
+    "FR-004": {
+      "title": "Default brand look unchanged except shared chrome"
+    },
+    "FR-005": {
+      "title": "Brands override only color, typography, logos"
+    },
+    "FR-006": {
+      "title": "Casa Maestra exact color roles in both themes"
+    },
+    "FR-007": {
+      "title": "Bitter/Roboto/Roboto Mono bundled for Casa Maestra"
+    },
+    "FR-008": {
+      "title": "Casa Maestra type style metrics"
+    },
+    "FR-009": {
+      "title": "Lockup, reversed lockup and mark placement"
+    },
+    "FR-010": {
+      "title": "Logo files are the design system originals"
+    },
+    "FR-011": {
+      "title": "Brand red never fills interactive controls"
+    },
+    "FR-012": {
+      "title": "Nav header mark vs mark+name by tier"
+    },
+    "FR-013": {
+      "title": "Accent, success, warning roles for every brand"
+    },
+    "FR-014": {
+      "title": "Every status chip has icon, word and tone"
+    },
+    "FR-015": {
+      "title": "Only promo uses accent container; error distinct from accent"
+    },
+    "FR-016": {
+      "title": "Error messages carry an icon"
+    },
+    "FR-017": {
+      "title": "3px accent rule under every app bar"
+    },
+    "FR-018": {
+      "title": "Navigation grouped into Operación, Inventario, Finanzas, Sistema"
+    },
+    "FR-019": {
+      "title": "IDs, folios, RFC, SKU, timestamps use mono styles"
+    },
+    "FR-020": {
+      "title": "Role pairs meet contrast thresholds"
+    },
+    "FR-021": {
+      "title": "Release scripts accept Casa Maestra brand"
+    },
+    "FR-022": {
+      "title": "Icons, splash, favicons made from the mark"
+    },
+    "FR-023": {
+      "title": "Casa Maestra release sets the brand ID"
+    },
+    "FR-024": {
+      "title": "mbe brand release output unchanged"
+    }
+  },
+  "intent": "Ship Casa Maestra as a branded deployment (palette, fonts, logos, packaging) plus shared chrome: accent rule, status tones, four nav sections",
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 45,
+    "projectedTasks": 40,
+    "scopeSignal": "none",
+    "verdict": "oversized"
+  },
+  "decisions": [
+    {
+      "decision": "Brand ID is xbe-cm (not casamaestra), for both the BRAND_ID build setting and the deploy/brands release brand"
+    },
+    {
+      "decision": "Nav split by use: customers→Operación; products, price lists, suppliers, labels→Inventario; taxpayers, exchange rates, payment methods, expenses→Finanzas; users, profiles, employees, facilities→Sistema"
+    },
+    {
+      "decision": "iOS bundle ID and Android application ID: com.mictlanix.xbe.cm"
+    },
+    {
+      "decision": "Brand ID changed from xbe-cm to xbe.cm (build setting and deploy/brands release brand name); supersedes the earlier xbe-cm decision"
+    }
+  ]
+}
