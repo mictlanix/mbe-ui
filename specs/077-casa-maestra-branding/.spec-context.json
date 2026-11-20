@@ -457,6 +457,94 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-20T15:33:53.366Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:22.869Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:22.962Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.069Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.163Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.253Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.344Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.437Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.526Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.618Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.710Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.802Z"
     }
   ],
   "telemetryInstanceId": "7b23ad11-955e-49d2-a4a8-4f4062ebf54c",
@@ -587,7 +675,7 @@
       "decision": "FR-012 nav header tier rule applies to every brand"
     }
   ],
-  "currentTask": "T039",
+  "currentTask": "T050",
   "task_summaries": {
     "T001,T002,T003,T004": {
       "status": "DONE",
@@ -944,6 +1032,85 @@
       "files": [
         "test/golden",
         "lib/core/widgets/status_chip.dart"
+      ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "AppBarTheme 3px accent rule + test across brands and themes",
+      "files": [
+        "lib/core/design/component_themes.dart",
+        "test/widget/core/design/app_bar_rule_test.dart"
+      ]
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "Removed the three local 1px app-bar borders so the theme rule shows",
+      "files": [
+        "lib/features/sales/presentation"
+      ]
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "Compact ResponsiveDialog header draws the accent rule; test",
+      "files": [
+        "lib/core/widgets/responsive_dialog.dart"
+      ]
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "navOperationGroup/navFinanceGroup/navSystemGroup in en and es; l10n regenerated",
+      "files": [
+        "lib/l10n"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "kNavigationTree regrouped into operation/inventory/finance/system; comments updated",
+      "files": [
+        "lib/core/navigation/nav_destinations.dart"
+      ]
+    },
+    "T045": {
+      "status": "DONE",
+      "did": "nav_destinations_test restated for the four sections, plus an all-destinations-once test",
+      "files": [
+        "test/unit/core/navigation/nav_destinations_test.dart"
+      ]
+    },
+    "T046": {
+      "status": "DONE",
+      "did": "app_navigation_test updated; app_router_test passes unchanged",
+      "files": [
+        "test/widget/core/widgets/app_navigation_test.dart"
+      ]
+    },
+    "T047": {
+      "status": "DONE",
+      "did": "Integration test nav group assertions updated (not run: need a live server)",
+      "files": [
+        "integration_test"
+      ]
+    },
+    "T048": {
+      "status": "DONE",
+      "did": "Removed four unused group keys from both arb files",
+      "files": [
+        "lib/l10n"
+      ]
+    },
+    "T049": {
+      "status": "DONE",
+      "did": "BrandNavHeader mark-only below 840px for every brand; shell tests for Medium, boundary, Expanded, Large, drawer",
+      "files": [
+        "lib/core/widgets/brand_nav_header.dart",
+        "test/widget/core/widgets/app_shell_test.dart"
+      ]
+    },
+    "T050": {
+      "status": "DONE",
+      "did": "Goldens regenerated: brand_nav_header, responsive_dialog narrow; new Casa Maestra and XBE app bar goldens",
+      "files": [
+        "test/golden"
       ]
     }
   }

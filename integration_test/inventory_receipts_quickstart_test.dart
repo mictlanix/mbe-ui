@@ -411,14 +411,12 @@ void main() {
           findsOneWidget,
         );
         double top(String key) => tester.getTopLeft(byKey(key)).dy;
+        // Sections run Operación, Inventario, Finanzas, Sistema (spec 077).
         expect(
-          top('nav_group_logistics'),
+          top('nav_group_operation'),
           lessThan(top('nav_group_inventory')),
         );
-        expect(
-          top('nav_group_inventory'),
-          lessThan(top('nav_group_invoicing')),
-        );
+        expect(top('nav_group_inventory'), lessThan(top('nav_group_finance')));
         await tapFinder(entry);
         await pumpUntilTrue(() => location() == _list, 'the list route');
         await waitForList();
@@ -843,10 +841,12 @@ void main() {
       await container().read(authProvider.notifier).signOut();
       await login(_noAccessUser, _noAccessPass);
       await step(
-        '1b qanoaccess: no Inventario group, the route redirects',
+        '1b qanoaccess: no warehouse receipts entry, the route redirects',
         () async {
           expect(byKey('nav_dest_inventory-receipts'), findsNothing);
-          expect(byKey('nav_group_inventory'), findsNothing);
+          // The Inventario section can still show for a user who reads
+          // products or labels (spec 077), so the destination above is the
+          // claim, not the section header.
           await go(_list);
           expect(location(), '/');
           expect(byKey('inventory_receipts_table'), findsNothing);

@@ -287,11 +287,6 @@ class _QuoteScreenBodyState extends ConsumerState<_QuoteScreenBody> {
 
     return Scaffold(
       appBar: AppBar(
-        shape: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).colorScheme.outlineVariant,
-          ),
-        ),
         leading: IconButton(
           key: const Key('sales_quote_screen_back'),
           icon: const Icon(Icons.arrow_back),

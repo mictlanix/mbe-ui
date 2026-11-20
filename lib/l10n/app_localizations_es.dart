@@ -97,15 +97,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get homeNewSaleButton => 'Nueva venta';
 
   @override
-  String get catalogsGroupTitle => 'Catálogos';
-
-  @override
-  String get salesGroupTitle => 'Ventas';
-
-  @override
-  String get logisticsGroupTitle => 'Logística';
-
-  @override
   String get usersMenuTitle => 'Usuarios';
 
   @override
@@ -7048,9 +7039,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get taxpayerBatchDeleteFailed => 'No se pudo eliminar la serie.';
 
   @override
-  String get navInvoicingGroup => 'Facturación';
-
-  @override
   String get navFiscalDocuments => 'Facturas';
 
   @override
@@ -7734,6 +7722,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get navInventoryGroup => 'Inventario';
+
+  @override
+  String get navOperationGroup => 'Operación';
+
+  @override
+  String get navFinanceGroup => 'Finanzas';
+
+  @override
+  String get navSystemGroup => 'Sistema';
 
   @override
   String get navInventoryReceipts => 'Entradas de almacén';

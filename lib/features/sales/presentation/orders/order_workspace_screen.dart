@@ -238,11 +238,6 @@ class _OrderWorkspaceBodyState extends ConsumerState<_OrderWorkspaceBody> {
 
     return Scaffold(
       appBar: AppBar(
-        shape: Border(
-          bottom: BorderSide(
-            color: Theme.of(context).colorScheme.outlineVariant,
-          ),
-        ),
         leading: IconButton(
           key: const Key('sales_order_workspace_back'),
           icon: const Icon(Icons.arrow_back),

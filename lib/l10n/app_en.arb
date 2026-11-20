@@ -79,14 +79,6 @@
 
   "homeNewSaleButton": "New sale",
   "@homeNewSaleButton": {"description": "XBE default-branding dashboard hero action button"},
-  "catalogsGroupTitle": "Catalogs",
-  "@catalogsGroupTitle": {},
-  "salesGroupTitle": "Sales",
-  "@salesGroupTitle": {},
-  "logisticsGroupTitle": "Logistics",
-  "@logisticsGroupTitle": {
-    "description": "Navigation group for delivery orders, vehicles and vehicle operators."
-  },
   "usersMenuTitle": "Users",
   "@usersMenuTitle": {},
 
@@ -4260,8 +4252,6 @@
   "@taxpayerBatchSaveFailed": {"description": "spec 065: banner headline when saving a series fails"},
   "taxpayerBatchDeleteFailed": "The series couldn't be deleted.",
   "@taxpayerBatchDeleteFailed": {"description": "spec 065: banner headline when deleting a series fails"},
-  "navInvoicingGroup": "Invoicing",
-  "@navInvoicingGroup": {"description": "spec 066: navInvoicingGroup"},
   "navFiscalDocuments": "Invoices",
   "@navFiscalDocuments": {"description": "spec 066: navFiscalDocuments"},
   "fiscalDocumentTitle": "Invoice {folio}",
@@ -4650,6 +4640,12 @@
   "@fiscalDocumentRelationRemoveTooltip": {"description": "spec 066: fiscalDocumentRelationRemoveTooltip"},
   "navInventoryGroup": "Inventory",
   "@navInventoryGroup": {"description": "spec 067: navigation group"},
+  "navOperationGroup": "Operations",
+  "@navOperationGroup": {"description": "spec 077: navigation group"},
+  "navFinanceGroup": "Finance",
+  "@navFinanceGroup": {"description": "spec 077: navigation group"},
+  "navSystemGroup": "System",
+  "@navSystemGroup": {"description": "spec 077: navigation group; the administration screens, not the theme mode"},
   "navInventoryReceipts": "Warehouse receipts",
   "@navInventoryReceipts": {"description": "spec 067: navigation destination"},
   "inventoryReceiptTitle": "Receipt {folio}",

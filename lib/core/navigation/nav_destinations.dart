@@ -40,7 +40,7 @@ class NavBranch {
   // 021-cash-sessions: appended last, not renumbered into the sequence —
   // appending avoids renumbering every constant above it for no functional
   // gain (NavBranch order is already not display order; see `pricing`
-  // above, under Sales, versus `facilities`, under Catalogs).
+  // above, under Operación, versus `facilities`, under Sistema).
   static const int cashSessions = 17;
 
   // 020-point-of-sale: appended last, same rationale as `cashSessions` above.
@@ -83,29 +83,29 @@ class NavBranch {
 
   // 061-delivery-orders: appended last, same rationale as `cashSessions`
   // above — display order comes from position within `kNavigationTree` (this
-  // destination opens the Logística group there).
+  // destination is in Operación there).
   static const int deliveryOrders = 26;
 
   // 062-delivery-order-approval: appended last, same rationale as
   // `cashSessions` above — display order comes from position within
   // `kNavigationTree` (this destination sits right after `deliveryOrders` in
-  // the Logística group there).
+  // Operación there).
   static const int deliveryOrderApproval = 27;
 
   // 063-for-delivery-queue: appended last, same rationale as `cashSessions`
   // above — display order comes from position within `kNavigationTree` (this
-  // destination sits right after `deliveryOrderApproval` in the Logística
-  // group there).
+  // destination sits right after `deliveryOrderApproval` in Operación
+  // there).
   static const int forDelivery = 28;
 
   // 066-invoice-list-editor: appended last, same rationale as `cashSessions`
   // above — display order comes from position within `kNavigationTree` (the
-  // Facturación group is the last one there).
+  // destination is in Finanzas there).
   static const int fiscalDocuments = 29;
 
   // 067-warehouse-receipts: appended last, same rationale as `cashSessions`
   // above — display order comes from position within `kNavigationTree` (the
-  // Inventario group sits between Logística and Facturación there).
+  // destination opens the Inventario group there).
   static const int inventoryReceipts = 30;
 
   // 068-warehouse-issues: appended last, same rationale as `cashSessions`
@@ -135,7 +135,7 @@ class NavBranch {
 
   // 075-delivery-itineraries: appended last, same rationale as `cashSessions`
   // above — display order comes from position within `kNavigationTree` (the
-  // fourth destination of the Logística group there, after `forDelivery`).
+  // destination sits after `forDelivery` in Operación there).
   static const int deliveryItineraries = 36;
 }
 
@@ -150,226 +150,11 @@ const List<NavItem> kNavigationTree = [
     route: '/',
     branchIndex: NavBranch.home,
   ),
+  // Operación (spec 077): the day-to-day selling and delivering work.
   NavGroup(
-    id: 'catalogs',
-    label: _catalogsLabel,
+    id: 'operation',
+    label: _operationLabel,
     children: [
-      NavDestination(
-        id: 'users',
-        label: _usersLabel,
-        icon: Icons.people_outline,
-        selectedIcon: Icons.people,
-        route: '/users',
-        branchIndex: NavBranch.users,
-        gate: PrivilegeGate(SystemObject.users, AccessRight.read),
-      ),
-      NavDestination(
-        id: 'user-profiles',
-        label: _userProfilesLabel,
-        icon: Icons.badge_outlined,
-        selectedIcon: Icons.badge,
-        route: '/user-profiles',
-        branchIndex: NavBranch.userProfiles,
-        gate: AdministratorGate(),
-      ),
-      NavDestination(
-        id: 'products',
-        label: _productsLabel,
-        icon: Icons.inventory_2_outlined,
-        selectedIcon: Icons.inventory_2,
-        route: '/products',
-        branchIndex: NavBranch.products,
-        gate: PrivilegeGate(SystemObject.products, AccessRight.read),
-      ),
-      NavDestination(
-        id: 'price-lists',
-        label: _priceListsLabel,
-        icon: Icons.sell_outlined,
-        selectedIcon: Icons.sell,
-        route: '/price-lists',
-        branchIndex: NavBranch.priceLists,
-        gate: PrivilegeGate(SystemObject.priceLists, AccessRight.read),
-      ),
-      NavDestination(
-        id: 'exchange-rates',
-        label: _exchangeRatesLabel,
-        icon: Icons.currency_exchange_outlined,
-        selectedIcon: Icons.currency_exchange,
-        route: '/exchange-rates',
-        branchIndex: NavBranch.exchangeRates,
-        gate: PrivilegeGate(SystemObject.exchangeRates, AccessRight.read),
-        requiresMultiCurrency: true,
-      ),
-      NavDestination(
-        id: 'suppliers',
-        label: _suppliersLabel,
-        icon: Icons.local_shipping_outlined,
-        selectedIcon: Icons.local_shipping,
-        route: '/suppliers',
-        branchIndex: NavBranch.suppliers,
-        gate: PrivilegeGate(SystemObject.suppliers, AccessRight.read),
-      ),
-      NavDestination(
-        id: 'labels',
-        label: _labelsLabel,
-        icon: Icons.label_outline,
-        selectedIcon: Icons.label,
-        route: '/labels',
-        branchIndex: NavBranch.labels,
-        gate: PrivilegeGate(SystemObject.labels, AccessRight.read),
-      ),
-      NavDestination(
-        id: 'employees',
-        label: _employeesLabel,
-        icon: Icons.badge_outlined,
-        selectedIcon: Icons.badge,
-        route: '/employees',
-        branchIndex: NavBranch.employees,
-        gate: PrivilegeGate(SystemObject.employees, AccessRight.read),
-      ),
-      NavDestination(
-        id: 'customers',
-        label: _customersLabel,
-        icon: Icons.people_alt_outlined,
-        selectedIcon: Icons.people_alt,
-        route: '/customers',
-        branchIndex: NavBranch.customers,
-        gate: PrivilegeGate(SystemObject.customers, AccessRight.read),
-      ),
-      NavDestination(
-        id: 'taxpayer-recipients',
-        label: _taxpayerRecipientsLabel,
-        icon: Icons.receipt_long_outlined,
-        selectedIcon: Icons.receipt_long,
-        route: '/taxpayer-recipients',
-        branchIndex: NavBranch.taxpayerRecipients,
-        gate: PrivilegeGate(SystemObject.taxpayerRecipients, AccessRight.read),
-      ),
-      NavDestination(
-        id: 'expenses',
-        label: _expensesLabel,
-        icon: Icons.payments_outlined,
-        selectedIcon: Icons.payments,
-        route: '/expenses',
-        branchIndex: NavBranch.expenses,
-        gate: PrivilegeGate(SystemObject.expenses, AccessRight.read),
-      ),
-      // Warehouses, Cash Drawers and Points of Sale are no longer
-      // standalone destinations (018-nested-facility-management): each
-      // exists only as a child of a facility, reached by expanding that
-      // facility's card on the Facilities screen below. Their l10n keys
-      // (warehousesMenuTitle/cashDrawersMenuTitle/pointsOfSaleMenuTitle) are
-      // reused as that screen's child-section headers, not orphaned.
-      NavDestination(
-        id: 'facilities',
-        label: _facilitiesLabel,
-        icon: Icons.business_outlined,
-        selectedIcon: Icons.business,
-        route: '/facilities',
-        branchIndex: NavBranch.facilities,
-        gate: PrivilegeGate(SystemObject.facilities, AccessRight.read),
-      ),
-      // spec 015: Payment Method Options is a fiscal catalog under Catálogos;
-      // its Taxpayer Issuers/Certificates counterparts live under Ventas
-      // below (contracts/routes.md).
-      NavDestination(
-        id: 'payment-method-options',
-        label: _paymentMethodOptionsLabel,
-        icon: Icons.payment_outlined,
-        selectedIcon: Icons.payment,
-        route: '/payment-method-options',
-        branchIndex: NavBranch.paymentMethodOptions,
-        gate: PrivilegeGate(
-          SystemObject.paymentMethodOptions,
-          AccessRight.read,
-        ),
-      ),
-    ],
-  ),
-  NavGroup(
-    id: 'sales',
-    label: _salesLabel,
-    children: [
-      NavDestination(
-        id: 'pricing',
-        label: _pricingLabel,
-        icon: Icons.price_change_outlined,
-        selectedIcon: Icons.price_change,
-        route: '/pricing',
-        branchIndex: NavBranch.pricing,
-        gate: PrivilegeGate(SystemObject.pricing, AccessRight.read),
-      ),
-      // Taxpayer Certificates has no destination of its own — it is a child
-      // section of the Taxpayer Issuer detail screen below, not a standalone
-      // catalog (spec 015 research.md §9).
-      NavDestination(
-        id: 'taxpayer-issuers',
-        label: _taxpayerIssuersLabel,
-        icon: Icons.corporate_fare_outlined,
-        selectedIcon: Icons.corporate_fare,
-        route: '/taxpayer-issuers',
-        branchIndex: NavBranch.taxpayerIssuers,
-        gate: PrivilegeGate(SystemObject.taxpayers, AccessRight.read),
-      ),
-      NavDestination(
-        id: 'cash-sessions',
-        label: _cashSessionsLabel,
-        icon: Icons.point_of_sale_outlined,
-        selectedIcon: Icons.point_of_sale,
-        route: '/sales/cash-sessions',
-        branchIndex: NavBranch.cashSessions,
-        gate: PrivilegeGate(SystemObject.pos, AccessRight.read),
-      ),
-      // 054-payments-list-search: next to the cash sessions it relates to.
-      // Gated on `customerPayments`, not `pos` — a payment is permissioned
-      // separately server-side, so an accountant without a register still
-      // reaches it.
-      NavDestination(
-        id: 'payments',
-        label: _paymentsLabel,
-        icon: Icons.payments_outlined,
-        selectedIcon: Icons.payments,
-        route: '/sales/payments',
-        branchIndex: NavBranch.salesPayments,
-        gate: PrivilegeGate(SystemObject.customerPayments, AccessRight.read),
-      ),
-      // 060-payment-verification: gated on `paymentsVerification` (108) read,
-      // matching the server's /customer-payments/unverified — not on
-      // `customerPayments`, since verification is a separate right and a
-      // verifier needs none of the others.
-      NavDestination(
-        id: 'payment-verification',
-        label: _paymentVerificationLabel,
-        icon: Icons.fact_check_outlined,
-        selectedIcon: Icons.fact_check,
-        route: '/sales/payment-verification',
-        branchIndex: NavBranch.paymentVerification,
-        gate: PrivilegeGate(
-          SystemObject.paymentsVerification,
-          AccessRight.read,
-        ),
-      ),
-      // Gated on `creditPayments` (83), matching the server's credit-notes
-      // read; the payment a note opens is gated separately, on
-      // `customerPayments`, when the user taps a row.
-      NavDestination(
-        id: 'credit-notes',
-        label: _creditNotesLabel,
-        icon: Icons.receipt_long_outlined,
-        selectedIcon: Icons.receipt_long,
-        route: '/sales/credit-notes',
-        branchIndex: NavBranch.creditNotes,
-        gate: PrivilegeGate(SystemObject.creditPayments, AccessRight.read),
-      ),
-      NavDestination(
-        id: 'refunds',
-        label: _refundsLabel,
-        icon: Icons.assignment_return_outlined,
-        selectedIcon: Icons.assignment_return,
-        route: '/sales/refunds',
-        branchIndex: NavBranch.customerRefunds,
-        gate: PrivilegeGate(SystemObject.customerRefunds, AccessRight.read),
-      ),
       NavDestination(
         id: 'pos',
         label: _posLabel,
@@ -404,16 +189,34 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.salesQuotes,
         gate: PrivilegeGate(SystemObject.salesQuotes, AccessRight.read),
       ),
-    ],
-  ),
-  // Logística: delivery orders, the trips that carry them (Itinerarios), and
-  // the vehicles and operators that make them. Only nav placement changed;
-  // routes and branch indices are unchanged.
-  NavGroup(
-    id: 'logistics',
-    label: _logisticsLabel,
-    children: [
-      // 061-delivery-orders: first in Logística. Gated on SystemObject 71
+      NavDestination(
+        id: 'pricing',
+        label: _pricingLabel,
+        icon: Icons.price_change_outlined,
+        selectedIcon: Icons.price_change,
+        route: '/pricing',
+        branchIndex: NavBranch.pricing,
+        gate: PrivilegeGate(SystemObject.pricing, AccessRight.read),
+      ),
+      NavDestination(
+        id: 'customers',
+        label: _customersLabel,
+        icon: Icons.people_alt_outlined,
+        selectedIcon: Icons.people_alt,
+        route: '/customers',
+        branchIndex: NavBranch.customers,
+        gate: PrivilegeGate(SystemObject.customers, AccessRight.read),
+      ),
+      NavDestination(
+        id: 'cash-sessions',
+        label: _cashSessionsLabel,
+        icon: Icons.point_of_sale_outlined,
+        selectedIcon: Icons.point_of_sale,
+        route: '/sales/cash-sessions',
+        branchIndex: NavBranch.cashSessions,
+        gate: PrivilegeGate(SystemObject.pos, AccessRight.read),
+      ),
+      // 061-delivery-orders: in Operación, after cash sessions. Gated on SystemObject 71
       // (`deliveryOrders`) read, matching the server's GET /delivery-orders.
       // The route stays under /sales/ (only the nav entry moved).
       NavDestination(
@@ -487,8 +290,7 @@ const List<NavItem> kNavigationTree = [
       ),
     ],
   ),
-  // Inventario (spec 067): warehouse receipts, (spec 068) issues, (spec
-  // 069) transfers and (spec 070) physical counts. Its own group, between Logística and Facturación.
+  // Inventario: warehouse documents and stock, with the catalogs that describe what is stocked.
   NavGroup(
     id: 'inventory',
     label: _inventoryLabel,
@@ -569,14 +371,99 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.inventoryKardex,
         gate: PrivilegeGate(SystemObject.kardex, AccessRight.read),
       ),
+      NavDestination(
+        id: 'products',
+        label: _productsLabel,
+        icon: Icons.inventory_2_outlined,
+        selectedIcon: Icons.inventory_2,
+        route: '/products',
+        branchIndex: NavBranch.products,
+        gate: PrivilegeGate(SystemObject.products, AccessRight.read),
+      ),
+      NavDestination(
+        id: 'price-lists',
+        label: _priceListsLabel,
+        icon: Icons.sell_outlined,
+        selectedIcon: Icons.sell,
+        route: '/price-lists',
+        branchIndex: NavBranch.priceLists,
+        gate: PrivilegeGate(SystemObject.priceLists, AccessRight.read),
+      ),
+      NavDestination(
+        id: 'suppliers',
+        label: _suppliersLabel,
+        icon: Icons.local_shipping_outlined,
+        selectedIcon: Icons.local_shipping,
+        route: '/suppliers',
+        branchIndex: NavBranch.suppliers,
+        gate: PrivilegeGate(SystemObject.suppliers, AccessRight.read),
+      ),
+      NavDestination(
+        id: 'labels',
+        label: _labelsLabel,
+        icon: Icons.label_outline,
+        selectedIcon: Icons.label,
+        route: '/labels',
+        branchIndex: NavBranch.labels,
+        gate: PrivilegeGate(SystemObject.labels, AccessRight.read),
+      ),
     ],
   ),
-  // Facturación (spec 066): fiscal documents. Its own group, last in the tree, since invoices
-  // are not sales documents; credit notes and payment receipts will join.
+  // Finanzas: money in and out, and the fiscal documents.
   NavGroup(
-    id: 'invoicing',
-    label: _invoicingLabel,
+    id: 'finance',
+    label: _financeLabel,
     children: [
+      // 054-payments-list-search: next to the cash sessions it relates to.
+      // Gated on `customerPayments`, not `pos` — a payment is permissioned
+      // separately server-side, so an accountant without a register still
+      // reaches it.
+      NavDestination(
+        id: 'payments',
+        label: _paymentsLabel,
+        icon: Icons.payments_outlined,
+        selectedIcon: Icons.payments,
+        route: '/sales/payments',
+        branchIndex: NavBranch.salesPayments,
+        gate: PrivilegeGate(SystemObject.customerPayments, AccessRight.read),
+      ),
+      // 060-payment-verification: gated on `paymentsVerification` (108) read,
+      // matching the server's /customer-payments/unverified — not on
+      // `customerPayments`, since verification is a separate right and a
+      // verifier needs none of the others.
+      NavDestination(
+        id: 'payment-verification',
+        label: _paymentVerificationLabel,
+        icon: Icons.fact_check_outlined,
+        selectedIcon: Icons.fact_check,
+        route: '/sales/payment-verification',
+        branchIndex: NavBranch.paymentVerification,
+        gate: PrivilegeGate(
+          SystemObject.paymentsVerification,
+          AccessRight.read,
+        ),
+      ),
+      // Gated on `creditPayments` (83), matching the server's credit-notes
+      // read; the payment a note opens is gated separately, on
+      // `customerPayments`, when the user taps a row.
+      NavDestination(
+        id: 'credit-notes',
+        label: _creditNotesLabel,
+        icon: Icons.receipt_long_outlined,
+        selectedIcon: Icons.receipt_long,
+        route: '/sales/credit-notes',
+        branchIndex: NavBranch.creditNotes,
+        gate: PrivilegeGate(SystemObject.creditPayments, AccessRight.read),
+      ),
+      NavDestination(
+        id: 'refunds',
+        label: _refundsLabel,
+        icon: Icons.assignment_return_outlined,
+        selectedIcon: Icons.assignment_return,
+        route: '/sales/refunds',
+        branchIndex: NavBranch.customerRefunds,
+        gate: PrivilegeGate(SystemObject.customerRefunds, AccessRight.read),
+      ),
       // Gated on SystemObject 23 (`fiscalDocuments`) read, matching the
       // server's GET /fiscal-documents. Creating and editing need 23 create
       // and update, checked on the screens.
@@ -589,15 +476,118 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.fiscalDocuments,
         gate: PrivilegeGate(SystemObject.fiscalDocuments, AccessRight.read),
       ),
+      // Taxpayer Certificates has no destination of its own — it is a child
+      // section of the Taxpayer Issuer detail screen below, not a standalone
+      // catalog (spec 015 research.md §9).
+      NavDestination(
+        id: 'taxpayer-issuers',
+        label: _taxpayerIssuersLabel,
+        icon: Icons.corporate_fare_outlined,
+        selectedIcon: Icons.corporate_fare,
+        route: '/taxpayer-issuers',
+        branchIndex: NavBranch.taxpayerIssuers,
+        gate: PrivilegeGate(SystemObject.taxpayers, AccessRight.read),
+      ),
+      NavDestination(
+        id: 'taxpayer-recipients',
+        label: _taxpayerRecipientsLabel,
+        icon: Icons.receipt_long_outlined,
+        selectedIcon: Icons.receipt_long,
+        route: '/taxpayer-recipients',
+        branchIndex: NavBranch.taxpayerRecipients,
+        gate: PrivilegeGate(SystemObject.taxpayerRecipients, AccessRight.read),
+      ),
+      NavDestination(
+        id: 'exchange-rates',
+        label: _exchangeRatesLabel,
+        icon: Icons.currency_exchange_outlined,
+        selectedIcon: Icons.currency_exchange,
+        route: '/exchange-rates',
+        branchIndex: NavBranch.exchangeRates,
+        gate: PrivilegeGate(SystemObject.exchangeRates, AccessRight.read),
+        requiresMultiCurrency: true,
+      ),
+      // spec 015: Payment Method Options is a fiscal catalog, in Finanzas beside
+      // its Taxpayer Issuers/Certificates counterparts (contracts/routes.md).
+      NavDestination(
+        id: 'payment-method-options',
+        label: _paymentMethodOptionsLabel,
+        icon: Icons.payment_outlined,
+        selectedIcon: Icons.payment,
+        route: '/payment-method-options',
+        branchIndex: NavBranch.paymentMethodOptions,
+        gate: PrivilegeGate(
+          SystemObject.paymentMethodOptions,
+          AccessRight.read,
+        ),
+      ),
+      NavDestination(
+        id: 'expenses',
+        label: _expensesLabel,
+        icon: Icons.payments_outlined,
+        selectedIcon: Icons.payments,
+        route: '/expenses',
+        branchIndex: NavBranch.expenses,
+        gate: PrivilegeGate(SystemObject.expenses, AccessRight.read),
+      ),
+    ],
+  ),
+  // Sistema: administration of people and places.
+  NavGroup(
+    id: 'system',
+    label: _systemLabel,
+    children: [
+      NavDestination(
+        id: 'users',
+        label: _usersLabel,
+        icon: Icons.people_outline,
+        selectedIcon: Icons.people,
+        route: '/users',
+        branchIndex: NavBranch.users,
+        gate: PrivilegeGate(SystemObject.users, AccessRight.read),
+      ),
+      NavDestination(
+        id: 'user-profiles',
+        label: _userProfilesLabel,
+        icon: Icons.badge_outlined,
+        selectedIcon: Icons.badge,
+        route: '/user-profiles',
+        branchIndex: NavBranch.userProfiles,
+        gate: AdministratorGate(),
+      ),
+      NavDestination(
+        id: 'employees',
+        label: _employeesLabel,
+        icon: Icons.badge_outlined,
+        selectedIcon: Icons.badge,
+        route: '/employees',
+        branchIndex: NavBranch.employees,
+        gate: PrivilegeGate(SystemObject.employees, AccessRight.read),
+      ),
+      // Warehouses, Cash Drawers and Points of Sale are no longer
+      // standalone destinations (018-nested-facility-management): each
+      // exists only as a child of a facility, reached by expanding that
+      // facility's card on the Facilities screen below. Their l10n keys
+      // (warehousesMenuTitle/cashDrawersMenuTitle/pointsOfSaleMenuTitle) are
+      // reused as that screen's child-section headers, not orphaned.
+      NavDestination(
+        id: 'facilities',
+        label: _facilitiesLabel,
+        icon: Icons.business_outlined,
+        selectedIcon: Icons.business,
+        route: '/facilities',
+        branchIndex: NavBranch.facilities,
+        gate: PrivilegeGate(SystemObject.facilities, AccessRight.read),
+      ),
     ],
   ),
 ];
 
 // Label resolvers kept as top-level tear-offs so [kNavigationTree] stays const.
 String _homeLabel(AppLocalizations l10n) => l10n.homeMenuTitle;
-String _catalogsLabel(AppLocalizations l10n) => l10n.catalogsGroupTitle;
-String _salesLabel(AppLocalizations l10n) => l10n.salesGroupTitle;
-String _logisticsLabel(AppLocalizations l10n) => l10n.logisticsGroupTitle;
+String _operationLabel(AppLocalizations l10n) => l10n.navOperationGroup;
+String _financeLabel(AppLocalizations l10n) => l10n.navFinanceGroup;
+String _systemLabel(AppLocalizations l10n) => l10n.navSystemGroup;
 String _inventoryLabel(AppLocalizations l10n) => l10n.navInventoryGroup;
 String _inventoryReceiptsLabel(AppLocalizations l10n) =>
     l10n.navInventoryReceipts;
@@ -607,7 +597,6 @@ String _inventoryTransfersLabel(AppLocalizations l10n) =>
 String _inventoryCountsLabel(AppLocalizations l10n) => l10n.navInventoryCounts;
 String _inventoryStockLabel(AppLocalizations l10n) => l10n.navInventoryStock;
 String _inventoryKardexLabel(AppLocalizations l10n) => l10n.navInventoryKardex;
-String _invoicingLabel(AppLocalizations l10n) => l10n.navInvoicingGroup;
 String _fiscalDocumentsLabel(AppLocalizations l10n) => l10n.navFiscalDocuments;
 String _usersLabel(AppLocalizations l10n) => l10n.usersMenuTitle;
 String _userProfilesLabel(AppLocalizations l10n) => l10n.userProfilesMenuTitle;

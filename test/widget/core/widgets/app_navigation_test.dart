@@ -36,7 +36,7 @@ const _usersOnlyUser = User(
   privileges: [Privilege(systemObject: SystemObject.users, rawValue: 2)],
 );
 
-/// No catalog privileges — the whole Catalogs group must disappear.
+/// No privileges — every section must disappear.
 const _noCatalogsUser = User(
   userId: 'none',
   email: 'none@example.com',
@@ -57,9 +57,9 @@ const _pricingOnlyUser = User(
   privileges: [Privilege(systemObject: SystemObject.pricing, rawValue: 2)],
 );
 
-/// Only `priceLists` (5) read — Catalogs' Price Lists entry visible, but no
-/// `pricing` privilege means the Sales group must not appear (spec 011,
-/// Pricing→Sales group move).
+/// Only `priceLists` (5) read — the Price Lists entry (Inventario) is visible,
+/// but no `pricing` privilege means Operación must not appear (spec 011; the
+/// sections are spec 077's).
 const _priceListsOnlyUser = User(
   userId: 'price-lists-only',
   email: 'price-lists-only@example.com',
@@ -126,7 +126,9 @@ void main() {
       await pumpNav(tester, user: _bothUser, mode: mode);
 
       expect(find.byKey(const Key('nav_dest_home')), findsOneWidget);
-      expect(find.byKey(const Key('nav_group_catalogs')), findsOneWidget);
+      // Users sit in Sistema, Products in Inventario (spec 077 FR-018).
+      expect(find.byKey(const Key('nav_group_system')), findsOneWidget);
+      expect(find.byKey(const Key('nav_group_inventory')), findsOneWidget);
       expect(find.byKey(const Key('nav_dest_users')), findsOneWidget);
       expect(find.byKey(const Key('nav_dest_products')), findsOneWidget);
     });
@@ -138,60 +140,70 @@ void main() {
 
       expect(find.byKey(const Key('nav_dest_users')), findsOneWidget);
       expect(find.byKey(const Key('nav_dest_products')), findsNothing);
-      // The group header survives because it still has one visible child.
-      expect(find.byKey(const Key('nav_group_catalogs')), findsOneWidget);
+      // Sistema survives because it still has one visible child; Inventario
+      // (Products' section) has none left and goes.
+      expect(find.byKey(const Key('nav_group_system')), findsOneWidget);
+      expect(find.byKey(const Key('nav_group_inventory')), findsNothing);
     });
 
-    testWidgets('[$mode] hides the empty Catalogs group entirely (FR-006)', (
+    testWidgets('[$mode] hides every empty section entirely (FR-006)', (
       tester,
     ) async {
       await pumpNav(tester, user: _noCatalogsUser, mode: mode);
 
       expect(find.byKey(const Key('nav_dest_home')), findsOneWidget);
-      expect(find.byKey(const Key('nav_group_catalogs')), findsNothing);
+      for (final group in ['operation', 'inventory', 'finance', 'system']) {
+        expect(
+          find.byKey(Key('nav_group_$group')),
+          findsNothing,
+          reason: group,
+        );
+      }
       expect(find.byKey(const Key('nav_dest_users')), findsNothing);
       expect(find.byKey(const Key('nav_dest_products')), findsNothing);
     });
 
     testWidgets(
-      '[$mode] pricing without priceLists: the Sales group (Pricing) is '
-      'visible, Price Lists and Exchange Rates (Catalogs) absent (spec 011 '
-      'T047, updated for the Pricing→Sales group move)',
+      '[$mode] pricing without priceLists: Operación (Pricing) is visible, '
+      'Price Lists and Exchange Rates absent (spec 011 T047, sections per '
+      'spec 077)',
       (tester) async {
         await pumpNav(tester, user: _pricingOnlyUser, mode: mode);
 
-        expect(find.byKey(const Key('nav_group_sales')), findsOneWidget);
+        expect(find.byKey(const Key('nav_group_operation')), findsOneWidget);
         expect(find.byKey(const Key('nav_dest_pricing')), findsOneWidget);
         expect(find.byKey(const Key('nav_dest_price-lists')), findsNothing);
         expect(find.byKey(const Key('nav_dest_exchange-rates')), findsNothing);
-        // Catalogs itself survives only if another of its children is
-        // visible; here none are, so it must be dropped too (FR-006).
-        expect(find.byKey(const Key('nav_group_catalogs')), findsNothing);
+        // Inventario (Price Lists) and Finanzas (Exchange Rates) survive only
+        // if another of their children is visible; here none are, so both
+        // must be dropped too (FR-006).
+        expect(find.byKey(const Key('nav_group_inventory')), findsNothing);
+        expect(find.byKey(const Key('nav_group_finance')), findsNothing);
       },
     );
 
-    testWidgets('[$mode] no pricing privileges: neither the Sales group nor '
+    testWidgets('[$mode] no pricing privileges: neither Operación nor '
         'any of the three pricing nav entries appear (spec 011 T047)', (
       tester,
     ) async {
       await pumpNav(tester, user: _noPricingUser, mode: mode);
 
-      expect(find.byKey(const Key('nav_group_sales')), findsNothing);
+      expect(find.byKey(const Key('nav_group_operation')), findsNothing);
       expect(find.byKey(const Key('nav_dest_price-lists')), findsNothing);
       expect(find.byKey(const Key('nav_dest_pricing')), findsNothing);
       expect(find.byKey(const Key('nav_dest_exchange-rates')), findsNothing);
     });
 
     testWidgets(
-      '[$mode] a user with only priceLists (no pricing) sees Catalogs but '
-      'not the Sales group — the two groups are independently visible '
-      '(spec 011, Pricing→Sales group move)',
+      '[$mode] a user with only priceLists (no pricing) sees Inventario but '
+      'not Operación — the two sections are independently visible '
+      '(spec 011, sections per spec 077)',
       (tester) async {
         await pumpNav(tester, user: _priceListsOnlyUser, mode: mode);
 
-        expect(find.byKey(const Key('nav_group_catalogs')), findsOneWidget);
+        expect(find.byKey(const Key('nav_group_inventory')), findsOneWidget);
         expect(find.byKey(const Key('nav_dest_price-lists')), findsOneWidget);
-        expect(find.byKey(const Key('nav_group_sales')), findsNothing);
+        expect(find.byKey(const Key('nav_group_operation')), findsNothing);
         expect(find.byKey(const Key('nav_dest_pricing')), findsNothing);
       },
     );
@@ -234,7 +246,12 @@ void main() {
     (tester) async {
       // The rail no longer carries the brand header itself (it's fixed in
       // AppShell's app bar instead — see app_shell_test.dart); the drawer
-      // still renders it via BrandNavHeader, so that's exercised here.
+      // still renders it via BrandNavHeader, so that's exercised here. The
+      // name shows from 840px up (spec 077 FR-012), so pump a wide view.
+      tester.view.physicalSize = const Size(1000, 800);
+      tester.view.devicePixelRatio = 1;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
       await pumpNav(
         tester,
         user: _bothUser,
@@ -249,4 +266,23 @@ void main() {
       expect(find.text('Mictlanix Business Essentials'), findsNothing);
     },
   );
+
+  testWidgets('below 840px the header is the mark alone, whatever the brand '
+      '(spec 077 FR-012)', (tester) async {
+    tester.view.physicalSize = const Size(500, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    await pumpNav(
+      tester,
+      user: _bothUser,
+      mode: AppNavigationMode.drawer,
+      brand: const BrandConfig(
+        displayName: 'CASA MAESTRA',
+        usesDefaultPalette: false,
+      ),
+    );
+
+    expect(find.text('CASA MAESTRA'), findsNothing);
+  });
 }

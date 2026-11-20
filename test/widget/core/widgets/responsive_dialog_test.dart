@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mbe_ui/core/branding/semantic_colors.dart';
 import 'package:mbe_ui/core/widgets/responsive_dialog.dart';
 
 import '../../../golden/golden_harness.dart';
@@ -111,6 +112,21 @@ void main() {
       expect(find.byKey(_secondaryKey), findsNothing);
       expect(find.text('Cancel'), findsNothing);
       expect(find.text('Dialog body'), findsOneWidget);
+    });
+
+    testWidgets('draws the 3px accent rule under the header (spec 077 '
+        'FR-017); the wide dialog has none', (tester) async {
+      await _open(tester, width: 500, onPrimary: () {});
+      final rule = find.byKey(const Key('responsive_dialog_header_rule'));
+      expect(rule, findsOneWidget);
+      expect(tester.getSize(rule).height, 3);
+      expect(
+        tester.widget<Container>(rule).color,
+        Theme.of(tester.element(rule)).extension<SemanticColors>()!.accent,
+      );
+
+      await _open(tester, width: 1000, onPrimary: () {});
+      expect(rule, findsNothing);
     });
 
     testWidgets('the close control closes the dialog', (tester) async {

@@ -68,6 +68,34 @@ void main() {
       );
     });
 
+    testWidgets('app bar with the accent rule', (tester) async {
+      await expectGoldenMatrix(
+        tester,
+        'casa_maestra_app_bar',
+        (brightness, width) => SizedBox(
+          width: width,
+          height: 80,
+          child: AppBar(title: const Text('Catálogo de Productos')),
+        ),
+        overrides: overrides,
+        brand: brand,
+      );
+    });
+
+    testWidgets('app bar with the accent rule (default XBE brand)', (
+      tester,
+    ) async {
+      await expectGoldenMatrix(
+        tester,
+        'xbe_app_bar',
+        (brightness, width) => SizedBox(
+          width: width,
+          height: 80,
+          child: AppBar(title: const Text('Catálogo de Productos')),
+        ),
+      );
+    });
+
     testWidgets('status tones and inline error', (tester) async {
       await expectGoldenMatrix(
         tester,
