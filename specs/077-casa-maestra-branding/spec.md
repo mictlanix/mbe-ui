@@ -11,6 +11,10 @@
 
 - Q: How are today's catalog screens split across the four navigation sections? → A: Split by use (Option A). Customers go to Operación; products, price lists, suppliers and labels to Inventario; taxpayers, exchange rates, payment methods and expenses to Finanzas; users, profiles, employees and facilities to Sistema.
 - Q: What are Casa Maestra's iOS bundle ID and Android application ID? → A: `com.mictlanix.xbe.cm` for both.
+- Q: How far does FR-019 (mono IDs) reach in this spec? → A: A shared seam plus list columns. Mono ID and timestamp column types and a shared folio/ID text are used in list-screen ID, folio, RFC and date columns and in detail-screen folio headers. Product codes stay non-mono, keeping spec 022's FR-028. Other display sites go to a follow-up.
+- Q: Do field errors get an icon (FR-016)? → A: No. The hand-built error banners and inline red error texts get an icon. Field errors keep their red border and message text.
+- Q: What is the Casa Maestra release deployment called? → A: `cm`, pointing at brand `xbe.cm`. Its production API URL is not known yet, so the release refuses to run until it is filled in.
+- Q: Which color goes behind the app icon and splash? → A: White `#FFFFFF`, also used as the web theme color, so the navy half of the mark stays visible.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -101,7 +105,7 @@ The release manager runs the existing release scripts with the Casa Maestra bran
 - **FR-001**: A build MUST select its brand by a brand ID set at build time. With no brand ID, the build MUST use the default XBE brand.
 - **FR-002**: Each brand MUST define, in reviewed code, its exact color for every color role in both light and dark themes, its font families, and its logo assets. Values MUST be copied from the brand's source, never derived by algorithm.
 - **FR-003**: An unknown brand ID MUST fall back to the default brand without failing startup.
-- **FR-004**: The default brand's colors, fonts and logos MUST stay the same as before this feature. The only visible changes to a default build are those required by FR-013 to FR-019.
+- **FR-004**: The default brand's colors, fonts and logos MUST stay the same as before this feature. The only visible changes to a default build are those required by FR-012 to FR-019.
 - **FR-005**: A brand MAY override only color, typography and logo assets. Spacing, shape, elevation, density and breakpoints MUST stay shared by all brands.
 
 **Casa Maestra brand**
@@ -112,27 +116,27 @@ The release manager runs the existing release scripts with the Casa Maestra bran
 - **FR-009**: Casa Maestra MUST show the primary lockup on the login branding pane in the light theme and the reversed lockup in the dark theme. The mark MUST show in the navigation header.
 - **FR-010**: Logo files MUST be the design system's own files, never redrawn or approximated.
 - **FR-011**: Brand red MUST NOT fill any interactive control. The only red-filled button is the destructive action inside a confirmation dialog, and it uses the error color, not the brand red.
-- **FR-012**: The navigation header MUST show the mark alone at Compact and Medium, and the mark plus the brand's display name at Expanded and Large.
+- **FR-012**: In every brand, the navigation header MUST show the mark alone at Compact and Medium, and the mark plus the brand's display name at Expanded and Large.
 
 **Shared chrome (every brand)**
 
 - **FR-013**: The theme MUST offer accent, success and warning roles, each with an on-color, a container and an on-container color, in both themes, for every brand. The default brand's values for these roles are its own (see Assumptions).
 - **FR-014**: Every status chip MUST show an icon and a word. Its tone MUST be one of success, warning, error, info, neutral or promo, picked by the status's meaning.
 - **FR-015**: Only the promo tone MAY use the accent container. The error tone MUST be visibly different from the accent.
-- **FR-016**: Error messages on fields and banners MUST carry an icon as well as text.
+- **FR-016**: Error banners and inline error messages MUST carry an icon as well as text. Form-field errors keep their red border and message text, with no icon.
 - **FR-017**: Every app bar MUST show a 3px rule in the accent color directly below it.
 - **FR-018**: Navigation MUST group destinations under four sections, Operación, Inventario, Finanzas and Sistema, in that order. Every destination MUST belong to exactly one section, split by use:
   - **Operación**: customers, POS, sales orders, quotes, pricing, cash sessions, delivery orders, delivery order approval, for delivery, delivery itineraries, vehicles, vehicle operators.
   - **Inventario**: products, price lists, suppliers, labels, warehouse receipts, warehouse issues, transfers, physical counts, stock, kardex.
   - **Finanzas**: payments, payment verification, credit notes, refunds, fiscal documents, taxpayer issuers, taxpayer recipients, exchange rates, payment method options, expenses.
   - **Sistema**: users, user profiles, employees, facilities.
-- **FR-019**: Record IDs, folios, RFCs, SKUs and timestamps shown in lists and detail screens MUST use the mono styles in every brand.
+- **FR-019**: In every brand, list-screen columns showing record IDs, folios, RFCs or dates and times, and the folio in detail-screen headers, MUST use the mono styles through one shared column type and one shared ID text. Product codes stay in body text (spec 022 FR-028).
 - **FR-020**: Every text and background pair used by a role MUST meet 4.5:1 contrast, or 3:1 for text 24px and larger, control borders, focus rings and icons, in both themes of every brand.
 
 **Packaging**
 
-- **FR-021**: The release scripts MUST accept a Casa Maestra brand with its own bundle ID, application ID, display name, web title, web short name and web theme color. Its iOS bundle ID and Android application ID are both `com.mictlanix.xbe.cm`.
-- **FR-022**: The Casa Maestra app icons, adaptive icon, splash and favicons MUST be made from the mark file.
+- **FR-021**: The release scripts MUST accept a Casa Maestra brand with its own bundle ID, application ID, display name, web title, web short name and web theme color `#FFFFFF`. Its release deployment is `cm`. Its iOS bundle ID and Android application ID are both `com.mictlanix.xbe.cm`.
+- **FR-022**: The Casa Maestra app icons, adaptive icon, splash and favicons MUST be made from the mark file, on a white `#FFFFFF` background.
 - **FR-023**: The Casa Maestra release MUST build the app with the Casa Maestra brand ID set.
 - **FR-024**: The existing `mbe` brand's release output MUST not change.
 
@@ -169,7 +173,7 @@ The release manager runs the existing release scripts with the Casa Maestra bran
 
 ## Verbatim Constraints
 
-Brand ID, used both as the build setting and as the release brand's name: `xbe.cm`. iOS bundle ID and Android application ID: `com.mictlanix.xbe.cm`. Display name: `Casa Maestra`. Navigation sections: `Operación`, `Inventario`, `Finanzas`, `Sistema`.
+Brand ID, used both as the build setting and as the release brand's name: `xbe.cm`. iOS bundle ID and Android application ID: `com.mictlanix.xbe.cm`. Release deployment: `cm`. Web theme, icon and splash background color: `#FFFFFF`. Display name: `Casa Maestra`. Navigation sections: `Operación`, `Inventario`, `Finanzas`, `Sistema`.
 
 Fonts: `Bitter`, `Roboto`, `Roboto Mono`.
 

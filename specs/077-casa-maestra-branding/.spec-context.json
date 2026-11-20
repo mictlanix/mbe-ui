@@ -2,8 +2,8 @@
   "workflow": "companion",
   "specName": "Casa Maestra Branding",
   "branch": "077-casa-maestra-branding",
-  "currentStep": "specify",
-  "status": "specified",
+  "currentStep": "plan",
+  "status": "planned",
   "history": [
     {
       "step": "specify",
@@ -25,6 +25,34 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-20T14:45:48.701Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-20T14:50:00.816Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:00:04.337Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:01:38.870Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T15:02:18.210Z"
     }
   ],
   "telemetryInstanceId": "7b23ad11-955e-49d2-a4a8-4f4062ebf54c",
@@ -138,6 +166,21 @@
     },
     {
       "decision": "Brand ID changed from xbe-cm to xbe.cm (build setting and deploy/brands release brand name); supersedes the earlier xbe-cm decision"
+    },
+    {
+      "decision": "FR-019 scoped to shared mono column/ID seam + list columns + detail folio headers; product codes stay non-mono (FR-028)"
+    },
+    {
+      "decision": "FR-016 scoped to banners + inline error text; field errors unchanged"
+    },
+    {
+      "decision": "Release deployment named cm (BRAND=xbe.cm), API URL TBD and refused by preflight"
+    },
+    {
+      "decision": "Casa Maestra icon/splash/web theme color #FFFFFF"
+    },
+    {
+      "decision": "FR-012 nav header tier rule applies to every brand"
     }
   ]
 }
