@@ -29,6 +29,7 @@ The design system is half-built, and the built half is the hard half.
 |---|---|---|
 | Color roles | ✅ **Done** — 20 dark / 19 light roles pinned, rest seed-derived | [xbe_palette.dart](lib/core/branding/xbe_palette.dart), [brand-tokens.md](specs/019-xbe-default-branding/contracts/brand-tokens.md) |
 | Brand ink (contrast-safe foreground) | ✅ **Done** | [brand_ink.dart](lib/core/branding/brand_ink.dart) |
+| Brand registry, accent/success/warning roles | ✅ **Done** (spec 077) — `BRAND_ID` selects a brand; XBE and Casa Maestra (`xbe.cm`) | [brand_definition.dart](lib/core/branding/brand_definition.dart), [semantic_colors.dart](lib/core/branding/semantic_colors.dart); §16 |
 | Font families | ✅ **Done** — Archivo + Roboto + RobotoMono, bundled | [pubspec.yaml](pubspec.yaml), [assets/fonts/](assets/fonts/) |
 | Logo placement | ✅ **Done** — 7 placements, min sizes, opacities | `XbePalette` placement block |
 | Type **role assignment** | ✅ **Done** — 21 slots, all 4 tiers | [type_roles.dart](lib/core/design/type_roles.dart); §3 below |
@@ -161,6 +162,12 @@ assigns it to "codes / SKUs / monospaced data"; it appears in exactly one place
 (activity-feed timestamps), while every SKU and product-code column renders in
 body text. Either honor the contract in the table columns or amend the contract
 — but not both as-is.
+
+*Update (spec 077):* record IDs, folios, RFCs and dates in list columns, and
+folio headings on detail screens, now use the mono roles through
+`DataTableColumn.id` / `.timestamp` and `RecordIdText`. Product codes stay in
+body text (spec 022 FR-028). Dates inside detail bodies, pickers and the
+remaining ~100 display sites are a follow-up.
 
 ---
 
@@ -525,3 +532,38 @@ changed and why — full detail in spec 022's `tasks.md` Revision History and
   see spec 022's Clarifications. §13 Q4 (RobotoMono scope): resolved as
   narrowing spec 019's contract to match built behavior (timestamps/record
   identifiers only), not extending it to codes/SKUs.
+
+---
+
+## 16. Multiple brands (spec 077)
+
+A build picks its brand with `BRAND_ID` (empty, `mbe`, `xbe` or an unknown
+value is the default XBE brand; startup never fails on it). A brand is one
+reviewed `BrandDefinition` in `lib/core/branding/brands/`, registered in
+`brand_registry.dart`. It sets only color roles, typography, logos, display
+name and the login-pane style; spacing, shape, elevation, density and
+breakpoints stay product tokens (constitution §V). Both schemes still come from
+`ColorScheme.fromSeed`, with the brand's roles pinned on top.
+
+- **Casa Maestra (`xbe.cm`)** transcribes the Casa Maestra design system:
+  navy `#00325F` primary, red as an accent, Bitter for display/headline/title,
+  Roboto (bundled as `BrandRoboto`, so the platform Roboto the default brand
+  uses is not replaced) for body and label, Roboto Mono for IDs. The reversed
+  lockup shows on dark.
+- **`SemanticColors`** (accent, success, warning, each with on-color and
+  container) is a theme extension every brand supplies. XBE derives its accent
+  from its tertiary roles and shares neutral success and warning tones, so its
+  look is otherwise unchanged.
+- **Status tones.** `StatusChip` takes a `StatusTone` (success, warning, error,
+  info, neutral, promo) and always shows an icon and a word. Error and promo
+  must differ: Casa Maestra's error and accent containers are nearly the same
+  pink, so promo also carries an accent outline.
+- **Chrome for every brand**: a 3px accent rule under each app bar (one
+  `AppBarTheme` entry), four navigation sections (Operación, Inventario,
+  Finanzas, Sistema), and a nav header that is the mark alone below 840px.
+- **Contrast gate.** `test/contract/brand_contrast_test.dart` checks every
+  registered brand in both themes. XBE pins that sit below the thresholds
+  (outline on surface, dark error text) are kept to preserve the default look
+  and recorded as floors in that test, for the brand owner.
+- **Packaging.** `deploy/brands/xbe.cm` and the `cm` deployment; see
+  `deploy/RELEASING.md`.

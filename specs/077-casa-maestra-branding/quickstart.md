@@ -75,3 +75,14 @@ Expected:
 - **Every platform**: the app opens in the Casa Maestra look.
 
 Restore `deploy/cm.env` afterwards.
+
+## Results (2026-11-20)
+
+| Step | Outcome |
+| --- | --- |
+| V1 default brand untouched | Theme and brand tests pass with no edits. XBE login/home have no goldens to change; goldens that changed by design: status chip, entity status, brand nav header (narrow), responsive dialog (narrow). 4 other goldens fail on clean `main` under Flutter 3.47.7 (baselines are 3.44.2). |
+| V2 values and contrast | Pass. Every verbatim value is asserted; the contrast gate passes for `xbe` (with recorded floors) and `xbe.cm`. |
+| V3 run the Casa Maestra app | **Not done**: needs eyes on a running app (mbe-ui#297). Goldens and 1.3× overflow checks cover login pane, nav header, type sample, tones and app bar. |
+| V4 unknown brand falls back | Unit-tested (`BrandConfig.resolve`); not run in the app. |
+| V5 chips, nav, errors | Pass (full unit/widget/contract run). Integration tests were updated but not run (they need a live server). |
+| V6 release | Refuses the `.invalid` URL; shellcheck clean. `web cm` and `web demo` built: `cm` has the Casa Maestra name, title, white theme/background; `demo` matches the repo baseline. **Android and iOS not built**: no signing variables here (mbe-ui#297). |

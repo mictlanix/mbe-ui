@@ -169,11 +169,11 @@ description: "Task list for 077-casa-maestra-branding"
 
 ## Phase 7: Polish & cross-cutting
 
-- [ ] T059 [P] Update `DESIGN-SYSTEM.md`: add `BRAND_ID` and the brand registry, `SemanticColors`, the status tones, the four nav sections, and the Casa Maestra type table. Mark RobotoMono's "broken promise" paragraph as partly resolved (list columns only). No constitution change is needed: §V already allows color, typography and logos per brand, and both brands use `fromSeed`.
-- [ ] T060 Run `dart format` on the changed files only, `flutter analyze` (no new warnings), and the full `flutter test`. Compare the failure count with `main`; every failure must be a deliberate update from this spec.
+- [x] T059 [P] Update `DESIGN-SYSTEM.md`: add `BRAND_ID` and the brand registry, `SemanticColors`, the status tones, the four nav sections, and the Casa Maestra type table. Mark RobotoMono's "broken promise" paragraph as partly resolved (list columns only). No constitution change is needed: §V already allows color, typography and logos per brand, and both brands use `fromSeed`.
+- [x] T060 Run `dart format` on the changed files only, `flutter analyze` (no new warnings), and the full `flutter test`. Compare the failure count with `main`; every failure must be a deliberate update from this spec.
 - [ ] T061 Run quickstart V1 to V6 end to end and write down the outcome of each. Re-check SC-002: the XBE login, home and theme goldens are byte-identical to `main`.
-- [ ] T062 File the follow-ups from research.md as GitHub issues in this repo (the remaining mono display sites and the `destination_*` misuse of `recordId`, the bool glyph columns, the possible empty-`BRAND_SEED_COLOR` bug in `.env.template`, the shared tri-state filter chip, the reversed lockup for print) and one manual-checks issue for what only a person can see: Casa Maestra on a real iOS and Android device, printed documents unchanged, and the largest text size on every main screen. Never put real URLs or secrets in an issue.
-- [ ] T063 Save a project memory for this spec (`project_casa_maestra_branding_077.md` plus the MEMORY.md pointer): the `xbe.cm` brand ID, the `cm` deployment with its placeholder URL, the `BrandRoboto` family trap, the overlay-manifest gaps found, the white icon ground, and the decisions on FR-016 and FR-019.
+- [x] T062 File the follow-ups from research.md as GitHub issues in this repo (the remaining mono display sites and the `destination_*` misuse of `recordId`, the bool glyph columns, the possible empty-`BRAND_SEED_COLOR` bug in `.env.template`, the shared tri-state filter chip, the reversed lockup for print) and one manual-checks issue for what only a person can see: Casa Maestra on a real iOS and Android device, printed documents unchanged, and the largest text size on every main screen. Never put real URLs or secrets in an issue.
+- [x] T063 Save a project memory for this spec (`project_casa_maestra_branding_077.md` plus the MEMORY.md pointer): the `xbe.cm` brand ID, the `cm` deployment with its placeholder URL, the `BrandRoboto` family trap, the overlay-manifest gaps found, the white icon ground, and the decisions on FR-016 and FR-019.
 
 ---
 
