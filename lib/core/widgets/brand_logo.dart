@@ -22,7 +22,8 @@ enum BrandLogoStyle { lockup, mark }
 enum BrandLogoBackground { neutral, brandFill }
 
 /// Renders the brand lockup or mark from `BrandConfig.lockupAsset`/
-/// `BrandConfig.markAsset`, enforcing the brand guide's minimum-size and
+/// `BrandConfig.markAsset` (the lockup is `lockupReversedAsset` in the dark
+/// theme when the brand has one), enforcing the brand guide's minimum-size and
 /// clear-space rules (contracts/brand-tokens.md; FR-003/004).
 ///
 /// Exactly one of [width] or [height] must be provided — the other
@@ -63,8 +64,11 @@ class BrandLogo extends ConsumerWidget {
     }
 
     final brand = ref.watch(brandConfigProvider);
+    // A brand with a reversed lockup (spec 077 FR-009) shows it on dark
+    // grounds; a brand without one (XBE) renders the same asset in both.
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final assetPath = style == BrandLogoStyle.lockup
-        ? brand.lockupAsset
+        ? (isDark ? brand.lockupReversedAsset : null) ?? brand.lockupAsset
         : brand.markAsset;
 
     Widget image = Image.asset(

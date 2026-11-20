@@ -1,2 +1,4 @@
 # Run self-trace — local diagnostic, read only by the doctor.
 .trace.jsonl
+# Task-close append log, folded into .spec-context.json by the writer.
+.spec-context.events.jsonl

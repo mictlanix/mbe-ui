@@ -34,11 +34,12 @@ class BrandInk extends ThemeExtension<BrandInk> {
   /// Only the XBE default palette pins bright gold to `primary`, so only it
   /// needs the light-mode demotion.
   factory BrandInk.forBrand(BrandConfig brand, ColorScheme scheme) {
-    final pinnedGoldOnLight =
-        brand.usesDefaultPalette && scheme.brightness == Brightness.light;
-    return pinnedGoldOnLight
-        ? const BrandInk(primary: XbePalette.goldInk)
-        : BrandInk.fromScheme(scheme);
+    final ink = brand.definition.lightInk;
+    final demoted =
+        brand.usesDefaultPalette &&
+        scheme.brightness == Brightness.light &&
+        ink != null;
+    return demoted ? BrandInk(primary: ink) : BrandInk.fromScheme(scheme);
   }
 
   @override

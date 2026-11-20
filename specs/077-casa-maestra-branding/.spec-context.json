@@ -2,8 +2,8 @@
   "workflow": "companion",
   "specName": "Casa Maestra Branding",
   "branch": "077-casa-maestra-branding",
-  "currentStep": "tasks",
-  "status": "ready-to-implement",
+  "currentStep": "implement",
+  "status": "implementing",
   "history": [
     {
       "step": "specify",
@@ -74,6 +74,173 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-20T15:07:29.584Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-20T15:09:54.413Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001,T002,T003,T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:10:33.794Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005,T006,T007,T008,T009,T010,T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:03.769Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.152Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.239Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.324Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.412Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.499Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.586Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.674Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.760Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.847Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.948Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:42.037Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:18:37.272Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:18:37.359Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:18:37.445Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:18:37.537Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:18:37.623Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:18:37.709Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:18:37.796Z"
     }
   ],
   "telemetryInstanceId": "7b23ad11-955e-49d2-a4a8-4f4062ebf54c",
@@ -203,5 +370,163 @@
     {
       "decision": "FR-012 nav header tier rule applies to every brand"
     }
-  ]
+  ],
+  "currentTask": "T018",
+  "task_summaries": {
+    "T001,T002,T003,T004": {
+      "status": "DONE",
+      "did": "Fonts (Bitter, Roboto as BrandRoboto), xbe.cm logos with 2x/3x variants, pubspec declarations, BRAND_ID in .env.template",
+      "files": [
+        "assets/fonts",
+        "assets/brand/xbe.cm",
+        "pubspec.yaml",
+        ".env.template"
+      ]
+    },
+    "T005,T006,T007,T008,T009,T010,T011": {
+      "status": "DONE",
+      "did": "Brand registry, BrandDefinition types, SemanticColors, XBE definition moved unchanged, BRAND_ID resolution, AppTheme from definition, golden harness brand param + fonts, registry-driven contrast gate. Parity: theme/brand tests pass unchanged. XBE below-threshold pins (outline, dark error) recorded as floors per FR-004",
+      "files": [
+        "lib/core/branding",
+        "lib/app/theme/app_theme.dart",
+        "test/golden/golden_harness.dart",
+        "test/contract/brand_contrast_test.dart",
+        "test/unit/core/branding"
+      ]
+    },
+    "T001": {
+      "status": "DONE",
+      "did": "Bitter + Roboto variable fonts and OFL licenses in assets/fonts",
+      "files": [
+        "assets/fonts"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "xbe.cm logos (lockup, reversed, mark) with 2x/3x variants from the design system originals",
+      "files": [
+        "assets/brand/xbe.cm"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "pubspec: assets/brand/xbe.cm/, Bitter and BrandRoboto families",
+      "files": [
+        "pubspec.yaml"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "BRAND_ID documented in .env.template",
+      "files": [
+        ".env.template"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "SemanticColors ThemeExtension + test",
+      "files": [
+        "lib/core/branding/semantic_colors.dart",
+        "test/unit/core/branding/semantic_colors_test.dart"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "BrandDefinition types and registry",
+      "files": [
+        "lib/core/branding/brand_definition.dart",
+        "lib/core/branding/brand_registry.dart"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "XBE definition moved from XbePalette/AppTheme unchanged",
+      "files": [
+        "lib/core/branding/brands/xbe_brand.dart"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "BrandConfig.resolve + BRAND_ID in fromEnvironment, tests",
+      "files": [
+        "lib/core/branding/brand_config.dart",
+        "test/unit/core/branding/brand_config_test.dart"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "AppTheme and BrandInk read the brand definition; parity tests pass unchanged",
+      "files": [
+        "lib/app/theme/app_theme.dart",
+        "lib/core/branding/brand_ink.dart"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Golden harness: brand parameter, Bitter and BrandRoboto fonts",
+      "files": [
+        "test/golden/golden_harness.dart"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Registry-driven contrast gate; XBE below-threshold pins recorded as floors (FR-004)",
+      "files": [
+        "test/contract/brand_contrast_test.dart"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Casa Maestra value test: every verbatim color, type metric, assets, FR-005 product tokens",
+      "files": [
+        "test/unit/core/branding/casa_maestra_brand_test.dart"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "xbe.cm definition with exact colors, SemanticColors, Bitter/BrandRoboto typography, assets; registered",
+      "files": [
+        "lib/core/branding/brands/casa_maestra_brand.dart",
+        "lib/core/branding/brand_registry.dart"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Generic text-theme builder confirmed by the type metric tests; mono stays RobotoMono",
+      "files": [
+        "lib/core/branding/brands/casa_maestra_brand.dart"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "BrandLogo shows the reversed lockup in dark when the brand has one; tests for both brands",
+      "files": [
+        "lib/core/widgets/brand_logo.dart",
+        "test/widget/core/widgets/brand_logo_test.dart"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "LoginBrandingPane painted from the brand LoginPaneStyle; tests for both brands and themes",
+      "files": [
+        "lib/features/auth/presentation/login/login_branding_pane.dart",
+        "test/widget/features/auth/login_branding_pane_test.dart"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "xbe.cm covered by the registry-driven contrast gate: all pairs pass, nothing to flag",
+      "files": [
+        "test/contract/brand_contrast_test.dart"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "Casa Maestra goldens (login pane, logo + nav header, type sample) and 1.3x overflow checks",
+      "files": [
+        "test/golden/casa_maestra_golden_test.dart",
+        "test/golden/goldens/casa_maestra_*.png"
+      ]
+    }
+  }
 }

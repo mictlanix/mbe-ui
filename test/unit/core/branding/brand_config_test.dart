@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/core/branding/brand_config.dart';
+import 'package:mbe_ui/core/branding/brand_registry.dart';
+import 'package:mbe_ui/core/branding/brands/casa_maestra_brand.dart';
+import 'package:mbe_ui/core/branding/brands/xbe_brand.dart';
 import 'package:mbe_ui/core/branding/xbe_palette.dart';
 
 void main() {
@@ -12,6 +15,67 @@ void main() {
       expect(config.usesDefaultPalette, isTrue);
       expect(config.lockupAsset, 'assets/brand/login_lockup.png');
       expect(config.markAsset, 'assets/brand/nav_lockup.png');
+    });
+  });
+
+  group('BrandConfig.resolve (BRAND_ID selection, spec 077 FR-001/FR-003)', () {
+    BrandConfig resolve(
+      String brandId, {
+      String seedHex = '',
+      bool hasSeed = false,
+      String displayName = 'Legacy Name',
+      String lockup = 'assets/brand/legacy_lockup.png',
+    }) => BrandConfig.resolve(
+      brandId: brandId,
+      displayName: displayName,
+      welcomeAsset: 'assets/branding/legacy.png',
+      seedColorHex: seedHex,
+      hasSeedColor: hasSeed,
+      lockupAsset: lockup,
+      markAsset: 'assets/brand/legacy_mark.png',
+    );
+
+    for (final id in ['', 'xbe', 'mbe', 'nope', 'XBE.CM']) {
+      test('"$id" keeps the default brand and honors the legacy flags', () {
+        final config = resolve(id, seedHex: '1B5E20', hasSeed: true);
+        expect(config.definition, same(xbeBrand));
+        expect(config.displayName, 'Legacy Name');
+        expect(config.welcomeAsset, 'assets/branding/legacy.png');
+        expect(config.seedColor, const Color(0xFF1B5E20));
+        expect(config.usesDefaultPalette, isFalse);
+        expect(config.lockupAsset, 'assets/brand/legacy_lockup.png');
+        expect(config.markAsset, 'assets/brand/legacy_mark.png');
+        expect(config.lockupReversedAsset, isNull);
+      });
+    }
+
+    test('with no seed flag the default palette pins stay on', () {
+      final config = resolve('');
+      expect(config.usesDefaultPalette, isTrue);
+      expect(config.seedColor, XbePalette.gold);
+    });
+
+    test('an unknown ID is never registered', () {
+      expect(isRegisteredBrand('nope'), isFalse);
+      expect(isRegisteredBrand('mbe'), isFalse);
+      expect(isRegisteredBrand('xbe'), isTrue);
+      expect(brandDefinitionById('nope'), same(xbeBrand));
+    });
+
+    test('every registered brand but the default beats the legacy flags', () {
+      for (final entry in kBrandRegistry.entries) {
+        if (entry.key == xbeBrand.id) continue;
+        final config = resolve(entry.key, seedHex: '1B5E20', hasSeed: true);
+        final def = entry.value;
+        expect(config.definition, same(def));
+        expect(config.displayName, def.displayName);
+        expect(config.seedColor, def.seedColor);
+        expect(config.usesDefaultPalette, isTrue);
+        expect(config.lockupAsset, def.lockupAsset);
+        expect(config.markAsset, def.markAsset);
+        expect(config.lockupReversedAsset, def.lockupReversedAsset);
+        expect(config.welcomeAsset, isNull);
+      }
     });
   });
 
@@ -46,6 +110,18 @@ void main() {
     test('differing usesDefaultPalette breaks equality', () {
       const a = BrandConfig(displayName: 'X', usesDefaultPalette: true);
       const b = BrandConfig(displayName: 'X', usesDefaultPalette: false);
+      expect(a, isNot(b));
+    });
+
+    test('differing definition breaks equality', () {
+      const a = BrandConfig(displayName: 'X');
+      const b = BrandConfig(displayName: 'X', definition: casaMaestraBrand);
+      expect(a, isNot(b));
+    });
+
+    test('differing lockupReversedAsset breaks equality', () {
+      const a = BrandConfig(displayName: 'X', lockupReversedAsset: 'a.png');
+      const b = BrandConfig(displayName: 'X', lockupReversedAsset: 'b.png');
       expect(a, isNot(b));
     });
 
