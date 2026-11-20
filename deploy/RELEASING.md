@@ -39,6 +39,16 @@ The white-label brand is `mbe` and the first deployment is `demo`
 (`API_BASE_URL=https://test.api.mbe.mictlanix.com`). The API URL must be
 `https://` for a release.
 
+The Casa Maestra brand is `xbe.cm` (spec 077) and its deployment is `cm`
+(a deployment name allows only `a-z`, `0-9` and `-`; a brand name may contain
+a dot). Its `API_BASE_URL` is a `.invalid` placeholder: the preflight refuses
+to release until you put the real URL in `deploy/cm.env`.
+
+`tool/release.sh` passes `--dart-define=BRAND_ID=<BRAND>` to every build, which
+is how the app picks its colors, fonts and logos (`mbe` resolves to the
+default XBE brand). Never set `BRAND_ID` in a deployment `.env`: the preflight
+refuses it, so the `.release` file stays the one source of truth.
+
 ## Credentials
 
 Never committed, never in `.env`. Keep them outside the repo and export them
@@ -170,6 +180,10 @@ chosen by the loader. Everything (including CanvasKit/skwasm) is served from
 the site's own origin. If a dependency ever breaks under WebAssembly, drop `--wasm`
 in `tool/release/web.sh` and note it in `specs/045-deploy-scripts/research.md`.
 
+After the build the page title, short name, `theme_color`, `background_color`
+and the splash background are set from the brand's `brand.properties`. The
+manifest `description` is not: it still names Mictlanix Business Essentials.
+
 ## Adding a brand
 
 Adding a customer touches only `deploy/` (plus a one-time artwork generation):
@@ -178,16 +192,26 @@ Adding a customer touches only `deploy/` (plus a one-time artwork generation):
    is required and validated).
 2. Add the source artwork in `deploy/brands/<brand>/src/`:
    `app_icon_1024.png`, `android_adaptive_foreground_1024.png`,
-   `splash_1024.png`.
+   `splash_1024.png`. `WEB_THEME_COLOR` is also the icon background, splash
+   ground and web theme color, so pick a ground the logo reads on (Casa
+   Maestra uses white: its mark has a navy half).
 3. Run `tool/release/brand_artwork.sh <brand>` and commit the generated
    `deploy/brands/<brand>/overlay/`. It runs the icon and splash generators in
    a temporary worktree, so your working tree is never touched.
 4. Create `deploy/<deployment>.env` and `deploy/<deployment>.release`
-   (`BRAND=<brand>`).
+   (`BRAND=<brand>`). If the brand has its own colors, fonts and logos in the
+   app, register it in `lib/core/branding/brand_registry.dart` under the same
+   name (spec 077).
 5. Register the new bundle id with Apple and create its App Store Connect
    record.
 6. `tool/release.sh all <deployment> --build-only` and check each artifact's
    name, id and icon; installing two brands side by side gives two apps.
+
+The first non-default brand (Casa Maestra) found that the overlay manifest
+missed the Android adaptive-icon foreground, `colors.xml`, the pre-Android-12
+splash backgrounds and the night styles; they are listed now. If a new
+generator version writes another file, add its glob to
+`tool/release/overlay-manifest.txt` or that brand ships MBE artwork there.
 
 During a build the overlay is copied over the tree and restored afterwards
 (including on failure). A brand missing any artwork listed in

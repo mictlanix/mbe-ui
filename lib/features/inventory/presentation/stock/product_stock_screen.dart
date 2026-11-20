@@ -15,6 +15,7 @@ import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/fact_strip_row.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/stock.dart';
 import 'package:mbe_ui/features/inventory/presentation/kardex/kardex_screen.dart';
 import 'package:mbe_ui/features/inventory/presentation/shared/inventory_name_cells.dart';
@@ -159,7 +160,7 @@ class _ProductStockBody extends ConsumerWidget {
                   final facility = view.facilities[r.warehouseId];
                   // An unresolved warehouse keeps its id (T011).
                   return facility == null
-                      ? Text('#${r.warehouseId}')
+                      ? RecordIdText('#${r.warehouseId}')
                       : InventoryFacilityName(
                           facilityId: facility.facilityId,
                           name: facility.facilityName,

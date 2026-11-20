@@ -107,7 +107,9 @@ Sources: the Casa Maestra design system (artifact `XqxMRRyKYvf5auFTjWZ24t`: READ
 
 **Rationale**: The deployment name allows only `[a-z0-9-]`, while the brand name is only used quoted in paths, so `xbe.cm` is safe as a brand. Spec 045 was only exercised with `mbe`, so the overlay gaps are latent bugs this brand exposes.
 
-**To verify in tasks**: the generator's exact output list (a dry run), whether Flutter lets a command-line `--dart-define` win over `--dart-define-from-file` (moot because of the preflight), and ShellCheck staying clean.
+**Generator dry run (T053, 2026-11-20)**: `flutter_launcher_icons` and `flutter_native_splash` wrote 71 files in a scratch worktree. The manifest already covered the iOS AppIcon/LaunchImage/LaunchBackground sets, `mipmap-*/ic_launcher*`, `drawable-*/splash.png`, `drawable-*/android12splash.png` (the `drawable-night-*` ones match the same glob), `values/styles.xml`, `values-v31/styles.xml`, `web/favicon.png`, `web/icons/*` and `web/splash/img/*`. It missed five, now added: `drawable-*/ic_launcher_foreground.png`, `values/colors.xml` (holds `ic_launcher_background`), `values-night-v31/styles.xml`, `drawable/background.png` and `drawable-v21/background.png`. The generators also edit `ios/Runner/Info.plist`, `web/index.html` (adds a duplicate viewport meta and the pdf.js block, so it is never overlaid) and `web/manifest.json`; those stay with the build-time rewrite. `web/manifest.json` `background_color` and the `index.html` splash `background-color` are both rewritten from `WEB_THEME_COLOR`; for `mbe` that is `#14120F`, its current value. The manifest `description` still names Mictlanix Business Essentials (documented in RELEASING.md, not rewritten).
+
+**Still to verify in tasks**: whether Flutter lets a command-line `--dart-define` win over `--dart-define-from-file` (moot because of the preflight), and ShellCheck staying clean.
 
 ## R10. Mono IDs: shared seam and list columns
 

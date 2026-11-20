@@ -17,9 +17,23 @@ class RecordIdText extends StatelessWidget {
     this.textAlign,
     this.maxLines,
     this.overflow,
-  });
+  }) : _inherit = false;
+
+  /// For a heading or any text whose size, weight and color come from its
+  /// surroundings (an `AppBar` title, a section title): only the font family
+  /// changes to mono, so the heading keeps its size.
+  const RecordIdText.inherit(
+    this.text, {
+    super.key,
+    this.color,
+    this.textAlign,
+    this.maxLines,
+    this.overflow,
+  }) : _inherit = true;
 
   final String text;
+
+  final bool _inherit;
 
   /// Overrides the inherited text color (e.g. a muted ID next to a name).
   final Color? color;
@@ -29,7 +43,12 @@ class RecordIdText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = Theme.of(context).typeRoles.recordId;
+    final roles = Theme.of(context).typeRoles;
+    final style = _inherit
+        ? DefaultTextStyle.of(
+            context,
+          ).style.copyWith(fontFamily: roles.recordId.fontFamily)
+        : roles.recordId;
     return Text(
       text,
       style: color == null ? style : style.copyWith(color: color),

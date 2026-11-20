@@ -14,25 +14,13 @@ String inventoryDocumentStatusLabel(
   InventoryDocumentStatus.cancelled => l10n.inventoryDocumentStatusCancelled,
 };
 
-/// A status's `(background, foreground)` pair: draft neutral, confirmed
-/// success, cancelled error.
-(Color, Color) inventoryDocumentStatusColors(
-  ColorScheme scheme,
-  InventoryDocumentStatus status,
-) => switch (status) {
-  InventoryDocumentStatus.draft => (
-    scheme.surfaceContainerHighest,
-    scheme.onSurface,
-  ),
-  InventoryDocumentStatus.completed => (
-    scheme.secondaryContainer,
-    scheme.onSecondaryContainer,
-  ),
-  InventoryDocumentStatus.cancelled => (
-    scheme.errorContainer,
-    scheme.onErrorContainer,
-  ),
-};
+/// A status's tone: draft neutral, confirmed success, cancelled error.
+StatusLook inventoryDocumentStatusLook(InventoryDocumentStatus status) =>
+    switch (status) {
+      InventoryDocumentStatus.draft => (StatusTone.neutral, Icons.edit_note),
+      InventoryDocumentStatus.completed => (StatusTone.success, null),
+      InventoryDocumentStatus.cancelled => (StatusTone.error, null),
+    };
 
 /// The receipt's status chip, shared by the list and the detail screen.
 class InventoryDocumentStatusChip extends StatelessWidget {
@@ -43,11 +31,13 @@ class InventoryDocumentStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final (tone, icon) = inventoryDocumentStatusLook(status);
     return StatusChip<InventoryDocumentStatus>(
       key: const Key('inventory_document_status_chip'),
       value: status,
       label: inventoryDocumentStatusLabel(l10n, status),
-      colors: (scheme) => inventoryDocumentStatusColors(scheme, status),
+      tone: tone,
+      icon: icon,
     );
   }
 }

@@ -36,24 +36,14 @@ class PosSaleStatusChip extends StatelessWidget {
       key: Key('pos_sale_status_chip_${status.name}'),
       value: status,
       label: label,
-      colors: (scheme) => switch (status) {
-        SaleStatus.draft => (
-          scheme.primaryContainer,
-          scheme.onPrimaryContainer,
-        ),
-        SaleStatus.completed => (
-          scheme.tertiaryContainer,
-          scheme.onTertiaryContainer,
-        ),
-        SaleStatus.paid => (
-          scheme.surfaceContainerHighest,
-          scheme.onSurfaceVariant,
-        ),
-        SaleStatus.cancelled => (
-          scheme.errorContainer,
-          scheme.onErrorContainer,
-        ),
+      // Completed means still owing money: waiting (warning); paid is done.
+      tone: switch (status) {
+        SaleStatus.draft => StatusTone.neutral,
+        SaleStatus.completed => StatusTone.warning,
+        SaleStatus.paid => StatusTone.success,
+        SaleStatus.cancelled => StatusTone.error,
       },
+      icon: status == SaleStatus.draft ? Icons.edit_note : null,
     );
   }
 }

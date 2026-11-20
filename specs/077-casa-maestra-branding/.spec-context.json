@@ -249,6 +249,182 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-20T15:20:27.035Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.111Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.204Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.297Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.401Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.499Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.594Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.685Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.776Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.868Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.962Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.055Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.147Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.331Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.422Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.514Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.605Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.696Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T054",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.786Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T055",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.878Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T056",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.969Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T058",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:25.061Z"
     }
   ],
   "telemetryInstanceId": "7b23ad11-955e-49d2-a4a8-4f4062ebf54c",
@@ -379,7 +555,7 @@
       "decision": "FR-012 nav header tier rule applies to every brand"
     }
   ],
-  "currentTask": "T020",
+  "currentTask": "T058",
   "task_summaries": {
     "T001,T002,T003,T004": {
       "status": "DONE",
@@ -544,6 +720,167 @@
         "lib/core/widgets/record_id_text.dart",
         "test/widget/core/widgets",
         "test/golden/core_widgets_golden_test.dart"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Mono ID/timestamp columns in sales orders, POS sales, quotes, refunds lists + refund heading",
+      "files": [
+        "lib/features/sales/presentation"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "Mono columns in payments list, payment heading keeps title size via RecordIdText.inherit",
+      "files": [
+        "lib/features/sales/presentation/payments"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Mono folio/RFC/UUID/date in fiscal documents list and detail; only the RFC (not the name) is mono",
+      "files": [
+        "lib/features/invoicing/presentation"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "Mono folio/date in inventory receipts, issues, transfers, counts lists and detail folio facts",
+      "files": [
+        "lib/features/inventory/presentation"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Mono folio/date in delivery orders, approval, for-delivery and itineraries lists",
+      "files": [
+        "lib/features/sales/presentation/delivery_orders",
+        "delivery_itineraries",
+        "for_delivery"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "RFC columns mono in taxpayer issuers and recipients lists; product codes untouched",
+      "files": [
+        "lib/features/catalog/presentation"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "type_roles_test FR-028 unchanged and passing; full unit/widget/contract run 6560 passed",
+      "files": [
+        "test/unit/core/design/type_roles_test.dart"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "StatusTone + icon StatusChip, tone tests across both brands and themes",
+      "files": [
+        "lib/core/widgets/status_chip.dart",
+        "test/widget/core/widgets/status_chip_test.dart"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "EntityStatusCell inactive/archived neutral with icons",
+      "files": [
+        "lib/core/widgets/entity_status_controls.dart"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Fiscal chips and cancellation outcome/simulated badge migrated to tones",
+      "files": [
+        "lib/features/invoicing/presentation"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "Inventory document/count/transfer chips migrated, tests updated",
+      "files": [
+        "lib/features/inventory/presentation",
+        "test/widget/features/inventory"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "Delivery order, itinerary and stop outcome chips migrated",
+      "files": [
+        "lib/features/sales/presentation/delivery_orders",
+        "delivery_itineraries"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "Cash session, POS sale, quote, refund and payment chips migrated",
+      "files": [
+        "lib/features/sales/presentation"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "Sweep: all 19 StatusChip sites on tones; legacy colors callback removed",
+      "files": [
+        "lib/core/widgets/status_chip.dart"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "InlineErrorText widget, test and golden",
+      "files": [
+        "lib/core/widgets/inline_error_text.dart"
+      ]
+    },
+    "T051": {
+      "status": "DONE",
+      "did": "Artwork sources composed from the mark: white icon, transparent adaptive foreground and splash",
+      "files": [
+        "deploy/brands/xbe.cm/src"
+      ]
+    },
+    "T052": {
+      "status": "DONE",
+      "did": "xbe.cm brand.properties, cm.release, cm.env with .invalid placeholder",
+      "files": [
+        "deploy/brands/xbe.cm/brand.properties",
+        "deploy/cm.release",
+        "deploy/cm.env"
+      ]
+    },
+    "T053": {
+      "status": "DONE",
+      "did": "Generator dry run: five missing overlay globs found, recorded in research R9",
+      "files": [
+        "specs/077-casa-maestra-branding/research.md"
+      ]
+    },
+    "T054": {
+      "status": "DONE",
+      "did": "BRAND_ID passed from the brand, preflight refuses .env BRAND_ID and .invalid URL, web rewrite sets background colors, manifest globs added",
+      "files": [
+        "tool/release"
+      ]
+    },
+    "T055": {
+      "status": "DONE",
+      "did": "xbe.cm overlay generated (76 files)",
+      "files": [
+        "deploy/brands/xbe.cm/overlay"
+      ]
+    },
+    "T056": {
+      "status": "DONE",
+      "did": "shellcheck clean; release web cm refuses the placeholder URL",
+      "files": [
+        "tool/release"
+      ]
+    },
+    "T058": {
+      "status": "DONE",
+      "did": "RELEASING.md documents cm, BRAND_ID source, manifest gaps, white ground",
+      "files": [
+        "deploy/RELEASING.md"
       ]
     }
   }

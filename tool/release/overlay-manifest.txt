@@ -14,3 +14,10 @@ android/app/src/main/res/values-v31/styles.xml
 web/favicon.png
 web/icons/*
 web/splash/img/*
+# Found missing by the first non-default brand (spec 077 T053): without these an
+# Android 8+ build kept the MBE adaptive icon, splash ground and night styles.
+android/app/src/main/res/drawable-*/ic_launcher_foreground.png
+android/app/src/main/res/values/colors.xml
+android/app/src/main/res/values-night-v31/styles.xml
+android/app/src/main/res/drawable/background.png
+android/app/src/main/res/drawable-v21/background.png

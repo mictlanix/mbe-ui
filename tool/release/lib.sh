@@ -98,6 +98,11 @@ load_deployment() {
   ENV_FILE="deploy/$DEPLOYMENT.env"
   REL_FILE="deploy/$DEPLOYMENT.release"
   [[ -f "$REPO_ROOT/$ENV_FILE" ]] || problem "missing $ENV_FILE"
+  # BRAND_ID comes from the brand (spec 077): the .env must not set it too, or
+  # the two could disagree about which brand the build is.
+  if [[ -f "$REPO_ROOT/$ENV_FILE" && -n "$(prop "$REPO_ROOT/$ENV_FILE" BRAND_ID)" ]]; then
+    problem "$ENV_FILE: remove BRAND_ID; tool/release.sh sets it from BRAND in $REL_FILE"
+  fi
 
   BRAND="$(prop "$REPO_ROOT/$REL_FILE" BRAND)"
   BRAND_DIR="deploy/brands/$BRAND"
@@ -133,6 +138,8 @@ check_api_url() {
     problem "$ENV_FILE: API_BASE_URL is not set"
   elif [[ "$API_BASE_URL" != https://* ]]; then
     problem "$ENV_FILE: API_BASE_URL must start with https:// for a release build"
+  elif [[ "$API_BASE_URL" =~ ^https://[^/:]+\.invalid([:/]|$) ]]; then
+    problem "$ENV_FILE: API_BASE_URL is still a .invalid placeholder; set the real API URL"
   fi
 }
 
@@ -253,6 +260,7 @@ rewrite_web_brand() {
   local idx="build/web/index.html" man="build/web/manifest.json" t
   t="$(mktemp)"
   sed -e "s|<title>.*</title>|<title>$WEB_TITLE</title>|" \
+    -e "s|^\( *background-color: \)#[0-9A-Fa-f]\{6\};|\1$WEB_THEME_COLOR;|" \
     -e "s|\(<meta name=\"apple-mobile-web-app-title\" content=\"\)[^\"]*|\1$WEB_SHORT_NAME|" \
     "$idx" >"$t"
   cat "$t" >"$idx" # overwrite in place: keep the file's permissions
@@ -261,6 +269,7 @@ rewrite_web_brand() {
   sed -e "s|\(\"name\": \"\)[^\"]*|\1$WEB_TITLE|" \
     -e "s|\(\"short_name\": \"\)[^\"]*|\1$WEB_SHORT_NAME|" \
     -e "s|\(\"theme_color\": \"\)[^\"]*|\1$WEB_THEME_COLOR|" \
+    -e "s|\(\"background_color\": \"\)[^\"]*|\1$WEB_THEME_COLOR|" \
     "$man" >"$t"
   cat "$t" >"$man" # overwrite in place: keep the file's permissions
   rm -f "$t"

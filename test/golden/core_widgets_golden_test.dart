@@ -25,6 +25,7 @@ import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 import 'package:mbe_ui/core/widgets/fact_strip_row.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/core/widgets/number_pad.dart';
@@ -82,6 +83,7 @@ const _coveredFiles = {
   'error_banner.dart',
   'form_error_banner.dart', // spec 058 — a form's headline plus the localized reason
   'fact_strip_row.dart', // spec 049 — the quote and order headers' strip
+  'inline_error_text.dart', // spec 077 — icon + text error message
   'label_multi_picker.dart',
   'list_state_views.dart',
   'number_pad.dart',
@@ -395,6 +397,15 @@ void main() {
           width: width - 32,
           child: const ErrorBanner(error: AppError.network('Connection lost')),
         ),
+      );
+    });
+
+    testWidgets('InlineErrorText', (tester) async {
+      await expectGoldenMatrix(
+        tester,
+        'inline_error_text',
+        (brightness, width) =>
+            const InlineErrorText('El RFC debe tener 12 o 13 caracteres'),
       );
     });
 

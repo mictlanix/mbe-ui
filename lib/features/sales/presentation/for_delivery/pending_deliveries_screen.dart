@@ -103,14 +103,12 @@ class PendingDeliveriesScreen extends ConsumerWidget {
             onData: (page) => DataTableView<PendingDeliveryLine>(
               key: const Key('for_delivery_table'),
               columns: [
-                DataTableColumn(
+                DataTableColumn.id(
                   label: l10n.deliveryOrderColumnSerial,
                   size: ColumnSize.S,
-                  cellBuilder: (context, l) => Text(
-                    l.serial == null
-                        ? l10n.deliveryOrderDraftFolio
-                        : '${l.serial}',
-                  ),
+                  text: (l) => l.serial == null
+                      ? l10n.deliveryOrderDraftFolio
+                      : '${l.serial}',
                 ),
                 DataTableColumn(
                   label: l10n.deliveryOrderColumnCustomer,
@@ -130,14 +128,12 @@ class PendingDeliveriesScreen extends ConsumerWidget {
                       label: l.shipToLabel,
                     ),
                   ),
-                DataTableColumn(
+                DataTableColumn.timestamp(
                   label: l10n.deliveryOrderColumnScheduled,
                   size: ColumnSize.S,
-                  cellBuilder: (context, l) => Text(
-                    l.scheduledDate == null
-                        ? l10n.forDeliveryNoDate
-                        : fmt.display.date(l.scheduledDate),
-                  ),
+                  text: (l) => l.scheduledDate == null
+                      ? l10n.forDeliveryNoDate
+                      : fmt.display.date(l.scheduledDate),
                 ),
                 DataTableColumn(
                   label: l10n.forDeliveryColumnPriority,

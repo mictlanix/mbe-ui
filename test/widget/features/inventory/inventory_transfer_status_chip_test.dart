@@ -35,35 +35,33 @@ void main() {
         findsOneWidget,
       );
       expect(find.text(_spanish[status]!), findsOneWidget);
+      // Every status shows an icon and a word (spec 077 FR-014).
+      expect(
+        find.descendant(
+          of: find.byType(StatusChip<InventoryTransferStatus>),
+          matching: find.byType(Icon),
+        ),
+        findsOneWidget,
+      );
     });
   }
 
-  test('each status has its tone', () {
-    final scheme = ColorScheme.fromSeed(seedColor: Colors.teal);
+  test('each status has its tone (spec 077)', () {
     expect(
-      inventoryTransferStatusColors(scheme, InventoryTransferStatus.draft).$1,
-      scheme.surfaceContainerHighest,
+      inventoryTransferStatusLook(InventoryTransferStatus.draft).$1,
+      StatusTone.neutral,
     );
     expect(
-      inventoryTransferStatusColors(
-        scheme,
-        InventoryTransferStatus.inTransit,
-      ).$1,
-      scheme.tertiaryContainer,
+      inventoryTransferStatusLook(InventoryTransferStatus.inTransit).$1,
+      StatusTone.info,
     );
     expect(
-      inventoryTransferStatusColors(
-        scheme,
-        InventoryTransferStatus.received,
-      ).$1,
-      scheme.secondaryContainer,
+      inventoryTransferStatusLook(InventoryTransferStatus.received).$1,
+      StatusTone.success,
     );
     expect(
-      inventoryTransferStatusColors(
-        scheme,
-        InventoryTransferStatus.cancelled,
-      ).$1,
-      scheme.errorContainer,
+      inventoryTransferStatusLook(InventoryTransferStatus.cancelled).$1,
+      StatusTone.error,
     );
   });
 }

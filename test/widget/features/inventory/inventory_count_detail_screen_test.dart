@@ -9,6 +9,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/errors/localize_problem.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_count.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
@@ -105,7 +106,10 @@ void main() {
 
       expect(title(tester), l10n.inventoryCountTitleDraft('412'));
       expect(title(tester), 'Conteo · Borrador #412');
-      expect(tester.widget<Text>(key('inventory_count_serial')).data, '—');
+      expect(
+        tester.widget<RecordIdText>(key('inventory_count_serial')).text,
+        '—',
+      );
       expect(find.text('Almacén 3'), findsOneWidget);
       expect(find.text('Sucursal 2'), findsOneWidget);
       expect(find.text('Pasillo 3'), findsOneWidget);
@@ -190,7 +194,10 @@ void main() {
     await h.pumpCount(tester, completed);
 
     expect(title(tester), 'Conteo 77');
-    expect(tester.widget<Text>(key('inventory_count_serial')).data, '77');
+    expect(
+      tester.widget<RecordIdText>(key('inventory_count_serial')).text,
+      '77',
+    );
     expect(find.text(l10n.inventoryCountStatusCompleted), findsOneWidget);
     expect(find.text(l10n.inventoryCountLineColExpected), findsOneWidget);
     expect(find.text(l10n.inventoryCountLineColDifference), findsOneWidget);

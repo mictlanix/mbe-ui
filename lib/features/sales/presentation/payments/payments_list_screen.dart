@@ -202,17 +202,15 @@ class PaymentsListScreen extends ConsumerWidget {
                   onData: (page) => DataTableView<CustomerPayment>(
                     key: const Key('payments_table'),
                     columns: [
-                      DataTableColumn(
+                      DataTableColumn.id(
                         label: l10n.paymentsColumnFolio,
                         fixedWidth: 90,
-                        cellBuilder: (context, p) =>
-                            Text('${p.customerPaymentId}'),
+                        text: (p) => '${p.customerPaymentId}',
                       ),
-                      DataTableColumn(
+                      DataTableColumn.timestamp(
                         label: l10n.paymentsColumnDate,
                         size: ColumnSize.L,
-                        cellBuilder: (context, p) =>
-                            Text(fmt.display.dateTime(p.date)),
+                        text: (p) => fmt.display.dateTime(p.date),
                       ),
                       if (allFacilities)
                         DataTableColumn(

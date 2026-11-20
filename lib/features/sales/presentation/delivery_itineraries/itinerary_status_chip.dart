@@ -33,42 +33,23 @@ String shortfallReasonLabel(AppLocalizations l10n, ShortfallReason reason) =>
       ShortfallReason.other => l10n.itineraryReasonOther,
     };
 
-/// A trip status's `(background, foreground)` pair: neutral (open), info
-/// (on the road), success (closed) and muted (cancelled).
-(Color, Color) itineraryStatusColors(
-  ColorScheme scheme,
-  ItineraryStatus status,
-) => switch (status) {
-  ItineraryStatus.open => (scheme.surfaceContainerHighest, scheme.onSurface),
-  ItineraryStatus.departed => (
-    scheme.primaryContainer,
-    scheme.onPrimaryContainer,
-  ),
-  ItineraryStatus.closed => (
-    scheme.secondaryContainer,
-    scheme.onSecondaryContainer,
-  ),
-  ItineraryStatus.cancelled => (
-    scheme.surfaceContainerLow,
-    scheme.onSurfaceVariant,
-  ),
+/// A trip status's tone (spec 077): neutral (open), info (on the road),
+/// success (closed) and error (cancelled).
+StatusLook itineraryStatusLook(ItineraryStatus status) => switch (status) {
+  ItineraryStatus.open => (StatusTone.neutral, null),
+  ItineraryStatus.departed => (StatusTone.info, Icons.local_shipping_outlined),
+  ItineraryStatus.closed => (StatusTone.success, null),
+  ItineraryStatus.cancelled => (StatusTone.error, null),
 };
 
-/// A stop outcome's pair: neutral (pending), success (delivered), warning
+/// A stop outcome's tone: neutral (pending), success (delivered), warning
 /// (partially delivered) and error (failed).
-(Color, Color) stopOutcomeColors(ColorScheme scheme, StopOutcome outcome) =>
-    switch (outcome) {
-      StopOutcome.pending => (scheme.surfaceContainerHighest, scheme.onSurface),
-      StopOutcome.delivered => (
-        scheme.secondaryContainer,
-        scheme.onSecondaryContainer,
-      ),
-      StopOutcome.partiallyDelivered => (
-        scheme.tertiaryContainer,
-        scheme.onTertiaryContainer,
-      ),
-      StopOutcome.failed => (scheme.errorContainer, scheme.onErrorContainer),
-    };
+StatusLook stopOutcomeLook(StopOutcome outcome) => switch (outcome) {
+  StopOutcome.pending => (StatusTone.neutral, null),
+  StopOutcome.delivered => (StatusTone.success, null),
+  StopOutcome.partiallyDelivered => (StatusTone.warning, null),
+  StopOutcome.failed => (StatusTone.error, null),
+};
 
 /// The trip's status chip, shared by the list and the trip screen. Never
 /// truncated: give it the width its label needs.
@@ -80,11 +61,13 @@ class ItineraryStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final (tone, icon) = itineraryStatusLook(status);
     return StatusChip<ItineraryStatus>(
       key: Key('itinerary_status_chip_${status.name}'),
       value: status,
       label: itineraryStatusLabel(l10n, status),
-      colors: (scheme) => itineraryStatusColors(scheme, status),
+      tone: tone,
+      icon: icon,
     );
   }
 }
@@ -98,11 +81,13 @@ class StopOutcomeChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final (tone, icon) = stopOutcomeLook(outcome);
     return StatusChip<StopOutcome>(
       key: Key('stop_outcome_chip_${outcome.name}'),
       value: outcome,
       label: stopOutcomeLabel(l10n, outcome),
-      colors: (scheme) => stopOutcomeColors(scheme, outcome),
+      tone: tone,
+      icon: icon,
     );
   }
 }

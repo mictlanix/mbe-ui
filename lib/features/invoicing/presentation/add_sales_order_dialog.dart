@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/core/widgets/responsive_dialog.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/invoicing/presentation/fiscal_document_actions.dart';
@@ -201,7 +202,7 @@ class _AddSalesOrderDialogState extends ConsumerState<_AddSalesOrderDialog> {
               key: Key('add_sales_order_row_${order.id}'),
               onTap: _busy ? null : () => _add(order),
               child: row([
-                Text('${order.serial ?? '#${order.id}'}'),
+                RecordIdText('${order.serial ?? '#${order.id}'}'),
                 Text(fmt.display.date(order.date)),
                 Text(fmt.display.currency(order.total)),
               ]),

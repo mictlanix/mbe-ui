@@ -206,17 +206,15 @@ class SalesOrdersListScreen extends ConsumerWidget {
             onData: (page) => DataTableView<OpenSale>(
               key: const Key('sales_orders_list_table'),
               columns: [
-                DataTableColumn(
+                DataTableColumn.id(
                   label: l10n.salesOrdersColumnReference,
                   size: ColumnSize.S,
-                  cellBuilder: (context, sale) =>
-                      Text('${sale.serial ?? sale.id}'),
+                  text: (sale) => '${sale.serial ?? sale.id}',
                 ),
-                DataTableColumn(
+                DataTableColumn.timestamp(
                   label: l10n.salesOrdersColumnDate,
                   size: ColumnSize.M,
-                  cellBuilder: (context, sale) =>
-                      Text(fmt.display.dateTime(sale.date)),
+                  text: (sale) => fmt.display.dateTime(sale.date),
                 ),
                 DataTableColumn.text(
                   label: l10n.salesOrdersColumnCustomer,

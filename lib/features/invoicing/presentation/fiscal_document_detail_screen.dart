@@ -28,6 +28,7 @@ import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/fact_strip_row.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart' show toAppError;
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/core/widgets/status_chip.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
@@ -925,8 +926,15 @@ class _HeaderFacts extends ConsumerWidget {
       ),
     );
 
-    String party(String rfc, String? name) =>
-        name == null || name.isEmpty ? rfc : '$rfc · $name';
+    // Only the RFC is an identifier (mono); the legal name stays body text.
+    Widget party(String rfc, String? name) => Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(text: rfc, style: Theme.of(context).typeRoles.recordId),
+          if (name != null && name.isNotEmpty) TextSpan(text: ' · $name'),
+        ],
+      ),
+    );
     String regime(String? code, String? name) => [?code, ?name].join(' · ');
 
     return Column(
@@ -955,7 +963,7 @@ class _HeaderFacts extends ConsumerWidget {
           facts: [
             CompactField(
               label: l10n.fiscalDocumentFactSeriesFolio,
-              child: Text(
+              child: RecordIdText(
                 s.folioLabel ?? l10n.fiscalDocumentDraftFolio,
                 key: const Key('fiscal_document_folio'),
               ),
@@ -975,8 +983,8 @@ class _HeaderFacts extends ConsumerWidget {
                       key: const Key('fiscal_document_simulated_badge'),
                       value: 'simulated',
                       label: l10n.fiscalDocumentSimulatedBadge,
-                      colors: (scheme) =>
-                          (scheme.errorContainer, scheme.onErrorContainer),
+                      tone: StatusTone.warning,
+                      icon: Icons.science_outlined,
                     ),
                 ],
               ),
@@ -1011,7 +1019,7 @@ class _HeaderFacts extends ConsumerWidget {
                 document.issuerRegime,
                 document.issuerRegimeName,
               ),
-              child: Text(party(s.issuerRfc, s.issuerName)),
+              child: party(s.issuerRfc, s.issuerName),
             ),
             if (s.recipientRfc != null)
               CompactField(
@@ -1022,7 +1030,7 @@ class _HeaderFacts extends ConsumerWidget {
                     '${l10n.fiscalDocumentFactPostalCode} '
                         '${document.taxpayerPostalCode}',
                 ].where((e) => e.isNotEmpty).join(' · '),
-                child: Text(party(s.recipientRfc!, s.recipientName)),
+                child: party(s.recipientRfc!, s.recipientName),
               ),
             if (customerId != null)
               CompactField(
@@ -1455,7 +1463,7 @@ class _CancellationsSection extends ConsumerWidget {
                       key: Key('fiscal_document_cancellation_outcome_${c.id}'),
                       value: c.outcome,
                       label: _outcomeLabel(l10n, c),
-                      colors: (scheme) => _outcomeColors(scheme, c.outcome),
+                      tone: _outcomeTone(c.outcome),
                     ),
                   ],
                 ),
@@ -1532,27 +1540,18 @@ String _outcomeLabel(
   ),
 };
 
-/// Open requests are "waiting", ones that ended in a cancellation are the
-/// cancelled colour, and the ones that didn't are neutral (research R10).
-(Color, Color) _outcomeColors(
-  ColorScheme scheme,
-  CancellationOutcome outcome,
-) => switch (outcome) {
-  CancellationOutcome.requested || CancellationOutcome.pending => (
-    scheme.tertiaryContainer,
-    scheme.onTertiaryContainer,
-  ),
-  CancellationOutcome.accepted || CancellationOutcome.expired => (
-    scheme.errorContainer,
-    scheme.onErrorContainer,
-  ),
+/// Open requests are "waiting" (warning), ones that ended in a cancellation or
+/// a failure are error, and the ones that were refused or are unknown are
+/// neutral (research R10, spec 077 contracts/status-tones.md).
+StatusTone _outcomeTone(CancellationOutcome outcome) => switch (outcome) {
+  CancellationOutcome.requested ||
+  CancellationOutcome.pending => StatusTone.warning,
+  CancellationOutcome.accepted ||
+  CancellationOutcome.expired ||
+  CancellationOutcome.failed => StatusTone.error,
   CancellationOutcome.rejected ||
   CancellationOutcome.notCancellable ||
-  CancellationOutcome.failed ||
-  CancellationOutcome.unknown => (
-    scheme.surfaceContainerHighest,
-    scheme.onSurface,
-  ),
+  CancellationOutcome.unknown => StatusTone.neutral,
 };
 
 /// The related documents: type, folio and UUID, with add and remove on an
@@ -1620,7 +1619,7 @@ class _RelationsSection extends StatelessWidget {
                               : '${r.series ?? ''}${r.serial}',
                         ),
                       ),
-                      if (r.stampUuid != null) Text(r.stampUuid!),
+                      if (r.stampUuid != null) RecordIdText(r.stampUuid!),
                     ],
                   ),
                 ),

@@ -50,33 +50,38 @@ void main() {
     });
   }
 
-  test('stamping and cancellation pending share the "waiting" pair, which '
-      'differs from the other four', () {
-    final scheme = ColorScheme.fromSeed(seedColor: Colors.indigo);
-    final pairs = {
+  test('stamping and cancellation pending share the "waiting" tone, which '
+      'differs from the other four (spec 077)', () {
+    final tones = {
       for (final status in FiscalDocumentStatus.values)
-        status: fiscalDocumentStatusColors(scheme, status),
+        status: fiscalDocumentStatusLook(status).$1,
     };
 
-    expect(pairs[FiscalDocumentStatus.stamping], (
-      scheme.tertiaryContainer,
-      scheme.onTertiaryContainer,
-    ));
+    expect(tones[FiscalDocumentStatus.stamping], StatusTone.warning);
     expect(
-      pairs[FiscalDocumentStatus.cancellationPending],
-      pairs[FiscalDocumentStatus.stamping],
+      tones[FiscalDocumentStatus.cancellationPending],
+      tones[FiscalDocumentStatus.stamping],
     );
-    final others = [
-      FiscalDocumentStatus.draft,
-      FiscalDocumentStatus.sealed,
-      FiscalDocumentStatus.issued,
-      FiscalDocumentStatus.cancelled,
-    ];
-    for (final other in others) {
+    expect(tones[FiscalDocumentStatus.draft], StatusTone.neutral);
+    expect(tones[FiscalDocumentStatus.sealed], StatusTone.info);
+    expect(tones[FiscalDocumentStatus.issued], StatusTone.success);
+    expect(tones[FiscalDocumentStatus.cancelled], StatusTone.error);
+  });
+
+  testWidgets('every status shows an icon and a word (spec 077 FR-014)', (
+    tester,
+  ) async {
+    for (final status in FiscalDocumentStatus.values) {
+      await tester.pumpWidget(
+        _wrap(FiscalDocumentStatusChip(status: status), width: 200),
+      );
       expect(
-        pairs[other],
-        isNot(pairs[FiscalDocumentStatus.stamping]),
-        reason: other.name,
+        find.descendant(
+          of: find.byType(StatusChip<FiscalDocumentStatus>),
+          matching: find.byType(Icon),
+        ),
+        findsOneWidget,
+        reason: status.name,
       );
     }
   });

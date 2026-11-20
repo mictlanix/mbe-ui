@@ -9,6 +9,7 @@ build_web() {
   info "building web (WebAssembly with JavaScript fallback)"
   flutter build web --release --wasm --no-web-resources-cdn \
     --build-name "$VERSION" --build-number "$BUILD" \
+    --dart-define=BRAND_ID="$BRAND" \
     --dart-define-from-file="$ENV_FILE"
   local f
   for f in main.dart.wasm main.dart.js flutter_bootstrap.js index.html; do

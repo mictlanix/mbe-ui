@@ -54,4 +54,20 @@ void main() {
     expect(text.maxLines, 1);
     expect(text.overflow, TextOverflow.ellipsis);
   });
+
+  testWidgets('inherit keeps the surrounding size and only goes mono', (
+    tester,
+  ) async {
+    await pump(
+      tester,
+      const DefaultTextStyle(
+        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+        child: RecordIdText.inherit('Pago 12'),
+      ),
+    );
+    final style = tester.widget<Text>(find.text('Pago 12')).style!;
+    expect(style.fontFamily, TypeRoles.monoFamily);
+    expect(style.fontSize, 22);
+    expect(style.fontWeight, FontWeight.w600);
+  });
 }

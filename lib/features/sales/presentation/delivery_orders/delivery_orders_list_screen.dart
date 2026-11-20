@@ -157,14 +157,12 @@ class DeliveryOrdersListScreen extends ConsumerWidget {
             onData: (page) => DataTableView<DeliveryOrderSummary>(
               key: const Key('delivery_orders_table'),
               columns: [
-                DataTableColumn(
+                DataTableColumn.id(
                   label: l10n.deliveryOrderColumnSerial,
                   size: ColumnSize.S,
-                  cellBuilder: (context, o) => Text(
-                    o.serial == null
-                        ? l10n.deliveryOrderDraftFolio
-                        : '${o.serial}',
-                  ),
+                  text: (o) => o.serial == null
+                      ? l10n.deliveryOrderDraftFolio
+                      : '${o.serial}',
                 ),
                 DataTableColumn(
                   label: l10n.deliveryOrderColumnCustomer,
@@ -181,10 +179,10 @@ class DeliveryOrdersListScreen extends ConsumerWidget {
                     cellBuilder: (context, o) =>
                         Text(deliveryOrderTypeLabel(l10n, o.type)),
                   ),
-                DataTableColumn(
+                DataTableColumn.timestamp(
                   label: l10n.deliveryOrderColumnScheduled,
                   size: ColumnSize.S,
-                  cellBuilder: (context, o) => Text(fmt.display.date(o.date)),
+                  text: (o) => fmt.display.date(o.date),
                 ),
                 if (!compact)
                   DataTableColumn(
@@ -200,7 +198,7 @@ class DeliveryOrdersListScreen extends ConsumerWidget {
                     ),
                   ),
                 if (!compact)
-                  DataTableColumn.text(
+                  DataTableColumn.id(
                     label: l10n.deliveryOrderColumnSalesOrders,
                     size: ColumnSize.S,
                     text: (o) => o.salesOrderIds.join(', '),

@@ -18,6 +18,7 @@ import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/date_range_filter_chip.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/features/catalog/data/taxpayer_issuer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/fiscal_document_kind.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/taxpayer_issuer_list_item.dart';
@@ -150,8 +151,9 @@ class FiscalDocumentsListScreen extends ConsumerWidget {
                 DataTableColumn(
                   label: l10n.fiscalDocumentColFolio,
                   size: ColumnSize.S,
-                  cellBuilder: (context, d) =>
-                      Text(d.folioLabel ?? l10n.fiscalDocumentTitleDraft(d.id)),
+                  cellBuilder: (context, d) => RecordIdText(
+                    d.folioLabel ?? l10n.fiscalDocumentTitleDraft(d.id),
+                  ),
                 ),
                 if (!compact)
                   DataTableColumn(
@@ -172,7 +174,7 @@ class FiscalDocumentsListScreen extends ConsumerWidget {
                     size: ColumnSize.S,
                     cellBuilder: (context, d) => Tooltip(
                       message: d.issuerName ?? d.issuerRfc,
-                      child: Text(d.issuerRfc),
+                      child: RecordIdText(d.issuerRfc),
                     ),
                   ),
                 DataTableColumn(
@@ -181,11 +183,10 @@ class FiscalDocumentsListScreen extends ConsumerWidget {
                   cellBuilder: (context, d) => _Recipient(summary: d),
                 ),
                 if (!compact)
-                  DataTableColumn(
+                  DataTableColumn.timestamp(
                     label: l10n.fiscalDocumentColIssued,
                     size: ColumnSize.S,
-                    cellBuilder: (context, d) =>
-                        Text(fmt.display.date(d.issued)),
+                    text: (d) => fmt.display.date(d.issued),
                   ),
                 DataTableColumn(
                   label: l10n.fiscalDocumentColStatus,
@@ -239,12 +240,7 @@ class _Recipient extends StatelessWidget {
         children: [
           Text(name, overflow: TextOverflow.ellipsis, maxLines: 1),
           if (rfc != null && rfc != name)
-            Text(
-              rfc,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
+            RecordIdText(rfc, overflow: TextOverflow.ellipsis, maxLines: 1),
         ],
       ),
     );

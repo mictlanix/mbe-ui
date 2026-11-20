@@ -8,6 +8,7 @@ import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/features/invoicing/data/fiscal_document_repository_impl.dart';
 import 'package:mbe_ui/features/invoicing/domain/entities/fiscal_document.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
@@ -217,9 +218,9 @@ class _FiscalDocumentCandidatePickerState
               key: Key('${prefix}_row_${d.id}'),
               onTap: widget.enabled ? () => widget.onPicked(d) : null,
               child: row([
-                Text(d.folioLabel ?? '#${d.id}'),
+                RecordIdText(d.folioLabel ?? '#${d.id}'),
                 Text(fmt.display.date(d.issued)),
-                Text(
+                RecordIdText(
                   d.stampUuid ?? '—',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,

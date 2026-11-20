@@ -35,19 +35,10 @@ class CashSessionStatusChip extends StatelessWidget {
       key: Key('cash_session_status_chip_${status.name}'),
       value: status,
       label: label,
-      colors: (scheme) => switch (status) {
-        CashSessionStatus.open => (
-          scheme.primaryContainer,
-          scheme.onPrimaryContainer,
-        ),
-        CashSessionStatus.stale => (
-          scheme.errorContainer,
-          scheme.onErrorContainer,
-        ),
-        CashSessionStatus.closed => (
-          scheme.surfaceContainerHighest,
-          scheme.onSurfaceVariant,
-        ),
+      tone: switch (status) {
+        CashSessionStatus.open => StatusTone.info,
+        CashSessionStatus.stale => StatusTone.error,
+        CashSessionStatus.closed => StatusTone.success,
       },
     );
   }

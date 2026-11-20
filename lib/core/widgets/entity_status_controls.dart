@@ -91,13 +91,12 @@ class EntityStatusCell extends StatelessWidget {
       key: Key('status_badge_${status.name}'),
       value: status,
       label: label,
-      colors: (scheme) => switch (status) {
-        EntityStatus.inactive => (
-          scheme.errorContainer,
-          scheme.onErrorContainer,
-        ),
-        // Archived is a deliberate, non-error end state — tone it down.
-        _ => (scheme.surfaceContainerHighest, scheme.onSurfaceVariant),
+      // Neither is an error: inactive and archived are deliberate states, so
+      // both are neutral (spec 077 contracts/status-tones.md).
+      tone: StatusTone.neutral,
+      icon: switch (status) {
+        EntityStatus.inactive => Icons.block,
+        _ => Icons.inventory_2_outlined,
       },
     );
   }

@@ -153,13 +153,13 @@ List<DataTableColumn<ItinerarySummary>> _wideColumns(
   AppLocalizations l10n,
   AppFormatters fmt,
 ) => [
-  DataTableColumn.text(
+  DataTableColumn.id(
     label: l10n.itineraryColumnNumber,
     size: ColumnSize.S,
     numeric: true,
     text: (t) => '${t.id}',
   ),
-  DataTableColumn.text(
+  DataTableColumn.timestamp(
     label: l10n.itineraryColumnDate,
     size: ColumnSize.S,
     text: (t) => fmt.display.date(t.date),
@@ -184,12 +184,12 @@ List<DataTableColumn<ItinerarySummary>> _wideColumns(
     size: ColumnSize.M,
     cellBuilder: (context, t) => ItineraryStatusChip(status: t.status),
   ),
-  DataTableColumn.text(
+  DataTableColumn.timestamp(
     label: l10n.itineraryColumnDeparture,
     size: ColumnSize.S,
     text: (t) => fmt.display.dateTime(t.departedAt),
   ),
-  DataTableColumn.text(
+  DataTableColumn.timestamp(
     label: l10n.itineraryColumnReturn,
     size: ColumnSize.S,
     text: (t) => fmt.display.dateTime(t.returnedAt),

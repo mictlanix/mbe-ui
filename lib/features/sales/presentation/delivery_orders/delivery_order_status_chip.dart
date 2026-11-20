@@ -31,39 +31,26 @@ String deliveryOrderTypeLabel(AppLocalizations l10n, FulfillmentType type) =>
       FulfillmentType.counterPickup => l10n.deliveryOrderTypePickup,
     };
 
-/// A status's `(background, foreground)` pair, by the C11 groups: neutral
-/// (draft), warning (needs someone's attention), info (moving along),
-/// success (handed over) and muted (cancelled).
-(Color, Color) deliveryOrderStatusColors(
-  ColorScheme scheme,
-  DeliveryOrderStatus status,
-) => switch (status) {
-  DeliveryOrderStatus.draft => (
-    scheme.surfaceContainerHighest,
-    scheme.onSurface,
-  ),
-  DeliveryOrderStatus.pendingApproval || DeliveryOrderStatus.failed => (
-    scheme.tertiaryContainer,
-    scheme.onTertiaryContainer,
-  ),
-  DeliveryOrderStatus.approved ||
-  DeliveryOrderStatus.readyForPickup ||
-  DeliveryOrderStatus.inPreparation ||
-  DeliveryOrderStatus.inTransit => (
-    scheme.primaryContainer,
-    scheme.onPrimaryContainer,
-  ),
-  DeliveryOrderStatus.pickedUp ||
-  DeliveryOrderStatus.delivered ||
-  DeliveryOrderStatus.partiallyDelivered => (
-    scheme.secondaryContainer,
-    scheme.onSecondaryContainer,
-  ),
-  DeliveryOrderStatus.cancelled => (
-    scheme.surfaceContainerLow,
-    scheme.onSurfaceVariant,
-  ),
-};
+/// A status's tone, by the C11 groups (spec 077 contracts/status-tones.md):
+/// neutral (draft), warning (needs someone's attention or went partly), info
+/// (moving along), success (handed over) and error (failed or cancelled).
+StatusLook deliveryOrderStatusLook(DeliveryOrderStatus status) =>
+    switch (status) {
+      DeliveryOrderStatus.draft => (StatusTone.neutral, Icons.edit_note),
+      DeliveryOrderStatus.pendingApproval ||
+      DeliveryOrderStatus.partiallyDelivered => (StatusTone.warning, null),
+      DeliveryOrderStatus.approved ||
+      DeliveryOrderStatus.readyForPickup ||
+      DeliveryOrderStatus.inPreparation => (StatusTone.info, null),
+      DeliveryOrderStatus.inTransit => (
+        StatusTone.info,
+        Icons.local_shipping_outlined,
+      ),
+      DeliveryOrderStatus.pickedUp ||
+      DeliveryOrderStatus.delivered => (StatusTone.success, null),
+      DeliveryOrderStatus.failed ||
+      DeliveryOrderStatus.cancelled => (StatusTone.error, null),
+    };
 
 /// The order's status chip, shared by the list and the detail screen. Never
 /// truncated: give it the width its label needs.
@@ -75,11 +62,13 @@ class DeliveryOrderStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final (tone, icon) = deliveryOrderStatusLook(status);
     return StatusChip<DeliveryOrderStatus>(
       key: Key('delivery_order_status_chip_${status.name}'),
       value: status,
       label: deliveryOrderStatusLabel(l10n, status),
-      colors: (scheme) => deliveryOrderStatusColors(scheme, status),
+      tone: tone,
+      icon: icon,
     );
   }
 }
