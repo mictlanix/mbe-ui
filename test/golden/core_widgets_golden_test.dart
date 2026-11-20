@@ -29,6 +29,7 @@ import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/core/widgets/number_pad.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/responsive_dialog.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
@@ -85,6 +86,7 @@ const _coveredFiles = {
   'list_state_views.dart',
   'number_pad.dart',
   'product_photo.dart',
+  'record_id_text.dart', // spec 077 — mono record ID / folio / RFC
   'record_form_actions.dart',
   'responsive_dialog.dart', // spec 053 — the quote email form's wide dialog / phone full-screen shell
   'responsive_form_grid.dart',
@@ -497,6 +499,22 @@ void main() {
         tester,
         'product_photo',
         (brightness, width) => const ProductPhoto(photoUrl: null),
+      );
+    });
+
+    testWidgets('RecordIdText', (tester) async {
+      await expectGoldenMatrix(
+        tester,
+        'record_id_text',
+        (brightness, width) => const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            RecordIdText('00337298'),
+            RecordIdText('SABE5513950918'),
+            RecordIdText('#4512'),
+          ],
+        ),
       );
     });
 

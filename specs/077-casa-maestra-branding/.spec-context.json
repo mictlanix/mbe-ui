@@ -241,6 +241,14 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-20T15:18:37.796Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:20:27.035Z"
     }
   ],
   "telemetryInstanceId": "7b23ad11-955e-49d2-a4a8-4f4062ebf54c",
@@ -371,7 +379,7 @@
       "decision": "FR-012 nav header tier rule applies to every brand"
     }
   ],
-  "currentTask": "T018",
+  "currentTask": "T020",
   "task_summaries": {
     "T001,T002,T003,T004": {
       "status": "DONE",
@@ -526,6 +534,16 @@
       "files": [
         "test/golden/casa_maestra_golden_test.dart",
         "test/golden/goldens/casa_maestra_*.png"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "DataTableColumn.id/.timestamp mono factories + RecordIdText, with tests and golden",
+      "files": [
+        "lib/core/widgets/data_table_view.dart",
+        "lib/core/widgets/record_id_text.dart",
+        "test/widget/core/widgets",
+        "test/golden/core_widgets_golden_test.dart"
       ]
     }
   }

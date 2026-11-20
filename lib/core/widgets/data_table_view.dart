@@ -49,6 +49,60 @@ class DataTableColumn<T> {
     );
   }
 
+  /// A plain-text cell for a record ID, folio, RFC or serial, set in the mono
+  /// `recordId` role (spec 077 FR-019). Same truncation and tooltip behavior
+  /// as [DataTableColumn.text]; the same rule applies: never for amounts or
+  /// text the user needs in full. Product codes are *not* record IDs and stay
+  /// in body text (spec 022 FR-028) — use [DataTableColumn.text] for them.
+  factory DataTableColumn.id({
+    required String label,
+    required String Function(T item) text,
+    Comparator<T>? comparator,
+    bool numeric = false,
+    ColumnSize size = ColumnSize.M,
+    double? fixedWidth,
+  }) => DataTableColumn<T>(
+    label: label,
+    numeric: numeric,
+    comparator: comparator,
+    size: size,
+    fixedWidth: fixedWidth,
+    cellBuilder: (context, item) =>
+        _monoCell(text(item), Theme.of(context).typeRoles.recordId, numeric),
+  );
+
+  /// A plain-text cell for a date and/or time, set in the mono `timestamp`
+  /// role (spec 077 FR-019). The caller formats the value through
+  /// `formattersProvider`, as everywhere else.
+  factory DataTableColumn.timestamp({
+    required String label,
+    required String Function(T item) text,
+    Comparator<T>? comparator,
+    bool numeric = false,
+    ColumnSize size = ColumnSize.M,
+    double? fixedWidth,
+  }) => DataTableColumn<T>(
+    label: label,
+    numeric: numeric,
+    comparator: comparator,
+    size: size,
+    fixedWidth: fixedWidth,
+    cellBuilder: (context, item) =>
+        _monoCell(text(item), Theme.of(context).typeRoles.timestamp, numeric),
+  );
+
+  static Widget _monoCell(String value, TextStyle style, bool numeric) =>
+      Tooltip(
+        message: value,
+        child: Text(
+          value,
+          style: style,
+          overflow: TextOverflow.ellipsis,
+          maxLines: 1,
+          textAlign: numeric ? TextAlign.end : null,
+        ),
+      );
+
   final String label;
   final Widget Function(BuildContext context, T item) cellBuilder;
   final Comparator<T>? comparator;

@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/app/theme/app_theme.dart';
 import 'package:mbe_ui/core/branding/brand_config.dart';
+import 'package:mbe_ui/core/design/design.dart';
+import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 
@@ -366,6 +368,83 @@ void main() {
       final table = tester.getRect(find.byType(DataTable2));
       expect(card.left, table.left);
       expect(card.left, 0);
+    });
+  });
+
+  group('mono columns (spec 077 FR-019)', () {
+    Future<void> pump(
+      WidgetTester tester,
+      List<DataTableColumn<int>> cols,
+    ) async {
+      final base = AppTheme.of(const BrandConfig(displayName: 'X')).light;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: base,
+          builder: (context, child) => Theme(
+            data: DesignTheme.forTier(Theme.of(context), LayoutTier.expanded),
+            child: child!,
+          ),
+          home: Scaffold(
+            body: DataTableView<int>(columns: cols, rows: const [1]),
+          ),
+        ),
+      );
+    }
+
+    TextStyle? styleOf(WidgetTester tester, String text) =>
+        tester.widget<Text>(find.text(text)).style;
+
+    testWidgets('DataTableColumn.id sets the recordId role (mono)', (
+      tester,
+    ) async {
+      await pump(tester, [
+        DataTableColumn<int>.id(label: 'Folio', text: (i) => '00337298'),
+      ]);
+      final style = styleOf(tester, '00337298')!;
+      expect(style.fontFamily, TypeRoles.monoFamily);
+      expect(style.fontSize, 14);
+    });
+
+    testWidgets('DataTableColumn.timestamp sets the timestamp role (mono, '
+        '12px)', (tester) async {
+      await pump(tester, [
+        DataTableColumn<int>.timestamp(
+          label: 'Fecha',
+          text: (i) => '2026-07-28 14:32',
+        ),
+      ]);
+      final style = styleOf(tester, '2026-07-28 14:32')!;
+      expect(style.fontFamily, TypeRoles.monoFamily);
+      expect(style.fontSize, 12);
+    });
+
+    testWidgets('DataTableColumn.text stays body text, never mono', (
+      tester,
+    ) async {
+      await pump(tester, [
+        DataTableColumn<int>.text(label: 'Nombre', text: (i) => 'Cemento'),
+      ]);
+      expect(
+        styleOf(tester, 'Cemento')?.fontFamily,
+        isNot(TypeRoles.monoFamily),
+      );
+    });
+
+    testWidgets('mono cells truncate with a tooltip and honor numeric', (
+      tester,
+    ) async {
+      await pump(tester, [
+        DataTableColumn<int>.id(
+          label: 'Folio',
+          numeric: true,
+          text: (i) => 'ABC-$i',
+        ),
+      ]);
+      final text = tester.widget<Text>(find.text('ABC-1'));
+      expect(text.overflow, TextOverflow.ellipsis);
+      expect(text.maxLines, 1);
+      expect(text.textAlign, TextAlign.end);
+      expect(find.byTooltip('ABC-1'), findsOneWidget);
     });
   });
 }
