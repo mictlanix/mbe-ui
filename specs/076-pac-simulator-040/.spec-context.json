@@ -1,0 +1,24 @@
+{
+  "workflow": "speckit",
+  "specName": "Pick Up the Real-PAC Simulator (mbe-api spec 040)",
+  "branch": "076-pac-simulator-040",
+  "status": "completed",
+  "currentStep": "implement",
+  "history": [
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T14:06:07.018Z"
+    }
+  ],
+  "currentTask": null,
+  "concerns": [
+    {
+      "note": "finished, unverified",
+      "step": "implement"
+    }
+  ],
+  "telemetryInstanceId": "46a2f832-5ca0-45ba-a891-34eb7831d8c0"
+}
