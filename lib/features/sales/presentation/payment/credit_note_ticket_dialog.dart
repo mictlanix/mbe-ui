@@ -12,6 +12,7 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 
 /// What the cashier confirmed in [showCreditNoteTicketDialog]: the note, and
 /// the exact amount the dialog showed as "Se aplicará" — so what is applied is
@@ -149,10 +150,9 @@ class _CreditNoteTicketDialogState
     } else if (_error != null) {
       status = ErrorBanner(error: _error!);
     } else if (lookup != null && lookup.refusal != null) {
-      status = Text(
+      status = InlineErrorText(
         _refusalMessage(l10n, lookup),
         key: const Key('credit_note_ticket_refusal'),
-        style: TextStyle(color: theme.colorScheme.error),
       );
     } else if (note != null) {
       status = Container(

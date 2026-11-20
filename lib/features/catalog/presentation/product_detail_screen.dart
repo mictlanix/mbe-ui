@@ -26,6 +26,7 @@ import 'package:mbe_ui/features/catalog/presentation/product_form_controller.dar
 import 'package:mbe_ui/l10n/app_localizations.dart';
 import 'package:mbe_ui/core/errors/localize_problem.dart';
 import 'package:mbe_ui/core/widgets/form_error_banner.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 
 /// Create / view / edit screen for a single product (FR-003..FR-009,
 /// FR-013, FR-014, FR-015). [productId] is `null` in create mode.
@@ -661,11 +662,7 @@ class _PhotoSection extends StatelessWidget {
         spacing: 4,
         children: [
           media,
-          if (photoError case final error?)
-            Text(
-              error,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-            ),
+          if (photoError case final error?) InlineErrorText(error),
         ],
       ),
     );

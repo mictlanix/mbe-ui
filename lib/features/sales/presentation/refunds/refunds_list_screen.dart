@@ -36,6 +36,7 @@ import 'package:mbe_ui/features/sales/presentation/refunds/refund_open_or_resume
 import 'package:mbe_ui/features/sales/presentation/refunds/refunds_filter.dart';
 import 'package:mbe_ui/features/sales/presentation/refunds/refunds_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 
 const refundsPath = '/sales/refunds';
 
@@ -516,11 +517,7 @@ class _NewRefundDialogState extends ConsumerState<_NewRefundDialog> {
             onSubmitted: (_) => _submit(),
           ),
           if (_refusal != null)
-            Text(
-              _refusal!,
-              key: const Key('refund_new_refusal'),
-              style: TextStyle(color: theme.colorScheme.error),
-            ),
+            InlineErrorText(_refusal!, key: const Key('refund_new_refusal')),
           if (_error != null) ErrorBanner(error: _error!),
         ],
       ),

@@ -23,6 +23,7 @@ Rules:
 - Only `promo` uses accent colors.
 - `error` uses the theme's `error` family. In Casa Maestra, `errorContainer` `#FFDAD6` and `accentContainer` `#FFDAD4` look alike by design, so the icon and word are what tell them apart. That is why both are required.
 - No caller passes raw colors.
+- Found at implementation (2026-11-20): the design system's `error-container` (`#FFDAD6`) and `accent-container` (`#FFDAD4`) differ by 2 in one channel, so the two grounds are indistinguishable by eye. The brand's colors are kept as given; `promo` instead carries a 1px outline in the accent color (`error` and every other tone have none), so FR-015 holds without relying on the icon alone.
 
 ## Meaning → tone
 

@@ -425,6 +425,38 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-20T15:29:25.061Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:33:53.060Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:33:53.163Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:33:53.263Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:33:53.366Z"
     }
   ],
   "telemetryInstanceId": "7b23ad11-955e-49d2-a4a8-4f4062ebf54c",
@@ -555,7 +587,7 @@
       "decision": "FR-012 nav header tier rule applies to every brand"
     }
   ],
-  "currentTask": "T058",
+  "currentTask": "T039",
   "task_summaries": {
     "T001,T002,T003,T004": {
       "status": "DONE",
@@ -881,6 +913,37 @@
       "did": "RELEASING.md documents cm, BRAND_ID source, manifest gaps, white ground",
       "files": [
         "deploy/RELEASING.md"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "InlineErrorText at the sales inline error texts",
+      "files": [
+        "lib/features/sales/presentation"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "InlineErrorText at the delivery and catalog inline error texts",
+      "files": [
+        "lib/features/sales/presentation/delivery",
+        "lib/features/catalog/presentation"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "Icons on pos_session_blocked_banner and refund_session_banner; 3 tests read InlineErrorText.text",
+      "files": [
+        "lib/features/sales/presentation",
+        "test/widget/features/sales"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "Goldens regenerated: status_chip, entity_status_controls; new Casa Maestra status tones. Promo got an accent outline because error/accent containers are near-identical",
+      "files": [
+        "test/golden",
+        "lib/core/widgets/status_chip.dart"
       ]
     }
   }

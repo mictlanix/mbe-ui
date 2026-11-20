@@ -15,6 +15,7 @@ import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery/destination_line_row.dart';
 import 'package:mbe_ui/features/sales/presentation/widgets/quantity_stepper.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 
 /// One already-created destination (FR-029, contract §4): a collapsible card
 /// with a positional badge, an identity/counts header, and — expanded —
@@ -463,10 +464,7 @@ class _DestinationCardState extends ConsumerState<DestinationCard> {
           if (error != null)
             Padding(
               padding: EdgeInsets.only(top: spacing.xxs),
-              child: Text(
-                error,
-                style: TextStyle(color: theme.colorScheme.error),
-              ),
+              child: InlineErrorText(error),
             ),
         ],
       ),

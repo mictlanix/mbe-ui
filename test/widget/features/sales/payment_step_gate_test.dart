@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 import 'package:mbe_ui/core/domain/currency.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
@@ -370,7 +371,7 @@ void main() {
       expect(issue, findsOneWidget);
       expect(banner, findsOneWidget);
       expect(
-        tester.widget<Text>(issue).data,
+        tester.widget<InlineErrorText>(issue).text,
         contains('\$300.00'),
         reason: 'the message names the credit that did go through',
       );

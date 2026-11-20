@@ -90,11 +90,18 @@ class StatusChip<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final (background, foreground) = tone.colors(Theme.of(context));
+    final theme = Theme.of(context);
+    final (background, foreground) = tone.colors(theme);
     return Chip(
       avatar: Icon(icon ?? tone.defaultIcon, size: 16, color: foreground),
       label: Text(label),
       backgroundColor: background,
+      // Casa Maestra's error and promo grounds are almost the same pink
+      // (#FFDAD6 vs #FFDAD4), so promo also carries an accent outline: the
+      // two stay distinguishable without relying on the icon alone (FR-015).
+      side: tone == StatusTone.promo
+          ? BorderSide(color: theme.semanticColors.accent)
+          : null,
       labelStyle: TextStyle(color: foreground),
       visualDensity: VisualDensity.compact,
     );

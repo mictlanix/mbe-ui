@@ -16,6 +16,7 @@ import 'package:mbe_ui/features/sales/presentation/delivery_itineraries/itinerar
 import 'package:mbe_ui/features/sales/presentation/delivery_itineraries/itinerary_status_chip.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_itineraries/signature_pad.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 
 /// A chosen proof image: its bytes and the file's name.
 typedef PickedProof = ({Uint8List bytes, String name});
@@ -480,10 +481,9 @@ class _CloseStopDialogState extends ConsumerState<_CloseStopDialog> {
                   ),
                 ],
                 if (_imageProblem != null)
-                  Text(
+                  InlineErrorText(
                     _imageProblem!,
                     key: const Key('itinerary_close_image_problem'),
-                    style: TextStyle(color: theme.colorScheme.error),
                   ),
               ],
             )

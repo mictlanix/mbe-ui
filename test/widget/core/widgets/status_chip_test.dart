@@ -179,6 +179,27 @@ void main() {
       }
     });
 
+    testWidgets(
+      'only promo has an accent outline, so it never reads as error',
+      (tester) async {
+        final theme = AppTheme.of(brands['xbe.cm']!).light;
+        for (final tone in StatusTone.values) {
+          await tester.pumpWidget(
+            MaterialApp(
+              theme: theme,
+              home: Scaffold(body: chip(tone)),
+            ),
+          );
+          final side = tester.widget<Chip>(find.byType(Chip)).side;
+          if (tone == StatusTone.promo) {
+            expect(side?.color, theme.extension<SemanticColors>()!.accent);
+          } else {
+            expect(side, isNull, reason: tone.name);
+          }
+        }
+      },
+    );
+
     test('in Casa Maestra, error and promo grounds are not the same color', () {
       for (final theme in [
         AppTheme.of(brands['xbe.cm']!).light,

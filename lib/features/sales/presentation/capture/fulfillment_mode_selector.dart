@@ -10,6 +10,7 @@ import 'package:mbe_ui/features/sales/domain/entities/sale.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_step_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 
 /// One segment of [_ModeTrack].
 typedef _ModeSegment = ({FulfillmentMode mode, String label, IconData icon});
@@ -329,10 +330,9 @@ class _FulfillmentModeSelectorState
         if (_refusal != null)
           Padding(
             padding: const EdgeInsets.only(top: 8),
-            child: Text(
+            child: InlineErrorText(
               _refusal!,
               key: const Key('pos_delivery_refusal'),
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
         if (_error != null)

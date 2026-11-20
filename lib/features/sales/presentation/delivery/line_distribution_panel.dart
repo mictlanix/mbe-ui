@@ -8,6 +8,7 @@ import 'package:mbe_ui/features/sales/domain/entities/destination.dart';
 import 'package:mbe_ui/features/sales/domain/entities/line_distribution.dart';
 import 'package:mbe_ui/features/sales/domain/money.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 
 /// FR-033: for every line, how much was ordered and where each destination's
 /// share of it is going — the running answer to "is this sale fully
@@ -316,10 +317,9 @@ class LineDistributionFoot extends ConsumerWidget {
           ),
           if (outstandingMessage != null) ...[
             SizedBox(height: spacing.xs),
-            Text(
-              key: const Key('delivery_outstanding_notice'),
+            InlineErrorText(
               outstandingMessage!,
-              style: TextStyle(color: theme.colorScheme.error),
+              key: const Key('delivery_outstanding_notice'),
             ),
             if (onSweepAndClose != null) ...[
               SizedBox(height: spacing.xs),

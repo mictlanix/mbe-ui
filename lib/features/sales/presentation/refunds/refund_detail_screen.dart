@@ -846,9 +846,22 @@ class _SessionBanner extends StatelessWidget {
         spacing: spacing.sm,
         runSpacing: spacing.sm,
         children: [
-          Text(
-            l10n.refundSessionBanner,
-            style: TextStyle(color: theme.colorScheme.onErrorContainer),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 20,
+                color: theme.colorScheme.onErrorContainer,
+              ),
+              SizedBox(width: spacing.xs),
+              Flexible(
+                child: Text(
+                  l10n.refundSessionBanner,
+                  style: TextStyle(color: theme.colorScheme.onErrorContainer),
+                ),
+              ),
+            ],
           ),
           FilledButton(
             key: const Key('refund_session_button'),

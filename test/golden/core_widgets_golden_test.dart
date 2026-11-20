@@ -654,10 +654,10 @@ void main() {
       await expectGoldenMatrix(
         tester,
         'status_chip',
-        (brightness, width) => StatusChip<EntityStatus>(
+        (brightness, width) => const StatusChip<EntityStatus>(
           value: EntityStatus.inactive,
           label: 'Inactive',
-          colors: (scheme) => (scheme.errorContainer, scheme.onErrorContainer),
+          tone: StatusTone.error,
         ),
       );
     });

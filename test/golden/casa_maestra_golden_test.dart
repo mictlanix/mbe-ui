@@ -9,6 +9,8 @@ import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/brand_logo.dart';
 import 'package:mbe_ui/core/widgets/brand_nav_header.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
+import 'package:mbe_ui/core/widgets/status_chip.dart';
 import 'package:mbe_ui/features/auth/presentation/login/login_branding_pane.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -60,6 +62,45 @@ void main() {
             SizedBox(height: 24),
             SizedBox(width: 240, child: BrandNavHeader()),
           ],
+        ),
+        overrides: overrides,
+        brand: brand,
+      );
+    });
+
+    testWidgets('status tones and inline error', (tester) async {
+      await expectGoldenMatrix(
+        tester,
+        'casa_maestra_status_tones',
+        (brightness, width) => SizedBox(
+          width: width - 32,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  for (final (tone, label) in const [
+                    (StatusTone.neutral, 'Borrador'),
+                    (StatusTone.info, 'En ruta'),
+                    (StatusTone.warning, 'Pendiente'),
+                    (StatusTone.success, 'Pagado'),
+                    (StatusTone.error, 'Cancelado'),
+                    (StatusTone.promo, 'Oferta'),
+                  ])
+                    StatusChip<StatusTone>(
+                      value: tone,
+                      label: label,
+                      tone: tone,
+                    ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const InlineErrorText('El RFC debe tener 12 o 13 caracteres'),
+            ],
+          ),
         ),
         overrides: overrides,
         brand: brand,
