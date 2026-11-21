@@ -139,7 +139,8 @@ the new build number.
 
 **iOS**
 1. Register the App ID `com.mictlanix.mbe` and create the App Store Connect app
-   record (done for the white-label app).
+   record (done for the white-label app). Casa Maestra (`xbe.cm`) has its own:
+   App ID `com.mictlanix.xbe.cm` and record (SKU `xbe-cm`), done 2026-11-21.
 2. Users and Access → Integrations → App Store Connect API → Team Keys →
    generate a key with the **Admin** role (cloud-managed distribution signing
    needs it). Download the `.p8` once; keep it in `~/.private_keys/` mode 600.
