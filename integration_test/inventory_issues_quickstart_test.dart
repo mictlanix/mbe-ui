@@ -712,10 +712,12 @@ void main() {
       await container().read(authProvider.notifier).signOut();
       await login(_noAccessUser, _noAccessPass);
       await step(
-        '1b qanoaccess: no Inventario group, the route redirects',
+        '1b qanoaccess: no warehouse issues entry, the route redirects',
         () async {
           expect(byKey('nav_dest_inventory-issues'), findsNothing);
-          expect(byKey('nav_group_inventory'), findsNothing);
+          // The Inventario section can still show for a user who reads
+          // products or labels (spec 077), so the destination above is the
+          // claim, not the section header.
           await go(_list);
           expect(location(), '/');
           expect(byKey('inventory_issues_table'), findsNothing);

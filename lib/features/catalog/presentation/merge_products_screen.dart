@@ -17,6 +17,7 @@ import 'package:mbe_ui/features/catalog/presentation/widgets/merge_comparison_ta
 import 'package:mbe_ui/features/catalog/presentation/widgets/merge_related_records_summary.dart';
 import 'package:mbe_ui/features/catalog/presentation/widgets/merge_review_panel.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 
 /// Minimum typed length before a picker searches (legacy screen used 3;
 /// research.md §2/§3), avoiding overly broad result sets.
@@ -131,10 +132,9 @@ class MergeProductsScreen extends ConsumerWidget {
             if (state.validationMessageCode case final code?)
               FormGridChild(
                 span: FormGridSpan.full,
-                Text(
+                InlineErrorText(
                   _localizeValidation(l10n, code),
                   key: const Key('merge_validation_message'),
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
             // The review step (specs/016 FR-001): once the pair is valid and

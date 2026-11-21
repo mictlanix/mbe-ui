@@ -216,17 +216,15 @@ class PosSalesListScreen extends ConsumerWidget {
             onData: (page) => DataTableView<OpenSale>(
               key: const Key('pos_sales_list_table'),
               columns: [
-                DataTableColumn(
+                DataTableColumn.id(
                   label: l10n.posSalesColumnReference,
                   size: ColumnSize.S,
-                  cellBuilder: (context, sale) =>
-                      Text('${sale.serial ?? sale.id}'),
+                  text: (sale) => '${sale.serial ?? sale.id}',
                 ),
-                DataTableColumn(
+                DataTableColumn.timestamp(
                   label: l10n.posSalesColumnDate,
                   size: ColumnSize.M,
-                  cellBuilder: (context, sale) =>
-                      Text(fmt.display.dateTime(sale.date)),
+                  text: (sale) => fmt.display.dateTime(sale.date),
                 ),
                 DataTableColumn.text(
                   label: l10n.posSalesColumnCustomer,

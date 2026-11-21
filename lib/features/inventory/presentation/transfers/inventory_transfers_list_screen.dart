@@ -15,6 +15,7 @@ import 'package:mbe_ui/core/widgets/catalog_filter_bar.dart';
 import 'package:mbe_ui/core/widgets/catalog_filter_sheet.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_transfer.dart';
@@ -133,7 +134,7 @@ class InventoryTransfersListScreen extends ConsumerWidget {
                   label: l10n.inventoryTransferColFolio,
                   size: ColumnSize.S,
                   numeric: true,
-                  cellBuilder: (context, r) => Text(
+                  cellBuilder: (context, r) => RecordIdText(
                     r.serial == null
                         ? l10n.inventoryDocumentDraftFolio('${r.id}')
                         : '${r.serial}',
@@ -181,11 +182,10 @@ class InventoryTransfersListScreen extends ConsumerWidget {
                       name: r.creatorName,
                     ),
                   ),
-                DataTableColumn(
+                DataTableColumn.timestamp(
                   label: l10n.inventoryTransferColDate,
                   size: ColumnSize.S,
-                  cellBuilder: (context, r) =>
-                      Text(fmt.display.dateTime(r.createdAt)),
+                  text: (r) => fmt.display.dateTime(r.createdAt),
                 ),
               ],
               rows: page.items,

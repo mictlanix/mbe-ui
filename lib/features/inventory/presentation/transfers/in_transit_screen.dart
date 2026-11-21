@@ -12,6 +12,7 @@ import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/catalog_entity_picker.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/facility_list_item.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_transfer.dart';
@@ -209,8 +210,9 @@ class _InTransitBody extends ConsumerWidget {
               label: l10n.inventoryTransferColFolio,
               size: ColumnSize.S,
               numeric: true,
-              cellBuilder: (context, r) =>
-                  Text(r.serial == null ? '#${r.transferId}' : '${r.serial}'),
+              cellBuilder: (context, r) => RecordIdText(
+                r.serial == null ? '#${r.transferId}' : '${r.serial}',
+              ),
             ),
             DataTableColumn(
               label: l10n.inventoryTransferColSource,

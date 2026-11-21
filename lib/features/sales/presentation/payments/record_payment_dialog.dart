@@ -23,6 +23,7 @@ import 'package:mbe_ui/features/sales/presentation/payment/facility_payment_opti
 import 'package:mbe_ui/features/sales/presentation/payments/payments_list_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 
 /// What the record form can refuse (spec 059 FR-012, FR-015), each shown
 /// under the field it is about.
@@ -378,10 +379,7 @@ class _RecordPaymentDialogState extends ConsumerState<_RecordPaymentDialog> {
               key: const Key('record_payment_cash_session_error'),
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  l10n.paymentRecordErrorCashSession,
-                  style: TextStyle(color: theme.colorScheme.error),
-                ),
+                InlineErrorText(l10n.paymentRecordErrorCashSession),
                 TextButton(
                   key: const Key('record_payment_go_sessions'),
                   onPressed: () {

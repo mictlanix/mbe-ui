@@ -399,7 +399,7 @@ void main() {
     });
 
     test(
-      'it opens the Logística group, ahead of vehicles and operators, on branch 26',
+      'it sits after Cajas in Operación, ahead of vehicles and operators, on branch 26',
       () {
         final container = ProviderContainer(
           overrides: [
@@ -423,40 +423,35 @@ void main() {
         );
         addTearDown(container.dispose);
         final items = container.read(navDestinationsProvider);
-        final groupIds = [
-          for (final item in items)
-            if (item is NavGroup) item.id,
-        ];
-        expect(groupIds.indexOf('logistics'), groupIds.indexOf('sales') + 1);
-        final logistics =
-            items.firstWhere((i) => i is NavGroup && i.id == 'logistics')
+        final operation =
+            items.firstWhere((i) => i is NavGroup && i.id == 'operation')
                 as NavGroup;
+        final ids = [for (final d in operation.children) d.id];
         expect(
-          [for (final d in logistics.children) d.id],
-          [
-            'delivery-orders',
-            'delivery-order-approval',
-            'for-delivery',
-            'delivery-itineraries',
-            'vehicles',
-            'vehicle-operators',
-          ],
+          ids.indexOf('delivery-orders'),
+          ids.indexOf('cash-sessions') + 1,
         );
-        final catalogs =
-            items.firstWhere((i) => i is NavGroup && i.id == 'catalogs')
-                as NavGroup;
-        final sales =
-            items.firstWhere((i) => i is NavGroup && i.id == 'sales')
-                as NavGroup;
-        final elsewhere = [
-          for (final d in [...catalogs.children, ...sales.children]) d.id,
+        expect(ids.sublist(ids.indexOf('delivery-orders')), [
+          'delivery-orders',
+          'delivery-order-approval',
+          'for-delivery',
+          'delivery-itineraries',
+          'vehicles',
+          'vehicle-operators',
+        ]);
+        final others = [
+          for (final g in items.whereType<NavGroup>().where(
+            (g) => g.id != 'operation',
+          ))
+            for (final d in g.children) d.id,
         ];
-        expect(elsewhere, isNot(contains('delivery-orders')));
-        expect(elsewhere, isNot(contains('vehicles')));
-        expect(elsewhere, isNot(contains('vehicle-operators')));
-        final destinations = logistics.children;
+        expect(others, isNot(contains('delivery-orders')));
+        expect(others, isNot(contains('vehicles')));
+        expect(others, isNot(contains('vehicle-operators')));
         expect(
-          destinations.firstWhere((d) => d.id == 'delivery-orders').branchIndex,
+          operation.children
+              .firstWhere((d) => d.id == 'delivery-orders')
+              .branchIndex,
           NavBranch.deliveryOrders,
         );
         expect(NavBranch.deliveryOrders, 26);
@@ -495,7 +490,7 @@ void main() {
       expect(ids, isNot(contains('delivery-orders')));
     });
 
-    test('it sits right after Órdenes de entrega in Logística, on branch 27 '
+    test('it sits right after Órdenes de entrega in Operación, on branch 27 '
         'at /sales/delivery-order-approval', () {
       final container = ProviderContainer(
         overrides: [
@@ -518,17 +513,17 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
-      final logistics =
+      final operation =
           container
                   .read(navDestinationsProvider)
-                  .firstWhere((i) => i is NavGroup && i.id == 'logistics')
+                  .firstWhere((i) => i is NavGroup && i.id == 'operation')
               as NavGroup;
-      final ids = [for (final d in logistics.children) d.id];
+      final ids = [for (final d in operation.children) d.id];
       expect(
         ids.indexOf('delivery-order-approval'),
         ids.indexOf('delivery-orders') + 1,
       );
-      final entry = logistics.children.firstWhere(
+      final entry = operation.children.firstWhere(
         (d) => d.id == 'delivery-order-approval',
       );
       expect(entry.branchIndex, NavBranch.deliveryOrderApproval);
@@ -568,7 +563,7 @@ void main() {
       expect(ids, isNot(contains('delivery-orders')));
     });
 
-    test('it sits right after Aprobación de entregas in Logística, on branch '
+    test('it sits right after Aprobación de entregas in Operación, on branch '
         '28 at /sales/for-delivery', () {
       final container = ProviderContainer(
         overrides: [
@@ -591,17 +586,17 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
-      final logistics =
+      final operation =
           container
                   .read(navDestinationsProvider)
-                  .firstWhere((i) => i is NavGroup && i.id == 'logistics')
+                  .firstWhere((i) => i is NavGroup && i.id == 'operation')
               as NavGroup;
-      final ids = [for (final d in logistics.children) d.id];
+      final ids = [for (final d in operation.children) d.id];
       expect(
         ids.indexOf('for-delivery'),
         ids.indexOf('delivery-order-approval') + 1,
       );
-      final entry = logistics.children.firstWhere(
+      final entry = operation.children.firstWhere(
         (d) => d.id == 'for-delivery',
       );
       expect(entry.branchIndex, NavBranch.forDelivery);
@@ -652,7 +647,7 @@ void main() {
       );
     });
 
-    test('it sits right after Por entregar in Logística, on branch 36 at '
+    test('it sits right after Por entregar in Operación, on branch 36 at '
         '/sales/delivery-itineraries', () {
       final container = ProviderContainer(
         overrides: [
@@ -675,17 +670,17 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
-      final logistics =
+      final operation =
           container
                   .read(navDestinationsProvider)
-                  .firstWhere((i) => i is NavGroup && i.id == 'logistics')
+                  .firstWhere((i) => i is NavGroup && i.id == 'operation')
               as NavGroup;
-      final ids = [for (final d in logistics.children) d.id];
+      final ids = [for (final d in operation.children) d.id];
       expect(
         ids.indexOf('delivery-itineraries'),
         ids.indexOf('for-delivery') + 1,
       );
-      final entry = logistics.children.firstWhere(
+      final entry = operation.children.firstWhere(
         (d) => d.id == 'delivery-itineraries',
       );
       expect(entry.branchIndex, NavBranch.deliveryItineraries);
@@ -695,7 +690,7 @@ void main() {
   });
 
   group('Facturas destination (spec 066 C1)', () {
-    test('a user without FiscalDocuments read has no Facturación group', () {
+    test('a user without FiscalDocuments read has no Facturas entry', () {
       final ids = visibleIds(
         multiCurrency: false,
         administrator: false,
@@ -707,7 +702,7 @@ void main() {
     });
 
     test('a user with FiscalDocuments read has the entry, on branch 29 at '
-        '/invoicing/fiscal-documents, in its own Facturación group', () {
+        '/invoicing/fiscal-documents, in Finanzas, after Devoluciones', () {
       final privileges = const [
         Privilege(systemObject: SystemObject.fiscalDocuments, rawValue: 2),
       ];
@@ -719,12 +714,13 @@ void main() {
         ),
         contains('fiscal-documents'),
       );
-      final entry = kNavigationTree
+      final children = kNavigationTree
           .whereType<NavGroup>()
-          .firstWhere((g) => g.id == 'invoicing')
-          .children
-          .single;
-      expect(entry.id, 'fiscal-documents');
+          .firstWhere((g) => g.id == 'finance')
+          .children;
+      final ids = [for (final d in children) d.id];
+      expect(ids.indexOf('fiscal-documents'), ids.indexOf('refunds') + 1);
+      final entry = children.firstWhere((d) => d.id == 'fiscal-documents');
       expect(entry.route, '/invoicing/fiscal-documents');
       expect(entry.branchIndex, NavBranch.fiscalDocuments);
       expect(NavBranch.fiscalDocuments, 29);
@@ -744,8 +740,8 @@ void main() {
     });
 
     test('a user with InventoryReceipts read has the entry, on branch 30 at '
-        '/inventory/receipts, in its Inventario group between Logística and '
-        'Facturación', () {
+        '/inventory/receipts, in its Inventario group between Operación and '
+        'Finanzas', () {
       expect(
         visibleIds(
           multiCurrency: false,
@@ -762,8 +758,8 @@ void main() {
       final groupIds = [
         for (final g in kNavigationTree.whereType<NavGroup>()) g.id,
       ];
-      expect(groupIds.indexOf('inventory'), groupIds.indexOf('logistics') + 1);
-      expect(groupIds.indexOf('invoicing'), groupIds.indexOf('inventory') + 1);
+      expect(groupIds.indexOf('inventory'), groupIds.indexOf('operation') + 1);
+      expect(groupIds.indexOf('finance'), groupIds.indexOf('inventory') + 1);
       final entry = kNavigationTree
           .whereType<NavGroup>()
           .firstWhere((g) => g.id == 'inventory')
@@ -810,7 +806,7 @@ void main() {
         'at /inventory/issues', () {
       final children = inventoryGroup().children;
       expect(
-        [for (final c in children) c.id],
+        [for (final c in children.take(6)) c.id],
         [
           'inventory-receipts',
           'inventory-issues',
@@ -864,7 +860,7 @@ void main() {
         'at /inventory/transfers', () {
       final children = inventoryGroup().children;
       expect(
-        [for (final c in children) c.id],
+        [for (final c in children.take(6)) c.id],
         [
           'inventory-receipts',
           'inventory-issues',
@@ -923,7 +919,7 @@ void main() {
         'at /inventory/counts', () {
       final children = inventoryGroup().children;
       expect(
-        [for (final c in children) c.id],
+        [for (final c in children.take(6)) c.id],
         [
           'inventory-receipts',
           'inventory-issues',
@@ -986,7 +982,7 @@ void main() {
         'branch 34 at /inventory/stock', () {
       final children = inventoryGroup().children;
       expect(
-        [for (final c in children) c.id],
+        [for (final c in children.take(6)) c.id],
         [
           'inventory-receipts',
           'inventory-issues',
@@ -1052,4 +1048,73 @@ void main() {
       expect(entry.selectedIcon, Icons.receipt_long);
     });
   });
+
+  test(
+    'four sections in order, Home first, every destination exactly once',
+    () {
+      expect(kNavigationTree.first, isA<NavDestination>());
+      expect((kNavigationTree.first as NavDestination).id, 'home');
+      final groups = kNavigationTree.whereType<NavGroup>().toList();
+      expect(kNavigationTree.length, 1 + groups.length);
+      expect(
+        {
+          for (final g in groups) g.id: [for (final d in g.children) d.id],
+        },
+        {
+          'operation': [
+            'pos',
+            'sales-orders',
+            'sales-quotes',
+            'pricing',
+            'customers',
+            'cash-sessions',
+            'delivery-orders',
+            'delivery-order-approval',
+            'for-delivery',
+            'delivery-itineraries',
+            'vehicles',
+            'vehicle-operators',
+          ],
+          'inventory': [
+            'inventory-receipts',
+            'inventory-issues',
+            'inventory-transfers',
+            'inventory-counts',
+            'inventory-stock',
+            'inventory-kardex',
+            'products',
+            'price-lists',
+            'suppliers',
+            'labels',
+          ],
+          'finance': [
+            'payments',
+            'payment-verification',
+            'credit-notes',
+            'refunds',
+            'fiscal-documents',
+            'taxpayer-issuers',
+            'taxpayer-recipients',
+            'exchange-rates',
+            'payment-method-options',
+            'expenses',
+          ],
+          'system': ['users', 'user-profiles', 'employees', 'facilities'],
+        },
+      );
+      expect(
+        [for (final g in groups) g.id],
+        ['operation', 'inventory', 'finance', 'system'],
+      );
+      final all = [
+        for (final item in kNavigationTree)
+          ...switch (item) {
+            NavDestination() => [item.id],
+            NavGroup() => item.children.map((d) => d.id),
+          },
+      ];
+      expect(all.length, 37);
+      expect(all.toSet().length, 37);
+    },
+  );
 }

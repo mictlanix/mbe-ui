@@ -34,6 +34,14 @@ void main() {
         findsOneWidget,
       );
       expect(find.text(_spanish[status]!), findsOneWidget);
+      // Every status shows an icon and a word (spec 077 FR-014).
+      expect(
+        find.descendant(
+          of: find.byType(StatusChip<InventoryDocumentStatus>),
+          matching: find.byType(Icon),
+        ),
+        findsOneWidget,
+      );
     });
   }
 }

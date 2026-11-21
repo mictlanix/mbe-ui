@@ -123,7 +123,7 @@ class TaxpayerRecipientsListScreen extends ConsumerWidget {
             onData: (page) => DataTableView<TaxpayerRecipientListItem>(
               key: const Key('taxpayer_recipients_table'),
               columns: [
-                DataTableColumn.text(
+                DataTableColumn.id(
                   label: l10n.taxpayerRecipientIdLabel,
                   text: (t) => t.taxpayerRecipientId,
                   size: ColumnSize.M,

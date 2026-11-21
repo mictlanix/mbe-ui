@@ -128,6 +128,7 @@ flutter:
   assets:
     - assets/branding/
     - assets/brand/
+    - assets/brand/xbe.cm/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
@@ -154,6 +155,20 @@ flutter:
           weight: 600
         - asset: assets/fonts/Archivo-Variable.ttf
           weight: 700
+    # Casa Maestra (brand `xbe.cm`, spec 077). `BrandRoboto`, not `Roboto`, so
+    # the platform Roboto the default brand relies on is not replaced.
+    - family: Bitter
+      fonts:
+        - asset: assets/fonts/Bitter-Variable.ttf
+          weight: 600
+        - asset: assets/fonts/Bitter-Variable.ttf
+          weight: 700
+    - family: BrandRoboto
+      fonts:
+        - asset: assets/fonts/Roboto-Variable.ttf
+          weight: 400
+        - asset: assets/fonts/Roboto-Variable.ttf
+          weight: 500
     - family: RobotoMono
       fonts:
         - asset: assets/fonts/RobotoMono-Variable.ttf

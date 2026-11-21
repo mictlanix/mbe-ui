@@ -107,11 +107,10 @@ class DeliveryOrderApprovalScreen extends ConsumerWidget {
       onData: (page) => DataTableView<DeliveryOrderSummary>(
         key: const Key('delivery_order_approval_table'),
         columns: [
-          DataTableColumn(
+          DataTableColumn.id(
             label: l10n.deliveryOrderColumnSerial,
             size: ColumnSize.S,
-            cellBuilder: (context, o) =>
-                Text(o.serial == null ? '#${o.id}' : '${o.serial}'),
+            text: (o) => o.serial == null ? '#${o.id}' : '${o.serial}',
           ),
           DataTableColumn(
             label: l10n.deliveryOrderColumnCustomer,
@@ -128,10 +127,10 @@ class DeliveryOrderApprovalScreen extends ConsumerWidget {
               cellBuilder: (context, o) =>
                   Text(deliveryOrderTypeLabel(l10n, o.type)),
             ),
-          DataTableColumn(
+          DataTableColumn.timestamp(
             label: l10n.deliveryOrderColumnScheduled,
             size: ColumnSize.S,
-            cellBuilder: (context, o) => Text(fmt.display.date(o.date)),
+            text: (o) => fmt.display.date(o.date),
           ),
           if (!compact)
             DataTableColumn(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/sales/domain/entities/delivery_itinerary.dart';
@@ -346,7 +347,7 @@ void main() {
 
     await chooseImage(tester);
     expect(
-      tester.widget<Text>(key('itinerary_close_image_problem')).data,
+      tester.widget<InlineErrorText>(key('itinerary_close_image_problem')).text,
       l10n.itineraryCloseImageTooLarge,
     );
     expect(canClose(tester), isFalse);
@@ -354,7 +355,7 @@ void main() {
     next = (bytes: png, name: 'nota.pdf');
     await chooseImage(tester);
     expect(
-      tester.widget<Text>(key('itinerary_close_image_problem')).data,
+      tester.widget<InlineErrorText>(key('itinerary_close_image_problem')).text,
       l10n.itineraryCloseImageFormat,
     );
     expect(canClose(tester), isFalse);

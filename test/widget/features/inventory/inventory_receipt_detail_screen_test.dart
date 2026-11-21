@@ -7,6 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/errors/localize_problem.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/core/domain/entity_status.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
 import 'package:mbe_ui/features/catalog/domain/repositories/product_repository.dart';
@@ -53,7 +54,10 @@ void main() {
 
       expect(title(tester), l10n.inventoryReceiptTitleDraft('318'));
       expect(key('inventory_document_status_chip'), findsOneWidget);
-      expect(tester.widget<Text>(key('inventory_receipt_serial')).data, '—');
+      expect(
+        tester.widget<RecordIdText>(key('inventory_receipt_serial')).text,
+        '—',
+      );
       expect(find.text('Almacén 3'), findsOneWidget);
       expect(find.text('Sucursal 2'), findsOneWidget);
       expect(find.text('Sin factura'), findsOneWidget);
@@ -124,7 +128,10 @@ void main() {
     await h.pumpReceipt(tester, completed);
 
     expect(title(tester), l10n.inventoryReceiptTitle('1043'));
-    expect(tester.widget<Text>(key('inventory_receipt_serial')).data, '1043');
+    expect(
+      tester.widget<RecordIdText>(key('inventory_receipt_serial')).text,
+      '1043',
+    );
     expect(key('inventory_receipt_edit_header'), findsNothing);
     expect(key('inventory_receipt_add_product'), findsNothing);
     expect(key('inventory_receipt_confirm'), findsNothing);
@@ -206,7 +213,10 @@ void main() {
       await confirm(tester);
 
       expect(title(tester), l10n.inventoryReceiptTitle('1043'));
-      expect(tester.widget<Text>(key('inventory_receipt_serial')).data, '1043');
+      expect(
+        tester.widget<RecordIdText>(key('inventory_receipt_serial')).text,
+        '1043',
+      );
       expect(find.text(l10n.inventoryDocumentStatusCompleted), findsOneWidget);
       expect(key('inventory_receipt_confirm'), findsNothing);
       expect(key('inventory_receipt_edit_header'), findsNothing);

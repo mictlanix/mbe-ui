@@ -24,6 +24,7 @@ import 'package:mbe_ui/core/widgets/catalog_search_bar.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/core/widgets/responsive_dialog.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_list_item.dart';
@@ -35,6 +36,7 @@ import 'package:mbe_ui/features/sales/presentation/refunds/refund_open_or_resume
 import 'package:mbe_ui/features/sales/presentation/refunds/refunds_filter.dart';
 import 'package:mbe_ui/features/sales/presentation/refunds/refunds_list_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 
 const refundsPath = '/sales/refunds';
 
@@ -138,21 +140,18 @@ class RefundsListScreen extends ConsumerWidget {
                   onData: (page) => DataTableView<CustomerRefundSummary>(
                     key: const Key('refunds_table'),
                     columns: [
-                      DataTableColumn(
+                      DataTableColumn.id(
                         label: l10n.refundsColumnNumber,
                         size: ColumnSize.S,
-                        cellBuilder: (context, r) => Text(
-                          r.serial == null
-                              ? emptyValuePlaceholder
-                              : '${r.serial}',
-                        ),
+                        text: (r) => r.serial == null
+                            ? emptyValuePlaceholder
+                            : '${r.serial}',
                       ),
                       if (!compact)
-                        DataTableColumn(
+                        DataTableColumn.timestamp(
                           label: l10n.refundsColumnDate,
                           size: ColumnSize.M,
-                          cellBuilder: (context, r) =>
-                              Text(fmt.display.dateTime(r.date)),
+                          text: (r) => fmt.display.dateTime(r.date),
                         ),
                       if (!compact)
                         DataTableColumn(
@@ -255,13 +254,13 @@ class _OrderCell extends ConsumerWidget {
     final theme = Theme.of(context);
     final label = '#$orderId';
     final text = target == null
-        ? Text(label)
+        ? RecordIdText(label)
         : InkWell(
             key: Key('refund_order_link_$orderId'),
             onTap: () => context.push(target),
             child: Text(
               label,
-              style: TextStyle(
+              style: theme.typeRoles.recordId.copyWith(
                 color: theme.colorScheme.primary,
                 decoration: TextDecoration.underline,
                 decorationColor: theme.colorScheme.primary,
@@ -285,7 +284,7 @@ class _OrderCell extends ConsumerWidget {
             height: spacing.sm,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: refundStatusColors(theme.colorScheme, status).$2,
+              color: refundStatusLook(status).$1.colors(theme).$2,
             ),
           ),
         ),
@@ -518,11 +517,7 @@ class _NewRefundDialogState extends ConsumerState<_NewRefundDialog> {
             onSubmitted: (_) => _submit(),
           ),
           if (_refusal != null)
-            Text(
-              _refusal!,
-              key: const Key('refund_new_refusal'),
-              style: TextStyle(color: theme.colorScheme.error),
-            ),
+            InlineErrorText(_refusal!, key: const Key('refund_new_refusal')),
           if (_error != null) ErrorBanner(error: _error!),
         ],
       ),

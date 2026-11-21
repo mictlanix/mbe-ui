@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:mbe_ui/core/branding/semantic_colors.dart';
 import 'package:mbe_ui/core/design/density.dart';
 import 'package:mbe_ui/core/design/elevations.dart';
 import 'package:mbe_ui/core/design/shapes.dart';
@@ -32,6 +33,12 @@ ThemeData applyComponentThemes(
       scrolledUnderElevation: elevations.floating.shadowDp,
       backgroundColor: scheme.surface,
       foregroundColor: scheme.onSurface,
+      // The brand rule (spec 077 FR-017): 3px in the accent color under every
+      // app bar. A bottom border paints inside the bar, so its height is
+      // unchanged; one theme entry reaches every AppBar in the app.
+      shape: Border(
+        bottom: BorderSide(color: base.semanticColors.accent, width: 3),
+      ),
     ),
     cardTheme: CardThemeData(
       color: elevations.raised.surfaceColor,

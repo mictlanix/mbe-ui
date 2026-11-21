@@ -7,6 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/errors/localize_problem.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_transfer.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -55,7 +56,10 @@ void main() {
 
       expect(title(tester), l10n.inventoryTransferTitleDraft('412'));
       expect(key('inventory_transfer_status_chip'), findsOneWidget);
-      expect(tester.widget<Text>(key('inventory_transfer_serial')).data, '—');
+      expect(
+        tester.widget<RecordIdText>(key('inventory_transfer_serial')).text,
+        '—',
+      );
       expect(find.text('Almacén 3'), findsOneWidget);
       expect(find.text('Almacén 4'), findsOneWidget);
       expect(find.text('Sucursal 2'), findsOneWidget);
@@ -114,7 +118,10 @@ void main() {
     await h.pumpTransfer(tester, dispatched);
 
     expect(title(tester), l10n.inventoryTransferTitle('77'));
-    expect(tester.widget<Text>(key('inventory_transfer_serial')).data, '77');
+    expect(
+      tester.widget<RecordIdText>(key('inventory_transfer_serial')).text,
+      '77',
+    );
     for (final header in [
       l10n.inventoryTransferLineColCode,
       l10n.inventoryTransferLineColProduct,

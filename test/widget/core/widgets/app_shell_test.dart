@@ -186,4 +186,76 @@ void main() {
       expect(find.byIcon(Icons.menu), findsOneWidget);
     },
   );
+
+  group('brand header by tier (spec 077 FR-012)', () {
+    const name = 'Mictlanix Business Essentials';
+    final header = find.descendant(
+      of: find.byType(AppBar),
+      matching: find.byType(BrandNavHeader),
+    );
+
+    testWidgets('Medium (700px): the mark alone, no name', (tester) async {
+      await _pumpShell(tester, size: const Size(700, 800));
+      expect(header, findsOneWidget);
+      expect(
+        find.descendant(of: header, matching: find.byType(Image)),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: header, matching: find.text(name)),
+        findsNothing,
+      );
+    });
+
+    testWidgets('just under Expanded (839px): still the mark alone', (
+      tester,
+    ) async {
+      await _pumpShell(tester, size: const Size(839, 800));
+      expect(
+        find.descendant(of: header, matching: find.text(name)),
+        findsNothing,
+      );
+    });
+
+    testWidgets('Expanded (840px): the mark plus the name', (tester) async {
+      await _pumpShell(tester, size: const Size(840, 800));
+      expect(
+        find.descendant(of: header, matching: find.byType(Image)),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: header, matching: find.text(name)),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('Large (1200px): the mark plus the name', (tester) async {
+      await _pumpShell(tester, size: const Size(1200, 800));
+      expect(
+        find.descendant(of: header, matching: find.text(name)),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('Compact (500px): the drawer header is the mark alone', (
+      tester,
+    ) async {
+      await _pumpShell(tester, size: const Size(500, 900));
+      await tester.tap(find.byIcon(Icons.menu));
+      await tester.pumpAndSettle();
+      final drawerHeader = find.descendant(
+        of: find.byType(NavigationDrawer),
+        matching: find.byType(BrandNavHeader),
+      );
+      expect(drawerHeader, findsOneWidget);
+      expect(
+        find.descendant(of: drawerHeader, matching: find.byType(Image)),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: drawerHeader, matching: find.text(name)),
+        findsNothing,
+      );
+    });
+  });
 }

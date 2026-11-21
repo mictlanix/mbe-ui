@@ -16,29 +16,18 @@ String inventoryTransferStatusLabel(
   InventoryTransferStatus.cancelled => l10n.inventoryTransferStatusCancelled,
 };
 
-/// A status's `(background, foreground)` pair: draft neutral, in transit
-/// tertiary, received success, cancelled error.
-(Color, Color) inventoryTransferStatusColors(
-  ColorScheme scheme,
-  InventoryTransferStatus status,
-) => switch (status) {
-  InventoryTransferStatus.draft => (
-    scheme.surfaceContainerHighest,
-    scheme.onSurface,
-  ),
-  InventoryTransferStatus.inTransit => (
-    scheme.tertiaryContainer,
-    scheme.onTertiaryContainer,
-  ),
-  InventoryTransferStatus.received => (
-    scheme.secondaryContainer,
-    scheme.onSecondaryContainer,
-  ),
-  InventoryTransferStatus.cancelled => (
-    scheme.errorContainer,
-    scheme.onErrorContainer,
-  ),
-};
+/// A status's tone: draft neutral, in transit info, received success,
+/// cancelled error.
+StatusLook inventoryTransferStatusLook(InventoryTransferStatus status) =>
+    switch (status) {
+      InventoryTransferStatus.draft => (StatusTone.neutral, Icons.edit_note),
+      InventoryTransferStatus.inTransit => (
+        StatusTone.info,
+        Icons.local_shipping_outlined,
+      ),
+      InventoryTransferStatus.received => (StatusTone.success, null),
+      InventoryTransferStatus.cancelled => (StatusTone.error, null),
+    };
 
 /// The transfer's status chip, shared by the list and the detail screen.
 class InventoryTransferStatusChip extends StatelessWidget {
@@ -49,11 +38,13 @@ class InventoryTransferStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final (tone, icon) = inventoryTransferStatusLook(status);
     return StatusChip<InventoryTransferStatus>(
       key: const Key('inventory_transfer_status_chip'),
       value: status,
       label: inventoryTransferStatusLabel(l10n, status),
-      colors: (scheme) => inventoryTransferStatusColors(scheme, status),
+      tone: tone,
+      icon: icon,
     );
   }
 }

@@ -1,0 +1,1222 @@
+{
+  "workflow": "companion",
+  "specName": "Casa Maestra Branding",
+  "branch": "077-casa-maestra-branding",
+  "currentStep": "implement",
+  "status": "implemented",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-20T14:38:04.350Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T14:40:07.600Z"
+    },
+    {
+      "step": "clarify",
+      "substep": null,
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T14:45:48.701Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-20T14:50:00.816Z"
+    },
+    {
+      "step": "plan",
+      "substep": "research",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:00:04.337Z"
+    },
+    {
+      "step": "plan",
+      "substep": "design",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:01:38.870Z"
+    },
+    {
+      "step": "plan",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T15:02:18.210Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-20T15:05:08.400Z"
+    },
+    {
+      "step": "tasks",
+      "substep": "generate",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:07:25.706Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-20T15:07:29.584Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-20T15:09:54.413Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001,T002,T003,T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:10:33.794Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005,T006,T007,T008,T009,T010,T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:03.769Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T001",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.152Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T002",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.239Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T003",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.324Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T004",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.412Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T005",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.499Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T006",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.586Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T007",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.674Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T008",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.760Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T009",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.847Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T010",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:41.948Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T011",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:15:42.037Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T012",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:18:37.272Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T013",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:18:37.359Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T014",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:18:37.445Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T015",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:18:37.537Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T016",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:18:37.623Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T017",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:18:37.709Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T018",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:18:37.796Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T020",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:20:27.035Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T021",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.111Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T022",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.204Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T023",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.297Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T024",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.401Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T025",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.499Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T026",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.594Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T027",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.685Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T028",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.776Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T029",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.868Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T030",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:23.962Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T031",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.055Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T032",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.147Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T033",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.240Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T034",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.331Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T035",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.422Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T051",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.514Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T052",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.605Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T053",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.696Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T054",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.786Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T055",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.878Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T056",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:24.969Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T058",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:29:25.061Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T036",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:33:53.060Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T037",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:33:53.163Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T038",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:33:53.263Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T039",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:33:53.366Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T040",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:22.869Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T041",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:22.962Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T042",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.069Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T043",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.163Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T044",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.253Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T045",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.344Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T046",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.437Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T047",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.526Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T048",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.618Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T049",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.710Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T050",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:38:23.802Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T059",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:44:55.318Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T062",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:46:05.041Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T063",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:46:05.135Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T060",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-20T15:46:15.016Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-21T10:11:25.498Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T061",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-21T10:11:25.588Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T057",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-21T10:11:25.734Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-21T10:11:25.735Z"
+    }
+  ],
+  "telemetryInstanceId": "7b23ad11-955e-49d2-a4a8-4f4062ebf54c",
+  "expectations": [
+    "Compact-tier card list for data tables",
+    "printed-document use of the reversed lockup before brand-owner confirmation",
+    "spacing, shape, elevation, density or breakpoint overrides per brand",
+    "mbe-roadmap issue link"
+  ],
+  "context": [
+    "area: lib/core/branding (BrandConfig, XbePalette, BrandInk)",
+    "area: lib/app/theme/app_theme.dart (hardcoded Archivo text theme)",
+    "area: lib/core/widgets/status_chip.dart + 8 per-feature status chips",
+    "area: lib/core/navigation/nav_destinations.dart (groups: catalogs, sales, logistics, inventory, invoicing)",
+    "area: deploy/brands + tool/release (spec 045)",
+    "constraint: constitution §V, brands override color, typography, logos only",
+    "constraint: default XBE brand unchanged except shared chrome",
+    "source: Casa Maestra design system artifact XqxMRRyKYvf5auFTjWZ24t"
+  ],
+  "coverage": {
+    "FR-001": {
+      "title": "Brand selected by build-time brand ID, default XBE"
+    },
+    "FR-002": {
+      "title": "Each brand defines exact colors, fonts, logos in code"
+    },
+    "FR-003": {
+      "title": "Unknown brand ID falls back to default"
+    },
+    "FR-004": {
+      "title": "Default brand look unchanged except shared chrome"
+    },
+    "FR-005": {
+      "title": "Brands override only color, typography, logos"
+    },
+    "FR-006": {
+      "title": "Casa Maestra exact color roles in both themes"
+    },
+    "FR-007": {
+      "title": "Bitter/Roboto/Roboto Mono bundled for Casa Maestra"
+    },
+    "FR-008": {
+      "title": "Casa Maestra type style metrics"
+    },
+    "FR-009": {
+      "title": "Lockup, reversed lockup and mark placement"
+    },
+    "FR-010": {
+      "title": "Logo files are the design system originals"
+    },
+    "FR-011": {
+      "title": "Brand red never fills interactive controls"
+    },
+    "FR-012": {
+      "title": "Nav header mark vs mark+name by tier"
+    },
+    "FR-013": {
+      "title": "Accent, success, warning roles for every brand"
+    },
+    "FR-014": {
+      "title": "Every status chip has icon, word and tone"
+    },
+    "FR-015": {
+      "title": "Only promo uses accent container; error distinct from accent"
+    },
+    "FR-016": {
+      "title": "Error messages carry an icon"
+    },
+    "FR-017": {
+      "title": "3px accent rule under every app bar"
+    },
+    "FR-018": {
+      "title": "Navigation grouped into Operación, Inventario, Finanzas, Sistema"
+    },
+    "FR-019": {
+      "title": "IDs, folios, RFC, SKU, timestamps use mono styles"
+    },
+    "FR-020": {
+      "title": "Role pairs meet contrast thresholds"
+    },
+    "FR-021": {
+      "title": "Release scripts accept Casa Maestra brand"
+    },
+    "FR-022": {
+      "title": "Icons, splash, favicons made from the mark"
+    },
+    "FR-023": {
+      "title": "Casa Maestra release sets the brand ID"
+    },
+    "FR-024": {
+      "title": "mbe brand release output unchanged"
+    }
+  },
+  "intent": "Ship Casa Maestra as a branded deployment (palette, fonts, logos, packaging) plus shared chrome: accent rule, status tones, four nav sections",
+  "size": "oversized",
+  "classification": {
+    "projectedFiles": 45,
+    "projectedTasks": 40,
+    "scopeSignal": "none",
+    "verdict": "oversized"
+  },
+  "decisions": [
+    {
+      "decision": "Brand ID is xbe-cm (not casamaestra), for both the BRAND_ID build setting and the deploy/brands release brand"
+    },
+    {
+      "decision": "Nav split by use: customers→Operación; products, price lists, suppliers, labels→Inventario; taxpayers, exchange rates, payment methods, expenses→Finanzas; users, profiles, employees, facilities→Sistema"
+    },
+    {
+      "decision": "iOS bundle ID and Android application ID: com.mictlanix.xbe.cm"
+    },
+    {
+      "decision": "Brand ID changed from xbe-cm to xbe.cm (build setting and deploy/brands release brand name); supersedes the earlier xbe-cm decision"
+    },
+    {
+      "decision": "FR-019 scoped to shared mono column/ID seam + list columns + detail folio headers; product codes stay non-mono (FR-028)"
+    },
+    {
+      "decision": "FR-016 scoped to banners + inline error text; field errors unchanged"
+    },
+    {
+      "decision": "Release deployment named cm (BRAND=xbe.cm), API URL TBD and refused by preflight"
+    },
+    {
+      "decision": "Casa Maestra icon/splash/web theme color #FFFFFF"
+    },
+    {
+      "decision": "FR-012 nav header tier rule applies to every brand"
+    }
+  ],
+  "currentTask": "T061",
+  "task_summaries": {
+    "T001,T002,T003,T004": {
+      "status": "DONE",
+      "did": "Fonts (Bitter, Roboto as BrandRoboto), xbe.cm logos with 2x/3x variants, pubspec declarations, BRAND_ID in .env.template",
+      "files": [
+        "assets/fonts",
+        "assets/brand/xbe.cm",
+        "pubspec.yaml",
+        ".env.template"
+      ]
+    },
+    "T005,T006,T007,T008,T009,T010,T011": {
+      "status": "DONE",
+      "did": "Brand registry, BrandDefinition types, SemanticColors, XBE definition moved unchanged, BRAND_ID resolution, AppTheme from definition, golden harness brand param + fonts, registry-driven contrast gate. Parity: theme/brand tests pass unchanged. XBE below-threshold pins (outline, dark error) recorded as floors per FR-004",
+      "files": [
+        "lib/core/branding",
+        "lib/app/theme/app_theme.dart",
+        "test/golden/golden_harness.dart",
+        "test/contract/brand_contrast_test.dart",
+        "test/unit/core/branding"
+      ]
+    },
+    "T001": {
+      "status": "DONE",
+      "did": "Bitter + Roboto variable fonts and OFL licenses in assets/fonts",
+      "files": [
+        "assets/fonts"
+      ]
+    },
+    "T002": {
+      "status": "DONE",
+      "did": "xbe.cm logos (lockup, reversed, mark) with 2x/3x variants from the design system originals",
+      "files": [
+        "assets/brand/xbe.cm"
+      ]
+    },
+    "T003": {
+      "status": "DONE",
+      "did": "pubspec: assets/brand/xbe.cm/, Bitter and BrandRoboto families",
+      "files": [
+        "pubspec.yaml"
+      ]
+    },
+    "T004": {
+      "status": "DONE",
+      "did": "BRAND_ID documented in .env.template",
+      "files": [
+        ".env.template"
+      ]
+    },
+    "T005": {
+      "status": "DONE",
+      "did": "SemanticColors ThemeExtension + test",
+      "files": [
+        "lib/core/branding/semantic_colors.dart",
+        "test/unit/core/branding/semantic_colors_test.dart"
+      ]
+    },
+    "T006": {
+      "status": "DONE",
+      "did": "BrandDefinition types and registry",
+      "files": [
+        "lib/core/branding/brand_definition.dart",
+        "lib/core/branding/brand_registry.dart"
+      ]
+    },
+    "T007": {
+      "status": "DONE",
+      "did": "XBE definition moved from XbePalette/AppTheme unchanged",
+      "files": [
+        "lib/core/branding/brands/xbe_brand.dart"
+      ]
+    },
+    "T008": {
+      "status": "DONE",
+      "did": "BrandConfig.resolve + BRAND_ID in fromEnvironment, tests",
+      "files": [
+        "lib/core/branding/brand_config.dart",
+        "test/unit/core/branding/brand_config_test.dart"
+      ]
+    },
+    "T009": {
+      "status": "DONE",
+      "did": "AppTheme and BrandInk read the brand definition; parity tests pass unchanged",
+      "files": [
+        "lib/app/theme/app_theme.dart",
+        "lib/core/branding/brand_ink.dart"
+      ]
+    },
+    "T010": {
+      "status": "DONE",
+      "did": "Golden harness: brand parameter, Bitter and BrandRoboto fonts",
+      "files": [
+        "test/golden/golden_harness.dart"
+      ]
+    },
+    "T011": {
+      "status": "DONE",
+      "did": "Registry-driven contrast gate; XBE below-threshold pins recorded as floors (FR-004)",
+      "files": [
+        "test/contract/brand_contrast_test.dart"
+      ]
+    },
+    "T012": {
+      "status": "DONE",
+      "did": "Casa Maestra value test: every verbatim color, type metric, assets, FR-005 product tokens",
+      "files": [
+        "test/unit/core/branding/casa_maestra_brand_test.dart"
+      ]
+    },
+    "T013": {
+      "status": "DONE",
+      "did": "xbe.cm definition with exact colors, SemanticColors, Bitter/BrandRoboto typography, assets; registered",
+      "files": [
+        "lib/core/branding/brands/casa_maestra_brand.dart",
+        "lib/core/branding/brand_registry.dart"
+      ]
+    },
+    "T014": {
+      "status": "DONE",
+      "did": "Generic text-theme builder confirmed by the type metric tests; mono stays RobotoMono",
+      "files": [
+        "lib/core/branding/brands/casa_maestra_brand.dart"
+      ]
+    },
+    "T015": {
+      "status": "DONE",
+      "did": "BrandLogo shows the reversed lockup in dark when the brand has one; tests for both brands",
+      "files": [
+        "lib/core/widgets/brand_logo.dart",
+        "test/widget/core/widgets/brand_logo_test.dart"
+      ]
+    },
+    "T016": {
+      "status": "DONE",
+      "did": "LoginBrandingPane painted from the brand LoginPaneStyle; tests for both brands and themes",
+      "files": [
+        "lib/features/auth/presentation/login/login_branding_pane.dart",
+        "test/widget/features/auth/login_branding_pane_test.dart"
+      ]
+    },
+    "T017": {
+      "status": "DONE",
+      "did": "xbe.cm covered by the registry-driven contrast gate: all pairs pass, nothing to flag",
+      "files": [
+        "test/contract/brand_contrast_test.dart"
+      ]
+    },
+    "T018": {
+      "status": "DONE",
+      "did": "Casa Maestra goldens (login pane, logo + nav header, type sample) and 1.3x overflow checks",
+      "files": [
+        "test/golden/casa_maestra_golden_test.dart",
+        "test/golden/goldens/casa_maestra_*.png"
+      ]
+    },
+    "T020": {
+      "status": "DONE",
+      "did": "DataTableColumn.id/.timestamp mono factories + RecordIdText, with tests and golden",
+      "files": [
+        "lib/core/widgets/data_table_view.dart",
+        "lib/core/widgets/record_id_text.dart",
+        "test/widget/core/widgets",
+        "test/golden/core_widgets_golden_test.dart"
+      ]
+    },
+    "T021": {
+      "status": "DONE",
+      "did": "Mono ID/timestamp columns in sales orders, POS sales, quotes, refunds lists + refund heading",
+      "files": [
+        "lib/features/sales/presentation"
+      ]
+    },
+    "T022": {
+      "status": "DONE",
+      "did": "Mono columns in payments list, payment heading keeps title size via RecordIdText.inherit",
+      "files": [
+        "lib/features/sales/presentation/payments"
+      ]
+    },
+    "T023": {
+      "status": "DONE",
+      "did": "Mono folio/RFC/UUID/date in fiscal documents list and detail; only the RFC (not the name) is mono",
+      "files": [
+        "lib/features/invoicing/presentation"
+      ]
+    },
+    "T024": {
+      "status": "DONE",
+      "did": "Mono folio/date in inventory receipts, issues, transfers, counts lists and detail folio facts",
+      "files": [
+        "lib/features/inventory/presentation"
+      ]
+    },
+    "T025": {
+      "status": "DONE",
+      "did": "Mono folio/date in delivery orders, approval, for-delivery and itineraries lists",
+      "files": [
+        "lib/features/sales/presentation/delivery_orders",
+        "delivery_itineraries",
+        "for_delivery"
+      ]
+    },
+    "T026": {
+      "status": "DONE",
+      "did": "RFC columns mono in taxpayer issuers and recipients lists; product codes untouched",
+      "files": [
+        "lib/features/catalog/presentation"
+      ]
+    },
+    "T027": {
+      "status": "DONE",
+      "did": "type_roles_test FR-028 unchanged and passing; full unit/widget/contract run 6560 passed",
+      "files": [
+        "test/unit/core/design/type_roles_test.dart"
+      ]
+    },
+    "T028": {
+      "status": "DONE",
+      "did": "StatusTone + icon StatusChip, tone tests across both brands and themes",
+      "files": [
+        "lib/core/widgets/status_chip.dart",
+        "test/widget/core/widgets/status_chip_test.dart"
+      ]
+    },
+    "T029": {
+      "status": "DONE",
+      "did": "EntityStatusCell inactive/archived neutral with icons",
+      "files": [
+        "lib/core/widgets/entity_status_controls.dart"
+      ]
+    },
+    "T030": {
+      "status": "DONE",
+      "did": "Fiscal chips and cancellation outcome/simulated badge migrated to tones",
+      "files": [
+        "lib/features/invoicing/presentation"
+      ]
+    },
+    "T031": {
+      "status": "DONE",
+      "did": "Inventory document/count/transfer chips migrated, tests updated",
+      "files": [
+        "lib/features/inventory/presentation",
+        "test/widget/features/inventory"
+      ]
+    },
+    "T032": {
+      "status": "DONE",
+      "did": "Delivery order, itinerary and stop outcome chips migrated",
+      "files": [
+        "lib/features/sales/presentation/delivery_orders",
+        "delivery_itineraries"
+      ]
+    },
+    "T033": {
+      "status": "DONE",
+      "did": "Cash session, POS sale, quote, refund and payment chips migrated",
+      "files": [
+        "lib/features/sales/presentation"
+      ]
+    },
+    "T034": {
+      "status": "DONE",
+      "did": "Sweep: all 19 StatusChip sites on tones; legacy colors callback removed",
+      "files": [
+        "lib/core/widgets/status_chip.dart"
+      ]
+    },
+    "T035": {
+      "status": "DONE",
+      "did": "InlineErrorText widget, test and golden",
+      "files": [
+        "lib/core/widgets/inline_error_text.dart"
+      ]
+    },
+    "T051": {
+      "status": "DONE",
+      "did": "Artwork sources composed from the mark: white icon, transparent adaptive foreground and splash",
+      "files": [
+        "deploy/brands/xbe.cm/src"
+      ]
+    },
+    "T052": {
+      "status": "DONE",
+      "did": "xbe.cm brand.properties, cm.release, cm.env with .invalid placeholder",
+      "files": [
+        "deploy/brands/xbe.cm/brand.properties",
+        "deploy/cm.release",
+        "deploy/cm.env"
+      ]
+    },
+    "T053": {
+      "status": "DONE",
+      "did": "Generator dry run: five missing overlay globs found, recorded in research R9",
+      "files": [
+        "specs/077-casa-maestra-branding/research.md"
+      ]
+    },
+    "T054": {
+      "status": "DONE",
+      "did": "BRAND_ID passed from the brand, preflight refuses .env BRAND_ID and .invalid URL, web rewrite sets background colors, manifest globs added",
+      "files": [
+        "tool/release"
+      ]
+    },
+    "T055": {
+      "status": "DONE",
+      "did": "xbe.cm overlay generated (76 files)",
+      "files": [
+        "deploy/brands/xbe.cm/overlay"
+      ]
+    },
+    "T056": {
+      "status": "DONE",
+      "did": "shellcheck clean; release web cm refuses the placeholder URL",
+      "files": [
+        "tool/release"
+      ]
+    },
+    "T058": {
+      "status": "DONE",
+      "did": "RELEASING.md documents cm, BRAND_ID source, manifest gaps, white ground",
+      "files": [
+        "deploy/RELEASING.md"
+      ]
+    },
+    "T036": {
+      "status": "DONE",
+      "did": "InlineErrorText at the sales inline error texts",
+      "files": [
+        "lib/features/sales/presentation"
+      ]
+    },
+    "T037": {
+      "status": "DONE",
+      "did": "InlineErrorText at the delivery and catalog inline error texts",
+      "files": [
+        "lib/features/sales/presentation/delivery",
+        "lib/features/catalog/presentation"
+      ]
+    },
+    "T038": {
+      "status": "DONE",
+      "did": "Icons on pos_session_blocked_banner and refund_session_banner; 3 tests read InlineErrorText.text",
+      "files": [
+        "lib/features/sales/presentation",
+        "test/widget/features/sales"
+      ]
+    },
+    "T039": {
+      "status": "DONE",
+      "did": "Goldens regenerated: status_chip, entity_status_controls; new Casa Maestra status tones. Promo got an accent outline because error/accent containers are near-identical",
+      "files": [
+        "test/golden",
+        "lib/core/widgets/status_chip.dart"
+      ]
+    },
+    "T040": {
+      "status": "DONE",
+      "did": "AppBarTheme 3px accent rule + test across brands and themes",
+      "files": [
+        "lib/core/design/component_themes.dart",
+        "test/widget/core/design/app_bar_rule_test.dart"
+      ]
+    },
+    "T041": {
+      "status": "DONE",
+      "did": "Removed the three local 1px app-bar borders so the theme rule shows",
+      "files": [
+        "lib/features/sales/presentation"
+      ]
+    },
+    "T042": {
+      "status": "DONE",
+      "did": "Compact ResponsiveDialog header draws the accent rule; test",
+      "files": [
+        "lib/core/widgets/responsive_dialog.dart"
+      ]
+    },
+    "T043": {
+      "status": "DONE",
+      "did": "navOperationGroup/navFinanceGroup/navSystemGroup in en and es; l10n regenerated",
+      "files": [
+        "lib/l10n"
+      ]
+    },
+    "T044": {
+      "status": "DONE",
+      "did": "kNavigationTree regrouped into operation/inventory/finance/system; comments updated",
+      "files": [
+        "lib/core/navigation/nav_destinations.dart"
+      ]
+    },
+    "T045": {
+      "status": "DONE",
+      "did": "nav_destinations_test restated for the four sections, plus an all-destinations-once test",
+      "files": [
+        "test/unit/core/navigation/nav_destinations_test.dart"
+      ]
+    },
+    "T046": {
+      "status": "DONE",
+      "did": "app_navigation_test updated; app_router_test passes unchanged",
+      "files": [
+        "test/widget/core/widgets/app_navigation_test.dart"
+      ]
+    },
+    "T047": {
+      "status": "DONE",
+      "did": "Integration test nav group assertions updated (not run: need a live server)",
+      "files": [
+        "integration_test"
+      ]
+    },
+    "T048": {
+      "status": "DONE",
+      "did": "Removed four unused group keys from both arb files",
+      "files": [
+        "lib/l10n"
+      ]
+    },
+    "T049": {
+      "status": "DONE",
+      "did": "BrandNavHeader mark-only below 840px for every brand; shell tests for Medium, boundary, Expanded, Large, drawer",
+      "files": [
+        "lib/core/widgets/brand_nav_header.dart",
+        "test/widget/core/widgets/app_shell_test.dart"
+      ]
+    },
+    "T050": {
+      "status": "DONE",
+      "did": "Goldens regenerated: brand_nav_header, responsive_dialog narrow; new Casa Maestra and XBE app bar goldens",
+      "files": [
+        "test/golden"
+      ]
+    },
+    "T059": {
+      "status": "DONE",
+      "did": "DESIGN-SYSTEM.md: spec 077 section, brand registry row, mono update",
+      "files": [
+        "DESIGN-SYSTEM.md"
+      ]
+    },
+    "T062": {
+      "status": "DONE",
+      "did": "Filed mbe-ui#297 (manual checks), #298 mono sites, #299 glyph columns, #300 BRAND_SEED_COLOR check, #301 brand-owner confirmations",
+      "files": [
+        "GitHub issues"
+      ]
+    },
+    "T063": {
+      "status": "DONE",
+      "did": "Project memory saved",
+      "files": [
+        "memory"
+      ]
+    },
+    "T060": {
+      "status": "DONE",
+      "did": "Changed Dart files formatted, flutter analyze clean, full unit/widget/contract run green",
+      "files": [
+        "all"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Light and dark verified by the user's screenshots on macOS (2026-11-21); 700px header and 1.3x text covered by widget tests",
+      "files": [
+        "specs/077-casa-maestra-branding/quickstart.md"
+      ]
+    },
+    "T061": {
+      "status": "DONE",
+      "did": "Quickstart V1-V6 results recorded; V4 unknown-brand fallback unit-tested only",
+      "files": [
+        "specs/077-casa-maestra-branding/quickstart.md"
+      ]
+    }
+  }
+}

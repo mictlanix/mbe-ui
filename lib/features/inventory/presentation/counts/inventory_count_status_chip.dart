@@ -26,11 +26,13 @@ class InventoryCountStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final (tone, icon) = inventoryDocumentStatusLook(status);
     return StatusChip<InventoryDocumentStatus>(
       key: const Key('inventory_count_status_chip'),
       value: status,
       label: inventoryCountStatusLabel(l10n, status),
-      colors: (scheme) => inventoryDocumentStatusColors(scheme, status),
+      tone: tone,
+      icon: icon,
     );
   }
 }

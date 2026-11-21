@@ -16,6 +16,7 @@ import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/errors/localize_problem.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/core/widgets/compact_field.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
@@ -63,11 +64,9 @@ class RefundDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          serial == null
-              ? l10n.refundDetailTitle
-              : l10n.refundDetailTitleWithNumber(serial),
-        ),
+        title: serial == null
+            ? Text(l10n.refundDetailTitle)
+            : RecordIdText.inherit(l10n.refundDetailTitleWithNumber(serial)),
       ),
       body: refund.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -565,17 +564,12 @@ String refundStatusLabel(AppLocalizations l10n, RefundStatus status) =>
       RefundStatus.cancelled => l10n.refundStatusCancelled,
     };
 
-/// A refund status's `(background, foreground)` pair.
-(Color, Color) refundStatusColors(
-  ColorScheme scheme,
-  RefundStatus status,
-) => switch (status) {
-  RefundStatus.draft => (scheme.primaryContainer, scheme.onPrimaryContainer),
-  RefundStatus.completed => (
-    scheme.surfaceContainerHighest,
-    scheme.onSurfaceVariant,
-  ),
-  RefundStatus.cancelled => (scheme.errorContainer, scheme.onErrorContainer),
+/// A refund status's tone (spec 077): draft neutral, completed success,
+/// cancelled error.
+StatusLook refundStatusLook(RefundStatus status) => switch (status) {
+  RefundStatus.draft => (StatusTone.neutral, Icons.edit_note),
+  RefundStatus.completed => (StatusTone.success, null),
+  RefundStatus.cancelled => (StatusTone.error, null),
 };
 
 /// The refund's status chip, shared by the detail screen and the list.
@@ -587,11 +581,13 @@ class RefundStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final (tone, icon) = refundStatusLook(status);
     return StatusChip<RefundStatus>(
       key: Key('refund_status_chip_${status.name}'),
       value: status,
       label: refundStatusLabel(l10n, status),
-      colors: (scheme) => refundStatusColors(scheme, status),
+      tone: tone,
+      icon: icon,
     );
   }
 }
@@ -850,9 +846,22 @@ class _SessionBanner extends StatelessWidget {
         spacing: spacing.sm,
         runSpacing: spacing.sm,
         children: [
-          Text(
-            l10n.refundSessionBanner,
-            style: TextStyle(color: theme.colorScheme.onErrorContainer),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 20,
+                color: theme.colorScheme.onErrorContainer,
+              ),
+              SizedBox(width: spacing.xs),
+              Flexible(
+                child: Text(
+                  l10n.refundSessionBanner,
+                  style: TextStyle(color: theme.colorScheme.onErrorContainer),
+                ),
+              ),
+            ],
           ),
           FilledButton(
             key: const Key('refund_session_button'),

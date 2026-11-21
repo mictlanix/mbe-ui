@@ -25,10 +25,12 @@ import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 import 'package:mbe_ui/core/widgets/fact_strip_row.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
 import 'package:mbe_ui/core/widgets/number_pad.dart';
 import 'package:mbe_ui/core/widgets/product_photo.dart';
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/core/widgets/record_form_actions.dart';
 import 'package:mbe_ui/core/widgets/responsive_dialog.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
@@ -81,10 +83,12 @@ const _coveredFiles = {
   'error_banner.dart',
   'form_error_banner.dart', // spec 058 — a form's headline plus the localized reason
   'fact_strip_row.dart', // spec 049 — the quote and order headers' strip
+  'inline_error_text.dart', // spec 077 — icon + text error message
   'label_multi_picker.dart',
   'list_state_views.dart',
   'number_pad.dart',
   'product_photo.dart',
+  'record_id_text.dart', // spec 077 — mono record ID / folio / RFC
   'record_form_actions.dart',
   'responsive_dialog.dart', // spec 053 — the quote email form's wide dialog / phone full-screen shell
   'responsive_form_grid.dart',
@@ -396,6 +400,15 @@ void main() {
       );
     });
 
+    testWidgets('InlineErrorText', (tester) async {
+      await expectGoldenMatrix(
+        tester,
+        'inline_error_text',
+        (brightness, width) =>
+            const InlineErrorText('El RFC debe tener 12 o 13 caracteres'),
+      );
+    });
+
     testWidgets('ErrorBanner (localized server code)', (tester) async {
       await expectGoldenMatrix(
         tester,
@@ -497,6 +510,22 @@ void main() {
         tester,
         'product_photo',
         (brightness, width) => const ProductPhoto(photoUrl: null),
+      );
+    });
+
+    testWidgets('RecordIdText', (tester) async {
+      await expectGoldenMatrix(
+        tester,
+        'record_id_text',
+        (brightness, width) => const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            RecordIdText('00337298'),
+            RecordIdText('SABE5513950918'),
+            RecordIdText('#4512'),
+          ],
+        ),
       );
     });
 
@@ -625,10 +654,10 @@ void main() {
       await expectGoldenMatrix(
         tester,
         'status_chip',
-        (brightness, width) => StatusChip<EntityStatus>(
+        (brightness, width) => const StatusChip<EntityStatus>(
           value: EntityStatus.inactive,
           label: 'Inactive',
-          colors: (scheme) => (scheme.errorContainer, scheme.onErrorContainer),
+          tone: StatusTone.error,
         ),
       );
     });

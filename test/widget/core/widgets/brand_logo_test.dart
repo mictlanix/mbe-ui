@@ -2,9 +2,93 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:mbe_ui/core/branding/brand_config.dart';
+import 'package:mbe_ui/core/branding/brand_config_provider.dart';
+import 'package:mbe_ui/core/branding/brands/casa_maestra_brand.dart';
 import 'package:mbe_ui/core/widgets/brand_logo.dart';
 
+const _casaMaestra = BrandConfig(
+  displayName: 'Casa Maestra',
+  seedColor: casaMaestraNavy,
+  lockupAsset: 'assets/brand/xbe.cm/casa-maestra-logo.png',
+  lockupReversedAsset: 'assets/brand/xbe.cm/casa-maestra-logo-reversed.png',
+  markAsset: 'assets/brand/xbe.cm/casa-maestra-mark.png',
+  definition: casaMaestraBrand,
+);
+
 void main() {
+  group('BrandLogo lockup asset by theme (spec 077 FR-009)', () {
+    Future<String> lockupAsset(
+      WidgetTester tester, {
+      required BrandConfig brand,
+      required Brightness brightness,
+      BrandLogoStyle style = BrandLogoStyle.lockup,
+    }) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          retry: (_, _) => null,
+          overrides: [brandConfigProvider.overrideWithValue(brand)],
+          child: MaterialApp(
+            theme: ThemeData(brightness: brightness),
+            home: Scaffold(body: BrandLogo(style: style, width: 236)),
+          ),
+        ),
+      );
+      final image = tester.widget<Image>(find.byType(Image));
+      return (image.image as AssetImage).assetName;
+    }
+
+    testWidgets('Casa Maestra: primary lockup in light', (tester) async {
+      expect(
+        await lockupAsset(
+          tester,
+          brand: _casaMaestra,
+          brightness: Brightness.light,
+        ),
+        'assets/brand/xbe.cm/casa-maestra-logo.png',
+      );
+    });
+
+    testWidgets('Casa Maestra: reversed lockup in dark', (tester) async {
+      expect(
+        await lockupAsset(
+          tester,
+          brand: _casaMaestra,
+          brightness: Brightness.dark,
+        ),
+        'assets/brand/xbe.cm/casa-maestra-logo-reversed.png',
+      );
+    });
+
+    testWidgets('Casa Maestra: the mark is the same in both themes', (
+      tester,
+    ) async {
+      for (final b in Brightness.values) {
+        expect(
+          await lockupAsset(
+            tester,
+            brand: _casaMaestra,
+            brightness: b,
+            style: BrandLogoStyle.mark,
+          ),
+          'assets/brand/xbe.cm/casa-maestra-mark.png',
+        );
+      }
+    });
+
+    testWidgets('XBE has no reversed lockup: same asset in both themes', (
+      tester,
+    ) async {
+      const xbe = BrandConfig(displayName: 'XBE');
+      for (final b in Brightness.values) {
+        expect(
+          await lockupAsset(tester, brand: xbe, brightness: b),
+          'assets/brand/login_lockup.png',
+        );
+      }
+    });
+  });
+
   Future<void> pump(WidgetTester tester, Widget child) async {
     await tester.pumpWidget(
       ProviderScope(

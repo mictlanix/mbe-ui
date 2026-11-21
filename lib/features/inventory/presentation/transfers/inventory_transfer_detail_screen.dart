@@ -19,6 +19,7 @@ import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/fact_strip_row.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart' show toAppError;
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/warehouse_repository_impl.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_transfer.dart';
@@ -484,7 +485,7 @@ class _HeaderFacts extends ConsumerWidget {
             ),
             CompactField(
               label: l10n.inventoryTransferFactFolio,
-              child: Text(
+              child: RecordIdText(
                 transfer.serial == null
                     ? emptyValuePlaceholder
                     : '${transfer.serial}',

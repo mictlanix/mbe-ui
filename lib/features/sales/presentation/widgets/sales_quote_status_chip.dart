@@ -34,24 +34,14 @@ class SalesQuoteStatusChip extends StatelessWidget {
       key: Key('sales_quote_status_chip_${status.name}'),
       value: status,
       label: label,
-      colors: (scheme) => switch (status) {
-        SaleStatus.draft => (
-          scheme.primaryContainer,
-          scheme.onPrimaryContainer,
-        ),
-        SaleStatus.completed => (
-          scheme.tertiaryContainer,
-          scheme.onTertiaryContainer,
-        ),
-        SaleStatus.paid => (
-          scheme.surfaceContainerHighest,
-          scheme.onSurfaceVariant,
-        ),
-        SaleStatus.cancelled => (
-          scheme.errorContainer,
-          scheme.onErrorContainer,
-        ),
+      // A quote has no payment step: a completed one is done (the paid label
+      // folds into "completed").
+      tone: switch (status) {
+        SaleStatus.draft => StatusTone.neutral,
+        SaleStatus.completed || SaleStatus.paid => StatusTone.success,
+        SaleStatus.cancelled => StatusTone.error,
       },
+      icon: status == SaleStatus.draft ? Icons.edit_note : null,
     );
   }
 }

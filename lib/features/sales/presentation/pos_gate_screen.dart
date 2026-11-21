@@ -136,11 +136,24 @@ class _BlockedBanner extends StatelessWidget {
         crossAxisAlignment: WrapCrossAlignment.center,
         spacing: theme.spacing.sm,
         children: [
-          Text(
-            stale
-                ? l10n.posSessionExpiredPaymentsBlocked
-                : l10n.posGateNoSessionBody,
-            style: TextStyle(color: theme.colorScheme.onErrorContainer),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 20,
+                color: theme.colorScheme.onErrorContainer,
+              ),
+              SizedBox(width: theme.spacing.xs),
+              Flexible(
+                child: Text(
+                  stale
+                      ? l10n.posSessionExpiredPaymentsBlocked
+                      : l10n.posGateNoSessionBody,
+                  style: TextStyle(color: theme.colorScheme.onErrorContainer),
+                ),
+              ),
+            ],
           ),
           TextButton(
             key: const Key('pos_session_blocked_action'),

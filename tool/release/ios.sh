@@ -28,6 +28,7 @@ build_ios() {
   rm -rf "$ARCHIVE"
   flutter build ipa --release --no-codesign \
     --build-name "$VERSION" --build-number "$BUILD" \
+    --dart-define=BRAND_ID="$BRAND" \
     --dart-define-from-file="$ENV_FILE"
   [[ -d "$ARCHIVE" ]] || die "expected archive not found: $ARCHIVE"
   local plist="$ARCHIVE/Products/Applications/Runner.app/Info.plist" got

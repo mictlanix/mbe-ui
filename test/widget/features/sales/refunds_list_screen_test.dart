@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
@@ -671,7 +672,7 @@ void main() {
 
       expect(key('refund_new_dialog'), findsOneWidget);
       expect(
-        tester.widget<Text>(key('refund_new_refusal')).data,
+        tester.widget<InlineErrorText>(key('refund_new_refusal')).text,
         l10n.refundRefusalOrderNotFound(99),
       );
     });

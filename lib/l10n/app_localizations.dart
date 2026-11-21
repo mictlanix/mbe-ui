@@ -260,24 +260,6 @@ abstract class AppLocalizations {
   /// **'New sale'**
   String get homeNewSaleButton;
 
-  /// No description provided for @catalogsGroupTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Catalogs'**
-  String get catalogsGroupTitle;
-
-  /// No description provided for @salesGroupTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Sales'**
-  String get salesGroupTitle;
-
-  /// Navigation group for delivery orders, vehicles and vehicle operators.
-  ///
-  /// In en, this message translates to:
-  /// **'Logistics'**
-  String get logisticsGroupTitle;
-
   /// No description provided for @usersMenuTitle.
   ///
   /// In en, this message translates to:
@@ -11647,12 +11629,6 @@ abstract class AppLocalizations {
   /// **'The series couldn\'t be deleted.'**
   String get taxpayerBatchDeleteFailed;
 
-  /// spec 066: navInvoicingGroup
-  ///
-  /// In en, this message translates to:
-  /// **'Invoicing'**
-  String get navInvoicingGroup;
-
   /// spec 066: navFiscalDocuments
   ///
   /// In en, this message translates to:
@@ -12819,6 +12795,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Inventory'**
   String get navInventoryGroup;
+
+  /// spec 077: navigation group
+  ///
+  /// In en, this message translates to:
+  /// **'Operations'**
+  String get navOperationGroup;
+
+  /// spec 077: navigation group
+  ///
+  /// In en, this message translates to:
+  /// **'Finance'**
+  String get navFinanceGroup;
+
+  /// spec 077: navigation group; the administration screens, not the theme mode
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get navSystemGroup;
 
   /// spec 067: navigation destination
   ///

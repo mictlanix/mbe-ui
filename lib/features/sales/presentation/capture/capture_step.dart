@@ -21,6 +21,7 @@ import 'package:mbe_ui/features/sales/presentation/register_controller.dart';
 import 'package:mbe_ui/features/sales/presentation/sale_editor.dart';
 import 'package:mbe_ui/features/sales/presentation/unconfirmed_edits_resolver.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 
 /// The Venta step (contracts/pos-screen.md §3; spec 039
 /// contracts/shared-step-seam.md §2): customer, fulfilment mode, main
@@ -484,10 +485,9 @@ class _CaptureStepState extends ConsumerState<CaptureStep> {
         if (stockBlocks)
           Padding(
             padding: horizontalInset.add(EdgeInsets.only(bottom: spacing.xs)),
-            child: Text(
+            child: InlineErrorText(
               l10n.posCaptureShortLines(stockGate.shortLineIds.length),
               key: const Key('capture_continue_blocked_reason'),
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ),
         if (_gated && sale != null && stockGate.unknownLineIds.isNotEmpty)

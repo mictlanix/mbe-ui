@@ -93,7 +93,7 @@ class TaxpayerIssuersListScreen extends ConsumerWidget {
             onData: (page) => DataTableView<TaxpayerIssuer>(
               key: const Key('taxpayer_issuers_table'),
               columns: [
-                DataTableColumn.text(
+                DataTableColumn.id(
                   label: l10n.columnRfc,
                   text: (t) => t.rfc,
                   size: ColumnSize.S,

@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import 'package:mbe_ui/core/branding/brand_definition.dart';
+import 'package:mbe_ui/core/branding/brand_registry.dart';
+import 'package:mbe_ui/core/branding/brands/xbe_brand.dart';
 import 'package:mbe_ui/core/branding/xbe_palette.dart';
 
 /// Per-deployment brand/flavor descriptor, resolved at build time from
@@ -18,6 +21,8 @@ class BrandConfig {
     this.usesDefaultPalette = true,
     this.lockupAsset = _defaultLockupAsset,
     this.markAsset = _defaultMarkAsset,
+    this.lockupReversedAsset,
+    this.definition = xbeBrand,
   });
 
   static const _defaultLockupAsset = 'assets/brand/login_lockup.png';
@@ -47,6 +52,15 @@ class BrandConfig {
   /// Isologo mark asset path, for the navigation header.
   final String markAsset;
 
+  /// Lockup recolored for dark grounds, or `null` when the brand uses
+  /// [lockupAsset] in both themes (spec 077 FR-009).
+  final String? lockupReversedAsset;
+
+  /// The brand picked by `BRAND_ID` (spec 077 FR-001). The default XBE brand
+  /// unless a registered brand is selected; every build-time color, font and
+  /// logo comes from it.
+  final BrandDefinition definition;
+
   bool get hasWelcomeAsset => welcomeAsset != null && welcomeAsset!.isNotEmpty;
 
   /// Build-time source. Values are injected via `--dart-define`, e.g.
@@ -70,20 +84,70 @@ class BrandConfig {
       'BRAND_MARK_ASSET',
       defaultValue: _defaultMarkAsset,
     );
+    const brandId = String.fromEnvironment('BRAND_ID');
     if (kDebugMode) {
       debugPrint(
-        '[BrandConfig] BRAND_DISPLAY_NAME=$displayName '
+        '[BrandConfig] BRAND_ID=$brandId '
+        'BRAND_DISPLAY_NAME=$displayName '
         'BRAND_WELCOME_ASSET=$welcomeAsset '
         'BRAND_SEED_COLOR=$seedColorHex '
         'BRAND_LOCKUP_ASSET=$lockupAsset '
         'BRAND_MARK_ASSET=$markAsset',
+      );
+      if (brandId.isNotEmpty &&
+          brandId != xbeBrand.id &&
+          brandId != 'mbe' &&
+          !isRegisteredBrand(brandId)) {
+        debugPrint(
+          '[BrandConfig] Unknown BRAND_ID "$brandId": using the default '
+          '${xbeBrand.id} brand.',
+        );
+      }
+    }
+    return BrandConfig.resolve(
+      brandId: brandId,
+      displayName: displayName,
+      welcomeAsset: welcomeAsset,
+      seedColorHex: seedColorHex,
+      hasSeedColor: const bool.hasEnvironment('BRAND_SEED_COLOR'),
+      lockupAsset: lockupAsset,
+      markAsset: markAsset,
+    );
+  }
+
+  /// Applies the brand-selection rules (spec 077 contracts/brand-definition.md)
+  /// to already-read build values, so they can be tested without
+  /// compile-time defines.
+  ///
+  /// A registered brand other than the default wins over the legacy `BRAND_*`
+  /// flags entirely. An empty, `mbe`, `xbe` or unknown [brandId] keeps the
+  /// default XBE brand with the legacy flags honored exactly as before
+  /// (spec 019).
+  factory BrandConfig.resolve({
+    required String brandId,
+    required String displayName,
+    String? welcomeAsset,
+    required String seedColorHex,
+    required bool hasSeedColor,
+    required String lockupAsset,
+    required String markAsset,
+  }) {
+    final definition = brandDefinitionById(brandId);
+    if (definition.id != xbeBrand.id) {
+      return BrandConfig(
+        displayName: definition.displayName,
+        seedColor: definition.seedColor,
+        lockupAsset: definition.lockupAsset,
+        markAsset: definition.markAsset,
+        lockupReversedAsset: definition.lockupReversedAsset,
+        definition: definition,
       );
     }
     return BrandConfig(
       displayName: displayName,
       welcomeAsset: welcomeAsset,
       seedColor: _parseSeedColor(seedColorHex),
-      usesDefaultPalette: !const bool.hasEnvironment('BRAND_SEED_COLOR'),
+      usesDefaultPalette: !hasSeedColor,
       lockupAsset: lockupAsset,
       markAsset: markAsset,
     );
@@ -108,7 +172,9 @@ class BrandConfig {
       other.seedColor == seedColor &&
       other.usesDefaultPalette == usesDefaultPalette &&
       other.lockupAsset == lockupAsset &&
-      other.markAsset == markAsset;
+      other.markAsset == markAsset &&
+      other.lockupReversedAsset == lockupReversedAsset &&
+      other.definition == definition;
 
   @override
   int get hashCode => Object.hash(
@@ -118,5 +184,7 @@ class BrandConfig {
     usesDefaultPalette,
     lockupAsset,
     markAsset,
+    lockupReversedAsset,
+    definition,
   );
 }

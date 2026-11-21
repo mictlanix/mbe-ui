@@ -18,35 +18,18 @@ String fiscalDocumentStatusLabel(
   FiscalDocumentStatus.cancelled => l10n.fiscalDocumentStatusCancelled,
 };
 
-/// A status's `(background, foreground)` pair (C4): draft neutral, sealed
-/// info, issued success, cancelled error. Stamping and cancellation pending
-/// are the "waiting" pair, the one delivery orders and POS sales use too
-/// (spec 072 R10).
-(Color, Color) fiscalDocumentStatusColors(
-  ColorScheme scheme,
-  FiscalDocumentStatus status,
-) => switch (status) {
-  FiscalDocumentStatus.draft => (
-    scheme.surfaceContainerHighest,
-    scheme.onSurface,
-  ),
-  FiscalDocumentStatus.sealed => (
-    scheme.primaryContainer,
-    scheme.onPrimaryContainer,
-  ),
-  FiscalDocumentStatus.stamping || FiscalDocumentStatus.cancellationPending => (
-    scheme.tertiaryContainer,
-    scheme.onTertiaryContainer,
-  ),
-  FiscalDocumentStatus.issued => (
-    scheme.secondaryContainer,
-    scheme.onSecondaryContainer,
-  ),
-  FiscalDocumentStatus.cancelled => (
-    scheme.errorContainer,
-    scheme.onErrorContainer,
-  ),
-};
+/// A status's tone (C4, spec 077): draft neutral, sealed info, issued success,
+/// cancelled error. Stamping and cancellation pending are the "waiting" tone,
+/// the one delivery orders and POS sales use too (spec 072 R10).
+StatusLook fiscalDocumentStatusLook(FiscalDocumentStatus status) =>
+    switch (status) {
+      FiscalDocumentStatus.draft => (StatusTone.neutral, Icons.edit_note),
+      FiscalDocumentStatus.sealed => (StatusTone.info, Icons.lock_outline),
+      FiscalDocumentStatus.stamping => (StatusTone.warning, null),
+      FiscalDocumentStatus.cancellationPending => (StatusTone.warning, null),
+      FiscalDocumentStatus.issued => (StatusTone.success, null),
+      FiscalDocumentStatus.cancelled => (StatusTone.error, null),
+    };
 
 /// The document's status chip, shared by the list and the detail screen.
 /// Never truncated: give it the width its label needs.
@@ -58,11 +41,13 @@ class FiscalDocumentStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final (tone, icon) = fiscalDocumentStatusLook(status);
     return StatusChip<FiscalDocumentStatus>(
       key: Key('fiscal_document_status_chip_${status.name}'),
       value: status,
       label: fiscalDocumentStatusLabel(l10n, status),
-      colors: (scheme) => fiscalDocumentStatusColors(scheme, status),
+      tone: tone,
+      icon: icon,
     );
   }
 }

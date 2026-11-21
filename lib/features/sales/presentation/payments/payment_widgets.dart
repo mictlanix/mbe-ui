@@ -58,9 +58,8 @@ class PaymentVerifiedChip extends StatelessWidget {
       key: Key(verified ? 'payment_chip_verified' : 'payment_chip_unverified'),
       value: verified,
       label: verified ? l10n.paymentVerified : l10n.paymentUnverified,
-      colors: (scheme) => verified
-          ? (scheme.primaryContainer, scheme.onPrimaryContainer)
-          : (scheme.surfaceContainerHighest, scheme.onSurfaceVariant),
+      tone: verified ? StatusTone.success : StatusTone.warning,
+      icon: verified ? Icons.verified_outlined : null,
     );
   }
 }
@@ -163,7 +162,8 @@ class PaymentReversedChip extends StatelessWidget {
       key: const Key('payment_chip_reversed'),
       value: 'reversed',
       label: l10n.paymentApplicationReversed,
-      colors: (scheme) => (scheme.errorContainer, scheme.onErrorContainer),
+      tone: StatusTone.error,
+      icon: Icons.undo,
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mbe_ui/core/access/access_control.dart';
 import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
+import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/core/navigation/list_search_submit.dart';
@@ -123,11 +124,10 @@ class SalesQuotesListScreen extends ConsumerWidget {
             onData: (page) => DataTableView<SalesQuoteSummary>(
               key: const Key('sales_quotes_list_table'),
               columns: [
-                DataTableColumn(
+                DataTableColumn.id(
                   label: l10n.salesQuotesColumnReference,
                   size: ColumnSize.S,
-                  cellBuilder: (context, quote) =>
-                      Text('${quote.serial ?? quote.id}'),
+                  text: (quote) => '${quote.serial ?? quote.id}',
                 ),
                 DataTableColumn(
                   label: l10n.salesQuotesColumnCustomer,
@@ -135,15 +135,14 @@ class SalesQuotesListScreen extends ConsumerWidget {
                   cellBuilder: (context, quote) =>
                       Text(quote.customerDisplayName ?? '—'),
                 ),
-                DataTableColumn(
+                DataTableColumn.timestamp(
                   label: l10n.salesQuotesColumnDate,
                   size: ColumnSize.M,
                   // A calendar date, not a timestamp — `dateTime` (used by
                   // the orders list's own Date column) doesn't fit this
                   // column's width once the Expiry column beside it also
                   // carries the expired marker (FR-035).
-                  cellBuilder: (context, quote) =>
-                      Text(fmt.display.date(quote.date)),
+                  text: (quote) => fmt.display.date(quote.date),
                 ),
                 DataTableColumn(
                   label: l10n.salesQuotesColumnExpiry,
@@ -155,7 +154,10 @@ class SalesQuotesListScreen extends ConsumerWidget {
                   cellBuilder: (context, quote) => Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(fmt.display.date(quote.dueDate)),
+                      Text(
+                        fmt.display.date(quote.dueDate),
+                        style: Theme.of(context).typeRoles.timestamp,
+                      ),
                       if (quote.hasExpired) ...[
                         const SizedBox(width: 2),
                         SalesQuoteExpiredMarker(hasExpired: quote.hasExpired),

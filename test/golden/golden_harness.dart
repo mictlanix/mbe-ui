@@ -58,7 +58,15 @@ Future<void> loadGoldenFonts() async {
   ).readAsBytesSync();
   final materialIcons = FontLoader('MaterialIcons')
     ..addFont(Future.value(ByteData.view(iconBytes.buffer)));
+  // Casa Maestra (brand `xbe.cm`, spec 077): bundled, so loadable via
+  // `rootBundle` like Archivo.
+  final bitter = FontLoader('Bitter')
+    ..addFont(rootBundle.load('assets/fonts/Bitter-Variable.ttf'));
+  final brandRoboto = FontLoader('BrandRoboto')
+    ..addFont(rootBundle.load('assets/fonts/Roboto-Variable.ttf'));
   await archivo.load();
+  await bitter.load();
+  await brandRoboto.load();
   await mono.load();
   await roboto.load();
   await materialIcons.load();
@@ -82,6 +90,7 @@ Future<void> pumpGoldenScenario(
   required double width,
   List<Override> overrides = const [],
   double height = _goldenHeight,
+  BrandConfig brand = _defaultBrand,
 }) async {
   tester.view.physicalSize = Size(width, height);
   tester.view.devicePixelRatio = 1.0;
@@ -90,7 +99,7 @@ Future<void> pumpGoldenScenario(
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.platformDispatcher.clearTextScaleFactorTestValue);
 
-  final appTheme = AppTheme.of(_defaultBrand);
+  final appTheme = AppTheme.of(brand);
   final base = brightness == Brightness.light ? appTheme.light : appTheme.dark;
 
   SharedPreferences.setMockInitialValues({});
@@ -132,6 +141,7 @@ Future<void> expectGoldenMatrix(
   String name,
   Widget Function(Brightness brightness, double width) scenario, {
   List<Override> overrides = const [],
+  BrandConfig brand = _defaultBrand,
 }) async {
   for (final brightness in Brightness.values) {
     for (final width in [goldenNarrowWidth, goldenWideWidth]) {
@@ -141,6 +151,7 @@ Future<void> expectGoldenMatrix(
         brightness: brightness,
         width: width,
         overrides: overrides,
+        brand: brand,
       );
       final widthLabel = width == goldenNarrowWidth ? 'narrow' : 'wide';
       await expectLater(

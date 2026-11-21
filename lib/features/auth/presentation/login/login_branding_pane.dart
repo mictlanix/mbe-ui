@@ -1,23 +1,39 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:mbe_ui/core/branding/brand_config_provider.dart';
+import 'package:mbe_ui/core/branding/semantic_colors.dart';
 import 'package:mbe_ui/core/branding/xbe_palette.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/widgets/brand_logo.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
-/// The login screen's dark branding pane (spec 019 FR-014; contracts/
+/// The login screen's branding pane (spec 019 FR-014; contracts/
 /// brand-tokens.md Login & Home layout contract): full lockup, tagline,
-/// subhead, and the three brand accent-color bars. Purely decorative — no
-/// interactive elements, no dependency on [LoginController] state.
-class LoginBrandingPane extends StatelessWidget {
+/// subhead, and the brand's accent bars. Purely decorative — no interactive
+/// elements, no dependency on [LoginController] state.
+///
+/// How it is painted comes from the active brand's `LoginPaneStyle` (spec 077
+/// FR-009): XBE keeps its always-dark pane with three fixed bars; a brand that
+/// follows the theme (Casa Maestra) takes its background and text from the
+/// theme and its bar from `SemanticColors.accent`.
+class LoginBrandingPane extends ConsumerWidget {
   const LoginBrandingPane({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final typeRoles = Theme.of(context).typeRoles;
+    final theme = Theme.of(context);
+    final typeRoles = theme.typeRoles;
+    final pane = ref.watch(brandConfigProvider).definition.loginPane;
+    final scheme = theme.colorScheme;
+    final background = pane.followsTheme ? scheme.surface : pane.background!;
+    final titleColor = pane.followsTheme ? scheme.onSurface : pane.title!;
+    final subtitleColor = pane.followsTheme
+        ? scheme.onSurfaceVariant
+        : pane.subtitle!;
     return ColoredBox(
-      color: XbePalette.darkSurface,
+      color: background,
       child: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(48),
@@ -32,12 +48,12 @@ class LoginBrandingPane extends StatelessWidget {
               const SizedBox(height: 40),
               Text(
                 l10n.loginTagline,
-                // This pane is deliberately always-dark regardless of the
-                // user's theme choice (spec 019 FR-014), so the color is
-                // pinned to the dark tokens explicitly -- only the
-                // typeface/size/weight come from the role.
+                // A fixed-color pane (XBE's always-dark one, spec 019
+                // FR-014) pins its text colors explicitly regardless of the
+                // user's theme choice -- only the typeface/size/weight come
+                // from the role.
                 style: typeRoles.heroHeading.copyWith(
-                  color: XbePalette.darkOnSurface,
+                  color: titleColor,
                   height: 1.15,
                 ),
               ),
@@ -45,20 +61,24 @@ class LoginBrandingPane extends StatelessWidget {
               Text(
                 l10n.loginSubhead,
                 style: typeRoles.heroSubhead.copyWith(
-                  color: XbePalette.darkOnSurfaceVariant,
+                  color: subtitleColor,
                   height: 1.5,
                 ),
               ),
-              const SizedBox(height: 24),
-              Row(
-                children: const [
-                  _AccentBar(color: XbePalette.red),
-                  SizedBox(width: 6),
-                  _AccentBar(color: XbePalette.orange),
-                  SizedBox(width: 6),
-                  _AccentBar(color: XbePalette.gold),
-                ],
-              ),
+              if (pane.accentBars.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    for (var i = 0; i < pane.accentBars.length; i++) ...[
+                      if (i > 0) const SizedBox(width: 6),
+                      _AccentBar(
+                        color:
+                            pane.accentBars[i] ?? theme.semanticColors.accent,
+                      ),
+                    ],
+                  ],
+                ),
+              ],
             ],
           ),
         ),

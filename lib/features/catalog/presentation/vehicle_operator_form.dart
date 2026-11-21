@@ -21,6 +21,7 @@ import 'package:mbe_ui/features/catalog/domain/entities/employee_list_item.dart'
 import 'package:mbe_ui/features/catalog/presentation/license_photo_provider.dart';
 import 'package:mbe_ui/features/catalog/presentation/vehicle_operator_form_controller.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 
 /// Create / view / edit form for a single vehicle operator (spec 035 US5 —
 /// converted from the pushed `/vehicle-operators/new` /
@@ -550,8 +551,7 @@ class _LicensePhotoSection extends ConsumerWidget {
       children: [
         Text(l10n.licensePhotoLabel, style: theme.textTheme.labelLarge),
         media,
-        if (photoError case final error?)
-          Text(error, style: TextStyle(color: theme.colorScheme.error)),
+        if (photoError case final error?) InlineErrorText(error),
       ],
     );
   }

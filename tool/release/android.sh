@@ -28,9 +28,11 @@ build_android() {
   info "building Android bundle and APK"
   flutter build appbundle --release \
     --build-name "$VERSION" --build-number "$BUILD" \
+    --dart-define=BRAND_ID="$BRAND" \
     --dart-define-from-file="$ENV_FILE"
   flutter build apk --release \
     --build-name "$VERSION" --build-number "$BUILD" \
+    --dart-define=BRAND_ID="$BRAND" \
     --dart-define-from-file="$ENV_FILE"
 
   local aab="build/app/outputs/bundle/release/app-release.aab"

@@ -35,6 +35,7 @@ import 'package:mbe_ui/features/sales/presentation/delivery_orders/delivery_orde
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/header_dialog.dart';
 import 'package:mbe_ui/features/sales/presentation/delivery_orders/pickup_dialog.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 
 /// One delivery order (spec 061 contracts C4): header facts, the detail
 /// band, the rejection banner, the lines, the proof of delivery, the history
@@ -1026,10 +1027,9 @@ class _ProofSection extends ConsumerWidget {
     final theme = Theme.of(context);
     final spacing = theme.spacing;
     final fmt = ref.watch(formattersProvider);
-    final failed = Text(
+    final failed = InlineErrorText(
       l10n.deliveryOrderProofLoadFailed,
       key: const Key('delivery_order_proof_failed'),
-      style: TextStyle(color: theme.colorScheme.error),
     );
 
     return Column(

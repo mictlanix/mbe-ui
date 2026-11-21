@@ -6,6 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mbe_ui/app/theme/app_theme.dart';
 import 'package:mbe_ui/core/branding/brand_config.dart';
 import 'package:mbe_ui/core/branding/brand_ink.dart';
+import 'package:mbe_ui/core/branding/brand_registry.dart';
+import 'package:mbe_ui/core/branding/semantic_colors.dart';
 
 /// The deployment contrast gate (spec 022 FR-027, SC-011).
 ///
@@ -36,6 +38,18 @@ double _contrastRatio(Color foreground, Color background) {
   final b = _relativeLuminance(background);
   return (math.max(a, b) + 0.05) / (math.min(a, b) + 0.05);
 }
+
+/// Pairs of the default XBE brand that sit below FR-020's thresholds and are
+/// kept anyway: they are pins transcribed from the approved XBE brand guide
+/// (spec 019), and spec 077 FR-004 requires the default look to stay
+/// pixel-identical. Each value is the measured ratio, a floor so the pair can
+/// never get worse. Flagged for the brand owner; remove an entry when the guide
+/// is amended and the pin changes.
+const _knownBelowThreshold = <String, double>{
+  'xbe light: outline': 1.79,
+  'xbe dark: outline': 2.04,
+  'xbe dark: error': 3.77,
+};
 
 void main() {
   group('The real deployment gate — BrandConfig.fromEnvironment()', () {
@@ -80,6 +94,112 @@ void main() {
         }
       },
     );
+  });
+
+  // Every registered brand, both brightnesses (spec 077 FR-020, SC-004): a new
+  // brand that fails cannot merge. Unlike the deployment gate above this does
+  // not depend on --dart-define, so it covers brands the build isn't using.
+  group('Every registered brand clears FR-020', () {
+    for (final definition in kBrandRegistry.values) {
+      final brand = BrandConfig.resolve(
+        brandId: definition.id,
+        displayName: definition.displayName,
+        seedColorHex: '',
+        hasSeedColor: false,
+        lockupAsset: definition.lockupAsset,
+        markAsset: definition.markAsset,
+      );
+      final appTheme = AppTheme.of(brand);
+      for (final theme in [appTheme.light, appTheme.dark]) {
+        final scheme = theme.colorScheme;
+        final sem = theme.semanticColors;
+        final mode = '${definition.id} ${theme.brightness.name}';
+
+        void expectText(String name, Color fg, Color bg, {double min = 4.5}) {
+          final ratio = _contrastRatio(fg, bg);
+          final known = _knownBelowThreshold['$mode: $name'];
+          if (known != null) {
+            // A pre-existing pin kept by FR-004: it may not get worse.
+            expect(
+              ratio,
+              greaterThanOrEqualTo(known),
+              reason: '$mode: $name regressed below its recorded $known:1',
+            );
+            return;
+          }
+          expect(
+            ratio,
+            greaterThanOrEqualTo(min),
+            reason:
+                '$mode: $name is ${ratio.toStringAsFixed(2)}:1 '
+                '(need >= $min:1)',
+          );
+        }
+
+        test('$mode: on-colors on their fills', () {
+          expectText('onPrimary/primary', scheme.onPrimary, scheme.primary);
+          expectText(
+            'onPrimaryContainer/primaryContainer',
+            scheme.onPrimaryContainer,
+            scheme.primaryContainer,
+          );
+          expectText('onError/error', scheme.onError, scheme.error);
+          expectText(
+            'onErrorContainer/errorContainer',
+            scheme.onErrorContainer,
+            scheme.errorContainer,
+          );
+          expectText('onAccent/accent', sem.onAccent, sem.accent);
+          expectText(
+            'onAccentContainer/accentContainer',
+            sem.onAccentContainer,
+            sem.accentContainer,
+          );
+          expectText('onSuccess/success', sem.onSuccess, sem.success);
+          expectText(
+            'onSuccessContainer/successContainer',
+            sem.onSuccessContainer,
+            sem.successContainer,
+          );
+          expectText('onWarning/warning', sem.onWarning, sem.warning);
+          expectText(
+            'onWarningContainer/warningContainer',
+            sem.onWarningContainer,
+            sem.warningContainer,
+          );
+        });
+
+        test('$mode: body text on every surface', () {
+          final surfaces = <String, Color>{
+            'surface': scheme.surface,
+            'surfaceContainerLowest': scheme.surfaceContainerLowest,
+            'surfaceContainerLow': scheme.surfaceContainerLow,
+            'surfaceContainer': scheme.surfaceContainer,
+            'surfaceContainerHigh': scheme.surfaceContainerHigh,
+            'surfaceContainerHighest': scheme.surfaceContainerHighest,
+          };
+          surfaces.forEach((name, bg) {
+            expectText('onSurface on $name', scheme.onSurface, bg);
+            expectText(
+              'onSurfaceVariant on $name',
+              scheme.onSurfaceVariant,
+              bg,
+            );
+          });
+        });
+
+        test('$mode: status roles read as text on the surface', () {
+          expectText('success', sem.success, scheme.surface);
+          expectText('warning', sem.warning, scheme.surface);
+          expectText('error', scheme.error, scheme.surface);
+          expectText('primary', theme.brandInk.primary, scheme.surface);
+        });
+
+        test('$mode: control borders clear 3:1', () {
+          expectText('outline', scheme.outline, scheme.surface, min: 3);
+        });
+      }
+    }
   });
 
   group(

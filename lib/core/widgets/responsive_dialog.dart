@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:mbe_ui/core/branding/semantic_colors.dart';
 import 'package:mbe_ui/core/design/design.dart';
 import 'package:mbe_ui/core/layout/breakpoints.dart';
 import 'package:mbe_ui/core/widgets/app_side_sheet.dart'
@@ -175,7 +176,13 @@ class ResponsiveDialog extends StatelessWidget {
             ],
           ),
         ),
-        const Divider(height: 1),
+        // The compact header is not an AppBar, so it draws the brand rule
+        // itself (spec 077 FR-017): 3px in the accent color.
+        Container(
+          key: const Key('responsive_dialog_header_rule'),
+          height: 3,
+          color: theme.semanticColors.accent,
+        ),
         Expanded(
           child: SingleChildScrollView(
             padding: EdgeInsets.all(spacing.md),

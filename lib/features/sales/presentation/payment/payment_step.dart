@@ -14,6 +14,7 @@ import 'package:mbe_ui/features/sales/presentation/payment/payment_controller.da
 import 'package:mbe_ui/features/sales/presentation/payment/payment_summary_panel.dart';
 import 'package:mbe_ui/features/sales/presentation/pos_gate_screen.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
+import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 
 /// The Cobro step (contracts/pos-screen.md §3, spec 025 contracts/
 /// payment-surface.md): tender amount, method, reference, applied payments
@@ -64,10 +65,9 @@ class PaymentStep extends ConsumerWidget {
     };
     final issueLine = issueMessage == null
         ? null
-        : Text(
+        : InlineErrorText(
             issueMessage,
             key: const Key('payment_issue_message'),
-            style: TextStyle(color: theme.colorScheme.error),
           );
     // Usually only one of the two is set. spec 056: a partly applied credit
     // spend sets both — what was applied, then the server's reason — so the

@@ -16,6 +16,7 @@ import 'package:mbe_ui/core/formatting/formatters_provider.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
+import 'package:mbe_ui/core/widgets/record_id_text.dart';
 import 'package:mbe_ui/core/widgets/responsive_form_grid.dart';
 import 'package:mbe_ui/features/catalog/data/employee_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/data/facility_repository_impl.dart';
@@ -180,9 +181,11 @@ class _PaymentBody extends ConsumerWidget {
                 runSpacing: spacing.sm,
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Text(
-                    l10n.paymentHeaderTitle(payment.customerPaymentId),
+                  DefaultTextStyle.merge(
                     style: Theme.of(context).textTheme.titleLarge,
+                    child: RecordIdText.inherit(
+                      l10n.paymentHeaderTitle(payment.customerPaymentId),
+                    ),
                   ),
                   PaymentVerifiedChip(verified: payment.isVerified),
                   if (canVerify) ...[

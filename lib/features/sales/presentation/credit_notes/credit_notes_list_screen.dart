@@ -105,11 +105,10 @@ class CreditNotesListScreen extends ConsumerWidget {
                   onData: (page) => DataTableView<CreditNote>(
                     key: const Key('credit_notes_table'),
                     columns: [
-                      DataTableColumn(
+                      DataTableColumn.timestamp(
                         label: l10n.creditNotesColumnDate,
                         size: ColumnSize.M,
-                        cellBuilder: (context, n) =>
-                            Text(fmt.display.dateTime(n.date)),
+                        text: (n) => fmt.display.dateTime(n.date),
                       ),
                       DataTableColumn(
                         label: l10n.creditNotesColumnCustomer,
