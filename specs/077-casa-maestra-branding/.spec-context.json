@@ -3,7 +3,7 @@
   "specName": "Casa Maestra Branding",
   "branch": "077-casa-maestra-branding",
   "currentStep": "implement",
-  "status": "implementing",
+  "status": "implemented",
   "history": [
     {
       "step": "specify",
@@ -577,6 +577,37 @@
       "kind": "complete",
       "by": "ai",
       "at": "2026-11-20T15:46:15.016Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T019",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-21T10:11:25.498Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T061",
+      "kind": "complete",
+      "by": "ai",
+      "at": "2026-11-21T10:11:25.588Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "task": "T057",
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-21T10:11:25.734Z"
+    },
+    {
+      "step": "implement",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-21T10:11:25.735Z"
     }
   ],
   "telemetryInstanceId": "7b23ad11-955e-49d2-a4a8-4f4062ebf54c",
@@ -707,7 +738,7 @@
       "decision": "FR-012 nav header tier rule applies to every brand"
     }
   ],
-  "currentTask": "T019",
+  "currentTask": "T061",
   "task_summaries": {
     "T001,T002,T003,T004": {
       "status": "DONE",
@@ -1171,6 +1202,20 @@
       "did": "Changed Dart files formatted, flutter analyze clean, full unit/widget/contract run green",
       "files": [
         "all"
+      ]
+    },
+    "T019": {
+      "status": "DONE",
+      "did": "Light and dark verified by the user's screenshots on macOS (2026-11-21); 700px header and 1.3x text covered by widget tests",
+      "files": [
+        "specs/077-casa-maestra-branding/quickstart.md"
+      ]
+    },
+    "T061": {
+      "status": "DONE",
+      "did": "Quickstart V1-V6 results recorded; V4 unknown-brand fallback unit-tested only",
+      "files": [
+        "specs/077-casa-maestra-branding/quickstart.md"
       ]
     }
   }
