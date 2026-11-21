@@ -3,7 +3,7 @@
   "specName": "Casa Maestra Branding",
   "branch": "077-casa-maestra-branding",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -738,7 +738,7 @@
       "decision": "FR-012 nav header tier rule applies to every brand"
     }
   ],
-  "currentTask": "T061",
+  "currentTask": null,
   "task_summaries": {
     "T001,T002,T003,T004": {
       "status": "DONE",
@@ -1218,5 +1218,28 @@
         "specs/077-casa-maestra-branding/quickstart.md"
       ]
     }
-  }
+  },
+  "concerns": [
+    {
+      "note": "finished, unverified",
+      "step": "implement"
+    }
+  ],
+  "verified": [
+    {
+      "what": "flutter test test/unit test/widget test/contract: ~6570 passed, 0 failed (2026-11-20)"
+    },
+    {
+      "what": "flutter analyze: no issues; changed Dart files formatted"
+    },
+    {
+      "what": "Contrast gate passes for xbe (with recorded floors) and xbe.cm, both themes"
+    },
+    {
+      "what": "Release: web cm + demo built (demo matches baseline); Android cm signed, badging com.mictlanix.xbe.cm / Casa Maestra; iOS archive verified by the user"
+    },
+    {
+      "what": "Casa Maestra run on macOS in light and dark (user screenshots, 2026-11-21)"
+    }
+  ]
 }
