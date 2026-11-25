@@ -330,6 +330,10 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
     'requested': '6',
   },
   api.ErrorCode.itineraryPeriodCancelled: {},
+  api.ErrorCode.itineraryPeriodEmptyStops: {
+    'stop_ids': [31, 33],
+    'sequences': [2, 4],
+  },
   api.ErrorCode.itineraryPeriodLinesOvercommitted: {},
   api.ErrorCode.itineraryPeriodNotDeparted: {'status': 0},
   api.ErrorCode.itineraryPeriodNotOpen: {'status': 1},

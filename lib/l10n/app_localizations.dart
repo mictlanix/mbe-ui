@@ -16177,6 +16177,18 @@ abstract class AppLocalizations {
   /// **'The itinerary is cancelled.'**
   String get apiErrorItineraryCancelled;
 
+  /// mbe-api#346: API error message for `itinerary.empty_stops` when the stop sequences are missing
+  ///
+  /// In en, this message translates to:
+  /// **'Some stops have nothing loaded. Load or remove them before departing.'**
+  String get apiErrorItineraryEmptyStops;
+
+  /// mbe-api#346: API error message for `itinerary.empty_stops`; stops is a comma-separated list of stop numbers
+  ///
+  /// In en, this message translates to:
+  /// **'These stops have nothing loaded: {stops}. Load or remove them before departing.'**
+  String apiErrorItineraryEmptyStopsListed(String stops);
+
   /// spec 075: API error message for `itinerary.nothing_committed`
   ///
   /// In en, this message translates to:

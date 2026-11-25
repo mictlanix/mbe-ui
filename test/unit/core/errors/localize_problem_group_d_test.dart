@@ -35,6 +35,27 @@ void main() {
     expect(en(api.ErrorCode.salesOrderPeriodBelowMinQuantity), isNull);
   });
 
+  test('itinerary.empty_stops lists the stop numbers, or stands alone', () {
+    expect(
+      es(api.ErrorCode.itineraryPeriodEmptyStops, {
+        'stop_ids': [31, 33],
+        'sequences': [2, 4],
+      }),
+      'Estas paradas no tienen nada cargado: 2, 4. '
+      'Cárgalas o quítalas antes de salir.',
+    );
+    expect(
+      en(api.ErrorCode.itineraryPeriodEmptyStops),
+      'Some stops have nothing loaded. Load or remove them before departing.',
+    );
+    expect(
+      en(api.ErrorCode.itineraryPeriodEmptyStops, {
+        'sequences': ['2'],
+      }),
+      'Some stops have nothing loaded. Load or remove them before departing.',
+    );
+  });
+
   test('supplier_agreement.end_before_start formats both dates', () {
     const params = {'start': '2026-01-01', 'end': '2025-12-31'};
     expect(

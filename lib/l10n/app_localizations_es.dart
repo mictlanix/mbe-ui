@@ -9750,6 +9750,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get apiErrorItineraryCancelled => 'El itinerario está cancelado.';
 
   @override
+  String get apiErrorItineraryEmptyStops =>
+      'Hay paradas sin nada cargado. Cárgalas o quítalas antes de salir.';
+
+  @override
+  String apiErrorItineraryEmptyStopsListed(String stops) {
+    return 'Estas paradas no tienen nada cargado: $stops. Cárgalas o quítalas antes de salir.';
+  }
+
+  @override
   String get apiErrorItineraryNothingCommitted =>
       'No hay nada cargado en este itinerario.';
 
