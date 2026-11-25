@@ -210,6 +210,7 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.deliveryOrderLinePeriodNothingToLoad,
   api.ErrorCode.deliveryOrderLinePeriodQuantityUnavailable,
   api.ErrorCode.itineraryPeriodCancelled,
+  api.ErrorCode.itineraryPeriodEmptyStops,
   api.ErrorCode.itineraryPeriodLinesOvercommitted,
   api.ErrorCode.itineraryPeriodNotDeparted,
   api.ErrorCode.itineraryPeriodNotOpen,
@@ -389,6 +390,16 @@ String? localizeProblem(
       l10n.apiErrorDeliveryOrderLineQuantityUnavailable,
     ),
     api.ErrorCode.itineraryPeriodCancelled => l10n.apiErrorItineraryCancelled,
+    // The stops are named by their sequence on the trip ("Parada 2"); without
+    // a usable `sequences` list the sentence stands alone (mbe-api#346).
+    api.ErrorCode.itineraryPeriodEmptyStops => switch (_intList(
+      problem.listParam('sequences'),
+    )) {
+      final sequences? => l10n.apiErrorItineraryEmptyStopsListed(
+        sequences.join(', '),
+      ),
+      null => l10n.apiErrorItineraryEmptyStops,
+    },
     // The refusal lists delivery-order line ids, not product names, so they
     // show as the numbers the server sent (spec 075 contracts/error-messages).
     api.ErrorCode.itineraryPeriodLinesOvercommitted => _withItems(
@@ -1077,6 +1088,12 @@ List<String>? _stringList(List<Object?>? list) =>
     list == null || list.isEmpty || !list.every((e) => e is String)
     ? null
     : list.cast<String>();
+
+/// A non-empty list whose every element is an int, or `null`.
+List<int>? _intList(List<Object?>? list) =>
+    list == null || list.isEmpty || !list.every((e) => e is int)
+    ? null
+    : list.cast<int>();
 
 String? _ap1<A>(A? a, String Function(A) f) => a == null ? null : f(a);
 

@@ -85,9 +85,9 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
 
   /// Another Abierto trip that already holds [vehicleId], if any.
   ///
-  /// The server checks one open trip per vehicle only when a trip is created
-  /// (mbe-api#345), so this asks the list first (research R16). It can race
-  /// with another writer, and the server stays the real fix. A failed check
+  /// The server checks one open trip per vehicle on create and on update
+  /// (`vehicle.open_itinerary_exists`, mbe-api#345); this asks the list first
+  /// so the warning comes before the save (research R16). A failed check
   /// doesn't block the save.
   Future<int?> _holderOf(int vehicleId) async {
     try {

@@ -173,7 +173,8 @@ abstract class Itinerary with _$Itinerary {
   int get loadedLineCount => stops.fold(0, (sum, s) => sum + s.lines.length);
 
   /// Stops with nothing loaded (R7): such a stop would block the trip from
-  /// closing, and the server departs with it (mbe-api#346).
+  /// closing. The server refuses to depart with one too
+  /// (`itinerary.empty_stops`, mbe-api#346); this check names them first.
   List<ItineraryStop> get emptyStops =>
       stops.where((s) => s.lines.isEmpty).toList();
 
