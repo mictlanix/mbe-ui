@@ -3,8 +3,11 @@ name: speckit-companion-tasks
 description: Companion tasks — user-story phased task list
 compatibility: Requires spec-kit project structure with .specify/ directory
 metadata:
-  author: github-spec-kit
+  author: alfredoperez
   source: companion:commands/speckit.companion.tasks.md
+  version: 0.29.0
+user-invocable: true
+disable-model-invocation: false
 ---
 
 ## User Input
