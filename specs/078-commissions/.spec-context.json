@@ -1,0 +1,24 @@
+{
+  "workflow": "speckit",
+  "specName": "Commissions",
+  "branch": "078-commissions",
+  "currentStep": "specify",
+  "status": "specified",
+  "history": [
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-25T14:33:55.193Z"
+    },
+    {
+      "step": "specify",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-25T14:46:46.035Z"
+    }
+  ],
+  "telemetryInstanceId": "7649d035-69b1-4266-8d7d-beebe50d2c62"
+}
