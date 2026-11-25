@@ -1,9 +1,9 @@
-import 'package:decimal/decimal.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/formatting/formatters_provider.dart';
+import 'package:mbe_ui/core/formatting/percent_input.dart';
 import 'package:mbe_ui/features/catalog/data/customer_repository_impl.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/customer_discount.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/product_list_item.dart';
@@ -39,15 +39,15 @@ const customerDiscountPercentMaxDecimals = 6;
 String? validateCustomerDiscountPercent(String text) {
   final trimmed = text.trim();
   if (trimmed.isEmpty) return CustomerDiscountPercentError.required;
-  final parsed = Decimal.tryParse(trimmed);
-  if (parsed == null) return CustomerDiscountPercentError.invalid;
-  if (parsed < Decimal.zero || parsed > Decimal.fromInt(100)) {
-    return CustomerDiscountPercentError.outOfRange;
-  }
-  if (parsed.scale > customerDiscountPercentMaxDecimals) {
-    return CustomerDiscountPercentError.tooPrecise;
-  }
-  return null;
+  return switch (PercentInput.validate(
+    trimmed,
+    maxDecimals: customerDiscountPercentMaxDecimals,
+  )) {
+    PercentInputError.invalid => CustomerDiscountPercentError.invalid,
+    PercentInputError.outOfRange => CustomerDiscountPercentError.outOfRange,
+    PercentInputError.tooPrecise => CustomerDiscountPercentError.tooPrecise,
+    null => null,
+  };
 }
 
 /// Form state for the discount dialog (spec 052 FR-004..FR-006). Scoped to

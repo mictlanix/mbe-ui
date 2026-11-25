@@ -41,7 +41,7 @@ From top to bottom:
      - "Total de {agent} {total}" and the agent's scheme;
      - a by-label table (Etiqueta · Líneas · Comisión, "Sin etiqueta" for null);
      - a **lines table** (client-paged 50, R8): Pedido · Pagado · Cliente · Producto · Etiqueta · Participación · Tasa · Importe · Comisión.
-     - Refund rows have a leading ↩ icon and "Devolución" under the order number.
+     - Refund rows have a leading ↩ icon beside the order number, with "Devolución" as its tooltip and semantic label. The word is not stacked under the number: two lines overflow the table's fixed row height at the largest text size (T036). The compact cards, which have room, show "Devolución" as text.
      - An unlabelled line on an open month, for a user with Update, shows "Asignar…" in the Etiqueta cell. That is the row's one action (§VI).
      - Row tap opens the **line panel**.
 5. **`ErrorBanner`**, when the last action was refused.
@@ -76,7 +76,7 @@ Rates display through `formatters.percent` (read-only, 2 decimals, "1.25 %"). `f
 
 ## Settings (`/commissions/settings`)
 
-- **Section switch**: `SegmentedButton` in `CatalogFilterBar.actions` (≥ 600 px), or a `DropdownButton` below that. It writes `?section=`.
+- **Section switch**: `SegmentedButton` in `CatalogFilterBar.actions` at the expanded breakpoint (≥ 840 px), or a `DropdownButton` below that. Below 840 px the filter bar wraps, and five segments would overflow (implementation finding). It writes `?section=`.
 - **`InfoBanner`** on every section: "Los cambios aplican a meses abiertos y cálculos futuros, nunca a meses cerrados." (FR-018)
 
 | Section | Filter row | Table | Surface |
@@ -106,6 +106,7 @@ Rights follow the HTTP call each control makes (spec 025 contract: POST of a set
 
 ## Compact tier
 
-- **Months list**: two-line cards.
-- **Month**: agents become name + total rows. Lines become stacked cards: order · date / product · label / customer · participation / amount × rate = commission.
-- **Settings**: the section switch becomes a dropdown. The rate grid becomes one block per label with the participation types stacked.
+The shared `DataTableView` has no card layout, and every list in the app renders through it at the compact tier too (truncating text columns with a tooltip, §VI). Commissions does the same rather than inventing a per-screen card mode. The months list does not get the wireframes' two-line cards (implementation finding, 2026-11-25); the month screen does, below. What does reflow:
+- **Months list**: "Configuración" becomes its icon with a tooltip.
+- **Month**: the agents table becomes `ListTile` rows (name, total), and the lines become stacked cards with their own pager. These two lists are the screen's core reading and do not truncate well. The by-label table stays a `DataTableView`.
+- **Settings**: the section switch becomes a dropdown. The rate grid stays a table.

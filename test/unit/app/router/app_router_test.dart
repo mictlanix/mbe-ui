@@ -96,8 +96,11 @@ import 'package:mbe_ui/features/sales/domain/entities/sales_quote_summary.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_quote_repository.dart';
+import 'package:mbe_ui/features/commissions/data/commission_repository_impl.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
+import '../../../widget/features/commissions/commission_harness.dart'
+    show MockCommissionRepository;
 import '../../../widget/features/inventory/inventory_harness.dart'
     show aWarehouse;
 import '../../../widget/features/sales/pos_test_harness.dart'
@@ -402,6 +405,19 @@ const _deliveryItinerariesReaderUser = User(
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.deliveryItineraries, rawValue: 2),
+  ],
+);
+
+/// Holds read on `commissionsBySalesPerson` (112) alone, the gate for spec
+/// 078's `/commissions` routes.
+const _commissionsReaderUser = User(
+  userId: 'commissions-reader',
+  email: 'commissions-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.commissionsBySalesPerson, rawValue: 2),
   ],
 );
 
@@ -2572,6 +2588,103 @@ void main() {
       final shell = tester.widget<AppShell>(find.byType(AppShell));
       expect(NavBranch.deliveryItineraries, 36);
       expect(shell.navigationShell.currentIndex, NavBranch.deliveryItineraries);
+    });
+  });
+
+  group('078-commissions — /commissions gates on commissionsBySalesPerson '
+      '(112) read', () {
+    List<Override> overrides() {
+      final repo = MockCommissionRepository();
+      when(() => repo.listPeriods()).thenAnswer((_) async => []);
+      return [commissionRepositoryProvider.overrideWithValue(repo)];
+    }
+
+    testWidgets('a user with read reaches the list', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _commissionsReaderUser,
+        '/commissions',
+        extraOverrides: overrides(),
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/commissions');
+      expect(find.byKey(const Key('list_state_empty')), findsOneWidget);
+    });
+
+    testWidgets('a user without read is redirected home', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/commissions');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a user without read cannot open a month', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/commissions/2026/1');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a month opens on its own route, with the agent', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _commissionsReaderUser,
+        '/commissions/2026/1?agent=7',
+        extraOverrides: overrides(),
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/commissions/2026/1');
+      expect(find.text('Enero de 2026'), findsOneWidget);
+    });
+
+    testWidgets('settings opens its own screen, not a month', (tester) async {
+      final repo = MockCommissionRepository();
+      when(() => repo.listAgents()).thenAnswer((_) async => []);
+      final handle = await pumpAt(
+        tester,
+        _commissionsReaderUser,
+        '/commissions/settings?section=agents',
+        extraOverrides: [commissionRepositoryProvider.overrideWithValue(repo)],
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/commissions/settings');
+      expect(handle.router.state.uri.queryParameters['section'], 'agents');
+      expect(find.byKey(const Key('commission_settings_note')), findsOneWidget);
+    });
+
+    testWidgets('a user without read cannot open the settings', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/commissions/settings',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('an invalid month redirects to the list', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _commissionsReaderUser,
+        '/commissions/2026/13',
+        extraOverrides: overrides(),
+      );
+      await tester.pumpAndSettle();
+      expect(handle.router.state.uri.path, '/commissions');
+    });
+
+    testWidgets('activates shell branch NavBranch.commissions (37)', (
+      tester,
+    ) async {
+      await pumpAt(
+        tester,
+        _commissionsReaderUser,
+        '/commissions',
+        extraOverrides: overrides(),
+      );
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.commissions, 37);
+      expect(shell.navigationShell.currentIndex, NavBranch.commissions);
     });
   });
 

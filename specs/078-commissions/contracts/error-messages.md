@@ -5,17 +5,17 @@ These are the codes the commissions routes can return, measured from mbe-api's
 
 ## New (add to `localizedErrorCodes`, the `localizeProblem` switch, `app_es.arb`, `app_en.arb`, `problem_fixtures.dart`; flip `code-scope.tsv` to `IN`)
 
-`{period}` is `formatters.monthYear(year, month)` ("octubre 2026").
+`{period}` is `formatters.monthYear(year, month)`, lowercase as Spanish writes it ("octubre de 2026"). No Spanish message starts with `{period}`, so it never needs capitalizing.
 
 | Code | Status | Params | Routes | es |
 |---|---|---|---|---|
-| `commission_period.not_ended` | 409 | `year`, `month` | close | {period} aún no termina; no se puede cerrar. |
+| `commission_period.not_ended` | 409 | `year`, `month` | close | Todavía no termina {period}; no se puede cerrar. |
 | `commission_period.previous_not_closed` | 409 | `year`, `month` | close | Para cerrar {period} primero hay que cerrar el mes anterior. |
 | `commission_period.later_closed` | 409 | `year`, `month` | close, reopen | Ya hay un mes posterior a {period} cerrado. |
-| `commission_period.already_closed` | 409 | `year`, `month` | close | {period} ya está cerrado. |
-| `commission_period.already_paid` | 409 | `year`, `month` | close, pay | {period} ya está pagado. |
-| `commission_period.not_closed` | 409 | `year`, `month` | reopen, pay | {period} no está cerrado. |
-| `commission_period.paid_cannot_reopen` | 409 | `year`, `month` | reopen | {period} ya está pagado y no se puede reabrir. |
+| `commission_period.already_closed` | 409 | `year`, `month` | close | El mes de {period} ya está cerrado. |
+| `commission_period.already_paid` | 409 | `year`, `month` | close, pay | El mes de {period} ya está pagado. |
+| `commission_period.not_closed` | 409 | `year`, `month` | reopen, pay | El mes de {period} no está cerrado. |
+| `commission_period.paid_cannot_reopen` | 409 | `year`, `month` | reopen | El mes de {period} ya está pagado y no se puede reabrir. |
 | `commission_agent.salesperson_not_agent` | 422 | `salesperson_id` | agent-rates create | El empleado #{salesperson_id} no es agente de comisiones. |
 
 - All 8 join `needParams` in `catalog_coverage_test.dart`. A missing or mistyped `year` or `month` falls back to the generic message (§III resilience).

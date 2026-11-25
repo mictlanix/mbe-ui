@@ -18,6 +18,39 @@ void main() {
     FormattingSettings settings = const FormattingSettings(),
   }) => DisplayFormatters(locale: locale, settings: settings);
 
+  group('display.monthYear', () {
+    test('es keeps the month lowercase, as Spanish writes it', () {
+      expect(display().monthYear(2026, 10), 'octubre de 2026');
+      expect(display().monthYear(2026, 1), 'enero de 2026');
+      expect(display().monthYear(2026, 12), 'diciembre de 2026');
+    });
+
+    test('monthName gives the bare month, stand-alone', () {
+      expect(display().monthName(10), 'octubre');
+      expect(display().monthName(1, capitalize: true), 'Enero');
+      expect(display().monthName(13), emptyValuePlaceholder);
+    });
+
+    test('capitalize uppercases the first letter for titles', () {
+      expect(
+        display().monthYear(2026, 10, capitalize: true),
+        'Octubre de 2026',
+      );
+    });
+
+    test('en renders the English month name', () {
+      final en = display(locale: const Locale('en'));
+      expect(en.monthYear(2026, 10), 'October 2026');
+      expect(en.monthYear(2026, 1), 'January 2026');
+      expect(en.monthYear(2026, 12), 'December 2026');
+    });
+
+    test('an out-of-range month is the placeholder, never a throw', () {
+      expect(display().monthYear(2026, 0), emptyValuePlaceholder);
+      expect(display().monthYear(2026, 13), emptyValuePlaceholder);
+    });
+  });
+
   group('display.currency (contracts/formatting-surface.md)', () {
     test('formats a decimal amount at the default symbol/digits', () {
       expect(display().currency('120.5'), r'$120.50');

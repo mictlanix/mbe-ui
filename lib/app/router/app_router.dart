@@ -23,6 +23,8 @@ import 'package:mbe_ui/features/catalog/presentation/customer_detail_screen.dart
 import 'package:mbe_ui/features/catalog/presentation/customers_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/employees_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/expenses_list_screen.dart';
+import 'package:mbe_ui/features/commissions/presentation/periods/commission_periods_screen.dart';
+import 'package:mbe_ui/features/commissions/presentation/settings/commission_settings_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/labels_list_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/merge_products_screen.dart';
 import 'package:mbe_ui/features/catalog/presentation/product_detail_screen.dart';
@@ -547,6 +549,18 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 078-commissions: appended last (index 37), same rationale as
+          // `payments` above. Gated on SystemObject 112
+          // (`commissionsBySalesPerson`) read, see `_routeGate`. A row opens
+          // the top-level `/commissions/:year/:month` route.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: commissionsPath,
+                builder: (context, state) => const CommissionPeriodsScreen(),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -750,6 +764,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           itineraryId: int.tryParse(state.pathParameters['itineraryId'] ?? ''),
         ),
       ),
+      // 078-commissions: a month's own full screen, gated on SystemObject 112
+      // (`commissionsBySalesPerson`) read by the `_routeGate` prefix. The
+      // factory redirects an invalid or future month to the list.
+      // The settings route is declared first so `settings` is not read as a
+      // year.
+      commissionSettingsRoute(),
+      commissionMonthRoute(),
       // 066-invoice-list-editor: a document's own full screen, gated on
       // SystemObject 23 (`fiscalDocuments`) read by the `_routeGate` prefix. A
       // non-numeric id parses to `null`, which the screen shows as not found.
@@ -1150,6 +1171,15 @@ NavGate? _routeGate(String location) {
   // prefix with the delivery order paths, and 71 read must not open it.
   if (location.startsWith(deliveryItinerariesPath)) {
     return PrivilegeGate(SystemObject.deliveryItineraries, AccessRight.read);
+  }
+  // 078-commissions: SystemObject 112 (`commissionsBySalesPerson`) read,
+  // matching the server's GET /commissions/periods. The prefix covers the
+  // list, the settings and every `/commissions/:year/:month`.
+  if (location.startsWith(commissionsPath)) {
+    return PrivilegeGate(
+      SystemObject.commissionsBySalesPerson,
+      AccessRight.read,
+    );
   }
   // 061-delivery-orders: SystemObject 71 (`deliveryOrders`) read, matching
   // the server's GET /delivery-orders. The prefix covers the list and every

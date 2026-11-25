@@ -116,87 +116,75 @@ from the "Abrir mes" dialog) and owns a child collection (its lines) — §VI re
 
 ### State: open month, all agents (live calculation)
 
+*Redrawn 2026-11-25 to match the clarifications and research R6–R8.*
+
 ```
-┌─ ← Comisiones · Octubre 2026 ───────────────────────────────────────────────────────────┐
-│ ‹ Sep   Octubre 2026  Oct ›        (○ Abierto)                                          │
-│ ┌ ⓘ Cálculo en vivo, no definitivo. Cambia con las ventas y la configuración hasta ──┐ │
-│ │   que se cierre el mes.                                                              │ │
-│ └──────────────────────────────────────────────────────────────────────────────────────┘ │
-│ Total del mes  $48,210.33          Agente [Todos ▾]                    [Cerrar mes]     │
-│                                                                                         │
-│ Totales por agente                                                                      │
+┌─ ← Comisiones · Octubre de 2026 ────────────────────────────────────────────────────────┐
+│ ‹  Octubre de 2026  ›   (○ Abierto)                                     [Filtros (0)]   │
+│ ┌ ⓘ Cálculo en vivo, no definitivo. Los importes pueden cambiar hasta que se cierre ─┐ │
+│ │   el mes.                                                                          │ │
+│ └────────────────────────────────────────────────────────────────────────────────────┘ │
+│ Total del mes  $48,210.33                                                               │
 │ ┌─────────────────────────────────────────────────────────────────────────────────────┐ │
 │ │ Agente                    Esquema           Líneas      Comisión                    │ │
 │ ├─────────────────────────────────────────────────────────────────────────────────────┤ │
 │ │ Juan Pérez                Pago total           412    $21,330.10                    │ │
 │ │ María López               Pagos parciales      288    $15,002.55                    │ │
 │ │ Agente #76                —                     14       $120.40                    │ │
-│ │ Sin etiqueta (3 líneas sin comisión)                     $0.00                      │ │
 │ └─────────────────────────────────────────────────────────────────────────────────────┘ │
+│                                                                        [Cerrar mes]     │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- Header band: `FactStripRow` — period navigator (‹ previous / next ›, Open Question 2),
-  `StatusChip`, and the grand total (FR-003). Next is hidden past the current month.
-- Not-final notice: an info banner. The shared `ErrorBanner` is error-toned only — Open
-  Question 4.
-- Agent selector: the agent filter (FR-004). Drawn inline because it is the screen's
-  main pivot, not a secondary facet — this conflicts with §VI's facet rule, Open Question 5.
-- "Cerrar mes": `FilledButton` in the body action area (FR-007). It is not an Edit/Save/Delete,
-  so `RecordFormActions` does not render it — Open Question 3.
-- Totals table: `DataTableView`, one row per agent; a row click selects that agent
-  (same as the selector). "Agente #76" is an agent no longer in the agents list (FR-006).
-  The "Sin etiqueta" row is drawn as a prompt to fix labels; whether it belongs here is
-  Open Question 7.
-- With all agents selected, lines are not listed: thousands of rows with no pivot are
-  unreadable, and the label breakdown needs one agent. Open Question 8.
+- Header band: `FactStripRow` with the ‹ › steppers (› hidden past the current month), the
+  `StatusChip` and the badged filters button. The **Agente** picker lives in the drawer
+  (research R7); no agent is chosen here, so the strip shows none.
+- Live notice: the shared `InfoBanner` (research R5), on open months only.
+- Totals table: `DataTableView`, one row per agent. A row click chooses that agent
+  (`?agent=`). "Agente #76" is an agent no longer in the agents list (FR-006).
+- **No lines** until an agent is chosen (clarification, FR-003/FR-004).
+- "Cerrar mes": `FilledButton` in the body action row at the end of the screen (research
+  R6), only with Update; a blocked month shows its reason as text instead.
 
 ### State: open month, one agent
 
 ```
-┌─ ← Comisiones · Octubre 2026 ───────────────────────────────────────────────────────────┐
-│ ‹ Sep   Octubre 2026  Oct ›        (○ Abierto)                                          │
-│ ┌ ⓘ Cálculo en vivo, no definitivo. … ──────────────────────────────────────────────┐ │
-│ Total de Juan Pérez  $21,330.10    Agente [Juan Pérez ▾]  Esquema: Pago total  [Cerrar mes] │
-│                                                                                         │
-│ Totales por etiqueta                                                                    │
+┌─ ← Comisiones · Octubre de 2026 ────────────────────────────────────────────────────────┐
+│ ‹  Octubre de 2026  ›   (○ Abierto)   Agente: Juan Pérez [×]            [Filtros (1)]   │
+│ ┌ ⓘ Cálculo en vivo, no definitivo. … ───────────────────────────────────────────────┐ │
+│ Total de Juan Pérez  $21,330.10   ·  Pago total                                         │
 │ ┌──────────────────────────────────────────────┐                                        │
 │ │ Etiqueta          Líneas      Comisión       │                                        │
 │ │ CONCRETOS            220   $14,210.00        │                                        │
 │ │ TABIQUES             150    $6,980.10        │                                        │
 │ │ Sin etiqueta           3        $0.00        │                                        │
 │ └──────────────────────────────────────────────┘                                        │
-│                                                                                         │
-│ Líneas                                                           [Filtros (0)]          │
 │ ┌─────────────────────────────────────────────────────────────────────────────────────┐ │
-│ │ Pedido  Pagado      Cliente          Producto         Etiqueta     Particip.  Tasa  │ │
-│ │                                                                   Importe  Comisión │ │
+│ │ Pedido   Pagado      Cliente        Producto        Etiqueta    Particip.  Tasa      │ │
+│ │                                                          Importe     Comisión        │ │
 │ ├─────────────────────────────────────────────────────────────────────────────────────┤ │
-│ │ 336924  2026-10-14  Constructora R…  Block 15x20x40   CONCRETOS    VITALICIO  2.50% │ │
-│ │                                                       $15,001.70   $375.04          │ │
-│ │ 336990  2026-10-20  Ferretería El…   Varilla 3/8"     [Asignar…]   CAMPO      0.00% │ │
-│ │                                                       $2,400.00      $0.00          │ │
-│ │ ↩ 337011 2026-10-22 Constructora R…  Block 15x20x40   CONCRETOS    VITALICIO  2.50% │ │
-│ │   Devolución                                          −$1,200.00   −$30.00          │ │
+│ │ 336924   2026-10-14  Constructo…    Block 15x20x40  CONCRETOS   VITALICIO  2.50 %    │ │
+│ │                                                          $15,001.70    $375.04       │ │
+│ │ 336990   2026-10-20  Ferretería…    Varilla 3/8"    [Asignar…]  CAMPO      0.00 %    │ │
+│ │                                                           $2,400.00      $0.00       │ │
+│ │ ↩ 337011 2026-10-22  Constructo…    Block 15x20x40  CONCRETOS   VITALICIO  2.50 %    │ │
+│ │ Devolución                                               −$1,200.00    −$30.00       │ │
 │ └─────────────────────────────────────────────────────────────────────────────────────┘ │
 │                                                     ‹  1–50 de 412  ›                   │
+│                                                                        [Cerrar mes]     │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- Label totals: `DataTableView`, compact (FR-003 "each agent's totals by label").
-- Lines: `DataTableView` + `CatalogPagination`, paged client-side over the one response
-  (FR-005, edge case "large month"). Totals are over the whole agent, never the page.
-- The row is drawn on two lines only to fit this page width. The full column set from
-  FR-005 (order date, label rate, agent share, full commission, paid share, scheme) does
-  not fit without horizontal scroll (§VI forbids it) — Open Question 9.
-- Refund rows: leading ↩ icon and "Devolución", negative amounts (FR-005, edge case).
-- "[Asignar…]" on an unlabelled line: shown on open months to users with Update (FR-016a).
-  It opens the Assign label dialog below. It is the row's one extra action (§VI allows Edit
-  plus one); the line has no Edit.
-- "Filtros" on lines: facets Movimiento (venta/devolución), Etiqueta, Participación —
-  client-side. Not required by the spec; drawn to show where they would go.
-- Row click: no surface (a line has no record of its own). Open Question 10 covers linking
-  to the order.
+- The chosen agent is shown in the strip with a clear (×) control; the drawer's badge counts it.
+- By-label totals and lines are this agent's only (FR-004).
+- Lines: the **core columns only** (FR-005). The row is drawn on two lines only to fit this
+  page; on screen it is one row. Every other value (order date, label rate, agent share,
+  full commission, paid share, scheme, salespeople) is in the read-only **line panel**
+  opened by clicking the row (FR-005a, `showRecordSheet`, no Edit).
+- Paged client-side, 50 per page; the totals are over the whole agent, never the page.
+- Refund rows: leading ↩ and "Devolución" under the order number; negative amounts stay negative.
+- "[Asignar…]" on an unlabelled line: open months only, Update only (FR-016a), the row's one action.
+- No lines-table facets and no link to the order (research R8).
 
 ### State: closed month
 
@@ -476,12 +464,17 @@ cálculos futuros, nunca a meses cerrados." (FR-018).
 └──────────────────────────────────┘
 ```
 
-- Five segments do not fit a phone: the `SegmentedButton` becomes a dropdown.
-- The rate grid turns into one block per label with the three participation types stacked.
+- Five segments do not fit: below the expanded breakpoint (840 px) the `SegmentedButton`
+  becomes a dropdown.
+- *As built (2026-11-25):* the rate grid stays a table at every width; the shared
+  `DataTableView` has no card mode (contracts/ui-contract.md, Compact tier). The stacked
+  block above was not built.
 
 ---
 
 ## Open Questions
+
+**Resolved in research (2026-11-25):** Q2 (two-dropdown dialog + ‹ › steppers, feature-local; R4), Q3 (body action row, not `RecordFormActions`; R6), Q4 (`InfoBanner` promoted to core; R5), Q5 (agent picker in the drawer, shown in the strip; R7), Q6 (client-side Estado facet, no search; R9), Q7 (no "Sin etiqueta" summary row in the all-agents view; it shows in the by-label table), Q10 (no order link; R8), Q11 (feature-local grid over `ConfirmableTextField`; R11).
 
 **Resolved in `/speckit-clarify` (2026-11-25):** Q1 (one settings screen, five sections), Q8 (totals only until an agent is chosen), Q9 (core columns in the table, every value in a read-only side panel, so the "row expansion" idea is replaced by `RecordSheet`), Q12 (any product can be picked to label). The rest stay open for planning.
 

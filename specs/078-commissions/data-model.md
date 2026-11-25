@@ -16,7 +16,7 @@ mapped from the generated DTOs in `data/` (§III). Money, rates and quantities s
 | `closed` | `closed` | Cerrado | info |
 | `paid` | `paid` | Pagado | success |
 
-An unknown wire value maps to `open` and is logged. A period the server does not know about is not final.
+The generated client's status enums refuse an unknown wire value while deserializing, so an unknown status reaches the screen as a server error (`AppError.server`), not as a period. The mapping's fallback to `open` is only a backstop.
 
 ### `CommissionMonth` (value)
 

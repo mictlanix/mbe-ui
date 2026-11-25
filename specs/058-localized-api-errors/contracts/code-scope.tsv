@@ -20,14 +20,14 @@ code	cash_session.drawer_busy	409	cash_drawer_id: int	IN	POST /cash-sessions	rea
 code	cash_session.not_closed	409	—	IN	GET /cash-sessions/{}/ticket	reachable from 1 UI route(s)
 code	cash_session.not_open	409	—	IN	POST /customer-refunds/{}/confirm	reachable from 1 UI route(s)
 code	cash_session.user_busy	409	cash_session_id: int	IN	POST /cash-sessions	reachable from 1 UI route(s)
-code	commission_agent.salesperson_not_agent	422	salesperson_id: int	OUT		
-code	commission_period.already_closed	409	year: int, month: int	OUT		
-code	commission_period.already_paid	409	year: int, month: int	OUT		
-code	commission_period.later_closed	409	year: int, month: int	OUT		
-code	commission_period.not_closed	409	year: int, month: int	OUT		
-code	commission_period.not_ended	409	year: int, month: int	OUT		
-code	commission_period.paid_cannot_reopen	409	year: int, month: int	OUT		
-code	commission_period.previous_not_closed	409	year: int, month: int	OUT		
+code	commission_agent.salesperson_not_agent	422	salesperson_id: int	IN	POST /commissions/agent-rates	reachable from the Comisiones screens (spec 078)
+code	commission_period.already_closed	409	year: int, month: int	IN	POST /commissions/periods/{}/{}/close	reachable from the Comisiones screens (spec 078)
+code	commission_period.already_paid	409	year: int, month: int	IN	POST /commissions/periods/{}/{}/close|pay	reachable from the Comisiones screens (spec 078)
+code	commission_period.later_closed	409	year: int, month: int	IN	POST /commissions/periods/{}/{}/close|reopen	reachable from the Comisiones screens (spec 078)
+code	commission_period.not_closed	409	year: int, month: int	IN	POST /commissions/periods/{}/{}/reopen|pay	reachable from the Comisiones screens (spec 078)
+code	commission_period.not_ended	409	year: int, month: int	IN	POST /commissions/periods/{}/{}/close	reachable from the Comisiones screens (spec 078)
+code	commission_period.paid_cannot_reopen	409	year: int, month: int	IN	POST /commissions/periods/{}/{}/reopen	reachable from the Comisiones screens (spec 078)
+code	commission_period.previous_not_closed	409	year: int, month: int	IN	POST /commissions/periods/{}/{}/close	reachable from the Comisiones screens (spec 078)
 code	csd.certificate_not_rsa	422	—	IN	POST /taxpayer-certificates	reachable from 1 UI route(s)
 code	csd.certificate_unreadable	422	—	IN	POST /taxpayer-certificates	reachable from 1 UI route(s)
 code	csd.key_mismatch	422	—	IN	POST /taxpayer-certificates	reachable from 1 UI route(s)

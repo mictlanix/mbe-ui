@@ -10300,4 +10300,605 @@ class AppLocalizationsEn extends AppLocalizations {
   String documentItineraryNotesTitle(String id) {
     return 'Delivery notes · itinerary $id';
   }
+
+  @override
+  String apiErrorCommissionPeriodNotEnded(String period) {
+    return '$period hasn\'t ended yet; it can\'t be closed.';
+  }
+
+  @override
+  String apiErrorCommissionPeriodPreviousNotClosed(String period) {
+    return 'To close $period, the previous month must be closed first.';
+  }
+
+  @override
+  String apiErrorCommissionPeriodLaterClosed(String period) {
+    return 'A month after $period is already closed.';
+  }
+
+  @override
+  String apiErrorCommissionPeriodAlreadyClosed(String period) {
+    return 'The month of $period is already closed.';
+  }
+
+  @override
+  String apiErrorCommissionPeriodAlreadyPaid(String period) {
+    return 'The month of $period is already paid.';
+  }
+
+  @override
+  String apiErrorCommissionPeriodNotClosed(String period) {
+    return 'The month of $period is not closed.';
+  }
+
+  @override
+  String apiErrorCommissionPeriodPaidCannotReopen(String period) {
+    return 'The month of $period is already paid and can\'t be reopened.';
+  }
+
+  @override
+  String apiErrorCommissionAgentSalespersonNotAgent(String salespersonId) {
+    return 'Employee #$salespersonId is not a commission agent.';
+  }
+
+  @override
+  String apiResourceCommission(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'commission labels',
+      one: 'commission label',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCommission => 'feminine';
+
+  @override
+  String apiResourceCommissionAgent(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'agents',
+      one: 'agent',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCommissionAgent => 'masculine';
+
+  @override
+  String apiResourceCommissionParticipation(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'participation types',
+      one: 'participation type',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCommissionParticipation => 'masculine';
+
+  @override
+  String apiResourceCommissionSalesperson(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'agent rates',
+      one: 'agent rate',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCommissionSalesperson => 'feminine';
+
+  @override
+  String apiResourceCommissionProduct(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'product labels',
+      one: 'product label',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCommissionProduct => 'feminine';
+
+  @override
+  String apiResourceCommissionPeriod(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'commission periods',
+      one: 'commission period',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCommissionPeriod => 'masculine';
+
+  @override
+  String apiResourceCommissionPeriodLine(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'commission lines',
+      one: 'commission line',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiResourceGenderCommissionPeriodLine => 'feminine';
+
+  @override
+  String get navCommissions => 'Commissions';
+
+  @override
+  String get commissionMonthsTitle => 'Commissions';
+
+  @override
+  String get commissionColumnMonth => 'Month';
+
+  @override
+  String get commissionColumnTotal => 'Total';
+
+  @override
+  String get commissionColumnClosedAt => 'Closed on';
+
+  @override
+  String get commissionColumnPaidAt => 'Paid on';
+
+  @override
+  String get commissionMonthsEmptyTitle => 'No month has been closed yet.';
+
+  @override
+  String get commissionMonthsEmptyBody =>
+      'You can review any month; the first one you close starts the history.';
+
+  @override
+  String get commissionMonthsLoadFailed => 'Couldn\'t load the months.';
+
+  @override
+  String get commissionOpenMonthAction => 'Open month…';
+
+  @override
+  String get commissionSettingsAction => 'Settings';
+
+  @override
+  String commissionViewMonthAction(String month) {
+    return 'View $month';
+  }
+
+  @override
+  String get commissionOpenMonthTitle => 'Open month';
+
+  @override
+  String get commissionOpenMonthMonthLabel => 'Month';
+
+  @override
+  String get commissionOpenMonthYearLabel => 'Year';
+
+  @override
+  String get commissionOpenMonthConfirm => 'Open';
+
+  @override
+  String commissionMonthTitle(String month) {
+    return 'Commissions · $month';
+  }
+
+  @override
+  String get commissionMonthLoadFailed => 'Couldn\'t load the month.';
+
+  @override
+  String get commissionPreviousMonthTooltip => 'Previous month';
+
+  @override
+  String get commissionNextMonthTooltip => 'Next month';
+
+  @override
+  String get commissionAgentFilterLabel => 'Agent';
+
+  @override
+  String get commissionClearAgentTooltip => 'Clear agent filter';
+
+  @override
+  String get commissionLiveNotice =>
+      'Live calculation, not final. Amounts can change until the month is closed.';
+
+  @override
+  String get commissionMonthTotal => 'Month total';
+
+  @override
+  String commissionAgentTotal(String agent) {
+    return 'Total for $agent';
+  }
+
+  @override
+  String commissionAgentFallback(String id) {
+    return 'Agent #$id';
+  }
+
+  @override
+  String commissionClosedOn(String date, String employee) {
+    return 'Closed on $date by $employee';
+  }
+
+  @override
+  String commissionReopenedOn(String date, String employee) {
+    return 'Reopened on $date by $employee';
+  }
+
+  @override
+  String commissionPaidOn(String date, String employee) {
+    return 'Paid on $date by $employee';
+  }
+
+  @override
+  String get commissionColumnAgent => 'Agent';
+
+  @override
+  String get commissionColumnScheme => 'Scheme';
+
+  @override
+  String get commissionColumnLines => 'Lines';
+
+  @override
+  String get commissionColumnCommission => 'Commission';
+
+  @override
+  String get commissionColumnLabel => 'Label';
+
+  @override
+  String get commissionColumnOrder => 'Order';
+
+  @override
+  String get commissionColumnPaid => 'Paid';
+
+  @override
+  String get commissionColumnCustomer => 'Customer';
+
+  @override
+  String get commissionColumnProduct => 'Product';
+
+  @override
+  String get commissionColumnParticipation => 'Participation';
+
+  @override
+  String get commissionColumnRate => 'Rate';
+
+  @override
+  String get commissionColumnAmount => 'Amount';
+
+  @override
+  String get commissionNoLabel => 'No label';
+
+  @override
+  String get commissionRefund => 'Refund';
+
+  @override
+  String get commissionAssignAction => 'Assign…';
+
+  @override
+  String get commissionMonthEmpty => 'This month has no commissions.';
+
+  @override
+  String get commissionLinesEmpty => 'This agent has no lines this month.';
+
+  @override
+  String get commissionStatusOpen => 'Open';
+
+  @override
+  String get commissionStatusClosed => 'Closed';
+
+  @override
+  String get commissionStatusPaid => 'Paid';
+
+  @override
+  String get commissionSchemeFullyPaid => 'Full payment';
+
+  @override
+  String get commissionSchemePartialPayments => 'Partial payments';
+
+  @override
+  String get commissionActionClose => 'Close month';
+
+  @override
+  String get commissionActionReopen => 'Reopen';
+
+  @override
+  String get commissionActionPay => 'Mark as paid';
+
+  @override
+  String commissionCloseTitle(String month) {
+    return 'Close $month';
+  }
+
+  @override
+  String commissionCloseBody(int count, String formatted, String total) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$formatted lines will be saved for $total.',
+      one: '$formatted line will be saved for $total.',
+    );
+    return '$_temp0 From now on the month won\'t change, even if customers, rates or labels do.';
+  }
+
+  @override
+  String commissionReopenTitle(String month) {
+    return 'Reopen $month';
+  }
+
+  @override
+  String get commissionReopenBody =>
+      'The saved lines will be discarded. The month will be recalculated with current data and will have to be closed again.';
+
+  @override
+  String commissionPayTitle(String month) {
+    return 'Mark $month as paid';
+  }
+
+  @override
+  String commissionPayBody(String total) {
+    return 'Total $total. A paid month is final: it can\'t be reopened or changed.';
+  }
+
+  @override
+  String get commissionCloseBlockedNotEnded =>
+      'Can\'t be closed: the month hasn\'t ended yet.';
+
+  @override
+  String commissionCloseBlockedPrevious(String month) {
+    return 'Can\'t be closed: $month has to be closed first.';
+  }
+
+  @override
+  String get commissionCloseBlockedLater =>
+      'Can\'t be closed: a later month is already closed.';
+
+  @override
+  String commissionLineTitle(String n) {
+    return 'Order line $n';
+  }
+
+  @override
+  String get commissionLineFieldOrderDate => 'Order date';
+
+  @override
+  String get commissionLineFieldPaidDate => 'Payment date';
+
+  @override
+  String get commissionLineFieldCustomer => 'Customer';
+
+  @override
+  String get commissionLineFieldProduct => 'Product';
+
+  @override
+  String get commissionLineFieldLabel => 'Label';
+
+  @override
+  String get commissionLineFieldLabelRate => 'Label rate';
+
+  @override
+  String get commissionLineFieldParticipation => 'Participation';
+
+  @override
+  String get commissionLineFieldAgentShare => 'Agent share';
+
+  @override
+  String get commissionLineFieldEffectiveRate => 'Effective rate';
+
+  @override
+  String get commissionLineFieldPrice => 'Price';
+
+  @override
+  String get commissionLineFieldQuantity => 'Quantity';
+
+  @override
+  String get commissionLineFieldAmount => 'Amount';
+
+  @override
+  String get commissionLineFieldFullCommission => 'Full commission';
+
+  @override
+  String get commissionLineFieldPaidPercent => 'Percent paid';
+
+  @override
+  String get commissionLineFieldMonthCommission => 'Month commission';
+
+  @override
+  String get commissionLineFieldScheme => 'Scheme';
+
+  @override
+  String get commissionLineFieldOrderSalesperson => 'Order salesperson';
+
+  @override
+  String get commissionLineFieldCustomerSalesperson => 'Customer salesperson';
+
+  @override
+  String get commissionLineFieldMovement => 'Movement';
+
+  @override
+  String get commissionLineFieldSale => 'Sale';
+
+  @override
+  String get commissionSectionLabels => 'Labels';
+
+  @override
+  String get commissionSectionParticipations => 'Participations';
+
+  @override
+  String get commissionSectionAgents => 'Agents';
+
+  @override
+  String get commissionSectionRates => 'Agent rates';
+
+  @override
+  String get commissionSectionProducts => 'Products';
+
+  @override
+  String get commissionSettingsTitle => 'Commission settings';
+
+  @override
+  String get commissionSettingsNote =>
+      'Changes apply to open months and future calculations, never to closed months.';
+
+  @override
+  String get commissionSettingsLoadFailed => 'Couldn\'t load the settings.';
+
+  @override
+  String get commissionSearchLabel => 'Search';
+
+  @override
+  String get commissionNewLabelAction => '+ New label';
+
+  @override
+  String get commissionNewParticipationAction => '+ New participation';
+
+  @override
+  String get commissionNewAgentAction => '+ New agent';
+
+  @override
+  String get commissionViewRatesAction => 'View rates';
+
+  @override
+  String get commissionAssignLabelAction => '+ Assign label';
+
+  @override
+  String get commissionRemoveLabelAction => 'Remove label';
+
+  @override
+  String get commissionLabelsEmpty => 'There are no commission labels.';
+
+  @override
+  String get commissionParticipationsEmpty =>
+      'There are no participation types.';
+
+  @override
+  String get commissionAgentsEmpty => 'There are no commission agents.';
+
+  @override
+  String get commissionProductLabelsEmpty =>
+      'There are no products with a commission label.';
+
+  @override
+  String get commissionRatesEmpty => 'Choose an agent to see their rates.';
+
+  @override
+  String get commissionRatesNoLabels =>
+      'Create labels and participation types first.';
+
+  @override
+  String get commissionFieldRate => 'Rate (%)';
+
+  @override
+  String get commissionFieldComment => 'Comment';
+
+  @override
+  String get commissionFieldEmployee => 'Employee';
+
+  @override
+  String get commissionFieldScheme => 'Scheme';
+
+  @override
+  String get commissionSchemeChangeNote =>
+      'Changing the scheme applies to open months and future calculations, never to closed months.';
+
+  @override
+  String get commissionColumnRateLabel => 'Rate';
+
+  @override
+  String get commissionNewLabelTitle => 'New commission label';
+
+  @override
+  String get commissionEditLabelTitle => 'Edit commission label';
+
+  @override
+  String get commissionViewLabelTitle => 'View commission label';
+
+  @override
+  String get commissionNewParticipationTitle => 'New participation';
+
+  @override
+  String get commissionEditParticipationTitle => 'Edit participation';
+
+  @override
+  String get commissionViewParticipationTitle => 'View participation';
+
+  @override
+  String get commissionNewAgentTitle => 'New agent';
+
+  @override
+  String get commissionEditAgentTitle => 'Edit agent';
+
+  @override
+  String get commissionViewAgentTitle => 'View agent';
+
+  @override
+  String get commissionDeleteLabelTitle => 'Delete label?';
+
+  @override
+  String get commissionDeleteParticipationTitle => 'Delete participation?';
+
+  @override
+  String get commissionDeleteAgentTitle => 'Delete agent?';
+
+  @override
+  String commissionDeleteConfirmBody(String name) {
+    return '\"$name\" will be deleted. This can\'t be undone.';
+  }
+
+  @override
+  String get commissionRateClearNotAllowed =>
+      'You don\'t have permission to clear rates.';
+
+  @override
+  String get commissionRateSaved => 'Saved';
+
+  @override
+  String commissionRateSavedBefore(String previous) {
+    return 'Saved · was $previous';
+  }
+
+  @override
+  String get commissionProductLabelTitle => 'Commission label';
+
+  @override
+  String get commissionProductLabelProduct => 'Product';
+
+  @override
+  String get commissionProductLabelLabel => 'Label';
+
+  @override
+  String get commissionProductLabelAssign => 'Assign';
+
+  @override
+  String get commissionProductFilterLabel => 'Product';
+
+  @override
+  String get commissionLabelFilterLabel => 'Label';
+
+  @override
+  String get commissionNameRequired => 'The name is required.';
+
+  @override
+  String get commissionEmployeeRequired => 'Choose an employee.';
+
+  @override
+  String get commissionPercentInvalid => 'Enter a number, e.g. 2.5.';
+
+  @override
+  String get commissionPercentOutOfRange => 'Must be between 0 and 100.';
+
+  @override
+  String get commissionPercentTooPrecise => 'At most 4 decimal places.';
 }

@@ -137,6 +137,10 @@ class NavBranch {
   // above — display order comes from position within `kNavigationTree` (the
   // destination sits after `forDelivery` in Operación there).
   static const int deliveryItineraries = 36;
+
+  // 078-commissions: appended last, same rationale as `deliveryItineraries`
+  // above — the destination sits after Gastos in Finanzas in `kNavigationTree`.
+  static const int commissions = 37;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -530,6 +534,20 @@ const List<NavItem> kNavigationTree = [
         branchIndex: NavBranch.expenses,
         gate: PrivilegeGate(SystemObject.expenses, AccessRight.read),
       ),
+      // Gated on SystemObject 112 (`commissionsBySalesPerson`) read, matching
+      // the server's GET /commissions/periods.
+      NavDestination(
+        id: 'commissions',
+        label: _commissionsLabel,
+        icon: Icons.percent_outlined,
+        selectedIcon: Icons.percent,
+        route: '/commissions',
+        branchIndex: NavBranch.commissions,
+        gate: PrivilegeGate(
+          SystemObject.commissionsBySalesPerson,
+          AccessRight.read,
+        ),
+      ),
     ],
   ),
   // Sistema: administration of people and places.
@@ -612,6 +630,7 @@ String _customersLabel(AppLocalizations l10n) => l10n.customersMenuTitle;
 String _taxpayerRecipientsLabel(AppLocalizations l10n) =>
     l10n.taxpayerRecipientsMenuTitle;
 String _expensesLabel(AppLocalizations l10n) => l10n.expensesMenuTitle;
+String _commissionsLabel(AppLocalizations l10n) => l10n.navCommissions;
 String _vehiclesLabel(AppLocalizations l10n) => l10n.vehiclesMenuTitle;
 String _vehicleOperatorsLabel(AppLocalizations l10n) =>
     l10n.vehicleOperatorsMenuTitle;

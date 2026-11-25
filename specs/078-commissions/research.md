@@ -30,7 +30,7 @@ codebase and mbe-api showed.
 - **Decision**: These stay feature-local:
   - an "Abrir mes…" `ResponsiveDialog` with month and year dropdowns, defaulting to the previous calendar month and offering nothing after the current month;
   - ‹ › steppers in the month screen's `FactStripRow`, with › hidden past the current month.
-- **Formatting**: A month name must go through the formatting surface (§V), so `AppFormatters` gains `monthYear(int year, int month)` ("octubre 2026" / "October 2026", `DateFormat.yMMMM` under the provider's locale). The guard test keeps any widget from building its own `DateFormat`.
+- **Formatting**: A month name must go through the formatting surface (§V), so `AppFormatters` gains `monthYear(int year, int month)` ("octubre de 2026" / "October 2026", `DateFormat.yMMMM` under the provider's locale; lowercase by default as Spanish writes it, with `capitalize: true` for titles and table cells). `monthName(int month, {capitalize})` (`DateFormat.LLLL`, the stand-alone form) labels the Mes dropdown, beside its own Año dropdown. The guard test keeps any widget from building its own `DateFormat`.
 - **Alternatives**: A shared month picker in `core/widgets/`, rejected because there is one caller. `showDatePicker` with day ignored, rejected because it offers days, which is confusing.
 
 ## R5 — The "live, not final" notice (wireframe Q4)

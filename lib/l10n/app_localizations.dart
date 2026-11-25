@@ -17165,6 +17165,966 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delivery notes · itinerary {id}'**
   String documentItineraryNotesTitle(String id);
+
+  /// No description provided for @apiErrorCommissionPeriodNotEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'{period} hasn\'t ended yet; it can\'t be closed.'**
+  String apiErrorCommissionPeriodNotEnded(String period);
+
+  /// No description provided for @apiErrorCommissionPeriodPreviousNotClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'To close {period}, the previous month must be closed first.'**
+  String apiErrorCommissionPeriodPreviousNotClosed(String period);
+
+  /// No description provided for @apiErrorCommissionPeriodLaterClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'A month after {period} is already closed.'**
+  String apiErrorCommissionPeriodLaterClosed(String period);
+
+  /// No description provided for @apiErrorCommissionPeriodAlreadyClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'The month of {period} is already closed.'**
+  String apiErrorCommissionPeriodAlreadyClosed(String period);
+
+  /// No description provided for @apiErrorCommissionPeriodAlreadyPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'The month of {period} is already paid.'**
+  String apiErrorCommissionPeriodAlreadyPaid(String period);
+
+  /// No description provided for @apiErrorCommissionPeriodNotClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'The month of {period} is not closed.'**
+  String apiErrorCommissionPeriodNotClosed(String period);
+
+  /// No description provided for @apiErrorCommissionPeriodPaidCannotReopen.
+  ///
+  /// In en, this message translates to:
+  /// **'The month of {period} is already paid and can\'t be reopened.'**
+  String apiErrorCommissionPeriodPaidCannotReopen(String period);
+
+  /// No description provided for @apiErrorCommissionAgentSalespersonNotAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee #{salespersonId} is not a commission agent.'**
+  String apiErrorCommissionAgentSalespersonNotAgent(String salespersonId);
+
+  /// No description provided for @apiResourceCommission.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{commission label} other{commission labels}}'**
+  String apiResourceCommission(int count);
+
+  /// No description provided for @apiResourceGenderCommission.
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderCommission;
+
+  /// No description provided for @apiResourceCommissionAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{agent} other{agents}}'**
+  String apiResourceCommissionAgent(int count);
+
+  /// No description provided for @apiResourceGenderCommissionAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderCommissionAgent;
+
+  /// No description provided for @apiResourceCommissionParticipation.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{participation type} other{participation types}}'**
+  String apiResourceCommissionParticipation(int count);
+
+  /// No description provided for @apiResourceGenderCommissionParticipation.
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderCommissionParticipation;
+
+  /// No description provided for @apiResourceCommissionSalesperson.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{agent rate} other{agent rates}}'**
+  String apiResourceCommissionSalesperson(int count);
+
+  /// No description provided for @apiResourceGenderCommissionSalesperson.
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderCommissionSalesperson;
+
+  /// No description provided for @apiResourceCommissionProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{product label} other{product labels}}'**
+  String apiResourceCommissionProduct(int count);
+
+  /// No description provided for @apiResourceGenderCommissionProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderCommissionProduct;
+
+  /// No description provided for @apiResourceCommissionPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{commission period} other{commission periods}}'**
+  String apiResourceCommissionPeriod(int count);
+
+  /// No description provided for @apiResourceGenderCommissionPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'masculine'**
+  String get apiResourceGenderCommissionPeriod;
+
+  /// No description provided for @apiResourceCommissionPeriodLine.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{commission line} other{commission lines}}'**
+  String apiResourceCommissionPeriodLine(int count);
+
+  /// No description provided for @apiResourceGenderCommissionPeriodLine.
+  ///
+  /// In en, this message translates to:
+  /// **'feminine'**
+  String get apiResourceGenderCommissionPeriodLine;
+
+  /// No description provided for @navCommissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Commissions'**
+  String get navCommissions;
+
+  /// No description provided for @commissionMonthsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Commissions'**
+  String get commissionMonthsTitle;
+
+  /// No description provided for @commissionColumnMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get commissionColumnMonth;
+
+  /// No description provided for @commissionColumnTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get commissionColumnTotal;
+
+  /// No description provided for @commissionColumnClosedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed on'**
+  String get commissionColumnClosedAt;
+
+  /// No description provided for @commissionColumnPaidAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid on'**
+  String get commissionColumnPaidAt;
+
+  /// No description provided for @commissionMonthsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No month has been closed yet.'**
+  String get commissionMonthsEmptyTitle;
+
+  /// No description provided for @commissionMonthsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can review any month; the first one you close starts the history.'**
+  String get commissionMonthsEmptyBody;
+
+  /// No description provided for @commissionMonthsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the months.'**
+  String get commissionMonthsLoadFailed;
+
+  /// No description provided for @commissionOpenMonthAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open month…'**
+  String get commissionOpenMonthAction;
+
+  /// No description provided for @commissionSettingsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get commissionSettingsAction;
+
+  /// No description provided for @commissionViewMonthAction.
+  ///
+  /// In en, this message translates to:
+  /// **'View {month}'**
+  String commissionViewMonthAction(String month);
+
+  /// No description provided for @commissionOpenMonthTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Open month'**
+  String get commissionOpenMonthTitle;
+
+  /// No description provided for @commissionOpenMonthMonthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get commissionOpenMonthMonthLabel;
+
+  /// No description provided for @commissionOpenMonthYearLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get commissionOpenMonthYearLabel;
+
+  /// No description provided for @commissionOpenMonthConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get commissionOpenMonthConfirm;
+
+  /// No description provided for @commissionMonthTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Commissions · {month}'**
+  String commissionMonthTitle(String month);
+
+  /// No description provided for @commissionMonthLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the month.'**
+  String get commissionMonthLoadFailed;
+
+  /// No description provided for @commissionPreviousMonthTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous month'**
+  String get commissionPreviousMonthTooltip;
+
+  /// No description provided for @commissionNextMonthTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Next month'**
+  String get commissionNextMonthTooltip;
+
+  /// No description provided for @commissionAgentFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent'**
+  String get commissionAgentFilterLabel;
+
+  /// No description provided for @commissionClearAgentTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear agent filter'**
+  String get commissionClearAgentTooltip;
+
+  /// No description provided for @commissionLiveNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Live calculation, not final. Amounts can change until the month is closed.'**
+  String get commissionLiveNotice;
+
+  /// No description provided for @commissionMonthTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Month total'**
+  String get commissionMonthTotal;
+
+  /// No description provided for @commissionAgentTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Total for {agent}'**
+  String commissionAgentTotal(String agent);
+
+  /// No description provided for @commissionAgentFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent #{id}'**
+  String commissionAgentFallback(String id);
+
+  /// No description provided for @commissionClosedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed on {date} by {employee}'**
+  String commissionClosedOn(String date, String employee);
+
+  /// No description provided for @commissionReopenedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopened on {date} by {employee}'**
+  String commissionReopenedOn(String date, String employee);
+
+  /// No description provided for @commissionPaidOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid on {date} by {employee}'**
+  String commissionPaidOn(String date, String employee);
+
+  /// No description provided for @commissionColumnAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent'**
+  String get commissionColumnAgent;
+
+  /// No description provided for @commissionColumnScheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheme'**
+  String get commissionColumnScheme;
+
+  /// No description provided for @commissionColumnLines.
+  ///
+  /// In en, this message translates to:
+  /// **'Lines'**
+  String get commissionColumnLines;
+
+  /// No description provided for @commissionColumnCommission.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission'**
+  String get commissionColumnCommission;
+
+  /// No description provided for @commissionColumnLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Label'**
+  String get commissionColumnLabel;
+
+  /// No description provided for @commissionColumnOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get commissionColumnOrder;
+
+  /// No description provided for @commissionColumnPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get commissionColumnPaid;
+
+  /// No description provided for @commissionColumnCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get commissionColumnCustomer;
+
+  /// No description provided for @commissionColumnProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get commissionColumnProduct;
+
+  /// No description provided for @commissionColumnParticipation.
+  ///
+  /// In en, this message translates to:
+  /// **'Participation'**
+  String get commissionColumnParticipation;
+
+  /// No description provided for @commissionColumnRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate'**
+  String get commissionColumnRate;
+
+  /// No description provided for @commissionColumnAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get commissionColumnAmount;
+
+  /// No description provided for @commissionNoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'No label'**
+  String get commissionNoLabel;
+
+  /// No description provided for @commissionRefund.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund'**
+  String get commissionRefund;
+
+  /// No description provided for @commissionAssignAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign…'**
+  String get commissionAssignAction;
+
+  /// No description provided for @commissionMonthEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'This month has no commissions.'**
+  String get commissionMonthEmpty;
+
+  /// No description provided for @commissionLinesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'This agent has no lines this month.'**
+  String get commissionLinesEmpty;
+
+  /// No description provided for @commissionStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get commissionStatusOpen;
+
+  /// No description provided for @commissionStatusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get commissionStatusClosed;
+
+  /// No description provided for @commissionStatusPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get commissionStatusPaid;
+
+  /// No description provided for @commissionSchemeFullyPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Full payment'**
+  String get commissionSchemeFullyPaid;
+
+  /// No description provided for @commissionSchemePartialPayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Partial payments'**
+  String get commissionSchemePartialPayments;
+
+  /// No description provided for @commissionActionClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close month'**
+  String get commissionActionClose;
+
+  /// No description provided for @commissionActionReopen.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen'**
+  String get commissionActionReopen;
+
+  /// No description provided for @commissionActionPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as paid'**
+  String get commissionActionPay;
+
+  /// No description provided for @commissionCloseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Close {month}'**
+  String commissionCloseTitle(String month);
+
+  /// No description provided for @commissionCloseBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{{formatted} line will be saved for {total}.} other{{formatted} lines will be saved for {total}.}} From now on the month won\'t change, even if customers, rates or labels do.'**
+  String commissionCloseBody(int count, String formatted, String total);
+
+  /// No description provided for @commissionReopenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen {month}'**
+  String commissionReopenTitle(String month);
+
+  /// No description provided for @commissionReopenBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved lines will be discarded. The month will be recalculated with current data and will have to be closed again.'**
+  String get commissionReopenBody;
+
+  /// No description provided for @commissionPayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark {month} as paid'**
+  String commissionPayTitle(String month);
+
+  /// No description provided for @commissionPayBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Total {total}. A paid month is final: it can\'t be reopened or changed.'**
+  String commissionPayBody(String total);
+
+  /// No description provided for @commissionCloseBlockedNotEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t be closed: the month hasn\'t ended yet.'**
+  String get commissionCloseBlockedNotEnded;
+
+  /// No description provided for @commissionCloseBlockedPrevious.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t be closed: {month} has to be closed first.'**
+  String commissionCloseBlockedPrevious(String month);
+
+  /// No description provided for @commissionCloseBlockedLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t be closed: a later month is already closed.'**
+  String get commissionCloseBlockedLater;
+
+  /// No description provided for @commissionLineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order line {n}'**
+  String commissionLineTitle(String n);
+
+  /// No description provided for @commissionLineFieldOrderDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Order date'**
+  String get commissionLineFieldOrderDate;
+
+  /// No description provided for @commissionLineFieldPaidDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment date'**
+  String get commissionLineFieldPaidDate;
+
+  /// No description provided for @commissionLineFieldCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get commissionLineFieldCustomer;
+
+  /// No description provided for @commissionLineFieldProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get commissionLineFieldProduct;
+
+  /// No description provided for @commissionLineFieldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Label'**
+  String get commissionLineFieldLabel;
+
+  /// No description provided for @commissionLineFieldLabelRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Label rate'**
+  String get commissionLineFieldLabelRate;
+
+  /// No description provided for @commissionLineFieldParticipation.
+  ///
+  /// In en, this message translates to:
+  /// **'Participation'**
+  String get commissionLineFieldParticipation;
+
+  /// No description provided for @commissionLineFieldAgentShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent share'**
+  String get commissionLineFieldAgentShare;
+
+  /// No description provided for @commissionLineFieldEffectiveRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Effective rate'**
+  String get commissionLineFieldEffectiveRate;
+
+  /// No description provided for @commissionLineFieldPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get commissionLineFieldPrice;
+
+  /// No description provided for @commissionLineFieldQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get commissionLineFieldQuantity;
+
+  /// No description provided for @commissionLineFieldAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get commissionLineFieldAmount;
+
+  /// No description provided for @commissionLineFieldFullCommission.
+  ///
+  /// In en, this message translates to:
+  /// **'Full commission'**
+  String get commissionLineFieldFullCommission;
+
+  /// No description provided for @commissionLineFieldPaidPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Percent paid'**
+  String get commissionLineFieldPaidPercent;
+
+  /// No description provided for @commissionLineFieldMonthCommission.
+  ///
+  /// In en, this message translates to:
+  /// **'Month commission'**
+  String get commissionLineFieldMonthCommission;
+
+  /// No description provided for @commissionLineFieldScheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheme'**
+  String get commissionLineFieldScheme;
+
+  /// No description provided for @commissionLineFieldOrderSalesperson.
+  ///
+  /// In en, this message translates to:
+  /// **'Order salesperson'**
+  String get commissionLineFieldOrderSalesperson;
+
+  /// No description provided for @commissionLineFieldCustomerSalesperson.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer salesperson'**
+  String get commissionLineFieldCustomerSalesperson;
+
+  /// No description provided for @commissionLineFieldMovement.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement'**
+  String get commissionLineFieldMovement;
+
+  /// No description provided for @commissionLineFieldSale.
+  ///
+  /// In en, this message translates to:
+  /// **'Sale'**
+  String get commissionLineFieldSale;
+
+  /// No description provided for @commissionSectionLabels.
+  ///
+  /// In en, this message translates to:
+  /// **'Labels'**
+  String get commissionSectionLabels;
+
+  /// No description provided for @commissionSectionParticipations.
+  ///
+  /// In en, this message translates to:
+  /// **'Participations'**
+  String get commissionSectionParticipations;
+
+  /// No description provided for @commissionSectionAgents.
+  ///
+  /// In en, this message translates to:
+  /// **'Agents'**
+  String get commissionSectionAgents;
+
+  /// No description provided for @commissionSectionRates.
+  ///
+  /// In en, this message translates to:
+  /// **'Agent rates'**
+  String get commissionSectionRates;
+
+  /// No description provided for @commissionSectionProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Products'**
+  String get commissionSectionProducts;
+
+  /// No description provided for @commissionSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission settings'**
+  String get commissionSettingsTitle;
+
+  /// No description provided for @commissionSettingsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes apply to open months and future calculations, never to closed months.'**
+  String get commissionSettingsNote;
+
+  /// No description provided for @commissionSettingsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the settings.'**
+  String get commissionSettingsLoadFailed;
+
+  /// No description provided for @commissionSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get commissionSearchLabel;
+
+  /// No description provided for @commissionNewLabelAction.
+  ///
+  /// In en, this message translates to:
+  /// **'+ New label'**
+  String get commissionNewLabelAction;
+
+  /// No description provided for @commissionNewParticipationAction.
+  ///
+  /// In en, this message translates to:
+  /// **'+ New participation'**
+  String get commissionNewParticipationAction;
+
+  /// No description provided for @commissionNewAgentAction.
+  ///
+  /// In en, this message translates to:
+  /// **'+ New agent'**
+  String get commissionNewAgentAction;
+
+  /// No description provided for @commissionViewRatesAction.
+  ///
+  /// In en, this message translates to:
+  /// **'View rates'**
+  String get commissionViewRatesAction;
+
+  /// No description provided for @commissionAssignLabelAction.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Assign label'**
+  String get commissionAssignLabelAction;
+
+  /// No description provided for @commissionRemoveLabelAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove label'**
+  String get commissionRemoveLabelAction;
+
+  /// No description provided for @commissionLabelsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no commission labels.'**
+  String get commissionLabelsEmpty;
+
+  /// No description provided for @commissionParticipationsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no participation types.'**
+  String get commissionParticipationsEmpty;
+
+  /// No description provided for @commissionAgentsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no commission agents.'**
+  String get commissionAgentsEmpty;
+
+  /// No description provided for @commissionProductLabelsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no products with a commission label.'**
+  String get commissionProductLabelsEmpty;
+
+  /// No description provided for @commissionRatesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an agent to see their rates.'**
+  String get commissionRatesEmpty;
+
+  /// No description provided for @commissionRatesNoLabels.
+  ///
+  /// In en, this message translates to:
+  /// **'Create labels and participation types first.'**
+  String get commissionRatesNoLabels;
+
+  /// No description provided for @commissionFieldRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate (%)'**
+  String get commissionFieldRate;
+
+  /// No description provided for @commissionFieldComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment'**
+  String get commissionFieldComment;
+
+  /// No description provided for @commissionFieldEmployee.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee'**
+  String get commissionFieldEmployee;
+
+  /// No description provided for @commissionFieldScheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheme'**
+  String get commissionFieldScheme;
+
+  /// No description provided for @commissionSchemeChangeNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing the scheme applies to open months and future calculations, never to closed months.'**
+  String get commissionSchemeChangeNote;
+
+  /// No description provided for @commissionColumnRateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate'**
+  String get commissionColumnRateLabel;
+
+  /// No description provided for @commissionNewLabelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New commission label'**
+  String get commissionNewLabelTitle;
+
+  /// No description provided for @commissionEditLabelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit commission label'**
+  String get commissionEditLabelTitle;
+
+  /// No description provided for @commissionViewLabelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View commission label'**
+  String get commissionViewLabelTitle;
+
+  /// No description provided for @commissionNewParticipationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New participation'**
+  String get commissionNewParticipationTitle;
+
+  /// No description provided for @commissionEditParticipationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit participation'**
+  String get commissionEditParticipationTitle;
+
+  /// No description provided for @commissionViewParticipationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View participation'**
+  String get commissionViewParticipationTitle;
+
+  /// No description provided for @commissionNewAgentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New agent'**
+  String get commissionNewAgentTitle;
+
+  /// No description provided for @commissionEditAgentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit agent'**
+  String get commissionEditAgentTitle;
+
+  /// No description provided for @commissionViewAgentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View agent'**
+  String get commissionViewAgentTitle;
+
+  /// No description provided for @commissionDeleteLabelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete label?'**
+  String get commissionDeleteLabelTitle;
+
+  /// No description provided for @commissionDeleteParticipationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete participation?'**
+  String get commissionDeleteParticipationTitle;
+
+  /// No description provided for @commissionDeleteAgentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete agent?'**
+  String get commissionDeleteAgentTitle;
+
+  /// No description provided for @commissionDeleteConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" will be deleted. This can\'t be undone.'**
+  String commissionDeleteConfirmBody(String name);
+
+  /// No description provided for @commissionRateClearNotAllowed.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have permission to clear rates.'**
+  String get commissionRateClearNotAllowed;
+
+  /// No description provided for @commissionRateSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get commissionRateSaved;
+
+  /// No description provided for @commissionRateSavedBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved · was {previous}'**
+  String commissionRateSavedBefore(String previous);
+
+  /// No description provided for @commissionProductLabelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission label'**
+  String get commissionProductLabelTitle;
+
+  /// No description provided for @commissionProductLabelProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get commissionProductLabelProduct;
+
+  /// No description provided for @commissionProductLabelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Label'**
+  String get commissionProductLabelLabel;
+
+  /// No description provided for @commissionProductLabelAssign.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign'**
+  String get commissionProductLabelAssign;
+
+  /// No description provided for @commissionProductFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get commissionProductFilterLabel;
+
+  /// No description provided for @commissionLabelFilterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Label'**
+  String get commissionLabelFilterLabel;
+
+  /// No description provided for @commissionNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'The name is required.'**
+  String get commissionNameRequired;
+
+  /// No description provided for @commissionEmployeeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an employee.'**
+  String get commissionEmployeeRequired;
+
+  /// No description provided for @commissionPercentInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number, e.g. 2.5.'**
+  String get commissionPercentInvalid;
+
+  /// No description provided for @commissionPercentOutOfRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Must be between 0 and 100.'**
+  String get commissionPercentOutOfRange;
+
+  /// No description provided for @commissionPercentTooPrecise.
+  ///
+  /// In en, this message translates to:
+  /// **'At most 4 decimal places.'**
+  String get commissionPercentTooPrecise;
 }
 
 class _AppLocalizationsDelegate
