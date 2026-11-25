@@ -46,7 +46,8 @@ caffeinate -dimsu flutter test integration_test/commissions_quickstart_test.dart
 | 12 | Agentes: add a salesperson under Pagos parciales; switch to Pago total; Ver tasas | Saved, with the scheme note; the grid opens on that agent | US4 sc. 3/4 |
 | 13 | Tasas: type 100 in an empty cell, Enter; change to 80; clear it | Created, updated, removed; leaving without Enter discards with acknowledgement | US5 |
 | 14 | Productos: filter by a label; pick a product; Asignar etiqueta on an unlabelled product; change; remove | Each reflected in the list | US6 |
-| 15 | Sign in as the read-only-on-112 account | Every screen readable; no Create, ✎, Eliminar, Cerrar, Reabrir, Pagar, Asignar; grid as text | FR-020, SC-006 |
+| 15 | Sign in as the read-only-on-112 account | Every screen readable; no Create, ✎, Eliminar, Cerrar mes, Reabrir, Marcar pagado, Asignar; grid as text | FR-020, SC-006 |
 | 16 | Sign in as a user without 112 | No Comisiones in the menu; `/commissions` redirects | FR-021 |
 | 17 | Largest text size, ≥ 1280 px: months list, month with lines, rate grid | No clipping or horizontal scroll | §V, §VI |
 | 18 | Switch to English | All commissions text and refusals in English | §III |
+| 19 | Time steps 1–6 (review and close last month) and, separately, one rate change, one share change and one product label | Under 2 minutes for the close; under 1 minute each for the settings changes | SC-001, SC-004 (manual timings, no automated task) |

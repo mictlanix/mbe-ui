@@ -118,7 +118,8 @@ codebase and mbe-api showed.
 - **Decision**: Move the parsing and validation, unchanged, into `lib/core/formatting/percent_input.dart` (`PercentInput.parse(String, {int maxDecimals})` → `Decimal?` fraction, plus a validator returning an error key), and point the customer-discount controller at it.
   - Commissions uses `maxDecimals: 4`: 4 percent digits make 6 fraction digits, which is exactly what the server keeps, so nothing is lost (FR-017).
   - The customer-discount tests are the regression check.
-- **Display**: `formattersProvider.percent`. The existing 2-decimal display shows 2.5% as "2.50 %". Effective rates such as 0.0125% would round, so effective rates in the line panel display through `formatters.rate` (up to 6 decimals, already used by pricing). The table shows `percent`.
+- **Display** (read-only): `formatters.percent`, two decimals with `%` ("2.50 %", "1.25 %"). The rates the scope document names (labels 0.2–4%, shares 50% and 100%) and every effective rate they make (smallest: ARMEX 0.2% × 50% = 0.10 %) are exact at two percent decimals, so the table and the line panel both use it. This is an assumption about the data: the live test (T034) reports any label rate, share or line rate with more than four fraction digits, and if one exists, T002 adds a full-precision display method instead.
+- **Editable** (grid cells, label rate field): `formatters.field.rate` fills the field at full precision with no `%` (`"0.025"` → `"2.5"`), the way customer discounts do. `PercentInput.parse` reads it back. §V keeps these two paths apart. Display never uses `field.rate`, and fields never use `percent`.
 - **Alternatives**: A third copy inside commissions, rejected by §V (one formatting surface, editable fields included).
 
 ## R13 — Error coverage (§III)

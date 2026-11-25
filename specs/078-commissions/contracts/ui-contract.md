@@ -63,7 +63,7 @@ States: loading and load error through `ListStateViews`, with the header kept.
 - the order's and customer's salespeople;
 - the movement.
 
-Rates display through `formatters.rate`.
+Rates display through `formatters.percent` (read-only, 2 decimals, "1.25 %"). `formatters.field.rate` is the editable-field formatter and is used only to fill grid cells (research R12).
 
 **Dialogs** (`period_dialogs.dart`, `showResponsiveDialog`, not dismissible while in flight):
 
@@ -87,10 +87,21 @@ Rates display through `formatters.rate`.
 | Tasas por agente | filters button (drawer: Agente picker) | `FactStripRow` with the agent, then `AgentRatesGrid` (R11) | in-cell |
 | Productos | filters button (drawer: Etiqueta, Producto) · "+ Asignar etiqueta" | Código · Producto · Etiqueta · ✎; `CatalogPagination` server-side, 20 | dialog: Producto (picker; fixed on edit) · Etiqueta · [Quitar etiqueta] on edit |
 
-Rights:
-- **Create** shows the "+" actions.
-- **Update** shows ✎, the edit toggle, grid fields, Asignar and Quitar.
-- **Delete** shows Eliminar in panels and clearing a grid cell. Without Delete, a cell with a value cannot be cleared: the field rejects an empty value with `commissionRateClearNotAllowed`.
+Rights follow the HTTP call each control makes (spec 025 contract: POST of a settings row = Create, PUT = Update, DELETE = Delete), so no control is shown that the server would refuse for lack of privilege (SC-006):
+
+| Control | Call | Right |
+|---|---|---|
+| "+ Nueva etiqueta", "+ Nueva participación", "+ Nuevo agente" | POST | Create |
+| ✎ and the panel's edit toggle on labels, participations, agents | PUT | Update |
+| Eliminar in a label, participation or agent panel | DELETE | Delete |
+| Rate grid: typing into an **empty** cell | POST `/agent-rates` | Create |
+| Rate grid: changing a **filled** cell | PUT `/agent-rates/{id}` | Update |
+| Rate grid: clearing a filled cell | DELETE `/agent-rates/{id}` | Delete |
+| "+ Asignar etiqueta", ✎ on a product label, "Asignar…" on a month line | PUT `/product-labels/{product}` | Update |
+| "Quitar etiqueta" | DELETE `/product-labels/{product}` | Delete |
+| Cerrar mes, Reabrir, Marcar pagado | POST `/periods/…/close`, `/reopen`, `/pay` | Update |
+
+- A grid cell is a field only when the user may write it: an empty cell needs Create, a filled cell needs Update. Otherwise it renders as text. A filled cell the user may update but not delete rejects an empty value with `commissionRateClearNotAllowed`, and keeps its value.
 - With **Read only**, everything renders as text.
 
 ## Compact tier
