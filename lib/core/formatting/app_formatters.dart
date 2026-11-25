@@ -52,7 +52,9 @@ class DisplayFormatters {
        ),
        _date = DateFormat(settings.datePattern, locale.toString()),
        _dateTime = DateFormat(settings.dateTimePattern, locale.toString()),
-       _count = NumberFormat.decimalPattern(locale.toString());
+       _count = NumberFormat.decimalPattern(locale.toString()),
+       _monthYear = DateFormat.yMMMM(locale.toString()),
+       _monthName = DateFormat.LLLL(locale.toString());
 
   final FormattingSettings _settings;
   final NumberFormat _currency;
@@ -60,6 +62,8 @@ class DisplayFormatters {
   final DateFormat _date;
   final DateFormat _dateTime;
   final NumberFormat _count;
+  final DateFormat _monthYear;
+  final DateFormat _monthName;
 
   /// A monetary amount, e.g. `"120.5"` → `"$120.50"` (defaults). `null` or
   /// unparseable → [emptyValuePlaceholder].
@@ -120,6 +124,28 @@ class DisplayFormatters {
   /// is always present or its row isn't rendered, so there is no `null`
   /// case and no [emptyValuePlaceholder].
   String count(int value) => _count.format(value);
+
+  /// A month and year in the locale's own form, e.g. `"octubre de 2026"`
+  /// (es) / `"October 2026"` (en). Spanish keeps the month lowercase, so the
+  /// default reads right inside a sentence; [capitalize] uppercases the first
+  /// letter for a title, a table cell or the start of a sentence
+  /// (`"Octubre de 2026"`). A [month] outside 1-12 →
+  /// [emptyValuePlaceholder].
+  String monthYear(int year, int month, {bool capitalize = false}) {
+    if (month < 1 || month > 12) return emptyValuePlaceholder;
+    final text = _monthYear.format(DateTime(year, month));
+    return capitalize ? text[0].toUpperCase() + text.substring(1) : text;
+  }
+
+  /// A month's name on its own, in its stand-alone form, e.g. `"octubre"`
+  /// (es) / `"October"` (en), for a month picker that has its year beside
+  /// it. [capitalize] as in [monthYear]. A [month] outside 1-12 →
+  /// [emptyValuePlaceholder].
+  String monthName(int month, {bool capitalize = false}) {
+    if (month < 1 || month > 12) return emptyValuePlaceholder;
+    final text = _monthName.format(DateTime(2000, month));
+    return capitalize ? text[0].toUpperCase() + text.substring(1) : text;
+  }
 
   /// Shared by [quantity] and [FieldFormatters.quantity] — identical
   /// rendering rule in both groups (data-model.md §2.1/§2.2).

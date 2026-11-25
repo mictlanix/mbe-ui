@@ -689,6 +689,69 @@ void main() {
     });
   });
 
+  group('Comisiones destination (spec 078)', () {
+    test('a user without commissionsBySalesPerson read has no entry', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.expenses, rawValue: 2),
+        ],
+      );
+      expect(ids, isNot(contains('commissions')));
+    });
+
+    test('read on commissionsBySalesPerson (112) shows the entry', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(
+            systemObject: SystemObject.commissionsBySalesPerson,
+            rawValue: 2,
+          ),
+        ],
+      );
+      expect(ids, contains('commissions'));
+    });
+
+    test('it sits right after Gastos in Finanzas, on branch 37 at '
+        '/commissions', () {
+      final container = ProviderContainer(
+        overrides: [
+          multiCurrencyEnabledProvider.overrideWithValue(false),
+          accessControlProvider.overrideWithValue(
+            AccessControlService(
+              AuthState.authenticated(
+                token: 't',
+                user: const User(
+                  userId: 'u',
+                  email: 'u@example.com',
+                  administrator: true,
+                  status: EntityStatus.active,
+                  sessionVersion: 1,
+                  privileges: [],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      final finance =
+          container
+                  .read(navDestinationsProvider)
+                  .firstWhere((i) => i is NavGroup && i.id == 'finance')
+              as NavGroup;
+      final ids = [for (final d in finance.children) d.id];
+      expect(ids.indexOf('commissions'), ids.indexOf('expenses') + 1);
+      final entry = finance.children.firstWhere((d) => d.id == 'commissions');
+      expect(entry.branchIndex, NavBranch.commissions);
+      expect(entry.route, '/commissions');
+      expect(NavBranch.commissions, 37);
+    });
+  });
+
   group('Facturas destination (spec 066 C1)', () {
     test('a user without FiscalDocuments read has no Facturas entry', () {
       final ids = visibleIds(
@@ -1098,6 +1161,7 @@ void main() {
             'exchange-rates',
             'payment-method-options',
             'expenses',
+            'commissions',
           ],
           'system': ['users', 'user-profiles', 'employees', 'facilities'],
         },
@@ -1113,8 +1177,8 @@ void main() {
             NavGroup() => item.children.map((d) => d.id),
           },
       ];
-      expect(all.length, 37);
-      expect(all.toSet().length, 37);
+      expect(all.length, 38);
+      expect(all.toSet().length, 38);
     },
   );
 }

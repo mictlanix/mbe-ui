@@ -24,6 +24,14 @@ void main() {
   /// The codes whose message needs a param. With none, they have no message;
   /// every other code is a fixed sentence.
   const needParams = {
+    'commission_agent.salesperson_not_agent',
+    'commission_period.already_closed',
+    'commission_period.already_paid',
+    'commission_period.later_closed',
+    'commission_period.not_closed',
+    'commission_period.not_ended',
+    'commission_period.paid_cannot_reopen',
+    'commission_period.previous_not_closed',
     'customer.credit_hold',
     'customer.credit_limit_exceeded',
     'customer.credit_limit_reached',
@@ -123,7 +131,7 @@ void main() {
         missing.add(cells[1]);
       }
     }
-    expect(checked, 206);
+    expect(checked, 214);
     expect(missing, isEmpty);
   });
 
@@ -186,7 +194,13 @@ void main() {
 
 /// `customerPeriodCreditHold` → `customer.credit_hold`.
 String _wireName(api.ErrorCode code) {
-  final parts = code.name.split('Period');
+  // The last `Period` is the dot; an earlier one belongs to the noun
+  // (`commission_period.*`).
+  final cut = code.name.lastIndexOf('Period');
+  final parts = [
+    code.name.substring(0, cut),
+    code.name.substring(cut + 'Period'.length),
+  ];
   String snake(String camel) => camel.replaceAllMapped(
     RegExp('[A-Z]'),
     (m) => '_${m.group(0)!.toLowerCase()}',

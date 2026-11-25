@@ -25,6 +25,7 @@ import 'package:mbe_ui/core/widgets/entity_status_controls.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/form_error_banner.dart';
 import 'package:mbe_ui/core/widgets/fact_strip_row.dart';
+import 'package:mbe_ui/core/widgets/info_banner.dart';
 import 'package:mbe_ui/core/widgets/inline_error_text.dart';
 import 'package:mbe_ui/core/widgets/label_multi_picker.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart';
@@ -82,6 +83,7 @@ const _coveredFiles = {
   'entity_status_controls.dart',
   'error_banner.dart',
   'form_error_banner.dart', // spec 058 — a form's headline plus the localized reason
+  'info_banner.dart', // spec 078 — promoted from the refund screen's private banner
   'fact_strip_row.dart', // spec 049 — the quote and order headers' strip
   'inline_error_text.dart', // spec 077 — icon + text error message
   'label_multi_picker.dart',
@@ -396,6 +398,21 @@ void main() {
         (brightness, width) => SizedBox(
           width: width - 32,
           child: const ErrorBanner(error: AppError.network('Connection lost')),
+        ),
+      );
+    });
+
+    testWidgets('InfoBanner', (tester) async {
+      await expectGoldenMatrix(
+        tester,
+        'info_banner',
+        (brightness, width) => SizedBox(
+          width: width - 32,
+          child: const InfoBanner(
+            message:
+                'Cálculo en vivo, no definitivo. Los importes pueden cambiar '
+                'hasta que se cierre el mes.',
+          ),
         ),
       );
     });

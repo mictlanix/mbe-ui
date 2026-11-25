@@ -18,6 +18,23 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.cashSessionPeriodNotClosed: {},
   api.ErrorCode.cashSessionPeriodNotOpen: {},
   api.ErrorCode.cashSessionPeriodUserBusy: {'cash_session_id': 41},
+  api.ErrorCode.commissionAgentPeriodSalespersonNotAgent: {'salesperson_id': 7},
+  api.ErrorCode.commissionPeriodPeriodAlreadyClosed: {
+    'year': 2026,
+    'month': 10,
+  },
+  api.ErrorCode.commissionPeriodPeriodAlreadyPaid: {'year': 2026, 'month': 10},
+  api.ErrorCode.commissionPeriodPeriodLaterClosed: {'year': 2026, 'month': 10},
+  api.ErrorCode.commissionPeriodPeriodNotClosed: {'year': 2026, 'month': 10},
+  api.ErrorCode.commissionPeriodPeriodNotEnded: {'year': 2026, 'month': 10},
+  api.ErrorCode.commissionPeriodPeriodPaidCannotReopen: {
+    'year': 2026,
+    'month': 10,
+  },
+  api.ErrorCode.commissionPeriodPeriodPreviousNotClosed: {
+    'year': 2026,
+    'month': 10,
+  },
   api.ErrorCode.csdPeriodCertificateNotRsa: {},
   api.ErrorCode.csdPeriodCertificateUnreadable: {},
   api.ErrorCode.csdPeriodKeyMismatch: {},

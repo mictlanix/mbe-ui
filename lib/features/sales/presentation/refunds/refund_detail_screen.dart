@@ -21,6 +21,7 @@ import 'package:mbe_ui/core/widgets/compact_field.dart';
 import 'package:mbe_ui/core/widgets/data_table_view.dart';
 import 'package:mbe_ui/core/widgets/error_banner.dart';
 import 'package:mbe_ui/core/widgets/fact_strip_row.dart';
+import 'package:mbe_ui/core/widgets/info_banner.dart';
 import 'package:mbe_ui/core/widgets/list_state_views.dart' show toAppError;
 import 'package:mbe_ui/core/widgets/status_chip.dart';
 import 'package:mbe_ui/features/catalog/domain/entities/warehouse.dart';
@@ -338,7 +339,7 @@ class _RefundBodyState extends ConsumerState<_RefundBody> {
         spacing: spacing.sectionGap,
         children: [
           if (_adjusted)
-            _InfoBanner(
+            InfoBanner(
               key: const Key('refund_adjusted_banner'),
               message: l10n.refundAdjustedBanner,
             ),
@@ -786,35 +787,6 @@ class _PayoutLine extends ConsumerWidget {
           ),
         ],
       ],
-    );
-  }
-}
-
-class _InfoBanner extends StatelessWidget {
-  const _InfoBanner({super.key, required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final spacing = theme.spacing;
-    final color = theme.colorScheme.onSecondaryContainer;
-    return Material(
-      color: theme.colorScheme.secondaryContainer,
-      borderRadius: theme.shapes.mdRadius,
-      child: Padding(
-        padding: EdgeInsets.all(spacing.md),
-        child: Row(
-          children: [
-            Icon(Icons.info_outline, color: color),
-            SizedBox(width: spacing.sm),
-            Expanded(
-              child: Text(message, style: TextStyle(color: color)),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
