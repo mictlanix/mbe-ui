@@ -315,8 +315,6 @@ import 'package:mbe_api_client/src/model/order_line_add.dart';
 import 'package:mbe_api_client/src/model/order_line_update.dart';
 import 'package:mbe_api_client/src/model/order_origin.dart';
 import 'package:mbe_api_client/src/model/outstanding_order_response.dart';
-import 'package:mbe_api_client/src/model/pac_simulation_response.dart';
-import 'package:mbe_api_client/src/model/pac_simulation_update.dart';
 import 'package:mbe_api_client/src/model/paid_invoice_add.dart';
 import 'package:mbe_api_client/src/model/paid_invoice_response.dart';
 import 'package:mbe_api_client/src/model/paid_invoice_update.dart';
@@ -402,7 +400,6 @@ import 'package:mbe_api_client/src/model/rate1.dart';
 import 'package:mbe_api_client/src/model/reason_request.dart';
 import 'package:mbe_api_client/src/model/receipt_create.dart';
 import 'package:mbe_api_client/src/model/receipt_update.dart';
-import 'package:mbe_api_client/src/model/receiver_answer.dart';
 import 'package:mbe_api_client/src/model/recover_password_admin_response.dart';
 import 'package:mbe_api_client/src/model/refund_payout.dart';
 import 'package:mbe_api_client/src/model/reject_request.dart';
@@ -807,8 +804,6 @@ part 'serializers.g.dart';
   OrderLineUpdate,
   OrderOrigin,
   OutstandingOrderResponse,
-  PacSimulationResponse,
-  PacSimulationUpdate,
   PaidInvoiceAdd,
   PaidInvoiceResponse,
   PaidInvoiceUpdate,
@@ -894,7 +889,6 @@ part 'serializers.g.dart';
   ReasonRequest,
   ReceiptCreate,
   ReceiptUpdate,
-  ReceiverAnswer,
   RecoverPasswordAdminResponse,
   RefundPayout,
   RejectRequest,

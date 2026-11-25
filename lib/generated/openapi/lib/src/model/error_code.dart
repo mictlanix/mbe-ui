@@ -477,6 +477,9 @@ class ErrorCode extends EnumClass {
       _$inventoryTransferPeriodSameWarehouse;
   @BuiltValueEnumConst(wireName: r'itinerary.cancelled')
   static const ErrorCode itineraryPeriodCancelled = _$itineraryPeriodCancelled;
+  @BuiltValueEnumConst(wireName: r'itinerary.empty_stops')
+  static const ErrorCode itineraryPeriodEmptyStops =
+      _$itineraryPeriodEmptyStops;
   @BuiltValueEnumConst(wireName: r'itinerary.lines_overcommitted')
   static const ErrorCode itineraryPeriodLinesOvercommitted =
       _$itineraryPeriodLinesOvercommitted;

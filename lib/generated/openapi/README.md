@@ -324,9 +324,6 @@ Class | Method | HTTP request | Description
 [*LabelsApi*](doc/LabelsApi.md) | [**getLabelApiV1LabelsLabelIdGet**](doc/LabelsApi.md#getlabelapiv1labelslabelidget) | **GET** /api/v1/labels/{label_id} | Get Label
 [*LabelsApi*](doc/LabelsApi.md) | [**listLabelsApiV1LabelsGet**](doc/LabelsApi.md#listlabelsapiv1labelsget) | **GET** /api/v1/labels | List Labels
 [*LabelsApi*](doc/LabelsApi.md) | [**updateLabelApiV1LabelsLabelIdPut**](doc/LabelsApi.md#updatelabelapiv1labelslabelidput) | **PUT** /api/v1/labels/{label_id} | Update Label
-[*PacSimulatorApi*](doc/PacSimulatorApi.md) | [**answerAsReceiverApiV1PacSimulatorFiscalDocumentsFiscalDocumentIdReceiverPost**](doc/PacSimulatorApi.md#answerasreceiverapiv1pacsimulatorfiscaldocumentsfiscaldocumentidreceiverpost) | **POST** /api/v1/pac-simulator/fiscal-documents/{fiscal_document_id}/receiver | Answer As Receiver
-[*PacSimulatorApi*](doc/PacSimulatorApi.md) | [**getSimulationApiV1PacSimulatorFiscalDocumentsFiscalDocumentIdGet**](doc/PacSimulatorApi.md#getsimulationapiv1pacsimulatorfiscaldocumentsfiscaldocumentidget) | **GET** /api/v1/pac-simulator/fiscal-documents/{fiscal_document_id} | Get Simulation
-[*PacSimulatorApi*](doc/PacSimulatorApi.md) | [**setSimulationApiV1PacSimulatorFiscalDocumentsFiscalDocumentIdPut**](doc/PacSimulatorApi.md#setsimulationapiv1pacsimulatorfiscaldocumentsfiscaldocumentidput) | **PUT** /api/v1/pac-simulator/fiscal-documents/{fiscal_document_id} | Set Simulation
 [*PaymentMethodOptionsApi*](doc/PaymentMethodOptionsApi.md) | [**createPaymentMethodOptionApiV1PaymentMethodOptionsPost**](doc/PaymentMethodOptionsApi.md#createpaymentmethodoptionapiv1paymentmethodoptionspost) | **POST** /api/v1/payment-method-options | Create Payment Method Option
 [*PaymentMethodOptionsApi*](doc/PaymentMethodOptionsApi.md) | [**deletePaymentMethodOptionApiV1PaymentMethodOptionsPaymentMethodOptionIdDelete**](doc/PaymentMethodOptionsApi.md#deletepaymentmethodoptionapiv1paymentmethodoptionspaymentmethodoptioniddelete) | **DELETE** /api/v1/payment-method-options/{payment_method_option_id} | Delete Payment Method Option
 [*PaymentMethodOptionsApi*](doc/PaymentMethodOptionsApi.md) | [**getPaymentMethodOptionApiV1PaymentMethodOptionsPaymentMethodOptionIdGet**](doc/PaymentMethodOptionsApi.md#getpaymentmethodoptionapiv1paymentmethodoptionspaymentmethodoptionidget) | **GET** /api/v1/payment-method-options/{payment_method_option_id} | Get Payment Method Option
@@ -817,8 +814,6 @@ Class | Method | HTTP request | Description
  - [OrderLineUpdate](doc/OrderLineUpdate.md)
  - [OrderOrigin](doc/OrderOrigin.md)
  - [OutstandingOrderResponse](doc/OutstandingOrderResponse.md)
- - [PacSimulationResponse](doc/PacSimulationResponse.md)
- - [PacSimulationUpdate](doc/PacSimulationUpdate.md)
  - [PaidInvoiceAdd](doc/PaidInvoiceAdd.md)
  - [PaidInvoiceResponse](doc/PaidInvoiceResponse.md)
  - [PaidInvoiceUpdate](doc/PaidInvoiceUpdate.md)
@@ -904,7 +899,6 @@ Class | Method | HTTP request | Description
  - [ReasonRequest](doc/ReasonRequest.md)
  - [ReceiptCreate](doc/ReceiptCreate.md)
  - [ReceiptUpdate](doc/ReceiptUpdate.md)
- - [ReceiverAnswer](doc/ReceiverAnswer.md)
  - [RecoverPasswordAdminResponse](doc/RecoverPasswordAdminResponse.md)
  - [RefundPayout](doc/RefundPayout.md)
  - [RejectRequest](doc/RejectRequest.md)

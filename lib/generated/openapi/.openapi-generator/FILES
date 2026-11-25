@@ -332,9 +332,6 @@ doc/OrderLineAdd.md
 doc/OrderLineUpdate.md
 doc/OrderOrigin.md
 doc/OutstandingOrderResponse.md
-doc/PacSimulationResponse.md
-doc/PacSimulationUpdate.md
-doc/PacSimulatorApi.md
 doc/PaidInvoiceAdd.md
 doc/PaidInvoiceResponse.md
 doc/PaidInvoiceUpdate.md
@@ -427,7 +424,6 @@ doc/Rate1.md
 doc/ReasonRequest.md
 doc/ReceiptCreate.md
 doc/ReceiptUpdate.md
-doc/ReceiverAnswer.md
 doc/RecoverPasswordAdminResponse.md
 doc/RefundPayout.md
 doc/RejectRequest.md
@@ -572,7 +568,6 @@ lib/src/api/inventory_receipts_api.dart
 lib/src/api/inventory_transfers_api.dart
 lib/src/api/kardex_api.dart
 lib/src/api/labels_api.dart
-lib/src/api/pac_simulator_api.dart
 lib/src/api/payment_method_options_api.dart
 lib/src/api/points_of_sale_api.dart
 lib/src/api/price_lists_api.dart
@@ -903,8 +898,6 @@ lib/src/model/order_line_add.dart
 lib/src/model/order_line_update.dart
 lib/src/model/order_origin.dart
 lib/src/model/outstanding_order_response.dart
-lib/src/model/pac_simulation_response.dart
-lib/src/model/pac_simulation_update.dart
 lib/src/model/paid_invoice_add.dart
 lib/src/model/paid_invoice_response.dart
 lib/src/model/paid_invoice_update.dart
@@ -990,7 +983,6 @@ lib/src/model/rate1.dart
 lib/src/model/reason_request.dart
 lib/src/model/receipt_create.dart
 lib/src/model/receipt_update.dart
-lib/src/model/receiver_answer.dart
 lib/src/model/recover_password_admin_response.dart
 lib/src/model/refund_payout.dart
 lib/src/model/reject_request.dart

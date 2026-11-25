@@ -38,7 +38,6 @@ import 'package:mbe_api_client/src/api/inventory_receipts_api.dart';
 import 'package:mbe_api_client/src/api/inventory_transfers_api.dart';
 import 'package:mbe_api_client/src/api/kardex_api.dart';
 import 'package:mbe_api_client/src/api/labels_api.dart';
-import 'package:mbe_api_client/src/api/pac_simulator_api.dart';
 import 'package:mbe_api_client/src/api/payment_method_options_api.dart';
 import 'package:mbe_api_client/src/api/points_of_sale_api.dart';
 import 'package:mbe_api_client/src/api/price_lists_api.dart';
@@ -360,12 +359,6 @@ class MbeApiClient {
   /// by doing that all interceptors will not be executed
   LabelsApi getLabelsApi() {
     return LabelsApi(dio, serializers);
-  }
-
-  /// Get PacSimulatorApi instance, base route and serializer can be overridden by a given but be careful,
-  /// by doing that all interceptors will not be executed
-  PacSimulatorApi getPacSimulatorApi() {
-    return PacSimulatorApi(dio, serializers);
   }
 
   /// Get PaymentMethodOptionsApi instance, base route and serializer can be overridden by a given but be careful,
