@@ -151,7 +151,7 @@ A manager sets which label a product belongs to, changes it, or removes it. A pr
 
 **Acceptance Scenarios**:
 
-1. **Given** the product labels, **When** the manager filters by a label or searches for a product, **Then** they see the matching products with their code, name and label, page by page.
+1. **Given** the product labels, **When** the manager filters by a label or picks a product, **Then** they see the matching products with their code, name and label, page by page.
 2. **Given** a product, **When** the manager sets or changes its label, **Then** it has exactly that label, and the change applies from the next calculation only.
 3. **Given** a labelled product, **When** the manager removes its label, **Then** it has none.
 4. **Given** an open month with a line marked "Sin etiqueta", **When** a user with the right to change settings assigns a label from that line, **Then** the product gets that label and the month is recalculated, so the line now earns at that label's rate. This is offered on open months only; a closed month's lines are frozen.
@@ -198,7 +198,7 @@ A manager sets which label a product belongs to, changes it, or removes it. A pr
 - **FR-013**: The user MUST be able to list, create, rename and delete participation types.
 - **FR-014**: The user MUST be able to list agents (name and scheme), add an employee as an agent with a scheme (default: fully paid), change an agent's scheme, and remove an agent. The employee choice MUST exclude employees who are already agents.
 - **FR-015**: The user MUST be able to see and edit one agent's rates as a grid of labels (rows) × participation types (columns), with names, where each cell is the share or empty. Entering a share in an empty cell creates the rate, changing it updates it, and clearing it removes it. Every label and participation type MUST appear, including those the agent has no rate for.
-- **FR-016**: The user MUST be able to list product labels page by page, filtered by label and searchable by product, and to set, change or remove a product's label. Because the list holds only labelled products, it MUST also offer a way to choose any product, labelled or not, and give it a label.
+- **FR-016**: The user MUST be able to list product labels page by page, filtered by label and by a chosen product (the server offers no text search over this list, research R10), and to set, change or remove a product's label. Because the list holds only labelled products, it MUST also offer a way to choose any product, labelled or not, and give it a label.
 - **FR-016a**: On an open month, a line without a label MUST offer a user with Update on commissions a way to assign a label to its product in place. After assigning, the month MUST be recalculated and shown with the new label. Closed and paid months MUST NOT offer it.
 - **FR-017**: Every rate and share MUST be entered and displayed as a percentage, and MUST be validated as between 0% and 100% before it is sent. What is stored is the same value as a fraction (2.5% is 0.025), with no loss of the precision the server keeps.
 - **FR-018**: Every settings screen MUST state, where a change is made, that settings changes apply to open months and future calculations only, never to closed months.
@@ -236,7 +236,7 @@ A manager sets which label a product belongs to, changes it, or removes it. A pr
 - **Scope against the report (mictlanix/mbe-roadmap#101)**: this feature shows a month's totals and lines on screen because a manager must review a month before closing it. The printed per-agent ticket and the CSV export belong to the report and are not built here.
 - **Navigation**: Commissions ("Comisiones") is one back-office entry in the Finanzas group. It opens the months; a "Configuración" button opens one settings screen with the five settings sections behind a segmented control. The whole feature sits behind one privilege and one menu entry.
 - **Who can be an agent**: commissions follow the order's and the customer's salesperson, so an employee who is not a salesperson can never earn. The agent picker offers salespeople only.
-- **Who closed/paid**: the server returns the user's number for who closed, reopened or paid a month. The screen shows a name where the app can resolve it and the number otherwise; if names prove unavailable to a commissions manager, the plan files an mbe-api issue rather than working around it.
+- **Who closed/paid**: the server records the employee who closed, reopened or paid a month. The screen shows that employee's name, or their number when the name cannot be found (research R2).
 - **Names for ids**: agent rates and month totals carry ids only. Labels, participation types and agents are small, bounded catalogs read with the same privilege, so the screens resolve names from them.
 - **Bounded lists**: labels (about 13), participation types (3), agents (about 6) and agent rates (about 130) are small and bounded, so they need search but not server paging. Product labels (about 1,100) and a month's lines (thousands) are shown page by page.
 - **Settings surfaces**: labels, participation types and agents are small records edited in the shared side panel over their list, like other small catalogs. Agent rates use the per-agent grid (Clarifications) instead of a list and panel.
