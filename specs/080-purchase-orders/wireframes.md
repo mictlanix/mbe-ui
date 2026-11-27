@@ -327,6 +327,8 @@ A full detail screen: it owns a child collection (lines) and linked records (rec
 
 ## Open Questions
 
+Settled by `/speckit-clarify` (2026-11-27, see the spec's Clarifications): 2 → ask mbe-api#354 for supplier filter, search and paging; ship with the facility filter only until then (FR-031). 8 → ask mbe-api#355 to list linked receipts with state on every order response; until then the receipts show only right after confirming (FR-022). 12 → link both screens (FR-030). 13 → no client-side mismatch warning; coded warnings asked in mbe-api#353 (FR-019). The rest are left to planning.
+
 1. **Names for creator, warehouse and facility.** List rows carry `supplier_name` but only ids for creator; lines, groups and receipts carry warehouse and facility ids. *Assumed:* the name lookups 067 and 079 use (`inventory_name_cells.dart`), as for requests.
 2. **Por comprar has no search, facets or pagination.** The endpoint returns every pending group at once. Options: (a) treat it as bounded (pending lines are cleared by ordering) and ship without; (b) filter client-side by supplier and facility in the drawer; (c) ask mbe-api for filters and paging. *Assumed:* (a), plus the expandable groups to keep it scannable. §VI needs this decided explicitly.
 3. **One "Crear orden" per group.** §VI puts screen actions in the filter row or the record's action area; a per-group button is neither. Options: (a) the button in each group header (drawn); (b) select a group, then one toolbar "Crear orden". *Assumed:* (a); it is the group's own action, like a row action, and keeps it one click.

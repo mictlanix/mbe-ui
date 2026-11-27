@@ -22,6 +22,15 @@ An order is in one of three states:
 
 There is no approval step. The legacy approval (PurchaseOrderApproval, 95) was used only from 2024-11 to 2025-03, left confirmed orders without receipts, and is not built (§4). Orders are numbered by their id and are not limited to a facility.
 
+## Clarifications
+
+### Session 2026-11-27
+
+- Q: Should the request detail (079) and receipt detail (067), which show an order number as plain text, link to the new order detail? → A: Both link it, for users with read access to purchase orders; others keep seeing plain text.
+- Q: Order lines don't carry the product's supplier and the batch product lookup doesn't return it. How does the UI warn about a supplier mismatch? → A: Ask mbe-api for coded warnings (filed as mictlanix/mbe-api#353). The UI shows the mismatch warning once that ships and shows none until then.
+- Q: Por comprar's endpoint returns every group at once with only a facility filter; how does the screen meet §VI's search, filter and pagination rule? → A: Ask mbe-api for a supplier filter, product search and pagination (filed as mictlanix/mbe-api#354). Until it ships, Por comprar offers only the facility filter the server already has, with no search or pagination, as a recorded temporary exception.
+- Q: The order response doesn't give each receipt's state, and `GET /purchase-orders/{id}` returns no receipts at all (only the confirm response does). How does a confirmed order show its receipts? → A: Ask mbe-api to list every linked receipt with its state on every order response (filed as mictlanix/mbe-api#355). Until it ships, the receipts appear only right after confirming, and a reloaded order relies on per-line received and pending quantities.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Order the pending request lines by supplier (Priority: P1)
@@ -54,8 +63,8 @@ A buyer creates an order by hand: chooses the supplier, an optional estimated re
 
 1. **Given** a user with create access, **When** they start a new order and choose a supplier, **Then** a draft order is created and opens for editing.
 2. **Given** a draft, **When** the user adds a product, **Then** the line starts with the user's point-of-sale warehouse, the product's cost as unit price (0 when none) and the product's tax rate, as the server returns them, and the user can change the warehouse, quantity, unit price and tax rate.
-3. **Given** a draft, **When** the user adds the lines of an approved request, **Then** the request's pending lines are added priced at cost, a line whose product's supplier differs from the order's is flagged with a Spanish warning, and lines already on another order are reported as left out.
-4. **Given** a draft with a supplier and lines with quantities above 0, **When** the user confirms, **Then** the order becomes confirmed, read-only, and shows the receipts it created, each with its warehouse, facility and line count, and each can be opened.
+3. **Given** a draft, **When** the user adds the lines of an approved request, **Then** the request's pending lines are added priced at cost, and lines already on another order are reported as left out. (Flagging a line whose product's supplier differs from the order's waits on mictlanix/mbe-api#353.)
+4. **Given** a draft with a supplier and lines with quantities above 0, **When** the user confirms, **Then** the order becomes confirmed, read-only, and shows the receipts it created, each with its warehouse, facility and line count, and each can be opened. (Once mictlanix/mbe-api#355 ships, a reopened order also lists them, with their state.)
 5. **Given** a draft with lines priced at 0, **When** the user confirms, **Then** the UI asks for confirmation naming those lines and, if they go ahead, the order is confirmed.
 6. **Given** a draft without a supplier or without lines, **When** the user tries to confirm, **Then** the action is unavailable or refused with a Spanish explanation.
 
@@ -144,6 +153,7 @@ A buyer edits a draft's header and lines, removes lines, or cancels the draft. C
 - **FR-007**: Por comprar MUST show one group per supplier and destination facility, each with its supplier name (or "Sin proveedor"), facility, line count and estimated total, and MUST let the user see each group's lines with their request folio, product code and name, quantity, warehouse and cost.
 - **FR-008**: Users with create access MUST be able to create a draft order from a group that has a supplier, and MUST land on the new order. A "Sin proveedor" group MUST NOT offer this.
 - **FR-009**: After creating an order from a group, Por comprar MUST reflect that the group's lines are no longer pending.
+- **FR-031**: Por comprar MUST offer a facility filter in the shared filter drawer. Supplier filter, product search and pagination MUST be added through the server once mictlanix/mbe-api#354 ships; until then Por comprar is a recorded exception to §VI's search and pagination rule, and the UI MUST NOT filter, search or page the groups itself.
 
 **Header**
 
@@ -159,13 +169,13 @@ A buyer edits a draft's header and lines, removes lines, or cancels the draft. C
 - **FR-016**: Each line MUST show its product code and name, warehouse, quantity, unit price, tax rate and amount, and the request folio when it came from a request.
 - **FR-017**: On a draft, users with update access MUST be able to add the pending lines of one approved request, chosen by its folio.
 - **FR-018**: When adding lines (from a group or a request) leaves some out because another order already holds them, the UI MUST say in Spanish how many lines were left out.
-- **FR-019**: The UI MUST show Spanish warnings, computed from the order's own figures, for a line priced at 0 and for a line whose product's supplier differs from the order's supplier. It MUST NOT show the server's English warning text.
+- **FR-019**: The UI MUST show a Spanish warning, computed from the order's own figures, for a line priced at 0. It MUST NOT show the server's English warning text. A warning for a line whose product's supplier differs from the order's MUST NOT be built client-side; it is added from the server's coded warning once mictlanix/mbe-api#353 ships.
 - **FR-020**: Discount, currency, exchange rate and tax-included MUST NOT be shown or editable.
 
 **Confirm and receipts**
 
 - **FR-021**: Users with update access MUST be able to confirm a draft that has a supplier and at least one line, all with quantity above 0. When any line is priced at 0, the UI MUST ask for confirmation naming those lines before confirming.
-- **FR-022**: A confirmed order MUST list the receipts it has, each with its number, warehouse, facility and line count, and each MUST open the existing receipt screen.
+- **FR-022**: A confirmed order MUST list the receipts the server returns for it, each with its number, warehouse, facility and line count, and each MUST open the existing receipt screen. Right after confirming, these are the receipts the confirm created. Once mictlanix/mbe-api#355 ships, every load of the order MUST list all its linked receipts with a state chip; until then a reloaded order shows no receipt list and the UI MUST NOT look receipts up by other means.
 - **FR-023**: A confirmed order's stockable lines MUST show the quantity received (on confirmed receipts) and pending; non-stockable lines MUST show neither.
 
 **Cancel**
@@ -183,11 +193,15 @@ A buyer edits a draft's header and lines, removes lines, or cancels the draft. C
 
 - **FR-029**: Every server refusal MUST be shown in Spanish from its error code, following the localized API errors rule (constitution §III), including no supplier, no lines, line without quantity, already cancelled, confirmed cannot cancel, not confirmed, nothing pending, nothing to add and request not approved.
 
+**Links from existing screens**
+
+- **FR-030**: The purchase request detail (spec 079) and the warehouse receipt detail (spec 067) MUST show the order number they already display as a link to the order detail for users with read access to purchase orders (object 20), and as plain text for everyone else.
+
 ### Key Entities
 
 - **Purchase order**: number, state, supplier, estimated receipt date, notes, creator and last updater, dates, line count, subtotal, tax, total.
 - **Purchase order line**: product (code and name as ordered), destination warehouse, quantity, unit price before tax, tax rate, amount, originating request line and request, quantity received and pending.
-- **Generated receipt**: a draft warehouse receipt created on confirm, one per destination warehouse; number, warehouse, facility, line count.
+- **Order receipt**: a warehouse receipt linked to the order, created on confirm (one per destination warehouse) or later as a complementary receipt; number, warehouse, facility, line count, and state once mictlanix/mbe-api#355 ships.
 - **Por comprar group**: supplier (or none), destination facility, line count, estimated total, and its pending request lines.
 - **Order email**: recipients (1–10) and optional message.
 
@@ -197,7 +211,7 @@ A buyer edits a draft's header and lines, removes lines, or cancels the draft. C
 
 - **SC-001**: A buyer turns a Por comprar group into a confirmed order in under 1 minute, with no retyping of products or quantities.
 - **SC-002**: A buyer writes, confirms, prints and emails a 5-line order by hand in under 4 minutes.
-- **SC-003**: Every confirmed order shows its receipts, and the stores can open them from the order, in 100% of cases.
+- **SC-003**: Right after confirming, the order shows every receipt it created and each opens from the order in 100% of cases; once mictlanix/mbe-api#355 ships, the same holds on every reopen.
 - **SC-004**: For any confirmed order, the received and pending quantities shown match its confirmed receipts in 100% of checked cases.
 - **SC-005**: No server message reaches the user in English: every refusal and warning in these screens appears in Spanish.
 - **SC-006**: The 17 legacy purchase-order actions are covered or deliberately dropped (approval, §4), with each one accounted for in the plan.
@@ -206,10 +220,11 @@ A buyer edits a draft's header and lines, removes lines, or cancels the draft. C
 
 - Purchase orders join the "Compras" navigation group added in spec 079, after Solicitudes de compra and Aprobación de solicitudes. The Spanish names follow the legacy system ("Órdenes de Compra").
 - There is no purchase order approval. The server stores the approved flag and approver as unused; the UI does not show them, nor the unused invoice number.
-- The server's warnings and the reasons for left-out lines are English text with no code, so the UI does not show them. The two warnings in this scope (price 0, supplier mismatch) are computed by the UI in Spanish, and left-out lines are reported by count (FR-018, FR-019). If the product's supplier is not readily known to the client, planning decides whether to ask the server for coded warnings, as was done in mbe-api#322.
+- The server's warnings and the reasons for left-out lines are English text with no code, so the UI does not show them. The price-0 warning is computed by the UI in Spanish, and left-out lines are reported by count (FR-018, FR-019). The supplier-mismatch warning cannot be computed client-side (lines don't carry the product's supplier); coded warnings and skip reasons are requested in mictlanix/mbe-api#353, following mbe-api#322.
 - List rows and lines carry ids for warehouse, creator and facility, not always names; how names are shown follows the pattern already used for receipts and requests and is decided in planning.
 - Receipts created on confirm are the spec 067 receipts; receiving goods, complementary receipts and over-receipt warnings stay in that screen. Confirming a receipt updates average cost on the server; nothing in this spec triggers or shows that beyond the receipt itself.
 - The cost-change history (GET /cost-changes) is out of scope: the issue's title names receipts, PDF and email but not cost averaging, which the server applies by itself.
+- Por comprar ships without search or pagination until mictlanix/mbe-api#354 adds them (FR-031). The list empties as lines are ordered, which keeps it small in practice, but that is not a guarantee, hence the server request.
 - Supplier payments applied to an order (GET /{id}/payments) belong to mictlanix/mbe-roadmap#75 and are out of scope.
 - Printing uses the same PDF viewing or download behavior as the other back-office documents (spec 044).
 - Live verification needs, in the dev tenant, an approved purchase request with marked lines, a purchasable product with a supplier and a cost, one without cost, a supplier with an email contact, and mail configured on the server.
