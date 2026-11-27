@@ -16,8 +16,8 @@ The detail is pushed (`context.push`) from the list, from the queue and after cr
 
 ## Solicitudes de compra list
 
-- Filter row: `CatalogFilterBar` with a numeric folio search, the "Mis solicitudes | Todas" `SegmentedButton`, the filters button with `Badge.count`, and "Nueva solicitud".
-- Filter sheet: state chips, facility, warehouse and requester pickers, date range. Each picker only with read on its catalog.
+- Filter row: `CatalogFilterBar` with a numeric folio search, the filters button with `Badge.count`, and "Nueva solicitud". Nothing else sits in the row (§VI).
+- Filter sheet: Mostrar ("Mis solicitudes" default, "Todas" counted in the badge), state chips, facility, warehouse and requester pickers, date range. Each picker only with read on its catalog.
 - Table: Folio, Sucursal, Almacén, Estado, Solicitó, Fecha, Partidas. Row tap pushes the detail. No row icons.
 - `CatalogListStateView` for loading, empty (text depends on scope), filtered-empty and error. `CatalogPagination`, 20 per page.
 
@@ -33,9 +33,9 @@ The detail is pushed (`context.push`) from the list, from the queue and after cr
 
 ## Aprobación de solicitudes
 
-- Filter row: inline facility picker and "Aprobar seleccionadas (n)".
+- Filter row: no search; the badged filters button (its sheet holds the Sucursal picker, with read on facilities; left out without it) and "Aprobar seleccionadas (n)".
 - Table: checkbox column (with update on 96), Folio, Sucursal, Almacén, Solicitó, Fecha, Partidas, Notas, row ✓ (with update on 96). Row tap pushes the detail only with read on 86.
-- Empty: "No hay solicitudes pendientes de aprobación." (with "Limpiar filtro" when a facility is chosen).
+- Empty: "No hay solicitudes pendientes de aprobación." (with "Limpiar filtros" when a facility is chosen).
 - After a single approve: SnackBar "Solicitud {folio} aprobada." After bulk: SnackBar when all succeed, result dialog when any is refused. The queue reloads; selection clears; an emptied page steps back one page.
 
 ## Dialogs (all `showResponsiveDialog`)

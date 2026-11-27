@@ -77,7 +77,7 @@ From `BulkApproveResponse.results`.
 
 ### PurchaseRequestsFilter (list, in the URL via `ListQuery`)
 
-`all: bool` (false), `status: PurchaseRequestStatus?`, `facilityId: int?`, `warehouseId: int?`, `creatorId: int?`, `from: Date?`, `to: Date?`, `serial: int?`, `pageIndex: int`. The badge counts status, facility, warehouse, creator and the date range (not `all`, not `serial`).
+`all: bool` (false), `status: PurchaseRequestStatus?`, `facilityId: int?`, `warehouseId: int?`, `creatorId: int?`, `from: Date?`, `to: Date?`, `serial: int?`, `pageIndex: int`. The badge counts `all` (when true), status, facility, warehouse, creator and the date range (as one); not `serial`, which is the search box.
 
 ### ApprovalQueueFilter
 
@@ -101,7 +101,7 @@ From `BulkApproveResponse.results`.
 
 ## Action availability
 
-`can(o, r)` is `accessControlProvider.can`. `own` = the user is an administrator, or the request's facility is null, or it equals `UserSettings.facilityId` (research R12).
+`can(o, r)` is `accessControlProvider.can`. `own` = the user is an administrator, or the request's facility is null, or it equals `UserSettings.facilityId` (research R12). The rules need only a request's `status` and `facilityId`, which both `PurchaseRequestSummary` and `PurchaseRequest` carry, so the same rules serve the detail and the queue rows.
 
 | Action | Where | State | Rights | Facility |
 |---|---|---|---|---|

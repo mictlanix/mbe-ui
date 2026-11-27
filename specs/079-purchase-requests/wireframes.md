@@ -12,7 +12,7 @@ A new "Compras" navigation group, after Inventario and before Finanzas, gated on
 
 ```text
 ┌ Compras ▸ Solicitudes de compra ────────────────────────────────────────────────────────┐
-│ [⌕ Folio            ]  (Mis solicitudes | Todas)     [⚲ Filtros ①]  [＋ Nueva solicitud] │
+│ [⌕ Folio            ]                                [⚲ Filtros ①]  [＋ Nueva solicitud] │
 ├───────────────┬────────────┬──────────────┬─────────────┬───────────┬───────┬───────────┤
 │         Folio │ Sucursal   │ Almacén      │ Estado      │ Solicitó  │ Fecha │ Partidas  │
 ├───────────────┼────────────┼──────────────┼─────────────┼───────────┼───────┼───────────┤
@@ -25,7 +25,7 @@ A new "Compras" navigation group, after Inventario and before Finanzas, gated on
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- Filter row: `CatalogFilterBar`. Its search slot is a numeric folio field (FR-003, server `serial`). The scope switch is a `SegmentedButton` (FR-002, Open Question 3). The actions slot holds the filters `IconButton.outlined` with `Badge.count` and the "Nueva solicitud" `FilledButton.icon`, shown only with create on 86 and read on warehouses (FR-006, FR-025).
+- Filter row: `CatalogFilterBar`. Its search slot is a numeric folio field (FR-003, server `serial`). The scope ("Mis solicitudes" or "Todas") is in the filter drawer, not the row: §VI keeps facet controls out of the filter row (FR-002, Open Question 3). The actions slot holds the filters `IconButton.outlined` with `Badge.count` and the "Nueva solicitud" `FilledButton.icon`, shown only with create on 86 and read on warehouses (FR-006, FR-025).
 - Table: `DataTableView`. Folio is right-aligned; a request never submitted shows "Borrador #{id}" (FR-004). Folio 569 is a rejected request: a draft that keeps its folio (US4). Estado is a `StatusChip`. Partidas is right-aligned. Row tap opens the detail; no row icons (§VI).
 - Pagination: `CatalogPagination`, newest first (FR-001).
 
@@ -34,6 +34,8 @@ A new "Compras" navigation group, after Inventario and before Finanzas, gated on
 ```text
 ┌───────────────────────────────┐
 │ Filtros                    ✕  │
+│ Mostrar                       │
+│ (Mis solicitudes) (Todas)     │
 │ Estado                        │
 │ (Borrador) (Enviada)          │
 │ (Aprobada) (Cancelada)        │
@@ -45,13 +47,14 @@ A new "Compras" navigation group, after Inventario and before Finanzas, gated on
 └───────────────────────────────┘
 ```
 
+- Mostrar: two choice chips, "Mis solicitudes" by default; "Todas" sends `all=true` and counts as one active filter in the badge, so the wider scope is visible from the row (FR-002).
 - `showCatalogFilterSheet` with single-select choice chips, `CatalogEntityPicker`s for facility, warehouse and employee, and `DateRangeFilterChip` (FR-003). Each picker is shown only with read on its catalog (FR-025). Picking Cancelada shows cancelled requests, which the default scope leaves out.
 
 ### State: loading / empty / filtered-empty / error / no access
 
 ```text
 ┌──────────────────────────────────┐ ┌──────────────────────────────────┐
-│ [⌕][Mis|Todas][⚲][＋ Nueva soli…]│ │ [⌕][Mis|Todas][⚲ ①][＋ Nueva …]  │
+│ [⌕ Folio] [⚲] [＋ Nueva solicitud]│ │ [⌕ Folio] [⚲ ①] [＋ Nueva solic…]│
 │   No tienes solicitudes de       │ │  Ninguna solicitud coincide con  │
 │   compra.                        │ │  los filtros. [Limpiar filtros]  │
 └──────────────────────────────────┘ └──────────────────────────────────┘
@@ -65,7 +68,7 @@ A new "Compras" navigation group, after Inventario and before Finanzas, gated on
 
 ```text
 ┌──────────────────────────────┐
-│ [⌕ Folio] [Mis|Todas] [⚲ ①]  │
+│ [⌕ Folio]             [⚲ ①]  │
 │                   [＋ Nueva]  │
 ├──────────────────────────────┤
 │ 571 · Bodega Norte           │
@@ -212,7 +215,7 @@ A second entry in Compras, gated on `PrivilegeGate(SystemObject.purchaseRequestA
 
 ```text
 ┌ Compras ▸ Aprobación de solicitudes ────────────────────────────────────────────────────┐
-│                                       [Sucursal: Todas ▾]   [✓ Aprobar seleccionadas (2)]│
+│                                             [⚲ Filtros]   [✓ Aprobar seleccionadas (2)]│
 ├───┬───────┬────────────┬──────────────┬───────────┬───────┬──────────┬───────────────┬───┤
 │ ☐ │ Folio │ Sucursal   │ Almacén      │ Solicitó  │ Fecha │ Partidas │ Notas         │   │
 ├───┼───────┼────────────┼──────────────┼───────────┼───────┼──────────┼───────────────┼───┤
@@ -224,9 +227,9 @@ A second entry in Compras, gated on `PrivilegeGate(SystemObject.purchaseRequestA
 └─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- Filter row: `CatalogFilterBar` with no search; a facility `CatalogEntityPicker` inline (shown with read on facilities) and the bulk button, shown only with update on 96 and disabled until something is selected (FR-019, FR-023).
+- Filter row: `CatalogFilterBar` with no search (the endpoint has none). Its actions slot holds the badged filters button, whose drawer has one facet, Sucursal (a `CatalogEntityPicker`, shown with read on facilities; §VI keeps pickers out of the row), and the bulk button, shown only with update on 96 and disabled until something is selected (FR-019, FR-023). Without read on facilities there is no facet, so the filters button is left out.
 - Table: `DataTableView`, oldest first as the server returns it, no Estado column (every row is Enviada, as in 062). Notas is truncated with a tooltip.
-- Selection: a checkbox column for bulk approve, at most 100 across the page (FR-023). `DataTableView` has no selection today (Open Question 2).
+- Selection: a checkbox column for bulk approve, within the current page (FR-023). The header holds a select-all checkbox for the page (Open Question 2).
 - Row ✓ "Aprobar" is the `primaryAction` of `buildCatalogRowActions` (FR-021). There is no row ✕: rejecting happens on the detail (Clarification 1).
 - Row tap pushes the request detail, so back returns to the queue (FR-020).
 
@@ -242,12 +245,12 @@ No checkbox column, no ✓ column and no bulk button; the queue is look-only (FR
 
 ```text
 ┌ Compras ▸ Aprobación de solicitudes ──────────────────────────────────────────────┐
-│                                 [Sucursal: Matriz ▾]                              │
+│                                                   [⚲ Filtros ①]                   │
 │            No hay solicitudes pendientes de aprobación.                           │
 └───────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- `CatalogListStateView`; with a facility chosen the empty state offers "Limpiar filtro".
+- `CatalogListStateView`; with a facility chosen the empty state offers "Limpiar filtros".
 
 ### State: after approve / bulk approve
 
@@ -272,7 +275,7 @@ No checkbox column, no ✓ column and no bulk button; the queue is look-only (FR
 
 ```text
 ┌──────────────────────────────┐
-│ [Sucursal ▾] [✓ Aprobar (2)] │
+│ [⚲ ①]        [✓ Aprobar (2)] │
 ├───┬──────┬──────────┬────┬───┤
 │ ☑ │  318 │ Sucurs.2 │  4 │ ✓ │
 │ ☐ │   92 │ Sucurs.5 │ 15 │ ✓ │
@@ -336,11 +339,11 @@ No checkbox column, no ✓ column and no bulk button; the queue is look-only (FR
 
 ## Open Questions
 
-Settled by the plan (2026-11-26, see [research.md](research.md)): 1 → R4, 2 → R10 (a checkbox column built with the existing `DataTableColumn.header`, not a `DataTableView` change), 3 → R9, 4 → R11, 5 → R12 (hide; spec FR-026 updated), 9 → R6, 10 → R9. Questions 6 and 7 stand as drawn; 8 stays deferred.
+Settled by the plan (2026-11-26, see [research.md](research.md)): 1 → R4, 2 → R10 (a checkbox column built with the existing `DataTableColumn.header`, not a `DataTableView` change), 3 → R9 (the scope moved into the filter drawer after `/speckit-analyze`: §VI keeps facet controls out of the filter row; the queue's facility picker moved there too, R10), 4 → R11, 5 → R12 (hide; spec FR-026 updated), 9 → R6, 10 → R9. Questions 6 and 7 stand as drawn; 8 stays deferred.
 
 1. **Names for warehouse, facility and requester.** Rows carry ids only. Options: (a) the display-name lookups 067 uses (warehouses, facilities, employees); (b) ask mbe-api for names on the summary, as #324–#330 did. *Assumed:* (a), since those lookups already exist; planning confirms.
 2. **Row selection for bulk approve.** `DataTableView` sets `showCheckboxColumn: false` and has no selection API. Options: (a) add opt-in selection to `DataTableView` (shared change); (b) a leading `Checkbox` cell column built by this screen; (c) an "Aprobar varias" dialog listing the page's requests with checkboxes, like `copy_invoice_lines_dialog`. *Assumed:* (a) as drawn; (c) avoids touching the shared widget.
-3. **Scope switch.** The server's `all` flag could be a `SegmentedButton` in the bar (drawn) or a filter in the drawer. *Assumed:* the bar, because it changes what the whole list means, not one facet, and the count badge should not count it.
+3. **Scope switch.** The server's `all` flag could be a `SegmentedButton` in the bar (drawn) or a filter in the drawer. ~~*Assumed:* the bar.~~ **Resolved 2026-11-26 (analysis finding C2):** the drawer, as a "Mostrar" facet counted in the badge. §VI forbids facet controls inline in the filter row, and the drawings above now show it there.
 4. **Marking control.** A `Checkbox` cell that saves on tap (drawn), or a row action "Marcar / Desmarcar". *Assumed:* the checkbox; it shows the state and the action in one place, and saves immediately with no prompt because it is easy to reverse.
 5. **Foreign-facility requests for a non-administrator.** The UI knows the request's facility and the user's, so it could hide Editar, Enviar and Cancelar instead of letting the server refuse. *Assumed:* show them and let the server refuse, as FR-026 says. Hiding them is kinder and costs one comparison; worth deciding in planning.
 6. **No shared warning banner** (same gap as 067 Open Question 1). *Assumed:* reuse 067's feature-local warning widget pattern, or promote it to `core/widgets/` now that a third feature needs it.

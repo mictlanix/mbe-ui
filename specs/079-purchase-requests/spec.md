@@ -66,7 +66,7 @@ A supervisor opens "Aprobación de solicitudes" and sees every submitted request
 2. **Given** the queue, **When** the user filters by facility, **Then** only that facility's requests are shown.
 3. **Given** a user with update access to purchase request approval and a submitted request, **When** they approve it after accepting a confirmation prompt, **Then** it shows the Approved state, the approver and the approval time, and it leaves the queue.
 4. **Given** a submitted request, **When** the supervisor rejects it with a reason of 1 to 500 characters, **Then** it shows the Draft state with its folio kept, and it leaves the queue.
-5. **Given** the queue, **When** the user selects up to 100 requests and approves them together, **Then** a summary shows how many were approved and, for each one refused, its folio and the reason in Spanish.
+5. **Given** the queue, **When** the user selects requests on the page and approves them together, **Then** a summary shows how many were approved and, for each one refused, its folio and the reason in Spanish.
 6. **Given** a request that someone else already approved, rejected or cancelled, **When** the supervisor tries to approve or reject it, **Then** the server's reason is shown and the queue reloads.
 7. **Given** the requester holds the approval right, **When** they open their own submitted request, **Then** they may approve it, as the server allows.
 
@@ -191,7 +191,7 @@ A request is no longer needed. Its requester or a supervisor cancels it from dra
 - **FR-020**: Users who also have read access to purchase requests (86) MUST be able to open a request from the queue to review its header and lines. For users without it, the queue MUST NOT offer opening a request.
 - **FR-021**: Users with update access to purchase request approval MUST be able to approve a submitted request, after accepting a confirmation prompt, from its detail (which needs read access to purchase requests, FR-020) or by selecting it in the queue (FR-023).
 - **FR-022**: Users with update access to purchase request approval and read access to purchase requests MUST be able to reject a submitted request from its detail, entering a reason of 1 to 500 characters.
-- **FR-023**: Users with update access to purchase request approval MUST be able to select 1 to 100 requests in the queue and approve them together. The result MUST show how many were approved and, for each one refused, its folio and the localized reason for its error code.
+- **FR-023**: Users with update access to purchase request approval MUST be able to select requests on the queue's current page and approve them together. The result MUST show how many were approved and, for each one refused, its folio and the localized reason for its error code.
 - **FR-024**: After an approval, rejection or bulk approval the queue MUST reload, so decided requests leave it.
 
 **Across the feature**
