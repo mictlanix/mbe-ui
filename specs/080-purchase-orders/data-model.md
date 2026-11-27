@@ -122,6 +122,7 @@ From `QuoteEmailResponse`: `recipients` (List<String>), `sentAt` (DateTime).
 | Facet | Query key | Wire param |
 |---|---|---|
 | facility | `facility` | `facility` |
+| page | `page` | none: the loaded groups are paged on the client, 20 per page, until mbe-api#354 |
 
 ## State transitions
 
@@ -150,7 +151,7 @@ No transition out of `completed` or `cancelled` in this UI.
 |---|---|---|---|
 | Open list / Por comprar | nav | — | read 20 |
 | Nueva orden | list bar | — | create 20 + read suppliers |
-| Crear orden (group) | Por comprar | group has supplier | create 20 |
+| Crear orden | Por comprar filter row | a selected group with a supplier | create 20 |
 | Editar encabezado | detail | draft | update 20 + read suppliers |
 | Agregar producto | detail | draft | update 20 + read products |
 | Agregar solicitud | detail | draft | update 20 + read 86 |
@@ -163,4 +164,4 @@ No transition out of `completed` or `cancelled` in this UI.
 | Order link | request detail, receipt detail | — | read 20 (else plain text) |
 | Filter: supplier / creator / facility | list, Por comprar | — | read on suppliers / employees / facilities |
 
-Absent, never disabled (§IV). The one disabled control is Confirmar on a draft with no lines, shown disabled with a tooltip, because the user can act once lines exist.
+Absent, never disabled (§IV). The disabled controls are Confirmar on a draft with no lines (with a tooltip) and Crear orden in Por comprar while no group is selected: both depend on state, not rights, and the user can act once the state changes.

@@ -26,7 +26,7 @@ Both screens join the "Compras" navigation group from spec 079, after Aprobació
 
 - Filter row: `CatalogFilterBar` with `CatalogSearchBar` (number search, FR-005), the badged filters button and a filled "Nueva orden" (create on 20, FR-010).
 - Table: `DataTableView`, `StatusChip` via the inventory document status chip (draft / completed / cancelled, the receipts' values; Open Question 4 for the labels). Proveedor is truncated with a tooltip; Total is never truncated (FR-006).
-- Row: ✎ Edit only for drafts with update on 20 (`buildCatalogRowActions`); row tap opens the detail read-only (§VI).
+- Row: no icons; row tap opens the detail (research R2 dropped the ✎ first drawn here, to match 079's document reading).
 - Pagination: `CatalogPagination`, newest first (FR-004).
 
 ### State: filter drawer open
@@ -82,30 +82,34 @@ Both screens join the "Compras" navigation group from spec 079, after Aprobació
 
 ## Screen: Por comprar (`/purchases/to-purchase`)
 
-### State: populated, one group expanded
+Redrawn after `/speckit-analyze` (findings C1, C2): one toolbar "Crear orden" over a selected group, and pagination.
+
+### State: populated, one group selected and expanded
 
 ```text
 ┌ Compras ▸ Por comprar ──────────────────────────────────────────────────────────────────┐
-│                                                                          [↻ Actualizar] │
+│                                   [⚲ Filtros]  [↻ Actualizar]  [＋ Crear orden]         │
 ├──────────────────────────────────────────────────────────────────────────────────────────┤
-│ ▾ Ferretera Norte · Matriz                      4 partidas   est. 8,410.00 [Crear orden] │
+│ (•) ▾ Ferretera Norte · Matriz                          4 partidas   est. 8,410.00       │
 │   ┌──────────┬────────┬──────────────────────┬──────────┬──────────────┬──────────────┐ │
 │   │ Solicitud│ Código │ Producto             │ Cantidad │ Almacén      │        Costo │ │
 │   ├──────────┼────────┼──────────────────────┼──────────┼──────────────┼──────────────┤ │
 │   │      566 │ A-100  │ Tornillo 1/4 caja    │    12.00 │ Bodega Norte │       310.00 │ │
 │   │      571 │ C-007  │ Rondana              │   100.00 │ Bodega Norte │    sin costo │ │
 │   └──────────┴────────┴──────────────────────┴──────────┴──────────────┴──────────────┘ │
-│ ▸ Ferretera Norte · Sucursal 2                  2 partidas   est. 1,020.00 [Crear orden] │
-│ ▸ Tornillería del Centro · Matriz               1 partida      est. 95.00  [Crear orden] │
-│ ▸ Sin proveedor · Matriz                        3 partidas   est. 2,310.00               │
-│     Agrégalas a mano en una orden.                                                       │
+│ ( ) ▸ Ferretera Norte · Sucursal 2                      2 partidas   est. 1,020.00       │
+│ ( ) ▸ Tornillería del Centro · Matriz                   1 partida      est. 95.00        │
+│     ▸ Sin proveedor · Matriz                            3 partidas   est. 2,310.00       │
+│         Agrégalas a mano en una orden.                                                   │
+├──────────────────────────────────────────────────────────────────────────────────────────┤
+│                                                1–4 de 4   ‹ 1 ›                         │
 └──────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- The endpoint has no search, filters or pagination: it returns every pending group. §VI requires search, facets and pagination for lists that can grow without limit; Open Question 2 asks whether this one counts as bounded.
-- Each group is an expandable row (`ExpansionTile`-style) whose header shows supplier (or "Sin proveedor"), facility, line count and estimated total (FR-007). Its lines are a `DataTableView`. A line without cost shows "sin costo" and counts 0 in the estimate (edge case).
-- "Crear orden" is an `OutlinedButton` per group, shown only with create on 20 and only on groups with a supplier (FR-008). Several buttons on one screen don't fit the "one toolbar action" pattern (Open Question 3).
-- "Actualizar" reloads; the screen also reloads when it regains focus (FR-009).
+- Filter row: `CatalogFilterBar` with no search (the endpoint has none); its actions slot holds the badged filters button (Sucursal facet, only with read on facilities), "Actualizar", and the filled "Crear orden" (create on 20, disabled until a group is selected) (FR-008, FR-031). Create stays a toolbar action (§VI).
+- Each group is an expandable card with a `Radio` for selection (supplier groups only), supplier (or "Sin proveedor"), facility, line count and estimated total (FR-007). Its lines are a `DataTableView`. A line without cost shows "sin costo" and counts 0 in the estimate (edge case).
+- Pagination: `CatalogPagination`, 20 groups per page over the loaded response, until mbe-api#354 pages on the server (§VI).
+- The screen reloads when it regains focus and after any create (FR-009).
 
 ### State: after Crear orden with lines left out
 
@@ -119,19 +123,21 @@ Both screens join the "Compras" navigation group from spec 079, after Aprobació
 
 ```text
 ┌ Compras ▸ Por comprar ────────────────────────────────────────────────────────────┐
+│                               [⚲ Filtros]  [↻ Actualizar]  [＋ Crear orden]       │
 │                 No hay partidas pendientes de comprar.                            │
 └───────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-- `CatalogListStateView`; error is `ErrorBanner` with retry.
+- `CatalogListStateView`; error is `ErrorBanner` with retry; with a facility chosen the empty state offers "Limpiar filtros".
 
 ### Compact tier
 
 ```text
 ┌──────────────────────────────┐
-│ ▾ Ferretera Norte · Matriz   │
+│ [⚲ ①] [↻] [＋ Crear orden]    │
+├──────────────────────────────┤
+│ (•) ▾ Ferretera Norte·Matriz │
 │   4 · est. 8,410.00          │
-│              [Crear orden]   │
 │   566 A-100 Tornillo 1/4…    │
 │   12.00 → Bodega Norte 310.00│
 └──────────────────────────────┘
@@ -327,7 +333,7 @@ A full detail screen: it owns a child collection (lines) and linked records (rec
 
 ## Open Questions
 
-Settled by `/speckit-clarify` (2026-11-27, see the spec's Clarifications): 2 → ask mbe-api#354 for supplier filter, search and paging; ship with the facility filter only until then (FR-031). 8 → ask mbe-api#355 to list linked receipts with state on every order response; until then the receipts show only right after confirming (FR-022). 12 → link both screens (FR-030). 13 → no client-side mismatch warning; coded warnings asked in mbe-api#353 (FR-019). The rest are left to planning.
+Settled by `/speckit-clarify` (2026-11-27, see the spec's Clarifications): 2 → ask mbe-api#354 for supplier filter, search and paging; ship with the facility filter only until then (FR-031). 8 → ask mbe-api#355 to list linked receipts with state on every order response; until then the receipts show only right after confirming (FR-022). 12 → link both screens (FR-030). 13 → no client-side mismatch warning; coded warnings asked in mbe-api#353 (FR-019). The rest are left to planning. After `/speckit-analyze`: 2 → Por comprar also pages its loaded groups on the client (§VI); 3 → one toolbar Crear orden over a selected group (§VI: create is toolbar-only).
 
 1. **Names for creator, warehouse and facility.** List rows carry `supplier_name` but only ids for creator; lines, groups and receipts carry warehouse and facility ids. *Assumed:* the name lookups 067 and 079 use (`inventory_name_cells.dart`), as for requests.
 2. **Por comprar has no search, facets or pagination.** The endpoint returns every pending group at once. Options: (a) treat it as bounded (pending lines are cleared by ordering) and ship without; (b) filter client-side by supplier and facility in the drawer; (c) ask mbe-api for filters and paging. *Assumed:* (a), plus the expandable groups to keep it scannable. §VI needs this decided explicitly.

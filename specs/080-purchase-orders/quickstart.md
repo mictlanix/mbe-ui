@@ -28,8 +28,8 @@ flutter test integration_test/purchase_orders_quickstart_test.dart -d macos \
 ## Walkthrough (also automated by the device test)
 
 1. **Navigation.** As admin, Compras shows Solicitudes de compra, Aprobación de solicitudes, Por comprar and Órdenes de compra. As `qanoaccess`, neither new entry shows and `/purchases/orders` redirects home.
-2. **Por comprar.** Approve a request with two marked lines (one with a supplier, one without cost). Por comprar shows its supplier group with the line count and estimate, the costless line as "sin costo". A "Sin proveedor" group, if any, has no Crear orden. Filter by Sucursal: only that facility's groups.
-3. **Create from a group.** Crear orden: the new draft opens with the group's lines priced at cost, the costless one at 0 with the price-0 warning. Back: the group is gone. **Timed (SC-001, manual):** group to confirmed order in under 1 minute.
+2. **Por comprar.** Approve a request with two marked lines (one with a supplier, one without cost). Por comprar shows its supplier group with the line count and estimate, the costless line as "sin costo". A "Sin proveedor" group, if any, has no Crear orden. Filter by Sucursal: only that facility's groups. With more than 20 groups, the pagination pages them.
+3. **Create from a group.** Select the group, then Crear orden in the toolbar (disabled until a group is selected): the new draft opens with the group's lines priced at cost, the costless one at 0 with the price-0 warning. Back: the group is gone. **Timed (SC-001, manual):** group to confirmed order in under 1 minute.
 4. **Create by hand.** Nueva orden with a supplier, a date and notes. Past dates are not selectable.
 5. **Header.** Change the date, then clear the notes and the date: reopen and check both are empty (research R7).
 6. **Lines.** Add a product with quantity 2: it lands in the admin's POS warehouse at its cost and tax rate. Edit it: warehouse in the other facility, quantity 1.2345, price 10.1234567, IVA 0 %. Try quantity 0 and 1.23456: refused by the dialog. Delete it.

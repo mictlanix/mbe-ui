@@ -24,12 +24,13 @@ Sources: mbe-api `docs/specs/05-purchases.md` §3–4, `app/api/v1/endpoints/pur
 
 ## R5. Por comprar (FR-007–FR-009, FR-031)
 
-- **Layout**: `CatalogFilterBar` with no search (the endpoint has none, §VI says omit it), the badged filters button and an "Actualizar" outlined button. Below it, one `ExpansionTile`-style card per group: the header shows supplier name (or "Sin proveedor"), facility, line count and estimated total (money). The body is a `DataTableView<ToPurchaseLine>` with Solicitud (serial), Código, Producto, Cantidad, Almacén, Costo ("sin costo" when 0).
-- **Filter**: the drawer has one facet, Sucursal (`CatalogEntityPicker` over facilities, needs read on facilities), sent as `facility`. Without that right the filters button is left out. The facet lives in the URL (`ListQuery`) like other lists.
-- **Search and pagination**: none until mictlanix/mbe-api#354 (FR-031). Recorded in Complexity Tracking.
-- **Crear orden** (wireframe Open Question 3): an `OutlinedButton` in each group header with a supplier, create on 20. It is the group's own action, like a row action; a single toolbar button would need a selection step for no gain. Recorded in Complexity Tracking.
+- **Layout**: `CatalogFilterBar` with no search (the endpoint has none, §VI says omit it). Its actions slot holds the badged filters button, "Actualizar" and the filled "Crear orden". Below it, one card per group: a leading `Radio` (only on a group with a supplier), the supplier name (or "Sin proveedor"), facility, line count and estimated total (money). The card expands to a `DataTableView<ToPurchaseLine>` with Solicitud (serial), Código, Producto, Cantidad, Almacén, Costo ("sin costo" when 0). Then `CatalogPagination`.
+- **Filter**: the drawer has one facet, Sucursal (`CatalogEntityPicker` over facilities, needs read on facilities), sent as `facility`. Without that right the filters button is left out. The facet and the page live in the URL (`ListQuery`).
+- **Pagination** (changed after `/speckit-analyze`, finding C2): §VI requires the shared pagination on a list that can grow without limit, and pending lines can. The endpoint returns every group at once, so the controller keeps the full response and the screen shows 20 groups per page with `CatalogPagination`, page clamped like the other lists. When mictlanix/mbe-api#354 ships, the paging moves to the server. Search and a supplier facet are not built client-side (FR-031).
+- **Crear orden** (changed after `/speckit-analyze`, finding C1; wireframe Open Question 3): §VI makes create a toolbar-only action, so there is one "Crear orden" in the filter row, create on 20. It acts on the selected group: a screen-scoped selection (supplier id, facility id) set by the group's radio or a tap on its header row. A "Sin proveedor" group has no radio. The button is present with the right and disabled while nothing is selected (state, not rights: the "Aprobar seleccionadas" precedent from 079). The selection clears on page change, filter change and after any create.
 - **After Crear orden**: `POST /to-purchase {supplier, facility}`, then `context.push` the new order, a SnackBar "Orden {id} creada con {n} partidas." plus " {k} partidas ya estaban en otra orden." when `skipped` is not empty (FR-018), and Por comprar is invalidated (FR-009). Back returns to a fresh Por comprar.
-- **Expanded state**: each group starts collapsed; with one group, it starts expanded.
+- **Expanded state**: each group starts collapsed; with one group on the page, it starts expanded and selected.
+- **Alternatives**: a "Crear orden" button in each group header (the first design). Rejected by §VI: create is never a row action.
 
 ## R6. Creating an order by hand
 

@@ -22,11 +22,12 @@ Compras group order: Solicitudes de compra (38), Aprobación de solicitudes (39)
 
 ## Por comprar
 
-- Filter row: no search; filters button with Sucursal (only with read on facilities); "Actualizar".
-- One card per group: supplier name or "Sin proveedor", facility, "{n} partidas", "est. {total}", "Crear orden" (create 20, supplier groups only). "Sin proveedor" groups show "Agrégalas a mano en una orden."
+- Filter row: no search; filters button with Sucursal (only with read on facilities); "Actualizar"; filled "Crear orden" (create 20), disabled until a group is selected.
+- One card per group: a radio (supplier groups only), supplier name or "Sin proveedor", facility, "{n} partidas", "est. {total}". "Sin proveedor" groups show "Agrégalas a mano en una orden." and can't be selected.
 - Expanded body: Solicitud, Código, Producto, Cantidad, Almacén, Costo ("sin costo" at 0).
-- States: loading, empty "No hay partidas pendientes de comprar.", error with retry.
-- Crear orden → push the new order, SnackBar with created and skipped counts (R5).
+- Pagination: 20 groups per page over the loaded response (client-side until mbe-api#354).
+- States: loading, empty "No hay partidas pendientes de comprar.", filtered-empty with "Limpiar filtros", error with retry.
+- Crear orden → creates the selected group's order, pushes it, SnackBar with created and skipped counts (R5).
 
 ## Orden de compra detail
 
