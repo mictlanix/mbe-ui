@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Purchase Requests with Approval",
   "branch": "079-purchase-requests",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -32,6 +32,20 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-27T04:31:56.489Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-27T04:36:55.462Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-27T04:39:55.124Z"
     }
   ],
   "telemetryInstanceId": "b204f098-249c-44cf-b3e1-eb04c8b240ca"

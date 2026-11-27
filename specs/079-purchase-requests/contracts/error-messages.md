@@ -23,7 +23,7 @@ These are the codes the 14 purchase-request endpoints can return, read from mbe-
 | `purchase_request.not_draft` | 409 | status | Solo se puede modificar o enviar una solicitud en borrador. | Only a draft request can be changed or submitted. |
 | `purchase_request.not_submitted` | 409 | status | La solicitud ya no está enviada; alguien más la aprobó, rechazó o canceló. | The request is no longer submitted; someone else approved, rejected or cancelled it. |
 | `purchase_request.no_lines` | 409 | — | La solicitud no tiene partidas. | The request has no lines. |
-| `purchase_request.line_without_quantity` | 409 | line_id | Una partida de la solicitud no tiene cantidad. | A line of the request has no quantity. |
+| `purchase_request.line_without_quantity` | 422 | line_id | Una partida de la solicitud no tiene cantidad. | A line of the request has no quantity. |
 | `purchase_request.facility_locked` | 409 | — | Una solicitud con folio solo puede cambiar a un almacén de su misma sucursal. | A numbered request can only move to a warehouse of its own facility. |
 | `purchase_request.warehouse_facility_changed` | 409 | — | El almacén cambió de sucursal mientras se guardaba. Intenta de nuevo. | The warehouse changed facility while saving. Try again. |
 | `purchase_request.already_cancelled` | 409 | — | La solicitud ya está cancelada. | The request is already cancelled. |
