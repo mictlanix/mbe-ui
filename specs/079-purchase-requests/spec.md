@@ -23,6 +23,13 @@ A request is in one of four states:
 
 A rejected request goes back to Draft and keeps the folio it got on its first submit.
 
+## Clarifications
+
+### Session 2026-11-26
+
+- Q: Opening a single request needs read access to purchase requests (86), not to approval (96). What can an approver with only 96 do? → A: They see the queue and can approve the requests they select there. Opening a request to review its lines needs 86 read too, and so do approving from the detail and rejecting, which happen on the detail. No server change is requested.
+- Q: The client cannot read a rejection's reason. How is that handled? → A: Ship without showing it, and track the server change in mictlanix/mbe-api#352 (latest rejection reason, who and when, on the request). When it ships, the request detail shows the reason.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Create and submit a request (Priority: P1)
@@ -137,12 +144,12 @@ A request is no longer needed. Its requester or a supervisor cancels it from dra
 - A non-administrator opens a request whose header warehouse is in another facility. They can read it, but the server refuses editing, submitting and cancelling it, and that refusal is shown. Approving, rejecting and marking lines are not limited by facility.
 - Two supervisors act on the same request. The second approval or rejection is refused with the server's reason, and the screen reloads the request in its new state.
 - A bulk approval mixes requests that can be approved with ones that were changed meanwhile. Each one is approved or refused on its own; the summary lists the refused ones with their reasons, and the queue reloads.
-- A request was rejected. The rejection reason is recorded on the server as an incidence, which the client has no route to read, so the requester sees the request back in Draft without the reason. See Assumptions.
+- A request was rejected. The rejection reason is recorded on the server as an incidence, which the client has no route to read, so the requester sees the request back in Draft without the reason until mictlanix/mbe-api#352 ships. See Assumptions.
 - A line's destination warehouse is in transit. The server refuses it, and the refusal is shown.
 - The product picker offers a product that is not purchasable. The server refuses it, and the refusal is shown.
 - A user can read requests but not update them: every request opens read-only, with no New, edit, submit or line actions.
 - The user leaves a draft with unsaved edits in the header or a line: they are warned before losing them, as in other back-office forms.
-- A user holds the approval right but not read access to purchase requests. They see the queue and can open a request from it to review its lines and decide.
+- A user holds the approval right but not read access to purchase requests. They see the queue and can approve the requests they select there, but the queue offers no way to open a request, so they can neither review its lines nor reject it.
 
 ## Requirements *(mandatory)*
 
@@ -181,15 +188,15 @@ A request is no longer needed. Its requester or a supervisor cancels it from dra
 **Approval**
 
 - **FR-019**: The back office MUST offer an Aprobación de solicitudes queue to users with read access to purchase request approval (system object 96), showing submitted requests of every facility, oldest first and paginated, each with its folio, facility, warehouse, requester, date, number of lines and notes, filterable by facility.
-- **FR-020**: From the queue the user MUST be able to open a request to review its header and lines.
-- **FR-021**: Users with update access to purchase request approval MUST be able to approve a submitted request, after accepting a confirmation prompt, from its detail.
-- **FR-022**: Users with update access to purchase request approval MUST be able to reject a submitted request from its detail, entering a reason of 1 to 500 characters.
+- **FR-020**: Users who also have read access to purchase requests (86) MUST be able to open a request from the queue to review its header and lines. For users without it, the queue MUST NOT offer opening a request.
+- **FR-021**: Users with update access to purchase request approval MUST be able to approve a submitted request, after accepting a confirmation prompt, from its detail (which needs read access to purchase requests, FR-020) or by selecting it in the queue (FR-023).
+- **FR-022**: Users with update access to purchase request approval and read access to purchase requests MUST be able to reject a submitted request from its detail, entering a reason of 1 to 500 characters.
 - **FR-023**: Users with update access to purchase request approval MUST be able to select 1 to 100 requests in the queue and approve them together. The result MUST show how many were approved and, for each one refused, its folio and the localized reason for its error code.
 - **FR-024**: After an approval, rejection or bulk approval the queue MUST reload, so decided requests leave it.
 
 **Across the feature**
 
-- **FR-025**: Actions the user's rights do not allow MUST be absent, never shown disabled, mirroring the server: read on 86 to see requests, create on 86 to start one, update on 86 to edit a draft and submit it, delete on 86 to cancel; read on 96 to see the queue and the requests it lists, update on 96 to approve and reject; update on 20 to mark lines. A control that lists other records also needs that record's read right (warehouses to choose or filter a warehouse, products to add a line, facilities to filter by facility, employees to filter by requester).
+- **FR-025**: Actions the user's rights do not allow MUST be absent, never shown disabled, mirroring the server: read on 86 to see requests, create on 86 to start one, update on 86 to edit a draft and submit it, delete on 86 to cancel; read on 96 to see the queue, plus read on 86 to open a request from it; update on 96 to approve (from the queue, or from the detail with read on 86) and to reject (from the detail, so also read on 86); update on 20 to mark lines. A control that lists other records also needs that record's read right (warehouses to choose or filter a warehouse, products to add a line, facilities to filter by facility, employees to filter by requester).
 - **FR-026**: The facility rule (a non-administrator edits, submits and cancels only requests whose header warehouse is in their facility) MUST be enforced by the server, and its refusal MUST be shown.
 - **FR-027**: Every server refusal MUST be shown with the localized text for its error code, never a raw server message or a generic failure. This includes submitting without lines, a wrong state for the action, a warehouse of another facility, an in-transit warehouse, a non-purchasable product, a request of another facility, and a line or request held by a live purchase order.
 - **FR-028**: After every change the screen MUST show the request as the server returned it.
@@ -200,7 +207,7 @@ A request is no longer needed. Its requester or a supervisor cancels it from dra
 - **Purchase request**: Goods a store asks for. It has a warehouse and, through it, a facility, a folio once first submitted, a state, notes, its requester and date, the approver and approval time once approved, its lines and its number of lines.
 - **Request line**: A purchasable product with the name shown for it, a quantity, a destination warehouse, a purchase mark, the product's minimum order quantity, and, when it is on a purchase order, that order's number and state.
 - **Approval queue**: The submitted requests of every facility, waiting for a supervisor.
-- **Rejection**: A supervisor's reason for sending a request back to draft. It is recorded on the server, not shown on the request.
+- **Rejection**: A supervisor's reason for sending a request back to draft. It is recorded on the server and not shown on the request until mictlanix/mbe-api#352 ships.
 - **Purchase order**: Shown only as a reference on the lines it holds. It is what keeps a line from being unmarked or a request from being cancelled.
 
 ## Success Criteria *(mandatory)*
@@ -216,7 +223,7 @@ A request is no longer needed. Its requester or a supervisor cancels it from dra
 ## Assumptions
 
 - The back office gets a new "Compras" group in its navigation, after Inventario and before Finanzas, holding Solicitudes de compra and Aprobación de solicitudes. Purchase orders, supplier payments and accounts payable (mictlanix/mbe-roadmap#71, #75, #80) will join it. Proveedores stays where it is. The Spanish names follow the legacy system ("Solicitudes de Compra").
-- The rejection reason is stored by the server as an incidence (source 4), and the client has no route to read incidences. This spec does not show the reason to the requester. Exposing the latest rejection reason on the request is a server follow-up to request in mbe-api; when it ships, the request detail should show it.
+- The rejection reason is stored by the server as an incidence (source 4), and the client has no route to read incidences. This spec does not show the reason to the requester. Exposing the latest rejection reason on the request is requested in mictlanix/mbe-api#352; when it ships, the request detail should show it.
 - The list and queue rows carry ids for the warehouse, facility and requester, not names. How the screens show names (client-side lookups or a server change, as was done for other documents in mbe-api#324–#330) is decided in planning.
 - The server's warnings are English text with no code, so the UI does not show them. The only warning in this scope, a quantity below the minimum order quantity, is computed by the UI in Spanish from the line figures (FR-013).
 - The list's default scope and the meaning of "everyone's requests" are decided by the server; the UI only sends the switch and the filters.
