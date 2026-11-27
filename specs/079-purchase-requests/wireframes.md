@@ -165,13 +165,13 @@ A new "Compras" navigation group, after Inventario and before Finanzas, gated on
 ```text
 ┌ ← Solicitud 560 ─────────────────────────┐  ┌ ← Solicitud 569 ─────────────────────────┐
 │ Estado (Cancelada) Folio 560 …           │  │ Estado (Borrador) … Sucursal Sucursal 2  │
-│ Partidas … (Comprar read-only, no ✎ 🗑)  │  │ Partidas … ✎ 🗑                          │
-│ (no actions)                             │  │ [Cancelar] [Editar…] [Agregar…] [Enviar] │
+│ Partidas … (Comprar read-only, no ✎ 🗑)  │  │ Partidas … (no ✎ 🗑)                     │
+│ (no actions)                             │  │ (no actions: another facility's draft)   │
 └──────────────────────────────────────────┘  └──────────────────────────────────────────┘
 ```
 
 - Cancelled and read-only: every action and line icon is absent (FR-025, SC-005).
-- Foreign facility (right): a non-administrator sees the actions their rights allow; the server refuses with the facility code and the banner shows it (FR-026, edge case). Hiding them instead is Open Question 5.
+- Foreign facility (right): for a non-administrator, editing, line, submit and cancel actions are absent (FR-026, research R12). Approve, reject and marks would still show on a submitted or approved request.
 
 ### State: refusal / loading / not found
 
@@ -335,6 +335,8 @@ No checkbox column, no ✓ column and no bulk button; the queue is look-only (FR
 ---
 
 ## Open Questions
+
+Settled by the plan (2026-11-26, see [research.md](research.md)): 1 → R4, 2 → R10 (a checkbox column built with the existing `DataTableColumn.header`, not a `DataTableView` change), 3 → R9, 4 → R11, 5 → R12 (hide; spec FR-026 updated), 9 → R6, 10 → R9. Questions 6 and 7 stand as drawn; 8 stays deferred.
 
 1. **Names for warehouse, facility and requester.** Rows carry ids only. Options: (a) the display-name lookups 067 uses (warehouses, facilities, employees); (b) ask mbe-api for names on the summary, as #324–#330 did. *Assumed:* (a), since those lookups already exist; planning confirms.
 2. **Row selection for bulk approve.** `DataTableView` sets `showCheckboxColumn: false` and has no selection API. Options: (a) add opt-in selection to `DataTableView` (shared change); (b) a leading `Checkbox` cell column built by this screen; (c) an "Aprobar varias" dialog listing the page's requests with checkboxes, like `copy_invoice_lines_dialog`. *Assumed:* (a) as drawn; (c) avoids touching the shared widget.

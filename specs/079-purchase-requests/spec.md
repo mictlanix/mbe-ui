@@ -141,7 +141,7 @@ A request is no longer needed. Its requester or a supervisor cancels it from dra
 
 ### Edge Cases
 
-- A non-administrator opens a request whose header warehouse is in another facility. They can read it, but the server refuses editing, submitting and cancelling it, and that refusal is shown. Approving, rejecting and marking lines are not limited by facility.
+- A non-administrator opens a request whose header warehouse is in another facility. They can read it, but editing, submitting and cancelling are not offered, since the server would refuse them. Approving, rejecting and marking lines are not limited by facility.
 - Two supervisors act on the same request. The second approval or rejection is refused with the server's reason, and the screen reloads the request in its new state.
 - A bulk approval mixes requests that can be approved with ones that were changed meanwhile. Each one is approved or refused on its own; the summary lists the refused ones with their reasons, and the queue reloads.
 - A request was rejected. The rejection reason is recorded on the server as an incidence, which the client has no route to read, so the requester sees the request back in Draft without the reason until mictlanix/mbe-api#352 ships. See Assumptions.
@@ -197,7 +197,7 @@ A request is no longer needed. Its requester or a supervisor cancels it from dra
 **Across the feature**
 
 - **FR-025**: Actions the user's rights do not allow MUST be absent, never shown disabled, mirroring the server: read on 86 to see requests, create on 86 to start one, update on 86 to edit a draft and submit it, delete on 86 to cancel; read on 96 to see the queue, plus read on 86 to open a request from it; update on 96 to approve (from the queue, or from the detail with read on 86) and to reject (from the detail, so also read on 86); update on 20 to mark lines. A control that lists other records also needs that record's read right (warehouses to choose or filter a warehouse, products to add a line, facilities to filter by facility, employees to filter by requester).
-- **FR-026**: The facility rule (a non-administrator edits, submits and cancels only requests whose header warehouse is in their facility) MUST be enforced by the server, and its refusal MUST be shown.
+- **FR-026**: The facility rule (a non-administrator edits, submits and cancels only requests whose header warehouse is in their facility) is enforced by the server. For a non-administrator, the edit, line, submit and cancel actions MUST be absent on a request whose facility differs from their own. The server's refusal MUST still be shown for any case the screen cannot foresee.
 - **FR-027**: Every server refusal MUST be shown with the localized text for its error code, never a raw server message or a generic failure. This includes submitting without lines, a wrong state for the action, a warehouse of another facility, an in-transit warehouse, a non-purchasable product, a request of another facility, and a line or request held by a live purchase order.
 - **FR-028**: After every change the screen MUST show the request as the server returned it.
 - **FR-029**: All user-facing text MUST be in Spanish, with quantities, dates and folios formatted by the app's shared formatting.
