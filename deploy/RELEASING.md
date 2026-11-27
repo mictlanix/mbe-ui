@@ -66,6 +66,9 @@ export MBE_ANDROID_KEYSTORE_PATH=~/.config/mbe/upload-keystore.jks
 export MBE_ANDROID_KEYSTORE_PASSWORD=...
 export MBE_ANDROID_KEY_ALIAS=upload
 export MBE_ANDROID_KEY_PASSWORD=...
+
+# DigitalOcean (doctl, Mictlanix team)
+export DIGITALOCEAN_ACCESS_TOKEN=...
 ```
 
 Key and keystore files must live **outside** the repository; the preflight
@@ -89,6 +92,8 @@ base64 < ~/.config/mbe/upload-keystore.jks | pass insert -m mbe/android/upload-k
 echo <KEYID> | pass insert -e mbe/ios/asc-key-id
 pass insert mbe/ios/asc-issuer-id
 pass insert -m mbe/ios/AuthKey_<KEYID>.p8 < ~/.private_keys/AuthKey_<KEYID>.p8
+
+pass insert mbe/digitalocean/api-token        # Mictlanix team token (app + account:read)
 ```
 
 `~/.config/mbe/release.env` (mode 600) then becomes:
@@ -101,7 +106,12 @@ export MBE_ANDROID_KEYSTORE_PATH=~/.config/mbe/upload-keystore.jks
 export MBE_ANDROID_KEYSTORE_PASSWORD="$(pass show mbe/android/keystore-password)"
 export MBE_ANDROID_KEY_ALIAS="$(pass show mbe/android/key-alias)"
 export MBE_ANDROID_KEY_PASSWORD="$(pass show mbe/android/key-password)"
+export DIGITALOCEAN_ACCESS_TOKEN="$(pass show mbe/digitalocean/api-token)"
 ```
+
+`doctl` reads `DIGITALOCEAN_ACCESS_TOKEN` directly, so skip `doctl auth init`:
+it would save the token unencrypted in doctl's config file. Check it with
+`doctl account get`.
 
 The scripts need the `.jks` and `.p8` as files; `pass` keeps encrypted copies.
 On a new Mac, restore them with
