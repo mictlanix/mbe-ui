@@ -65,7 +65,9 @@ void main() {
     'payment.exceeds_order_balance',
     'payment.exceeds_unapplied',
     'product.lookup_too_many',
+    'product.not_purchasable',
     'product.not_stockable',
+    'purchase_request.lines_on_live_order',
     'product_price.references_not_found',
     'refund.line_invoiced',
     'resource.already_exists',
@@ -131,7 +133,7 @@ void main() {
         missing.add(cells[1]);
       }
     }
-    expect(checked, 214);
+    expect(checked, 225);
     expect(missing, isEmpty);
   });
 

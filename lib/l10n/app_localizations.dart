@@ -18125,6 +18125,690 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'At most 4 decimal places.'**
   String get commissionPercentTooPrecise;
+
+  /// spec 079: navigation group
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases'**
+  String get navPurchasesGroup;
+
+  /// spec 079: navigation destination
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase requests'**
+  String get navPurchaseRequests;
+
+  /// spec 079: navigation destination
+  ///
+  /// In en, this message translates to:
+  /// **'Request approval'**
+  String get navPurchaseRequestApproval;
+
+  /// spec 079: detail title with a folio
+  ///
+  /// In en, this message translates to:
+  /// **'Request {folio}'**
+  String purchaseRequestTitle(String folio);
+
+  /// spec 079: detail title of an unnumbered draft
+  ///
+  /// In en, this message translates to:
+  /// **'Request · Draft #{id}'**
+  String purchaseRequestTitleDraft(String id);
+
+  /// spec 079: folio label of an unnumbered draft
+  ///
+  /// In en, this message translates to:
+  /// **'Draft #{id}'**
+  String purchaseRequestDraftFolio(String id);
+
+  /// spec 079: status label
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get purchaseRequestStatusDraft;
+
+  /// spec 079: status label
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get purchaseRequestStatusSubmitted;
+
+  /// spec 079: status label
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get purchaseRequestStatusApproved;
+
+  /// spec 079: status label
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get purchaseRequestStatusCancelled;
+
+  /// spec 079: list column header
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get purchaseRequestColFolio;
+
+  /// spec 079: list column header
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get purchaseRequestColFacility;
+
+  /// spec 079: list column header
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get purchaseRequestColWarehouse;
+
+  /// spec 079: list column header
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get purchaseRequestColStatus;
+
+  /// spec 079: list column header
+  ///
+  /// In en, this message translates to:
+  /// **'Requested by'**
+  String get purchaseRequestColCreator;
+
+  /// spec 079: list column header
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get purchaseRequestColDate;
+
+  /// spec 079: list column header
+  ///
+  /// In en, this message translates to:
+  /// **'Lines'**
+  String get purchaseRequestColLines;
+
+  /// spec 079: list column header
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get purchaseRequestColComment;
+
+  /// spec 079: folio search box hint
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get purchaseRequestSearchHint;
+
+  /// spec 079: filter facet label
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get purchaseRequestFacetScope;
+
+  /// spec 079: scope choice
+  ///
+  /// In en, this message translates to:
+  /// **'My requests'**
+  String get purchaseRequestScopeMine;
+
+  /// spec 079: scope choice
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get purchaseRequestScopeAll;
+
+  /// spec 079: filter facet label
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get purchaseRequestFacetStatus;
+
+  /// spec 079: filter facet label
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get purchaseRequestFacetFacility;
+
+  /// spec 079: filter facet label
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get purchaseRequestFacetWarehouse;
+
+  /// spec 079: filter facet label
+  ///
+  /// In en, this message translates to:
+  /// **'Requested by'**
+  String get purchaseRequestFacetCreator;
+
+  /// spec 079: filter facet label
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get purchaseRequestFacetDate;
+
+  /// spec 079: empty list, own scope
+  ///
+  /// In en, this message translates to:
+  /// **'You have no purchase requests.'**
+  String get purchaseRequestEmptyMine;
+
+  /// spec 079: empty list, all scope
+  ///
+  /// In en, this message translates to:
+  /// **'There are no purchase requests.'**
+  String get purchaseRequestEmptyAll;
+
+  /// spec 079: empty list with filters
+  ///
+  /// In en, this message translates to:
+  /// **'No request matches the filters.'**
+  String get purchaseRequestFilteredEmpty;
+
+  /// spec 079: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get purchaseRequestFactStatus;
+
+  /// spec 079: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Folio'**
+  String get purchaseRequestFactFolio;
+
+  /// spec 079: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get purchaseRequestFactWarehouse;
+
+  /// spec 079: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get purchaseRequestFactFacility;
+
+  /// spec 079: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get purchaseRequestFactComment;
+
+  /// spec 079: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Requested by'**
+  String get purchaseRequestFactCreator;
+
+  /// spec 079: detail fact label
+  ///
+  /// In en, this message translates to:
+  /// **'Approved by'**
+  String get purchaseRequestFactApprover;
+
+  /// spec 079: lines table header
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get purchaseRequestLineColCode;
+
+  /// spec 079: lines table header
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get purchaseRequestLineColProduct;
+
+  /// spec 079: lines table header
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get purchaseRequestLineColQuantity;
+
+  /// spec 079: lines table header
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get purchaseRequestLineColDestination;
+
+  /// spec 079: lines table header
+  ///
+  /// In en, this message translates to:
+  /// **'Buy'**
+  String get purchaseRequestLineColToPurchase;
+
+  /// spec 079: lines table header
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase order'**
+  String get purchaseRequestLineColPurchaseOrder;
+
+  /// spec 079: empty draft
+  ///
+  /// In en, this message translates to:
+  /// **'Add the products you need.'**
+  String get purchaseRequestLinesEmpty;
+
+  /// spec 079: no facility note
+  ///
+  /// In en, this message translates to:
+  /// **'Your user has no facility assigned.'**
+  String get purchaseRequestNoFacility;
+
+  /// spec 079: line edit icon
+  ///
+  /// In en, this message translates to:
+  /// **'Edit line'**
+  String get purchaseRequestLineEditTooltip;
+
+  /// spec 079: line remove icon
+  ///
+  /// In en, this message translates to:
+  /// **'Remove line'**
+  String get purchaseRequestLineRemoveTooltip;
+
+  /// spec 079: back link
+  ///
+  /// In en, this message translates to:
+  /// **'Back to purchase requests'**
+  String get purchaseRequestBackToList;
+
+  /// spec 079: action
+  ///
+  /// In en, this message translates to:
+  /// **'New request'**
+  String get purchaseRequestNewAction;
+
+  /// spec 079: action
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get purchaseRequestEditHeader;
+
+  /// spec 079: action
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get purchaseRequestAddProduct;
+
+  /// spec 079: action
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get purchaseRequestSubmit;
+
+  /// spec 079: action
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get purchaseRequestCancel;
+
+  /// spec 079: action
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get purchaseRequestApprove;
+
+  /// spec 079: action
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get purchaseRequestReject;
+
+  /// spec 079: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'New request'**
+  String get purchaseRequestNewTitle;
+
+  /// spec 079: dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get purchaseRequestNewSubmit;
+
+  /// spec 079: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get purchaseRequestEditHeaderTitle;
+
+  /// spec 079: field label
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get purchaseRequestFieldWarehouse;
+
+  /// spec 079: field label
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get purchaseRequestFieldComment;
+
+  /// spec 079: field label
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get purchaseRequestFieldProduct;
+
+  /// spec 079: field label
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get purchaseRequestFieldName;
+
+  /// spec 079: field label
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get purchaseRequestFieldQuantity;
+
+  /// spec 079: field label
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get purchaseRequestFieldDestination;
+
+  /// spec 079: field label
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get purchaseRequestFieldReason;
+
+  /// spec 079: quantity helper
+  ///
+  /// In en, this message translates to:
+  /// **'minimum {n}'**
+  String purchaseRequestQuantityMinimum(String n);
+
+  /// spec 079: quantity validation
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity greater than 0, with at most 2 decimals.'**
+  String get purchaseRequestQuantityInvalid;
+
+  /// spec 079: header warehouse helper once numbered
+  ///
+  /// In en, this message translates to:
+  /// **'only warehouses of {facility}'**
+  String purchaseRequestWarehouseFacilityHelper(String facility);
+
+  /// spec 079: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get purchaseRequestAddProductTitle;
+
+  /// spec 079: dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get purchaseRequestAddProductSubmit;
+
+  /// spec 079: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit line'**
+  String get purchaseRequestEditLineTitle;
+
+  /// spec 079: dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get purchaseRequestSaveButton;
+
+  /// spec 079: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Remove line'**
+  String get purchaseRequestRemoveTitle;
+
+  /// spec 079: dialog body
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {code} from the request.'**
+  String purchaseRequestRemoveBody(String code);
+
+  /// spec 079: dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get purchaseRequestRemoveAction;
+
+  /// spec 079: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Submit request'**
+  String get purchaseRequestSubmitTitle;
+
+  /// spec 079: first submit prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting gives it its folio and sends it for approval. It can\'t be edited afterwards.'**
+  String get purchaseRequestSubmitFirstBody;
+
+  /// spec 079: resubmit prompt
+  ///
+  /// In en, this message translates to:
+  /// **'It goes back to approval with folio {serial}. It can\'t be edited afterwards.'**
+  String purchaseRequestSubmitResubmitBody(String serial);
+
+  /// spec 079: submit prompt heading for minimum warnings
+  ///
+  /// In en, this message translates to:
+  /// **'Below the purchase minimum:'**
+  String get purchaseRequestSubmitBelowMinimum;
+
+  /// spec 079: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Approve request {folio}?'**
+  String purchaseRequestApproveTitle(String folio);
+
+  /// spec 079: approve prompt summary
+  ///
+  /// In en, this message translates to:
+  /// **'{facility} · {warehouse} · {lines} lines'**
+  String purchaseRequestApproveSummary(
+    String facility,
+    String warehouse,
+    String lines,
+  );
+
+  /// spec 079: dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get purchaseRequestApproveAction;
+
+  /// spec 079: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Reject request {folio}'**
+  String purchaseRequestRejectTitle(String folio);
+
+  /// spec 079: reject dialog note
+  ///
+  /// In en, this message translates to:
+  /// **'The request returns to draft and keeps its folio.'**
+  String get purchaseRequestRejectNote;
+
+  /// spec 079: dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get purchaseRequestRejectAction;
+
+  /// spec 079: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request'**
+  String get purchaseRequestCancelTitle;
+
+  /// spec 079: cancel prompt for a numbered request
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request {folio}: it becomes cancelled and can no longer be used.'**
+  String purchaseRequestCancelBody(String folio);
+
+  /// spec 079: cancel prompt for a draft
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel the draft.'**
+  String get purchaseRequestCancelDraftBody;
+
+  /// spec 079: dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request'**
+  String get purchaseRequestCancelAction;
+
+  /// spec 079: dialog button that keeps the request
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get purchaseRequestBack;
+
+  /// spec 079: queue bulk action
+  ///
+  /// In en, this message translates to:
+  /// **'Approve selected ({n})'**
+  String purchaseRequestApproveSelected(String n);
+
+  /// spec 079: empty approval queue
+  ///
+  /// In en, this message translates to:
+  /// **'There are no requests pending approval.'**
+  String get purchaseRequestQueueEmpty;
+
+  /// spec 079: single approve SnackBar
+  ///
+  /// In en, this message translates to:
+  /// **'Request {folio} approved.'**
+  String purchaseRequestApprovedSnack(String folio);
+
+  /// spec 079: bulk approve SnackBar
+  ///
+  /// In en, this message translates to:
+  /// **'{n} requests approved.'**
+  String purchaseRequestBulkApprovedSnack(String n);
+
+  /// spec 079: bulk result dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Approval result'**
+  String get purchaseRequestBulkResultTitle;
+
+  /// spec 079: bulk result dialog summary
+  ///
+  /// In en, this message translates to:
+  /// **'{approved} of {total} requests approved.'**
+  String purchaseRequestBulkResultSummary(String approved, String total);
+
+  /// spec 079: bulk result dialog heading
+  ///
+  /// In en, this message translates to:
+  /// **'Not approved:'**
+  String get purchaseRequestBulkResultRefused;
+
+  /// spec 079: bulk result refused row
+  ///
+  /// In en, this message translates to:
+  /// **'{folio} · {facility}: {reason}'**
+  String purchaseRequestBulkResultRefusedItem(
+    String folio,
+    String facility,
+    String reason,
+  );
+
+  /// spec 079: dialog button
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get purchaseRequestResultClose;
+
+  /// spec 079: minimum-quantity warning line
+  ///
+  /// In en, this message translates to:
+  /// **'{code}: {quantity} is less than the purchase minimum ({minimum}).'**
+  String purchaseRequestBelowMinimum(
+    String code,
+    String quantity,
+    String minimum,
+  );
+
+  /// spec 079: names the order that blocks unmarking a line
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase order {n}'**
+  String purchaseRequestRefusalOrder(String n);
+
+  /// spec 079: mbe-api error code `purchase_request.not_draft`
+  ///
+  /// In en, this message translates to:
+  /// **'Only a draft request can be changed or submitted.'**
+  String get apiErrorPurchaseRequestNotDraft;
+
+  /// spec 079: mbe-api error code `purchase_request.not_submitted`
+  ///
+  /// In en, this message translates to:
+  /// **'The request is no longer submitted; someone else approved, rejected or cancelled it.'**
+  String get apiErrorPurchaseRequestNotSubmitted;
+
+  /// spec 079: mbe-api error code `purchase_request.no_lines`
+  ///
+  /// In en, this message translates to:
+  /// **'The request has no lines.'**
+  String get apiErrorPurchaseRequestNoLines;
+
+  /// spec 079: mbe-api error code `purchase_request.line_without_quantity`
+  ///
+  /// In en, this message translates to:
+  /// **'A line of the request has no quantity.'**
+  String get apiErrorPurchaseRequestLineWithoutQuantity;
+
+  /// spec 079: mbe-api error code `purchase_request.facility_locked`
+  ///
+  /// In en, this message translates to:
+  /// **'A numbered request can only move to a warehouse of its own facility.'**
+  String get apiErrorPurchaseRequestFacilityLocked;
+
+  /// spec 079: mbe-api error code `purchase_request.warehouse_facility_changed`
+  ///
+  /// In en, this message translates to:
+  /// **'The warehouse changed facility while saving. Try again.'**
+  String get apiErrorPurchaseRequestWarehouseFacilityChanged;
+
+  /// spec 079: mbe-api error code `purchase_request.already_cancelled`
+  ///
+  /// In en, this message translates to:
+  /// **'The request is already cancelled.'**
+  String get apiErrorPurchaseRequestAlreadyCancelled;
+
+  /// spec 079: mbe-api error code `purchase_request.lines_not_markable`
+  ///
+  /// In en, this message translates to:
+  /// **'Lines can be marked only on a submitted or approved request.'**
+  String get apiErrorPurchaseRequestLinesNotMarkable;
+
+  /// spec 079: mbe-api error code `purchase_request.line_on_live_order`
+  ///
+  /// In en, this message translates to:
+  /// **'The line is on a live purchase order and can\'t be unmarked.'**
+  String get apiErrorPurchaseRequestLineOnLiveOrder;
+
+  /// spec 079: mbe-api error code `purchase_request.lines_on_live_order`
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{One line of the request is} other{{count} lines of the request are}} on a live purchase order.'**
+  String apiErrorPurchaseRequestLinesOnLiveOrder(int count);
+
+  /// spec 079: mbe-api error code `product.not_purchasable`
+  ///
+  /// In en, this message translates to:
+  /// **'Product {product} isn\'t purchasable.'**
+  String apiErrorProductNotPurchasable(String product);
 }
 
 class _AppLocalizationsDelegate

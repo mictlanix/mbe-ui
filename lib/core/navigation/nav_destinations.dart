@@ -141,6 +141,16 @@ class NavBranch {
   // 078-commissions: appended last, same rationale as `deliveryItineraries`
   // above — the destination sits after Gastos in Finanzas in `kNavigationTree`.
   static const int commissions = 37;
+
+  // 079-purchase-requests: appended last, same rationale as
+  // `deliveryItineraries` above — the destination opens the Compras group in
+  // `kNavigationTree`.
+  static const int purchaseRequests = 38;
+
+  // 079-purchase-requests: appended last, same rationale as
+  // `deliveryItineraries` above — the destination follows Solicitudes de
+  // compra in the Compras group of `kNavigationTree`.
+  static const int purchaseRequestApproval = 39;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -413,6 +423,40 @@ const List<NavItem> kNavigationTree = [
       ),
     ],
   ),
+  // Compras (spec 079): asking for goods and approving what to buy.
+  NavGroup(
+    id: 'purchases',
+    label: _purchasesLabel,
+    children: [
+      // Gated on SystemObject 86 (`purchaseRequest`) read, matching the
+      // server's GET /purchase-requests. Creating, editing, submitting and
+      // cancelling need 86 create, update and delete, checked on the screens.
+      NavDestination(
+        id: 'purchase-requests',
+        label: _purchaseRequestsLabel,
+        icon: Icons.assignment_outlined,
+        selectedIcon: Icons.assignment,
+        route: '/purchases/requests',
+        branchIndex: NavBranch.purchaseRequests,
+        gate: PrivilegeGate(SystemObject.purchaseRequest, AccessRight.read),
+      ),
+      // Gated on SystemObject 96 (`purchaseRequestApproval`) read, matching
+      // the server's GET /purchase-requests/approval-queue. Approving needs
+      // 96 update and opening a row 86 read, checked on the screen.
+      NavDestination(
+        id: 'purchase-request-approval',
+        label: _purchaseRequestApprovalLabel,
+        icon: Icons.fact_check_outlined,
+        selectedIcon: Icons.fact_check,
+        route: '/purchases/request-approval',
+        branchIndex: NavBranch.purchaseRequestApproval,
+        gate: PrivilegeGate(
+          SystemObject.purchaseRequestApproval,
+          AccessRight.read,
+        ),
+      ),
+    ],
+  ),
   // Finanzas: money in and out, and the fiscal documents.
   NavGroup(
     id: 'finance',
@@ -615,6 +659,11 @@ String _inventoryTransfersLabel(AppLocalizations l10n) =>
 String _inventoryCountsLabel(AppLocalizations l10n) => l10n.navInventoryCounts;
 String _inventoryStockLabel(AppLocalizations l10n) => l10n.navInventoryStock;
 String _inventoryKardexLabel(AppLocalizations l10n) => l10n.navInventoryKardex;
+String _purchasesLabel(AppLocalizations l10n) => l10n.navPurchasesGroup;
+String _purchaseRequestsLabel(AppLocalizations l10n) =>
+    l10n.navPurchaseRequests;
+String _purchaseRequestApprovalLabel(AppLocalizations l10n) =>
+    l10n.navPurchaseRequestApproval;
 String _fiscalDocumentsLabel(AppLocalizations l10n) => l10n.navFiscalDocuments;
 String _usersLabel(AppLocalizations l10n) => l10n.usersMenuTitle;
 String _userProfilesLabel(AppLocalizations l10n) => l10n.userProfilesMenuTitle;

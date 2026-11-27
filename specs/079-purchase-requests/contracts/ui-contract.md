@@ -50,7 +50,7 @@ The detail is pushed (`context.push`) from the list, from the queue and after cr
 | Enviar solicitud | first submit vs. "Volverá a aprobación con el folio {serial}"; minimum warnings listed | Enviar |
 | ¿Aprobar solicitud {folio}? | sucursal · almacén · partidas | Aprobar |
 | Rechazar solicitud {folio} | Motivo* (1–500, trimmed); note: returns to draft, keeps folio | Rechazar |
-| Cancelar solicitud | "Cancelar la solicitud {folio}" / "Cancelar el borrador" | Cancelar solicitud |
+| Cancelar solicitud | "Cancelar la solicitud {folio}: queda cancelada y ya no se podrá usar." / "Cancelar el borrador" (any draft, numbered or not) | Cancelar solicitud |
 | Resultado de la aprobación | "Se aprobaron {a} de {n} solicitudes." + refused folio · sucursal: reason | Cerrar |
 
 Every dialog disables its buttons while submitting; refusals show in `FormErrorBanner`.

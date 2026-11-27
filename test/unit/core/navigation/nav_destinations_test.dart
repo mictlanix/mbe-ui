@@ -752,6 +752,94 @@ void main() {
     });
   });
 
+  group('Solicitudes de compra destination (spec 079)', () {
+    test('a user without PurchaseRequest (86) read has no Compras group', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.inventoryReceipts, rawValue: 2),
+        ],
+      );
+      expect(ids, isNot(contains('purchase-requests')));
+    });
+
+    test('read on PurchaseRequest (86) shows the entry', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.purchaseRequest, rawValue: 2),
+        ],
+      );
+      expect(ids, contains('purchase-requests'));
+    });
+
+    test('it opens the Compras group, between Inventario and Finanzas, on '
+        'branch 38 at /purchases/requests', () {
+      final groups = kNavigationTree.whereType<NavGroup>().toList();
+      final groupIds = [for (final g in groups) g.id];
+      expect(groupIds.indexOf('purchases'), groupIds.indexOf('inventory') + 1);
+      expect(groupIds.indexOf('finance'), groupIds.indexOf('purchases') + 1);
+      final entry = groups
+          .firstWhere((g) => g.id == 'purchases')
+          .children
+          .first;
+      expect(entry.id, 'purchase-requests');
+      expect(entry.route, '/purchases/requests');
+      expect(entry.branchIndex, NavBranch.purchaseRequests);
+      expect(NavBranch.purchaseRequests, 38);
+      expect(entry.icon, Icons.assignment_outlined);
+      expect(entry.selectedIcon, Icons.assignment);
+    });
+  });
+
+  group('Aprobación de solicitudes destination (spec 079)', () {
+    test('read on PurchaseRequestApproval (96) alone shows the entry and '
+        'the Compras group, without Solicitudes de compra', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(
+            systemObject: SystemObject.purchaseRequestApproval,
+            rawValue: 2,
+          ),
+        ],
+      );
+      // The Compras group shows, holding only this entry.
+      expect(ids, contains('purchase-request-approval'));
+      expect(ids, isNot(contains('purchase-requests')));
+    });
+
+    test('read on PurchaseRequest (86) alone shows the group without the '
+        'approval entry', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.purchaseRequest, rawValue: 2),
+        ],
+      );
+      expect(ids, contains('purchase-requests'));
+      expect(ids, isNot(contains('purchase-request-approval')));
+    });
+
+    test('it follows Solicitudes de compra in Compras, on branch 39 at '
+        '/purchases/request-approval', () {
+      final entry = kNavigationTree
+          .whereType<NavGroup>()
+          .firstWhere((g) => g.id == 'purchases')
+          .children[1];
+      expect(entry.id, 'purchase-request-approval');
+      expect(entry.route, '/purchases/request-approval');
+      expect(entry.branchIndex, NavBranch.purchaseRequestApproval);
+      expect(NavBranch.purchaseRequestApproval, 39);
+      expect(entry.icon, Icons.fact_check_outlined);
+      expect(entry.selectedIcon, Icons.fact_check);
+    });
+  });
+
   group('Facturas destination (spec 066 C1)', () {
     test('a user without FiscalDocuments read has no Facturas entry', () {
       final ids = visibleIds(
@@ -822,7 +910,11 @@ void main() {
         for (final g in kNavigationTree.whereType<NavGroup>()) g.id,
       ];
       expect(groupIds.indexOf('inventory'), groupIds.indexOf('operation') + 1);
-      expect(groupIds.indexOf('finance'), groupIds.indexOf('inventory') + 1);
+      // Compras (spec 079) sits between Inventario and Finanzas.
+      expect(
+        groupIds.indexOf('finance'),
+        greaterThan(groupIds.indexOf('inventory')),
+      );
       final entry = kNavigationTree
           .whereType<NavGroup>()
           .firstWhere((g) => g.id == 'inventory')
@@ -1113,7 +1205,7 @@ void main() {
   });
 
   test(
-    'four sections in order, Home first, every destination exactly once',
+    'five sections in order, Home first, every destination exactly once',
     () {
       expect(kNavigationTree.first, isA<NavDestination>());
       expect((kNavigationTree.first as NavDestination).id, 'home');
@@ -1150,6 +1242,7 @@ void main() {
             'suppliers',
             'labels',
           ],
+          'purchases': ['purchase-requests', 'purchase-request-approval'],
           'finance': [
             'payments',
             'payment-verification',
@@ -1168,7 +1261,7 @@ void main() {
       );
       expect(
         [for (final g in groups) g.id],
-        ['operation', 'inventory', 'finance', 'system'],
+        ['operation', 'inventory', 'purchases', 'finance', 'system'],
       );
       final all = [
         for (final item in kNavigationTree)
@@ -1177,8 +1270,8 @@ void main() {
             NavGroup() => item.children.map((d) => d.id),
           },
       ];
-      expect(all.length, 38);
-      expect(all.toSet().length, 38);
+      expect(all.length, 40);
+      expect(all.toSet().length, 40);
     },
   );
 }

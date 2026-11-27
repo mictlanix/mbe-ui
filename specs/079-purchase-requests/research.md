@@ -31,7 +31,7 @@ Sources: mbe-api `docs/specs/05-purchases.md` §1–2, `specs/031-purchase-reque
 
 - **Decision**: Import `inventory_name_cells.dart` and `inventory_warehouse_options.dart` (`inventoryWarehouseScopeProvider`, `inventoryStartingWarehouseProvider`, `inventoryWarehouseOptions`) from `lib/features/inventory/presentation/shared/` directly.
 - **Rationale**: Both do exactly what this feature needs (names for ids; the own-facility warehouse scope and the starting point-of-sale warehouse). Copying them duplicates ~200 lines. Moving them to `catalog` touches 23 files of shipped code for no behaviour change (CLAUDE.md: surgical changes).
-- **Cost**: This is the first import of one feature's presentation from another. §I does not forbid it (it constrains presentation → data and shared entities), but it couples the two features. When a third feature needs these parts, move them to `lib/features/catalog/presentation/` in their own change.
+- **Cost**: It couples the two features. §I does not forbid it (it constrains presentation → data and shared entities), and it is not new: invoicing already imports the sales payments filter's date helpers, which this feature also reuses. When a third feature needs these parts, move them to `lib/features/catalog/presentation/` in their own change.
 
 ## R6. Creating a request and the pickers
 

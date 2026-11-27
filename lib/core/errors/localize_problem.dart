@@ -169,6 +169,17 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.productPeriodLookupTooMany,
   api.ErrorCode.productPeriodMergeWithItself,
   api.ErrorCode.productPeriodNotStockable,
+  api.ErrorCode.purchaseRequestPeriodNotDraft,
+  api.ErrorCode.purchaseRequestPeriodNotSubmitted,
+  api.ErrorCode.purchaseRequestPeriodNoLines,
+  api.ErrorCode.purchaseRequestPeriodLineWithoutQuantity,
+  api.ErrorCode.purchaseRequestPeriodFacilityLocked,
+  api.ErrorCode.purchaseRequestPeriodWarehouseFacilityChanged,
+  api.ErrorCode.purchaseRequestPeriodAlreadyCancelled,
+  api.ErrorCode.purchaseRequestPeriodLinesOnLiveOrder,
+  api.ErrorCode.purchaseRequestPeriodLinesNotMarkable,
+  api.ErrorCode.purchaseRequestPeriodLineOnLiveOrder,
+  api.ErrorCode.productPeriodNotPurchasable,
   api.ErrorCode.productPricePeriodDuplicateEntry,
   api.ErrorCode.productPricePeriodReferencesNotFound,
   api.ErrorCode.quotePeriodAlreadyCancelled,
@@ -774,6 +785,33 @@ String? localizeProblem(
     api.ErrorCode.productPeriodNotStockable => _ap1(
       problem.stringParam('product_code'),
       l10n.apiErrorProductNotStockable,
+    ),
+    // Purchase requests (spec 079).
+    api.ErrorCode.purchaseRequestPeriodNotDraft =>
+      l10n.apiErrorPurchaseRequestNotDraft,
+    api.ErrorCode.purchaseRequestPeriodNotSubmitted =>
+      l10n.apiErrorPurchaseRequestNotSubmitted,
+    api.ErrorCode.purchaseRequestPeriodNoLines =>
+      l10n.apiErrorPurchaseRequestNoLines,
+    api.ErrorCode.purchaseRequestPeriodLineWithoutQuantity =>
+      l10n.apiErrorPurchaseRequestLineWithoutQuantity,
+    api.ErrorCode.purchaseRequestPeriodFacilityLocked =>
+      l10n.apiErrorPurchaseRequestFacilityLocked,
+    api.ErrorCode.purchaseRequestPeriodWarehouseFacilityChanged =>
+      l10n.apiErrorPurchaseRequestWarehouseFacilityChanged,
+    api.ErrorCode.purchaseRequestPeriodAlreadyCancelled =>
+      l10n.apiErrorPurchaseRequestAlreadyCancelled,
+    api.ErrorCode.purchaseRequestPeriodLinesOnLiveOrder => _ap1(
+      problem.intParam('count'),
+      l10n.apiErrorPurchaseRequestLinesOnLiveOrder,
+    ),
+    api.ErrorCode.purchaseRequestPeriodLinesNotMarkable =>
+      l10n.apiErrorPurchaseRequestLinesNotMarkable,
+    api.ErrorCode.purchaseRequestPeriodLineOnLiveOrder =>
+      l10n.apiErrorPurchaseRequestLineOnLiveOrder,
+    api.ErrorCode.productPeriodNotPurchasable => _ap1(
+      problem.stringParam('product_code'),
+      l10n.apiErrorProductNotPurchasable,
     ),
     api.ErrorCode.productPricePeriodDuplicateEntry =>
       l10n.apiErrorProductPriceDuplicateEntry,
