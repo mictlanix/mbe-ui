@@ -3,7 +3,7 @@
   "specName": "Purchase Requests with Approval",
   "branch": "079-purchase-requests",
   "currentStep": "implement",
-  "status": "implemented",
+  "status": "completed",
   "history": [
     {
       "step": "specify",
@@ -383,5 +383,28 @@
     }
   ],
   "telemetryInstanceId": "b204f098-249c-44cf-b3e1-eb04c8b240ca",
-  "currentTask": "T040"
+  "currentTask": null,
+  "concerns": [
+    {
+      "note": "finished, unverified",
+      "step": "implement"
+    }
+  ],
+  "verified": [
+    {
+      "what": "flutter test (whole suite, no .env defines): 7123 passed, 85 skipped, 8 failed; the 8 are the known golden diffs that also fail on main (mbe-ui#209) (2026-11-27)"
+    },
+    {
+      "what": "flutter analyze: no issues; the 51 changed or new Dart files formatted"
+    },
+    {
+      "what": "Live repository test test/integration/purchase_requests_live_test.dart against dev with MBE_WRITE=true: 32 steps, 0 failed; every error code and param matched contracts/error-messages.md"
+    },
+    {
+      "what": "macOS walkthrough integration_test/purchase_requests_quickstart_test.dart against dev: quickstart steps 1-11 pass (below-minimum parts skipped, no dev fixture)"
+    },
+    {
+      "what": "Largest text level: list, detail and approval queue widget tests show no overflow"
+    }
+  ]
 }
