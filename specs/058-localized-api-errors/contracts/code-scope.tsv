@@ -184,7 +184,7 @@ code	price_list.replace_with_itself	400	—	IN	DELETE /price-lists/{}	reachable 
 code	product.lookup_criteria_required	422	—	IN	GET /sales-orders/product-lookup	reachable from 1 UI route(s)
 code	product.lookup_too_many	422	max: int	IN	GET /sales-orders/product-lookup	reachable from 1 UI route(s)
 code	product.merge_with_itself	400	—	IN	GET /products/merge/preview; POST /products/merge	reachable from 2 UI route(s)
-code	product.not_purchasable	422	product_id: int, product_code: str	OUT		
+code	product.not_purchasable	422	product_id: int, product_code: str	IN	POST /purchase-requests/{}/submit	reachable from the Solicitudes de compra screens (spec 079)
 code	product.not_stockable	422	product_code: str	IN	POST /inventory-receipts/{}/lines	reachable from the Entradas de almacén screens (spec 067)
 code	product_price.duplicate_entry	400	product_id: int, price_list_id: int	IN	PUT /product-prices	reachable from 1 UI route(s)
 code	product_price.references_not_found	404	resource: str (product	IN	PUT /product-prices	reachable from 1 UI route(s)
@@ -197,16 +197,16 @@ code	purchase_order.not_confirmed	409	purchase_order_id: int	OUT
 code	purchase_order.nothing_pending	409	supplier_id: int, facility_id: int	OUT		
 code	purchase_order.nothing_to_add	409	purchase_request_id: int	OUT		
 code	purchase_order.request_not_approved	409	purchase_request_id: int	OUT		
-code	purchase_request.already_cancelled	409	—	OUT		
-code	purchase_request.facility_locked	409	—	OUT		
-code	purchase_request.line_on_live_order	409	line_id: int	OUT		
-code	purchase_request.line_without_quantity	422	line_id: int	OUT		
-code	purchase_request.lines_not_markable	409	status: enum:RequestStatus	OUT		
-code	purchase_request.lines_on_live_order	409	count: int	OUT		
-code	purchase_request.no_lines	409	—	OUT		
-code	purchase_request.not_draft	409	status: enum:RequestStatus	OUT		
-code	purchase_request.not_submitted	409	status: enum:RequestStatus	OUT		
-code	purchase_request.warehouse_facility_changed	409	—	OUT		
+code	purchase_request.already_cancelled	409	—	IN	POST /purchase-requests/{}/submit	reachable from the Solicitudes de compra screens (spec 079)
+code	purchase_request.facility_locked	409	—	IN	POST /purchase-requests/{}/submit	reachable from the Solicitudes de compra screens (spec 079)
+code	purchase_request.line_on_live_order	409	line_id: int	IN	POST /purchase-requests/{}/submit	reachable from the Solicitudes de compra screens (spec 079)
+code	purchase_request.line_without_quantity	422	line_id: int	IN	POST /purchase-requests/{}/submit	reachable from the Solicitudes de compra screens (spec 079)
+code	purchase_request.lines_not_markable	409	status: enum:RequestStatus	IN	POST /purchase-requests/{}/submit	reachable from the Solicitudes de compra screens (spec 079)
+code	purchase_request.lines_on_live_order	409	count: int	IN	POST /purchase-requests/{}/submit	reachable from the Solicitudes de compra screens (spec 079)
+code	purchase_request.no_lines	409	—	IN	POST /purchase-requests/{}/submit	reachable from the Solicitudes de compra screens (spec 079)
+code	purchase_request.not_draft	409	status: enum:RequestStatus	IN	POST /purchase-requests/{}/submit	reachable from the Solicitudes de compra screens (spec 079)
+code	purchase_request.not_submitted	409	status: enum:RequestStatus	IN	POST /purchase-requests/{}/submit	reachable from the Solicitudes de compra screens (spec 079)
+code	purchase_request.warehouse_facility_changed	409	—	IN	POST /purchase-requests/{}/submit	reachable from the Solicitudes de compra screens (spec 079)
 code	quote.already_cancelled	409	—	IN	POST /sales-quotes/{}/cancel	reachable from 1 UI route(s)
 code	quote.cancelled	409	—	IN	POST /sales-quotes/{}/convert	reachable from 1 UI route(s)
 code	quote.expired	409	—	IN	POST /sales-quotes/{}/convert	reachable from 1 UI route(s)

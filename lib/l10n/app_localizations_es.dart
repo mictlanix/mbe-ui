@@ -10962,4 +10962,414 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get commissionPercentTooPrecise => 'Máximo 4 decimales.';
+
+  @override
+  String get navPurchasesGroup => 'Compras';
+
+  @override
+  String get navPurchaseRequests => 'Solicitudes de compra';
+
+  @override
+  String get navPurchaseRequestApproval => 'Aprobación de solicitudes';
+
+  @override
+  String purchaseRequestTitle(String folio) {
+    return 'Solicitud $folio';
+  }
+
+  @override
+  String purchaseRequestTitleDraft(String id) {
+    return 'Solicitud · Borrador #$id';
+  }
+
+  @override
+  String purchaseRequestDraftFolio(String id) {
+    return 'Borrador #$id';
+  }
+
+  @override
+  String get purchaseRequestStatusDraft => 'Borrador';
+
+  @override
+  String get purchaseRequestStatusSubmitted => 'Enviada';
+
+  @override
+  String get purchaseRequestStatusApproved => 'Aprobada';
+
+  @override
+  String get purchaseRequestStatusCancelled => 'Cancelada';
+
+  @override
+  String get purchaseRequestColFolio => 'Folio';
+
+  @override
+  String get purchaseRequestColFacility => 'Sucursal';
+
+  @override
+  String get purchaseRequestColWarehouse => 'Almacén';
+
+  @override
+  String get purchaseRequestColStatus => 'Estado';
+
+  @override
+  String get purchaseRequestColCreator => 'Solicitó';
+
+  @override
+  String get purchaseRequestColDate => 'Fecha';
+
+  @override
+  String get purchaseRequestColLines => 'Partidas';
+
+  @override
+  String get purchaseRequestColComment => 'Notas';
+
+  @override
+  String get purchaseRequestSearchHint => 'Folio';
+
+  @override
+  String get purchaseRequestFacetScope => 'Mostrar';
+
+  @override
+  String get purchaseRequestScopeMine => 'Mis solicitudes';
+
+  @override
+  String get purchaseRequestScopeAll => 'Todas';
+
+  @override
+  String get purchaseRequestFacetStatus => 'Estado';
+
+  @override
+  String get purchaseRequestFacetFacility => 'Sucursal';
+
+  @override
+  String get purchaseRequestFacetWarehouse => 'Almacén';
+
+  @override
+  String get purchaseRequestFacetCreator => 'Solicitó';
+
+  @override
+  String get purchaseRequestFacetDate => 'Fecha';
+
+  @override
+  String get purchaseRequestEmptyMine => 'No tienes solicitudes de compra.';
+
+  @override
+  String get purchaseRequestEmptyAll => 'No hay solicitudes de compra.';
+
+  @override
+  String get purchaseRequestFilteredEmpty =>
+      'Ninguna solicitud coincide con los filtros.';
+
+  @override
+  String get purchaseRequestFactStatus => 'Estado';
+
+  @override
+  String get purchaseRequestFactFolio => 'Folio';
+
+  @override
+  String get purchaseRequestFactWarehouse => 'Almacén';
+
+  @override
+  String get purchaseRequestFactFacility => 'Sucursal';
+
+  @override
+  String get purchaseRequestFactComment => 'Notas';
+
+  @override
+  String get purchaseRequestFactCreator => 'Solicitó';
+
+  @override
+  String get purchaseRequestFactApprover => 'Aprobó';
+
+  @override
+  String get purchaseRequestLineColCode => 'Código';
+
+  @override
+  String get purchaseRequestLineColProduct => 'Producto';
+
+  @override
+  String get purchaseRequestLineColQuantity => 'Cantidad';
+
+  @override
+  String get purchaseRequestLineColDestination => 'Destino';
+
+  @override
+  String get purchaseRequestLineColToPurchase => 'Comprar';
+
+  @override
+  String get purchaseRequestLineColPurchaseOrder => 'Orden de compra';
+
+  @override
+  String get purchaseRequestLinesEmpty => 'Agrega los productos que necesitas.';
+
+  @override
+  String get purchaseRequestNoFacility =>
+      'Tu usuario no tiene una sucursal asignada.';
+
+  @override
+  String get purchaseRequestLineEditTooltip => 'Editar partida';
+
+  @override
+  String get purchaseRequestLineRemoveTooltip => 'Quitar partida';
+
+  @override
+  String get purchaseRequestBackToList => 'Volver a solicitudes de compra';
+
+  @override
+  String get purchaseRequestNewAction => 'Nueva solicitud';
+
+  @override
+  String get purchaseRequestEditHeader => 'Editar encabezado';
+
+  @override
+  String get purchaseRequestAddProduct => 'Agregar producto';
+
+  @override
+  String get purchaseRequestSubmit => 'Enviar';
+
+  @override
+  String get purchaseRequestCancel => 'Cancelar';
+
+  @override
+  String get purchaseRequestApprove => 'Aprobar';
+
+  @override
+  String get purchaseRequestReject => 'Rechazar';
+
+  @override
+  String get purchaseRequestNewTitle => 'Nueva solicitud';
+
+  @override
+  String get purchaseRequestNewSubmit => 'Crear';
+
+  @override
+  String get purchaseRequestEditHeaderTitle => 'Editar encabezado';
+
+  @override
+  String get purchaseRequestFieldWarehouse => 'Almacén';
+
+  @override
+  String get purchaseRequestFieldComment => 'Notas';
+
+  @override
+  String get purchaseRequestFieldProduct => 'Producto';
+
+  @override
+  String get purchaseRequestFieldName => 'Nombre';
+
+  @override
+  String get purchaseRequestFieldQuantity => 'Cantidad';
+
+  @override
+  String get purchaseRequestFieldDestination => 'Destino';
+
+  @override
+  String get purchaseRequestFieldReason => 'Motivo';
+
+  @override
+  String purchaseRequestQuantityMinimum(String n) {
+    return 'mínimo $n';
+  }
+
+  @override
+  String get purchaseRequestQuantityInvalid =>
+      'Escribe una cantidad mayor que 0, con máximo 2 decimales.';
+
+  @override
+  String purchaseRequestWarehouseFacilityHelper(String facility) {
+    return 'solo almacenes de $facility';
+  }
+
+  @override
+  String get purchaseRequestAddProductTitle => 'Agregar producto';
+
+  @override
+  String get purchaseRequestAddProductSubmit => 'Agregar';
+
+  @override
+  String get purchaseRequestEditLineTitle => 'Editar partida';
+
+  @override
+  String get purchaseRequestSaveButton => 'Guardar';
+
+  @override
+  String get purchaseRequestRemoveTitle => 'Quitar partida';
+
+  @override
+  String purchaseRequestRemoveBody(String code) {
+    return 'Quitar $code de la solicitud.';
+  }
+
+  @override
+  String get purchaseRequestRemoveAction => 'Quitar';
+
+  @override
+  String get purchaseRequestSubmitTitle => 'Enviar solicitud';
+
+  @override
+  String get purchaseRequestSubmitFirstBody =>
+      'Al enviarla recibe su folio y queda en espera de aprobación. Después ya no se puede editar.';
+
+  @override
+  String purchaseRequestSubmitResubmitBody(String serial) {
+    return 'Volverá a aprobación con el folio $serial. Después ya no se puede editar.';
+  }
+
+  @override
+  String get purchaseRequestSubmitBelowMinimum =>
+      'Debajo del mínimo de compra:';
+
+  @override
+  String purchaseRequestApproveTitle(String folio) {
+    return '¿Aprobar solicitud $folio?';
+  }
+
+  @override
+  String purchaseRequestApproveSummary(
+    String facility,
+    String warehouse,
+    String lines,
+  ) {
+    return '$facility · $warehouse · $lines partidas';
+  }
+
+  @override
+  String get purchaseRequestApproveAction => 'Aprobar';
+
+  @override
+  String purchaseRequestRejectTitle(String folio) {
+    return 'Rechazar solicitud $folio';
+  }
+
+  @override
+  String get purchaseRequestRejectNote =>
+      'La solicitud regresa a borrador y conserva su folio.';
+
+  @override
+  String get purchaseRequestRejectAction => 'Rechazar';
+
+  @override
+  String get purchaseRequestCancelTitle => 'Cancelar solicitud';
+
+  @override
+  String purchaseRequestCancelBody(String folio) {
+    return 'Cancelar la solicitud $folio: queda cancelada y ya no se podrá usar.';
+  }
+
+  @override
+  String get purchaseRequestCancelDraftBody => 'Cancelar el borrador.';
+
+  @override
+  String get purchaseRequestCancelAction => 'Cancelar solicitud';
+
+  @override
+  String get purchaseRequestBack => 'Volver';
+
+  @override
+  String purchaseRequestApproveSelected(String n) {
+    return 'Aprobar seleccionadas ($n)';
+  }
+
+  @override
+  String get purchaseRequestQueueEmpty =>
+      'No hay solicitudes pendientes de aprobación.';
+
+  @override
+  String purchaseRequestApprovedSnack(String folio) {
+    return 'Solicitud $folio aprobada.';
+  }
+
+  @override
+  String purchaseRequestBulkApprovedSnack(String n) {
+    return 'Se aprobaron $n solicitudes.';
+  }
+
+  @override
+  String get purchaseRequestBulkResultTitle => 'Resultado de la aprobación';
+
+  @override
+  String purchaseRequestBulkResultSummary(String approved, String total) {
+    return 'Se aprobaron $approved de $total solicitudes.';
+  }
+
+  @override
+  String get purchaseRequestBulkResultRefused => 'No se aprobaron:';
+
+  @override
+  String purchaseRequestBulkResultRefusedItem(
+    String folio,
+    String facility,
+    String reason,
+  ) {
+    return '$folio · $facility: $reason';
+  }
+
+  @override
+  String get purchaseRequestResultClose => 'Cerrar';
+
+  @override
+  String purchaseRequestBelowMinimum(
+    String code,
+    String quantity,
+    String minimum,
+  ) {
+    return '$code: $quantity es menos que el mínimo de compra ($minimum).';
+  }
+
+  @override
+  String purchaseRequestRefusalOrder(String n) {
+    return 'Orden de compra $n';
+  }
+
+  @override
+  String get apiErrorPurchaseRequestNotDraft =>
+      'Solo se puede modificar o enviar una solicitud en borrador.';
+
+  @override
+  String get apiErrorPurchaseRequestNotSubmitted =>
+      'La solicitud ya no está enviada; alguien más la aprobó, rechazó o canceló.';
+
+  @override
+  String get apiErrorPurchaseRequestNoLines =>
+      'La solicitud no tiene partidas.';
+
+  @override
+  String get apiErrorPurchaseRequestLineWithoutQuantity =>
+      'Una partida de la solicitud no tiene cantidad.';
+
+  @override
+  String get apiErrorPurchaseRequestFacilityLocked =>
+      'Una solicitud con folio solo puede cambiar a un almacén de su misma sucursal.';
+
+  @override
+  String get apiErrorPurchaseRequestWarehouseFacilityChanged =>
+      'El almacén cambió de sucursal mientras se guardaba. Intenta de nuevo.';
+
+  @override
+  String get apiErrorPurchaseRequestAlreadyCancelled =>
+      'La solicitud ya está cancelada.';
+
+  @override
+  String get apiErrorPurchaseRequestLinesNotMarkable =>
+      'Solo se pueden marcar partidas de una solicitud enviada o aprobada.';
+
+  @override
+  String get apiErrorPurchaseRequestLineOnLiveOrder =>
+      'La partida está en una orden de compra vigente y no se puede desmarcar.';
+
+  @override
+  String apiErrorPurchaseRequestLinesOnLiveOrder(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count partidas de la solicitud están',
+      one: 'Una partida de la solicitud está',
+    );
+    return '$_temp0 en una orden de compra vigente.';
+  }
+
+  @override
+  String apiErrorProductNotPurchasable(String product) {
+    return 'El producto $product no se puede comprar.';
+  }
 }

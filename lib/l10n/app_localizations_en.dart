@@ -10901,4 +10901,410 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get commissionPercentTooPrecise => 'At most 4 decimal places.';
+
+  @override
+  String get navPurchasesGroup => 'Purchases';
+
+  @override
+  String get navPurchaseRequests => 'Purchase requests';
+
+  @override
+  String get navPurchaseRequestApproval => 'Request approval';
+
+  @override
+  String purchaseRequestTitle(String folio) {
+    return 'Request $folio';
+  }
+
+  @override
+  String purchaseRequestTitleDraft(String id) {
+    return 'Request · Draft #$id';
+  }
+
+  @override
+  String purchaseRequestDraftFolio(String id) {
+    return 'Draft #$id';
+  }
+
+  @override
+  String get purchaseRequestStatusDraft => 'Draft';
+
+  @override
+  String get purchaseRequestStatusSubmitted => 'Submitted';
+
+  @override
+  String get purchaseRequestStatusApproved => 'Approved';
+
+  @override
+  String get purchaseRequestStatusCancelled => 'Cancelled';
+
+  @override
+  String get purchaseRequestColFolio => 'Folio';
+
+  @override
+  String get purchaseRequestColFacility => 'Facility';
+
+  @override
+  String get purchaseRequestColWarehouse => 'Warehouse';
+
+  @override
+  String get purchaseRequestColStatus => 'Status';
+
+  @override
+  String get purchaseRequestColCreator => 'Requested by';
+
+  @override
+  String get purchaseRequestColDate => 'Date';
+
+  @override
+  String get purchaseRequestColLines => 'Lines';
+
+  @override
+  String get purchaseRequestColComment => 'Notes';
+
+  @override
+  String get purchaseRequestSearchHint => 'Folio';
+
+  @override
+  String get purchaseRequestFacetScope => 'Show';
+
+  @override
+  String get purchaseRequestScopeMine => 'My requests';
+
+  @override
+  String get purchaseRequestScopeAll => 'All';
+
+  @override
+  String get purchaseRequestFacetStatus => 'Status';
+
+  @override
+  String get purchaseRequestFacetFacility => 'Facility';
+
+  @override
+  String get purchaseRequestFacetWarehouse => 'Warehouse';
+
+  @override
+  String get purchaseRequestFacetCreator => 'Requested by';
+
+  @override
+  String get purchaseRequestFacetDate => 'Date';
+
+  @override
+  String get purchaseRequestEmptyMine => 'You have no purchase requests.';
+
+  @override
+  String get purchaseRequestEmptyAll => 'There are no purchase requests.';
+
+  @override
+  String get purchaseRequestFilteredEmpty => 'No request matches the filters.';
+
+  @override
+  String get purchaseRequestFactStatus => 'Status';
+
+  @override
+  String get purchaseRequestFactFolio => 'Folio';
+
+  @override
+  String get purchaseRequestFactWarehouse => 'Warehouse';
+
+  @override
+  String get purchaseRequestFactFacility => 'Facility';
+
+  @override
+  String get purchaseRequestFactComment => 'Notes';
+
+  @override
+  String get purchaseRequestFactCreator => 'Requested by';
+
+  @override
+  String get purchaseRequestFactApprover => 'Approved by';
+
+  @override
+  String get purchaseRequestLineColCode => 'Code';
+
+  @override
+  String get purchaseRequestLineColProduct => 'Product';
+
+  @override
+  String get purchaseRequestLineColQuantity => 'Quantity';
+
+  @override
+  String get purchaseRequestLineColDestination => 'Destination';
+
+  @override
+  String get purchaseRequestLineColToPurchase => 'Buy';
+
+  @override
+  String get purchaseRequestLineColPurchaseOrder => 'Purchase order';
+
+  @override
+  String get purchaseRequestLinesEmpty => 'Add the products you need.';
+
+  @override
+  String get purchaseRequestNoFacility => 'Your user has no facility assigned.';
+
+  @override
+  String get purchaseRequestLineEditTooltip => 'Edit line';
+
+  @override
+  String get purchaseRequestLineRemoveTooltip => 'Remove line';
+
+  @override
+  String get purchaseRequestBackToList => 'Back to purchase requests';
+
+  @override
+  String get purchaseRequestNewAction => 'New request';
+
+  @override
+  String get purchaseRequestEditHeader => 'Edit header';
+
+  @override
+  String get purchaseRequestAddProduct => 'Add product';
+
+  @override
+  String get purchaseRequestSubmit => 'Submit';
+
+  @override
+  String get purchaseRequestCancel => 'Cancel';
+
+  @override
+  String get purchaseRequestApprove => 'Approve';
+
+  @override
+  String get purchaseRequestReject => 'Reject';
+
+  @override
+  String get purchaseRequestNewTitle => 'New request';
+
+  @override
+  String get purchaseRequestNewSubmit => 'Create';
+
+  @override
+  String get purchaseRequestEditHeaderTitle => 'Edit header';
+
+  @override
+  String get purchaseRequestFieldWarehouse => 'Warehouse';
+
+  @override
+  String get purchaseRequestFieldComment => 'Notes';
+
+  @override
+  String get purchaseRequestFieldProduct => 'Product';
+
+  @override
+  String get purchaseRequestFieldName => 'Name';
+
+  @override
+  String get purchaseRequestFieldQuantity => 'Quantity';
+
+  @override
+  String get purchaseRequestFieldDestination => 'Destination';
+
+  @override
+  String get purchaseRequestFieldReason => 'Reason';
+
+  @override
+  String purchaseRequestQuantityMinimum(String n) {
+    return 'minimum $n';
+  }
+
+  @override
+  String get purchaseRequestQuantityInvalid =>
+      'Enter a quantity greater than 0, with at most 2 decimals.';
+
+  @override
+  String purchaseRequestWarehouseFacilityHelper(String facility) {
+    return 'only warehouses of $facility';
+  }
+
+  @override
+  String get purchaseRequestAddProductTitle => 'Add product';
+
+  @override
+  String get purchaseRequestAddProductSubmit => 'Add';
+
+  @override
+  String get purchaseRequestEditLineTitle => 'Edit line';
+
+  @override
+  String get purchaseRequestSaveButton => 'Save';
+
+  @override
+  String get purchaseRequestRemoveTitle => 'Remove line';
+
+  @override
+  String purchaseRequestRemoveBody(String code) {
+    return 'Remove $code from the request.';
+  }
+
+  @override
+  String get purchaseRequestRemoveAction => 'Remove';
+
+  @override
+  String get purchaseRequestSubmitTitle => 'Submit request';
+
+  @override
+  String get purchaseRequestSubmitFirstBody =>
+      'Submitting gives it its folio and sends it for approval. It can\'t be edited afterwards.';
+
+  @override
+  String purchaseRequestSubmitResubmitBody(String serial) {
+    return 'It goes back to approval with folio $serial. It can\'t be edited afterwards.';
+  }
+
+  @override
+  String get purchaseRequestSubmitBelowMinimum => 'Below the purchase minimum:';
+
+  @override
+  String purchaseRequestApproveTitle(String folio) {
+    return 'Approve request $folio?';
+  }
+
+  @override
+  String purchaseRequestApproveSummary(
+    String facility,
+    String warehouse,
+    String lines,
+  ) {
+    return '$facility · $warehouse · $lines lines';
+  }
+
+  @override
+  String get purchaseRequestApproveAction => 'Approve';
+
+  @override
+  String purchaseRequestRejectTitle(String folio) {
+    return 'Reject request $folio';
+  }
+
+  @override
+  String get purchaseRequestRejectNote =>
+      'The request returns to draft and keeps its folio.';
+
+  @override
+  String get purchaseRequestRejectAction => 'Reject';
+
+  @override
+  String get purchaseRequestCancelTitle => 'Cancel request';
+
+  @override
+  String purchaseRequestCancelBody(String folio) {
+    return 'Cancel request $folio: it becomes cancelled and can no longer be used.';
+  }
+
+  @override
+  String get purchaseRequestCancelDraftBody => 'Cancel the draft.';
+
+  @override
+  String get purchaseRequestCancelAction => 'Cancel request';
+
+  @override
+  String get purchaseRequestBack => 'Back';
+
+  @override
+  String purchaseRequestApproveSelected(String n) {
+    return 'Approve selected ($n)';
+  }
+
+  @override
+  String get purchaseRequestQueueEmpty =>
+      'There are no requests pending approval.';
+
+  @override
+  String purchaseRequestApprovedSnack(String folio) {
+    return 'Request $folio approved.';
+  }
+
+  @override
+  String purchaseRequestBulkApprovedSnack(String n) {
+    return '$n requests approved.';
+  }
+
+  @override
+  String get purchaseRequestBulkResultTitle => 'Approval result';
+
+  @override
+  String purchaseRequestBulkResultSummary(String approved, String total) {
+    return '$approved of $total requests approved.';
+  }
+
+  @override
+  String get purchaseRequestBulkResultRefused => 'Not approved:';
+
+  @override
+  String purchaseRequestBulkResultRefusedItem(
+    String folio,
+    String facility,
+    String reason,
+  ) {
+    return '$folio · $facility: $reason';
+  }
+
+  @override
+  String get purchaseRequestResultClose => 'Close';
+
+  @override
+  String purchaseRequestBelowMinimum(
+    String code,
+    String quantity,
+    String minimum,
+  ) {
+    return '$code: $quantity is less than the purchase minimum ($minimum).';
+  }
+
+  @override
+  String purchaseRequestRefusalOrder(String n) {
+    return 'Purchase order $n';
+  }
+
+  @override
+  String get apiErrorPurchaseRequestNotDraft =>
+      'Only a draft request can be changed or submitted.';
+
+  @override
+  String get apiErrorPurchaseRequestNotSubmitted =>
+      'The request is no longer submitted; someone else approved, rejected or cancelled it.';
+
+  @override
+  String get apiErrorPurchaseRequestNoLines => 'The request has no lines.';
+
+  @override
+  String get apiErrorPurchaseRequestLineWithoutQuantity =>
+      'A line of the request has no quantity.';
+
+  @override
+  String get apiErrorPurchaseRequestFacilityLocked =>
+      'A numbered request can only move to a warehouse of its own facility.';
+
+  @override
+  String get apiErrorPurchaseRequestWarehouseFacilityChanged =>
+      'The warehouse changed facility while saving. Try again.';
+
+  @override
+  String get apiErrorPurchaseRequestAlreadyCancelled =>
+      'The request is already cancelled.';
+
+  @override
+  String get apiErrorPurchaseRequestLinesNotMarkable =>
+      'Lines can be marked only on a submitted or approved request.';
+
+  @override
+  String get apiErrorPurchaseRequestLineOnLiveOrder =>
+      'The line is on a live purchase order and can\'t be unmarked.';
+
+  @override
+  String apiErrorPurchaseRequestLinesOnLiveOrder(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lines of the request are',
+      one: 'One line of the request is',
+    );
+    return '$_temp0 on a live purchase order.';
+  }
+
+  @override
+  String apiErrorProductNotPurchasable(String product) {
+    return 'Product $product isn\'t purchasable.';
+  }
 }

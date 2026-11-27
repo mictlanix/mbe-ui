@@ -16,6 +16,7 @@ import 'package:mbe_ui/core/navigation/nav_destination.dart';
 import 'package:mbe_ui/core/navigation/nav_destinations.dart';
 import 'package:mbe_ui/core/storage/shared_preferences_provider.dart';
 import 'package:mbe_ui/core/widgets/app_shell.dart';
+import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/auth/data/user_profile_repository_impl.dart';
 import 'package:mbe_ui/features/auth/data/user_repository_impl.dart';
 import 'package:mbe_ui/features/auth/domain/entities/auth_session.dart';
@@ -97,12 +98,15 @@ import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repositor
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_quote_repository.dart';
 import 'package:mbe_ui/features/commissions/data/commission_repository_impl.dart';
+import 'package:mbe_ui/features/purchases/data/purchase_request_repository_impl.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import '../../../widget/features/commissions/commission_harness.dart'
     show MockCommissionRepository;
 import '../../../widget/features/inventory/inventory_harness.dart'
     show aWarehouse;
+import '../../../widget/features/purchases/purchases_harness.dart'
+    show MockPurchaseRequestRepository;
 import '../../../widget/features/sales/pos_test_harness.dart'
     show MockCustomerRefundRepository, testRefund;
 import '../../features/inventory/kardex_fixtures.dart';
@@ -432,6 +436,32 @@ const _fiscalDocumentsReaderUser = User(
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.fiscalDocuments, rawValue: 2),
+  ],
+);
+
+/// Holds read on `purchaseRequest` (86) alone — the gate for spec 079's
+/// `/purchases/requests` routes.
+const _purchaseRequestReaderUser = User(
+  userId: 'purchase-request-reader',
+  email: 'purchase-request-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.purchaseRequest, rawValue: 2),
+  ],
+);
+
+/// Holds read on `purchaseRequestApproval` (96) alone — the gate for spec
+/// 079's `/purchases/request-approval` route.
+const _purchaseRequestApprovalReaderUser = User(
+  userId: 'purchase-request-approver',
+  email: 'purchase-request-approver@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.purchaseRequestApproval, rawValue: 2),
   ],
 );
 
@@ -2685,6 +2715,169 @@ void main() {
       final shell = tester.widget<AppShell>(find.byType(AppShell));
       expect(NavBranch.commissions, 37);
       expect(shell.navigationShell.currentIndex, NavBranch.commissions);
+    });
+  });
+
+  group('079-purchase-requests — /purchases/requests gates on '
+      'purchaseRequest (86) read', () {
+    List<Override> overrides() {
+      final repo = MockPurchaseRequestRepository();
+      when(
+        () => repo.list(
+          all: any(named: 'all'),
+          status: any(named: 'status'),
+          facilityId: any(named: 'facilityId'),
+          warehouseId: any(named: 'warehouseId'),
+          creatorId: any(named: 'creatorId'),
+          serial: any(named: 'serial'),
+          from: any(named: 'from'),
+          to: any(named: 'to'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async =>
+            const CatalogPage(items: [], total: 0, pageIndex: 0, pageSize: 20),
+      );
+      when(() => repo.get(any())).thenThrow(const AppError.notFound());
+      return [purchaseRequestRepositoryProvider.overrideWithValue(repo)];
+    }
+
+    testWidgets('a user with purchaseRequest:read reaches the list', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _purchaseRequestReaderUser,
+        '/purchases/requests',
+        extraOverrides: overrides(),
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/purchases/requests');
+      expect(find.byKey(const Key('list_state_empty')), findsOneWidget);
+    });
+
+    testWidgets('a user without purchaseRequest:read is redirected home', (
+      tester,
+    ) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/purchases/requests');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a user with purchaseRequest:read reaches a request (here '
+        'not found)', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _purchaseRequestReaderUser,
+        '/purchases/requests/9',
+        extraOverrides: overrides(),
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/purchases/requests/9');
+      expect(
+        find.byKey(const Key('purchase_request_not_found')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('a user without purchaseRequest:read is redirected from a '
+        'request', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/purchases/requests/9',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a non-numeric id gives the not-found state', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _purchaseRequestReaderUser,
+        '/purchases/requests/abc',
+        extraOverrides: overrides(),
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/purchases/requests/abc');
+      expect(
+        find.byKey(const Key('purchase_request_not_found')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('activates shell branch NavBranch.purchaseRequests (38)', (
+      tester,
+    ) async {
+      await pumpAt(
+        tester,
+        _purchaseRequestReaderUser,
+        '/purchases/requests',
+        extraOverrides: overrides(),
+      );
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.purchaseRequests, 38);
+      expect(shell.navigationShell.currentIndex, NavBranch.purchaseRequests);
+    });
+  });
+
+  group('079-purchase-requests — /purchases/request-approval gates on '
+      'purchaseRequestApproval (96) read', () {
+    List<Override> overrides() {
+      final repo = MockPurchaseRequestRepository();
+      when(
+        () => repo.approvalQueue(
+          facilityId: any(named: 'facilityId'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async =>
+            const CatalogPage(items: [], total: 0, pageIndex: 0, pageSize: 20),
+      );
+      return [purchaseRequestRepositoryProvider.overrideWithValue(repo)];
+    }
+
+    testWidgets('a user with purchaseRequestApproval:read reaches the queue, '
+        'on shell branch NavBranch.purchaseRequestApproval (39)', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _purchaseRequestApprovalReaderUser,
+        '/purchases/request-approval',
+        extraOverrides: overrides(),
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/purchases/request-approval');
+      expect(find.byKey(const Key('list_state_empty')), findsOneWidget);
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.purchaseRequestApproval, 39);
+      expect(
+        shell.navigationShell.currentIndex,
+        NavBranch.purchaseRequestApproval,
+      );
+    });
+
+    testWidgets('a user without it is redirected home', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/purchases/request-approval',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('purchaseRequest:read alone does not open it', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _purchaseRequestReaderUser,
+        '/purchases/request-approval',
+      );
+      expect(handle.router.state.uri.path, '/');
     });
   });
 
