@@ -2,8 +2,8 @@
   "workflow": "speckit",
   "specName": "Purchase Orders with Receipts, PDF and Email",
   "branch": "080-purchase-orders",
-  "currentStep": "plan",
-  "status": "planned",
+  "currentStep": "tasks",
+  "status": "ready-to-implement",
   "history": [
     {
       "step": "specify",
@@ -32,6 +32,20 @@
       "kind": "complete",
       "by": "extension",
       "at": "2026-11-27T12:18:20.153Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "start",
+      "by": "extension",
+      "at": "2026-11-27T12:37:41.223Z"
+    },
+    {
+      "step": "tasks",
+      "substep": null,
+      "kind": "complete",
+      "by": "extension",
+      "at": "2026-11-27T12:40:51.210Z"
     }
   ],
   "telemetryInstanceId": "0b32b8cc-9fa8-4875-9b8d-f6caa3812add"
