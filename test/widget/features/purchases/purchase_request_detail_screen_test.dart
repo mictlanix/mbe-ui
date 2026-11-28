@@ -11,6 +11,7 @@ import 'package:mbe_ui/features/purchases/domain/entities/purchase_request.dart'
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 import '../../../unit/features/purchases/purchase_request_fixtures.dart';
+import '../../../unit/features/purchases/purchase_order_fixtures.dart';
 import 'purchases_harness.dart';
 
 /// Spec 079 US1 (T018, T019): a request's detail, as a requester sees it;
@@ -429,6 +430,59 @@ void main() {
         findsOneWidget,
       );
       expect(key('purchase_request_line_order_901'), findsNothing);
+    });
+
+    testWidgets('the order number links to the order with read on 20, and '
+        'is plain text without it (spec 080 FR-030)', (tester) async {
+      final request = aRequest(
+        serial: 571,
+        status: PurchaseRequestStatus.approved,
+        lines: [
+          aRequestLine(
+            toPurchase: true,
+            purchaseOrderId: 77,
+            purchaseOrderStatus: InventoryDocumentStatus.draft,
+          ),
+        ],
+      );
+      h.stubOrder(anOrder(id: 77));
+      final router = await h.pumpRequest(
+        tester,
+        request,
+        who: PurchasesHarness.user(orderRights: 2),
+      );
+
+      await tester.tap(key('purchase_order_link_77'));
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, '/purchases/orders/77');
+    });
+
+    testWidgets('without read on 20 the order number is not a link', (
+      tester,
+    ) async {
+      await h.pumpRequest(
+        tester,
+        aRequest(
+          serial: 571,
+          status: PurchaseRequestStatus.approved,
+          lines: [
+            aRequestLine(
+              toPurchase: true,
+              purchaseOrderId: 77,
+              purchaseOrderStatus: InventoryDocumentStatus.draft,
+            ),
+          ],
+        ),
+      );
+
+      expect(key('purchase_order_link_77'), findsNothing);
+      expect(
+        find.descendant(
+          of: key('purchase_request_line_order_900'),
+          matching: find.text('77'),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('a request with no line on an order has no Orden de compra '

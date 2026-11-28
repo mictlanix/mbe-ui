@@ -38,7 +38,7 @@ Compras group order: Solicitudes de compra (38), Aprobación de solicitudes (39)
 - Cancelled: draft columns, read-only, no actions.
 - Every action absent without its right (data-model action table). Refusals in `ErrorBanner` above the action area; stale codes re-fetch.
 
-## Dialogs (`ResponsiveDialog`, refusals in `FormErrorBanner`, both buttons disabled while submitting)
+## Dialogs (`ResponsiveDialog`, refusals in `ErrorBanner`, as spec 079's dialogs, both buttons disabled while submitting)
 
 | Dialog | Fields | Submit |
 |---|---|---|

@@ -227,6 +227,13 @@ void main() {
       expect(can(posReader, DocumentKind.salesQuote), isFalse);
     });
 
+    test('a purchase-orders reader may open the purchase order, and a '
+        'sales-quotes reader may not (spec 080)', () {
+      expect(can(purchaseOrdersReader, DocumentKind.purchaseOrder), isTrue);
+      expect(can(purchaseOrdersReader, DocumentKind.salesQuote), isFalse);
+      expect(can(salesQuotesReader, DocumentKind.purchaseOrder), isFalse);
+    });
+
     test('a user with no privileges may open nothing', () {
       for (final kind in DocumentKind.values) {
         expect(can(noPrivileges, kind), isFalse, reason: '$kind');

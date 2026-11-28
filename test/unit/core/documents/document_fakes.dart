@@ -116,6 +116,11 @@ final User deliveryOrdersReader = _user(const [
   Privilege(systemObject: SystemObject.deliveryOrders, rawValue: _read),
 ]);
 
+/// Reads purchase orders (SystemObject 20) and nothing else (spec 080).
+final User purchaseOrdersReader = _user(const [
+  Privilege(systemObject: SystemObject.purchasesOrders, rawValue: _read),
+]);
+
 /// Holds neither privilege.
 final User noPrivileges = _user(const []);
 

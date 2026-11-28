@@ -52,3 +52,23 @@ void setQuantity3(api.Quantity3Builder builder, String value) {
 void setQuantity1(api.Quantity1Builder builder, String value) {
   builder.anyOf = AnyOf2<String, num>(values: {0: value});
 }
+
+/// Spec 080: the purchase order line update's `quantity`.
+void setQuantity4(api.Quantity4Builder builder, String value) {
+  builder.anyOf = AnyOf2<String, num>(values: {0: value});
+}
+
+/// Spec 080: the purchase order line add's `quantity`.
+void setQuantity5(api.Quantity5Builder builder, String value) {
+  builder.anyOf = AnyOf2<String, num>(values: {0: value});
+}
+
+/// Spec 080: the purchase order line update's unit `price`.
+void setPrice(api.PriceBuilder builder, String value) {
+  builder.anyOf = AnyOf2<String, num>(values: {0: value});
+}
+
+/// Spec 080: the purchase order line update's `tax_rate`.
+void setTaxRate1(api.TaxRate1Builder builder, String value) {
+  builder.anyOf = AnyOf2<String, num>(values: {0: value});
+}

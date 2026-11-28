@@ -33,6 +33,7 @@ import 'package:mbe_ui/features/inventory/presentation/receipts/receipt_dialogs.
 import 'package:mbe_ui/features/inventory/presentation/receipts/receipt_header_dialog.dart';
 import 'package:mbe_ui/features/inventory/presentation/shared/inventory_name_cells.dart';
 import 'package:mbe_ui/features/inventory/presentation/receipts/receipt_warnings.dart';
+import 'package:mbe_ui/features/purchases/presentation/orders/purchase_order_link.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
 /// One warehouse receipt (spec 067 contracts/ui-contract.md "Detail
@@ -461,12 +462,14 @@ class _HeaderFacts extends ConsumerWidget {
               label: l10n.inventoryReceiptFactFacility,
               child: InventoryFacilityName(facilityId: receipt.facilityId),
             ),
-            if (receipt.purchaseOrderId != null)
+            if (receipt.purchaseOrderId case final orderId?)
               CompactField(
                 label: l10n.inventoryReceiptFactPurchaseOrder,
-                child: Text(
-                  '${receipt.purchaseOrderId}',
+                // A link with PurchasesOrders (20) read, plain text otherwise
+                // (spec 080 FR-030).
+                child: PurchaseOrderLink(
                   key: const Key('inventory_receipt_purchase_order'),
+                  orderId: orderId,
                 ),
               ),
           ],

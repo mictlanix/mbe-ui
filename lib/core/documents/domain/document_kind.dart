@@ -61,7 +61,13 @@ enum DocumentKind {
   /// `GET /delivery-itineraries/{id}/delivery-notes` — the delivery notes of a
   /// departed or closed itinerary, one per stop (mbe-api spec 026, spec 075
   /// research R11). The same 409s as [itineraryTicket].
-  itineraryDeliveryNotes(SystemObject.deliveryItineraries);
+  itineraryDeliveryNotes(SystemObject.deliveryItineraries),
+
+  /// `GET /purchase-orders/{id}/document` — the Letter-size purchase order
+  /// (spec 080 research R13). A draft or cancelled order is a 409
+  /// `purchase_order.not_confirmed` on the server, so call sites offer it only
+  /// for a confirmed one. Gated by PurchasesOrders (SystemObject 20) read.
+  purchaseOrder(SystemObject.purchasesOrders);
 
   const DocumentKind(this.gateObject);
 
@@ -87,6 +93,7 @@ enum DocumentKind {
     DocumentKind.fiscalDocument => 'factura-$recordId.pdf',
     DocumentKind.itineraryTicket => 'itinerario-$recordId.pdf',
     DocumentKind.itineraryDeliveryNotes => 'notas-entrega-$recordId.pdf',
+    DocumentKind.purchaseOrder => 'orden-compra-${_pad(recordId, 8)}.pdf',
   };
 
   static String _pad(int id, int width) => id.toString().padLeft(width, '0');

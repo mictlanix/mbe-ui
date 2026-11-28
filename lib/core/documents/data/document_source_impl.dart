@@ -24,7 +24,8 @@ final documentSourceProvider = Provider<DocumentSource>((ref) {
 /// ticket and Letter document mbe-api spec 026 added (spec 064 research R1),
 /// plus the fiscal document PDF mbe-api spec 020 added (spec 066 research R9),
 /// plus the itinerary ticket and delivery notes mbe-api spec 026 added (spec
-/// 075 research R11).
+/// 075 research R11), plus the purchase order document (spec 080 research
+/// R13).
 ///
 /// A PDF has no DTO, so there is no mapping: the bytes are returned exactly as
 /// the server sent them (FR-020). The generated methods already ask dio for
@@ -39,7 +40,8 @@ class DocumentSourceImpl implements DocumentSource {
       _customerRefunds = api.CustomerRefundsApi(dio, appSerializers),
       _deliveryOrders = api.DeliveryOrdersApi(dio, appSerializers),
       _fiscalDocuments = api.FiscalDocumentsApi(dio, appSerializers),
-      _itineraries = api.DeliveryItinerariesApi(dio, appSerializers);
+      _itineraries = api.DeliveryItinerariesApi(dio, appSerializers),
+      _purchaseOrders = api.PurchaseOrdersApi(dio, appSerializers);
 
   final api.SalesOrdersApi _salesOrders;
   final api.CashSessionsApi _cashSessions;
@@ -49,6 +51,7 @@ class DocumentSourceImpl implements DocumentSource {
   final api.DeliveryOrdersApi _deliveryOrders;
   final api.FiscalDocumentsApi _fiscalDocuments;
   final api.DeliveryItinerariesApi _itineraries;
+  final api.PurchaseOrdersApi _purchaseOrders;
 
   @override
   Future<RenderedDocument> fetch(DocumentRef ref) async {
@@ -109,6 +112,11 @@ class DocumentSourceImpl implements DocumentSource {
           _itineraries
               .printDeliveryNotesApiV1DeliveryItinerariesItineraryIdDeliveryNotesGet(
                 itineraryId: ref.recordId,
+              ),
+        DocumentKind.purchaseOrder =>
+          _purchaseOrders
+              .printPurchaseOrderDocumentApiV1PurchaseOrdersOrderIdDocumentGet(
+                orderId: ref.recordId,
               ),
       };
 

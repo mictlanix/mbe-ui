@@ -151,6 +151,16 @@ class NavBranch {
   // `deliveryItineraries` above — the destination follows Solicitudes de
   // compra in the Compras group of `kNavigationTree`.
   static const int purchaseRequestApproval = 39;
+
+  // 080-purchase-orders: appended last, same rationale as
+  // `deliveryItineraries` above — the destination follows Aprobación de
+  // solicitudes in the Compras group of `kNavigationTree`.
+  static const int toPurchase = 40;
+
+  // 080-purchase-orders: appended last, same rationale as
+  // `deliveryItineraries` above — the destination follows Por comprar in the
+  // Compras group of `kNavigationTree`.
+  static const int purchaseOrders = 41;
 }
 
 /// The full navigation tree for the app, before access filtering. New
@@ -455,6 +465,30 @@ const List<NavItem> kNavigationTree = [
           AccessRight.read,
         ),
       ),
+      // Gated on SystemObject 20 (`purchasesOrders`) read, matching the
+      // server's GET /purchase-orders/to-purchase. Crear orden needs 20
+      // create, checked on the screen.
+      NavDestination(
+        id: 'to-purchase',
+        label: _toPurchaseLabel,
+        icon: Icons.shopping_cart_outlined,
+        selectedIcon: Icons.shopping_cart,
+        route: '/purchases/to-purchase',
+        branchIndex: NavBranch.toPurchase,
+        gate: PrivilegeGate(SystemObject.purchasesOrders, AccessRight.read),
+      ),
+      // Gated on SystemObject 20 (`purchasesOrders`) read, matching the
+      // server's GET /purchase-orders. Nueva orden needs 20 create, checked
+      // on the screen.
+      NavDestination(
+        id: 'purchase-orders',
+        label: _purchaseOrdersLabel,
+        icon: Icons.receipt_long_outlined,
+        selectedIcon: Icons.receipt_long,
+        route: '/purchases/orders',
+        branchIndex: NavBranch.purchaseOrders,
+        gate: PrivilegeGate(SystemObject.purchasesOrders, AccessRight.read),
+      ),
     ],
   ),
   // Finanzas: money in and out, and the fiscal documents.
@@ -664,6 +698,8 @@ String _purchaseRequestsLabel(AppLocalizations l10n) =>
     l10n.navPurchaseRequests;
 String _purchaseRequestApprovalLabel(AppLocalizations l10n) =>
     l10n.navPurchaseRequestApproval;
+String _toPurchaseLabel(AppLocalizations l10n) => l10n.navToPurchase;
+String _purchaseOrdersLabel(AppLocalizations l10n) => l10n.navPurchaseOrders;
 String _fiscalDocumentsLabel(AppLocalizations l10n) => l10n.navFiscalDocuments;
 String _usersLabel(AppLocalizations l10n) => l10n.usersMenuTitle;
 String _userProfilesLabel(AppLocalizations l10n) => l10n.userProfilesMenuTitle;

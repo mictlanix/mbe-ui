@@ -45,8 +45,11 @@ import 'package:mbe_ui/features/pricing/presentation/price_lists_list_screen.dar
 import 'package:mbe_ui/features/pricing/presentation/pricing_grid_screen.dart';
 import 'package:mbe_ui/features/pricing/presentation/pricing_screen.dart';
 import 'package:mbe_ui/features/purchases/presentation/approval/purchase_request_approval_screen.dart';
+import 'package:mbe_ui/features/purchases/presentation/orders/purchase_order_detail_screen.dart';
+import 'package:mbe_ui/features/purchases/presentation/orders/purchase_orders_list_screen.dart';
 import 'package:mbe_ui/features/purchases/presentation/requests/purchase_request_detail_screen.dart';
 import 'package:mbe_ui/features/purchases/presentation/requests/purchase_requests_list_screen.dart';
+import 'package:mbe_ui/features/purchases/presentation/to_purchase/to_purchase_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/capture/advanced_search_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_session_detail_screen.dart';
 import 'package:mbe_ui/features/sales/presentation/cash_sessions_screen.dart';
@@ -592,6 +595,33 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               ),
             ],
           ),
+          // 080-purchase-orders: appended last (index 40), same rationale as
+          // `payments` above. Gated on SystemObject 20 (`purchasesOrders`)
+          // read, see `_routeGate`. Crear orden pushes the top-level
+          // `/purchases/orders/:orderId` route.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: toPurchasePath,
+                builder: (context, state) =>
+                    ToPurchaseScreen(query: ListQuery.fromUri(state.uri)),
+              ),
+            ],
+          ),
+          // 080-purchase-orders: appended last (index 41), same rationale as
+          // `payments` above. Gated on SystemObject 20 (`purchasesOrders`)
+          // read, see `_routeGate`. A row tap pushes the top-level
+          // `/purchases/orders/:orderId` route.
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: purchaseOrdersPath,
+                builder: (context, state) => PurchaseOrdersListScreen(
+                  query: ListQuery.fromUri(state.uri),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       GoRoute(
@@ -821,6 +851,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '$purchaseRequestsPath/:requestId',
         builder: (context, state) => PurchaseRequestDetailScreen(
           requestId: int.tryParse(state.pathParameters['requestId'] ?? ''),
+        ),
+      ),
+      // 080-purchase-orders: an order's own full screen, gated on
+      // SystemObject 20 (`purchasesOrders`) read by the `_routeGate` prefix.
+      // A non-numeric id parses to `null`, which the screen shows as not
+      // found.
+      GoRoute(
+        path: '$purchaseOrdersPath/:orderId',
+        builder: (context, state) => PurchaseOrderDetailScreen(
+          orderId: int.tryParse(state.pathParameters['orderId'] ?? ''),
         ),
       ),
       // 067-warehouse-receipts: a receipt's own full screen, gated on
@@ -1227,6 +1267,18 @@ NavGate? _routeGate(String location) {
       SystemObject.purchaseRequestApproval,
       AccessRight.read,
     );
+  }
+  // 080-purchase-orders: SystemObject 20 (`purchasesOrders`) read, matching
+  // the server's GET /purchase-orders. The prefix covers the list and every
+  // `/purchases/orders/:orderId`; it shares no prefix with
+  // `/purchases/requests`, and 86 read must not open it.
+  if (location.startsWith(purchaseOrdersPath)) {
+    return PrivilegeGate(SystemObject.purchasesOrders, AccessRight.read);
+  }
+  // 080-purchase-orders: SystemObject 20 (`purchasesOrders`) read, matching
+  // the server's GET /purchase-orders/to-purchase.
+  if (location.startsWith(toPurchasePath)) {
+    return PrivilegeGate(SystemObject.purchasesOrders, AccessRight.read);
   }
   // 078-commissions: SystemObject 112 (`commissionsBySalesPerson`) read,
   // matching the server's GET /commissions/periods. The prefix covers the

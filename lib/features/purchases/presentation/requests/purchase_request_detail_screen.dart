@@ -22,6 +22,7 @@ import 'package:mbe_ui/features/inventory/presentation/shared/inventory_document
 import 'package:mbe_ui/features/inventory/presentation/shared/inventory_name_cells.dart';
 import 'package:mbe_ui/features/purchases/domain/below_minimum.dart';
 import 'package:mbe_ui/features/purchases/domain/entities/purchase_request.dart';
+import 'package:mbe_ui/features/purchases/presentation/orders/purchase_order_link.dart';
 import 'package:mbe_ui/features/purchases/presentation/requests/add_request_line_dialog.dart';
 import 'package:mbe_ui/features/purchases/presentation/requests/purchase_request_actions.dart';
 import 'package:mbe_ui/features/purchases/presentation/requests/purchase_request_availability.dart';
@@ -658,7 +659,8 @@ class _LinesSection extends ConsumerWidget {
                   );
                 },
               ),
-              // Text, not a link: there is no purchase-order screen yet.
+              // The order number links to the order with PurchasesOrders (20)
+              // read, plain text otherwise (spec 080 FR-030).
               if (onOrder)
                 DataTableColumn(
                   label: l10n.purchaseRequestLineColPurchaseOrder,
@@ -674,7 +676,7 @@ class _LinesSection extends ConsumerWidget {
                       mainAxisSize: MainAxisSize.min,
                       spacing: spacing.sm,
                       children: [
-                        RecordIdText('$orderId'),
+                        PurchaseOrderLink(orderId: orderId),
                         if (status != null)
                           Flexible(
                             child: InventoryDocumentStatusChip(status: status),

@@ -18809,6 +18809,776 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Product {product} isn\'t purchasable.'**
   String apiErrorProductNotPurchasable(String product);
+
+  /// spec 080: navigation destination
+  ///
+  /// In en, this message translates to:
+  /// **'To purchase'**
+  String get navToPurchase;
+
+  /// spec 080: navigation destination
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase orders'**
+  String get navPurchaseOrders;
+
+  /// spec 080: detail title
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase order {id}'**
+  String purchaseOrderTitle(String id);
+
+  /// spec 080: Por comprar: name of the group without a supplier
+  ///
+  /// In en, this message translates to:
+  /// **'No supplier'**
+  String get toPurchaseNoSupplier;
+
+  /// spec 080: line count of a group, a receipt or an order
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 line} other{{n} lines}}'**
+  String toPurchaseLineCount(int n);
+
+  /// spec 080: Por comprar: estimated total of a group
+  ///
+  /// In en, this message translates to:
+  /// **'est. {total}'**
+  String toPurchaseEstimate(String total);
+
+  /// spec 080: Por comprar: toolbar action over the selected group
+  ///
+  /// In en, this message translates to:
+  /// **'Create order'**
+  String get toPurchaseCreateOrder;
+
+  /// spec 080: Por comprar: tooltip while no group is selected
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a group with a supplier to create the order.'**
+  String get toPurchaseCreateOrderNoSelection;
+
+  /// spec 080: Por comprar: reload action
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get toPurchaseRefresh;
+
+  /// spec 080: Por comprar: note on a group without a supplier
+  ///
+  /// In en, this message translates to:
+  /// **'Add them by hand to an order.'**
+  String get toPurchaseNoSupplierHint;
+
+  /// spec 080: Por comprar column
+  ///
+  /// In en, this message translates to:
+  /// **'Request'**
+  String get toPurchaseColRequest;
+
+  /// spec 080: Por comprar column
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get toPurchaseColCode;
+
+  /// spec 080: Por comprar column
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get toPurchaseColProduct;
+
+  /// spec 080: Por comprar column
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get toPurchaseColQuantity;
+
+  /// spec 080: Por comprar column
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get toPurchaseColWarehouse;
+
+  /// spec 080: Por comprar column
+  ///
+  /// In en, this message translates to:
+  /// **'Cost'**
+  String get toPurchaseColCost;
+
+  /// spec 080: Por comprar: a line whose cost is 0
+  ///
+  /// In en, this message translates to:
+  /// **'no cost'**
+  String get toPurchaseNoCost;
+
+  /// spec 080: Por comprar filter facet
+  ///
+  /// In en, this message translates to:
+  /// **'Facility'**
+  String get toPurchaseFacetFacility;
+
+  /// spec 080: Por comprar: empty state
+  ///
+  /// In en, this message translates to:
+  /// **'There are no lines pending purchase.'**
+  String get toPurchaseEmpty;
+
+  /// spec 080: Por comprar: the groups shown on this page, of all
+  ///
+  /// In en, this message translates to:
+  /// **'{start}–{end} of {total} groups'**
+  String toPurchasePaginationSummary(String start, String end, String total);
+
+  /// spec 080: Por comprar: after Crear orden
+  ///
+  /// In en, this message translates to:
+  /// **'Order {id} created with {n, plural, =1{1 line} other{{n} lines}}.'**
+  String toPurchaseCreatedSnack(String id, int n);
+
+  /// spec 080: sentence appended to a SnackBar when lines were left out
+  ///
+  /// In en, this message translates to:
+  /// **' {k, plural, =1{1 line was} other{{k} lines were}} already on another order.'**
+  String purchaseOrderLeftOutSnack(int k);
+
+  /// spec 080: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get purchaseOrderColNumber;
+
+  /// spec 080: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier'**
+  String get purchaseOrderColSupplier;
+
+  /// spec 080: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get purchaseOrderColStatus;
+
+  /// spec 080: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get purchaseOrderColDelivery;
+
+  /// spec 080: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get purchaseOrderColCreator;
+
+  /// spec 080: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get purchaseOrderColDate;
+
+  /// spec 080: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Lines'**
+  String get purchaseOrderColLines;
+
+  /// spec 080: list column
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get purchaseOrderColTotal;
+
+  /// spec 080: list number search hint
+  ///
+  /// In en, this message translates to:
+  /// **'Number'**
+  String get purchaseOrderSearchHint;
+
+  /// spec 080: list facet
+  ///
+  /// In en, this message translates to:
+  /// **'Show'**
+  String get purchaseOrderFacetScope;
+
+  /// spec 080: list scope option
+  ///
+  /// In en, this message translates to:
+  /// **'My orders'**
+  String get purchaseOrderScopeMine;
+
+  /// spec 080: list scope option
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get purchaseOrderScopeAll;
+
+  /// spec 080: list facet
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get purchaseOrderFacetStatus;
+
+  /// spec 080: list facet
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier'**
+  String get purchaseOrderFacetSupplier;
+
+  /// spec 080: list facet
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get purchaseOrderFacetCreator;
+
+  /// spec 080: list facet
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get purchaseOrderFacetDate;
+
+  /// spec 080: list empty state, own orders
+  ///
+  /// In en, this message translates to:
+  /// **'You have no purchase orders.'**
+  String get purchaseOrderEmptyMine;
+
+  /// spec 080: list empty state, all orders
+  ///
+  /// In en, this message translates to:
+  /// **'There are no purchase orders.'**
+  String get purchaseOrderEmptyAll;
+
+  /// spec 080: list toolbar action
+  ///
+  /// In en, this message translates to:
+  /// **'New order'**
+  String get purchaseOrderNewAction;
+
+  /// spec 080: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get purchaseOrderFactStatus;
+
+  /// spec 080: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier'**
+  String get purchaseOrderFactSupplier;
+
+  /// spec 080: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get purchaseOrderFactDelivery;
+
+  /// spec 080: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get purchaseOrderFactNotes;
+
+  /// spec 080: detail fact
+  ///
+  /// In en, this message translates to:
+  /// **'Created by'**
+  String get purchaseOrderFactCreator;
+
+  /// spec 080: detail lines column
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get purchaseOrderLineColCode;
+
+  /// spec 080: detail lines column
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get purchaseOrderLineColProduct;
+
+  /// spec 080: detail lines column
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get purchaseOrderLineColWarehouse;
+
+  /// spec 080: detail lines column
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get purchaseOrderLineColQuantity;
+
+  /// spec 080: detail lines column
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get purchaseOrderLineColPrice;
+
+  /// spec 080: detail lines column
+  ///
+  /// In en, this message translates to:
+  /// **'VAT'**
+  String get purchaseOrderLineColTax;
+
+  /// spec 080: detail lines column
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get purchaseOrderLineColAmount;
+
+  /// spec 080: detail lines column
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get purchaseOrderLineColReceived;
+
+  /// spec 080: detail lines column
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get purchaseOrderLineColPending;
+
+  /// spec 080: request folio after a line's product name
+  ///
+  /// In en, this message translates to:
+  /// **'Req. {serial}'**
+  String purchaseOrderLineRequest(String serial);
+
+  /// spec 080: draft line icon tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Edit line'**
+  String get purchaseOrderLineEditTooltip;
+
+  /// spec 080: draft line icon tooltip
+  ///
+  /// In en, this message translates to:
+  /// **'Remove line'**
+  String get purchaseOrderLineRemoveTooltip;
+
+  /// spec 080: totals band
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal'**
+  String get purchaseOrderTotalSubtotal;
+
+  /// spec 080: totals band
+  ///
+  /// In en, this message translates to:
+  /// **'VAT'**
+  String get purchaseOrderTotalTax;
+
+  /// spec 080: totals band
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get purchaseOrderTotalTotal;
+
+  /// spec 080: empty draft
+  ///
+  /// In en, this message translates to:
+  /// **'Add products or the lines of an approved request.'**
+  String get purchaseOrderLinesEmpty;
+
+  /// spec 080: detail receipts section
+  ///
+  /// In en, this message translates to:
+  /// **'Receipts'**
+  String get purchaseOrderReceiptsTitle;
+
+  /// spec 080: detail receipts section row
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt {id}'**
+  String purchaseOrderReceiptItem(String id);
+
+  /// spec 080: detail receipts section row action
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get purchaseOrderReceiptOpen;
+
+  /// spec 080: back link
+  ///
+  /// In en, this message translates to:
+  /// **'Back to purchase orders'**
+  String get purchaseOrderBackToList;
+
+  /// spec 080: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get purchaseOrderEditHeader;
+
+  /// spec 080: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get purchaseOrderAddProduct;
+
+  /// spec 080: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Add request'**
+  String get purchaseOrderAddRequest;
+
+  /// spec 080: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get purchaseOrderConfirm;
+
+  /// spec 080: Confirmar tooltip on a draft without lines
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one line to confirm.'**
+  String get purchaseOrderConfirmNoLinesTooltip;
+
+  /// spec 080: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel order'**
+  String get purchaseOrderCancelAction;
+
+  /// spec 080: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Print'**
+  String get purchaseOrderPrint;
+
+  /// spec 080: detail action
+  ///
+  /// In en, this message translates to:
+  /// **'Send by email'**
+  String get purchaseOrderEmailAction;
+
+  /// spec 080: remove-line prompt button
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get purchaseOrderRemoveAction;
+
+  /// spec 080: prompt dismiss button
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get purchaseOrderBack;
+
+  /// spec 080: dialog submit
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get purchaseOrderAddAction;
+
+  /// spec 080: dialog submit
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get purchaseOrderCreateAction;
+
+  /// spec 080: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'New purchase order'**
+  String get purchaseOrderNewTitle;
+
+  /// spec 080: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit header'**
+  String get purchaseOrderEditHeaderTitle;
+
+  /// spec 080: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Add product'**
+  String get purchaseOrderAddProductTitle;
+
+  /// spec 080: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit line'**
+  String get purchaseOrderEditLineTitle;
+
+  /// spec 080: dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Add lines from a request'**
+  String get purchaseOrderAddRequestTitle;
+
+  /// spec 080: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Supplier'**
+  String get purchaseOrderFieldSupplier;
+
+  /// spec 080: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get purchaseOrderFieldDelivery;
+
+  /// spec 080: tooltip of the delivery date field's clear button
+  ///
+  /// In en, this message translates to:
+  /// **'Clear delivery date'**
+  String get purchaseOrderClearDelivery;
+
+  /// spec 080: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get purchaseOrderFieldNotes;
+
+  /// spec 080: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get purchaseOrderFieldProduct;
+
+  /// spec 080: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get purchaseOrderFieldQuantity;
+
+  /// spec 080: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Warehouse'**
+  String get purchaseOrderFieldWarehouse;
+
+  /// spec 080: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get purchaseOrderFieldPrice;
+
+  /// spec 080: dialog field helper
+  ///
+  /// In en, this message translates to:
+  /// **'before VAT'**
+  String get purchaseOrderFieldPriceHelper;
+
+  /// spec 080: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'VAT'**
+  String get purchaseOrderFieldTax;
+
+  /// spec 080: tax-rate option label
+  ///
+  /// In en, this message translates to:
+  /// **'{rate} %'**
+  String purchaseOrderTaxRateOption(String rate);
+
+  /// spec 080: dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Request'**
+  String get purchaseOrderFieldRequest;
+
+  /// spec 080: dialog field helper
+  ///
+  /// In en, this message translates to:
+  /// **'approved requests only'**
+  String get purchaseOrderFieldRequestHelper;
+
+  /// spec 080: approved-request option
+  ///
+  /// In en, this message translates to:
+  /// **'{serial} · {facility} · {warehouse}'**
+  String purchaseOrderRequestOption(
+    String serial,
+    String facility,
+    String warehouse,
+  );
+
+  /// spec 080: quantity validation
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a quantity above 0, with at most 4 decimals.'**
+  String get purchaseOrderQuantityInvalid;
+
+  /// spec 080: price validation
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a price of 0 or more, with at most 7 decimals.'**
+  String get purchaseOrderPriceInvalid;
+
+  /// spec 080: prompt title
+  ///
+  /// In en, this message translates to:
+  /// **'Remove line'**
+  String get purchaseOrderRemoveTitle;
+
+  /// spec 080: prompt body
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {product} from the order.'**
+  String purchaseOrderRemoveBody(String product);
+
+  /// spec 080: prompt title
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm order {id}?'**
+  String purchaseOrderConfirmTitle(String id);
+
+  /// spec 080: confirm prompt summary; lines is the formatted line count
+  ///
+  /// In en, this message translates to:
+  /// **'{supplier} · {lines} · Total {total}'**
+  String purchaseOrderConfirmSummary(
+    String supplier,
+    String lines,
+    String total,
+  );
+
+  /// spec 080: confirm prompt
+  ///
+  /// In en, this message translates to:
+  /// **'Receipts will be created in {warehouses}.'**
+  String purchaseOrderConfirmReceipts(String warehouses);
+
+  /// spec 080: confirm prompt zero-price note
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 line with price 0} other{{n} lines with price 0}}: {products}.'**
+  String purchaseOrderConfirmZeroPrice(int n, String products);
+
+  /// spec 080: confirm prompt
+  ///
+  /// In en, this message translates to:
+  /// **'It can no longer be edited.'**
+  String get purchaseOrderConfirmIrreversible;
+
+  /// spec 080: SnackBar after confirm
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{Order confirmed; 1 receipt created.} other{Order confirmed; {n} receipts created.}}'**
+  String purchaseOrderConfirmedSnack(int n);
+
+  /// spec 080: prompt title
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel order {id}'**
+  String purchaseOrderCancelTitle(String id);
+
+  /// spec 080: cancel prompt
+  ///
+  /// In en, this message translates to:
+  /// **'The order is cancelled. Its request lines go back to Por comprar.'**
+  String get purchaseOrderCancelBody;
+
+  /// spec 080: SnackBar after adding a request's lines
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{1 line added.} other{{n} lines added.}}'**
+  String purchaseOrderAddRequestSnack(int n);
+
+  /// spec 080: price-0 warning line
+  ///
+  /// In en, this message translates to:
+  /// **'{code} {name}: price 0; it won\'t update the cost.'**
+  String purchaseOrderZeroPriceWarning(String code, String name);
+
+  /// spec 080: email dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Send order {id} by email'**
+  String purchaseOrderEmailTitle(String id);
+
+  /// spec 080: email dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get purchaseOrderEmailRecipients;
+
+  /// spec 080: email dialog field
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get purchaseOrderEmailMessage;
+
+  /// spec 080: email message counter
+  ///
+  /// In en, this message translates to:
+  /// **'{count} / 1000'**
+  String purchaseOrderEmailMessageCounter(String count);
+
+  /// spec 080: email dialog hint
+  ///
+  /// In en, this message translates to:
+  /// **'Suggested from the supplier\'s contacts'**
+  String get purchaseOrderEmailSuggestions;
+
+  /// spec 080: email dialog hint when no suggestions
+  ///
+  /// In en, this message translates to:
+  /// **'No suggested addresses; type one.'**
+  String get purchaseOrderEmailNoSuggestions;
+
+  /// spec 080: SnackBar after sending
+  ///
+  /// In en, this message translates to:
+  /// **'{n, plural, =1{Order sent to 1 recipient.} other{Order sent to {n} recipients.}}'**
+  String purchaseOrderEmailSentSnack(int n);
+
+  /// spec 080: mbe-api error code `purchase_order.no_supplier`
+  ///
+  /// In en, this message translates to:
+  /// **'The order has no supplier.'**
+  String get apiErrorPurchaseOrderNoSupplier;
+
+  /// spec 080: mbe-api error code `purchase_order.no_lines`
+  ///
+  /// In en, this message translates to:
+  /// **'The order has no lines.'**
+  String get apiErrorPurchaseOrderNoLines;
+
+  /// spec 080: mbe-api error code `purchase_order.line_without_quantity`
+  ///
+  /// In en, this message translates to:
+  /// **'Every line must have a quantity above zero.'**
+  String get apiErrorPurchaseOrderLineWithoutQuantity;
+
+  /// spec 080: mbe-api error code `purchase_order.already_cancelled`
+  ///
+  /// In en, this message translates to:
+  /// **'The order is already cancelled.'**
+  String get apiErrorPurchaseOrderAlreadyCancelled;
+
+  /// spec 080: mbe-api error code `purchase_order.confirmed_cannot_cancel`
+  ///
+  /// In en, this message translates to:
+  /// **'A confirmed order cannot be cancelled.'**
+  String get apiErrorPurchaseOrderConfirmedCannotCancel;
+
+  /// spec 080: mbe-api error code `purchase_order.not_confirmed`
+  ///
+  /// In en, this message translates to:
+  /// **'Only a confirmed order can be printed or emailed.'**
+  String get apiErrorPurchaseOrderNotConfirmed;
+
+  /// spec 080: mbe-api error code `purchase_order.nothing_pending`
+  ///
+  /// In en, this message translates to:
+  /// **'There are no pending lines to order for that supplier and facility.'**
+  String get apiErrorPurchaseOrderNothingPending;
+
+  /// spec 080: mbe-api error code `purchase_order.nothing_to_add`
+  ///
+  /// In en, this message translates to:
+  /// **'The request has no pending lines to order.'**
+  String get apiErrorPurchaseOrderNothingToAdd;
+
+  /// spec 080: mbe-api error code `purchase_order.request_not_approved`
+  ///
+  /// In en, this message translates to:
+  /// **'The request is not approved.'**
+  String get apiErrorPurchaseOrderRequestNotApproved;
 }
 
 class _AppLocalizationsDelegate

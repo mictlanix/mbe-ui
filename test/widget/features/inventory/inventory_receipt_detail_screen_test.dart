@@ -88,13 +88,32 @@ void main() {
       expect(find.text(l10n.inventoryReceiptLinesEmpty), findsOneWidget);
     });
 
-    testWidgets('a linked receipt shows its purchase order', (tester) async {
+    testWidgets('a linked receipt shows its purchase order, as text without '
+        'read on purchase orders', (tester) async {
       await h.pumpReceipt(tester, aReceipt(purchaseOrderId: 5512));
 
       expect(
-        tester.widget<Text>(key('inventory_receipt_purchase_order')).data,
-        '5512',
+        find.descendant(
+          of: key('inventory_receipt_purchase_order'),
+          matching: find.text('5512'),
+        ),
+        findsOneWidget,
       );
+      expect(key('purchase_order_link_5512'), findsNothing);
+    });
+
+    testWidgets('with PurchasesOrders (20) read the purchase order is a link '
+        'to it (spec 080 FR-030)', (tester) async {
+      final router = await h.pumpReceipt(
+        tester,
+        aReceipt(purchaseOrderId: 5512),
+        who: InventoryHarness.user(purchaseOrders: 2),
+      );
+
+      await tester.tap(key('purchase_order_link_5512'));
+      await tester.pumpAndSettle();
+
+      expect(router.state.uri.path, '/purchases/orders/5512');
     });
 
     testWidgets('Agregar producto needs Products read', (tester) async {
