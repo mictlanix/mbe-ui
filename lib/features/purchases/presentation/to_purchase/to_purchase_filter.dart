@@ -19,11 +19,6 @@ abstract class ToPurchaseFilter with _$ToPurchaseFilter {
     pageIndex: query.pageIndex,
   );
 
-  /// This filter as a URL query.
-  ListQuery toQuery() => ListQuery(
-    pageIndex: pageIndex,
-  ).withFacet('facility', facilityId?.toString());
-
   /// What the drawer badge counts: the facility, when chosen.
   int get activeFilterCount => facilityId != null ? 1 : 0;
 }

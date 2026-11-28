@@ -71,7 +71,8 @@ class _ToPurchaseScreenState extends ConsumerState<ToPurchaseScreen> {
   /// A create is in flight: Crear orden is disabled meanwhile.
   bool _creating = false;
 
-  /// The last create's refusal.
+  /// The last create's refusal, until the user refreshes, changes the
+  /// filter or page, or picks another group.
   AppError? _error;
 
   /// The groups the user expanded; with one group on the page it is
@@ -79,6 +80,23 @@ class _ToPurchaseScreenState extends ConsumerState<ToPurchaseScreen> {
   final Set<_GroupId> _expanded = {};
 
   ToPurchaseFilter get _filter => ToPurchaseFilter.fromQuery(widget.query);
+
+  @override
+  void didUpdateWidget(ToPurchaseScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Another facility or page: the refusal was about a group not shown.
+    if (ToPurchaseFilter.fromQuery(oldWidget.query) != _filter) _error = null;
+  }
+
+  void _refresh(ToPurchaseFilter filter) {
+    setState(() => _error = null);
+    ref.invalidate(toPurchaseControllerProvider(filter.facilityId));
+  }
+
+  void _select(ToPurchaseFilter filter, ToPurchaseGroupKey key) {
+    setState(() => _error = null);
+    ref.read(toPurchaseSelectionProvider(filter).notifier).select(key);
+  }
 
   /// Creates the order for the group [key] names, pushes it and says how
   /// many lines it took (counted on the server's answer) and how many were
@@ -189,9 +207,7 @@ class _ToPurchaseScreenState extends ConsumerState<ToPurchaseScreen> {
               ),
             OutlinedButton.icon(
               key: const Key('to_purchase_refresh'),
-              onPressed: () => ref.invalidate(
-                toPurchaseControllerProvider(filter.facilityId),
-              ),
+              onPressed: () => _refresh(filter),
               icon: const Icon(Icons.refresh),
               label: Text(l10n.toPurchaseRefresh),
             ),
@@ -229,11 +245,7 @@ class _ToPurchaseScreenState extends ConsumerState<ToPurchaseScreen> {
             onData: (page) => RadioGroup<ToPurchaseGroupKey>(
               groupValue: selected,
               onChanged: (key) {
-                if (key != null) {
-                  ref
-                      .read(toPurchaseSelectionProvider(filter).notifier)
-                      .select(key);
-                }
+                if (key != null) _select(filter, key);
               },
               child: ListView(
                 key: const Key('to_purchase_groups'),
@@ -246,12 +258,7 @@ class _ToPurchaseScreenState extends ConsumerState<ToPurchaseScreen> {
                           _expanded.contains(_idOf(g)),
                       onToggle: () => _toggle(g),
                       onSelect: switch (_keyOf(g)) {
-                        final key? =>
-                          () => ref
-                              .read(
-                                toPurchaseSelectionProvider(filter).notifier,
-                              )
-                              .select(key),
+                        final key? => () => _select(filter, key),
                         null => null,
                       },
                     ),
@@ -329,23 +336,40 @@ class _GroupCard extends ConsumerWidget {
                     ),
                     onPressed: onToggle,
                   ),
+                  // The count and estimate sit at the end when they fit and
+                  // wrap under the supplier when they don't: on a narrow
+                  // window at the largest text, never cut (the money least).
                   Expanded(
                     child: Wrap(
-                      spacing: spacing.xs,
+                      alignment: WrapAlignment.spaceBetween,
                       crossAxisAlignment: WrapCrossAlignment.center,
+                      spacing: spacing.sm,
                       children: [
-                        Text(supplier, style: theme.textTheme.titleSmall),
-                        const Text('·'),
-                        InventoryFacilityName(facilityId: group.facilityId),
+                        Wrap(
+                          spacing: spacing.xs,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Text(supplier, style: theme.textTheme.titleSmall),
+                            const Text('·'),
+                            InventoryFacilityName(facilityId: group.facilityId),
+                          ],
+                        ),
+                        Wrap(
+                          spacing: spacing.sm,
+                          children: [
+                            Text(l10n.toPurchaseLineCount(group.lineCount)),
+                            Text(
+                              l10n.toPurchaseEstimate(
+                                fmt.display.currency(
+                                  group.estimatedTotal.toString(),
+                                ),
+                              ),
+                              key: Key('to_purchase_group_total_$tag'),
+                            ),
+                          ],
+                        ),
                       ],
                     ),
-                  ),
-                  Text(l10n.toPurchaseLineCount(group.lineCount)),
-                  Text(
-                    l10n.toPurchaseEstimate(
-                      fmt.display.currency(group.estimatedTotal.toString()),
-                    ),
-                    key: Key('to_purchase_group_total_$tag'),
                   ),
                 ],
               ),

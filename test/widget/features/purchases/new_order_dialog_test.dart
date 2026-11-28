@@ -145,6 +145,25 @@ void main() {
     expect(submit(tester).onPressed, isNotNull);
   });
 
+  testWidgets('the 500-character limit counts the trimmed notes, as sent', (
+    tester,
+  ) async {
+    await open(tester);
+    await pickSupplier(tester);
+
+    await tester.enterText(
+      key('new_purchase_order_comment'),
+      '  ${'x' * 500}  ',
+    );
+    await tester.pumpAndSettle();
+    expect(submit(tester).onPressed, isNotNull);
+    expect(find.text('500/500'), findsOneWidget);
+
+    await tester.enterText(key('new_purchase_order_comment'), 'x' * 501);
+    await tester.pumpAndSettle();
+    expect(find.text('501/500'), findsOneWidget);
+  });
+
   testWidgets('success sends the supplier and notes, then opens the new '
       'draft', (tester) async {
     final created = anOrder(id: 401, lines: const []);

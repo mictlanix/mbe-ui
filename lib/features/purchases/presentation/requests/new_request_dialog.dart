@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -94,7 +93,8 @@ class _NewRequestDialogState extends ConsumerState<_NewRequestDialog> {
         ? null
         : (ref.watch(warehouseDisplayNameProvider(start)).value ?? '#$start');
     final warehouseId = _picked?.warehouseId ?? start;
-    final commentTooLong = _comment.text.length > _commentMaxLength;
+    final commentLength = _comment.text.trim().length;
+    final commentTooLong = commentLength > _commentMaxLength;
 
     return ResponsiveDialog(
       key: const Key('new_purchase_request_dialog'),
@@ -135,12 +135,16 @@ class _NewRequestDialogState extends ConsumerState<_NewRequestDialog> {
             enabled: !_busy,
             minLines: 2,
             maxLines: 4,
-            maxLength: _commentMaxLength,
             // Over-long text stays visible with the counter in error, rather
-            // than being cut silently, and "Crear" stays disabled.
-            maxLengthEnforcement: MaxLengthEnforcement.none,
+            // than being cut silently, and "Crear" stays disabled. The
+            // counter counts the trimmed text, which is what is sent.
             decoration: InputDecoration(
               labelText: l10n.purchaseRequestFieldComment,
+              counterText: '$commentLength/$_commentMaxLength',
+              errorText: commentTooLong ? '' : null,
+              counterStyle: commentTooLong
+                  ? TextStyle(color: Theme.of(context).colorScheme.error)
+                  : null,
             ),
             onChanged: (_) => setState(() {}),
           ),

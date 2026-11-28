@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:data_table_2/data_table_2.dart';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
@@ -490,12 +492,10 @@ class _HeaderFacts extends ConsumerWidget {
             FormGridChild(
               CompactField(
                 label: l10n.purchaseOrderFactCreator,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+                // Wraps the date under the name on a narrow window.
+                child: Wrap(
                   children: [
-                    Flexible(
-                      child: InventoryEmployeeName(employeeId: order.creatorId),
-                    ),
+                    InventoryEmployeeName(employeeId: order.creatorId),
                     Text(' · ${fmt.display.dateTime(order.createdAt)}'),
                   ],
                 ),
@@ -746,21 +746,31 @@ class _ProductCell extends ConsumerWidget {
     );
     // On the name's line, not under it: a table row has one fixed height
     // and two lines overflow it at the largest text level (T035). The name
-    // gives way (ellipsis, full text in the tooltip); the folio never does.
-    return Row(
-      spacing: theme.spacing.sm,
-      children: [
-        Flexible(
-          child: Tooltip(message: line.productName, child: name),
-        ),
-        Text(
-          l10n.purchaseOrderLineRequest(folio),
-          key: Key('purchase_order_line_request_${line.id}'),
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+    // gives way first (ellipsis, full text in the tooltip); the folio only
+    // when the cell is narrower than the folio alone (a compact window).
+    return LayoutBuilder(
+      builder: (context, constraints) => Row(
+        spacing: theme.spacing.sm,
+        children: [
+          Flexible(
+            child: Tooltip(message: line.productName, child: name),
           ),
-        ),
-      ],
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: math.max(0, constraints.maxWidth - theme.spacing.sm),
+            ),
+            child: Text(
+              l10n.purchaseOrderLineRequest(folio),
+              key: Key('purchase_order_line_request_${line.id}'),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

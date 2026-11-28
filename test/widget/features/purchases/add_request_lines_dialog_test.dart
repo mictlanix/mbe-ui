@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:mocktail/mocktail.dart';
+
+import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 
 import 'package:mbe_ui/features/purchases/domain/entities/purchase_order.dart';
 import 'package:mbe_ui/features/purchases/domain/entities/purchase_request.dart';
@@ -169,4 +173,55 @@ void main() {
       expect(find.text('SERVER TEXT'), findsNothing);
     });
   }
+
+  testWidgets('closing the dialog while the options load is harmless', (
+    tester,
+  ) async {
+    final loading = Completer<PurchaseRequestPage>();
+    when(
+      () => h.requests.list(
+        all: any(named: 'all'),
+        status: any(named: 'status'),
+        facilityId: any(named: 'facilityId'),
+        warehouseId: any(named: 'warehouseId'),
+        creatorId: any(named: 'creatorId'),
+        serial: any(named: 'serial'),
+        from: any(named: 'from'),
+        to: any(named: 'to'),
+        skip: any(named: 'skip'),
+        limit: any(named: 'limit'),
+      ),
+    ).thenAnswer((_) => loading.future);
+    await open(tester);
+
+    await tester.enterText(
+      find.descendant(
+        of: key('add_request_lines_request'),
+        matching: find.byType(TextField),
+      ),
+      '571',
+    );
+    await tester.pump(const Duration(seconds: 1));
+    Navigator.of(tester.element(key('add_request_lines_request'))).pop();
+    await tester.pumpAndSettle();
+    expect(key('add_request_lines_dialog'), findsNothing);
+
+    loading.complete(
+      CatalogPage(
+        items: [
+          aRequestSummary(
+            id: 212,
+            serial: 571,
+            status: PurchaseRequestStatus.approved,
+          ),
+        ],
+        total: 1,
+        pageIndex: 0,
+        pageSize: 10,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+  });
 }

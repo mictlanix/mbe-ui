@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -90,7 +89,8 @@ class _NewOrderDialogState extends ConsumerState<_NewOrderDialog> {
     final l10n = AppLocalizations.of(context)!;
     final spacing = Theme.of(context).spacing;
     final supplier = _supplier;
-    final commentTooLong = _comment.text.length > _commentMaxLength;
+    final commentLength = _comment.text.trim().length;
+    final commentTooLong = commentLength > _commentMaxLength;
 
     return ResponsiveDialog(
       key: const Key('new_purchase_order_dialog'),
@@ -133,12 +133,16 @@ class _NewOrderDialogState extends ConsumerState<_NewOrderDialog> {
             enabled: !_busy,
             minLines: 2,
             maxLines: 4,
-            maxLength: _commentMaxLength,
             // Over-long text stays visible with the counter in error, rather
-            // than being cut silently, and "Crear" stays disabled.
-            maxLengthEnforcement: MaxLengthEnforcement.none,
+            // than being cut silently, and "Crear" stays disabled. The
+            // counter counts the trimmed text, which is what is sent.
             decoration: InputDecoration(
               labelText: l10n.purchaseOrderFieldNotes,
+              counterText: '$commentLength/$_commentMaxLength',
+              errorText: commentTooLong ? '' : null,
+              counterStyle: commentTooLong
+                  ? TextStyle(color: Theme.of(context).colorScheme.error)
+                  : null,
             ),
             onChanged: (_) => setState(() {}),
           ),

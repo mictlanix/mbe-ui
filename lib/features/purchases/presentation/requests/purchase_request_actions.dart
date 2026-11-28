@@ -9,6 +9,7 @@ import 'package:mbe_ui/features/purchases/domain/repositories/purchase_request_r
 import 'package:mbe_ui/features/purchases/presentation/approval/approval_queue_controller.dart';
 import 'package:mbe_ui/features/purchases/presentation/requests/purchase_request_detail_controller.dart';
 import 'package:mbe_ui/features/purchases/presentation/requests/purchase_requests_list_controller.dart';
+import 'package:mbe_ui/features/purchases/presentation/to_purchase/to_purchase_controller.dart';
 
 part 'purchase_request_actions.g.dart';
 
@@ -45,7 +46,8 @@ bool isStaleRefusal(AppError error) =>
 /// when it went through, rather than throwing: the dialog that asked shows
 /// the refusal where the user is looking. On success the returned request is
 /// put into its detail provider (when one is alive) and the list and the
-/// approval queue are invalidated; a stale refusal also reloads the queue.
+/// approval queue are invalidated (and Por comprar, after a write that
+/// changes which lines are pending); a stale refusal also reloads the queue.
 ///
 /// Keep-alive because a write outlives the dialog that started it.
 @Riverpod(keepAlive: true)
@@ -114,7 +116,7 @@ class PurchaseRequestActions extends _$PurchaseRequestActions {
 
   /// `POST /purchase-requests/{id}/cancel`.
   Future<AppError?> cancel(int id) async =>
-      (await _run(id, (r) => r.cancel(id))).error;
+      (await _run(id, (r) => r.cancel(id), changesPending: true)).error;
 
   /// `PUT /purchase-requests/{id}/lines/{lineId}/to-purchase`.
   Future<AppError?> markLine(
@@ -124,15 +126,20 @@ class PurchaseRequestActions extends _$PurchaseRequestActions {
   }) async => (await _run(
     id,
     (r) => r.markLine(id, lineId, toPurchase: toPurchase),
+    changesPending: true,
   )).error;
 
   /// `POST /purchase-requests/{id}/approve`.
   Future<AppError?> approve(int id) async =>
-      (await _run(id, (r) => r.approve(id))).error;
+      (await _run(id, (r) => r.approve(id), changesPending: true)).error;
 
   /// `POST /purchase-requests/{id}/reject`.
   Future<AppError?> reject(int id, {required String reason}) async =>
-      (await _run(id, (r) => r.reject(id, reason: reason))).error;
+      (await _run(
+        id,
+        (r) => r.reject(id, reason: reason),
+        changesPending: true,
+      )).error;
 
   /// `POST /purchase-requests/approve`: one outcome per id. A refused id is an
   /// outcome, not an error; only a whole-call failure answers an error. No
@@ -148,15 +155,18 @@ class PurchaseRequestActions extends _$PurchaseRequestActions {
     }
     ref.invalidate(purchaseRequestsListControllerProvider);
     ref.invalidate(approvalQueueControllerProvider);
+    ref.invalidate(toPurchaseControllerProvider);
     return (error: null, outcomes: outcomes);
   }
 
   /// The one write path. [id] is the request written to (`null` for
-  /// `create`), refreshed after a stale refusal.
+  /// `create`), refreshed after a stale refusal. [changesPending]: the write
+  /// changes which lines are pending, so Por comprar is reloaded on success.
   Future<({AppError? error, PurchaseRequest? request})> _run(
     int? id,
-    Future<PurchaseRequest> Function(PurchaseRequestRepository r) write,
-  ) async {
+    Future<PurchaseRequest> Function(PurchaseRequestRepository r) write, {
+    bool changesPending = false,
+  }) async {
     final PurchaseRequest request;
     try {
       request = await write(ref.read(purchaseRequestRepositoryProvider));
@@ -173,6 +183,7 @@ class PurchaseRequestActions extends _$PurchaseRequestActions {
     if (ref.exists(detail)) ref.read(detail.notifier).put(request);
     ref.invalidate(purchaseRequestsListControllerProvider);
     ref.invalidate(approvalQueueControllerProvider);
+    if (changesPending) ref.invalidate(toPurchaseControllerProvider);
     return (error: null, request: request);
   }
 }

@@ -28,12 +28,16 @@ class OrderDeliveryField extends ConsumerWidget {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final current = value;
+    final fiveYears = DateTime(today.year + 5, today.month, today.day);
     final picked = await showDatePicker(
       context: context,
       // A date already in the past starts the picker at today instead.
       initialDate: current == null || current.isBefore(today) ? today : current,
       firstDate: today,
-      lastDate: DateTime(today.year + 5, today.month, today.day),
+      // A date further out than five years stays pickable.
+      lastDate: current != null && current.isAfter(fiveYears)
+          ? current
+          : fiveYears,
     );
     if (picked != null) onChanged(picked);
   }

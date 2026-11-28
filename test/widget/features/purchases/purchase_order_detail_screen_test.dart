@@ -171,6 +171,25 @@ void main() {
     );
   });
 
+  testWidgets('a request whose folio failed to load shows its id', (
+    tester,
+  ) async {
+    when(
+      () => h.requests.get(212),
+    ).thenAnswer((_) async => throw const AppError.network());
+
+    await h.pumpOrder(
+      tester,
+      anOrder(lines: [anOrderLine(requestId: 212)]),
+      who: buyer,
+    );
+
+    expect(
+      tester.widget<Text>(key('purchase_order_line_request_900')).data,
+      l10n.purchaseOrderLineRequest('#212'),
+    );
+  });
+
   testWidgets('an empty draft says how to add lines', (tester) async {
     await h.pumpOrder(tester, anOrder(lines: const []), who: buyer);
 

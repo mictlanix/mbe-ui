@@ -8,20 +8,64 @@ import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/widgets/catalog_pagination.dart';
 import 'package:mbe_ui/features/inventory/domain/entities/inventory_document_status.dart';
+import 'package:mbe_ui/features/inventory/domain/entities/inventory_receipt.dart';
+import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_list_controller.dart';
+import 'package:mbe_ui/features/inventory/presentation/shared/inventory_documents_filter.dart';
 import 'package:mbe_ui/features/purchases/data/purchase_order_repository_impl.dart';
 import 'package:mbe_ui/features/purchases/domain/entities/purchase_order.dart';
+import 'package:mbe_ui/features/purchases/domain/entities/purchase_request.dart';
 import 'package:mbe_ui/features/purchases/domain/repositories/purchase_order_repository.dart';
 import 'package:mbe_ui/features/purchases/presentation/orders/purchase_order_actions.dart';
 import 'package:mbe_ui/features/purchases/presentation/orders/purchase_order_detail_controller.dart';
 import 'package:mbe_ui/features/purchases/presentation/orders/purchase_orders_filter.dart';
 import 'package:mbe_ui/features/purchases/presentation/orders/purchase_orders_list_controller.dart';
+import 'package:mbe_ui/features/purchases/presentation/requests/purchase_request_detail_controller.dart';
+import 'package:mbe_ui/features/purchases/presentation/requests/purchase_requests_filter.dart';
+import 'package:mbe_ui/features/purchases/presentation/requests/purchase_requests_list_controller.dart';
 
 import 'purchase_order_fixtures.dart';
+import 'purchase_request_fixtures.dart';
 
 class MockPurchaseOrderRepository extends Mock
     implements PurchaseOrderRepository {}
 
 const _id = 310;
+const _requestId = 212;
+
+var _requestDetailBuilds = 0;
+var _requestListBuilds = 0;
+var _receiptListBuilds = 0;
+
+const _emptyPage = CatalogPage<Never>(
+  items: [],
+  total: 0,
+  pageIndex: 0,
+  pageSize: 20,
+);
+
+class _CountingRequestDetail extends PurchaseRequestDetailController {
+  @override
+  Future<PurchaseRequest> build(int id) async {
+    _requestDetailBuilds++;
+    return aRequest(id: id);
+  }
+}
+
+class _CountingRequestList extends PurchaseRequestsListController {
+  @override
+  Future<PurchaseRequestPage> build(PurchaseRequestsFilter filter) async {
+    _requestListBuilds++;
+    return _emptyPage;
+  }
+}
+
+class _CountingReceiptList extends InventoryReceiptsListController {
+  @override
+  Future<InventoryReceiptPage> build(InventoryDocumentsFilter filter) async {
+    _receiptListBuilds++;
+    return _emptyPage;
+  }
+}
 
 AppError _refusal(String codeName, api.ErrorCode code) => AppError.validation(
   [],
@@ -40,11 +84,23 @@ void main() {
 
   setUp(() async {
     repository = MockPurchaseOrderRepository();
+    _requestDetailBuilds = 0;
+    _requestListBuilds = 0;
+    _receiptListBuilds = 0;
     when(() => repository.get(_id)).thenAnswer((_) async => anOrder());
     container = ProviderContainer(
       retry: (_, _) => null,
       overrides: [
         purchaseOrderRepositoryProvider.overrideWithValue(repository),
+        purchaseRequestDetailControllerProvider(
+          _requestId,
+        ).overrideWith(_CountingRequestDetail.new),
+        purchaseRequestsListControllerProvider(
+          const PurchaseRequestsFilter(),
+        ).overrideWith(_CountingRequestList.new),
+        inventoryReceiptsListControllerProvider(
+          const InventoryDocumentsFilter(),
+        ).overrideWith(_CountingReceiptList.new),
       ],
     );
     addTearDown(container.dispose);
@@ -134,6 +190,24 @@ void main() {
     return () => fetches;
   }
 
+  /// Keeps a purchase request's detail, the requests list and the warehouse
+  /// receipts list alive, as their screens do.
+  Future<void> watchRequestsAndReceipts() async {
+    container
+      ..listen(purchaseRequestDetailControllerProvider(_requestId), (_, _) {})
+      ..listen(
+        purchaseRequestsListControllerProvider(const PurchaseRequestsFilter()),
+        (_, _) {},
+      )
+      ..listen(
+        inventoryReceiptsListControllerProvider(
+          const InventoryDocumentsFilter(),
+        ),
+        (_, _) {},
+      );
+    await settle();
+  }
+
   for (final MapEntry(key: name, value: c) in cases.entries) {
     group(name, () {
       test('on success reloads the orders list', () async {
@@ -148,6 +222,36 @@ void main() {
         );
 
         expect(fetches(), 1);
+      });
+
+      test('on success reloads the purchase requests', () async {
+        await watchRequestsAndReceipts();
+        when(c.call).thenAnswer((_) async => written);
+
+        expect(await c.act(actions()), isNull);
+        await settle();
+
+        expect(_requestDetailBuilds, 2);
+        expect(_requestListBuilds, 2);
+        // Only confirm creates warehouse receipts.
+        expect(_receiptListBuilds, name == 'confirm' ? 2 : 1);
+      });
+
+      test('a refusal leaves the requests and receipts alone', () async {
+        await watchRequestsAndReceipts();
+        when(c.call).thenAnswer(
+          (_) async => throw _refusal(
+            'purchase_order.no_supplier',
+            api.ErrorCode.purchaseOrderPeriodNoSupplier,
+          ),
+        );
+
+        expect(await c.act(actions()), isNotNull);
+        await settle();
+
+        expect(_requestDetailBuilds, 1);
+        expect(_requestListBuilds, 1);
+        expect(_receiptListBuilds, 1);
       });
 
       test('a refusal leaves the orders list alone', () async {

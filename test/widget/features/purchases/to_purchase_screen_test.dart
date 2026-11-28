@@ -263,6 +263,86 @@ void main() {
       expect(key('to_purchase_refusal'), findsOneWidget);
       expect(find.textContaining('SERVER TEXT'), findsNothing);
       expect(router.state.uri.path, toPurchasePath);
+      // The group shown was stale: Por comprar reloads.
+      expect(facilities, [null, null]);
+    });
+
+    group('the refusal banner clears', () {
+      void refuseCreates() =>
+          when(
+            () => h.orders.createFromGroup(
+              supplierId: any(named: 'supplierId'),
+              facilityId: any(named: 'facilityId'),
+            ),
+          ).thenAnswer(
+            (_) async => throw aRefusal(
+              api.ErrorCode.purchaseOrderPeriodNoSupplier,
+              'purchase_order.no_supplier',
+            ),
+          );
+
+      Future<void> refuse(WidgetTester tester, String groupText) async {
+        await tester.tap(find.text(groupText));
+        await tester.pumpAndSettle();
+        await tester.tap(createButton());
+        await tester.pumpAndSettle();
+        expect(key('to_purchase_refusal'), findsOneWidget);
+      }
+
+      testWidgets('on Actualizar', (tester) async {
+        serve([norte, centro]);
+        refuseCreates();
+        await pumpScreen(tester);
+        await refuse(tester, 'Ferretera del Norte');
+
+        await tester.tap(key('to_purchase_refresh'));
+        await tester.pumpAndSettle();
+
+        expect(key('to_purchase_refusal'), findsNothing);
+      });
+
+      testWidgets('when another group is selected', (tester) async {
+        serve([norte, centro]);
+        refuseCreates();
+        await pumpScreen(tester);
+        await refuse(tester, 'Ferretera del Norte');
+
+        await tester.tap(key('to_purchase_group_radio_13_2'));
+        await tester.pumpAndSettle();
+
+        expect(key('to_purchase_refusal'), findsNothing);
+      });
+
+      testWidgets('on a filter change', (tester) async {
+        serve([norte, centro]);
+        refuseCreates();
+        final router = await h.pump(
+          tester,
+          who: buyer(),
+          location: toPurchasePath,
+        );
+        await refuse(tester, 'Ferretera del Norte');
+
+        router.go('$toPurchasePath?facility=2');
+        await tester.pumpAndSettle();
+
+        expect(key('to_purchase_refusal'), findsNothing);
+      });
+
+      testWidgets('on a page change', (tester) async {
+        serve([
+          for (var i = 1; i <= 21; i++)
+            aToPurchaseGroup(supplierId: i, supplierName: 'Proveedor $i'),
+        ]);
+        refuseCreates();
+        await pumpScreen(tester, surface: const Size(1400, 3000));
+        await refuse(tester, 'Proveedor 2');
+
+        await tester.tap(key('to_purchase_next_page'));
+        await tester.pumpAndSettle();
+
+        expect(key('to_purchase_refusal'), findsNothing);
+      });
     });
   });
 

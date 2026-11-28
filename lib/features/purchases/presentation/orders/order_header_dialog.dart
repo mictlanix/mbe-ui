@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mbe_ui/core/design/design.dart';
@@ -81,10 +80,12 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
   bool _hasUnsavedChanges() =>
       _supplierChange != null || _commentChanged || _deliveryChanged;
 
-  bool get _canSave =>
-      !_busy &&
-      _hasUnsavedChanges() &&
-      _comment.text.length <= _commentMaxLength;
+  /// The notes' length as sent: trimmed.
+  int get _commentLength => _comment.text.trim().length;
+
+  bool get _commentTooLong => _commentLength > _commentMaxLength;
+
+  bool get _canSave => !_busy && _hasUnsavedChanges() && !_commentTooLong;
 
   Future<void> _save() async {
     if (!_canSave) return;
@@ -167,12 +168,16 @@ class _HeaderDialogState extends ConsumerState<_HeaderDialog> {
             enabled: !_busy,
             minLines: 2,
             maxLines: 4,
-            maxLength: _commentMaxLength,
             // Over-long text stays visible with the counter in error, rather
-            // than being cut silently, and "Guardar" stays disabled.
-            maxLengthEnforcement: MaxLengthEnforcement.none,
+            // than being cut silently, and "Guardar" stays disabled. The
+            // counter counts the trimmed text, which is what is sent.
             decoration: InputDecoration(
               labelText: l10n.purchaseOrderFieldNotes,
+              counterText: '$_commentLength/$_commentMaxLength',
+              errorText: _commentTooLong ? '' : null,
+              counterStyle: _commentTooLong
+                  ? TextStyle(color: Theme.of(context).colorScheme.error)
+                  : null,
             ),
             onChanged: (_) => setState(() {}),
           ),

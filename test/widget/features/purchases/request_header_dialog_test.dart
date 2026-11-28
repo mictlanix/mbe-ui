@@ -217,6 +217,20 @@ void main() {
     expect(save(tester).onPressed, isNotNull);
   });
 
+  testWidgets('the 500-character limit counts the trimmed notes, as sent', (
+    tester,
+  ) async {
+    await open(tester, draft);
+
+    await tester.enterText(
+      key('purchase_request_header_comment'),
+      '  ${'x' * 500}\n',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('500/500'), findsOneWidget);
+    expect(save(tester).onPressed, isNotNull);
+  });
+
   testWidgets('facility_locked stays in the dialog, in Spanish', (
     tester,
   ) async {

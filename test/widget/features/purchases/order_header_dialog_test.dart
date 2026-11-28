@@ -202,6 +202,24 @@ void main() {
     expect(picker.initialDate, today);
   });
 
+  testWidgets('a date more than five years out opens the picker on it', (
+    tester,
+  ) async {
+    final now = DateTime.now();
+    final far = DateTime(now.year + 8, 3, 15);
+    await open(tester, anOrder(estimatedReceiptDate: far));
+
+    await tester.tap(key('purchase_order_header_delivery'));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    final picker = tester.widget<DatePickerDialog>(
+      find.byType(DatePickerDialog),
+    );
+    expect(picker.initialDate, far);
+    expect(picker.lastDate, far);
+  });
+
   testWidgets("notes over 500 characters can't be saved", (tester) async {
     await open(tester, dated);
 
@@ -212,6 +230,24 @@ void main() {
     await tester.enterText(key('purchase_order_header_comment'), 'x' * 500);
     await tester.pumpAndSettle();
     expect(submit(tester).onPressed, isNotNull);
+  });
+
+  testWidgets('the 500-character limit counts the trimmed notes, as sent', (
+    tester,
+  ) async {
+    answerUpdate(anOrder());
+    await open(tester, dated);
+
+    await tester.enterText(
+      key('purchase_order_header_comment'),
+      '  ${'x' * 500}  ',
+    );
+    await tester.pumpAndSettle();
+    expect(submit(tester).onPressed, isNotNull);
+    expect(find.text('500/500'), findsOneWidget);
+    await save(tester);
+
+    verify(() => h.orders.updateHeader(310, comment: 'x' * 500)).called(1);
   });
 
   testWidgets('a refusal stays in the dialog, localized', (tester) async {

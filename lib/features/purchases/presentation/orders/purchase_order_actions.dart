@@ -3,11 +3,14 @@ import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import 'package:mbe_ui/core/errors/app_error.dart';
+import 'package:mbe_ui/features/inventory/presentation/receipts/inventory_receipts_list_controller.dart';
 import 'package:mbe_ui/features/purchases/data/purchase_order_repository_impl.dart';
 import 'package:mbe_ui/features/purchases/domain/entities/purchase_order.dart';
 import 'package:mbe_ui/features/purchases/domain/repositories/purchase_order_repository.dart';
 import 'package:mbe_ui/features/purchases/presentation/orders/purchase_order_detail_controller.dart';
 import 'package:mbe_ui/features/purchases/presentation/orders/purchase_orders_list_controller.dart';
+import 'package:mbe_ui/features/purchases/presentation/requests/purchase_request_detail_controller.dart';
+import 'package:mbe_ui/features/purchases/presentation/requests/purchase_requests_list_controller.dart';
 import 'package:mbe_ui/features/purchases/presentation/to_purchase/to_purchase_controller.dart';
 
 part 'purchase_order_actions.g.dart';
@@ -50,9 +53,10 @@ bool isStaleOrderRefusal(AppError error) =>
 /// when it went through, rather than throwing: the dialog or screen that
 /// asked shows the refusal where the user is looking. On success the
 /// returned order is put into its detail provider (when one is alive), and
-/// the orders list and Por comprar are invalidated: every write may change
-/// a row's lines, total or status, and which request lines are pending
-/// (FR-009). A stale refusal re-fetches the detail.
+/// the orders list, Por comprar and the purchase requests are invalidated:
+/// every write may change a row's lines, total or status, which request
+/// lines are pending (FR-009), and the order a request line shows. A stale
+/// refusal re-fetches the detail.
 ///
 /// Keep-alive because a write outlives the dialog that started it.
 @Riverpod(keepAlive: true)
@@ -87,6 +91,11 @@ class PurchaseOrderActions extends _$PurchaseOrderActions {
       null,
       (r) => r.createFromGroup(supplierId: supplierId, facilityId: facilityId),
     );
+    // The group shown is stale: its lines went onto another order meanwhile.
+    if (error?.problem?.code ==
+        api.ErrorCode.purchaseOrderPeriodNothingPending) {
+      ref.invalidate(toPurchaseControllerProvider);
+    }
     return _opened(error, order);
   }
 
@@ -175,9 +184,13 @@ class PurchaseOrderActions extends _$PurchaseOrderActions {
   }
 
   /// `POST /purchase-orders/{id}/confirm`. The response's receipts stay on
-  /// the detail until the next reload (research R11).
-  Future<AppError?> confirm(int id) async =>
-      (await _run(id, (r) => r.confirm(id))).error;
+  /// the detail until the next reload (research R11); confirming creates
+  /// warehouse receipts, so their list is reloaded.
+  Future<AppError?> confirm(int id) async {
+    final error = (await _run(id, (r) => r.confirm(id))).error;
+    if (error == null) ref.invalidate(inventoryReceiptsListControllerProvider);
+    return error;
+  }
 
   /// `POST /purchase-orders/{id}/cancel`.
   Future<AppError?> cancel(int id) async =>
@@ -203,6 +216,9 @@ class PurchaseOrderActions extends _$PurchaseOrderActions {
     if (ref.exists(detail)) ref.read(detail.notifier).put(order);
     ref.invalidate(purchaseOrdersListControllerProvider);
     ref.invalidate(toPurchaseControllerProvider);
+    // Request lines show the number and state of the order they are on.
+    ref.invalidate(purchaseRequestDetailControllerProvider);
+    ref.invalidate(purchaseRequestsListControllerProvider);
     return (error: null, order: order);
   }
 }

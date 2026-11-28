@@ -49,37 +49,52 @@ class OrderReceiptsSection extends ConsumerWidget {
           style: theme.textTheme.titleMedium,
         ),
         for (final receipt in receipts)
-          Row(
+          // The count and Abrir sit at the end when they fit and wrap under
+          // the receipt on a narrow window.
+          Wrap(
             key: Key('purchase_order_receipt_${receipt.id}'),
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
             spacing: spacing.md,
             children: [
-              RecordIdText(l10n.purchaseOrderReceiptItem('${receipt.id}')),
-              Expanded(
-                child: Row(
-                  spacing: spacing.xs,
-                  children: [
-                    Flexible(
-                      child: InventoryWarehouseName(
-                        warehouseId: receipt.warehouseId,
+              Wrap(
+                spacing: spacing.md,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  RecordIdText(l10n.purchaseOrderReceiptItem('${receipt.id}')),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: spacing.xs,
+                    children: [
+                      Flexible(
+                        child: InventoryWarehouseName(
+                          warehouseId: receipt.warehouseId,
+                        ),
                       ),
-                    ),
-                    const Text('·'),
-                    Flexible(
-                      child: InventoryFacilityName(
-                        facilityId: receipt.facilityId,
+                      const Text('·'),
+                      Flexible(
+                        child: InventoryFacilityName(
+                          facilityId: receipt.facilityId,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ),
-              Text(l10n.toPurchaseLineCount(receipt.lineCount)),
-              if (canOpen)
-                TextButton(
-                  key: Key('purchase_order_receipt_open_${receipt.id}'),
-                  onPressed: () =>
-                      context.push('$inventoryReceiptsPath/${receipt.id}'),
-                  child: Text(l10n.purchaseOrderReceiptOpen),
-                ),
+              Wrap(
+                spacing: spacing.md,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(l10n.toPurchaseLineCount(receipt.lineCount)),
+                  if (canOpen)
+                    TextButton(
+                      key: Key('purchase_order_receipt_open_${receipt.id}'),
+                      onPressed: () =>
+                          context.push('$inventoryReceiptsPath/${receipt.id}'),
+                      child: Text(l10n.purchaseOrderReceiptOpen),
+                    ),
+                ],
+              ),
             ],
           ),
       ],

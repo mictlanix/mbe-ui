@@ -69,17 +69,21 @@ class _AddRequestLinesDialogState
   AppError? _refusal;
 
   /// The names come from the cached per-id lookups; one that can't be read
-  /// shows as `#id`.
-  Future<String> _label(PurchaseRequestSummary r) async {
-    final l10n = AppLocalizations.of(context)!;
+  /// shows as `#id`. `null` when the dialog closed meanwhile.
+  Future<String?> _label(
+    PurchaseRequestSummary r,
+    AppLocalizations l10n,
+  ) async {
     final facilityId = r.facilityId;
     final facility = facilityId == null
         ? null
         : await _name(facilityDisplayNameProvider(facilityId), facilityId);
+    if (!mounted) return null;
     final warehouse = await _name(
       warehouseDisplayNameProvider(r.warehouseId),
       r.warehouseId,
     );
+    if (!mounted) return null;
     return l10n.purchaseOrderRequestOption(
       '${r.serial ?? '#${r.id}'}',
       facility ?? emptyValuePlaceholder,
@@ -96,7 +100,9 @@ class _AddRequestLinesDialogState
     }
   }
 
+  /// Offers no options once the dialog closed while they loaded.
   Future<Iterable<PurchaseRequestSummary>> _options(String search) async {
+    final l10n = AppLocalizations.of(context)!;
     final page = await ref
         .read(purchaseRequestRepositoryProvider)
         .list(
@@ -106,8 +112,11 @@ class _AddRequestLinesDialogState
           skip: 0,
           limit: 10,
         );
+    if (!mounted) return const [];
     for (final r in page.items) {
-      _labels[r.id] = await _label(r);
+      final label = await _label(r, l10n);
+      if (label == null) return const [];
+      _labels[r.id] = label;
     }
     return page.items;
   }

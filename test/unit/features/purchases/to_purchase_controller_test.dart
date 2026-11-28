@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mbe_api_client/mbe_api_client.dart' as api;
 import 'package:mocktail/mocktail.dart';
 
+import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/core/navigation/list_query.dart';
 import 'package:mbe_ui/features/purchases/data/purchase_order_repository_impl.dart';
@@ -43,7 +45,6 @@ void main() {
       );
       expect(filter, const ToPurchaseFilter(facilityId: 4, pageIndex: 2));
       expect(filter.activeFilterCount, 1);
-      expect(ToPurchaseFilter.fromQuery(filter.toQuery()), filter);
     });
 
     test('ignores a non-numeric facility', () {
@@ -160,6 +161,50 @@ void main() {
       await container.read(purchaseOrderActionsProvider.notifier).cancel(310);
 
       await reloaded();
+    });
+
+    test('after a createFromGroup refused with nothing_pending', () async {
+      when(
+        () => repository.createFromGroup(supplierId: 1, facilityId: 2),
+      ).thenAnswer(
+        (_) async => throw AppError.validation(
+          [],
+          'purchase_order.nothing_pending',
+          ApiProblem(
+            codeName: 'purchase_order.nothing_pending',
+            code: api.ErrorCode.purchaseOrderPeriodNothingPending,
+          ),
+        ),
+      );
+
+      final result = await container
+          .read(purchaseOrderActionsProvider.notifier)
+          .createFromGroup(supplierId: 1, facilityId: 2);
+
+      expect(result.error, isNotNull);
+      await reloaded();
+    });
+
+    test('not after another createFromGroup refusal', () async {
+      when(
+        () => repository.createFromGroup(supplierId: 1, facilityId: 2),
+      ).thenAnswer(
+        (_) async => throw AppError.validation(
+          [],
+          'purchase_order.no_supplier',
+          ApiProblem(
+            codeName: 'purchase_order.no_supplier',
+            code: api.ErrorCode.purchaseOrderPeriodNoSupplier,
+          ),
+        ),
+      );
+
+      await container
+          .read(purchaseOrderActionsProvider.notifier)
+          .createFromGroup(supplierId: 1, facilityId: 2);
+      await container.read(toPurchaseControllerProvider(null).future);
+
+      verify(() => repository.toPurchase(facilityId: null)).called(1);
     });
 
     test('not after a refusal', () async {
