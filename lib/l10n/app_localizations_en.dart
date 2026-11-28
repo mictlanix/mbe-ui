@@ -11307,4 +11307,494 @@ class AppLocalizationsEn extends AppLocalizations {
   String apiErrorProductNotPurchasable(String product) {
     return 'Product $product isn\'t purchasable.';
   }
+
+  @override
+  String get navToPurchase => 'To purchase';
+
+  @override
+  String get navPurchaseOrders => 'Purchase orders';
+
+  @override
+  String purchaseOrderTitle(String id) {
+    return 'Purchase order $id';
+  }
+
+  @override
+  String get toPurchaseNoSupplier => 'No supplier';
+
+  @override
+  String toPurchaseLineCount(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n lines',
+      one: '1 line',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String toPurchaseEstimate(String total) {
+    return 'est. $total';
+  }
+
+  @override
+  String get toPurchaseCreateOrder => 'Create order';
+
+  @override
+  String get toPurchaseCreateOrderNoSelection =>
+      'Choose a group with a supplier to create the order.';
+
+  @override
+  String get toPurchaseRefresh => 'Refresh';
+
+  @override
+  String get toPurchaseNoSupplierHint => 'Add them by hand to an order.';
+
+  @override
+  String get toPurchaseColRequest => 'Request';
+
+  @override
+  String get toPurchaseColCode => 'Code';
+
+  @override
+  String get toPurchaseColProduct => 'Product';
+
+  @override
+  String get toPurchaseColQuantity => 'Quantity';
+
+  @override
+  String get toPurchaseColWarehouse => 'Warehouse';
+
+  @override
+  String get toPurchaseColCost => 'Cost';
+
+  @override
+  String get toPurchaseNoCost => 'no cost';
+
+  @override
+  String get toPurchaseFacetFacility => 'Facility';
+
+  @override
+  String get toPurchaseEmpty => 'There are no lines pending purchase.';
+
+  @override
+  String toPurchasePaginationSummary(String start, String end, String total) {
+    return '$start–$end of $total groups';
+  }
+
+  @override
+  String toPurchaseCreatedSnack(String id, int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n lines',
+      one: '1 line',
+    );
+    return 'Order $id created with $_temp0.';
+  }
+
+  @override
+  String purchaseOrderLeftOutSnack(int k) {
+    String _temp0 = intl.Intl.pluralLogic(
+      k,
+      locale: localeName,
+      other: '$k lines were',
+      one: '1 line was',
+    );
+    return ' $_temp0 already on another order.';
+  }
+
+  @override
+  String get purchaseOrderColNumber => 'Number';
+
+  @override
+  String get purchaseOrderColSupplier => 'Supplier';
+
+  @override
+  String get purchaseOrderColStatus => 'Status';
+
+  @override
+  String get purchaseOrderColDelivery => 'Delivery';
+
+  @override
+  String get purchaseOrderColCreator => 'Created by';
+
+  @override
+  String get purchaseOrderColDate => 'Date';
+
+  @override
+  String get purchaseOrderColLines => 'Lines';
+
+  @override
+  String get purchaseOrderColTotal => 'Total';
+
+  @override
+  String get purchaseOrderSearchHint => 'Number';
+
+  @override
+  String get purchaseOrderFacetScope => 'Show';
+
+  @override
+  String get purchaseOrderScopeMine => 'My orders';
+
+  @override
+  String get purchaseOrderScopeAll => 'All';
+
+  @override
+  String get purchaseOrderFacetStatus => 'Status';
+
+  @override
+  String get purchaseOrderFacetSupplier => 'Supplier';
+
+  @override
+  String get purchaseOrderFacetCreator => 'Created by';
+
+  @override
+  String get purchaseOrderFacetDate => 'Date';
+
+  @override
+  String get purchaseOrderEmptyMine => 'You have no purchase orders.';
+
+  @override
+  String get purchaseOrderEmptyAll => 'There are no purchase orders.';
+
+  @override
+  String get purchaseOrderNewAction => 'New order';
+
+  @override
+  String get purchaseOrderFactStatus => 'Status';
+
+  @override
+  String get purchaseOrderFactSupplier => 'Supplier';
+
+  @override
+  String get purchaseOrderFactDelivery => 'Delivery';
+
+  @override
+  String get purchaseOrderFactNotes => 'Notes';
+
+  @override
+  String get purchaseOrderFactCreator => 'Created by';
+
+  @override
+  String get purchaseOrderLineColCode => 'Code';
+
+  @override
+  String get purchaseOrderLineColProduct => 'Product';
+
+  @override
+  String get purchaseOrderLineColWarehouse => 'Warehouse';
+
+  @override
+  String get purchaseOrderLineColQuantity => 'Quantity';
+
+  @override
+  String get purchaseOrderLineColPrice => 'Price';
+
+  @override
+  String get purchaseOrderLineColTax => 'VAT';
+
+  @override
+  String get purchaseOrderLineColAmount => 'Amount';
+
+  @override
+  String get purchaseOrderLineColReceived => 'Received';
+
+  @override
+  String get purchaseOrderLineColPending => 'Pending';
+
+  @override
+  String purchaseOrderLineRequest(String serial) {
+    return 'Req. $serial';
+  }
+
+  @override
+  String get purchaseOrderLineEditTooltip => 'Edit line';
+
+  @override
+  String get purchaseOrderLineRemoveTooltip => 'Remove line';
+
+  @override
+  String get purchaseOrderTotalSubtotal => 'Subtotal';
+
+  @override
+  String get purchaseOrderTotalTax => 'VAT';
+
+  @override
+  String get purchaseOrderTotalTotal => 'Total';
+
+  @override
+  String get purchaseOrderLinesEmpty =>
+      'Add products or the lines of an approved request.';
+
+  @override
+  String get purchaseOrderReceiptsTitle => 'Receipts';
+
+  @override
+  String purchaseOrderReceiptItem(String id) {
+    return 'Receipt $id';
+  }
+
+  @override
+  String get purchaseOrderReceiptOpen => 'Open';
+
+  @override
+  String get purchaseOrderBackToList => 'Back to purchase orders';
+
+  @override
+  String get purchaseOrderEditHeader => 'Edit header';
+
+  @override
+  String get purchaseOrderAddProduct => 'Add product';
+
+  @override
+  String get purchaseOrderAddRequest => 'Add request';
+
+  @override
+  String get purchaseOrderConfirm => 'Confirm';
+
+  @override
+  String get purchaseOrderConfirmNoLinesTooltip =>
+      'Add at least one line to confirm.';
+
+  @override
+  String get purchaseOrderCancelAction => 'Cancel order';
+
+  @override
+  String get purchaseOrderPrint => 'Print';
+
+  @override
+  String get purchaseOrderEmailAction => 'Send by email';
+
+  @override
+  String get purchaseOrderRemoveAction => 'Remove';
+
+  @override
+  String get purchaseOrderBack => 'Back';
+
+  @override
+  String get purchaseOrderAddAction => 'Add';
+
+  @override
+  String get purchaseOrderCreateAction => 'Create';
+
+  @override
+  String get purchaseOrderNewTitle => 'New purchase order';
+
+  @override
+  String get purchaseOrderEditHeaderTitle => 'Edit header';
+
+  @override
+  String get purchaseOrderAddProductTitle => 'Add product';
+
+  @override
+  String get purchaseOrderEditLineTitle => 'Edit line';
+
+  @override
+  String get purchaseOrderAddRequestTitle => 'Add lines from a request';
+
+  @override
+  String get purchaseOrderFieldSupplier => 'Supplier';
+
+  @override
+  String get purchaseOrderFieldDelivery => 'Delivery';
+
+  @override
+  String get purchaseOrderClearDelivery => 'Clear delivery date';
+
+  @override
+  String get purchaseOrderFieldNotes => 'Notes';
+
+  @override
+  String get purchaseOrderFieldProduct => 'Product';
+
+  @override
+  String get purchaseOrderFieldQuantity => 'Quantity';
+
+  @override
+  String get purchaseOrderFieldWarehouse => 'Warehouse';
+
+  @override
+  String get purchaseOrderFieldPrice => 'Price';
+
+  @override
+  String get purchaseOrderFieldPriceHelper => 'before VAT';
+
+  @override
+  String get purchaseOrderFieldTax => 'VAT';
+
+  @override
+  String purchaseOrderTaxRateOption(String rate) {
+    return '$rate %';
+  }
+
+  @override
+  String get purchaseOrderFieldRequest => 'Request';
+
+  @override
+  String get purchaseOrderFieldRequestHelper => 'approved requests only';
+
+  @override
+  String purchaseOrderRequestOption(
+    String serial,
+    String facility,
+    String warehouse,
+  ) {
+    return '$serial · $facility · $warehouse';
+  }
+
+  @override
+  String get purchaseOrderQuantityInvalid =>
+      'Enter a quantity above 0, with at most 4 decimals.';
+
+  @override
+  String get purchaseOrderPriceInvalid =>
+      'Enter a price of 0 or more, with at most 7 decimals.';
+
+  @override
+  String get purchaseOrderRemoveTitle => 'Remove line';
+
+  @override
+  String purchaseOrderRemoveBody(String product) {
+    return 'Remove $product from the order.';
+  }
+
+  @override
+  String purchaseOrderConfirmTitle(String id) {
+    return 'Confirm order $id?';
+  }
+
+  @override
+  String purchaseOrderConfirmSummary(
+    String supplier,
+    String lines,
+    String total,
+  ) {
+    return '$supplier · $lines · Total $total';
+  }
+
+  @override
+  String purchaseOrderConfirmReceipts(String warehouses) {
+    return 'Receipts will be created in $warehouses.';
+  }
+
+  @override
+  String purchaseOrderConfirmZeroPrice(int n, String products) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n lines with price 0',
+      one: '1 line with price 0',
+    );
+    return '$_temp0: $products.';
+  }
+
+  @override
+  String get purchaseOrderConfirmIrreversible => 'It can no longer be edited.';
+
+  @override
+  String purchaseOrderConfirmedSnack(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Order confirmed; $n receipts created.',
+      one: 'Order confirmed; 1 receipt created.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String purchaseOrderCancelTitle(String id) {
+    return 'Cancel order $id';
+  }
+
+  @override
+  String get purchaseOrderCancelBody =>
+      'The order is cancelled. Its request lines go back to Por comprar.';
+
+  @override
+  String purchaseOrderAddRequestSnack(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: '$n lines added.',
+      one: '1 line added.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String purchaseOrderZeroPriceWarning(String code, String name) {
+    return '$code $name: price 0; it won\'t update the cost.';
+  }
+
+  @override
+  String purchaseOrderEmailTitle(String id) {
+    return 'Send order $id by email';
+  }
+
+  @override
+  String get purchaseOrderEmailRecipients => 'To';
+
+  @override
+  String get purchaseOrderEmailMessage => 'Message';
+
+  @override
+  String purchaseOrderEmailMessageCounter(String count) {
+    return '$count / 1000';
+  }
+
+  @override
+  String get purchaseOrderEmailSuggestions =>
+      'Suggested from the supplier\'s contacts';
+
+  @override
+  String get purchaseOrderEmailNoSuggestions =>
+      'No suggested addresses; type one.';
+
+  @override
+  String purchaseOrderEmailSentSnack(int n) {
+    String _temp0 = intl.Intl.pluralLogic(
+      n,
+      locale: localeName,
+      other: 'Order sent to $n recipients.',
+      one: 'Order sent to 1 recipient.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get apiErrorPurchaseOrderNoSupplier => 'The order has no supplier.';
+
+  @override
+  String get apiErrorPurchaseOrderNoLines => 'The order has no lines.';
+
+  @override
+  String get apiErrorPurchaseOrderLineWithoutQuantity =>
+      'Every line must have a quantity above zero.';
+
+  @override
+  String get apiErrorPurchaseOrderAlreadyCancelled =>
+      'The order is already cancelled.';
+
+  @override
+  String get apiErrorPurchaseOrderConfirmedCannotCancel =>
+      'A confirmed order cannot be cancelled.';
+
+  @override
+  String get apiErrorPurchaseOrderNotConfirmed =>
+      'Only a confirmed order can be printed or emailed.';
+
+  @override
+  String get apiErrorPurchaseOrderNothingPending =>
+      'There are no pending lines to order for that supplier and facility.';
+
+  @override
+  String get apiErrorPurchaseOrderNothingToAdd =>
+      'The request has no pending lines to order.';
+
+  @override
+  String get apiErrorPurchaseOrderRequestNotApproved =>
+      'The request is not approved.';
 }

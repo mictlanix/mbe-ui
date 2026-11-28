@@ -188,15 +188,15 @@ code	product.not_purchasable	422	product_id: int, product_code: str	IN	POST /pur
 code	product.not_stockable	422	product_code: str	IN	POST /inventory-receipts/{}/lines	reachable from the Entradas de almacén screens (spec 067)
 code	product_price.duplicate_entry	400	product_id: int, price_list_id: int	IN	PUT /product-prices	reachable from 1 UI route(s)
 code	product_price.references_not_found	404	resource: str (product	IN	PUT /product-prices	reachable from 1 UI route(s)
-code	purchase_order.already_cancelled	409	—	OUT		
-code	purchase_order.confirmed_cannot_cancel	409	—	OUT		
-code	purchase_order.line_without_quantity	409	product_code: str	OUT		
-code	purchase_order.no_lines	409	—	OUT		
-code	purchase_order.no_supplier	409	—	OUT		
-code	purchase_order.not_confirmed	409	purchase_order_id: int	OUT		
-code	purchase_order.nothing_pending	409	supplier_id: int, facility_id: int	OUT		
-code	purchase_order.nothing_to_add	409	purchase_request_id: int	OUT		
-code	purchase_order.request_not_approved	409	purchase_request_id: int	OUT		
+code	purchase_order.already_cancelled	409	—	IN	POST /purchase-orders/{}/confirm	reachable from the Órdenes de compra screens (spec 080)
+code	purchase_order.confirmed_cannot_cancel	409	—	IN	POST /purchase-orders/{}/confirm	reachable from the Órdenes de compra screens (spec 080)
+code	purchase_order.line_without_quantity	409	product_code: str	IN	POST /purchase-orders/{}/confirm	reachable from the Órdenes de compra screens (spec 080)
+code	purchase_order.no_lines	409	—	IN	POST /purchase-orders/{}/confirm	reachable from the Órdenes de compra screens (spec 080)
+code	purchase_order.no_supplier	409	—	IN	POST /purchase-orders/{}/confirm	reachable from the Órdenes de compra screens (spec 080)
+code	purchase_order.not_confirmed	409	purchase_order_id: int	IN	POST /purchase-orders/{}/confirm	reachable from the Órdenes de compra screens (spec 080)
+code	purchase_order.nothing_pending	409	supplier_id: int, facility_id: int	IN	POST /purchase-orders/{}/confirm	reachable from the Órdenes de compra screens (spec 080)
+code	purchase_order.nothing_to_add	409	purchase_request_id: int	IN	POST /purchase-orders/{}/confirm	reachable from the Órdenes de compra screens (spec 080)
+code	purchase_order.request_not_approved	409	purchase_request_id: int	IN	POST /purchase-orders/{}/confirm	reachable from the Órdenes de compra screens (spec 080)
 code	purchase_request.already_cancelled	409	—	IN	POST /purchase-requests/{}/submit	reachable from the Solicitudes de compra screens (spec 079)
 code	purchase_request.facility_locked	409	—	IN	POST /purchase-requests/{}/submit	reachable from the Solicitudes de compra screens (spec 079)
 code	purchase_request.line_on_live_order	409	line_id: int	IN	POST /purchase-requests/{}/submit	reachable from the Solicitudes de compra screens (spec 079)

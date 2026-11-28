@@ -196,6 +196,34 @@ void main() {
       }
     });
 
+    test('a purchase order uses its route, the server\'s name and a padded '
+        'fallback, gated by PurchasesOrders read (spec 080)', () async {
+      final paths = <String>[];
+      var withHeader = true;
+      final source = _sourceWith((options) async {
+        paths.add(options.path);
+        return withHeader
+            ? _pdfResponse(_pdf([1]), filename: 'OC-5531.pdf')
+            : _pdfResponse(_pdf([1]));
+      });
+
+      expect(
+        (await source.fetch(_ref(DocumentKind.purchaseOrder, 5531))).filename,
+        'OC-5531.pdf',
+      );
+      withHeader = false;
+      expect(
+        (await source.fetch(_ref(DocumentKind.purchaseOrder, 5531))).filename,
+        'orden-compra-00005531.pdf',
+      );
+      expect(paths.first, '/api/v1/purchase-orders/5531/document');
+      expect(
+        DocumentKind.purchaseOrder.gateObject,
+        SystemObject.purchasesOrders,
+      );
+      expect(DocumentKind.purchaseOrder.gateRight, AccessRight.read);
+    });
+
     test('a fiscal document PDF uses its route, the server\'s name and a '
         'padded-free fallback (spec 066)', () async {
       final paths = <String>[];

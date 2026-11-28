@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mbe_ui/core/access/access_control.dart';
+import 'package:mbe_ui/core/access/access_right.dart';
 import 'package:mbe_ui/core/access/privilege.dart';
 import 'package:mbe_ui/core/access/system_object.dart';
 import 'package:mbe_ui/core/access/user.dart';
@@ -840,6 +841,93 @@ void main() {
     });
   });
 
+  group('Por comprar destination (spec 080)', () {
+    test('read on PurchasesOrders (20) alone shows the entry and the '
+        'Compras group, without the request entries', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.purchasesOrders, rawValue: 2),
+        ],
+      );
+      expect(ids, contains('to-purchase'));
+      expect(ids, isNot(contains('purchase-requests')));
+      expect(ids, isNot(contains('purchase-request-approval')));
+    });
+
+    test('without read on PurchasesOrders (20) there is no entry', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.purchasesOrders, rawValue: 1),
+          Privilege(systemObject: SystemObject.purchaseRequest, rawValue: 2),
+        ],
+      );
+      expect(ids, isNot(contains('to-purchase')));
+    });
+
+    test('it follows Aprobación de solicitudes in Compras, on branch 40 at '
+        '/purchases/to-purchase', () {
+      final entry = kNavigationTree
+          .whereType<NavGroup>()
+          .firstWhere((g) => g.id == 'purchases')
+          .children[2];
+      expect(entry.id, 'to-purchase');
+      expect(entry.route, '/purchases/to-purchase');
+      expect(entry.branchIndex, NavBranch.toPurchase);
+      expect(NavBranch.toPurchase, 40);
+      expect(entry.icon, Icons.shopping_cart_outlined);
+      expect(entry.selectedIcon, Icons.shopping_cart);
+      final gate = entry.gate as PrivilegeGate;
+      expect(gate.object, SystemObject.purchasesOrders);
+      expect(gate.right, AccessRight.read);
+    });
+  });
+
+  group('Órdenes de compra destination (spec 080)', () {
+    test('read on PurchasesOrders (20) alone shows the entry', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.purchasesOrders, rawValue: 2),
+        ],
+      );
+      expect(ids, contains('purchase-orders'));
+    });
+
+    test('without read on PurchasesOrders (20) there is no entry', () {
+      final ids = visibleIds(
+        multiCurrency: false,
+        administrator: false,
+        privileges: const [
+          Privilege(systemObject: SystemObject.purchasesOrders, rawValue: 1),
+          Privilege(systemObject: SystemObject.purchaseRequest, rawValue: 2),
+        ],
+      );
+      expect(ids, isNot(contains('purchase-orders')));
+    });
+
+    test('it follows Por comprar in Compras, on branch 41 at '
+        '/purchases/orders', () {
+      final entry = kNavigationTree
+          .whereType<NavGroup>()
+          .firstWhere((g) => g.id == 'purchases')
+          .children[3];
+      expect(entry.id, 'purchase-orders');
+      expect(entry.route, '/purchases/orders');
+      expect(entry.branchIndex, NavBranch.purchaseOrders);
+      expect(NavBranch.purchaseOrders, 41);
+      expect(entry.icon, Icons.receipt_long_outlined);
+      expect(entry.selectedIcon, Icons.receipt_long);
+      final gate = entry.gate as PrivilegeGate;
+      expect(gate.object, SystemObject.purchasesOrders);
+      expect(gate.right, AccessRight.read);
+    });
+  });
+
   group('Facturas destination (spec 066 C1)', () {
     test('a user without FiscalDocuments read has no Facturas entry', () {
       final ids = visibleIds(
@@ -1242,7 +1330,12 @@ void main() {
             'suppliers',
             'labels',
           ],
-          'purchases': ['purchase-requests', 'purchase-request-approval'],
+          'purchases': [
+            'purchase-requests',
+            'purchase-request-approval',
+            'to-purchase',
+            'purchase-orders',
+          ],
           'finance': [
             'payments',
             'payment-verification',
@@ -1270,8 +1363,21 @@ void main() {
             NavGroup() => item.children.map((d) => d.id),
           },
       ];
-      expect(all.length, 40);
-      expect(all.toSet().length, 40);
+      expect(all.length, 42);
+      expect(all.toSet().length, 42);
     },
   );
+
+  test('the branch indices are 0..41 with no gap and no repeat: a shell '
+      'branch is positional, so a destination appended out of order would '
+      'open the wrong screen', () {
+    final indices = [
+      for (final item in kNavigationTree)
+        ...switch (item) {
+          NavDestination() => [item.branchIndex],
+          NavGroup() => item.children.map((d) => d.branchIndex),
+        },
+    ]..sort();
+    expect(indices, List.generate(42, (i) => i));
+  });
 }

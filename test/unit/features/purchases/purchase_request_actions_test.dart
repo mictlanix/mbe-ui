@@ -7,6 +7,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:mbe_ui/core/errors/api_problem.dart';
 import 'package:mbe_ui/core/errors/app_error.dart';
 import 'package:mbe_ui/features/purchases/data/purchase_request_repository_impl.dart';
+import 'package:mbe_ui/features/purchases/domain/entities/purchase_order.dart';
 import 'package:mbe_ui/features/purchases/domain/entities/purchase_request.dart';
 import 'package:mbe_ui/features/purchases/domain/repositories/purchase_request_repository.dart';
 import 'package:mbe_ui/features/purchases/presentation/approval/approval_queue_controller.dart';
@@ -14,6 +15,7 @@ import 'package:mbe_ui/features/purchases/presentation/requests/purchase_request
 import 'package:mbe_ui/features/purchases/presentation/requests/purchase_request_detail_controller.dart';
 import 'package:mbe_ui/features/purchases/presentation/requests/purchase_requests_filter.dart';
 import 'package:mbe_ui/features/purchases/presentation/requests/purchase_requests_list_controller.dart';
+import 'package:mbe_ui/features/purchases/presentation/to_purchase/to_purchase_controller.dart';
 
 import 'purchase_request_fixtures.dart';
 
@@ -24,6 +26,18 @@ const _id = 212;
 
 var _listBuilds = 0;
 var _queueBuilds = 0;
+var _toPurchaseBuilds = 0;
+
+/// The writes that change which lines are pending, so Por comprar reloads.
+const _changesPending = {'cancel', 'markLine', 'approve', 'reject'};
+
+class _CountingToPurchase extends ToPurchaseController {
+  @override
+  Future<List<ToPurchaseGroup>> build(int? facilityId) async {
+    _toPurchaseBuilds++;
+    return const [];
+  }
+}
 
 class _CountingList extends PurchaseRequestsListController {
   @override
@@ -72,6 +86,7 @@ void main() {
     repository = MockPurchaseRequestRepository();
     _listBuilds = 0;
     _queueBuilds = 0;
+    _toPurchaseBuilds = 0;
     when(() => repository.get(_id)).thenAnswer((_) async => aRequest());
     container = ProviderContainer(
       retry: (_, _) => null,
@@ -83,6 +98,9 @@ void main() {
         approvalQueueControllerProvider(
           queueFilter,
         ).overrideWith(_CountingQueue.new),
+        toPurchaseControllerProvider(
+          null,
+        ).overrideWith(_CountingToPurchase.new),
       ],
     );
     addTearDown(container.dispose);
@@ -93,6 +111,8 @@ void main() {
       (_, _) {},
     );
     container.listen(approvalQueueControllerProvider(queueFilter), (_, _) {});
+    container.listen(toPurchaseControllerProvider(null), (_, _) {});
+    await container.read(toPurchaseControllerProvider(null).future);
     await container.read(detail.future);
     await container.read(approvalQueueControllerProvider(queueFilter).future);
     await container.read(
@@ -165,6 +185,7 @@ void main() {
         expect(container.read(detail).value, written);
         expect(_listBuilds, 2);
         expect(_queueBuilds, 2);
+        expect(_toPurchaseBuilds, _changesPending.contains(name) ? 2 : 1);
         verifyNever(() => repository.get(_id));
       });
 
@@ -181,6 +202,7 @@ void main() {
         expect(container.read(detail).value, aRequest());
         expect(_listBuilds, 1);
         expect(_queueBuilds, 1);
+        expect(_toPurchaseBuilds, 1);
         verifyNever(() => repository.get(_id));
       });
 
@@ -286,6 +308,7 @@ void main() {
       expect(result.outcomes, outcomes);
       expect(_listBuilds, 2);
       expect(_queueBuilds, 2);
+      expect(_toPurchaseBuilds, 2);
       expect(container.read(detail).value, aRequest());
       verifyNever(() => repository.get(_id));
     });
@@ -303,6 +326,7 @@ void main() {
       expect(result.outcomes, isNull);
       expect(_listBuilds, 1);
       expect(_queueBuilds, 1);
+      expect(_toPurchaseBuilds, 1);
     });
   });
 }

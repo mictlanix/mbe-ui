@@ -277,6 +277,22 @@ final Map<api.ErrorCode, Map<String, Object?>> problemFixtures = {
   api.ErrorCode.purchaseRequestPeriodLinesOnLiveOrder: {'count': 2},
   api.ErrorCode.purchaseRequestPeriodLinesNotMarkable: {'status': 'draft'},
   api.ErrorCode.purchaseRequestPeriodLineOnLiveOrder: {'line_id': 12},
+  api.ErrorCode.purchaseOrderPeriodNoSupplier: {},
+  api.ErrorCode.purchaseOrderPeriodNoLines: {},
+  api.ErrorCode.purchaseOrderPeriodLineWithoutQuantity: {
+    'product_code': 'PT-001',
+  },
+  api.ErrorCode.purchaseOrderPeriodAlreadyCancelled: {},
+  api.ErrorCode.purchaseOrderPeriodConfirmedCannotCancel: {},
+  api.ErrorCode.purchaseOrderPeriodNotConfirmed: {'purchase_order_id': 5},
+  api.ErrorCode.purchaseOrderPeriodNothingPending: {
+    'supplier_id': 3,
+    'facility_id': 1,
+  },
+  api.ErrorCode.purchaseOrderPeriodNothingToAdd: {'purchase_request_id': 7},
+  api.ErrorCode.purchaseOrderPeriodRequestNotApproved: {
+    'purchase_request_id': 7,
+  },
   api.ErrorCode.productPricePeriodDuplicateEntry: {
     'product_id': 7,
     'price_list_id': 2,

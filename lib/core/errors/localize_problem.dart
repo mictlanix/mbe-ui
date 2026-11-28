@@ -179,6 +179,15 @@ const Set<api.ErrorCode> localizedErrorCodes = {
   api.ErrorCode.purchaseRequestPeriodLinesOnLiveOrder,
   api.ErrorCode.purchaseRequestPeriodLinesNotMarkable,
   api.ErrorCode.purchaseRequestPeriodLineOnLiveOrder,
+  api.ErrorCode.purchaseOrderPeriodNoSupplier,
+  api.ErrorCode.purchaseOrderPeriodNoLines,
+  api.ErrorCode.purchaseOrderPeriodLineWithoutQuantity,
+  api.ErrorCode.purchaseOrderPeriodAlreadyCancelled,
+  api.ErrorCode.purchaseOrderPeriodConfirmedCannotCancel,
+  api.ErrorCode.purchaseOrderPeriodNotConfirmed,
+  api.ErrorCode.purchaseOrderPeriodNothingPending,
+  api.ErrorCode.purchaseOrderPeriodNothingToAdd,
+  api.ErrorCode.purchaseOrderPeriodRequestNotApproved,
   api.ErrorCode.productPeriodNotPurchasable,
   api.ErrorCode.productPricePeriodDuplicateEntry,
   api.ErrorCode.productPricePeriodReferencesNotFound,
@@ -809,6 +818,25 @@ String? localizeProblem(
       l10n.apiErrorPurchaseRequestLinesNotMarkable,
     api.ErrorCode.purchaseRequestPeriodLineOnLiveOrder =>
       l10n.apiErrorPurchaseRequestLineOnLiveOrder,
+    // Purchase orders (spec 080).
+    api.ErrorCode.purchaseOrderPeriodNoSupplier =>
+      l10n.apiErrorPurchaseOrderNoSupplier,
+    api.ErrorCode.purchaseOrderPeriodNoLines =>
+      l10n.apiErrorPurchaseOrderNoLines,
+    api.ErrorCode.purchaseOrderPeriodLineWithoutQuantity =>
+      l10n.apiErrorPurchaseOrderLineWithoutQuantity,
+    api.ErrorCode.purchaseOrderPeriodAlreadyCancelled =>
+      l10n.apiErrorPurchaseOrderAlreadyCancelled,
+    api.ErrorCode.purchaseOrderPeriodConfirmedCannotCancel =>
+      l10n.apiErrorPurchaseOrderConfirmedCannotCancel,
+    api.ErrorCode.purchaseOrderPeriodNotConfirmed =>
+      l10n.apiErrorPurchaseOrderNotConfirmed,
+    api.ErrorCode.purchaseOrderPeriodNothingPending =>
+      l10n.apiErrorPurchaseOrderNothingPending,
+    api.ErrorCode.purchaseOrderPeriodNothingToAdd =>
+      l10n.apiErrorPurchaseOrderNothingToAdd,
+    api.ErrorCode.purchaseOrderPeriodRequestNotApproved =>
+      l10n.apiErrorPurchaseOrderRequestNotApproved,
     api.ErrorCode.productPeriodNotPurchasable => _ap1(
       problem.stringParam('product_code'),
       l10n.apiErrorProductNotPurchasable,

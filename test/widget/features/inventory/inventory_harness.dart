@@ -206,6 +206,7 @@ class InventoryHarness {
     int counts = 0,
     int stock = 0,
     int kardex = 0,
+    int purchaseOrders = 0,
     bool warehousesRead = true,
     bool productsRead = true,
     bool administrator = false,
@@ -243,6 +244,11 @@ class InventoryHarness {
         ),
       if (kardex != 0)
         Privilege(systemObject: SystemObject.kardex, rawValue: kardex),
+      if (purchaseOrders != 0)
+        Privilege(
+          systemObject: SystemObject.purchasesOrders,
+          rawValue: purchaseOrders,
+        ),
       if (warehousesRead)
         const Privilege(systemObject: SystemObject.warehouses, rawValue: 2),
       if (productsRead)
@@ -871,6 +877,13 @@ class InventoryHarness {
               body: Text('${s.uri}', key: const Key('sales_document_route')),
             ),
           ),
+        // A stand-in for the purchase order a receipt links to (spec 080).
+        GoRoute(
+          path: '/purchases/orders/:id',
+          builder: (_, s) => Scaffold(
+            body: Text('${s.uri}', key: const Key('purchase_order_route')),
+          ),
+        ),
         GoRoute(
           path: '$inventoryReceiptsPath/:id',
           builder: (_, s) => InventoryReceiptDetailScreen(

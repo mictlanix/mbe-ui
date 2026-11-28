@@ -98,6 +98,7 @@ import 'package:mbe_ui/features/sales/domain/repositories/cash_session_repositor
 import 'package:mbe_ui/features/sales/domain/repositories/sales_order_repository.dart';
 import 'package:mbe_ui/features/sales/domain/repositories/sales_quote_repository.dart';
 import 'package:mbe_ui/features/commissions/data/commission_repository_impl.dart';
+import 'package:mbe_ui/features/purchases/data/purchase_order_repository_impl.dart';
 import 'package:mbe_ui/features/purchases/data/purchase_request_repository_impl.dart';
 import 'package:mbe_ui/l10n/app_localizations.dart';
 
@@ -106,7 +107,7 @@ import '../../../widget/features/commissions/commission_harness.dart'
 import '../../../widget/features/inventory/inventory_harness.dart'
     show aWarehouse;
 import '../../../widget/features/purchases/purchases_harness.dart'
-    show MockPurchaseRequestRepository;
+    show MockPurchaseOrderRepository, MockPurchaseRequestRepository;
 import '../../../widget/features/sales/pos_test_harness.dart'
     show MockCustomerRefundRepository, testRefund;
 import '../../features/inventory/kardex_fixtures.dart';
@@ -462,6 +463,19 @@ const _purchaseRequestApprovalReaderUser = User(
   sessionVersion: 1,
   privileges: [
     Privilege(systemObject: SystemObject.purchaseRequestApproval, rawValue: 2),
+  ],
+);
+
+/// Holds read on `purchasesOrders` (20) alone — the gate for spec 080's
+/// `/purchases/to-purchase` and `/purchases/orders` routes.
+const _purchaseOrdersReaderUser = User(
+  userId: 'purchase-orders-reader',
+  email: 'purchase-orders-reader@example.com',
+  administrator: false,
+  status: EntityStatus.active,
+  sessionVersion: 1,
+  privileges: [
+    Privilege(systemObject: SystemObject.purchasesOrders, rawValue: 2),
   ],
 );
 
@@ -2878,6 +2892,138 @@ void main() {
         '/purchases/request-approval',
       );
       expect(handle.router.state.uri.path, '/');
+    });
+  });
+
+  group('080-purchase-orders — /purchases/to-purchase and /purchases/orders '
+      'gate on purchasesOrders (20) read', () {
+    List<Override> overrides() {
+      final repo = MockPurchaseOrderRepository();
+      when(
+        () => repo.toPurchase(facilityId: any(named: 'facilityId')),
+      ).thenAnswer((_) async => const []);
+      when(() => repo.get(any())).thenThrow(const AppError.notFound());
+      when(
+        () => repo.list(
+          all: any(named: 'all'),
+          status: any(named: 'status'),
+          supplierId: any(named: 'supplierId'),
+          creatorId: any(named: 'creatorId'),
+          orderId: any(named: 'orderId'),
+          from: any(named: 'from'),
+          to: any(named: 'to'),
+          skip: any(named: 'skip'),
+          limit: any(named: 'limit'),
+        ),
+      ).thenAnswer(
+        (_) async =>
+            const CatalogPage(items: [], total: 0, pageIndex: 0, pageSize: 20),
+      );
+      return [purchaseOrderRepositoryProvider.overrideWithValue(repo)];
+    }
+
+    testWidgets('a user with purchasesOrders:read reaches Órdenes de compra, '
+        'on the last shell branch NavBranch.purchaseOrders (41)', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _purchaseOrdersReaderUser,
+        '/purchases/orders',
+        extraOverrides: overrides(),
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/purchases/orders');
+      expect(find.byKey(const Key('list_state_empty')), findsOneWidget);
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.purchaseOrders, 41);
+      expect(shell.navigationShell.currentIndex, NavBranch.purchaseOrders);
+      // Positional: branch 41 is the last one, after Por comprar (40).
+      expect(shell.navigationShell.route.branches.length, 42);
+    });
+
+    testWidgets('a user without it is redirected home from Órdenes de '
+        'compra', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/purchases/orders');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a user with purchasesOrders:read reaches Por comprar, on '
+        'shell branch NavBranch.toPurchase (40)', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _purchaseOrdersReaderUser,
+        '/purchases/to-purchase',
+        extraOverrides: overrides(),
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/purchases/to-purchase');
+      expect(find.byKey(const Key('list_state_empty')), findsOneWidget);
+      final shell = tester.widget<AppShell>(find.byType(AppShell));
+      expect(NavBranch.toPurchase, 40);
+      expect(shell.navigationShell.currentIndex, NavBranch.toPurchase);
+    });
+
+    testWidgets('a user without it is redirected home from Por comprar', (
+      tester,
+    ) async {
+      final handle = await pumpAt(
+        tester,
+        _noAccessUser,
+        '/purchases/to-purchase',
+      );
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('purchaseRequest:read alone opens neither', (tester) async {
+      for (final location in [
+        '/purchases/to-purchase',
+        '/purchases/orders',
+        '/purchases/orders/9',
+      ]) {
+        final handle = await pumpAt(
+          tester,
+          _purchaseRequestReaderUser,
+          location,
+        );
+        expect(handle.router.state.uri.path, '/', reason: location);
+      }
+    });
+
+    testWidgets('a user with purchasesOrders:read reaches an order (here not '
+        'found), not shadowed by /purchases/requests', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _purchaseOrdersReaderUser,
+        '/purchases/orders/9',
+        extraOverrides: overrides(),
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/purchases/orders/9');
+      expect(find.byKey(const Key('purchase_order_not_found')), findsOneWidget);
+      expect(find.byKey(const Key('purchase_request_not_found')), findsNothing);
+    });
+
+    testWidgets('a user without purchasesOrders:read is redirected from an '
+        'order', (tester) async {
+      final handle = await pumpAt(tester, _noAccessUser, '/purchases/orders/9');
+      expect(handle.router.state.uri.path, '/');
+    });
+
+    testWidgets('a non-numeric id gives the not-found state', (tester) async {
+      final handle = await pumpAt(
+        tester,
+        _purchaseOrdersReaderUser,
+        '/purchases/orders/abc',
+        extraOverrides: overrides(),
+      );
+      await tester.pumpAndSettle();
+
+      expect(handle.router.state.uri.path, '/purchases/orders/abc');
+      expect(find.byKey(const Key('purchase_order_not_found')), findsOneWidget);
     });
   });
 

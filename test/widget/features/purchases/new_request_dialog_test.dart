@@ -147,6 +147,20 @@ void main() {
     expect(submit(tester).onPressed, isNotNull);
   });
 
+  testWidgets('the 500-character limit counts the trimmed notes, as sent', (
+    tester,
+  ) async {
+    await open(tester);
+
+    await tester.enterText(
+      key('new_purchase_request_comment'),
+      '  ${'x' * 500}\n',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('500/500'), findsOneWidget);
+    expect(submit(tester).onPressed, isNotNull);
+  });
+
   testWidgets('a refusal stays in the dialog, localized', (tester) async {
     when(
       () => h.requests.create(
