@@ -61,6 +61,8 @@ The other 16 legacy actions are covered or deliberately dropped: see `specs/080-
 
 Closes mictlanix/mbe-roadmap#71
 
+Follow-up for manual checks: mbe-ui#311.
+
 Upstream, not blocking: mbe-api#353 (coded warnings and skip reasons), mbe-api#354 (Por comprar filters and paging), mbe-api#355 (receipts with state on every order response), mbe-api#356 (draft quotation document). Follow-up: mbe-ui#310.
 
 ## Test plan
@@ -85,9 +87,18 @@ Upstream, not blocking: mbe-api#353 (coded warnings and skip reasons), mbe-api#3
   - **Reload after confirm:** the receipts list comes back empty. The test asserts that, so it fails on purpose when mbe-api#355 ships.
   - **Mail:** not configured on dev, so the test confirms the `email.not_configured` path without sending anything.
 - [x] Device walkthrough `integration_test/purchase_orders_quickstart_test.dart` on macOS against dev: quickstart steps 1–12 and 14 pass, including the no-access check and the concurrent-confirm reload.
-- [x] Largest text level: the list, Por comprar, a draft and a confirmed order show no overflow. The test caught the request folio overflowing the line row; it now sits on the same line as the product name.
+- [x] Largest text level, at 1280 px and at 360 px: the list, Por comprar, a draft and a confirmed order show no overflow. The test caught the request folio, the Por comprar group header, the creator row and the receipts rows overflowing; they now wrap or shorten.
+- [x] A high-effort code review of the branch found 10 issues, all fixed in `b4f1dec0`:
+  - stale request screens, Por comprar and receipts list after writes;
+  - a date-picker assertion on far-future dates;
+  - an options load continuing after its dialog closed;
+  - compact-width overflows;
+  - a cached failed folio lookup;
+  - a lingering refusal banner;
+  - the notes limit counting untrimmed text, also fixed in the 079 request dialogs;
+  - an unused method.
 
-**Still manual** (tracked in the follow-up `[UI]` issue for this PR):
+**Still manual** (tracked in mbe-ui#311):
 - the timed checks SC-001 (Por comprar group to a confirmed order in under 1 minute) and SC-002 (a 5-line order written, confirmed, printed and emailed in under 4 minutes);
 - an email actually arriving with the PDF, which needs mail configured;
 - quickstart step 13 with a read-only account on 20, since no seeded account has it;
